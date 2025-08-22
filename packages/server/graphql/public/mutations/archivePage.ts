@@ -1,10 +1,9 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import publish from '../../../utils/publish'
+import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {addCanonicalPageLink} from '../../../utils/tiptap/addCanonicalPageLink'
 import {removeBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
@@ -93,10 +92,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
     }
   }
   const data = {pageId: dbPageId, action}
-  const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)
-  access.forEach(({userId}) => {
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'ArchivePagePayload', data, subOptions)
-  })
+  publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
   return data
 }
 

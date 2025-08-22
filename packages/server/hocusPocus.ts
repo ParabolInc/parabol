@@ -5,18 +5,18 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import {encodeStateAsUpdate} from 'yjs'
-import {SubscriptionChannel} from '../client/types/constEnums'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
-import publish from './utils/publish'
+import {publishPageNotification} from './utils/publishPageNotification'
 import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import {withBacklinks} from './utils/tiptap/hocusPocusHub'
 import {Redis} from './utils/tiptap/hocusPocusRedis'
+import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
 
@@ -32,10 +32,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}
   const data = {pageId}
-  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
-  access.forEach(({userId}) => {
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePagePayload', data, subOptions)
-  })
+  await publishPageNotification(pageId, 'UpdatePagePayload', data, subOptions, dataLoader)
   dataLoader.dispose()
 }
 export const server = new Server({
@@ -60,13 +57,24 @@ export const server = new Server({
     const {documentName, request, connectionConfig} = data
     const userId = (request as any).userId as string
     const [dbId] = CipherId.fromClient(documentName)
-    const pageAccess = await getKysely()
+    let pageAccess = await getKysely()
       .selectFrom('PageAccess')
       .select('role')
       .where('pageId', '=', dbId)
       .where('userId', '=', userId)
       .executeTakeFirst()
-    if (!pageAccess) throw new Error('Document does not exist or user is not authorized')
+    if (!pageAccess) {
+      pageAccess = await getKysely()
+        .selectFrom('PageExternalAccess')
+        .select('role')
+        .where('pageId', '=', dbId)
+        .where('email', '=', '*')
+        .limit(1)
+        .executeTakeFirst()
+      if (!pageAccess) {
+        throw new Error('Document does not exist or user is not authorized')
+      }
+    }
     const {role} = pageAccess
     if (role === 'viewer' || role === 'commenter') {
       connectionConfig.readOnly = true
@@ -121,7 +129,8 @@ export const server = new Server({
     new Throttle({
       throttle: 100,
       banTime: 1
-    })
+    }),
+    new RedisPublisher()
   ]
 })
 

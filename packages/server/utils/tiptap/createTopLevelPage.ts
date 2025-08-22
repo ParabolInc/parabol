@@ -4,13 +4,12 @@ import {sql} from 'kysely'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
-import {SubscriptionChannel} from '../../../client/types/constEnums'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {analytics} from '../../utils/analytics/analytics'
-import publish from '../publish'
+import {publishPageNotification} from '../publishPageNotification'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 
 export const createTopLevelPage = async (
@@ -63,9 +62,6 @@ export const createTopLevelPage = async (
     .execute()
   analytics.pageCreated(viewer, pageId)
   const data = {page}
-  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
-  access.forEach(({userId}) => {
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'CreatePagePayload', data, subOptions)
-  })
+  await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
   return page
 }

@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
 import type {
@@ -9,7 +9,7 @@ import {PageAccessComboboxControl} from './PageAccessComboboxControl'
 import {UnlinkPageDialog} from './UnlinkPageDialog'
 
 interface Props {
-  defaultRole: PageRoleEnum
+  defaultRole: PageRoleEnum | null
   pageId: string
   subjectId: string
   subjectType: PageSubjectEnum
@@ -58,9 +58,24 @@ export const PageAccessCombobox = (props: Props) => {
       }
     })
   }
+  const nullRoleToggledRef = useRef<boolean>(false)
+
+  // If the combobox loads without a role, set the role to viewer
+  // this is for general access switching from restricted to public
+  useEffect(() => {
+    if (defaultRole !== null || nullRoleToggledRef.current) return
+    nullRoleToggledRef.current = true
+    toggleRole('viewer')
+  }, [])
+
+  if (!defaultRole) return null
   return (
     <>
-      <PageAccessComboboxControl onClick={toggleRole} defaultRole={defaultRole} canRemove />
+      <PageAccessComboboxControl
+        onClick={toggleRole}
+        defaultRole={defaultRole}
+        noOwner={subjectId === '*'}
+      />
       {attemptedRole && (
         <UnlinkPageDialog approveUnlink={approveUnlink} closeDialog={closeDialog} />
       )}

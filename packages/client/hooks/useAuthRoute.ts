@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import type {AuthTokenRole} from '../types/constEnums'
+import {AuthTokenRole, LocalStorageKey} from '../types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
 import useRouter from './useRouter'
@@ -52,13 +52,14 @@ const useAuthRoute = (inOptions: Options = {}) => {
   useEffect(checkAuth, [atmosphere.authObj, history, options])
 
   // Detect changes to the auth token in localStorage (e.g., user signs out from another tab)
-  const token = window.localStorage.getItem('Action:token')
   useEffect(() => {
-    if (!token) {
-      atmosphere.setAuthToken(null)
+    window.addEventListener('storage', (e) => {
+      // this only fires if another tab has changed localStorage
+      if (e.key !== LocalStorageKey.APP_TOKEN_KEY) return
+      atmosphere.setAuthToken(e.newValue)
       checkAuth()
-    }
-  }, [token])
+    })
+  }, [])
 }
 
 export default useAuthRoute

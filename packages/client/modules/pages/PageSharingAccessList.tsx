@@ -1,4 +1,3 @@
-import PublicIcon from '@mui/icons-material/Public'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
@@ -9,9 +8,11 @@ import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUpdatePageParentLinkMutation} from '../../mutations/useUpdatePageParentLinkMutation'
 import {cn} from '../../ui/cn'
+import {PageSharingGeneralAccess} from './PageSharingGeneralAccess'
 
 graphql`
   fragment PageSharingAccessList_pageAccess on Page {
+    ...PageSharingGeneralAccess_page
     id
     isParentLinked
     access {
@@ -181,22 +182,7 @@ export const PageSharingAccessList = (props: Props) => {
             </div>
           )
         })}
-        {access.public && (
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3 pr-2'>
-              <PublicIcon className='h-8 w-8' />
-              <div className='flex flex-col'>
-                <div className='font-medium text-slate-700 text-sm'>{'Shared Publicly'}</div>
-              </div>
-            </div>
-            <PageAccessCombobox
-              defaultRole={access.public}
-              subjectId={'*'}
-              subjectType='external'
-              pageId={pageId}
-            />
-          </div>
-        )}
+        <PageSharingGeneralAccess pageRef={page} />
       </div>
     </div>
   )
