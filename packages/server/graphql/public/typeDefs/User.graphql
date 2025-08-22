@@ -523,11 +523,6 @@ type User implements UserPartial {
 		"""
 		before: DateTime!
 	): MeetingConnection!
-
-	"""
-	A single page accessible by the User
-	"""
-	page(pageId: ID!): Page
 	"""
 	All the pages accessible by a user
 	"""

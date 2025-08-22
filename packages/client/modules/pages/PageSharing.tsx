@@ -16,19 +16,16 @@ export const PageSharing = (props: Props) => {
   const query = usePreloadedQuery<PageSharingQuery>(
     graphql`
       query PageSharingQuery($pageId: ID!) {
-        viewer {
-          ...usePageSharingAutocomplete_viewer
-          page(pageId: $pageId) {
-            ...PageSharingAccessList_page
-            id
-          }
+        ...usePageSharingAutocomplete_query
+        page(pageId: $pageId) {
+          ...PageSharingAccessList_page
+          id
         }
       }
     `,
     queryRef
   )
-  const {viewer} = query
-  const page = viewer.page!
+  const page = query.page!
   const {
     getRootProps,
     getInputProps,
@@ -40,7 +37,7 @@ export const PageSharing = (props: Props) => {
     error,
     value,
     setValue
-  } = usePageSharingAutocomplete(viewer)
+  } = usePageSharingAutocomplete(query)
   return (
     <div className='flex max-h-96 w-96 flex-col bg-white p-4 pb-0 text-slate-700'>
       <PageSharingInput

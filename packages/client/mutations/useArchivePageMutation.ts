@@ -10,6 +10,7 @@ graphql`
   fragment useArchivePageMutation_notification on ArchivePagePayload {
     page {
       ...LeftNavPageLink_page @relay(mask: false)
+      ...PageDeletedHeader_page
       id
       deletedAt
       deletedBy

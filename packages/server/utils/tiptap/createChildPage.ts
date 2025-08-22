@@ -1,10 +1,9 @@
 import {sql} from 'kysely'
-import {SubscriptionChannel} from '../../../client/types/constEnums'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {analytics} from '../../utils/analytics/analytics'
-import publish from '../publish'
+import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 
 export const createChildPage = async (parentPageId: number, userId: string) => {
@@ -77,10 +76,7 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}
   const data = {page}
-  const access = await dataLoader.get('pageAccessByPageId').load(pageId)
-  access.forEach(({userId}) => {
-    publish(SubscriptionChannel.NOTIFICATION, userId, 'CreatePagePayload', data, subOptions)
-  })
+  await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
   dataLoader.dispose()
   return page
 }

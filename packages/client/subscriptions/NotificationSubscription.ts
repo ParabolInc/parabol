@@ -188,6 +188,9 @@ const subscription = graphql`
       UpdatePagePayload {
         ...useUpdatePageMutation_notification @relay(mask: false)
       }
+      UpdatePageAccessPayload {
+        ...useUpdatePageAccessMutation_notification @relay(mask: false)
+      }
     }
   }
 `

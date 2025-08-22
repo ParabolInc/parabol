@@ -30,4 +30,5 @@ type NotificationSubscriptionPayload {
 	ArchivePagePayload: ArchivePagePayload
 	CreatePagePayload: CreatePagePayload
 	UpdatePagePayload: UpdatePagePayload
+	UpdatePageAccessPayload: UpdatePageAccessPayload
 }
