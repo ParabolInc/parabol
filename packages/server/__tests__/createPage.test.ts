@@ -248,7 +248,6 @@ test('Access propagates to linked children', async () => {
 
   const childPageRes = await sendPublic({
     query: `query Page($pageId: ID!) {
-      viewer {
         page(pageId: $pageId) {
           access {
             public
@@ -272,7 +271,6 @@ test('Access propagates to linked children', async () => {
             }
           }
         }
-      }
     }`,
     variables: {
       pageId: childPageId
@@ -282,30 +280,28 @@ test('Access propagates to linked children', async () => {
 
   expect(childPageRes).toMatchObject({
     data: {
-      viewer: {
-        page: {
-          access: {
-            guests: [
-              {
-                email: 'foo@example.com'
+      page: {
+        access: {
+          guests: [
+            {
+              email: 'foo@example.com'
+            }
+          ],
+          public: 'owner',
+          organizations: [
+            {
+              organization: {
+                id: `preview:${user1.orgId}`
               }
-            ],
-            public: 'owner',
-            organizations: [
-              {
-                organization: {
-                  id: `preview:${user1.orgId}`
-                }
+            }
+          ],
+          teams: [
+            {
+              team: {
+                id: `preview:${user1.teamId}`
               }
-            ],
-            teams: [
-              {
-                team: {
-                  id: `preview:${user1.teamId}`
-                }
-              }
-            ]
-          }
+            }
+          ]
         }
       }
     }
@@ -420,7 +416,6 @@ test('Revoking access unlinks children', async () => {
 
   await sendPublic({
     query: `query Page($pageId: ID!) {
-      viewer {
         page(pageId: $pageId) {
           access {
             public
@@ -443,7 +438,6 @@ test('Revoking access unlinks children', async () => {
               }
             }
           }
-        }
       }
     }`,
     variables: {
