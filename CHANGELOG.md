@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.0](https://github.com/ParabolInc/parabol/compare/v10.19.3...v10.20.0) (2025-08-22)
+
+
+### Added
+
+* Public Pages without Auth ([#11901](https://github.com/ParabolInc/parabol/issues/11901)) ([5405827](https://github.com/ParabolInc/parabol/commit/5405827c5fb8f4db67b94e3f1a5d6538a48569ec))
+
+
+### Fixed
+
+* fetch active meetings when joining public team ([#11891](https://github.com/ParabolInc/parabol/issues/11891)) ([ced3d98](https://github.com/ParabolInc/parabol/commit/ced3d98645de480f095f6c1387f85246c6229fbd))
+* max task card width ([#11899](https://github.com/ParabolInc/parabol/issues/11899)) ([97fe99b](https://github.com/ParabolInc/parabol/commit/97fe99b6c7a754a30927443cbb4b16723e4750f7))
+
+
+### Changed
+
+* decode HTML entities for issue titles ([#11892](https://github.com/ParabolInc/parabol/issues/11892)) ([33c7f6f](https://github.com/ParabolInc/parabol/commit/33c7f6fc921095fa9245fb06a5c169ee697d0bce))
+* **deps:** bump dd-trace from 5.61.1 to 5.62.0 ([#11830](https://github.com/ParabolInc/parabol/issues/11830)) ([6e258aa](https://github.com/ParabolInc/parabol/commit/6e258aafa6ef7b0d634d3397cfe22d0391b731c0))
+
 ## [10.19.3](https://github.com/ParabolInc/parabol/compare/v10.19.2...v10.19.3) (2025-08-21)
 
 
