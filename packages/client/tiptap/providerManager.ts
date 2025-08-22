@@ -14,7 +14,7 @@ class ProviderManager {
       const host = __PRODUCTION__
         ? `${window.location.host}/hocuspocus`
         : `${window.location.hostname}:${__HOCUS_POCUS_PORT__}`
-      const baseUrl = `${wsProtocol}//${host}?token=${this.authToken}`
+      const baseUrl = `${wsProtocol}//${host}?token=${this.authToken || ''}`
       this.socket = new HocuspocusProviderWebsocket({
         url: baseUrl
       })
@@ -74,6 +74,11 @@ class ProviderManager {
       prevProviderEntry.provider.destroy()
       delete this.providers[pageId!]
     }
+  }
+
+  close() {
+    Object.values(this.providers).forEach((p) => p.provider.destroy())
+    this.providers = {}
   }
 }
 

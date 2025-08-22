@@ -2,7 +2,7 @@ import {useAutocomplete} from '@mui/base/useAutocomplete'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {readInlineData} from 'relay-runtime'
-import type {usePageSharingAutocomplete_viewer$key} from '../../__generated__/usePageSharingAutocomplete_viewer.graphql'
+import type {usePageSharingAutocomplete_query$key} from '../../__generated__/usePageSharingAutocomplete_query.graphql'
 import parseEmailAddressList from '../../utils/parseEmailAddressList'
 
 export type Option =
@@ -61,31 +61,33 @@ const normalizeLowerNoAccents = (str: string) => {
     .toLowerCase()
 }
 
-export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete_viewer$key) => {
-  const viewer = readInlineData(
+export const usePageSharingAutocomplete = (queryRef: usePageSharingAutocomplete_query$key) => {
+  const query = readInlineData(
     graphql`
-      fragment usePageSharingAutocomplete_viewer on User @inline {
-        id
-        email
-        organizations {
+      fragment usePageSharingAutocomplete_query on Query @inline {
+        viewer {
           id
-          name
-          picture
-          organizationUsers {
-            edges {
-              node {
-                user {
-                  id
-                  preferredName
-                  picture
-                  email
+          email
+          organizations {
+            id
+            name
+            picture
+            organizationUsers {
+              edges {
+                node {
+                  user {
+                    id
+                    preferredName
+                    picture
+                    email
+                  }
                 }
               }
             }
-          }
-          teams {
-            id
-            name
+            teams {
+              id
+              name
+            }
           }
         }
         page(pageId: $pageId) {
@@ -112,9 +114,10 @@ export const usePageSharingAutocomplete = (viewerRef: usePageSharingAutocomplete
         }
       }
     `,
-    viewerRef
+    queryRef
   )
-  const {email, organizations, page} = viewer
+  const {viewer, page} = query
+  const {email, organizations} = viewer
   const [value, setValue] = useState([] as Option[])
   const [error, setError] = useState<string | null>(null)
   const viewerDomain = email.slice(email.indexOf('@') + 1)

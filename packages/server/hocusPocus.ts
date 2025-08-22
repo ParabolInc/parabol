@@ -7,7 +7,6 @@ import StarterKit from '@tiptap/starter-kit'
 import {encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
-import {isAuthenticated} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
@@ -46,12 +45,9 @@ export const server = new Server({
     const {request} = data
     const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
-    if (!isAuthenticated(authToken)) {
-      throw new Error('Unauthenticated')
-    }
     const req = data.request as any
     // put the userId on the request because context isn't available until onAuthenticate
-    req.userId = authToken.sub
+    req.userId = authToken?.sub
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data

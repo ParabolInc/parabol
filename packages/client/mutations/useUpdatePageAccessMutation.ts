@@ -5,13 +5,17 @@ import findNodeInConn from '../utils/relay/findNodeInConn'
 import safePutNodeInConn from './handlers/safePutNodeInConn'
 
 graphql`
-  fragment useUpdatePageAccessMutation_payload on UpdatePageAccessPayload {
+  fragment useUpdatePageAccessMutation_notification on UpdatePageAccessPayload {
     page {
       isPrivate
       isParentLinked
       parentPageId
       teamId
       sortOrder
+      access {
+        viewer
+        public
+      }
       ...PageSharingAccessList_pageAccess @relay(mask: false)
     }
   }
@@ -32,7 +36,7 @@ const mutation = graphql`
       role: $role
       unlinkApproved: $unlinkApproved
     ) {
-      ...useUpdatePageAccessMutation_payload @relay(mask: false)
+      ...useUpdatePageAccessMutation_notification @relay(mask: false)
     }
   }
 `

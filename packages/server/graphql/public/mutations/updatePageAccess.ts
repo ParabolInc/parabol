@@ -7,6 +7,7 @@ import type {DB} from '../../../postgres/types/pg'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {publishPageNotification} from '../../../utils/publishPageNotification'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
 
@@ -45,10 +46,12 @@ const getNextIsPrivate = async (
 const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   _source,
   {pageId, subjectType, subjectId, role, unlinkApproved},
-  {authToken, dataLoader}
+  {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
+  const operationId = dataLoader.share()
+  const subOptions = {operationId, mutatorId}
   const [dbPageId] = CipherId.fromClient(pageId)
   const tableMap = {
     user: 'PageUserAccess',
@@ -167,7 +170,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
-  return {pageId: dbPageId}
+  const data = {pageId: dbPageId}
+  await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
+  return data
 }
 
 export default updatePageAccess

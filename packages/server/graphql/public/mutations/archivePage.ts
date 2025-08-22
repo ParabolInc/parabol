@@ -92,7 +92,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
     }
   }
   const data = {pageId: dbPageId, action}
-  publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
+  await publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
   return data
 }
 

@@ -5,6 +5,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
 import type {PageSharingGeneralAccess_page$key} from '../../__generated__/PageSharingGeneralAccess_page.graphql'
+import {useUpdatePageAccessMutation} from '../../mutations/useUpdatePageAccessMutation'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -47,6 +48,23 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const {id: pageId, access} = page
   const {public: publicAccess} = access
   const [GAValue, setGAValue] = useState<GAValue>(publicAccess ? 'public' : 'restricted')
+  const [execute, submitting] = useUpdatePageAccessMutation()
+
+  const updateGAValue = (value: GAValue) => {
+    setGAValue(value)
+    if (submitting) return
+    if (value === 'restricted') {
+      execute({
+        variables: {
+          pageId,
+          role: null,
+          subjectId: '*',
+          subjectType: 'external',
+          unlinkApproved: false
+        }
+      })
+    }
+  }
   const GARole = gaRoles.find((r) => r.value === GAValue)!
   const {icon: AccessIcon, label} = GARole
   return (
@@ -72,7 +90,7 @@ export const PageSharingGeneralAccess = (props: Props) => {
                         className='py-1'
                         key={value}
                         onClick={() => {
-                          setGAValue(value)
+                          updateGAValue(value)
                         }}
                       >
                         <div className='flex flex-col'>
