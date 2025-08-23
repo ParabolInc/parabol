@@ -96,7 +96,7 @@
     "http-message-signatures": "^1.0.4",
     "ioredis": "^5.6.1",
     "js-yaml": "^4.1.0",
-    "jsdom": "^20.0.0",
+    "jsdom": "^26.1.0",
     "jsonwebtoken": "^9.0.0",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^9.3.0",
