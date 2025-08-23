@@ -175,7 +175,7 @@
     "@whatwg-node/fetch": "^0.10.10",
     "base64url": "^3.0.1",
     "dotenv": "8.0.0",
-    "dotenv-expand": "5.1.0",
+    "dotenv-expand": "12.0.2",
     "graphql-ws": "^6.0.4",
     "html-minifier-terser": "^5.1.1",
     "kysely": "^0.28.5",
