@@ -75,7 +75,7 @@
     "@types/history": "^4.7.0",
     "cleave.js": "^1.6.0",
     "clsx": "^1.2.1",
-    "date-fns": "^2.29.3",
+    "date-fns": "^4.1.0",
     "dayjs": "^1.11.3",
     "dompurify": "^3.2.4",
     "email-addresses": "^3.0.1",
