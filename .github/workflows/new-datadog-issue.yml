@@ -45,8 +45,8 @@ jobs:
               .replace(/&lt;/g, '<')
               .replace(/&gt;/g, '>')
               .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'");
-            )
+              .replace(/&#39;/g, "'")
+            );
 
             const issueId = ${{ toJSON(inputs.issueId) }};
             const issueLink = ${{ toJSON(inputs.issueLink) }};
