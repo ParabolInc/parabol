@@ -7,6 +7,7 @@ const cardRootStyles = {
   borderRadius: Card.BORDER_RADIUS,
   boxShadow: cardShadow,
   minWidth: 256,
+  maxWidth: 300,
   position: 'relative' as const,
   width: '100%'
 }

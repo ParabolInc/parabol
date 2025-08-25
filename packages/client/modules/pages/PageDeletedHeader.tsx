@@ -16,16 +16,19 @@ export const PageDeletedHeader = (props: Props) => {
     graphql`
       fragment PageDeletedHeader_page on Page {
         id
-            deletedAt
-            deletedByUser {
-              preferredName
-            }
+        deletedAt
+        deletedByUser {
+          preferredName
+        }
+        access {
+          viewer
+        }
       }
     `,
     pageRef
   )
-
-  const {id: pageId, deletedByUser, deletedAt} = page
+  const {id: pageId, deletedByUser, deletedAt, access} = page
+  const {viewer: viewerAccess} = access
   const [execute] = useArchivePageMutation()
   const history = useHistory()
   const restorePage = () => {
@@ -52,18 +55,26 @@ export const PageDeletedHeader = (props: Props) => {
   const relativeTime = relativeDate(deletedAt, {smallDiff: 'just now'})
   const {preferredName} = deletedByUser
   return (
-    <div className='flex w-full items-center justify-center bg-tomato-500 font-semibold text-white'>
+    <div className='flex h-10 w-full items-center justify-center bg-tomato-500 font-semibold text-white'>
       <div className='pr-4'>{`${preferredName} moved this page to the trash ${relativeTime}`}</div>
-      <Button
-        variant='outline'
-        onClick={restorePage}
-        className='m-1 text-white hover:bg-tomato-400'
-      >
-        Restore page
-      </Button>
-      <Button variant='outline' onClick={deletePage} className='m-1 text-white hover:bg-tomato-400'>
-        Delete forever
-      </Button>
+      {viewerAccess === 'owner' && (
+        <>
+          <Button
+            variant='outline'
+            onClick={restorePage}
+            className='m-1 text-white hover:bg-tomato-400'
+          >
+            Restore page
+          </Button>
+          <Button
+            variant='outline'
+            onClick={deletePage}
+            className='m-1 text-white hover:bg-tomato-400'
+          >
+            Delete forever
+          </Button>
+        </>
+      )}
     </div>
   )
 }

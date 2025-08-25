@@ -80,7 +80,11 @@ const permissionMap: PermissionMap<Resolvers> = {
   Query: {
     '*': isAuthenticated,
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
-    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600})
+    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
+    page: and(
+      rateLimit({perMinute: 20, perHour: 100}),
+      hasPageAccess<'User.page'>('args.pageId', 'viewer')
+    )
   },
   Organization: {
     saml: and(
@@ -100,8 +104,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   User: {
-    domains: or(isSuperUser, isUserViewer),
-    page: hasPageAccess<'User.page'>('args.pageId', 'viewer')
+    domains: or(isSuperUser, isUserViewer)
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')

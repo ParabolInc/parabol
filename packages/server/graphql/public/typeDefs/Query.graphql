@@ -51,4 +51,8 @@ type Query {
 		"""
 		isInvited: Boolean
 	): String
+	"""
+	A single page accessible by the viewer or public
+	"""
+	page(pageId: ID!): Page
 }

@@ -8,26 +8,24 @@ import {PageNoAccess} from './PageNoAccess'
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
   queryRef: PreloadedQuery<PageEntryQuery>
+  isPublic?: boolean
 }
 
 export const PageEntry = (props: Props) => {
-  const {viewerRef, queryRef} = props
+  const {viewerRef, queryRef, isPublic} = props
   const query = usePreloadedQuery<PageEntryQuery>(
     graphql`
       query PageEntryQuery($pageId: ID!) {
-        viewer {
-          page(pageId: $pageId) {
-            ...Page_page
-            id
-          }
+        page(pageId: $pageId) {
+          ...Page_page
+          id
         }
       }
     `,
     queryRef
   )
 
-  const {viewer} = query
-  const {page} = viewer
+  const {page} = query
   if (!page) return <PageNoAccess />
-  return <Page pageRef={page} viewerRef={viewerRef} />
+  return <Page pageRef={page} viewerRef={viewerRef} isPublic={isPublic} />
 }

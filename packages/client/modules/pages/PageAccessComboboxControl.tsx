@@ -8,6 +8,7 @@ interface Props {
   canRemove?: boolean
   defaultRole: PageRoleEnum
   onClick: (role: PageRoleEnum | null) => void
+  noOwner?: boolean
 }
 
 const pageRoles = [
@@ -32,7 +33,7 @@ const pageRoles = [
 ] as {value: PageRoleEnum; label: string; description?: string}[]
 
 export const PageAccessComboboxControl = (props: Props) => {
-  const {onClick, defaultRole, canRemove} = props
+  const {onClick, defaultRole, canRemove, noOwner} = props
   const roleLabel = pageRoles.find((role) => role.value === defaultRole)!.label
   return (
     <Menu
@@ -41,6 +42,7 @@ export const PageAccessComboboxControl = (props: Props) => {
     >
       <MenuContent align='end' sideOffset={4} className='max-h-80'>
         {pageRoles.map(({value, label, description}) => {
+          if (noOwner && value === 'owner') return null
           return (
             <MenuItem
               key={value}
@@ -49,8 +51,8 @@ export const PageAccessComboboxControl = (props: Props) => {
               }}
             >
               <div className='flex flex-col'>
-                <div>{label}</div>
-                <div>{description}</div>
+                <div className='text-slate-700'>{label}</div>
+                <div className='font-semibold text-slate-600 text-xs'>{description}</div>
               </div>
             </MenuItem>
           )

@@ -8,10 +8,11 @@ import {PageEntry} from './PageEntry'
 
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
+  isPublic?: boolean
 }
 
 export const PageRoot = (props: Props) => {
-  const {viewerRef} = props
+  const {viewerRef, isPublic} = props
   const {match} = useRouter<{pageSlug: string}>()
   const {params} = match
   const {pageSlug} = params
@@ -21,7 +22,7 @@ export const PageRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<PageEntryQuery>(pageQuery, {pageId})
   return (
     <Suspense fallback={''}>
-      {queryRef && <PageEntry queryRef={queryRef} viewerRef={viewerRef} />}
+      {queryRef && <PageEntry queryRef={queryRef} viewerRef={viewerRef} isPublic={isPublic} />}
     </Suspense>
   )
 }

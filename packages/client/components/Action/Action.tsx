@@ -28,6 +28,7 @@ const TeamInvitation = lazy(
 const InvitationLink = lazy(
   () => import(/* webpackChunkName: 'InvitationLinkRoot' */ '../InvitationLinkRoot')
 )
+const PageRoute = lazy(() => import(/* webpackChunkName: 'PageRoute' */ '../PageRoute'))
 
 const Action = memo(() => {
   useServiceWorkerUpdater()
@@ -91,6 +92,7 @@ const Action = memo(() => {
               <Route path='/reset-password/:token' component={SetNewPassword} />
               <Route path='/team-invitation/:token' component={TeamInvitation} />
               <Route path='/invitation-link/:token' component={InvitationLink} />
+              <Route path='/pages/:pageSlug' component={PageRoute} />
               <Route component={PrivateRoutes} />
             </Switch>
           </div>

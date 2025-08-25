@@ -53,9 +53,9 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
   const {id: blockId, after, before, meetingTypes, teamIds, meetingIds, hash, title, prompt} = attrs
+  const atmosphere = useAtmosphere()
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
-  const atmosphere = useAtmosphere()
   const disabled = submitting || meetingIds.length < 1
 
   const generateInsights = async () => {
@@ -124,6 +124,11 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
         }
       } as any,
       sink
+    )
+  }
+  if (!atmosphere.authObj) {
+    return (
+      <div className='font-semibold text-slate-700 text-sm'>Please login to generate insights</div>
     )
   }
   return (

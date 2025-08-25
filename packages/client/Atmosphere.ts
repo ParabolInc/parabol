@@ -421,5 +421,6 @@ export default class Atmosphere extends Environment {
     this.subscriptions = {}
     this.viewerId = null!
     this.connectWebsocketPromise = null
+    providerManager.close()
   }
 }
