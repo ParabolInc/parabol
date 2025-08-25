@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.2](https://github.com/ParabolInc/parabol/compare/v10.20.1...v10.20.2) (2025-08-25)
+
+
+### Fixed
+
+* memory leak onError and activeClients ([#11914](https://github.com/ParabolInc/parabol/issues/11914)) ([107ad9a](https://github.com/ParabolInc/parabol/commit/107ad9a8d92fc93133a68cf16a77eb127a1af663))
+* memory leak onError and activeClients ([#11915](https://github.com/ParabolInc/parabol/issues/11915)) ([a4f0689](https://github.com/ParabolInc/parabol/commit/a4f068999a4b0f0847de8755d4d1c403a75079ce))
+
 ## [10.20.1](https://github.com/ParabolInc/parabol/compare/v10.20.0...v10.20.1) (2025-08-25)
 
 
