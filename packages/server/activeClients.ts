@@ -1,3 +1,3 @@
-import type {Extra} from 'graphql-ws/use/uWebSockets'
+import type {WebSocket} from 'uWebSockets.js'
 
-export const activeClients = new Map<string, Extra>()
+export const activeClients = new Map<string, WebSocket<unknown>>()

@@ -32,7 +32,8 @@ declare module 'graphql-ws/use/uWebSockets' {
     authToken: AuthToken
     socketId: string
     resubscribe: Record<string, () => void>
-    dispose: Record<string, () => void>
+    // not present for subscription IDs
+    dataLoaders: Record<string, ReturnType<typeof getNewDataLoader>>
   }
 }
 
@@ -109,7 +110,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.ip = clientIP || extra.socket.ip
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.resubscribe = {}
-    extra.dispose = {}
+    extra.dataLoaders = {}
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader()
     const {data} = await execute({
@@ -126,7 +127,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     dataLoader.dispose()
     const tms = data?.connectSocket?.tms
     const freshToken = setFreshTokenIfNeeded(extra, tms)
-    activeClients.set(extra.socketId, extra)
+    activeClients.set(extra.socketId, extra.socket)
     return {version: __APP_VERSION__, authToken: freshToken}
   },
   async onNext(context, id, _payload, {contextValue}, result) {
@@ -166,15 +167,13 @@ export const wsHandler = makeBehavior<{token?: string}>({
   subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe, dispose} = extra
+    const {ip, authToken, socketId, resubscribe} = extra
     const {schema, execute, subscribe, parse} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
     const query = await getPersistedOperation(docId!)
     const document = parse(query)
     const rateLimiter = getRateLimiter()
     const isSubscription = docId.startsWith('s')
-    // subscribe functions don't need a dataloader since they just kickstart an async iterator
-    const dataLoader = isSubscription ? null : getNewDataLoader()
 
     if (isSubscription) {
       resubscribe[id] = async () => {
@@ -192,17 +191,22 @@ export const wsHandler = makeBehavior<{token?: string}>({
         }
       }
     } else {
-      dispose[id] = () => {
-        delete dispose[id]
-        dataLoader!.dispose()
-      }
+      // subscribe functions don't need a dataloader since they just kickstart an async iterator
+      extra.dataLoaders[id] = getNewDataLoader()
     }
     const args: EnvelopedExecutionArgs = {
       schema: authToken.rol === 'su' ? privateSchema : schema,
       operationName: params.operationName,
       document,
       variableValues: params.variables,
-      contextValue: {dataLoader, rateLimiter, ip, authToken, socketId},
+      // dataLoader will be null for subscriptions
+      contextValue: {
+        dataLoader: extra.dataLoaders[id] || null,
+        rateLimiter,
+        ip,
+        authToken,
+        socketId
+      },
       rootValue: {
         execute,
         subscribe
@@ -211,10 +215,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     return args
   },
   onComplete: (ctx, id) => {
-    ctx.extra.dispose[id]?.()
-  },
-  onError: (ctx, id) => {
-    ctx.extra.dispose[id]?.()
+    ctx.extra.dataLoaders[id]?.dispose()
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
