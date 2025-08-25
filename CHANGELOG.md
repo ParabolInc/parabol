@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.1](https://github.com/ParabolInc/parabol/compare/v10.20.0...v10.20.1) (2025-08-25)
+
+
+### Fixed
+
+* do not overwrite Query resolvers ([#11910](https://github.com/ParabolInc/parabol/issues/11910)) ([5f0bdb4](https://github.com/ParabolInc/parabol/commit/5f0bdb452283ab27267a1259d4d13d7d884ed475))
+
+
+### Changed
+
+* fix create new issue workflow ([#11906](https://github.com/ParabolInc/parabol/issues/11906)) ([559f6ea](https://github.com/ParabolInc/parabol/commit/559f6ea1051b1a5ac0207e271c743496fa7a4c41))
+
 ## [10.20.0](https://github.com/ParabolInc/parabol/compare/v10.19.3...v10.20.0) (2025-08-22)
 
 
