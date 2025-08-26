@@ -60,14 +60,14 @@ if (datadogEnabled) {
           return false
         }
       }
-      return undefined
+      return true
     },
     clientToken: datadogClientToken,
     site: 'datadoghq.com',
     service: datadogService,
     version: __APP_VERSION__,
-    sampleRate: 100,
-    trackInteractions: true,
+    sessionSampleRate: 100,
+    trackUserInteractions: true,
     defaultPrivacyLevel: 'allow'
   })
   datadogRum.startSessionReplayRecording()
@@ -205,7 +205,7 @@ const AnalyticsPage = () => {
         id: atmosphere.viewerId
       })
     } else {
-      datadogRum.removeUser()
+      datadogRum.clearUser()
     }
   }, [atmosphere, atmosphere.viewerId])
 
