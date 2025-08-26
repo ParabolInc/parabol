@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.4](https://github.com/ParabolInc/parabol/compare/v10.20.3...v10.20.4) (2025-08-26)
+
+
+### Changed
+
+* bump datadog-rum ([#11920](https://github.com/ParabolInc/parabol/issues/11920)) ([64bccf7](https://github.com/ParabolInc/parabol/commit/64bccf7643e6cf9914cd642f007a48bb3a3b190e))
+
 ## [10.20.3](https://github.com/ParabolInc/parabol/compare/v10.20.2...v10.20.3) (2025-08-26)
 
 
