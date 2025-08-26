@@ -2,9 +2,12 @@ import styled from '@emotion/styled'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
 import useModal from '~/hooks/useModal'
-import {isOldBrowserError} from '~/utils/isOldBrowserError'
-
-const isNotFoundError = (error: Error) => error.name === 'NotFoundError'
+import {
+  isExtensionError,
+  isIgnoredError,
+  isNetworkError,
+  isOldBrowserError
+} from '../../utils/errorFilters'
 
 const ErrorBlock = styled('div')({
   alignItems: 'center',
@@ -29,15 +32,14 @@ interface Props {
   eventId: string
 }
 
-const IGNORED_ERRORS = ['ChunkLoadError']
 const ErrorComponent = (props: Props) => {
   const {error, eventId} = props
-  if (!IGNORED_ERRORS.includes(error?.name)) {
+  if (!isIgnoredError(error)) {
     console.error(error)
   }
   const {modalPortal, openPortal, closePortal} = useModal()
 
-  if (isNotFoundError(error)) {
+  if (isExtensionError(error)) {
     return (
       <ErrorBlock>
         <div>
@@ -50,8 +52,7 @@ const ErrorComponent = (props: Props) => {
     )
   }
 
-  const isOldBrowserErr = isOldBrowserError(error.message)
-  if (isOldBrowserErr) {
+  if (isOldBrowserError(error)) {
     const url = 'https://browser-update.org/update-browser.html'
     return (
       <ErrorBlock>
@@ -64,6 +65,16 @@ const ErrorComponent = (props: Props) => {
       </ErrorBlock>
     )
   }
+
+  if (isNetworkError(error)) {
+    return (
+      <ErrorBlock>
+        There was a network issue. Please check your connection and try again.
+        <Button onClick={() => window.location.reload()}>Refresh the page</Button>
+      </ErrorBlock>
+    )
+  }
+
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}

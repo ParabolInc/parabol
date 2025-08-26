@@ -3,7 +3,7 @@ import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import {isOldBrowserError} from '../utils/isOldBrowserError'
+import {isIgnoredError} from '../utils/errorFilters'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
@@ -15,7 +15,7 @@ interface State {
   error?: Error
   errorInfo?: ErrorInfo
   eventId?: string
-  isOldBrowserErr: boolean
+  isIgnoredError: boolean
 }
 
 class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
@@ -23,12 +23,12 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     error: undefined,
     errorInfo: undefined,
     eventId: undefined,
-    isOldBrowserErr: false
+    isIgnoredError: false
   }
 
   componentDidUpdate() {
-    const {error, isOldBrowserErr} = this.state
-    if (!error || isOldBrowserErr) return
+    const {error, isIgnoredError} = this.state
+    if (!error || isIgnoredError) return
     const {atmosphere} = this.props
     SendClientSideEvent(atmosphere, 'Fatal Error')
   }
@@ -38,13 +38,13 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     const {viewerId} = atmosphere
     const store = atmosphere.getStore()
     const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
-    const isOldBrowserErr = isOldBrowserError(error.message)
+    const ignoredError = isIgnoredError(error)
     const eventId = crypto.randomUUID()
     this.setState({
       error,
       errorInfo,
       eventId,
-      isOldBrowserErr
+      isIgnoredError: ignoredError
     })
 
     const {componentStack} = errorInfo
