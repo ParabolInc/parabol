@@ -210,7 +210,7 @@ const DowngradeModal = (props: Props) => {
 
   return (
     <StyledDialogContainer>
-      <StyledDialogTitle>GEORG Downgrade</StyledDialogTitle>
+      <StyledDialogTitle>Downgrade</StyledDialogTitle>
       <StyledCloseButton onClick={handleClose}>
         <CloseIcon />
       </StyledCloseButton>
