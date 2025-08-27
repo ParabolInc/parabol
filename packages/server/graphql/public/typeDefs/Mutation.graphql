@@ -2039,11 +2039,6 @@ type Mutation {
 	): UpdateUserProfilePayload
 
 	"""
-	Describe the mutation here
-	"""
-	upgradeToTeamTier(invoiceId: ID!): UpgradeToTeamTierPayload!
-
-	"""
 	Upload the IdP Metadata file for an org for those who cannot self-host the file
 	"""
 	uploadIdPMetadata(

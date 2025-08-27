@@ -121,6 +121,7 @@ const CTAButton = styled(BaseButton)<{
 }>(({buttonStyle}) => ({
   width: '80%',
   boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
+  opacity: 1,
   bottom: 0,
   fontWeight: 600,
   borderRadius: Radius.BUTTON_PILL,
@@ -139,13 +140,8 @@ const CTAButton = styled(BaseButton)<{
   border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
   transition: 'all ease 0.5s',
   ':hover': {
-    cursor: buttonStyle === 'disabled' ? 'default' : 'pointer',
-    background:
-      buttonStyle === 'primary'
-        ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
-        : buttonStyle === 'secondary'
-          ? PALETTE.SLATE_300
-          : PALETTE.SLATE_300
+    opacity: 1,
+    background: buttonStyle === 'primary' ? PALETTE.GRADIENT_TOMATO_700_ROSE_600 : PALETTE.SLATE_300
   }
 }))
 
@@ -156,6 +152,7 @@ type Props = {
     details: readonly string[]
     buttonStyle: 'disabled' | 'primary' | 'secondary'
     buttonLabel: 'Contact' | 'Select Plan' | 'Downgrade' | 'Current Plan'
+    buttonTooltip?: string
     isActive: boolean
   }
   isTablet: boolean
@@ -167,7 +164,15 @@ type Props = {
 
 const OrgPlan = (props: Props) => {
   const {plan, isTablet, handleClick} = props
-  const {subtitle, tier: planTier, details, buttonStyle, buttonLabel: defaultLabel, isActive} = plan
+  const {
+    subtitle,
+    tier: planTier,
+    details,
+    buttonStyle,
+    buttonLabel: defaultLabel,
+    buttonTooltip,
+    isActive
+  } = plan
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.LOWER_CENTER
@@ -209,7 +214,12 @@ const OrgPlan = (props: Props) => {
           </LI>
         ))}
       </UL>
-      <CTAButton buttonStyle={buttonStyle} size='medium'>
+      <CTAButton
+        buttonStyle={buttonStyle}
+        disabled={buttonStyle === 'disabled'}
+        title={buttonTooltip}
+        size='medium'
+      >
         {buttonLabel}
       </CTAButton>
     </Plan>

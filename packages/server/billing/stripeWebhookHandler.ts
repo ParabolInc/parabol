@@ -6,6 +6,12 @@ import {getStripeManager} from '../utils/stripe'
 
 interface InvoiceEventCallBackArg {
   id: string
+  subscription_details?: {
+    metadata?: {
+      orgId: string
+      userId?: string
+    }
+  }
 }
 
 const eventLookup = {
@@ -31,10 +37,13 @@ const eventLookup = {
       `
     },
     payment_succeeded: {
-      getVars: ({id: invoiceId}: InvoiceEventCallBackArg) => ({invoiceId}),
+      getVars: ({id: invoiceId, subscription_details}: InvoiceEventCallBackArg) => ({
+        invoiceId,
+        userId: subscription_details?.metadata?.userId
+      }),
       query: `
-        mutation UpgradeToTeamTier($invoiceId: ID!) {
-          upgradeToTeamTier(invoiceId: $invoiceId) {
+        mutation UpgradeToTeamTier($invoiceId: ID!, $userId: ID) {
+          upgradeToTeamTier(invoiceId: $invoiceId, userId: $userId) {
             ... on UpgradeToTeamTierSuccess {
               organization {
                 id
