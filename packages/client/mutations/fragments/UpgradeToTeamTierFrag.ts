@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 graphql`
   fragment UpgradeToTeamTierFrag_organization on UpgradeToTeamTierSuccess {
     organization {
+      ...BillingLeaders_organization
       creditCard {
         brand
         last4

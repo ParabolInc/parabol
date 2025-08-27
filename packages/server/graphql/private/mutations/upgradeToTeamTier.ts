@@ -3,7 +3,6 @@ import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitOb
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -19,10 +18,9 @@ export type UpgradeToTeamTierSuccessSource = {
 
 const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   _source,
-  {invoiceId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {invoiceId, userId},
+  {dataLoader, socketId: mutatorId}
 ) => {
-  const userId = getUserId(authToken)
   const manager = getStripeManager()
   const invoice = await manager.retrieveInvoice(invoiceId)
   const stripeId = invoice.customer as string
@@ -44,21 +42,20 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const viewerId = getUserId(authToken)
-  const [organization, viewer] = await Promise.all([
+  const [organization, billingLeader] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    userId ? dataLoader.get('users').load(userId) : null
   ])
 
   const {tier, activeDomain, name: orgName, trialStartDate} = organization
 
   if (tier === 'enterprise') {
     return standardError(new Error("Can not change an org's plan from enterprise to team"), {
-      userId: viewerId
+      userId
     })
   } else if (tier === 'team') {
     return standardError(new Error('Org is already on team tier'), {
-      userId: viewerId
+      userId
     })
   }
 
@@ -84,19 +81,21 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   ])
   organization.tier = 'team'
 
+  if (userId) {
+    await pg
+      .updateTable('OrganizationUser')
+      .set({role: 'BILLING_LEADER'})
+      .where('userId', '=', userId)
+      .where('orgId', '=', orgId)
+      .where('removedAt', 'is', null)
+      .execute()
+  }
+  // do this after the billing user update to avoid having to invalidate the dataloader
   await identifyHighestUserTierForOrgId(orgId, dataLoader)
-
-  await pg
-    .updateTable('OrganizationUser')
-    .set({role: 'BILLING_LEADER'})
-    .where('userId', '=', viewerId)
-    .where('orgId', '=', orgId)
-    .where('removedAt', 'is', null)
-    .execute()
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
-  analytics.organizationUpgraded(viewer, {
+  analytics.organizationUpgraded(billingLeader ?? {id: 'aGhostUser'}, {
     orgId,
     domain: activeDomain || undefined,
     isTrial: !!trialStartDate,

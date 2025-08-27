@@ -1,9 +1,19 @@
 import type AuthToken from '../database/types/AuthToken'
 import type {DataLoaderWorker} from '../graphql/graphql'
 import type {OrganizationUser} from '../postgres/types'
+import logError from './logError'
+
+const getUserIdInternal = (authToken: any) => {
+  return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
+}
 
 export const getUserId = (authToken: any) => {
-  return authToken && typeof authToken === 'object' ? (authToken.sub as string) : ''
+  const userId = getUserIdInternal(authToken)
+  if (userId === 'aGhostUser') {
+    // This probably means someone is trying to get the viewerId when the mutation was called from the server
+    logError(new Error('getUserId called with aGhostUser'))
+  }
+  return userId
 }
 
 export const isAuthenticated = (authToken: any): authToken is AuthToken => {
@@ -11,7 +21,7 @@ export const isAuthenticated = (authToken: any): authToken is AuthToken => {
 }
 
 export const isSuperUser = (authToken: AuthToken) => {
-  const userId = getUserId(authToken)
+  const userId = getUserIdInternal(authToken)
   return userId ? authToken.rol === 'su' : false
 }
 

@@ -34,25 +34,28 @@ const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
   }
 }))
 
-const getButtonStyle = (tier: TierEnum, plan: TierEnum) => {
+const getButtonSettings = (tier: TierEnum, plan: TierEnum, canChangePlans: boolean) => {
   if (tier === plan) {
-    return 'disabled'
-  } else if (tier === 'starter') {
-    return plan === 'team' ? 'primary' : 'secondary'
-  } else {
-    return 'secondary'
-  }
-}
-
-const getButtonLabel = (tier: TierEnum, plan: TierEnum) => {
-  if (tier === plan) {
-    return 'Current Plan'
+    return {
+      buttonLabel: 'Current Plan' as const,
+      buttonStyle: 'disabled' as const
+    }
   } else if (tier === 'enterprise' || plan === 'enterprise') {
-    return 'Contact'
+    return {
+      buttonLabel: 'Contact' as const,
+      buttonStyle: 'secondary' as const
+    }
   } else if (plan === 'starter') {
-    return 'Downgrade'
+    return {
+      buttonLabel: 'Downgrade' as const,
+      buttonStyle: canChangePlans ? ('secondary' as const) : ('disabled' as const),
+      buttonTooltip: canChangePlans ? undefined : 'Only billing leaders can change plans'
+    }
   } else {
-    return 'Select Plan'
+    return {
+      buttonLabel: 'Select Plan' as const,
+      buttonStyle: 'primary' as const
+    }
   }
 }
 
@@ -71,13 +74,14 @@ const OrgPlans = (props: Props) => {
         ...LimitExceededWarning_organization
         id
         billingTier
+        isBillingLeader
       }
     `,
     organizationRef
   )
   const {closePortal: closeModal, openPortal, modalPortal} = useModal()
   const atmosphere = useAtmosphere()
-  const {id: orgId, billingTier} = organization
+  const {id: orgId, billingTier, isBillingLeader} = organization
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
 
   const plans = [
@@ -85,23 +89,20 @@ const OrgPlans = (props: Props) => {
       tier: 'starter',
       subtitle: 'Free',
       details: [...StarterBenefits],
-      buttonStyle: getButtonStyle(billingTier, 'starter'),
-      buttonLabel: getButtonLabel(billingTier, 'starter'),
+      ...getButtonSettings(billingTier, 'starter', isBillingLeader),
       isActive: !hasSelectedTeamPlan && billingTier === 'starter'
     },
     {
       tier: 'team',
       details: ['Everything in Starter', ...TeamBenefits],
-      buttonStyle: getButtonStyle(billingTier, 'team'),
-      buttonLabel: getButtonLabel(billingTier, 'team'),
+      ...getButtonSettings(billingTier, 'team', isBillingLeader),
       isActive: hasSelectedTeamPlan || billingTier === 'team'
     },
     {
       tier: 'enterprise',
       subtitle: 'Contact for quote',
       details: ['Everything in Team', ...EnterpriseBenefits],
-      buttonStyle: getButtonStyle(billingTier, 'enterprise'),
-      buttonLabel: getButtonLabel(billingTier, 'enterprise'),
+      ...getButtonSettings(billingTier, 'enterprise', isBillingLeader),
       isActive: billingTier === 'enterprise'
     }
   ] as const

@@ -140,7 +140,11 @@ export default class StripeManager {
     })
   }
 
-  async createTeamSubscription(customerId: string, orgId: string, quantity: number) {
+  async createTeamSubscription(
+    customerId: string,
+    quantity: number,
+    metadata: {orgId: string; userId: string}
+  ) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
       // https://stripe.com/docs/billing/testing
@@ -153,32 +157,7 @@ export default class StripeManager {
       // run `pnpm ultrahook` and subscribe
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
       // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
-      metadata: {
-        orgId
-      },
-      items: [
-        {
-          plan: StripeManager.TEAM_PRICE_APP_ID,
-          quantity
-        }
-      ]
-    })
-  }
-
-  async createTeamSubscriptionOld(customerId: string, orgId: string, quantity: number) {
-    return this.stripe.subscriptions.create({
-      // USE THIS FOR TESTING A FAILING PAYMENT
-      // https://stripe.com/docs/billing/testing
-      // trial_end: toEpochSeconds(new Date(Date.now() + 1000 * 10)),
-      customer: customerId,
-      proration_behavior: 'none',
-      // Use this for testing invoice.created hooks
-      // run `pnpm ultrahook` and subscribe
-      // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
-      // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
-      metadata: {
-        orgId
-      },
+      metadata,
       items: [
         {
           plan: StripeManager.TEAM_PRICE_APP_ID,
