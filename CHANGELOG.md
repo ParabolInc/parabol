@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.5](https://github.com/ParabolInc/parabol/compare/v10.20.4...v10.20.5) (2025-08-27)
+
+
+### Fixed
+
+* only billing users can downgrade a plan ([#11924](https://github.com/ParabolInc/parabol/issues/11924)) ([d68f470](https://github.com/ParabolInc/parabol/commit/d68f47025fbf58eb4857a4e33869e18c0a4507df))
+
 ## [10.20.4](https://github.com/ParabolInc/parabol/compare/v10.20.3...v10.20.4) (2025-08-26)
 
 
