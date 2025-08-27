@@ -17,6 +17,7 @@ export const isTableGripSelected = (editor: Editor) => {
   const {view, state} = editor
   const {selection} = state
   const {from} = selection
+  if (view.isDestroyed) return false // domAtPos will throw if not mounted
   const domAtPos = view.domAtPos(from || 0).node as HTMLElement
   const nodeDOM = view.nodeDOM(from || 0) as HTMLElement
   const node = nodeDOM || domAtPos
