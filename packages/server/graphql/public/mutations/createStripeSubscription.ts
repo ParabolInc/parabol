@@ -45,7 +45,10 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     customer = maybeCustomer
   }
 
-  const subscription = await manager.createTeamSubscription(customer.id, orgId, orgUsersCount)
+  const subscription = await manager.createTeamSubscription(customer.id, orgUsersCount, {
+    orgId,
+    userId: viewerId
+  })
 
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent

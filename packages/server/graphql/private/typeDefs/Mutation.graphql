@@ -361,6 +361,20 @@ type Mutation {
 	): Boolean
 
 	"""
+	Called on stripe.invoice.payment_succeeded webhook to move an org to the team tier
+	"""
+	upgradeToTeamTier(
+		invoiceId: ID!
+
+		"""
+		User ID of the user that initiated the subscription creation. Will be promoted to billing leader.
+
+		Optional for the transition period while we still might receive events without it.
+		"""
+		userId: ID
+	): UpgradeToTeamTierPayload!
+
+	"""
 	add/remove user(s) to/from the watchlist so that we start/stop recording their sessions
 	"""
 	updateWatchlist(

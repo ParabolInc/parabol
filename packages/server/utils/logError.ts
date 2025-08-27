@@ -1,7 +1,7 @@
 import {Logger} from './Logger'
 
 export interface ErrorOptions {
-  userId?: string
+  userId?: string | null
   ip?: string
   tags?: {
     [tag: string]: string | number
