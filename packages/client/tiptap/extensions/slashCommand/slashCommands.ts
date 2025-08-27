@@ -14,7 +14,6 @@ import TextFieldsIcon from '@mui/icons-material/TextFields'
 import TitleIcon from '@mui/icons-material/Title'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import type {Editor} from '@tiptap/core'
-import {createPageLinkElement} from '../../../shared/tiptap/createPageLinkElement'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -166,10 +165,25 @@ export const slashCommands = [
         ],
         icon: NoteAddIcon,
         action: (editor: Editor) => {
-          const {yDoc} = editor.storage.pageLinkBlock
-          const frag = yDoc.getXmlFragment('default')
-          const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
-          frag.insert(1, [pageLinkBlock] as any)
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          const pageLinkNode = schema.nodes.pageLinkBlock!.create({
+            pageCode: -1,
+            title: '<Untitled>',
+            canonical: true
+          })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, pageLinkNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
         }
       }
     ]
