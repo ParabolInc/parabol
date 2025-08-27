@@ -547,9 +547,13 @@
   border-right: 1px solid #0d0d0d;
   margin-left: -1px;
   margin-right: -1px;
-  pointer-events: none;
   position: relative;
   word-break: normal;
+  transition: opacity ease-in 100ms;
+  &:hover {
+    opacity: 0.2;
+    cursor: text;
+  }
 }
 
 /* Render the username above the caret */
