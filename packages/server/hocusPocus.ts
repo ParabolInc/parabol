@@ -106,9 +106,10 @@ export const server = new Server({
         const [dbId, pageCode] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
-        const [{updatedTitle}] = await Promise.all([updatePageContent(dbId, content, state)])
+        const {updatedTitle} = await updatePageContent(dbId, content, state)
         if (updatedTitle) {
-          await Promise.all([
+          // do not await, we want to complete onStoreDocument ASAP
+          Promise.all([
             pushGQLTitleUpdates(dbId),
             withBacklinks(dbId, (doc) => {
               updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
@@ -120,7 +121,8 @@ export const server = new Server({
       }
     }),
     new Redis({
-      redis: new RedisInstance('hocusPocus')
+      redis: new RedisInstance('hocusPocus'),
+      lockTimeout: 2000
     }),
     new Throttle({
       throttle: 100,
