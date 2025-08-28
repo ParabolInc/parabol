@@ -260,9 +260,15 @@ export class Redis implements Extension {
   async afterStoreDocument({documentName, socketId}: afterStoreDocumentPayload): Promise<void> {
     const lockKey = this.lockKey(documentName)
     const lock = this.locks.get(lockKey)
+    const span = this.spans.get(lockKey)
     if (!lock) {
+      const error = new Error(
+        `Lock created in onStoreDocument not found in afterStoreDocument: ${lockKey}`
+      )
+      span?.setTag('error', error)
+      span?.finish()
       this.spans.delete(lockKey)
-      throw new Error(`Lock created in onStoreDocument not found in afterStoreDocument: ${lockKey}`)
+      throw error
     }
     try {
       // Always try to unlock and clean up the lock
@@ -271,12 +277,9 @@ export class Redis implements Extension {
     } catch {
       // Lock will expire on its own after timeout
     } finally {
+      span?.finish()
       this.locks.delete(lockKey)
-      const span = this.spans.get(lockKey)
-      if (span) {
-        span.finish()
-        this.spans.delete(lockKey)
-      }
+      this.spans.delete(lockKey)
     }
     if (socketId !== 'server') return
     // if the change was initiated by a directConnection, we need to delay this hook to make sure sync can finish first.
