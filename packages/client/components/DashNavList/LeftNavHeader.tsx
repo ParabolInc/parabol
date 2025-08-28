@@ -5,5 +5,7 @@ interface Props {
 }
 export const LeftNavHeader = (props: Props) => {
   const {children} = props
-  return <div className='flex flex-1 items-center p-1 font-medium text-xs'>{children}</div>
+  return (
+    <div className='flex flex-1 items-center text-nowrap p-1 font-medium text-xs'>{children}</div>
+  )
 }
