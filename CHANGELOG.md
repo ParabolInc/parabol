@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.6](https://github.com/ParabolInc/parabol/compare/v10.20.5...v10.20.6) (2025-08-28)
+
+
+### Fixed
+
+* bump tiptap ([#11927](https://github.com/ParabolInc/parabol/issues/11927)) ([32015da](https://github.com/ParabolInc/parabol/commit/32015dac85da8927b3ae3c622c332d076a950e8c))
+* shared pages include top-level accessible ([#11929](https://github.com/ParabolInc/parabol/issues/11929)) ([263e61f](https://github.com/ParabolInc/parabol/commit/263e61f7e39d9345bec2867c1b81a08b508b9e0a))
+
 ## [10.20.5](https://github.com/ParabolInc/parabol/compare/v10.20.4...v10.20.5) (2025-08-27)
 
 

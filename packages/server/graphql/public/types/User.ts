@@ -23,6 +23,7 @@ import {
   selectPages,
   selectTasks
 } from '../../../postgres/select'
+import type {Page} from '../../../postgres/types'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -884,7 +885,6 @@ const User: ReqResolvers<'User'> = {
       throw new GraphQLError('parentPageId and teamId are mutually exclusive')
     }
 
-    const isTopLevel = parentPageId === null
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId
       ? CipherId.fromClient(parentPageId)[0]
@@ -920,29 +920,47 @@ const User: ReqResolvers<'User'> = {
         }))
       }
     }
+    let pagesPlusOne: Page[]
+    if (isPrivate === false) {
+      const pg = getKysely()
+      // this is for shared pages, which only return the top-most accessible page
+      pagesPlusOne = await pg
+        .with('teams', (qc) =>
+          qc
+            .selectFrom('TeamMember')
+            .select('teamId')
+            .where('userId', '=', viewerId)
+            .where('isNotRemoved', '=', true)
+        )
+        .with('pages', (qc) =>
+          selectPages(qc as any)
+            .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+            .where('PageAccess.userId', '=', viewerId)
+            // if the user has access to that team, don't put it in Shared Pages
+            .where('teamId', 'not in', qc.selectFrom('teams').select('teamId'))
+            .where('isPrivate', '=', false)
+            .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+            .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+            .where('deletedBy', 'is', null)
+        )
 
-    const pagesPlusOne = await selectPages()
-      .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
-      .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
-      .where('PageAccess.userId', '=', viewerId)
-      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-      .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
-      .$if(!teamId, (qb) => qb.where('teamId', 'is', null))
-      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-      // TODO make this a variable, but for now, hide summaries from everything
-      .where('summaryMeetingId', 'is', null)
-      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
-      .where('deletedBy', 'is', null)
-      .orderBy('sortOrder')
-      .limit(first + 1)
-      .execute()
-
-    const hasNextPage = pagesPlusOne.length > first
-    const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
-
-    if (isTopLevel && !isPrivate) {
-      // for shared pages, we need a user-specific sortOrder
+        .selectFrom('pages as p')
+        .selectAll()
+        // if a parent page is in the result set, exclude children
+        .where(({not, exists, selectFrom}) =>
+          not(
+            exists(
+              selectFrom('pages as parent')
+                .select('id')
+                .whereRef('parent.id', '=', 'p.parentPageId')
+            )
+          )
+        )
+        .orderBy('sortOrder')
+        .limit(first + 1)
+        .execute()
+      const hasNextPage = pagesPlusOne.length > first
+      const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
       await Promise.all(
         pages.map(async (page) => {
           const userSortOrder = await dataLoader
@@ -951,7 +969,27 @@ const User: ReqResolvers<'User'> = {
           page.sortOrder = userSortOrder ?? page.sortOrder
         })
       )
+    } else {
+      pagesPlusOne = await selectPages()
+        .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+        .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+        .where('PageAccess.userId', '=', viewerId)
+        .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+        .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+        .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+        .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
+        .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+        // TODO make this a variable, but for now, hide summaries from everything
+        .where('summaryMeetingId', 'is', null)
+        .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+        .where('deletedBy', 'is', null)
+        .orderBy('sortOrder')
+        .limit(first + 1)
+        .execute()
     }
+    // ok now we have ALL the pages the user has access to, but we need to filter out the ones
+    const hasNextPage = pagesPlusOne.length > first
+    const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
     return {
       pageInfo: {
         hasNextPage,
