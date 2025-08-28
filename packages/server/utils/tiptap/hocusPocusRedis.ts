@@ -16,6 +16,7 @@ import {
   type onStoreDocumentPayload
 } from '@hocuspocus/server'
 import {type ExecutionResult, type Lock, Redlock} from '@sesamecare-oss/redlock'
+import tracer, {Span} from 'dd-trace'
 import RedisClient, {
   type Cluster,
   type ClusterNode,
@@ -101,6 +102,7 @@ export class Redis implements Extension {
   redlock: Redlock
 
   locks = new Map<string, {lock: Lock; release?: Promise<ExecutionResult>}>()
+  spans = new Map<string, Span>()
 
   messagePrefix: Buffer
 
@@ -235,12 +237,21 @@ export class Redis implements Extension {
     // to avoid conflict with other instances storing the same document.
     const resource = this.lockKey(documentName)
     const ttl = this.configuration.lockTimeout
-    const lock = await this.redlock.acquire([resource], ttl)
-    const oldLock = this.locks.get(resource)
-    if (oldLock) {
-      await oldLock.release
+
+    const span = tracer.startSpan('hocusPocusRedis.onStoreDocument', {tags: {resource}})
+    try {
+      const lock = await this.redlock.acquire([resource], ttl)
+      const oldLock = this.locks.get(resource)
+      if (oldLock) {
+        await oldLock.release
+      }
+      this.locks.set(resource, {lock})
+      this.spans.set(resource, span)
+    } catch (error) {
+      span.setTag('error', error)
+      span.finish()
+      throw error
     }
-    this.locks.set(resource, {lock})
   }
 
   /**
@@ -250,6 +261,7 @@ export class Redis implements Extension {
     const lockKey = this.lockKey(documentName)
     const lock = this.locks.get(lockKey)
     if (!lock) {
+      this.spans.delete(lockKey)
       throw new Error(`Lock created in onStoreDocument not found in afterStoreDocument: ${lockKey}`)
     }
     try {
@@ -260,6 +272,11 @@ export class Redis implements Extension {
       // Lock will expire on its own after timeout
     } finally {
       this.locks.delete(lockKey)
+      const span = this.spans.get(lockKey)
+      if (span) {
+        span.finish()
+        this.spans.delete(lockKey)
+      }
     }
     if (socketId !== 'server') return
     // if the change was initiated by a directConnection, we need to delay this hook to make sure sync can finish first.
