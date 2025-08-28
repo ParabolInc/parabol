@@ -1,5 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
-import type {ControlledTransaction, Kysely} from 'kysely'
+import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
@@ -306,8 +306,8 @@ export const selectTasks = () =>
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()
 
-export const selectPages = () =>
-  getKysely().selectFrom('Page').select([
+export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKysely()) =>
+  queryCreator.selectFrom('Page').select([
     // do not select plaintextContent or yDoc.
     // yDoc is large and can't be sent via graphql
     'createdAt',

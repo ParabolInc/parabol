@@ -541,7 +541,7 @@ type User implements UserPartial {
 		"""
 		after: String
 		"""
-		true to query top-level private pages. false to query top-level shard pages. ignored if parentPageId or teamId is present
+		true to query top-level private pages. false to query top-level sharerd pages. ignored if parentPageId or teamId is present
 		"""
 		isPrivate: Boolean
 		"""
