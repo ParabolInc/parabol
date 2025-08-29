@@ -24,6 +24,7 @@ import RedisClient, {
   type RedisOptions
 } from 'ioredis'
 import {v4 as uuid} from 'uuid'
+import logError from '../logError'
 
 export type RedisInstance = RedisClient | Cluster
 
@@ -250,6 +251,15 @@ export class Redis implements Extension {
     } catch (error) {
       span.setTag('error', error)
       span.finish()
+      logError(error as Error)
+      if (error instanceof Error && error.name === 'ExecutionError') {
+        // Do not throw an error with a message here as that crashes the server.
+        // https://github.com/ueberdosis/hocuspocus/issues/754#issuecomment-2288844459
+        throw {
+          name: 'LockError',
+          cause: error
+        }
+      }
       throw error
     }
   }
