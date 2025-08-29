@@ -467,6 +467,14 @@
       @apply overflow-hidden rounded-md;
     }
   }
+
+  .node-insightsBlock {
+    @apply relative;
+    &.has-focus > div::after {
+      content: '';
+      @apply pointer-events-none absolute inset-0 h-full w-full bg-[#2383e247] select-none;
+    }
+  }
   .search-result {
     background-color: rgba(255, 217, 0, 0.5);
   }
