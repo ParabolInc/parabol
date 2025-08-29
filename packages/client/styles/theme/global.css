@@ -411,6 +411,8 @@
     padding-left: 1rem;
   }
   /* List styles */
+
+  /* List styles */
   ul,
   ol {
     padding: 0 1rem;
@@ -428,7 +430,7 @@
     padding: 0;
 
     li {
-      align-items: center;
+      align-items: flex-start;
       display: flex;
 
       > label {
@@ -444,6 +446,7 @@
 
     input[type='checkbox'] {
       cursor: pointer;
+      vertical-align: bottom;
     }
 
     ul[data-type='taskList'] {
