@@ -127,7 +127,8 @@ export const server = new Server({
       }
     }),
     new Redis({
-      redis: new RedisInstance('hocusPocus')
+      redis: new RedisInstance('hocusPocus'),
+      lockTimeout: 2000
     }),
     new Throttle({
       throttle: 100,

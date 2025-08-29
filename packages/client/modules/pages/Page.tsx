@@ -9,6 +9,7 @@ import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
 import {cn} from '../../ui/cn'
 import {PageHeader} from './PageHeader'
 import {PageHeaderPublic} from './PageHeaderPublic'
+import {StarterActions} from './StarterActions'
 
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
@@ -48,7 +49,7 @@ export const Page = (props: Props) => {
   return (
     <div className='relative flex w-full flex-col items-center bg-white'>
       {isPublic ? <PageHeaderPublic /> : <PageHeader pageRef={page} />}
-      <div className='flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
+      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
         <TipTapEditor
           editor={editor}
           className={cn(
@@ -56,6 +57,7 @@ export const Page = (props: Props) => {
             synced && 'opacity-100'
           )}
         />
+        <StarterActions editor={editor} />
       </div>
     </div>
   )

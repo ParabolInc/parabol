@@ -2,6 +2,7 @@ import type {Editor} from '@tiptap/core'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {ImageBlock} from './extensions/imageBlock/ImageBlock'
 import {ImageUpload} from './extensions/imageUpload/ImageUpload'
+import {InsightsBlock} from './extensions/insightsBlock/InsightsBlock'
 import {TaskBlock} from './extensions/insightsBlock/TaskBlock'
 import {PageLinkBlock} from './extensions/pageLinkBlock/PageLinkBlock'
 
@@ -9,6 +10,7 @@ const customNodes = [
   TiptapLinkExtension.name,
   PageLinkBlock.name,
   ImageUpload.name,
+  InsightsBlock.name,
   ImageBlock.name,
   TaskBlock.name
 ]

@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.21.0](https://github.com/ParabolInc/parabol/compare/v10.20.10...v10.21.0) (2025-08-29)
+
+
+### Added
+
+* add starter actions for adding insights ([#11947](https://github.com/ParabolInc/parabol/issues/11947)) ([5a63249](https://github.com/ParabolInc/parabol/commit/5a6324931103362226a6405111643e6b505e4fbc))
+
+
+### Fixed
+
+* add email to no access modal ([#11950](https://github.com/ParabolInc/parabol/issues/11950)) ([68b93a4](https://github.com/ParabolInc/parabol/commit/68b93a4d3e7c6c641f80cfad4aa05462d5762d03))
+* increase redlock retries ([#11935](https://github.com/ParabolInc/parabol/issues/11935)) ([055fdc3](https://github.com/ParabolInc/parabol/commit/055fdc33b316b2ab19c83c2f39bcb2428812d710))
+* shared pages include pages where teamId is null ([#11951](https://github.com/ParabolInc/parabol/issues/11951)) ([0288107](https://github.com/ParabolInc/parabol/commit/028810717171ce607c531bd72efb13e4dad0e2e2))
+* todo list styles in pages ([#11949](https://github.com/ParabolInc/parabol/issues/11949)) ([7ea02ef](https://github.com/ParabolInc/parabol/commit/7ea02ef06e405ff159296be330df226459f862df))
+
 ## [10.20.10](https://github.com/ParabolInc/parabol/compare/v10.20.9...v10.20.10) (2025-08-29)
 
 
