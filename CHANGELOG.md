@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.9](https://github.com/ParabolInc/parabol/compare/v10.20.8...v10.20.9) (2025-08-29)
+
+
+### Changed
+
+* reduce error logs when onStoreDocument fails ([#11940](https://github.com/ParabolInc/parabol/issues/11940)) ([a206fa4](https://github.com/ParabolInc/parabol/commit/a206fa49f66132bc4ed1593af0c86b24ffb616ed))
+
 ## [10.20.8](https://github.com/ParabolInc/parabol/compare/v10.20.7...v10.20.8) (2025-08-29)
 
 
