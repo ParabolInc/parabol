@@ -256,8 +256,7 @@ export class Redis implements Extension {
         // Do not throw an error with a message here as that crashes the server.
         // https://github.com/ueberdosis/hocuspocus/issues/754#issuecomment-2288844459
         throw {
-          name: 'LockError',
-          cause: error
+          name: 'LockError'
         }
       }
       throw error
