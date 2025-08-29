@@ -9,6 +9,7 @@ import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 interface Props {}
 
 export const PageNoAccess = (_props: Props) => {
+  const email = localStorage.getItem('email')
   const history = useHistory()
   return (
     <div>
@@ -20,19 +21,33 @@ export const PageNoAccess = (_props: Props) => {
           <DialogTitle className='mb-0 flex w-full flex-col items-center justify-center'>
             <LockIcon />
             <div>No access to this page</div>
+            <div className='text-xs'>
+              {email && (
+                <span>
+                  You are logged in as <b>{email}</b>
+                </span>
+              )}
+            </div>
           </DialogTitle>
           <DialogDescription className='text-center'>
-            Ask a page owner to share the page with you
+            {email ? 'Ask a page owner to share the page with you' : 'Try logging in first'}
           </DialogDescription>
           <Button
             shape='pill'
             variant='secondary'
-            className='p-2'
+            className='p-2 px-3'
             onClick={() => {
-              history.push('/me')
+              if (email) {
+                history.push('/me')
+              } else {
+                history.replace({
+                  pathname: '/',
+                  search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+                })
+              }
             }}
           >
-            Go home
+            {email ? 'Go home' : 'Login'}
           </Button>
         </DialogContent>
       </Dialog>
