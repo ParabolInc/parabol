@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.10](https://github.com/ParabolInc/parabol/compare/v10.20.9...v10.20.10) (2025-08-29)
+
+
+### Changed
+
+* add more hocus pocus tracing ([#11943](https://github.com/ParabolInc/parabol/issues/11943)) ([7c829a8](https://github.com/ParabolInc/parabol/commit/7c829a8f45d31ba4c1440dca80a13865dc81e0d6))
+
 ## [10.20.9](https://github.com/ParabolInc/parabol/compare/v10.20.8...v10.20.9) (2025-08-29)
 
 
