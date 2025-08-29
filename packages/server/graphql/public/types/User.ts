@@ -937,7 +937,12 @@ const User: ReqResolvers<'User'> = {
             .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
             .where('PageAccess.userId', '=', viewerId)
             // if the user has access to that team, don't put it in Shared Pages
-            .where('teamId', 'not in', qc.selectFrom('teams').select('teamId'))
+            .where(({or, eb}) =>
+              or([
+                eb('teamId', 'is', null),
+                eb('teamId', 'not in', qc.selectFrom('teams').select('teamId'))
+              ])
+            )
             .where('isPrivate', '=', false)
             .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
             .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
