@@ -4,6 +4,7 @@ import {Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
+import tracer from 'dd-trace'
 import {encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
@@ -106,15 +107,21 @@ export const server = new Server({
         const [dbId, pageCode] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
-        const [{updatedTitle}] = await Promise.all([updatePageContent(dbId, content, state)])
+        const {updatedTitle} = await tracer.trace('hocusPocus.updatePageContent', () =>
+          updatePageContent(dbId, content, state)
+        )
         if (updatedTitle) {
           await Promise.all([
-            pushGQLTitleUpdates(dbId),
-            withBacklinks(dbId, (doc) => {
-              updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
-                node.setAttribute('title', updatedTitle)
+            tracer.trace('hocusPocus.pushGQLTitleUpdates', () => pushGQLTitleUpdates(dbId)),
+            tracer.trace('hocusPocus.withBacklinks', () =>
+              withBacklinks(dbId, (doc) => {
+                tracer.trace('hocusPocus.updateYDocNodes', () =>
+                  updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
+                    node.setAttribute('title', updatedTitle)
+                  })
+                )
               })
-            })
+            )
           ])
         }
       }
