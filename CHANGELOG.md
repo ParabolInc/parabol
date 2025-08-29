@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.7](https://github.com/ParabolInc/parabol/compare/v10.20.6...v10.20.7) (2025-08-29)
+
+
+### Fixed
+
+* left nav max length overflow ([#11931](https://github.com/ParabolInc/parabol/issues/11931)) ([407b68f](https://github.com/ParabolInc/parabol/commit/407b68f0655d34c22cec876bfd05fc89f3f59047))
+
+
+### Changed
+
+* measure hocusPocus store document ([#11932](https://github.com/ParabolInc/parabol/issues/11932)) ([4f5e553](https://github.com/ParabolInc/parabol/commit/4f5e553c0487ae6bacdf59e96656b6b43a479e7b))
+
 ## [10.20.6](https://github.com/ParabolInc/parabol/compare/v10.20.5...v10.20.6) (2025-08-28)
 
 
