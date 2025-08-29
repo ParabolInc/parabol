@@ -84,7 +84,7 @@ export const LeftNavTeamLink = (props: Props) => {
         <Link
           draggable={false}
           to={`/team/${teamId}`}
-          className={'ml-1 flex w-full items-center'}
+          className={'flex w-full items-center'}
           onClick={(e) => {
             if (draggingPageId) {
               e.preventDefault()

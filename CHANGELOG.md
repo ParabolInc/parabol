@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.20.9](https://github.com/ParabolInc/parabol/compare/v10.20.8...v10.20.9) (2025-08-29)
+
+
+### Changed
+
+* reduce error logs when onStoreDocument fails ([#11940](https://github.com/ParabolInc/parabol/issues/11940)) ([a206fa4](https://github.com/ParabolInc/parabol/commit/a206fa49f66132bc4ed1593af0c86b24ffb616ed))
+
+## [10.20.8](https://github.com/ParabolInc/parabol/compare/v10.20.7...v10.20.8) (2025-08-29)
+
+
+### Fixed
+
+* do not crash when failing to acquire page store lock ([#11937](https://github.com/ParabolInc/parabol/issues/11937)) ([9a7290b](https://github.com/ParabolInc/parabol/commit/9a7290b02bfa690dbc1f3067e09860f18229d1ed))
+
+## [10.20.7](https://github.com/ParabolInc/parabol/compare/v10.20.6...v10.20.7) (2025-08-29)
+
+
+### Fixed
+
+* left nav max length overflow ([#11931](https://github.com/ParabolInc/parabol/issues/11931)) ([407b68f](https://github.com/ParabolInc/parabol/commit/407b68f0655d34c22cec876bfd05fc89f3f59047))
+
+
+### Changed
+
+* measure hocusPocus store document ([#11932](https://github.com/ParabolInc/parabol/issues/11932)) ([4f5e553](https://github.com/ParabolInc/parabol/commit/4f5e553c0487ae6bacdf59e96656b6b43a479e7b))
+
 ## [10.20.6](https://github.com/ParabolInc/parabol/compare/v10.20.5...v10.20.6) (2025-08-28)
 
 

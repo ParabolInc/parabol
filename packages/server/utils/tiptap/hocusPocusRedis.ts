@@ -16,6 +16,7 @@ import {
   type onStoreDocumentPayload
 } from '@hocuspocus/server'
 import {type ExecutionResult, type Lock, Redlock} from '@sesamecare-oss/redlock'
+import tracer, {Span} from 'dd-trace'
 import RedisClient, {
   type Cluster,
   type ClusterNode,
@@ -23,6 +24,7 @@ import RedisClient, {
   type RedisOptions
 } from 'ioredis'
 import {v4 as uuid} from 'uuid'
+import logError from '../logError'
 
 export type RedisInstance = RedisClient | Cluster
 
@@ -101,6 +103,7 @@ export class Redis implements Extension {
   redlock: Redlock
 
   locks = new Map<string, {lock: Lock; release?: Promise<ExecutionResult>}>()
+  spans = new Map<string, Span>()
 
   messagePrefix: Buffer
 
@@ -235,12 +238,29 @@ export class Redis implements Extension {
     // to avoid conflict with other instances storing the same document.
     const resource = this.lockKey(documentName)
     const ttl = this.configuration.lockTimeout
-    const lock = await this.redlock.acquire([resource], ttl)
-    const oldLock = this.locks.get(resource)
-    if (oldLock) {
-      await oldLock.release
+
+    const span = tracer.startSpan('hocusPocusRedis.onStoreDocument', {tags: {resource}})
+    try {
+      const lock = await this.redlock.acquire([resource], ttl)
+      const oldLock = this.locks.get(resource)
+      if (oldLock) {
+        await oldLock.release
+      }
+      this.locks.set(resource, {lock})
+      this.spans.set(resource, span)
+    } catch (error) {
+      span.setTag('error', error)
+      span.finish()
+      logError(error as Error)
+      if (error instanceof Error && error.name === 'ExecutionError') {
+        // Do not throw an error with a message here as that crashes the server.
+        // https://github.com/ueberdosis/hocuspocus/issues/754#issuecomment-2288844459
+        throw {
+          name: 'LockError'
+        }
+      }
+      throw error
     }
-    this.locks.set(resource, {lock})
   }
 
   /**
@@ -249,8 +269,15 @@ export class Redis implements Extension {
   async afterStoreDocument({documentName, socketId}: afterStoreDocumentPayload): Promise<void> {
     const lockKey = this.lockKey(documentName)
     const lock = this.locks.get(lockKey)
+    const span = this.spans.get(lockKey)
     if (!lock) {
-      throw new Error(`Lock created in onStoreDocument not found in afterStoreDocument: ${lockKey}`)
+      const error = new Error(
+        `Lock created in onStoreDocument not found in afterStoreDocument: ${lockKey}`
+      )
+      span?.setTag('error', error)
+      span?.finish()
+      this.spans.delete(lockKey)
+      throw error
     }
     try {
       // Always try to unlock and clean up the lock
@@ -259,7 +286,9 @@ export class Redis implements Extension {
     } catch {
       // Lock will expire on its own after timeout
     } finally {
+      span?.finish()
       this.locks.delete(lockKey)
+      this.spans.delete(lockKey)
     }
     if (socketId !== 'server') return
     // if the change was initiated by a directConnection, we need to delay this hook to make sure sync can finish first.
