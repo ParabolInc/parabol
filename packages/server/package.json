@@ -86,7 +86,7 @@
     "dotenv-expand": "5.1.0",
     "emoji-mart": "^5.6.0",
     "fast-json-stable-stringify": "^2.1.0",
-    "fast-xml-parser": "^4.2.7",
+    "fast-xml-parser": "^5.2.5",
     "form-data": "^4.0.4",
     "googleapis": "^118.0.0",
     "graphql-relay": "^0.10.0",
