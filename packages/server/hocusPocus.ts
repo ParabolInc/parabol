@@ -107,15 +107,21 @@ export const server = new Server({
         const [dbId, pageCode] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
-        const {updatedTitle} = await tracer.trace('hocusPocus.updatePageContent', () =>
-          updatePageContent(dbId, content, state)
+        const {updatedTitle} = await tracer.trace(
+          'hocusPocus.updatePageContent',
+          {
+            tags: {documentName}
+          },
+          () => updatePageContent(dbId, content, state)
         )
         if (updatedTitle) {
           await Promise.all([
-            tracer.trace('hocusPocus.pushGQLTitleUpdates', () => pushGQLTitleUpdates(dbId)),
-            tracer.trace('hocusPocus.withBacklinks', () =>
+            tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
+              pushGQLTitleUpdates(dbId)
+            ),
+            tracer.trace('hocusPocus.withBacklinks', {tags: {documentName}}, () =>
               withBacklinks(dbId, (doc) => {
-                tracer.trace('hocusPocus.updateYDocNodes', () =>
+                tracer.trace('hocusPocus.updateYDocNodes', {tags: {documentName}}, () =>
                   updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
                     node.setAttribute('title', updatedTitle)
                   })
