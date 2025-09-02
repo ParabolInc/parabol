@@ -33,6 +33,7 @@ const DashNavList = (props: Props) => {
       fragment DashNavList_organization on Organization @relay(plural: true) {
         ...DashNavListTeams_organization
         ...EmptyTeams_organization
+        hasPages: featureFlag(featureName: "Pages")
         id
         name
         tier
@@ -48,7 +49,6 @@ const DashNavList = (props: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DashNavList_viewer on User {
-        hasPages: featureFlag(featureName: "Pages")
         ...LeftNavPrivatePagesSection_viewer
         ...LeftNavSharedPagesSection_viewer
         ...LeftNavTeamsSection_viewer
@@ -59,8 +59,8 @@ const DashNavList = (props: Props) => {
     `,
     viewerRef
   )
-  const {hasPages} = viewer
   const sortedOrgs = sortByTier(organizations)
+  const hasPages = organizations.some((org) => org.hasPages)
   return (
     <div className='w-full p-3 pt-4 pb-0'>
       {hasPages && (

@@ -211,15 +211,15 @@ export default {
       })
     }
     // remove any empty tasks
-    const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all(
-      [
-        dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
-        dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-        dataLoader.get('teams').loadNonNull(teamId),
-        dataLoader.get('teamMembersByTeamId').load(teamId),
-        removeEmptyTasks(meetingId)
-      ]
-    )
+    const [meetingMembers, team, teamMembers, removedTaskIds] = await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      removeEmptyTasks(meetingId)
+    ])
+    const makePagesSummary = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: team.orgId, featureName: 'Pages'})
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
