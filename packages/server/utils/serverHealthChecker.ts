@@ -50,6 +50,9 @@ class ServerHealthChecker {
     await sleep(waitForStartup)
     const socketServers = await this.getLivingServers()
 
+    // just for logging
+    const socketsOnDeadServers = new Map<string, string[]>()
+
     // find all connected users and prune the dead servers from their list of connections
     const userPresenceStream = this.publisher.scanStream({
       match: 'presence:*'
@@ -62,7 +65,6 @@ class ServerHealthChecker {
       userPresenceStream.pause()
 
       const presenceBatch = (await this.publisher.multi(reads).exec()) as [null, string[]][]
-      const socketsOnDeadServers = new Map<string, string[]>()
       await Promise.all(
         presenceBatch.flatMap((record, idx) => {
           const key = keys[idx]!
@@ -81,11 +83,6 @@ class ServerHealthChecker {
           })
         })
       )
-      for (const [socketInstanceId, socketIds] of socketsOnDeadServers) {
-        Logger.log(
-          `serverHealthChecker: cleaned ${socketIds.length} connections on dead instance ${socketInstanceId}`
-        )
-      }
       userPresenceStream.resume()
     })
     await new Promise((resolve, reject) => {
@@ -94,6 +91,11 @@ class ServerHealthChecker {
         reject(e)
       })
     })
+    for (const [socketInstanceId, socketIds] of socketsOnDeadServers) {
+      Logger.log(
+        `serverHealthChecker: cleaned ${socketIds.length} connections on dead instance ${socketInstanceId}`
+      )
+    }
   }
 }
 
