@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.21.2](https://github.com/ParabolInc/parabol/compare/v10.21.1...v10.21.2) (2025-09-03)
+
+
+### Fixed
+
+* distinct orgs for pages feature flag migration ([#11976](https://github.com/ParabolInc/parabol/issues/11976)) ([f5f66eb](https://github.com/ParabolInc/parabol/commit/f5f66ebb89bac078f8e6abb0db3d5caf7a7ce21a))
+
 ## [10.21.1](https://github.com/ParabolInc/parabol/compare/v10.21.0...v10.21.1) (2025-09-03)
 
 
