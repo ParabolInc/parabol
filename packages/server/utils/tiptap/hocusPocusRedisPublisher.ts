@@ -1,6 +1,7 @@
 import {
   type afterLoadDocumentPayload,
   type afterUnloadDocumentPayload,
+  type Document,
   type Extension
 } from '@hocuspocus/server'
 import {unpack} from 'msgpackr'
@@ -15,17 +16,16 @@ export class RedisPublisher implements Extension {
 
   sub: RedisInstance
 
+  documentConnections = new Map<string, Document>()
+
   public constructor() {
     this.sub = new RedisInstance('publicPage_sub')
-  }
+    this.sub.on('messageBuffer', (channel, message) => {
+      const document = this.documentConnections.get(channel.toString())
+      if (!document) {
+        return
+      }
 
-  private getChannelName(documentName: string) {
-    const [dbId] = CipherId.fromClient(documentName)
-    return `publicPage:${dbId}`
-  }
-  async afterLoadDocument({documentName, document}: afterLoadDocumentPayload) {
-    this.sub.subscribe(this.getChannelName(documentName))
-    this.sub.on('messageBuffer', (_channel, message) => {
       const payload = unpack(message) as PublicPageNotificationPayload
       const {data, subOptions, type, userIdsToIgnore} = payload
       document.connections.forEach(({connection}) => {
@@ -37,7 +37,17 @@ export class RedisPublisher implements Extension {
     })
   }
 
+  private getChannelName(documentName: string) {
+    const [dbId] = CipherId.fromClient(documentName)
+    return `publicPage:${dbId}`
+  }
+  async afterLoadDocument({documentName, document}: afterLoadDocumentPayload) {
+    this.sub.subscribe(this.getChannelName(documentName))
+    this.documentConnections.set(this.getChannelName(documentName), document)
+  }
+
   async afterUnloadDocument({documentName}: afterUnloadDocumentPayload) {
     await this.sub.unsubscribe(this.getChannelName(documentName))
+    this.documentConnections.delete(this.getChannelName(documentName))
   }
 }

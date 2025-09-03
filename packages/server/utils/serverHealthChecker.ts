@@ -62,6 +62,7 @@ class ServerHealthChecker {
       userPresenceStream.pause()
 
       const presenceBatch = (await this.publisher.multi(reads).exec()) as [null, string[]][]
+      const socketsOnDeadServers = new Map<string, string[]>()
       await Promise.all(
         presenceBatch.flatMap((record, idx) => {
           const key = keys[idx]!
@@ -72,11 +73,19 @@ class ServerHealthChecker {
             const {socketInstanceId, socketId} = presence
             if (socketServers.includes(socketInstanceId)) return
             // let GQL handle the disconnect logic so it can do special handling like notify team memers
-            Logger.log(`serverHealthChecker: ${socketId} is on dead instace ${socketInstanceId}`)
+            if (!socketsOnDeadServers.has(socketInstanceId)) {
+              socketsOnDeadServers.set(socketInstanceId, [])
+            }
+            socketsOnDeadServers.get(socketInstanceId)!.push(socketId)
             await callGQL(disconnectQuery, {userId, socketId})
           })
         })
       )
+      for (const [socketInstanceId, socketIds] of socketsOnDeadServers) {
+        Logger.log(
+          `serverHealthChecker: cleaned ${socketIds.length} connections on dead instance ${socketInstanceId}`
+        )
+      }
       userPresenceStream.resume()
     })
     await new Promise((resolve, reject) => {
