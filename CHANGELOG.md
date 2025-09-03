@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.21.4](https://github.com/ParabolInc/parabol/compare/v10.21.3...v10.21.4) (2025-09-03)
+
+
+### Fixed
+
+* version match relay to latest ([#11986](https://github.com/ParabolInc/parabol/issues/11986)) ([bcf20f0](https://github.com/ParabolInc/parabol/commit/bcf20f025a6ad31c736e77b8763276abedb2a943))
+
+
+### Changed
+
+* really reduce server health checker ([#11984](https://github.com/ParabolInc/parabol/issues/11984)) ([f47b3fa](https://github.com/ParabolInc/parabol/commit/f47b3fa73c2134cf48ab4f9b0e3812e7558d92bf))
+
 ## [10.21.3](https://github.com/ParabolInc/parabol/compare/v10.21.2...v10.21.3) (2025-09-03)
 
 
