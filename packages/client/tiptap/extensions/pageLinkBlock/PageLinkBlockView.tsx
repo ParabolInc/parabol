@@ -25,13 +25,11 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const focusLink = () => {
-    console.log('focus')
     const pos = getPos()
     if (!pos) return
     const tr = view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos))
     view.dispatch(tr)
     view.focus()
-    console.log('focused view', view)
   }
   const archivePage = () => {
     executeArchive({

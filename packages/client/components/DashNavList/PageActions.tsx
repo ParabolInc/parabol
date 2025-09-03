@@ -52,6 +52,20 @@ export const PageActions = (props: Props) => {
             message: firstError,
             autoDismiss: 5
           })
+        } else {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageActionsArchiveUndo',
+            message: 'Moved to trash',
+            action: {
+              label: 'Undo',
+              callback: () => {
+                executeArchive({
+                  variables: {pageId, action: 'restore'}
+                })
+              }
+            },
+            autoDismiss: 5
+          })
         }
       }
     })
