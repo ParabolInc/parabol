@@ -132,6 +132,12 @@ importers:
       react:
         specifier: 17.0.2
         version: 17.0.2
+      react-relay:
+        specifier: ^18.2.0
+        version: 18.2.0(react@17.0.2)
+      relay-runtime:
+        specifier: ^18.2.0
+        version: 18.2.0
       tiptap-markdown:
         specifier: ^0.8.10
         version: 0.8.10(@tiptap/core@3.3.0(@tiptap/pm@3.3.0))
@@ -232,6 +238,9 @@ importers:
       '@types/react-relay':
         specifier: 16.0.6
         version: 16.0.6
+      '@types/relay-runtime':
+        specifier: ^18.2.5
+        version: 18.2.5
       autoprefixer:
         specifier: ^10.4.13
         version: 10.4.21(postcss@8.5.6)
@@ -245,8 +254,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       babel-plugin-relay:
-        specifier: ^20.1.0
-        version: 20.1.1
+        specifier: ^18.2.0
+        version: 18.2.0
       clean-webpack-plugin:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.101.3)
@@ -332,8 +341,8 @@ importers:
         specifier: ^0.17.0
         version: 0.17.0
       relay-compiler:
-        specifier: ^20.1.0
-        version: 20.1.1
+        specifier: ^18.2.0
+        version: 18.2.0
       relay-config:
         specifier: ^12.0.1
         version: 12.0.1
@@ -366,7 +375,7 @@ importers:
         version: 4.1.1(file-loader@6.2.0(webpack@5.101.3))(webpack@5.101.3)
       vscode-apollo-relay:
         specifier: ^1.5.0
-        version: 1.5.2(relay-compiler@20.1.1)(relay-config@12.0.1)
+        version: 1.5.2(relay-compiler@18.2.0)(relay-config@12.0.1)
       webpack:
         specifier: ^5.99.6
         version: 5.101.3(@swc/core@1.13.5)(webpack-cli@5.1.4)
@@ -562,9 +571,6 @@ importers:
       react-ga4:
         specifier: ^1.4.1
         version: 1.4.1
-      react-relay:
-        specifier: ^18.0.0
-        version: 18.2.0(react@17.0.2)
       react-router:
         specifier: 5.2.1
         version: 5.2.1(react@17.0.2)
@@ -589,9 +595,6 @@ importers:
       react-virtualized:
         specifier: ^9.21.1
         version: 9.22.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      relay-runtime:
-        specifier: ^18.0.0
-        version: 18.2.0
       resize-observer-polyfill:
         specifier: ^1.5.0
         version: 1.5.1
@@ -680,9 +683,6 @@ importers:
       '@types/react-virtualized':
         specifier: ^9.21.20
         version: 9.22.2
-      '@types/relay-runtime':
-        specifier: ^18.2.5
-        version: 18.2.5
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.16.0
@@ -756,15 +756,9 @@ importers:
       react-redux:
         specifier: ^9.2.0
         version: 9.2.0(@types/react@17.0.2)(react@17.0.2)(redux@4.0.5)
-      react-relay:
-        specifier: ^20.1.0
-        version: 20.1.1(react@17.0.2)
       react-select:
         specifier: 5.8.2
         version: 5.8.2(@types/react@17.0.2)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      relay-runtime:
-        specifier: ^18.1.1
-        version: 18.2.0
       styled-components:
         specifier: 5.3.6
         version: 5.3.6(@babel/core@7.28.3)(react-dom@17.0.2(react@17.0.2))(react-is@17.0.2)(react@17.0.2)
@@ -784,18 +778,12 @@ importers:
       '@types/react-bootstrap':
         specifier: 0.32.37
         version: 0.32.37
-      '@types/relay-runtime':
-        specifier: ^18.2.5
-        version: 18.2.5
       '@types/styled-components':
         specifier: ^5.1.34
         version: 5.1.34
       openapi-fetch:
         specifier: ^0.10.0
         version: 0.10.6
-      relay-compiler:
-        specifier: ^20.1.0
-        version: 20.1.1
       tailwindcss:
         specifier: ^4.0.3
         version: 4.1.12
@@ -1018,12 +1006,6 @@ importers:
       react-dom:
         specifier: 17.0.2
         version: 17.0.2(react@17.0.2)
-      react-relay:
-        specifier: ^20.1.0
-        version: 20.1.1(react@17.0.2)
-      relay-runtime:
-        specifier: ^14.1.0
-        version: 14.1.0
       rrule-rust:
         specifier: ^2.0.2
         version: 2.0.4
@@ -1100,9 +1082,6 @@ importers:
       '@types/nodemailer':
         specifier: ^6.4.14
         version: 6.4.19
-      '@types/relay-runtime':
-        specifier: ^18.2.5
-        version: 18.2.5
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.16.0
@@ -2400,10 +2379,6 @@ packages:
 
   '@babel/runtime@7.27.0':
     resolution: {integrity: sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/runtime@7.28.2':
-    resolution: {integrity: sha512-KHp2IflsnGywDjBWDkR9iEqiWSpc8GIi0lgTT3mOElT0PP1tG26P4tmFI2YvAdzgq9RGyoHZQEIEdZy6Ec5xCA==}
     engines: {node: '>=6.9.0'}
 
   '@babel/runtime@7.28.3':
@@ -6971,8 +6946,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-relay@20.1.1:
-    resolution: {integrity: sha512-BWlqLPiHbxZTxlyng2rVgsZCwztHNje7H8FR4c+UKy3ErQJBG6BKLr9vUdeR7mAZCH2v0sOAxNhG6zR1FrWjAg==}
+  babel-plugin-relay@18.2.0:
+    resolution: {integrity: sha512-icTICGxKvlmhOvw+MESI/xBsY3J+vsNzgyq6/FL2c/hMnsYJ10IIM6Nps4M3cdUxQfS9CCUTXsbz2/kfmYLzhQ==}
 
   babel-plugin-styled-components@2.1.4:
     resolution: {integrity: sha512-Xgp9g+A/cG47sUyRwwYxGM4bR/jDRg5N6it/8+HxCnbT5XNKSKDT9xm4oag/osgqjC2It/vH0yXsomOG6k558g==}
@@ -11458,11 +11433,6 @@ packages:
     peerDependencies:
       react: 17.0.2
 
-  react-relay@20.1.1:
-    resolution: {integrity: sha512-pwl7wHHXCOx32dOg4TVNkhVojgGVvOBMo9pcMGeM1BIFYvmwGauKTtBB+qr5buXHGooCL8TXjMVg+ZLizIsbeQ==}
-    peerDependencies:
-      react: 17.0.2
-
   react-remove-scroll-bar@2.3.8:
     resolution: {integrity: sha512-9r+yi9+mgU33AKcj6IbT9oRCO78WriSj6t/cF8DWBZJ9aOGPOTEDvdUDz1FwKim7QXWwmHqtdHnRJfhAxEG46Q==}
     engines: {node: '>=10'}
@@ -11696,8 +11666,8 @@ packages:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
     engines: {node: '>= 0.10'}
 
-  relay-compiler@20.1.1:
-    resolution: {integrity: sha512-J/FFFLS/3vnbDkyQMw8l3Ev7dNHXMgC1RAs0fITz4Q63TFPOw142knKxY1Mm5ZZBABkAs9g2JghXaqM+phwTxw==}
+  relay-compiler@18.2.0:
+    resolution: {integrity: sha512-P3o5/Gv/oLC9hckUaz/a+KvDgbFERpjtz5lgsJSIQILg9paaF3k1yaX9qSxErGuU4icZvjoK5G82a/bfPgGZpA==}
     hasBin: true
 
   relay-config@12.0.1:
@@ -11706,14 +11676,8 @@ packages:
   relay-runtime@12.0.0:
     resolution: {integrity: sha512-QU6JKr1tMsry22DXNy9Whsq5rmvwr3LSZiiWV/9+DFpuTWvp+WFhobWMc8TC4OjKFfNhEZy7mOiqUAn5atQtug==}
 
-  relay-runtime@14.1.0:
-    resolution: {integrity: sha512-t2DR2hZviHrdEQrOvFqwmvRWvZ0SjI/r4bS5f3qvMyXt4g1kw3RTb2RNVmbKGg6zEQhf7Na/brdqE4roApmclQ==}
-
   relay-runtime@18.2.0:
     resolution: {integrity: sha512-r4FYWlx1dPwFW+KQnuF1ugwVKR4toIFduCGheEf2paRc6nEEcCIgd2p2Jx2gRF+4niO3mCbRZvqdCoKaznUDzg==}
-
-  relay-runtime@20.1.1:
-    resolution: {integrity: sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw==}
 
   remedial@1.0.8:
     resolution: {integrity: sha512-/62tYiOe6DzS5BqVsNpH/nkGlX45C/Sp6V+NtiN6JQNS1Viay7cWkazmRkrQrdFj2eshDe96SIQNIoMxqhzBOg==}
@@ -16104,8 +16068,6 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
-  '@babel/runtime@7.28.2': {}
-
   '@babel/runtime@7.28.3': {}
 
   '@babel/template@7.27.0':
@@ -18041,7 +18003,7 @@ snapshots:
 
   '@mui/types@7.4.1(@types/react@17.0.2)':
     dependencies:
-      '@babel/runtime': 7.28.2
+      '@babel/runtime': 7.28.3
     optionalDependencies:
       '@types/react': 17.0.2
 
@@ -21457,7 +21419,7 @@ snapshots:
 
   babel-plugin-macros@2.8.0:
     dependencies:
-      '@babel/runtime': 7.28.2
+      '@babel/runtime': 7.28.3
       cosmiconfig: 6.0.0
       resolve: 1.22.10
 
@@ -21491,7 +21453,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-relay@20.1.1:
+  babel-plugin-relay@18.2.0:
     dependencies:
       babel-plugin-macros: 2.8.0
       cosmiconfig: 5.2.1
@@ -21849,7 +21811,7 @@ snapshots:
 
   chrome-launcher@0.15.2:
     dependencies:
-      '@types/node': 16.18.126
+      '@types/node': 22.18.0
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -21860,7 +21822,7 @@ snapshots:
 
   chromium-edge-launcher@0.2.0:
     dependencies:
-      '@types/node': 16.18.126
+      '@types/node': 22.18.0
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -26864,23 +26826,12 @@ snapshots:
 
   react-relay@18.2.0(react@17.0.2):
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.28.3
       fbjs: 3.0.5
       invariant: 2.2.4
       nullthrows: 1.1.1
       react: 17.0.2
       relay-runtime: 18.2.0
-    transitivePeerDependencies:
-      - encoding
-
-  react-relay@20.1.1(react@17.0.2):
-    dependencies:
-      '@babel/runtime': 7.28.2
-      fbjs: 3.0.5
-      invariant: 2.2.4
-      nullthrows: 1.1.1
-      react: 17.0.2
-      relay-runtime: 20.1.1
     transitivePeerDependencies:
       - encoding
 
@@ -27190,7 +27141,7 @@ snapshots:
 
   relateurl@0.2.7: {}
 
-  relay-compiler@20.1.1: {}
+  relay-compiler@18.2.0: {}
 
   relay-config@12.0.1:
     dependencies:
@@ -27204,25 +27155,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  relay-runtime@14.1.0:
-    dependencies:
-      '@babel/runtime': 7.27.0
-      fbjs: 3.0.5
-      invariant: 2.2.4
-    transitivePeerDependencies:
-      - encoding
-
   relay-runtime@18.2.0:
     dependencies:
-      '@babel/runtime': 7.27.0
-      fbjs: 3.0.5
-      invariant: 2.2.4
-    transitivePeerDependencies:
-      - encoding
-
-  relay-runtime@20.1.1:
-    dependencies:
-      '@babel/runtime': 7.28.2
+      '@babel/runtime': 7.28.3
       fbjs: 3.0.5
       invariant: 2.2.4
     transitivePeerDependencies:
@@ -28636,9 +28571,9 @@ snapshots:
 
   vlq@1.0.1: {}
 
-  vscode-apollo-relay@1.5.2(relay-compiler@20.1.1)(relay-config@12.0.1):
+  vscode-apollo-relay@1.5.2(relay-compiler@18.2.0)(relay-config@12.0.1):
     dependencies:
-      relay-compiler: 20.1.1
+      relay-compiler: 18.2.0
       relay-config: 12.0.1
 
   vscode-languageserver-types@3.17.5: {}
@@ -29181,7 +29116,7 @@ snapshots:
 
   yup@0.32.11:
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.28.3
       '@types/lodash': 4.17.16
       lodash: 4.17.21
       lodash-es: 4.17.21
