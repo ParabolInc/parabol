@@ -30,6 +30,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .innerJoin('OrganizationUser', 'FeatureFlagOwner.userId', 'OrganizationUser.userId')
         .select((eb) => [eb.val(featureFlagId).as('featureFlagId'), 'OrganizationUser.orgId'])
         .where('featureFlagId', '=', existingFeatureFlag.id)
+        .groupBy('OrganizationUser.orgId')
     )
     .execute()
 }
