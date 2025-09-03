@@ -4,7 +4,6 @@ reviewers:
     maintainers:
       - mattkrick
       - Dschoordsch
-    data:
     designers:
       - ackernaut
     devops:
@@ -16,8 +15,6 @@ reviewers:
       - none
     maintainers:
       - none
-    data:
-      - none
     designers:
       - none
     devops:
@@ -27,10 +24,6 @@ reviewers:
     - maintainers
 
 files:
-  "**/migrations/**":
-    - data
-  "**/analytics/**":
-    - data
   "docker/**":
     - devops
   ".env.example":

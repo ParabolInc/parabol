@@ -115,15 +115,16 @@ const safeEndRetrospective = async ({
   }
   // remove any empty tasks
   const {templateId} = completedRetrospective
-  const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds, template] =
-    await Promise.all([
-      dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
-      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      removeEmptyTasks(meetingId),
-      dataLoader.get('meetingTemplates').loadNonNull(templateId)
-    ])
+  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
+    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    removeEmptyTasks(meetingId),
+    dataLoader.get('meetingTemplates').loadNonNull(templateId)
+  ])
+  const makePagesSummary = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: team.orgId, featureName: 'Pages'})
   // wait for removeEmptyTasks before summarizeRetroMeeting
   // don't await for the OpenAI response or it'll hang for a while when ending the retro
   summarizeRetroMeeting(completedRetrospective, makePagesSummary, context)

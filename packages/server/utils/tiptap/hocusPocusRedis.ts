@@ -240,7 +240,9 @@ export class Redis implements Extension {
     const resource = this.lockKey(documentName)
     const ttl = this.configuration.lockTimeout
 
-    const span = tracer.startSpan('hocusPocusRedis.onStoreDocument', {tags: {resource}})
+    const span = tracer.startSpan('hocusPocusRedis.onStoreDocument', {
+      tags: {resource, documentName}
+    })
     try {
       const lock = await this.redlock.acquire([resource], ttl)
       const oldLock = this.locks.get(resource)

@@ -111,18 +111,19 @@ export default {
       })
     }
     const {templateId} = completedMeeting
-    const [makePagesSummary, meetingMembers, team, teamMembers, removedTaskIds, template] =
-      await Promise.all([
-        dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
-        dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-        dataLoader.get('teams').loadNonNull(teamId),
-        dataLoader.get('teamMembersByTeamId').load(teamId),
-        removeEmptyTasks(meetingId),
-        // technically, this template could have mutated while the meeting was going on. but in practice, probably not
-        dataLoader
-          .get('meetingTemplates')
-          .loadNonNull(templateId)
-      ])
+    const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      removeEmptyTasks(meetingId),
+      // technically, this template could have mutated while the meeting was going on. but in practice, probably not
+      dataLoader
+        .get('meetingTemplates')
+        .loadNonNull(templateId)
+    ])
+    const makePagesSummary = await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: team.orgId, featureName: 'Pages'})
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')

@@ -79,15 +79,17 @@ const safeEndTeamPrompt = async ({
     .execute()
   dataLoader.clearAll('newMeetings')
 
-  const [makePagesSummary, completedTeamPrompt, meetingMembers, team, teamMembers, responses] =
-    await Promise.all([
-      dataLoader.get('featureFlagByOwnerId').load({ownerId: viewerId, featureName: 'Pages'}),
-      dataLoader.get('newMeetings').loadNonNull(meetingId),
-      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-      dataLoader.get('teams').loadNonNull(teamId),
-      dataLoader.get('teamMembersByTeamId').load(teamId),
-      getTeamPromptResponsesByMeetingId(meetingId)
-    ])
+  const [completedTeamPrompt, meetingMembers, team, teamMembers, responses] = await Promise.all([
+    dataLoader.get('newMeetings').loadNonNull(meetingId),
+    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+    dataLoader.get('teams').loadNonNull(teamId),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
+    getTeamPromptResponsesByMeetingId(meetingId)
+  ])
+
+  const makePagesSummary = await dataLoader
+    .get('featureFlagByOwnerId')
+    .load({ownerId: team.orgId, featureName: 'Pages'})
 
   const events = teamMembers.map(
     (teamMember) =>

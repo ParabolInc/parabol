@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.21.2](https://github.com/ParabolInc/parabol/compare/v10.21.1...v10.21.2) (2025-09-03)
+
+
+### Fixed
+
+* distinct orgs for pages feature flag migration ([#11976](https://github.com/ParabolInc/parabol/issues/11976)) ([f5f66eb](https://github.com/ParabolInc/parabol/commit/f5f66ebb89bac078f8e6abb0db3d5caf7a7ce21a))
+
+## [10.21.1](https://github.com/ParabolInc/parabol/compare/v10.21.0...v10.21.1) (2025-09-03)
+
+
+### Changed
+
+* add tags to dd-traces for hocusPocus ([#11967](https://github.com/ParabolInc/parabol/issues/11967)) ([5632876](https://github.com/ParabolInc/parabol/commit/5632876e6d7134782012a80e5f26d8165d30e34b))
+* make Pages an organization feature flag ([#11971](https://github.com/ParabolInc/parabol/issues/11971)) ([06ff397](https://github.com/ParabolInc/parabol/commit/06ff397c666ae1f13e6532522576624859de234b))
+* speed up teamsWithUserSort query ([#11974](https://github.com/ParabolInc/parabol/issues/11974)) ([04d8721](https://github.com/ParabolInc/parabol/commit/04d872106d8a4a4834144d13440bd6c937d9cef5))
+
 ## [10.21.0](https://github.com/ParabolInc/parabol/compare/v10.20.10...v10.21.0) (2025-08-29)
 
 

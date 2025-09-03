@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import type {Selectable} from 'kysely'
+import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import {selectTeams} from '../postgres/select'
 import type {Team} from '../postgres/types'
@@ -21,11 +22,11 @@ export const teamsWithUserSort = (parent: RootDataLoader, dependsOn: RegisterDep
       const res = await selectTeams()
         .innerJoin('TeamMember', 'Team.id', 'TeamMember.teamId')
         .select(['sortOrder', 'userId'])
-        .where(({eb, refTuple, tuple}) =>
+        .where(({eb}) =>
           eb(
-            refTuple('TeamMember.teamId', 'TeamMember.userId'),
+            'TeamMember.id',
             'in',
-            keys.map((key) => tuple(key.teamId, key.userId))
+            keys.map(({teamId, userId}) => TeamMemberId.join(teamId, userId))
           )
         )
         .execute()
