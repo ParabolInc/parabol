@@ -8,7 +8,7 @@ import {setIsBusy} from '../../../getIsBusy'
 import {Logger} from '../../../utils/Logger'
 import type {MutationResolvers} from '../resolverTypes'
 
-const {SERVER_ID} = process.env
+const {SERVER_ID, HEAP_DUMP_FOLDER} = process.env
 
 const dumpHeap: MutationResolvers['dumpHeap'] = async (
   _source,
@@ -34,7 +34,9 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (
     const usedMB = Math.floor(rss / MB)
     const now = new Date().toJSON()
     const fileName = `Dumpy_${now}_${SERVER_ID}_${usedMB}.heapsnapshot`
-    const pathName = path.join(os.tmpdir(), fileName)
+    const dumpFolder = (HEAP_DUMP_FOLDER ?? '').trim() || os.tmpdir()
+    const pathName = path.join(dumpFolder, fileName)
+    if (!fs.existsSync(dumpFolder)) fs.mkdirSync(dumpFolder, {recursive: true})
     const fd = fs.openSync(pathName, 'w')
     session.connect()
     session.on('HeapProfiler.addHeapSnapshotChunk', (m) => {
