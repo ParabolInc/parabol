@@ -97,7 +97,7 @@ const MeetingOptions = (props: Props) => {
         <Tooltip open={openTooltip}>
           <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <TooltipTrigger asChild>
-              <MenuItem onClick={handleClick} isDisabled={isDisabled}>
+              <MenuItem onSelect={handleClick} isDisabled={isDisabled}>
                 <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
                 Change template
               </MenuItem>

@@ -53,8 +53,8 @@ const GitLabProviderRow = (props: Props) => {
             }
           >
             <MenuContent>
-              <MenuItem onClick={openEdit}>Edit</MenuItem>
-              <MenuItem onClick={openDelete}>Delete</MenuItem>
+              <MenuItem onSelect={openEdit}>Edit</MenuItem>
+              <MenuItem onSelect={openDelete}>Delete</MenuItem>
             </MenuContent>
           </Menu>
         </ProviderActions>

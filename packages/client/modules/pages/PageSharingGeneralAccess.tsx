@@ -89,7 +89,7 @@ export const PageSharingGeneralAccess = (props: Props) => {
                       <MenuItem
                         className='py-1'
                         key={value}
-                        onClick={() => {
+                        onSelect={() => {
                           updateGAValue(value)
                         }}
                       >

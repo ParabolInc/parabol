@@ -3,14 +3,15 @@ import * as React from 'react'
 import {cn} from '../cn'
 
 interface MenuItemProps {
-  onClick?: (event: Event) => void
+  onSelect?: (event: Event) => void
+  onClick?: React.MouseEventHandler
   isDisabled?: boolean
   className?: string
   children: React.ReactNode
 }
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
-  ({onClick, isDisabled, className, children}, ref) => {
+  ({onSelect, onClick, isDisabled, className, children}, ref) => {
     return (
       <DropdownMenu.Item
         className={cn(
@@ -20,7 +21,8 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         )}
         // FIX ME: onClick has a MouseEvent handler, onSelect has a custom event that can't do things like e.stopPropagation()
         // Refactor: onClick -> onSelect here & in all dependencies
-        onSelect={onClick}
+        onSelect={onSelect}
+        onClick={onClick}
         ref={ref}
       >
         {children}

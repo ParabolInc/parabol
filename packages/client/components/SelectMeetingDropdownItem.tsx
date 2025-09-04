@@ -58,7 +58,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   const meetingPhaseLabel = (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
   return (
-    <MenuItem onClick={gotoMeeting}>
+    <MenuItem onSelect={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
         <div className='m-2 size-6 text-slate-600'>
           {

@@ -32,14 +32,29 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
     view.focus()
   }
   const archivePage = () => {
+    const pageId = `page:${pageCode}`
     executeArchive({
-      variables: {pageId: `page:${pageCode}`, action: 'archive'},
+      variables: {pageId, action: 'archive'},
       onCompleted(_res, errors) {
         const firstError = errors?.[0]?.message
         if (firstError) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'PageActionsArchive',
             message: firstError,
+            autoDismiss: 5
+          })
+        } else {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageActionsArchiveUndo',
+            message: 'Moved to trash',
+            action: {
+              label: 'Undo',
+              callback: () => {
+                executeArchive({
+                  variables: {pageId, action: 'restore'}
+                })
+              }
+            },
             autoDismiss: 5
           })
         }
@@ -77,7 +92,12 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
           }
         >
           <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
-            <MenuItem onClick={archivePage}>
+            <MenuItem
+              onSelect={archivePage}
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+            >
               <DeleteIcon className='text-slate-600' />
               <span className='pl-1'>{'Delete page'}</span>
             </MenuItem>
