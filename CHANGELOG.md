@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.22.0](https://github.com/ParabolInc/parabol/compare/v10.21.4...v10.22.0) (2025-09-04)
+
+
+### Added
+
+* send in app notifications when a page is shared with a user ([#11991](https://github.com/ParabolInc/parabol/issues/11991)) ([b36b374](https://github.com/ParabolInc/parabol/commit/b36b3742f3c05500a35fed814d58822b747a050f))
+
+
+### Fixed
+
+* no dependabot updates ([#11988](https://github.com/ParabolInc/parabol/issues/11988)) ([68a5a1a](https://github.com/ParabolInc/parabol/commit/68a5a1a01a649d7722936be6ac44875ef791a9fa))
+* undo del snackbar ([#11996](https://github.com/ParabolInc/parabol/issues/11996)) ([83d1a80](https://github.com/ParabolInc/parabol/commit/83d1a80c60b174900fb1799168eccab8d64416dd))
+
 ## [10.21.4](https://github.com/ParabolInc/parabol/compare/v10.21.3...v10.21.4) (2025-09-03)
 
 
