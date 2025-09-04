@@ -1,5 +1,10 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
+import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
+import makeAppURL from '../../../../client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
+import getMailManager from '../../../email/getMailManager'
+import pageSharedEmailCreator from '../../../email/pageSharedEmailCreator'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
@@ -52,7 +57,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
   const tableMap = {
     user: 'PageUserAccess',
     team: 'PageTeamAccess',
@@ -170,6 +175,34 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
+
+  // notifications
+  if (role) {
+    if (nextSubjectType === 'external') {
+      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      const {html, subject, body} = pageSharedEmailCreator({
+        appOrigin,
+        inviterName: viewer.preferredName,
+        inviterEmail: viewer.email,
+        inviterAvatar: viewer.picture,
+        pageName: page.title ?? 'Untitled',
+        pageLink: makeAppURL(appOrigin, `pages/${pageSlug}`),
+        role,
+        corsOptions: EMAIL_CORS_OPTIONS
+      })
+      await getMailManager().sendEmail({
+        to: nextSubjectId,
+        html,
+        subject,
+        body,
+        tags: ['type:pageSharedInvitation']
+      })
+    }
+    if (nextSubjectType === 'user') {
+      // send in app notification
+    }
+  }
+
   const data = {pageId: dbPageId}
   await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
   return data
