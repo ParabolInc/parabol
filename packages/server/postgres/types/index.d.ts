@@ -111,8 +111,11 @@ export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
-export type PagePartial = Pick<Page, 'id' | 'title'> & {
-  __typename: 'PagePartial'
+export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId'> & {
+  __typename: 'Page' | 'PagePreview'
+}
+export type PagePreview = PagePartial & {
+  __typename: 'PagePreview'
 }
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
 export type PageExternalAccess = Selectable<PageExternalAccessPG>
