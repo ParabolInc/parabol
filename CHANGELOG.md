@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.22.1](https://github.com/ParabolInc/parabol/compare/v10.22.0...v10.22.1) (2025-09-05)
+
+
+### Changed
+
+* **heap-dump:** allow customizing the folder where the heap dumps are stored ([#11995](https://github.com/ParabolInc/parabol/issues/11995)) ([5aa4df8](https://github.com/ParabolInc/parabol/commit/5aa4df8cd71768183c673a0709d5a853e96a88dd))
+
 ## [10.22.0](https://github.com/ParabolInc/parabol/compare/v10.21.4...v10.22.0) (2025-09-04)
 
 
