@@ -46,7 +46,7 @@ export const PageAccessComboboxControl = (props: Props) => {
           return (
             <MenuItem
               key={value}
-              onClick={() => {
+              onSelect={() => {
                 onClick(value)
               }}
             >
@@ -63,7 +63,7 @@ export const PageAccessComboboxControl = (props: Props) => {
             <MenuItem
               className={'hover:text-tomato-700'}
               key={'remove'}
-              onClick={() => {
+              onSelect={() => {
                 onClick(null)
               }}
             >

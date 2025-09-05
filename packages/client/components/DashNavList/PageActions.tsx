@@ -52,6 +52,20 @@ export const PageActions = (props: Props) => {
             message: firstError,
             autoDismiss: 5
           })
+        } else {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'PageActionsArchiveUndo',
+            message: 'Moved to trash',
+            action: {
+              label: 'Undo',
+              callback: () => {
+                executeArchive({
+                  variables: {pageId, action: 'restore'}
+                })
+              }
+            },
+            autoDismiss: 5
+          })
         }
       }
     })
@@ -94,7 +108,7 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              <MenuItem onClick={archivePage}>
+              <MenuItem onSelect={archivePage} onClick={(e) => e.stopPropagation()}>
                 <DeleteIcon className='text-slate-600' />
                 <span className='pl-1'>{'Delete page'}</span>
               </MenuItem>

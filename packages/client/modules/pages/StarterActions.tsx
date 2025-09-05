@@ -13,7 +13,6 @@ export const StarterActions = (props: Props) => {
   const transformRef = useRef<undefined | string>(undefined)
   const getTransform = () => {
     const coords = editor.view.coordsAtPos(1)
-    console.log('coords', coords)
     const {left, top} = coords
     if (left !== 0 && top !== 0) {
       transformRef.current = `translate(${coords.left}px,${coords.top + 90}px)`

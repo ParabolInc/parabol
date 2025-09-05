@@ -75,6 +75,7 @@ export const PageAccessCombobox = (props: Props) => {
         onClick={toggleRole}
         defaultRole={defaultRole}
         noOwner={subjectId === '*'}
+        canRemove
       />
       {attemptedRole && (
         <UnlinkPageDialog approveUnlink={approveUnlink} closeDialog={closeDialog} />

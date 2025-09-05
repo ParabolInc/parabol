@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
@@ -170,6 +171,24 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
+
+  // notifications
+  if (role) {
+    if (nextSubjectType === 'user') {
+      await pg
+        .insertInto('Notification')
+        .values({
+          id: generateUID(),
+          type: 'PAGE_ACCESS_GRANTED',
+          userId: nextSubjectId,
+          ownerId: viewerId,
+          pageId: dbPageId,
+          role
+        })
+        .execute()
+    }
+  }
+
   const data = {pageId: dbPageId}
   await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
   return data

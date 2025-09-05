@@ -15,31 +15,34 @@ const customNodes = [
   TaskBlock.name
 ]
 
-export const isTableGripSelected = (editor: Editor) => {
-  const {view, state} = editor
-  const {selection} = state
-  const {from} = selection
-  if (view.isDestroyed) return false // domAtPos will throw if not mounted
-  const domAtPos = view.domAtPos(from || 0).node as HTMLElement
-  const nodeDOM = view.nodeDOM(from || 0) as HTMLElement
-  const node = nodeDOM || domAtPos
-  let container = node
+// if the view is not mounted yet, view.domAtPos will throw a fatal.
+// there's no way to check if it is mounted in tiptap yet, so leaving this out for now
 
-  while (container && !['TD', 'TH'].includes(container.tagName)) {
-    container = container.parentElement!
-  }
+// export const isTableGripSelected = (editor: Editor) => {
+//   const {view, state} = editor
+//   const {selection} = state
+//   const {from} = selection
+//   if (view.isDestroyed || editor) return false // domAtPos will throw if not mounted
+//   const domAtPos = view.domAtPos(from || 0).node as HTMLElement
+//   const nodeDOM = view.nodeDOM(from || 0) as HTMLElement
+//   const node = nodeDOM || domAtPos
+//   let container = node
 
-  const gripColumn =
-    container && container.querySelector && container.querySelector('a.grip-column.selected')
-  const gripRow =
-    container && container.querySelector && container.querySelector('a.grip-row.selected')
+//   while (container && !['TD', 'TH'].includes(container.tagName)) {
+//     container = container.parentElement!
+//   }
 
-  if (gripColumn || gripRow) {
-    return true
-  }
+//   const gripColumn =
+//     container && container.querySelector && container.querySelector('a.grip-column.selected')
+//   const gripRow =
+//     container && container.querySelector && container.querySelector('a.grip-row.selected')
 
-  return false
-}
+//   if (gripColumn || gripRow) {
+//     return true
+//   }
+
+//   return false
+// }
 export const isCustomNodeSelected = (editor: Editor) => {
-  return customNodes.some((type) => editor.isActive(type)) || isTableGripSelected(editor)
+  return customNodes.some((type) => editor.isActive(type))
 }

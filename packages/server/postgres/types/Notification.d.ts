@@ -1,4 +1,4 @@
-import type {Notification} from './pg'
+import type {Notification, Pageroleenum} from './pg'
 
 interface BaseNotification {
   id: string
@@ -109,6 +109,13 @@ export interface TeamsLimitReminderNotification extends BaseNotification {
   orgName: string
   orgPicture: string | null
   scheduledLockAt: Date
+}
+
+export interface PageAccessGrantedNotification extends BaseNotification {
+  type: 'PAGE_ACCESS_GRANTED'
+  ownerId: string
+  pageId: number
+  role: Pageroleenum
 }
 
 export type AnyNotification =

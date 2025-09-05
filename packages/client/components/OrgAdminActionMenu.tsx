@@ -97,28 +97,28 @@ export const OrgAdminActionMenu = (props: Props) => {
     >
       <MenuContent align='end' sideOffset={4}>
         {isViewerOrgAdmin && !isOrgAdmin && (
-          <MenuItem onClick={setRole('ORG_ADMIN')}>{'Promote to Org Admin'}</MenuItem>
+          <MenuItem onSelect={setRole('ORG_ADMIN')}>{'Promote to Org Admin'}</MenuItem>
         )}
         {isViewerBillingLeaderPlus && !isOrgAdmin && !isBillingLeader && (
-          <MenuItem onClick={setRole('BILLING_LEADER')}>{'Promote to Billing Leader'}</MenuItem>
+          <MenuItem onSelect={setRole('BILLING_LEADER')}>{'Promote to Billing Leader'}</MenuItem>
         )}
         {isViewerOrgAdmin && isOrgAdmin && (!isSelf || !isViewerLastOrgAdmin) && (
-          <MenuItem onClick={setRole('BILLING_LEADER')}>{'Change to Billing Leader'}</MenuItem>
+          <MenuItem onSelect={setRole('BILLING_LEADER')}>{'Change to Billing Leader'}</MenuItem>
         )}
-        {canRemoveRole && <MenuItem onClick={setRole(null)}>{`Remove ${roleName} role`}</MenuItem>}
+        {canRemoveRole && <MenuItem onSelect={setRole(null)}>{`Remove ${roleName} role`}</MenuItem>}
         {isSelf &&
           ((isOrgAdmin && !isViewerLastOrgAdmin) ||
             (isBillingLeader && !isViewerLastRole) ||
             !isViewerBillingLeaderPlus) && (
-            <MenuItem onClick={toggleLeave}>{'Leave Organization'}</MenuItem>
+            <MenuItem onSelect={toggleLeave}>{'Leave Organization'}</MenuItem>
           )}
         {!isSelf && (isViewerOrgAdmin || (isViewerBillingLeaderPlus && !isOrgAdmin)) && (
-          <MenuItem onClick={toggleRemove}>{'Remove from Organization'}</MenuItem>
+          <MenuItem onSelect={toggleRemove}>{'Remove from Organization'}</MenuItem>
         )}
         {isSelf &&
           ((isOrgAdmin && isViewerLastOrgAdmin) || (isBillingLeader && isViewerLastRole)) && (
             <MenuItem
-              onClick={() => {
+              onSelect={() => {
                 window.location.href =
                   'mailto:support@parabol.co?subject=Request to be removed from organization'
               }}
