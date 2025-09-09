@@ -44,19 +44,6 @@ const subTitleStyle = {
   color: PALETTE.SLATE_900
 }
 
-const utmParams = {
-  utm_source: 'shared page email',
-  utm_medium: 'email',
-  utm_campaign: 'invitations'
-}
-function appendUTM(url: string) {
-  const newUrl = new URL(url)
-  Object.entries(utmParams).forEach(([name, value]) => {
-    newUrl.searchParams.append(name, value)
-  })
-  return newUrl.toString()
-}
-
 export const pageRoles = {
   owner: 'edit',
   editor: 'edit',
@@ -66,9 +53,9 @@ export const pageRoles = {
 
 export interface PageSharedInviteProps {
   appOrigin: string
-  inviterName: string
-  inviterEmail: string
-  inviterAvatar: string
+  ownerName: string
+  ownerEmail: string
+  ownerAvatar: string
   pageLink: string
   pageName: string
   role: PageRoleEnum
@@ -76,21 +63,13 @@ export interface PageSharedInviteProps {
 }
 
 const PageSharedInvite = (props: PageSharedInviteProps) => {
-  const {
-    appOrigin,
-    inviterName,
-    inviterEmail,
-    inviterAvatar,
-    pageLink,
-    pageName,
-    role,
-    corsOptions
-  } = props
+  const {appOrigin, ownerName, ownerEmail, ownerAvatar, pageLink, pageName, role, corsOptions} =
+    props
   const pageAccess = pageRoles[role] || 'view'
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <h1 style={emailHeadingStyle}>{inviterName} shared a page</h1>
+        <h1 style={emailHeadingStyle}>{ownerName} shared a page</h1>
         <p style={emailCopyStyle}>
           <table style={emailTableBase} width='100%'>
             <tbody>
@@ -101,14 +80,14 @@ const PageSharedInvite = (props: PageSharedInviteProps) => {
                     height='48px'
                     alt='Avatar'
                     style={{borderRadius: '24px'}}
-                    src={inviterAvatar}
+                    src={ownerAvatar}
                   />
                 </td>
                 <td style={{paddingLeft: '18px'}}>
-                  <span style={boldStyle}>{inviterName}</span>
+                  <span style={boldStyle}>{ownerName}</span>
                   {' ('}
-                  <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
-                    {inviterEmail}
+                  <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
+                    {ownerEmail}
                   </a>
                   {') has invited you to '}
                   <b>{pageAccess}</b>
@@ -148,7 +127,7 @@ const PageSharedInvite = (props: PageSharedInviteProps) => {
               </tr>
             </tbody>
           </table>
-          <Button url={appendUTM(pageLink)}>Open Page</Button>
+          <Button url={pageLink}>Open Page</Button>
         </p>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>

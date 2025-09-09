@@ -5,14 +5,14 @@ import PageSharedInvite, {
 } from 'parabol-client/modules/email/components/PageSharedInvite'
 import {headCSS} from 'parabol-client/modules/email/styles'
 
-const subjectLine = (inviterName: string): string =>
-  `${inviterName} has shared a Page with you on Parabol`
+const subjectLine = (ownerName: string): string =>
+  `${ownerName} has shared a Page with you on Parabol`
 
 const teamInviteText = (props: PageSharedInviteProps) => {
-  const {inviterName, inviterEmail, pageName, pageLink, role} = props
+  const {ownerName, ownerEmail, pageName, pageLink, role} = props
   const pageAccess = pageRoles[role] || 'view'
   return `
-${inviterName} (${inviterEmail}) has invited you to ${pageAccess} this page in Parabol: ${pageName}
+${ownerName} (${ownerEmail}) has invited you to ${pageAccess} this page in Parabol: ${pageName}
 
 Open Page here: ${pageLink}
 
@@ -22,7 +22,7 @@ The Parabol Product Team
 }
 
 export default (props: PageSharedInviteProps) => {
-  const subject = subjectLine(props.inviterName)
+  const subject = subjectLine(props.ownerName)
   return {
     subject,
     body: teamInviteText(props),

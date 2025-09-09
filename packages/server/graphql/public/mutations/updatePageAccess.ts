@@ -1,11 +1,11 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
-import generateUID from '../../../generateUID'
 import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
 import pageSharedEmailCreator from '../../../email/pageSharedEmailCreator'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
@@ -16,6 +16,12 @@ import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+
+const utmParams = {
+  utm_source: 'shared page email',
+  utm_medium: 'email',
+  utm_campaign: 'invitations'
+}
 
 const getNextIsPrivate = async (
   trx: ControlledTransaction<DB, []>,
@@ -181,18 +187,25 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   if (role) {
     if (nextSubjectType === 'external') {
       const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      const email = nextSubjectId
+      const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
+        searchParams: {
+          ...utmParams,
+          email
+        }
+      })
       const {html, subject, body} = pageSharedEmailCreator({
         appOrigin,
-        inviterName: viewer.preferredName,
-        inviterEmail: viewer.email,
-        inviterAvatar: viewer.picture,
+        ownerName: viewer.preferredName,
+        ownerEmail: viewer.email,
+        ownerAvatar: viewer.picture,
         pageName: page.title ?? 'Untitled',
-        pageLink: makeAppURL(appOrigin, `pages/${pageSlug}`),
+        pageLink,
         role,
         corsOptions: EMAIL_CORS_OPTIONS
       })
       await getMailManager().sendEmail({
-        to: nextSubjectId,
+        to: email,
         html,
         subject,
         body,
