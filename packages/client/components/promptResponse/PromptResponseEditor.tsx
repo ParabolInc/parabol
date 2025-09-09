@@ -59,6 +59,7 @@ const PromptResponseEditor = (props: Props) => {
   const atmosphere = useAtmosphere()
   const [isEditing, setIsEditing] = useState(false)
   const [autoFocus, setAutoFocus] = useState(autoFocusProp)
+  const [isEditorEmpty, setIsEditorEmpty] = useState(true)
 
   const content = useMemo(
     () => (rawContent && readOnly ? unfurlLoomLinks(rawContent) : rawContent),
@@ -76,6 +77,7 @@ const PromptResponseEditor = (props: Props) => {
   const onUpdate = useCallback(
     ({editor}: {editor: Editor}) => {
       setEditing(true)
+      setIsEditorEmpty(editor.isEmpty)
       if (draftStorageKey) {
         window.localStorage.setItem(draftStorageKey, JSON.stringify(editor.getJSON()))
       }
@@ -180,7 +182,7 @@ const PromptResponseEditor = (props: Props) => {
             <SubmitButton
               onClick={() => onSubmit()}
               size='medium'
-              disabled={!editor || editor.isEmpty}
+              disabled={!editor || isEditorEmpty}
               aria-label={`${buttonTitle} your response`}
               title={`${buttonTitle} your response ${modEnter}`}
             >
