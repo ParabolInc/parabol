@@ -27,14 +27,7 @@ import {getHTMLFromFragment} from './getHTMLFromFragment'
  * const html = generateHTML(doc, extensions)
  */
 export function generateHTML(doc: JSONContent, extensions: Extensions): string {
-  if (typeof window === 'undefined') {
-    throw new Error(
-      'generateHTML can only be used in a browser environment\nIf you want to use this in a Node environment, use the `@tiptap/html/server` import instead.'
-    )
-  }
-
   const schema = getSchema(extensions)
   const contentNode = Node.fromJSON(schema, doc)
-
   return getHTMLFromFragment(contentNode, schema)
 }
