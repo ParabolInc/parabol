@@ -10,6 +10,7 @@ import {Section} from '@react-email/section'
 import {Text} from '@react-email/text'
 import dayjs from 'dayjs'
 import type {GraphQLResolveInfo} from 'graphql'
+import {Fragment} from 'react'
 import {PALETTE} from '../../client/styles/paletteV3'
 import logoImg from '../../client/styles/theme/images/brand/parabol_logo_transparent@1X.png'
 import makeAppURL from '../../client/utils/makeAppURL'
@@ -85,12 +86,10 @@ const makeTeamPromptFallbackInsights = async (
       const markdown = convertTipTapToMarkdown(content)
 
       return (
-        <>
-          <Text style={{...paragraph, lineHeight: '14px'}} key={userId}>
-            {preferredName}
-          </Text>
+        <Fragment key={userId}>
+          <Text style={{...paragraph, lineHeight: '14px'}}>{preferredName}</Text>
           <Markdown children={markdown} />
-        </>
+        </Fragment>
       )
     })
   )
