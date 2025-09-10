@@ -17,15 +17,17 @@ export const PageSharing = (props: Props) => {
     graphql`
       query PageSharingQuery($pageId: ID!) {
         ...usePageSharingAutocomplete_query
-        page(pageId: $pageId) {
-          ...PageSharingAccessList_page
-          id
+        public {
+          page(pageId: $pageId) {
+            ...PageSharingAccessList_page
+            id
+          }
         }
       }
     `,
     queryRef
   )
-  const page = query.page!
+  const page = query.public.page!
   const {
     getRootProps,
     getInputProps,

@@ -50,6 +50,8 @@ export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) 
   commitLocalUpdate(atmosphere, (store) => {
     const root = store.getRoot()
     root.setValue(isNewUser, 'isNewUser')
+    // public objects like pages have different permissions based on the user
+    root.getLinkedRecord('public')?.invalidateRecord()
   })
   emitGA4SignUpEvent({
     isNewUser,

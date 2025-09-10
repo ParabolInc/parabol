@@ -81,6 +81,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
+    public: rateLimit({perMinute: 20, perHour: 100})
+  },
+  PublicRoot: {
     page: and(
       rateLimit({perMinute: 20, perHour: 100}),
       hasPageAccess<'User.page'>('args.pageId', 'viewer')
