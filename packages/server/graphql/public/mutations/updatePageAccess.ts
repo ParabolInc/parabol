@@ -1,5 +1,11 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
+import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
+import makeAppURL from '../../../../client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
+import getMailManager from '../../../email/getMailManager'
+import pageSharedEmailCreator from '../../../email/pageSharedEmailCreator'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
@@ -10,6 +16,13 @@ import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+import publishNotification from './helpers/publishNotification'
+
+const utmParams = {
+  utm_source: 'shared page email',
+  utm_medium: 'email',
+  utm_campaign: 'invitations'
+}
 
 const getNextIsPrivate = async (
   trx: ControlledTransaction<DB, []>,
@@ -52,7 +65,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
   const tableMap = {
     user: 'PageUserAccess',
     team: 'PageTeamAccess',
@@ -73,6 +86,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     if (existingUser) {
       nextSubjectType = 'user'
       nextSubjectId = existingUser.id
+      dataLoader.get('users').prime(existingUser.id, existingUser)
     }
   }
   const table = tableMap[nextSubjectType]
@@ -170,6 +184,63 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   await trx.commit().execute()
   dataLoader.get('pages').clear(dbPageId)
+
+  // notifications
+  if (role) {
+    let invitationEmail: string | null = null
+
+    if (nextSubjectType === 'external') {
+      invitationEmail = nextSubjectId
+    }
+    if (nextSubjectType === 'user') {
+      const [user, notification] = await Promise.all([
+        dataLoader.get('users').load(nextSubjectId),
+        pg
+          .insertInto('Notification')
+          .values({
+            id: generateUID(),
+            type: 'PAGE_ACCESS_GRANTED',
+            userId: nextSubjectId,
+            ownerId: viewerId,
+            pageId: dbPageId,
+            role
+          })
+          .returningAll()
+          .executeTakeFirst()
+      ])
+      if (user?.sendPageInvitationEmail) {
+        invitationEmail = user.email
+      }
+      publishNotification(notification!, subOptions)
+    }
+    if (invitationEmail) {
+      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
+        searchParams: {
+          ...utmParams,
+          email: invitationEmail
+        }
+      })
+      const {html, subject, body} = pageSharedEmailCreator({
+        appOrigin,
+        ownerName: viewer.preferredName,
+        ownerEmail: viewer.email,
+        ownerAvatar: viewer.picture,
+        pageName: page.title ?? 'Untitled',
+        pageLink,
+        role,
+        corsOptions: EMAIL_CORS_OPTIONS
+      })
+      await getMailManager().sendEmail({
+        to: invitationEmail,
+        html,
+        subject,
+        body,
+        tags: ['type:pageSharedInvitation']
+      })
+    }
+  }
+
   const data = {pageId: dbPageId}
   await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
   return data

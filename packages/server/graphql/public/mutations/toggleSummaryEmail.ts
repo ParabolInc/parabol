@@ -1,5 +1,5 @@
+import getKysely from '../../../postgres/getKysely'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
-import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -16,7 +16,12 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
 
   // RESOLUTION
   const {sendSummaryEmail} = viewer
-  await updateUser({sendSummaryEmail: !sendSummaryEmail}, viewerId)
+  const pg = getKysely()
+  await pg
+    .updateTable('User')
+    .set({sendSummaryEmail: !sendSummaryEmail})
+    .where('id', '=', viewerId)
+    .execute()
   analytics.toggleSubToSummaryEmail(viewer, !sendSummaryEmail)
 
   return true

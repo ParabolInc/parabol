@@ -1823,6 +1823,11 @@ type Mutation {
 	toggleSummaryEmail: ToggleSummaryEmailPayload!
 
 	"""
+	Toggles the sendPageInvitationEmail value on the User object which determines whether page invitation emails are sent to the user
+	"""
+	togglePageInvitationEmail: TogglePageInvitationEmailPayload!
+
+	"""
 	Update the autoJoin value for a set of teams
 	"""
 	updateAutoJoin(

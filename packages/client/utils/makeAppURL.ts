@@ -10,6 +10,7 @@ interface Options {
     openNotifs?: string
     responseId?: string
     redirectTo?: string
+    email?: string
   } & (UTMParams | Partial<Record<keyof UTMParams, never>>)
 }
 

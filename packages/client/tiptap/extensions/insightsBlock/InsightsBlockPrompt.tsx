@@ -68,7 +68,7 @@ export const InsightsBlockPrompt = (props: Props) => {
                   return (
                     <MenuItem
                       key={id}
-                      onClick={() => {
+                      onSelect={() => {
                         updateAttributes({prompt: content})
                       }}
                       className='w-80 flex-col items-start justify-start'

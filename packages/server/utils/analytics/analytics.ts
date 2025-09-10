@@ -170,6 +170,7 @@ export type AnalyticsEvent =
   | 'Connect WebSocket'
   | 'Disconnect WebSocket'
   | 'Summary Email Setting Changed'
+  | 'Page Invitation Email Setting Changed'
   // snackbar
   | 'Snackbar Clicked'
   | 'Snackbar Viewed'
@@ -638,6 +639,15 @@ class Analytics {
 
   websocketDisconnected = (user: AnalyticsUser, websocketProperties: WebSocketProperties) => {
     this.track(user, 'Disconnect WebSocket', websocketProperties)
+  }
+
+  toggleSubToPageInvitationEmail = (
+    user: AnalyticsUser,
+    subscribeToPageInvitationEmail: boolean
+  ) => {
+    this.track(user, 'Page Invitation Email Setting Changed', {
+      subscribeToPageInvitationEmail
+    })
   }
 
   toggleSubToSummaryEmail = (user: AnalyticsUser, subscribeToSummaryEmail: boolean) => {

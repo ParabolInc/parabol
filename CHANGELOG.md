@@ -5,6 +5,55 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.1](https://github.com/ParabolInc/parabol/compare/v10.23.0...v10.23.1) (2025-09-10)
+
+
+### Fixed
+
+* support server usage ([#12016](https://github.com/ParabolInc/parabol/issues/12016)) ([c6ce84b](https://github.com/ParabolInc/parabol/commit/c6ce84bcefe383de838a0966bba98e673b325a6a))
+
+## [10.23.0](https://github.com/ParabolInc/parabol/compare/v10.22.1...v10.23.0) (2025-09-10)
+
+
+### Added
+
+* send page invites to externals via email ([#11973](https://github.com/ParabolInc/parabol/issues/11973)) ([ec7a91b](https://github.com/ParabolInc/parabol/commit/ec7a91be6ac42e6b8644f2d405f74fb324748864))
+* send page shared email to users ([#12009](https://github.com/ParabolInc/parabol/issues/12009)) ([5977926](https://github.com/ParabolInc/parabol/commit/59779269e9920bc9bba663aaa7b19ef86ec81553))
+
+
+### Fixed
+
+* cleanup happy-dom with custom generateHTML ([#12014](https://github.com/ParabolInc/parabol/issues/12014)) ([a0c76fa](https://github.com/ParabolInc/parabol/commit/a0c76faecec7d247dbc4060f256a02686a3d04eb))
+* CSS wrap domains in SAML ([#12006](https://github.com/ParabolInc/parabol/issues/12006)) ([f860384](https://github.com/ParabolInc/parabol/commit/f860384e7c55cdbf19603e4bf3ff374750b63f75))
+* enable Update button correctly in PromptResponseEditor after cle… ([#11972](https://github.com/ParabolInc/parabol/issues/11972)) ([18e09c4](https://github.com/ParabolInc/parabol/commit/18e09c43338d52b2dca7a89c55bbb377f2cddbd3))
+* give new users access to shared pages ([#12007](https://github.com/ParabolInc/parabol/issues/12007)) ([dd7cc57](https://github.com/ParabolInc/parabol/commit/dd7cc57a4f3df8e449c7c86c15025c6d0b7bb13a))
+
+
+### Changed
+
+* add tests for public/restricted pages ([#12008](https://github.com/ParabolInc/parabol/issues/12008)) ([cdb891d](https://github.com/ParabolInc/parabol/commit/cdb891dfb97f82ccd54e33eb3bda150713da19ec))
+* update mattermost redux package ([#12010](https://github.com/ParabolInc/parabol/issues/12010)) ([e2b8dee](https://github.com/ParabolInc/parabol/commit/e2b8dee8a00ac69cd4e46212ac1f4b86a256fb24))
+
+## [10.22.1](https://github.com/ParabolInc/parabol/compare/v10.22.0...v10.22.1) (2025-09-05)
+
+
+### Changed
+
+* **heap-dump:** allow customizing the folder where the heap dumps are stored ([#11995](https://github.com/ParabolInc/parabol/issues/11995)) ([5aa4df8](https://github.com/ParabolInc/parabol/commit/5aa4df8cd71768183c673a0709d5a853e96a88dd))
+
+## [10.22.0](https://github.com/ParabolInc/parabol/compare/v10.21.4...v10.22.0) (2025-09-04)
+
+
+### Added
+
+* send in app notifications when a page is shared with a user ([#11991](https://github.com/ParabolInc/parabol/issues/11991)) ([b36b374](https://github.com/ParabolInc/parabol/commit/b36b3742f3c05500a35fed814d58822b747a050f))
+
+
+### Fixed
+
+* no dependabot updates ([#11988](https://github.com/ParabolInc/parabol/issues/11988)) ([68a5a1a](https://github.com/ParabolInc/parabol/commit/68a5a1a01a649d7722936be6ac44875ef791a9fa))
+* undo del snackbar ([#11996](https://github.com/ParabolInc/parabol/issues/11996)) ([83d1a80](https://github.com/ParabolInc/parabol/commit/83d1a80c60b174900fb1799168eccab8d64416dd))
+
 ## [10.21.4](https://github.com/ParabolInc/parabol/compare/v10.21.3...v10.21.4) (2025-09-03)
 
 

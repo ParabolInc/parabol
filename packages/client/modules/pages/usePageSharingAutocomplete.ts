@@ -90,24 +90,26 @@ export const usePageSharingAutocomplete = (queryRef: usePageSharingAutocomplete_
             }
           }
         }
-        page(pageId: $pageId) {
-          access {
-            guests {
-              email
-            }
-            users {
-              user {
-                id
+        public {
+          page(pageId: $pageId) {
+            access {
+              guests {
+                email
               }
-            }
-            teams {
-              team {
-                id
+              users {
+                user {
+                  id
+                }
               }
-            }
-            organizations {
-              organization {
-                id
+              teams {
+                team {
+                  id
+                }
+              }
+              organizations {
+                organization {
+                  id
+                }
               }
             }
           }
@@ -116,11 +118,12 @@ export const usePageSharingAutocomplete = (queryRef: usePageSharingAutocomplete_
     `,
     queryRef
   )
-  const {viewer, page} = query
+  const {viewer} = query
   const {email, organizations} = viewer
   const [value, setValue] = useState([] as Option[])
   const [error, setError] = useState<string | null>(null)
   const viewerDomain = email.slice(email.indexOf('@') + 1)
+  const {page} = query.public
   const {access} = page!
   const {guests} = access
   const options = useMemo(() => {

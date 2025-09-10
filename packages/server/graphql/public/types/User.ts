@@ -936,13 +936,6 @@ const User: ReqResolvers<'User'> = {
           selectPages(qc as any)
             .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
             .where('PageAccess.userId', '=', viewerId)
-            // if the user has access to that team, don't put it in Shared Pages
-            .where(({or, eb}) =>
-              or([
-                eb('teamId', 'is', null),
-                eb('teamId', 'not in', qc.selectFrom('teams').select('teamId'))
-              ])
-            )
             .where('isPrivate', '=', false)
             .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
             .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
@@ -960,6 +953,14 @@ const User: ReqResolvers<'User'> = {
                 .whereRef('parent.id', '=', 'p.parentPageId')
             )
           )
+        )
+        // if the user has access to that team, don't put it in Shared Pages
+        // this must go down here because a parentPage has the teamId so we need to first remove all descendants
+        .where(({or, eb, selectFrom}) =>
+          or([
+            eb('teamId', 'is', null),
+            eb('teamId', 'not in', selectFrom('teams').select('teamId'))
+          ])
         )
         .orderBy('sortOrder')
         .limit(first + 1)

@@ -1,6 +1,6 @@
+import type {GlobalState} from '@mattermost/types/store'
 import type {AnyAction, Store} from '@reduxjs/toolkit'
 import {Client4} from 'mattermost-redux/client'
-import type {GlobalState} from 'mattermost-redux/types/store'
 import type {Variables} from 'react-relay'
 import {
   Environment,
