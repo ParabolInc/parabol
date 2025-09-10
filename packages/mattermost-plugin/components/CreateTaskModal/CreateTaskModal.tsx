@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import type {Post} from 'mattermost-redux/types/posts'
 import type {
   CreateTaskModalMutation,
   TaskStatusEnum
@@ -148,15 +147,10 @@ const CreateTaskModal = () => {
         ]
       }
 
-      Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
-        method: 'post',
-        body: JSON.stringify({
-          user_id: mmUser.id,
-          post: {
-            channel_id: channel.id,
-            props
-          }
-        } as Partial<Post>)
+      Client4.createPostEphemeral(mmUser.id, {
+        channel_id: channel.id,
+        message: '',
+        props
       })
     }
 

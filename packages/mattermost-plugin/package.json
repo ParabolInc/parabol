@@ -20,11 +20,11 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@mattermost/types": "6.7.0-0",
+    "@mattermost/types": "^10.10.0",
     "@tailwindcss/postcss": "^4.0.3",
     "@types/node": "^16.11.62",
-    "@types/react": "16.9.11",
-    "@types/react-bootstrap": "0.32.37",
+    "@types/react": "^16.9.11",
+    "@types/react-bootstrap": "^0.32.37",
     "@types/styled-components": "^5.1.34",
     "openapi-fetch": "^0.10.0",
     "tailwindcss": "^4.0.3"
@@ -34,15 +34,16 @@
     "@mui/material": "^6.3.1",
     "@radix-ui/react-popover": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.3",
-    "@reduxjs/toolkit": "1.9.7",
-    "mattermost-redux": "5.33.1",
+    "@reduxjs/toolkit": "^2.9.0",
+    "mattermost-redux": "^10.10.0",
     "parabol-client": "workspace:*",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
     "react-redux": "^9.2.0",
-    "react-select": "5.8.2",
-    "styled-components": "5.3.6"
+    "react-select": "^5.8.2",
+    "redux": "^5.0.1",
+    "styled-components": "^5.3.6"
   },
   "overrides": {
     "@mui/base": {

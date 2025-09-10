@@ -1,11 +1,10 @@
+import type {GlobalState} from '@mattermost/types/store'
 import {generateJSON, mergeAttributes} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
 import {getPost} from 'mattermost-redux/selectors/entities/posts'
-import type {Post} from 'mattermost-redux/types/posts'
-import type {GlobalState} from 'mattermost-redux/types/store'
 import type {PushReflectionModalMutation} from 'parabol-client/__generated__/PushReflectionModalMutation.graphql'
 import type {PushReflectionModalQuery} from 'parabol-client/__generated__/PushReflectionModalQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
@@ -229,25 +228,12 @@ const PushReflectionModal = () => {
       ]
     }
 
-    Client4.doFetch(`${Client4.getPostsRoute()}/ephemeral`, {
-      method: 'post',
-      body: JSON.stringify({
-        user_id: mmUser.id,
-        post: {
-          channel_id: post.channel_id,
-          root_id: post.root_id || post.id,
-          props
-        }
-      } as Partial<Post>)
-    })
-    /*
-    TODO update to this call once https://github.com/mattermost/mattermost/pull/30117 was released
     Client4.createPostEphemeral(mmUser.id, {
       channel_id: post.channel_id,
       root_id: post.root_id || post.id,
+      message: '',
       props
     })
-     */
 
     handleClose()
   }

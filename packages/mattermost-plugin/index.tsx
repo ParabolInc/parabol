@@ -1,7 +1,7 @@
+import type {GlobalState} from '@mattermost/types/store'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import type {AnyAction, Store} from '@reduxjs/toolkit'
 import {generateHTML, generateJSON} from '@tiptap/core'
-import type {GlobalState} from 'mattermost-redux/types/store'
 import {TipTapProvider} from '../client/components/TipTapProvider'
 import {serverTipTapExtensions} from '../client/shared/tiptap/serverTipTapExtensions'
 import {createEnvironment} from './Atmosphere'
