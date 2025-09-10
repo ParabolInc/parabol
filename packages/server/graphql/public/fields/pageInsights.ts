@@ -121,43 +121,47 @@ If not, respond with "Invalid prompt"`
       })
       .execute()
   }
-  const rawInsightResponseStream = await openAI.openAIApi!.chat.completions.create({
-    model: 'o3-mini',
-    stream: true,
-    stream_options: {
-      include_usage: true
-    },
-    messages: [
-      {
-        role: 'system',
-        content: `Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
-Your response should be in markdown format. Do not use horizontal rules to separate sections.`
+  try {
+    const rawInsightResponseStream = await openAI.openAIApi!.chat.completions.create({
+      model: 'o3-mini',
+      stream: true,
+      stream_options: {
+        include_usage: true
       },
-      {
-        role: 'user',
-        content: prompt
-      },
-      {
-        role: 'user',
-        content: `Here is the meeting data:\n\n${yamlData}`
-      }
-    ]
-  })
-  if (!rawInsightResponseStream) {
-    throw new GraphQLError('Could not get response frm AI')
-  }
+      messages: [
+        {
+          role: 'system',
+          content: `Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
+  Your response should be in markdown format. Do not use horizontal rules to separate sections.`
+        },
+        {
+          role: 'user',
+          content: prompt
+        },
+        {
+          role: 'user',
+          content: `Here is the meeting data:\n\n${yamlData}`
+        }
+      ]
+    })
+    if (!rawInsightResponseStream) {
+      throw new GraphQLError('Could not get response from AI')
+    }
 
-  const streamIt = async function* () {
-    for await (const chunk of rawInsightResponseStream) {
-      const content = chunk.choices[0]?.delta?.content
-      if (content) {
-        yield content
-      } else if (chunk.usage) {
-        const tokenCost = chunk.usage?.total_tokens ?? 10_000
-        analytics.pageInsightsGenerated(viewer)
-        await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
+    const streamIt = async function* () {
+      for await (const chunk of rawInsightResponseStream) {
+        const content = chunk.choices[0]?.delta?.content
+        if (content) {
+          yield content
+        } else if (chunk.usage) {
+          const tokenCost = chunk.usage?.total_tokens ?? 10_000
+          analytics.pageInsightsGenerated(viewer)
+          await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
+        }
       }
     }
+    return streamIt() as any
+  } catch (error) {
+    throw new GraphQLError('AI model failed to generate insights', {extensions: {error}})
   }
-  return streamIt() as any
 }
