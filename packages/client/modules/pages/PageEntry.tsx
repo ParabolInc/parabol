@@ -16,16 +16,18 @@ export const PageEntry = (props: Props) => {
   const query = usePreloadedQuery<PageEntryQuery>(
     graphql`
       query PageEntryQuery($pageId: ID!) {
-        page(pageId: $pageId) {
-          ...Page_page
-          id
+        public {
+          page(pageId: $pageId) {
+            ...Page_page
+            id
+          }
         }
       }
     `,
     queryRef
   )
 
-  const {page} = query
+  const {page} = query.public
   if (!page) return <PageNoAccess />
   return <Page pageRef={page} viewerRef={viewerRef} isPublic={isPublic} />
 }

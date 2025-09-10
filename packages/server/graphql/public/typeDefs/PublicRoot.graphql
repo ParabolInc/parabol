@@ -1,0 +1,12 @@
+"""
+Root object for objects accessible by the viewer or public.
+The access can change based on whether the viewer is logged in or not, so this needs to be a separate for easy cache invalidation.
+"""
+type PublicRoot {
+	id: ID!
+
+	"""
+	A single page accessible by the viewer or public
+	"""
+	page(pageId: ID!): Page
+}

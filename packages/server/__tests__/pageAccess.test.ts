@@ -248,31 +248,35 @@ test('Access propagates to linked children', async () => {
   })
 
   const childPageRes = await sendPublic({
-    query: `query Page($pageId: ID!) {
-        page(pageId: $pageId) {
-          access {
-            public
-            guests {
-              email
-            }
-            users {
-              user {
-                id
+    query: `
+      query Page($pageId: ID!) {
+        public {
+          page(pageId: $pageId) {
+            access {
+              public
+              guests {
+                email
               }
-            }
-            teams {
-              team {
-                id
+              users {
+                user {
+                  id
+                }
               }
-            }
-            organizations {
-              organization {
-                id
+              teams {
+                team {
+                  id
+                }
+              }
+              organizations {
+                organization {
+                  id
+                }
               }
             }
           }
         }
-    }`,
+      }
+    `,
     variables: {
       pageId: childPageId
     },
@@ -281,28 +285,30 @@ test('Access propagates to linked children', async () => {
 
   expect(childPageRes).toMatchObject({
     data: {
-      page: {
-        access: {
-          guests: [
-            {
-              email: 'foo@example.com'
-            }
-          ],
-          public: 'owner',
-          organizations: [
-            {
-              organization: {
-                id: `preview:${user1.orgId}`
+      public: {
+        page: {
+          access: {
+            guests: [
+              {
+                email: 'foo@example.com'
               }
-            }
-          ],
-          teams: [
-            {
-              team: {
-                id: `preview:${user1.teamId}`
+            ],
+            public: 'owner',
+            organizations: [
+              {
+                organization: {
+                  id: `preview:${user1.orgId}`
+                }
               }
-            }
-          ]
+            ],
+            teams: [
+              {
+                team: {
+                  id: `preview:${user1.teamId}`
+                }
+              }
+            ]
+          }
         }
       }
     }
@@ -416,31 +422,35 @@ test('Revoking access unlinks children', async () => {
   })
 
   await sendPublic({
-    query: `query Page($pageId: ID!) {
-        page(pageId: $pageId) {
-          access {
-            public
-            guests {
-              email
-            }
-            users {
-              user {
-                id
+    query: `
+      query Page($pageId: ID!) {
+        public {
+          page(pageId: $pageId) {
+            access {
+              public
+              guests {
+                email
               }
-            }
-            teams {
-              team {
-                id
+              users {
+                user {
+                  id
+                }
               }
-            }
-            organizations {
-              organization {
-                id
+              teams {
+                team {
+                  id
+                }
+              }
+              organizations {
+                organization {
+                  id
+                }
               }
             }
           }
+        }
       }
-    }`,
+    `,
     variables: {
       pageId: parentPageId
     },
@@ -521,8 +531,10 @@ test('New User adopts external access', async () => {
   const pageAccess = await sendPublic({
     query: `
       query Page($pageId: ID!) {
-        page(pageId: $pageId) {
-          id
+        public {
+          page(pageId: $pageId) {
+            id
+          }
         }
       }
     `,
@@ -534,9 +546,70 @@ test('New User adopts external access', async () => {
 
   expect(pageAccess).toEqual({
     data: {
-      page: {
-        id: pageId
+      public: {
+        page: {
+          id: pageId
+        }
       }
     }
+  })
+})
+
+test('Rando has no access', async () => {
+  const [owner, rando] = await Promise.all([signUp(), signUp()])
+  const {authToken} = owner
+
+  const page = await sendPublic({
+    query: `
+      mutation CreatePage {
+        createPage {
+          page {
+            id
+          }
+        }
+      }
+    `,
+    variables: {},
+    authToken
+  })
+
+  expect(page).toMatchObject({
+    data: {
+      createPage: {
+        page: {
+          id: expect.anything()
+        }
+      }
+    }
+  })
+  const pageId = page.data.createPage.page.id
+
+  const pageAccess = await sendPublic({
+    query: `
+      query Page($pageId: ID!) {
+        public {
+          page(pageId: $pageId) {
+            id
+          }
+        }
+      }
+    `,
+    variables: {
+      pageId
+    },
+    authToken: rando.authToken
+  })
+
+  expect(pageAccess).toEqual({
+    data: {
+      public: {
+        page: null
+      }
+    },
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Insufficient permission.')
+      })
+    ]
   })
 })

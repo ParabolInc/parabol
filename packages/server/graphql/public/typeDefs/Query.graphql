@@ -51,8 +51,9 @@ type Query {
 		"""
 		isInvited: Boolean
 	): String
+
 	"""
-	A single page accessible by the viewer or public
+	A root for public access to pages and other public objects which change access based on whether the viewer is logged in or not.
 	"""
-	page(pageId: ID!): Page
+	public: PublicRoot!
 }
