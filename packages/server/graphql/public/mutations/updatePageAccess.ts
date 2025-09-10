@@ -1,5 +1,10 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
+import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
+import makeAppURL from '../../../../client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
+import getMailManager from '../../../email/getMailManager'
+import pageSharedEmailCreator from '../../../email/pageSharedEmailCreator'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
@@ -11,6 +16,12 @@ import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+
+const utmParams = {
+  utm_source: 'shared page email',
+  utm_medium: 'email',
+  utm_campaign: 'invitations'
+}
 
 const getNextIsPrivate = async (
   trx: ControlledTransaction<DB, []>,
@@ -53,7 +64,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
   const tableMap = {
     user: 'PageUserAccess',
     team: 'PageTeamAccess',
@@ -174,6 +185,33 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   // notifications
   if (role) {
+    if (nextSubjectType === 'external') {
+      const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      const email = nextSubjectId
+      const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
+        searchParams: {
+          ...utmParams,
+          email
+        }
+      })
+      const {html, subject, body} = pageSharedEmailCreator({
+        appOrigin,
+        ownerName: viewer.preferredName,
+        ownerEmail: viewer.email,
+        ownerAvatar: viewer.picture,
+        pageName: page.title ?? 'Untitled',
+        pageLink,
+        role,
+        corsOptions: EMAIL_CORS_OPTIONS
+      })
+      await getMailManager().sendEmail({
+        to: email,
+        html,
+        subject,
+        body,
+        tags: ['type:pageSharedInvitation']
+      })
+    }
     if (nextSubjectType === 'user') {
       await pg
         .insertInto('Notification')
