@@ -1,6 +1,6 @@
+import type {Post} from '@mattermost/types/posts'
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
-import type {Post} from 'mattermost-redux/types/posts'
 import type {
   MeetingTypeEnum,
   useInviteToMeeting_meeting$key

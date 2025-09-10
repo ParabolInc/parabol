@@ -20,7 +20,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@mattermost/types": "6.7.0-0",
+    "@mattermost/types": "^10.10.0",
     "@tailwindcss/postcss": "^4.0.3",
     "@types/node": "^16.11.62",
     "@types/react": "16.9.11",

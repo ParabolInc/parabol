@@ -767,8 +767,8 @@ importers:
         version: 5.3.6(@babel/core@7.28.3)(react-dom@17.0.2(react@17.0.2))(react-is@17.0.2)(react@17.0.2)
     devDependencies:
       '@mattermost/types':
-        specifier: 6.7.0-0
-        version: 6.7.0-0(typescript@5.9.2)
+        specifier: ^10.10.0
+        version: 10.10.0(typescript@5.9.2)
       '@tailwindcss/postcss':
         specifier: ^4.0.3
         version: 4.1.12
@@ -3549,14 +3549,6 @@ packages:
 
   '@mattermost/types@10.10.0':
     resolution: {integrity: sha512-zBHMcQdGpCTHc71ry91vu+dsVr+RyCPvNDLBZMqQlrid+p4IstdLLMAUWcu2ruZ1iSvT+D0vWJipIdw5F9VWtQ==}
-    peerDependencies:
-      typescript: ^5.9.2
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@mattermost/types@6.7.0-0':
-    resolution: {integrity: sha512-mT8wJwWEp20KPo9D12y7bW7EdUHO7VhUHxr3gH8nPGapWooGcl0Ra0H3u1iCjPpqPWvp7LiodcneU0IysunYKQ==}
     peerDependencies:
       typescript: ^5.9.2
     peerDependenciesMeta:
@@ -17308,10 +17300,6 @@ snapshots:
       typescript: 5.9.2
 
   '@mattermost/types@10.10.0(typescript@5.9.2)':
-    optionalDependencies:
-      typescript: 5.9.2
-
-  '@mattermost/types@6.7.0-0(typescript@5.9.2)':
     optionalDependencies:
       typescript: 5.9.2
 
