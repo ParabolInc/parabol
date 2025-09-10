@@ -210,6 +210,7 @@
           "ToggleAIFeaturesSuccess": "./types/ToggleAIFeaturesSuccess#ToggleAIFeaturesSuccessSource",
           "ToggleFavoriteTemplateSuccess": "./types/ToggleFavoriteTemplateSuccess#ToggleFavoriteTemplateSuccessSource",
           "ToggleFeatureFlagSuccess": "./types/ToggleFeatureFlagSuccess#ToggleFeatureFlagSuccessSource",
+          "TogglePageInvitationEmailSuccess": "./types/TogglePageInvitationEmailSuccess#TogglePageInvitationEmailSuccessSource",
           "ToggleSummaryEmailSuccess": "./types/ToggleSummaryEmailSuccess#ToggleSummaryEmailSuccessSource",
           "ToggleTeamPrivacySuccess": "./types/ToggleTeamPrivacySuccess#ToggleTeamPrivacySuccessSource",
           "UpdateAgendaItemPayload": "./types/UpdateAgendaItemPayload#UpdateAgendaItemPayloadSource",

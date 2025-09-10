@@ -16,6 +16,7 @@ import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
+import publishNotification from './helpers/publishNotification'
 
 const utmParams = {
   utm_source: 'shared page email',
@@ -85,6 +86,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     if (existingUser) {
       nextSubjectType = 'user'
       nextSubjectId = existingUser.id
+      dataLoader.get('users').prime(existingUser.id, existingUser)
     }
   }
   const table = tableMap[nextSubjectType]
@@ -185,13 +187,38 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   // notifications
   if (role) {
+    let invitationEmail: string | null = null
+
     if (nextSubjectType === 'external') {
+      invitationEmail = nextSubjectId
+    }
+    if (nextSubjectType === 'user') {
+      const [user, notification] = await Promise.all([
+        dataLoader.get('users').load(nextSubjectId),
+        pg
+          .insertInto('Notification')
+          .values({
+            id: generateUID(),
+            type: 'PAGE_ACCESS_GRANTED',
+            userId: nextSubjectId,
+            ownerId: viewerId,
+            pageId: dbPageId,
+            role
+          })
+          .returningAll()
+          .executeTakeFirst()
+      ])
+      if (user?.sendPageInvitationEmail) {
+        invitationEmail = user.email
+      }
+      publishNotification(notification!, subOptions)
+    }
+    if (invitationEmail) {
       const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-      const email = nextSubjectId
       const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
         searchParams: {
           ...utmParams,
-          email
+          email: invitationEmail
         }
       })
       const {html, subject, body} = pageSharedEmailCreator({
@@ -205,25 +232,12 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
         corsOptions: EMAIL_CORS_OPTIONS
       })
       await getMailManager().sendEmail({
-        to: email,
+        to: invitationEmail,
         html,
         subject,
         body,
         tags: ['type:pageSharedInvitation']
       })
-    }
-    if (nextSubjectType === 'user') {
-      await pg
-        .insertInto('Notification')
-        .values({
-          id: generateUID(),
-          type: 'PAGE_ACCESS_GRANTED',
-          userId: nextSubjectId,
-          ownerId: viewerId,
-          pageId: dbPageId,
-          role
-        })
-        .execute()
     }
   }
 

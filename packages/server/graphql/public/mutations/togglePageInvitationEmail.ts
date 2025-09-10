@@ -5,7 +5,7 @@ import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
-const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
+const togglePageInvitationEmail: MutationResolvers['togglePageInvitationEmail'] = async (
   _source,
   _args,
   {authToken}
@@ -15,16 +15,16 @@ const toggleSummaryEmail: MutationResolvers['toggleSummaryEmail'] = async (
   if (!viewer) return standardError(new Error('User not found'), {userId: viewerId})
 
   // RESOLUTION
-  const {sendSummaryEmail} = viewer
+  const {sendPageInvitationEmail} = viewer
   const pg = getKysely()
   await pg
     .updateTable('User')
-    .set({sendSummaryEmail: !sendSummaryEmail})
+    .set({sendPageInvitationEmail: !sendPageInvitationEmail})
     .where('id', '=', viewerId)
     .execute()
-  analytics.toggleSubToSummaryEmail(viewer, !sendSummaryEmail)
+  analytics.toggleSubToPageInvitationEmail(viewer, !sendPageInvitationEmail)
 
   return true
 }
 
-export default toggleSummaryEmail
+export default togglePageInvitationEmail
