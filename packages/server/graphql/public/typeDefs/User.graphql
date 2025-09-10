@@ -257,6 +257,11 @@ type User implements UserPartial {
 	sendSummaryEmail: Boolean!
 
 	"""
+	Whether the user should receive page invitation emails
+	"""
+	sendPageInvitationEmail: Boolean!
+
+	"""
 	The reflection groups that are similar to the selected reflection in the Spotlight
 	"""
 	similarReflectionGroups(

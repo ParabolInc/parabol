@@ -1,7 +1,7 @@
 import {getUserId} from '../../../utils/authorization'
 import type {ToggleSummaryEmailSuccessResolvers} from '../resolverTypes'
 
-export type ToggleSummaryEmailSuccessSource = Record<string, any>
+export type ToggleSummaryEmailSuccessSource = true
 
 const ToggleSummaryEmailSuccess: ToggleSummaryEmailSuccessResolvers = {
   user: async (_src, _args, {authToken, dataLoader}) => {

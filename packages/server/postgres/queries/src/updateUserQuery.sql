@@ -11,6 +11,7 @@ UPDATE "User" SET
   "pseudoId" = COALESCE(:pseudoId, "pseudoId"),
   "isRemoved" = COALESCE(:isRemoved, "isRemoved"),
   "sendSummaryEmail" = COALESCE(:sendSummaryEmail, "sendSummaryEmail"),
+  "sendPageInvitationEmail" = COALESCE(:sendPageInvitationEmail, "sendPageInvitationEmail"),
   "isWatched" = COALESCE(:isWatched, "isWatched"),
   "reasonRemoved" = COALESCE(:reasonRemoved, "reasonRemoved"),
   "newFeatureId" = COALESCE(:newFeatureId, "newFeatureId"),

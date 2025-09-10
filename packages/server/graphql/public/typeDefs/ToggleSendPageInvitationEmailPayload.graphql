@@ -1,0 +1,4 @@
+"""
+Return value for togglePageInvitationEmail, which could be an error
+"""
+union TogglePageInvitationEmailPayload = ErrorPayload | TogglePageInvitationEmailSuccess
