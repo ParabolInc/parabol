@@ -1,14 +1,15 @@
+import faker from 'faker'
 import type {Doc, YXmlEvent} from 'yjs'
 import {createPageLinkElement} from '../../client/shared/tiptap/createPageLinkElement'
 import getKysely from '../postgres/getKysely'
-import {sendPublic, sendTipTap, signUp} from './common'
+import {sendPublic, sendTipTap, signUp, signUpWithEmail} from './common'
 
 afterAll(async () => {
   await getKysely().destroy()
 })
 
 const UPDATE_PAGE_ACCESS = `
-      mutation UpdatePageAccess(
+  mutation UpdatePageAccess(
     $pageId: ID!
     $subjectType: PageSubjectEnum!
     $subjectId: ID!
@@ -454,6 +455,87 @@ test('Revoking access unlinks children', async () => {
             public: 'viewer'
           }
         }
+      }
+    }
+  })
+})
+
+test('New User adopts external access', async () => {
+  const owner = await signUp()
+  const inviteeEmail = faker.internet.email().toLowerCase()
+  const {authToken} = owner
+
+  const page = await sendPublic({
+    query: `
+      mutation CreatePage {
+        createPage {
+          page {
+            id
+          }
+        }
+      }
+    `,
+    variables: {},
+    authToken
+  })
+
+  expect(page).toMatchObject({
+    data: {
+      createPage: {
+        page: {
+          id: expect.anything()
+        }
+      }
+    }
+  })
+  const pageId = page.data.createPage.page.id
+  const updatedAccess = await sendPublic({
+    query: UPDATE_PAGE_ACCESS,
+    variables: {
+      pageId,
+      subjectType: 'external',
+      subjectId: inviteeEmail,
+      role: 'editor'
+    },
+    authToken
+  })
+
+  expect(updatedAccess).toEqual({
+    data: {
+      updatePageAccess: {
+        page: expect.objectContaining({
+          id: pageId,
+          access: expect.objectContaining({
+            guests: [
+              {
+                email: inviteeEmail
+              }
+            ]
+          })
+        })
+      }
+    }
+  })
+
+  const invitee = await signUpWithEmail(inviteeEmail)
+  const pageAccess = await sendPublic({
+    query: `
+      query Page($pageId: ID!) {
+        page(pageId: $pageId) {
+          id
+        }
+      }
+    `,
+    variables: {
+      pageId
+    },
+    authToken: invitee.authToken
+  })
+
+  expect(pageAccess).toEqual({
+    data: {
+      page: {
+        id: pageId
       }
     }
   })
