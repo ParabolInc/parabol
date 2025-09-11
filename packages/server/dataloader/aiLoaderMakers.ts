@@ -63,8 +63,8 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
           const yamlData = yaml.dump(dataByTeam, {
             noCompatMode: true
           })
-          const openAI = new OpenAIServerManager()
           try {
+            const openAI = new OpenAIServerManager()
             const response = await openAI.openAIApi!.chat.completions.create({
               model: 'o3-mini',
               messages: [

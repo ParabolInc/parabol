@@ -149,15 +149,19 @@ If not, respond with "Invalid prompt"`
     }
 
     const streamIt = async function* () {
-      for await (const chunk of rawInsightResponseStream) {
-        const content = chunk.choices[0]?.delta?.content
-        if (content) {
-          yield content
-        } else if (chunk.usage) {
-          const tokenCost = chunk.usage?.total_tokens ?? 10_000
-          analytics.pageInsightsGenerated(viewer)
-          await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
+      try {
+        for await (const chunk of rawInsightResponseStream) {
+          const content = chunk.choices[0]?.delta?.content
+          if (content) {
+            yield content
+          } else if (chunk.usage) {
+            const tokenCost = chunk.usage?.total_tokens ?? 10_000
+            analytics.pageInsightsGenerated(viewer)
+            await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
+          }
         }
+      } catch (error) {
+        throw new GraphQLError('AI model failed to generate insights', {extensions: {error}})
       }
     }
     return streamIt() as any
