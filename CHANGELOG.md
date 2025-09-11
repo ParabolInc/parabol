@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.2](https://github.com/ParabolInc/parabol/compare/v10.23.1...v10.23.2) (2025-09-11)
+
+
+### Fixed
+
+* attempt to cleanup dataloaders ([#12023](https://github.com/ParabolInc/parabol/issues/12023)) ([f08fb95](https://github.com/ParabolInc/parabol/commit/f08fb954360718584d37b8bb98bd6f58d7b3b86f))
+* catch OpenAI exceptions ([#12012](https://github.com/ParabolInc/parabol/issues/12012)) ([d49d9c7](https://github.com/ParabolInc/parabol/commit/d49d9c72740046fd44ea97f32f68f684bce5c9b7))
+* fix User.tms trigger on Team updates ([#12020](https://github.com/ParabolInc/parabol/issues/12020)) ([2ba0af7](https://github.com/ParabolInc/parabol/commit/2ba0af7336c68084eab570b15ea0a79920f0fcdb))
+
 ## [10.23.1](https://github.com/ParabolInc/parabol/compare/v10.23.0...v10.23.1) (2025-09-10)
 
 
