@@ -1,4 +1,6 @@
 import faker from 'faker'
+import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
+import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
 import {sendIntranet, sendPublic, signUp, signUpWithEmail} from './common'
 
 test('Get user by id', async () => {
@@ -177,6 +179,234 @@ test.skip.each([
     data: {
       viewer: {
         templateSearch: expect.arrayContaining(templateIds.map((id) => ({id})))
+      }
+    }
+  })
+})
+
+test('Creating and archiving teams updates User.tms', async () => {
+  const user = await signUp()
+
+  const user1 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+          organizations {
+            id
+          }
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user1).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: [expect.any(String)],
+        organizations: [
+          {
+            id: expect.any(String)
+          }
+        ]
+      }
+    }
+  })
+  const team1Id = user1.data.viewer.tms[0]
+  const orgId = user1.data.viewer.organizations[0].id
+  const createdTeam = await sendPublic({
+    query: `
+      mutation CreateTeam($newTeam: NewTeamInput!) {
+        addTeam(newTeam: $newTeam) {
+          team {
+            id
+          }
+          error {
+            message
+          }
+        }
+      }
+    `,
+    variables: {
+      newTeam: {
+        name: 'My Team',
+        orgId,
+        isPublic: true
+      }
+    },
+    authToken: user.authToken
+  })
+  expect(createdTeam).toMatchObject({
+    data: {
+      addTeam: {
+        team: {
+          id: expect.any(String)
+        }
+      }
+    }
+  })
+  const team2Id = createdTeam.data.addTeam.team.id
+
+  const user2 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user2).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: [team1Id, team2Id]
+      }
+    }
+  })
+
+  const archivedTeam = await sendPublic({
+    query: `
+      mutation ArchiveTeam($teamId: ID!) {
+        archiveTeam(teamId: $teamId) {
+          error {
+            message
+          }
+        }
+      }
+    `,
+    variables: {
+      teamId: team1Id
+    },
+    authToken: user.authToken
+  })
+  expect(archivedTeam).toMatchObject({
+    data: {
+      archiveTeam: {
+        error: null
+      }
+    }
+  })
+
+  const user3 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user3).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: [team2Id]
+      }
+    }
+  })
+})
+
+test('Leaving a team updates User.tms', async () => {
+  const user = await signUp()
+
+  const user1 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user1).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: [expect.any(String)]
+      }
+    }
+  })
+  const teamId = user1.data.viewer.tms[0]
+  const teamMemberId = TeamMemberId.join(teamId, user.userId)
+  console.log('teamMemberId', teamMemberId)
+
+  const leftTeam = await sendPublic({
+    query: `
+      mutation RemoveTeamMember($teamMemberId: ID!) {
+        removeTeamMember(teamMemberId: $teamMemberId) {
+          error {
+            message
+          }
+        }
+      }
+    `,
+    variables: {
+      teamMemberId
+    },
+    authToken: user.authToken
+  })
+  expect(leftTeam).toMatchObject({
+    data: {
+      removeTeamMember: {
+        error: null
+      }
+    }
+  })
+
+  const user2 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user2).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: []
+      }
+    }
+  })
+
+  // real bug might be triggered by setting isArchived to false explicitly even if it's already false
+  // anyhow, the member is removed, so this shouldn't add the team back to the user
+  await updateTeamByTeamId({isArchived: false}, teamId)
+  const user3 = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+          tms
+        }
+      }
+    `,
+    authToken: user.authToken
+  })
+
+  expect(user3).toMatchObject({
+    data: {
+      viewer: {
+        id: user.userId,
+        tms: []
       }
     }
   })
