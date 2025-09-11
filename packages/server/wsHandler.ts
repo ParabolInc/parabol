@@ -215,12 +215,16 @@ export const wsHandler = makeBehavior<{token?: string}>({
     return args
   },
   onComplete: (ctx, id) => {
-    ctx.extra.dataLoaders[id]?.dispose()
+    const {extra} = ctx
+    const {dataLoaders} = extra
+    dataLoaders[id]?.dispose()
+    delete dataLoaders[id]
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
     const {sub: userId} = authToken
+    extra.dataLoaders = {} // should not be necessary, but doing in case of memory leak
     activeClients.delete(extra.socketId)
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader()

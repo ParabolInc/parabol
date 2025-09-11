@@ -1,5 +1,6 @@
 import DataLoader from 'dataloader'
 import yaml from 'js-yaml'
+import logError from '../utils/logError'
 import {makeMeetingInsightInput} from '../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../utils/OpenAIServerManager'
 import type RootDataLoader from './RootDataLoader'
@@ -62,30 +63,35 @@ export const meetingInsightsContent = (parent: RootDataLoader) => {
           const yamlData = yaml.dump(dataByTeam, {
             noCompatMode: true
           })
-          const openAI = new OpenAIServerManager()
-          const response = await openAI.openAIApi!.chat.completions.create({
-            model: 'o3-mini',
-            messages: [
-              {
-                role: 'system',
-                content: `Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
-Your response should be in markdown format. Do not use horizontal rules to separate sections.`
-              },
-              {
-                role: 'system',
-                content: summaryInsightsPrompt
-              },
-              {
-                role: 'user',
-                content: yamlData
-              }
-            ]
-          })
-          const responseContent = response.choices[0]?.message?.content?.trim()
-          if (!responseContent) return {error: 'modelFail' as const}
-          if (responseContent.includes(NOT_ENOUGH_DATA_FOR_INSIGHTS))
-            return {error: 'nodata' as const}
-          return {content: responseContent}
+          try {
+            const openAI = new OpenAIServerManager()
+            const response = await openAI.openAIApi!.chat.completions.create({
+              model: 'o3-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: `Below I will provide you with a user-defined prompt and data containing meeting discussions, work completed, and agile stories with points, all in YAML format.
+  Your response should be in markdown format. Do not use horizontal rules to separate sections.`
+                },
+                {
+                  role: 'system',
+                  content: summaryInsightsPrompt
+                },
+                {
+                  role: 'user',
+                  content: yamlData
+                }
+              ]
+            })
+            const responseContent = response.choices[0]?.message?.content?.trim()
+            if (!responseContent) return {error: 'modelFail' as const}
+            if (responseContent.includes(NOT_ENOUGH_DATA_FOR_INSIGHTS))
+              return {error: 'nodata' as const}
+            return {content: responseContent}
+          } catch (error) {
+            logError(error as Error, {tags: {meetingId, orgId, teamId}})
+            return {error: 'modelFail' as const}
+          }
         })
       )
       return contents
