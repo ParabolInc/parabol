@@ -124,7 +124,7 @@ export default class GCSManager extends FileStoreManager {
     url.searchParams.append('name', fullPath)
     const accessToken = await this.getAccessToken()
     try {
-      await fetch(url, {
+      const r = await fetch(url, {
         method: 'POST',
         body: file as any,
         headers: {
@@ -133,12 +133,17 @@ export default class GCSManager extends FileStoreManager {
           'Content-Type': mime.lookup(fullPath) || ''
         }
       })
+      if (!r.ok) {
+        throw new Error(`GCS Upload Error: ${r.status}`)
+      }
     } catch (e) {
       // https://github.com/nodejs/undici/issues/583#issuecomment-1577475664
       // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
       if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
         Logger.log('   Retrying GCS Post:', fullPath)
         await this.putFile(file, fullPath)
+      } else {
+        throw e
       }
     }
     return this.getPublicFileLocation(fullPath)
