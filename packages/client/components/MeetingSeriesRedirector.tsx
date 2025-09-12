@@ -48,7 +48,7 @@ const MeetingSeriesRedirector = (props: Props) => {
     )
   } else if (!meeting) {
     // We know that a null meeting while we should have access is an error.
-    // We could render here an error component here. For that we'd need to create an error, store it in state, log it to Sentry and render the component.
+    // We could render here an error component here. For that we'd need to create an error, store it in state, log it to the error tracking and render the component.
     // This is pretty much what the ErrorBoundary will do if we just throw here.
     throw new Error('Meeting was null')
   } else {

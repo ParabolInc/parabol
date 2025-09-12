@@ -196,8 +196,6 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    // this shouldn't ever happen, yet
-    // https://sentry.io/organizations/parabol/issues/1322927523/?environment=client&project=107196&query=is%3Aunresolved
     const errObj = {id: reflectionGroup.id} as any
     datadogRum.addError(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
   }
