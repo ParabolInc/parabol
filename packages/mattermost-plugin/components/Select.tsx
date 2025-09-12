@@ -29,8 +29,10 @@ const Select = <T extends IdName>(props: SelectProps<T>) => {
           id='team'
           value={value && {value: value.id, label: value.name}}
           options={options.map(({id, name}) => ({value: id, label: name}))}
-          onChange={(newValue) => onChange(options.find(({id}) => id === newValue?.value) ?? null)}
-          styles={{menuPortal: (base) => ({...base, zIndex: 9999})}}
+          onChange={(newValue: {value: string; label: string}) =>
+            onChange(options.find(({id}) => id === newValue?.value) ?? null)
+          }
+          styles={{menuPortal: (base: any) => ({...base, zIndex: 9999})}}
           menuPortalTarget={document.body}
           isSearchable={true}
           menuPosition='fixed'
