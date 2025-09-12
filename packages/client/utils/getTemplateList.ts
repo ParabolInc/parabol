@@ -22,7 +22,6 @@ const getTemplateList = (
   )
   const {id: templateId, team} = template
   if (!team) {
-    // https://sentry.io/share/issue/3e6e31cb053b44689eddd531858f1081/
     datadogRum.addError(new Error(`NO TEAM ON TEMPLATE WTF. ${viewerTeamId}, ${templateId}`))
     return 'TEAM'
   }
