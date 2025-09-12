@@ -62,16 +62,18 @@ const handleDeletedPageLink = async (
 
 export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   document,
-  context,
+  // DO NOT USE CONTEXT FROM HERE it's just the first user that caused the load on this server,
   documentName
 }) => {
   const [pageId] = CipherId.fromClient(documentName)
-  const {userId} = context
   const root = document.getXmlFragment('default')
   // FIXME: this gets called once per document load & the context is tied to the user, which it should not be
   // Also, we don't want 2 servers doing the same thing...
   root.observe(async (event) => {
-    const {added, deleted} = event.changes
+    const {changes, transaction} = event
+    const {added, deleted} = changes
+    // the
+    const userId = transaction.origin?.context?.userId
     // watch for new PageLinks
     // If it's a sentinel, mint a new page
     // Then, add it to the backlinks table
@@ -127,7 +129,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
     deleted.forEach((item) => {
       const [node] = item.content.getContent()
       if (node instanceof Y.XmlElement && node.nodeName === 'pageLinkBlock') {
-        handleDeletedPageLink(context.userId, pageId, node)
+        handleDeletedPageLink(userId, pageId, node)
       }
     })
   })
