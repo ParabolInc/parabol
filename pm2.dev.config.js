@@ -9,7 +9,8 @@ module.exports = {
     },
     {
       name: 'Socket Server',
-      script: 'scripts/runSocketServer.js',
+      script: 'node',
+      args: ['--inspect', 'scripts/runSocketServer.js'],
       // increase this to test scaling
       instances: 1,
       increment_var: 'SERVER_ID',

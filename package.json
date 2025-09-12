@@ -27,7 +27,7 @@
     "db:start": "mkdir -p dev && docker compose -f docker/stacks/development/docker-compose.yml up -d",
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",
     "predeploy": "node dist/preDeploy.js",
-    "dev": "bash -c 'set -a; source .env; set +a; PM2_SILENT=true pm2 start pm2.dev.config.js --no-daemon'",
+    "dev": "bash -c 'set -a; source .env; set +a; pm2-runtime start pm2.dev.config.js'",
     "biome": "pnpm exec biome check",
     "newMutation": "pnpm sucrase-node scripts/codeshift/newMutation.ts",
     "typecheck": "pnpm -r typecheck",
