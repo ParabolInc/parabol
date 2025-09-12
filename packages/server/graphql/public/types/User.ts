@@ -279,7 +279,7 @@ const User: ReqResolvers<'User'> = {
     return connectionFromTasks(filteredTasks, first)
   },
   team: async (_source, {teamId}, {authToken, dataLoader}, {operation}) => {
-    // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them to sentry
+    // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them the error tracking
     const HANDLED_OPS = ['TeamRootQuery', 'TeamContainerQuery']
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team

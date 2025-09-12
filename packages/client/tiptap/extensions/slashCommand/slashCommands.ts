@@ -151,18 +151,7 @@ export const slashCommands = [
       {
         title: 'Create page',
         description: 'Create a page within the current one',
-        searchTerms: [
-          'page',
-          'subpage',
-          'sub-page',
-          'doc',
-          'subdoc',
-          'sub-doc',
-          'subpage',
-          'sub-page',
-          'subdoc',
-          'child'
-        ],
+        searchTerms: ['page', 'subpage', 'sub-page', 'doc', 'subdoc', 'sub-doc', 'child'],
         icon: NoteAddIcon,
         action: (editor: Editor) => {
           const {state, schema} = editor

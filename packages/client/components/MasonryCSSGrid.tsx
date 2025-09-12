@@ -75,7 +75,6 @@ class MasonryCSSGrid extends Component<Props> {
       delete this.itemRefs[id]
     }
     const method = c ? 'observe' : 'unobserve'
-    // must safe check for el: https://sentry.io/organizations/parabol/issues/1203214376/?project=107196
     if (el && el.firstElementChild) {
       this.resizeObserver[method](el.firstElementChild)
     }

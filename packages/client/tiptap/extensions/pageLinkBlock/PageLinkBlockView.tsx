@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import type {PageLinkBlockAttributes} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
@@ -24,6 +25,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const Icon = canonical ? DescriptionIcon : FileOpenIcon
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
+  const isOptimistic = pageCode === -1
   const focusLink = () => {
     const pos = getPos()
     if (!pos) return
@@ -32,6 +34,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
     view.focus()
   }
   const archivePage = () => {
+    if (isOptimistic) return
     const pageId = `page:${pageCode}`
     executeArchive({
       variables: {pageId, action: 'archive'},
@@ -67,7 +70,10 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
       <Link
         draggable={false}
         to={`/pages/${pageSlug}`}
-        className='no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200'
+        className={cn(
+          'no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200',
+          isOptimistic && 'pointer-events-none'
+        )}
       >
         <Icon />
         <div className='flex-1 pl-1'>{title}</div>

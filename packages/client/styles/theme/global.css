@@ -381,6 +381,40 @@
     }
   }
 }
+/** See constEnums.ZIndex for values */
+@utility z-bottom-bar {
+  z-index: 8;
+}
+@utility z-dialog {
+  z-index: 24;
+}
+@utility z-fab {
+  z-index: 6;
+}
+@utility z-menu {
+  z-index: 24; /* portal needs to float above other components, especially sidebars */
+}
+@utility z-sidebar {
+  z-index: 16;
+}
+@utility z-side-sheet {
+  z-index: 8;
+}
+@utility z-snackbar {
+  z-index: 24; /* snackbar is kind of dialog */
+}
+@utility z-reflection-in-flight {
+  z-index: 8;
+}
+@utility z-reflection-in-flight-local {
+  z-index: 28; /* keep it above the dialog */
+}
+@utility z-reflection-in-flight-spotlight {
+  z-index: 26;
+}
+@utility z-tooltip {
+  z-index: 24; /* portal needs to float above other components, especially sidebars */
+}
 
 /** Customize daypicker styles */
 .rdp {

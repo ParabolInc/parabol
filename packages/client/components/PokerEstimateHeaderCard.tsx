@@ -94,6 +94,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
     graphql`
       fragment PokerEstimateHeaderCard_stage on EstimateStage {
         meetingId
+        taskId
         task {
           ...PokerEstimateHeaderCardParabol_task
           integrationHash
@@ -151,7 +152,29 @@ const PokerEstimateHeaderCard = (props: Props) => {
   )
   const {meetingId, task} = stage
   if (!task) {
-    return <PokerEstimateHeaderCardError />
+    const {taskId} = stage
+    const onRemove = () => {
+      UpdatePokerScopeMutation(
+        atmosphere,
+        {
+          meetingId,
+          updates: [
+            {
+              service: 'PARABOL',
+              serviceTaskId: taskId,
+              action: 'DELETE'
+            }
+          ]
+        },
+        {
+          onCompleted: () => {},
+          onError: () => {},
+          contents: []
+        }
+      )
+    }
+
+    return <PokerEstimateHeaderCardError onRemove={onRemove} />
   }
 
   const {integrationHash, integration} = task

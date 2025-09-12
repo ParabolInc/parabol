@@ -49,7 +49,6 @@ const removeReflectionAndEmptyGroup = (
   if (!reflectionGroup) return
   safeRemoveNodeFromArray(reflectionId, reflectionGroup, 'reflections')
   const reflections = reflectionGroup.getLinkedRecords('reflections')
-  // https://sentry.io/share/issue/c8712aae0e6544a1ac0acd3be8d38ae8/
   if (!reflections || reflections.length === 0) {
     handleRemoveReflectionGroups(reflectionGroupId, meetingId, store)
   }

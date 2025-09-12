@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.3](https://github.com/ParabolInc/parabol/compare/v10.23.2...v10.23.3) (2025-09-12)
+
+
+### Fixed
+
+* Allow deleting deleted tasks from Poker scope ([#12030](https://github.com/ParabolInc/parabol/issues/12030)) ([e897ba3](https://github.com/ParabolInc/parabol/commit/e897ba3dae2b1edf2b02023bfaa6372bc22a2f60))
+* always fall back to fetch on Service Worker onFetch ([#12029](https://github.com/ParabolInc/parabol/issues/12029)) ([4cdb794](https://github.com/ParabolInc/parabol/commit/4cdb794c244c7831fbd197cebd881658789fc74b))
+* invalid parent page access on child page creation ([#12035](https://github.com/ParabolInc/parabol/issues/12035)) ([2910e05](https://github.com/ParabolInc/parabol/commit/2910e0553fdcc84320ea9e90565d095470c45224))
+* link menu in reflection groups ([#12033](https://github.com/ParabolInc/parabol/issues/12033)) ([b7f9b82](https://github.com/ParabolInc/parabol/commit/b7f9b82bdd907b95181c6e04aa3fa7c162e60f58))
+
+
+### Changed
+
+* **deps:** bump axios from 1.11.0 to 1.12.0 ([#12024](https://github.com/ParabolInc/parabol/issues/12024)) ([cb15334](https://github.com/ParabolInc/parabol/commit/cb15334b70fe81ef8538d1bbdee2a1f5e7145ab4))
+* **nodejs:** upgrade to 22.19.0 ([#12028](https://github.com/ParabolInc/parabol/issues/12028)) ([4330c11](https://github.com/ParabolInc/parabol/commit/4330c1133f051f100fcf192d962cae1c068a92d6))
+* remove all references to Sentry ([#12026](https://github.com/ParabolInc/parabol/issues/12026)) ([9e56c20](https://github.com/ParabolInc/parabol/commit/9e56c20f8535f433d7fae10b7d08494816bd2ab4))
+
 ## [10.23.2](https://github.com/ParabolInc/parabol/compare/v10.23.1...v10.23.2) (2025-09-11)
 
 
