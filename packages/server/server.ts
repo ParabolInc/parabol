@@ -7,6 +7,7 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import './hocusPocus'
+import {fetch} from '@whatwg-node/fetch'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
@@ -19,6 +20,10 @@ import SAMLHandler from './utils/SAMLHandler'
 import uwsGetIP from './utils/uwsGetIP'
 import {wsHandler} from './wsHandler'
 import {yoga} from './yoga'
+
+// undici has a memory leak in Node v22 (and it looks like v24 as well).
+// by monkeypatching fetch, we fix it for all our code as well as calls that exist in our dependencies
+globalThis.fetch = fetch
 
 export const RECONNECT_WINDOW = process.env.WEB_SERVER_RECONNECT_WINDOW
   ? parseInt(process.env.WEB_SERVER_RECONNECT_WINDOW, 10) * 1000
