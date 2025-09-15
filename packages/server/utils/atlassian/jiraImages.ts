@@ -1,7 +1,7 @@
 import base64url from 'base64url'
-import * as cheerio from 'cheerio'
 import crypto from 'crypto'
 import ms from 'ms'
+import {parse} from 'node-html-parser'
 import type AtlassianServerManager from '../AtlassianServerManager'
 import getRedis from '../getRedis'
 
@@ -24,21 +24,20 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
   const imageUrlToHash = {} as Record<string, string>
   const projectBaseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`
   if (!descriptionHTML) return {updatedDescription: descriptionHTML, imageUrlToHash}
-  const $ = cheerio.load(descriptionHTML)
-  $('body')
-    .find('img')
-    .each((_i, img) => {
-      const imageUrl = $(img).attr('src')
-      if (!imageUrl) return
 
-      const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
-      const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
-      imageUrlToHash[absoluteImageUrl] = hashedImageUrl
+  const root = parse(descriptionHTML)
+  const imgTags = root.getElementsByTagName('img')
+  imgTags.forEach((img) => {
+    const imageUrl = img.getAttribute('src')
+    if (!imageUrl) return
 
-      $(img).attr('src', createParabolImageUrl(hashedImageUrl))
-    })
+    const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
+    const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
+    imageUrlToHash[absoluteImageUrl] = hashedImageUrl
 
-  return {updatedDescription: $.html(), imageUrlToHash}
+    img.setAttribute('src', createParabolImageUrl(hashedImageUrl))
+  })
+  return {updatedDescription: root.toString(), imageUrlToHash}
 }
 
 export const downloadAndCacheImages = async (
