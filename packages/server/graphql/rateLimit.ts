@@ -1,9 +1,10 @@
-import type {
-  GraphQLFieldResolver,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLOutputType,
-  GraphQLResolveInfo
+import {
+  type GraphQLFieldResolver,
+  type GraphQLNonNull,
+  type GraphQLObjectType,
+  type GraphQLOutputType,
+  type GraphQLResolveInfo,
+  GraphQLUnionType
 } from 'graphql'
 import {getUserId} from '../utils/authorization'
 import standardError from '../utils/standardError'
@@ -12,6 +13,24 @@ import type {GQLContext} from './graphql'
 interface Options {
   perMinute: number
   perHour: number
+}
+
+const hasErrorField = (type?: GraphQLOutputType) => {
+  if (!type) {
+    return false
+  }
+  if ((type as GraphQLNonNull<GraphQLObjectType>)?.ofType) {
+    return hasErrorField((type as GraphQLNonNull<GraphQLObjectType>)?.ofType)
+  }
+  if (type instanceof GraphQLUnionType) {
+    return type.getTypes().some(hasErrorField)
+  }
+
+  const fields = (type as GraphQLObjectType)?.getFields?.()
+  if (fields?.error) {
+    return true
+  }
+  return false
 }
 
 const rateLimit =
@@ -31,10 +50,7 @@ const rateLimit =
       // if (lastMinute > perMinute + 10) {
       // TODO Handle suspected bot by dynamically blacklisting in nginx
       // }
-      const baseType = ((returnType as GraphQLNonNull<GraphQLOutputType>).ofType ||
-        returnType) as GraphQLObjectType
-      const fields = baseType.getFields && baseType.getFields()
-      if (fields && fields.error) {
+      if (hasErrorField(returnType)) {
         return returnVal
       } else {
         // this will get sanitized before sent to the client
