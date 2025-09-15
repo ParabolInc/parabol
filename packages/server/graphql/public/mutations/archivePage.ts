@@ -68,6 +68,10 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({
         deletedAt: null,
         deletedBy: null,
+        ancestorIds:
+          parentPageId === null
+            ? page.ancestorIds.filter((id) => id !== page.parentPageId)
+            : undefined,
         parentPageId,
         teamId,
         sortOrder
