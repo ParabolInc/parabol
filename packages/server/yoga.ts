@@ -9,19 +9,21 @@ import type AuthToken from './database/types/AuthToken'
 import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
-import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/public/resolverTypes'
+import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
+import {useSOC2AuditLogs} from './utils/useSOC2AuditLogs'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
 type ExcludedArgs = {
   [P in keyof OperationResolvers]?: Array<keyof ExtractArgs<OperationResolvers[P]>>
 }
+type ExcludedOps = Array<keyof OperationResolvers>
 
 export interface ServerContext {
   req: uws.HttpRequest
@@ -72,6 +74,80 @@ export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   plugins: [
+    useSOC2AuditLogs({
+      excludeArgs: {
+        acceptTeamInvitation: ['invitationToken'],
+        loginWithPassword: ['password'],
+        resetPassword: ['token', 'newPassword'],
+        signUpWithPassword: ['password', 'invitationToken'],
+        verifyEmail: ['verificationToken']
+      } as ExcludedArgs,
+      includeOps: new Set([
+        'acceptRequestToJoinDomain',
+        'acceptTeamInvitation',
+        'addApprovedOrganizationDomains',
+        'addAtlassianAuth',
+        'addGitHubAuth',
+        'addIntegrationProvider',
+        'addSlackAuth',
+        'addTeamMemberIntegrationAuth',
+        'assignSAMLIdToOrg',
+        'changeEmailDomain',
+        'connectSocket',
+        'createImposterToken',
+        'createOAuth1AuthorizeUrl',
+        'deleteUser',
+        'denyPushInvitation',
+        'disconnectSocket',
+        'emailPasswordReset',
+        'hardDeleteUser',
+        'invalidateSessions',
+        'inviteToTeam',
+        'joinTeam',
+        'lockOrganizations',
+        'loginSAML',
+        'loginWithGoogle',
+        'loginWithMicrosoft',
+        'loginWithPassword',
+        'moveTeamToOrg',
+        'promoteToTeamLead',
+        'pushInvitation',
+        'removeAllSlackAuths',
+        'removeApprovedOrganizationDomains',
+        'removeAtlassianAuth',
+        'removeAuthIdentity',
+        'removeFeatureFlagOwner',
+        'removeGitHubAuth',
+        'removeIntegrationProvider',
+        'removeOrgUsers',
+        'removeSlackAuth',
+        'removeTeamMember',
+        'removeTeamMemberIntegrationAuth',
+        'resetPassword',
+        'setOrgUserRole',
+        'setOrganizationDomain',
+        'signUpWithPassword',
+        'stripeUpdateCreditCard',
+        'toggleAIFeatures',
+        'toggleAllowInsights',
+        'toggleFeatureFlag',
+        'toggleTeamPrivacy',
+        'updateAutoJoin',
+        'updateCreditCard',
+        'updateEmail',
+        'updateFeatureFlag',
+        'updateIntegrationProvider',
+        'updatePageAccess',
+        'updateSAML',
+        'updateUserProfile',
+        'uploadIdPMetadata',
+        'uploadOrgImage',
+        'uploadUserAsset',
+        'uploadUserImage',
+        'verifyDomain',
+        'verifyEmail'
+      ] as ExcludedOps)
+    }),
     useDatadogTracing({
       excludeArgs: {
         acceptTeamInvitation: ['invitationToken'],
