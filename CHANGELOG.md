@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.4](https://github.com/ParabolInc/parabol/compare/v10.23.3...v10.23.4) (2025-09-15)
+
+
+### Fixed
+
+* ditch cheerio and undici ([#12040](https://github.com/ParabolInc/parabol/issues/12040)) ([e2e3bae](https://github.com/ParabolInc/parabol/commit/e2e3bae9a69e7b4807657c7908f7e966203bae10))
+* use watwg-node/fetch for everything on server ([#12036](https://github.com/ParabolInc/parabol/issues/12036)) ([7d0ead7](https://github.com/ParabolInc/parabol/commit/7d0ead7bf05f6e807e7763ab8fb7ec122c12affd))
+
 ## [10.23.3](https://github.com/ParabolInc/parabol/compare/v10.23.2...v10.23.3) (2025-09-12)
 
 
