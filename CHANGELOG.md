@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.5](https://github.com/ParabolInc/parabol/compare/v10.23.4...v10.23.5) (2025-09-15)
+
+
+### Fixed
+
+* don't throw in ratelimit if return type has error ([#12044](https://github.com/ParabolInc/parabol/issues/12044)) ([0168b98](https://github.com/ParabolInc/parabol/commit/0168b98771b9f3d3908c83620d730ba4453c2075))
+* when restoring child without parent, remove parent from ancestorIds ([#12045](https://github.com/ParabolInc/parabol/issues/12045)) ([259b7eb](https://github.com/ParabolInc/parabol/commit/259b7eb817d6f946deb4699269275bf92d9929dc))
+
+
+### Changed
+
+* pnpm dev debug settings ([#12031](https://github.com/ParabolInc/parabol/issues/12031)) ([a3673e2](https://github.com/ParabolInc/parabol/commit/a3673e2f98d332cbb63d6ec18c7174e890705b5e))
+
 ## [10.23.4](https://github.com/ParabolInc/parabol/compare/v10.23.3...v10.23.4) (2025-09-15)
 
 
