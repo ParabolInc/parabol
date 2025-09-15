@@ -35,15 +35,6 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
     const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
     imageUrlToHash[absoluteImageUrl] = hashedImageUrl
 
-    console.log(
-      'GEORG imageUrl',
-      imageUrl,
-      'absoluteImageUrl',
-      absoluteImageUrl,
-      'hashedImageUrl',
-      hashedImageUrl
-    )
-
     img.setAttribute('src', createParabolImageUrl(hashedImageUrl))
   })
   return {updatedDescription: root.toString(), imageUrlToHash}
