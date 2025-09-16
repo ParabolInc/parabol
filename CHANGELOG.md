@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.6](https://github.com/ParabolInc/parabol/compare/v10.23.5...v10.23.6) (2025-09-16)
+
+
+### Fixed
+
+* monkeypatch fetch with whatwg-node/fetch ([#12046](https://github.com/ParabolInc/parabol/issues/12046)) ([8db31aa](https://github.com/ParabolInc/parabol/commit/8db31aabf21270be3587cdab8c23a666ea76267f))
+
+
+### Changed
+
+* bump @module-federation/enhanced ([#12052](https://github.com/ParabolInc/parabol/issues/12052)) ([a312057](https://github.com/ParabolInc/parabol/commit/a31205726059f58ab9a5783ebafa4cfd7a43f5a6))
+* **docker:** upgrade from Debian Bookworm to Trixie ([#12049](https://github.com/ParabolInc/parabol/issues/12049)) ([c9e2690](https://github.com/ParabolInc/parabol/commit/c9e2690160475f60dd2ff374a621d5d2734d1337))
+* improve log format for Datadog ingestion ([#12051](https://github.com/ParabolInc/parabol/issues/12051)) ([c8b0a08](https://github.com/ParabolInc/parabol/commit/c8b0a08a08037ac892afd5344b50b3b600527c78))
+* overwrite brace-expansion version ([#12054](https://github.com/ParabolInc/parabol/issues/12054)) ([37ab2b5](https://github.com/ParabolInc/parabol/commit/37ab2b59295dab2ccbfb9c7bf6083e7f58f43dce))
+* overwrite brace-expansion version ([#12055](https://github.com/ParabolInc/parabol/issues/12055)) ([e258857](https://github.com/ParabolInc/parabol/commit/e258857cd0906b8f661137dd64bca63cd2d57043))
+* resolve @babel/runtime to a single version ([#12053](https://github.com/ParabolInc/parabol/issues/12053)) ([09612c9](https://github.com/ParabolInc/parabol/commit/09612c9cad2eda60152d8707bc4ee6871af3dbf8))
+
 ## [10.23.5](https://github.com/ParabolInc/parabol/compare/v10.23.4...v10.23.5) (2025-09-15)
 
 

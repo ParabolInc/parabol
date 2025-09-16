@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.23.5",
+  "version": "10.23.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -63,7 +63,10 @@
     "axios": "^1.7.8",
     "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "@babel/runtime": "^7.27.1",
+    "brace-expansion@1.1.11": "1.1.12",
+    "brace-expansion@2.0.1": "2.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -146,7 +149,7 @@
     "webpack": "^5.99.6",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "^5.2.1",
+    "webpack-dev-server": "^5.2.2",
     "webpack-hot-middleware": "^2.26.1",
     "webpack-node-externals": "^3.0.0",
     "workbox-webpack-plugin": "^6.5.4",
@@ -156,7 +159,7 @@
     "@floating-ui/dom": "^1.6.13",
     "@graphql-yoga/plugin-prometheus": "^6.8.5",
     "@hocuspocus/provider": "^3.2.3",
-    "@module-federation/enhanced": "^0.13.0",
+    "@module-federation/enhanced": "^0.18.3",
     "@sesamecare-oss/redlock": "^1.4.0",
     "@tiptap/core": "3.3.0",
     "@tiptap/extension-collaboration": "3.3.0",
