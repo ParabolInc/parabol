@@ -17,15 +17,28 @@ function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
 
   const span = tracer.scope().active()
   const time = new Date().toISOString()
+  const tags = optionalParameters
+    .map((param) => param.tags)
+    .filter((tags) => tags && typeof tags === 'object')
+    .reduce((acc, tags) => Object.assign(acc, tags), {} as Record<string, any>)
+  const userId = optionalParameters.find((param) => param.userId)?.userId
+  if (userId) {
+    tags['usr.id'] = userId
+  }
+  const ip = optionalParameters.find((param) => param.ip)?.ip
+  if (ip) {
+    tags['network.client.ip'] = ip
+  }
+
   const record = {
     time,
     level,
-    message: util.format(message, ...optionalParameters)
+    message: util.format(message, ...optionalParameters),
+    tags
   }
 
   if (span) {
     tracer.inject(span.context(), formats.LOG, record)
-    const tags = optionalParameters.find((param) => param.tags) as Record<string, any> | undefined
     if (tags && typeof tags === 'object') {
       span.addTags(tags)
     }
