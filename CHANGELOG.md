@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.7](https://github.com/ParabolInc/parabol/compare/v10.23.6...v10.23.7) (2025-09-16)
+
+
+### Fixed
+
+* add user-agent to fetch calls ([#12060](https://github.com/ParabolInc/parabol/issues/12060)) ([4c67372](https://github.com/ParabolInc/parabol/commit/4c67372b37b59994b7dd51d395b18dac1afe578e))
+
+
+### Changed
+
+* simplify logging tags ([#12057](https://github.com/ParabolInc/parabol/issues/12057)) ([2b6c1cb](https://github.com/ParabolInc/parabol/commit/2b6c1cb95b455f5cfd9a41b6afe43204072e5c55))
+
 ## [10.23.6](https://github.com/ParabolInc/parabol/compare/v10.23.5...v10.23.6) (2025-09-16)
 
 
