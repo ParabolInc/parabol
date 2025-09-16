@@ -257,7 +257,8 @@ class AzureDevOpsServerManager implements TaskIntegrationManager {
   private headers = {
     Authorization: '',
     Accept: 'application/json' as const,
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'User-Agent': 'parabol'
   }
   private readonly auth: TeamMemberIntegrationAuth | null
 

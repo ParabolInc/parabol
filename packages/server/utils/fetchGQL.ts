@@ -12,6 +12,7 @@ export const fetchGQL = async (query: string, variables?: Record<string, any>) =
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
+      'User-Agent': 'parabol',
       authorization: `Bearer ${authToken}`
     },
     body: JSON.stringify({query, variables})
