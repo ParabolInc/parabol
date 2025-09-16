@@ -52,7 +52,8 @@ export default class GoogleServerManager extends GoogleManager {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'parabol'
       }
     })
     const tokenJson = (await tokenRes.json()) as OAuth2Response

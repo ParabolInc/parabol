@@ -39,6 +39,7 @@ const defaultExecutor: Executor<{
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
+        'User-Agent': 'parabol',
         ...headers
       },
       body: JSON.stringify({

@@ -41,7 +41,8 @@ class RecallAIServerManager {
         {
           headers: {
             Authorization: `Token ${this.apiKey}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'User-Agent': 'parabol'
           }
         }
       )
@@ -62,7 +63,8 @@ class RecallAIServerManager {
       const response = await axios.get(`${RECALL_API_BASE_URL}/bot/${botId}`, {
         headers: {
           Authorization: `Token ${this.apiKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'User-Agent': 'parabol'
         }
       })
 

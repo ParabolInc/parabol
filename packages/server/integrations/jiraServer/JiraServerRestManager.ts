@@ -164,6 +164,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
       body: body ? JSON.stringify(body) : undefined,
       headers: {
         'Content-Type': 'application/json',
+        'User-Agent': 'parabol',
         ...headers
       }
     })
