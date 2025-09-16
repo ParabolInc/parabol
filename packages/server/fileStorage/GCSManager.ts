@@ -130,7 +130,8 @@ export default class GCSManager extends FileStoreManager {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/json',
-          'Content-Type': mime.lookup(fullPath) || ''
+          'Content-Type': mime.lookup(fullPath) || '',
+          'User-Agent': 'parabol'
         }
       })
     } catch (e) {

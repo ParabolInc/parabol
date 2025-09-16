@@ -355,7 +355,7 @@ class AtlassianServerManager extends AtlassianManager {
   async getImage(imageUrl: string) {
     try {
       const imageRes = await this.fetch(imageUrl, {
-        headers: {Authorization: this.headers.Authorization},
+        headers: {'User-Agent': 'parabol', Authorization: this.headers.Authorization},
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)
       })
 

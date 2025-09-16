@@ -804,7 +804,7 @@ const User: ReqResolvers<'User'> = {
     const response = await fetch(EMBED_URL, {
       method: 'POST',
       body: JSON.stringify({inputs: search}),
-      headers: {'Content-Type': 'application/json'}
+      headers: {'Content-Type': 'application/json', 'User-Agent': 'parabol'}
     })
     const data = await response.json()
 

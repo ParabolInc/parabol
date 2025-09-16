@@ -28,7 +28,8 @@ class MSTeamsServerManager {
         method: 'POST',
         headers: {
           Accept: 'application/json' as const,
-          'Content-Type': 'application/json;charset=utf-8'
+          'Content-Type': 'application/json;charset=utf-8',
+          'User-Agent': 'parabol'
         },
         body: payload,
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)

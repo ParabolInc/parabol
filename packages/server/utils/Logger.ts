@@ -23,11 +23,11 @@ function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
     .reduce((acc, tags) => Object.assign(acc, tags), {} as Record<string, any>)
   const userId = optionalParameters.find((param) => param.userId)?.userId
   if (userId) {
-    tags['usr.id'] = userId
+    tags['userId'] = userId
   }
   const ip = optionalParameters.find((param) => param.ip)?.ip
   if (ip) {
-    tags['network.client.ip'] = ip
+    tags['ip'] = ip
   }
 
   const record = {
