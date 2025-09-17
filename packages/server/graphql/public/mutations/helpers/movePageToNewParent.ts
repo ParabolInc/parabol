@@ -267,7 +267,7 @@ export const movePageToNewParent = async (
       .execute()
   }
   await trx.commit().execute()
-  const dataLoader = getNewDataLoader()
+  const dataLoader = getNewDataLoader('movePageToNewParent')
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}
   const data = {pageId}

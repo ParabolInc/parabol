@@ -5,7 +5,7 @@ import {dataLoaderCache} from './RootDataLoader'
 
 export const hydrateDataLoader = (id: string, packedDataloader: Buffer) => {
   const loaders = unpack(packedDataloader)
-  const cacheWorker = dataLoaderCache.add(id)
+  const cacheWorker = dataLoaderCache.add(id, 'hydrate')
   // treat this as shared so if the first subscriber tries to dispose of it, it will wait 500ms (see wsHandler.onComplete)
   // which should be enough time for other subscribers to grab it
   cacheWorker.share()

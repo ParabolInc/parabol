@@ -50,7 +50,7 @@ test.each([
   'foo@other.subtest.com',
   'foo@notwildtest.com'
 ])('Unapproved email fails: %s', async (email) => {
-  const dataloader = getNewDataLoader()
+  const dataloader = getNewDataLoader('test')
   const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
   expect(error).toBeInstanceOf(Error)
 })
@@ -58,7 +58,7 @@ test.each([
 test.each(['foo@test.com', 'foo@sub.subtest.com', 'foo@wildtest.com', 'foo@sub.wildtest.com'])(
   'Approved email passes: %s',
   async (email) => {
-    const dataloader = getNewDataLoader()
+    const dataloader = getNewDataLoader('test')
     const error = await getIsEmailApprovedByOrg(email, 'testOrgId', dataloader)
     expect(error).toBe(undefined)
   }

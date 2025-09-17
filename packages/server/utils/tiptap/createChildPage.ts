@@ -72,7 +72,7 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
     .selectNoFrom(sql`1`.as('t'))
     .execute()
   analytics.pageCreated(viewer, pageId)
-  const dataLoader = getNewDataLoader()
+  const dataLoader = getNewDataLoader('createChildPage')
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}
   const data = {page}

@@ -112,7 +112,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.resubscribe = {}
     extra.dataLoaders = {}
     const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader()
+    const dataLoader = getNewDataLoader('wsHandler.onConnect')
     const {data} = await execute({
       document: parse(connectQuery),
       variableValues: {socketInstanceId: INSTANCE_ID},
@@ -192,7 +192,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
       }
     } else {
       // subscribe functions don't need a dataloader since they just kickstart an async iterator
-      extra.dataLoaders[id] = getNewDataLoader()
+      extra.dataLoaders[id] = getNewDataLoader('wsHandler.onSubscribe')
     }
     const args: EnvelopedExecutionArgs = {
       schema: authToken.rol === 'su' ? privateSchema : schema,
@@ -227,7 +227,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.dataLoaders = {} // should not be necessary, but doing in case of memory leak
     activeClients.delete(extra.socketId)
     const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader()
+    const dataLoader = getNewDataLoader('wsHandler.onDisconnect')
     extra.socket.closed = true
     await execute({
       document: parse(disconnectQuery),
