@@ -3,17 +3,20 @@ export class CacheWorker<T extends {clearAll: (pkLoaderName: any) => void; get: 
   dataLoaderWorker: T
   did: string
   disposeId: NodeJS.Timeout | undefined
+  // who added this to the cache?
+  source: string | undefined
 
   shared = false
   get: T['get']
   clearAll: T['clearAll']
   onDispose: () => void
-  constructor(dataLoaderWorker: T, did: string, onDispose: () => void) {
+  constructor(dataLoaderWorker: T, did: string, onDispose: () => void, source: string) {
     this.dataLoaderWorker = dataLoaderWorker
     this.did = did
     this.get = this.dataLoaderWorker.get
     this.clearAll = this.dataLoaderWorker.clearAll
     this.onDispose = onDispose
+    this.source = source
   }
 
   dispose() {
@@ -47,12 +50,12 @@ export default class DataLoaderCache<
     this.DataLoaderWorkerConstructor = DataLoaderWorkerConstructor
   }
 
-  add(did: string) {
+  add(did: string, source: string) {
     const dataLoaderWorker = new this.DataLoaderWorkerConstructor()
     const onDispose = () => {
       delete this.workers[did]
     }
-    this.workers[did] = new CacheWorker(dataLoaderWorker, did, onDispose)
+    this.workers[did] = new CacheWorker(dataLoaderWorker, did, onDispose, source)
     return this.workers[did]!
   }
 

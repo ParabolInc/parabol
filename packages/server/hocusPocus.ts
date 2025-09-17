@@ -28,7 +28,7 @@ if (isNaN(port) || port < 0 || port > 65536) {
 
 const pushGQLTitleUpdates = async (pageId: number) => {
   // This is necessary for titles of top-level items (shared, team, private) to propagate in real time
-  const dataLoader = getNewDataLoader()
+  const dataLoader = getNewDataLoader('pushGQLTitleUpdates')
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId: undefined}
   const data = {pageId}
