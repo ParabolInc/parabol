@@ -21,7 +21,7 @@ const getDataLoader = async (id: string) => {
     }
   }, 3000)
   // Anything past this line is a bug, but we handle bugs gracefully
-  const fallback = getNewDataLoader()
+  const fallback = getNewDataLoader('getDataLoader-fallback')
   fallback.share()
   fallback.dispose()
   return fallback

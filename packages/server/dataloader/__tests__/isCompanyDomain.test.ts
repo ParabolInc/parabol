@@ -1,7 +1,7 @@
 import '../../../../scripts/webpack/utils/dotenv'
 import {getNewDataLoader} from '../getNewDataLoader'
 
-const dataloader = getNewDataLoader()
+const dataloader = getNewDataLoader('test')
 
 afterAll(async () => {
   dataloader.dispose()

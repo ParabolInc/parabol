@@ -65,7 +65,7 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res, req) => {
     return
   }
 
-  const dataLoader = getNewDataLoader()
+  const dataLoader = getNewDataLoader('mattermostWebhookHandler')
   try {
     const [mattermostProvider] = await dataLoader
       .get('sharedIntegrationProviders')

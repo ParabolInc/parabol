@@ -1,6 +1,8 @@
 packages:
   - packages/*
-
+minimumReleaseAge: 2880
+minimumReleaseAgeExclude:
+  - nest-graphql-endpoint
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'
