@@ -22,18 +22,6 @@
       }
     </script>
     <!-- End Google Tag Manager -->
-    <!-- Safari sometimes kills the service worker before it can load the initial script -->
-    <script>
-      async function checkAndUnregisterSW(event) {
-        console.error('Error loading main script', event);
-        if (event.message === 'Service Worker context closed') {
-          const reg = await navigator.serviceWorker.getRegistration();
-          await reg?.unregister();
-          location.reload();
-        }
-      }
-    </script>
-    <!-- End Safari hack -->
     <title>Streamline or Replace Meetings | Parabol</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -47,12 +35,41 @@
     <%=
       htmlWebpackPlugin.tags.headTags.map((tag) => {
         tag.attributes.crossorigin=''
-        if (tag.tagName === 'script') {
-          tag.attributes.onerror='checkAndUnregisterSW'
-        }
         return tag
       }).join('')
     %>
+    <!-- Safari sometimes kills the service worker before it can load the initial script -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        function unregisterSW(event) {
+          console.error('Error loading main script', event, event.message)
+          if (event.message === 'Service Worker context closed') {
+            navigator.serviceWorker.getRegistration().then((req) => {
+              if (!req) return
+              req.unregister().then(() => {
+                location.reload()
+              })
+            })
+          }
+        }
+
+        // because the script tag is `defer` we need to attach the handler via script
+        document.querySelectorAll('script').forEach((script) => {
+          if (script.src) {
+            script.onerror = unregisterSW
+          }
+        })
+
+        // for debugging, maybe Safari closes the SW because there is an update available?
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (!reg) return
+          reg.addEventListener('updatefound', () => {
+            console.log('New service worker found')
+          })
+        })
+      }
+    </script>
+    <!-- End Safari hack -->
   </head>
 
   <body>
