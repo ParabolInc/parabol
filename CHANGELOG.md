@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.9](https://github.com/ParabolInc/parabol/compare/v10.23.8...v10.23.9) (2025-09-18)
+
+
+### Fixed
+
+* dispose dataloaders on socket disconnect ([#12070](https://github.com/ParabolInc/parabol/issues/12070)) ([e3f4750](https://github.com/ParabolInc/parabol/commit/e3f475084e2f067ded6db2b4dc7eeeb1b09dd8ed))
+
 ## [10.23.8](https://github.com/ParabolInc/parabol/compare/v10.23.7...v10.23.8) (2025-09-17)
 
 
