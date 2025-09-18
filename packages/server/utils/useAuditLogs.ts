@@ -10,13 +10,13 @@ interface Config {
    */
   excludeArgs?: Record<string, string[]>
   /**
-   * A set of operations that do not need to be audited
+   * A set of operations that do need to be audited
    */
   includeOps: Set<string>
 }
 
-export const useSOC2AuditLogs = (config: Config): Plugin<ServerContext> => {
-  if (process.env.SOC2_LOGS !== 'true') return {}
+export const useAuditLogs = (config: Config): Plugin<ServerContext> => {
+  if (process.env.AUDIT_LOGS !== 'true') return {}
   return {
     onExecute({args, context}) {
       const operationAst = getOperationAST(args.document, args.operationName)!

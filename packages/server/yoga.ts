@@ -13,10 +13,10 @@ import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/privat
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
-import {useSOC2AuditLogs} from './utils/useSOC2AuditLogs'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
@@ -74,7 +74,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
   plugins: [
-    useSOC2AuditLogs({
+    useAuditLogs({
       excludeArgs: {
         acceptTeamInvitation: ['invitationToken'],
         loginWithPassword: ['password'],
