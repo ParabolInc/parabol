@@ -22,6 +22,18 @@
       }
     </script>
     <!-- End Google Tag Manager -->
+    <!-- Safari sometimes kills the service worker before it can load the initial script -->
+    <script>
+      async function checkAndUnregisterSW(event) {
+        console.error('Error loading main script', event);
+        if (event.message === 'Service Worker context closed') {
+          const reg = await navigator.serviceWorker.getRegistration();
+          await reg?.unregister();
+          location.reload();
+        }
+      }
+    </script>
+    <!-- End Safari hack -->
     <title>Streamline or Replace Meetings | Parabol</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,8 +44,15 @@
     />
     <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <link href="__PUBLIC_PATH__/favicon.ico" rel="shortcut icon" crossorigin="" />
-    <%= htmlWebpackPlugin.tags.headTags.map((tag) => { tag.attributes.crossorigin=''; return tag
-    }).join('') %>
+    <%=
+      htmlWebpackPlugin.tags.headTags.map((tag) => {
+        tag.attributes.crossorigin=''
+        if (tag.tagName === 'script') {
+          tag.attributes.onerror='checkAndUnregisterSW'
+        }
+        return tag
+      }).join('')
+    %>
   </head>
 
   <body>
