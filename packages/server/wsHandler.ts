@@ -19,6 +19,7 @@ import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
+import {Logger} from './utils/Logger'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
@@ -192,6 +193,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
       }
     } else {
       // subscribe functions don't need a dataloader since they just kickstart an async iterator
+      if (extra.dataLoaders[id]) {
+        Logger.error('Overwriting an existing dataloader on wsHandler.onSubscribe')
+      }
       extra.dataLoaders[id] = getNewDataLoader('wsHandler.onSubscribe')
     }
     const args: EnvelopedExecutionArgs = {
@@ -224,7 +228,8 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const {extra} = ctx
     const {authToken, socketId} = extra
     const {sub: userId} = authToken
-    extra.dataLoaders = {} // should not be necessary, but doing in case of memory leak
+    Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
+    extra.dataLoaders = {}
     activeClients.delete(extra.socketId)
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader('wsHandler.onDisconnect')

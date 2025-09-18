@@ -33,7 +33,7 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (
     const MB = 2 ** 20
     const usedMB = Math.floor(rss / MB)
     const now = new Date().toJSON()
-    const fileName = `Dumpy_${now}_${SERVER_ID}_${usedMB}.heapsnapshot`
+    const fileName = `Dumpy_${now}_${SERVER_ID}_${usedMB}.heapsnapshot`.replaceAll(':', '_')
     const dumpFolder = (HEAP_DUMP_FOLDER ?? '').trim() || os.tmpdir()
     const pathName = path.join(dumpFolder, fileName)
     if (!fs.existsSync(dumpFolder)) fs.mkdirSync(dumpFolder, {recursive: true})
