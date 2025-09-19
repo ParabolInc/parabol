@@ -71,6 +71,7 @@ export const LeftNavPageLink = (props: Props) => {
     setShowChildren(!showChildren)
   }
   const isTopLevelShared = connectionKey === 'User_sharedPages'
+  const parentSection = isTopLevelShared ? '' : parentPageId || teamId || ''
   const {onPointerDown, ref} = useDraggablePage(
     id,
     isPrivate,
@@ -114,15 +115,7 @@ export const LeftNavPageLink = (props: Props) => {
             '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow && 'cursor-pointer'
           )}
-          data-drop-below={
-            canDropBelow
-              ? showChildren
-                ? id
-                : isTopLevelShared
-                  ? ''
-                  : parentPageId || teamId || ''
-              : undefined
-          }
+          data-drop-below={canDropBelow ? (showChildren ? id : parentSection) : undefined}
           data-drop-idx={showChildren ? -1 : dropIdx}
           aria-expanded={showChildren}
         ></div>
