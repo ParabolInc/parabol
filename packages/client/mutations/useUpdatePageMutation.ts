@@ -5,7 +5,6 @@ import type {
   PageSectionEnum,
   useUpdatePageMutation as TuseUpdatePageMutation
 } from '../__generated__/useUpdatePageMutation.graphql'
-import type {useUpdatePageMutation_notification$data} from '../__generated__/useUpdatePageMutation_notification.graphql'
 
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import getBaseRecord from '../utils/relay/getBaseRecord'
@@ -106,7 +105,16 @@ const getTargetConn = (
   })!
 }
 export const handleUpdatePage = (
-  payload: RecordProxy<Omit<useUpdatePageMutation_notification$data, ' $fragmentType'>>,
+  payload: RecordProxy<{
+    page: {
+      id: string
+      teamId: string | null | undefined
+      parentPageId: string | null | undefined
+      sortOrder: string
+      userSortOrder: string
+    }
+    pageSection: PageSectionEnum
+  }>,
   {store}: {store: RecordSourceSelectorProxy}
 ) => {
   const page = payload.getLinkedRecord('page')

@@ -5,7 +5,10 @@ import type {ReqResolvers} from './ReqResolvers'
 const PagePartial: ReqResolvers<'PagePartial'> = {
   __resolveType: (source) =>
     (source as any).__typename === 'PagePreview' ? 'PagePreview' : 'Page',
-  id: ({id}) => CipherId.toClient(id, 'page'),
+  id: ({id, __typename}) => {
+    const prefix = __typename === 'PagePreview' ? 'pagePreview' : 'page'
+    return CipherId.toClient(id, prefix)
+  },
   team: async ({teamId}, _args, {authToken, dataLoader}) => {
     if (!teamId) return null
     const [teamMember, team] = await Promise.all([

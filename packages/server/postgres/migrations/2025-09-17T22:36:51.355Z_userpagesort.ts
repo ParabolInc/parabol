@@ -28,7 +28,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
   // this trigger function is broken it doesn't generate a sortOrder for all shared pages
   await sql`
-	DROP TRIGGER IF EXISTS trg_delete_page_user_sort;
+	DROP TRIGGER IF EXISTS trg_delete_page_user_sort ON "PageAccess";
 	DROP FUNCTION IF EXISTS "removePageUserSortOrder";
 	`.execute(db)
   await db.schema

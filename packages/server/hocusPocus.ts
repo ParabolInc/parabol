@@ -69,7 +69,7 @@ export const server = new Server({
         .limit(1)
         .executeTakeFirst()
       if (!pageAccess) {
-        throw new Error('Document does not exist or user is not authorized')
+        throw new Error(`Document does not exist or user is not authorized: ${dbId}`)
       }
     }
     const {role} = pageAccess

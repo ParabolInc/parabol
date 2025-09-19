@@ -60,7 +60,8 @@ export const LeftNavPageLink = (props: Props) => {
     isDraggingLastChild,
     teamId,
     isPrivate,
-    currentPageAncestorDepth
+    currentPageAncestorDepth,
+    userSortOrder
   } = page
   const pageCode = id.split(':')[1]
   const slug = getPageSlug(Number(pageCode), title)
@@ -69,6 +70,7 @@ export const LeftNavPageLink = (props: Props) => {
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
+  const isTopLevelShared = connectionKey === 'User_sharedPages'
   const {onPointerDown, ref} = useDraggablePage(
     id,
     isPrivate,
@@ -82,7 +84,6 @@ export const LeftNavPageLink = (props: Props) => {
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const isSelf = draggingPageId === id
   const isNextPeer = draggingPageId === nextPeerId && !showChildren
-  const isTopLevelShared = connectionKey === 'User_sharedPages'
   const isPrivateToTopLevelShared = isTopLevelShared && draggingPageIsPrivate
   const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
   const canDropBelow =
@@ -114,7 +115,13 @@ export const LeftNavPageLink = (props: Props) => {
             canDropBelow && 'cursor-pointer'
           )}
           data-drop-below={
-            canDropBelow ? (showChildren ? id : parentPageId || teamId || '') : undefined
+            canDropBelow
+              ? showChildren
+                ? id
+                : isTopLevelShared
+                  ? ''
+                  : parentPageId || teamId || ''
+              : undefined
           }
           data-drop-idx={showChildren ? -1 : dropIdx}
           aria-expanded={showChildren}
@@ -136,13 +143,18 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={isSelf ? null : draggingPageId}
           />
           <LeftNavItem>
-            <span className='pl-1'>{title || '<Untitled>'}</span>
+            <span className='pl-1'>
+              {title || '<Untitled>'} {userSortOrder}
+            </span>
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>
       </div>
       {showChildren && (
-        <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
+        <div
+          className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}
+          data-pages-connection={'User_pages'}
+        >
           <SubPagesRoot
             parentPageId={id}
             pageAncestors={nextPageAncestors}

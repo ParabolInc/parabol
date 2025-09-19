@@ -965,7 +965,7 @@ const User: ReqResolvers<'User'> = {
             .on('PageUserSortOrder.userId', '=', viewerId)
             .onRef('PageUserSortOrder.pageId', '=', 'p.id')
         )
-        .select(({ref}) => ref('PageUserSortOrder.sortOrder').as('userSortOrder'))
+        .select(({ref}) => [ref('PageUserSortOrder.sortOrder').as('userSortOrder'), 'p.sortOrder'])
         .orderBy('userSortOrder', (od) => od.asc().nullsFirst())
         .$if(!!after, (qb) => qb.where('PageUserSortOrder.sortOrder', '>', after!))
         .limit(first + 1)

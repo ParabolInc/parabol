@@ -60,12 +60,17 @@ const updatePage: MutationResolvers['updatePage'] = async (
       // simple reorder
       if (targetSection === 'shared') {
         await pg
-          .updateTable('PageUserSortOrder')
-          .set({
+          .insertInto('PageUserSortOrder')
+          .values({
+            userId: viewerId,
+            pageId: dbPageId,
             sortOrder: nextSortOrder
           })
-          .where('userId', '=', viewerId)
-          .where('pageId', '=', dbPageId)
+          .onConflict((oc) =>
+            oc.columns(['userId', 'pageId']).doUpdateSet({
+              sortOrder: nextSortOrder
+            })
+          )
           .execute()
       } else {
         await pg

@@ -309,6 +309,12 @@ const updatePageNotificationUpdater: SharedUpdater<
   handleUpdatePage(payload, context)
 }
 
+const updatePageAccessNotificationUpdater: SharedUpdater<
+  NotificationSubscription$data['notificationSubscription']['UpdatePageAccessPayload']
+> = (payload, context) => {
+  handleUpdatePage(payload, context)
+}
+
 const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
@@ -319,6 +325,7 @@ const updateHandlers = {
   CreateTaskPayload: createTaskNotificationUpdater,
   CreatePagePayload: createPageNotificationUpdater,
   UpdatePagePayload: updatePageNotificationUpdater,
+  UpdatePageAccessPayload: updatePageAccessNotificationUpdater,
   EndCheckInSuccess: endCheckInNotificationUpdater,
   EndRetrospectiveSuccess: endRetrospectiveNotificationUpdater,
   InviteToTeamPayload: inviteToTeamNotificationUpdater,
