@@ -20,17 +20,11 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     }
   },
   parentPageId: ({parentPageId}) => (parentPageId ? CipherId.toClient(parentPageId, 'page') : null),
-  sortOrder: async (
-    {id: pageId, isPrivate, teamId, parentPageId, sortOrder},
-    _args,
-    {authToken, dataLoader}
-  ) => {
-    const isTopLevelShared = !teamId && !parentPageId && !isPrivate
-    if (!isTopLevelShared) return sortOrder
+  userSortOrder: async ({id: pageId, userSortOrder}, _args, {authToken, dataLoader}) => {
+    if (userSortOrder) return userSortOrder
     const viewerId = getUserId(authToken)
-    const userSortOrder = await dataLoader.get('pageUserSortOrder').load({pageId, userId: viewerId})
-    // should never be null, but just in case
-    return userSortOrder || '!'
+    const sortOrder = await dataLoader.get('pageUserSortOrder').load({pageId, userId: viewerId})
+    return sortOrder || '!'
   },
   ancestorIds: ({ancestorIds}) => ancestorIds.map((id) => CipherId.toClient(id, 'page')),
   ancestors: async ({ancestorIds}, _args, {authToken, dataLoader}) => {

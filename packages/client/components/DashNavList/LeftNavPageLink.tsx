@@ -46,6 +46,7 @@ export const LeftNavPageLink = (props: Props) => {
         isDraggingFirstChild
         isDraggingLastChild
         currentPageAncestorDepth
+        userSortOrder
         sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,

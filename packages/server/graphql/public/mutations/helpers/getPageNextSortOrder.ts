@@ -11,11 +11,51 @@ import getKysely from '../../../../postgres/getKysely'
 // this isn't part of the transaction, so although rare, there could still be a conflict
 export const getPageNextSortOrder = async (
   sortOrder: string,
+  isUserSortOrder: boolean,
   viewerId: string,
   isPrivate: boolean,
   teamId: string | null
 ) => {
   const pg = getKysely()
+  if (isUserSortOrder) {
+    // the logic here is exact the same as below, but duplicating to keep typechecking for tables
+    const buildPeers = () => {
+      return pg.selectFrom('PageUserSortOrder').select('sortOrder').where('userId', '=', viewerId)
+    }
+    if (sortOrder === __END__) {
+      const lastSortOrder = await buildPeers()
+        .orderBy('sortOrder', 'desc')
+        .limit(1)
+        .executeTakeFirst()
+      return positionAfter(lastSortOrder?.sortOrder ?? ' ')
+    }
+    if (sortOrder === __START__) {
+      const firstSortOrder = await buildPeers().orderBy('sortOrder').limit(1).executeTakeFirst()
+      return positionBefore(firstSortOrder?.sortOrder ?? ' ')
+    }
+    const conflicting = await buildPeers()
+      .where('sortOrder', '=', sortOrder)
+      .limit(1)
+      .executeTakeFirst()
+    if (!conflicting) return sortOrder
+    const [rowBefore, rowAfter] = await Promise.all([
+      buildPeers()
+        .where('sortOrder', '<', sortOrder)
+        .orderBy('sortOrder', 'desc')
+        .limit(1)
+        .executeTakeFirst(),
+      buildPeers()
+        .where('sortOrder', '>', sortOrder)
+        .orderBy('sortOrder')
+        .limit(1)
+        .executeTakeFirst()
+    ])
+    const endPosition = rowBefore || rowAfter
+    return endPosition
+      ? positionBetween(sortOrder, endPosition.sortOrder)
+      : positionAfter(sortOrder)
+  }
+
   const buildPeers = () => {
     const query = pg.selectFrom('Page').select('sortOrder')
     if (!teamId) {
@@ -49,7 +89,9 @@ export const getPageNextSortOrder = async (
     .where('sortOrder', '=', sortOrder)
     .limit(1)
     .executeTakeFirst()
-  if (!conflicting) return sortOrder
+  if (!conflicting) {
+    return sortOrder
+  }
 
   const [rowBefore, rowAfter] = await Promise.all([
     buildPeers()

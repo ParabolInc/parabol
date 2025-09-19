@@ -306,8 +306,7 @@ const createPageNotificationUpdater: SharedUpdater<any> = (payload, context) => 
 const updatePageNotificationUpdater: SharedUpdater<
   NotificationSubscription$data['notificationSubscription']['UpdatePagePayload']
 > = (payload, context) => {
-  const updatedPage = payload.getLinkedRecord('page')
-  handleUpdatePage(updatedPage, context)
+  handleUpdatePage(payload, context)
 }
 
 const updateHandlers = {

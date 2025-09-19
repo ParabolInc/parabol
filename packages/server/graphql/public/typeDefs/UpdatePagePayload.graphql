@@ -1,3 +1,4 @@
 type UpdatePagePayload {
 	page: Page!
+	pageSection: PageSectionEnum!
 }

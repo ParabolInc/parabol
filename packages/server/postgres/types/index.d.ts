@@ -110,7 +110,10 @@ export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
 export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>
-export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages>
+// userSortOrder comes from PageUserSortOrder table, and is sometimes prefetched for performance
+export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages> & {
+  userSortOrder?: string | null
+}
 export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId'> & {
   __typename: 'Page' | 'PagePreview'
 }

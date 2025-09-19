@@ -3,6 +3,7 @@ import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
+import type {PageSectionEnum} from '../__generated__/useUpdatePageMutation.graphql'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
@@ -183,6 +184,7 @@ export const useDraggablePage = (
         frag.insert(nextIdx, [createPageLinkBlock() as any])
       })
     } else {
+      // the target is top-level, under a team, shared pages, or private pages
       const targetTeamId =
         targetParentPageIdOrTeamId && !targetParentPageId ? targetParentPageIdOrTeamId : undefined
 
@@ -195,15 +197,19 @@ export const useDraggablePage = (
         teamId: targetTeamId
       })
       const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
+      const connectionToSection: Record<PageConnectionKey, PageSectionEnum> = {
+        User_privatePages: 'private',
+        User_sharedPages: 'shared',
+        User_pages: 'team'
+      }
+
       execute({
         variables: {
           pageId,
           sortOrder,
-          teamId: targetTeamId,
-          makePrivate:
-            !targetParentPageId &&
-            targetConnectionKey === 'User_privatePages' &&
-            sourceConnectionKey !== targetConnectionKey
+          sourceSection: connectionToSection[sourceConnectionKey],
+          targetSection: connectionToSection[targetConnectionKey],
+          teamId: targetTeamId
         },
         onError: snackOnError(atmosphere, 'updatePageErr'),
         sourceTeamId,
@@ -213,6 +219,7 @@ export const useDraggablePage = (
       })
     }
     if (sourceParentPageId) {
+      // TODO i may not have access to this document!
       // if the source has a parent, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
         const frag = document.getXmlFragment('default')
