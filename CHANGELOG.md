@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.24.0](https://github.com/ParabolInc/parabol/compare/v10.23.9...v10.24.0) (2025-09-20)
+
+
+### Added
+
+* add audit logs ([#12048](https://github.com/ParabolInc/parabol/issues/12048)) ([ec839f8](https://github.com/ParabolInc/parabol/commit/ec839f85bcddc8917084dd2266c1be8db39e999c))
+
+
+### Fixed
+
+* user sort order for shared pages ([#12075](https://github.com/ParabolInc/parabol/issues/12075)) ([1f6b890](https://github.com/ParabolInc/parabol/commit/1f6b890991893df9932aa1f5265c525a8b39f636))
+
 ## [10.23.9](https://github.com/ParabolInc/parabol/compare/v10.23.8...v10.23.9) (2025-09-18)
 
 
