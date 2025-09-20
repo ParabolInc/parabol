@@ -37,6 +37,10 @@ if (ENABLE_METRICS) {
   }
 }
 
+const ENABLE_STATIC_FILE_HANDLER = !__PRODUCTION__ || process.env.FILE_STORE_PROVIDER === 'local'
+const ENABLE_MATTERMOST_FILE_HANDLER =
+  !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
+
 process.on('SIGTERM', async (signal) => {
   Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
@@ -53,8 +57,6 @@ const app = uws
   .get('/favicon.ico', PWAHandler)
   .get('/sw.js', PWAHandler)
   .get('/manifest.json', PWAHandler)
-  .get('/static/*', createStaticFileHandler('/static/'))
-  .get('/components/*', createStaticFileHandler('/components/'))
   .get('/email/createics', ICSHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
@@ -70,6 +72,21 @@ const app = uws
   })
   .post('/saml/:domain', SAMLHandler)
   .ws('/*', wsHandler)
+
+if (ENABLE_STATIC_FILE_HANDLER) {
+  app.get('/static/*', createStaticFileHandler('/static/'))
+} else {
+  app.get('/static/*', (res) => {
+    res.writeStatus('404 Not Found').end()
+  })
+}
+if (ENABLE_MATTERMOST_FILE_HANDLER) {
+  app.get('/components/*', createStaticFileHandler('/components/'))
+} else {
+  app.get('/components/*', (res) => {
+    res.writeStatus('404 Not Found').end()
+  })
+}
 
 if (ENABLE_METRICS) {
   uws
