@@ -5,7 +5,7 @@ import getKysely from '../../postgres/getKysely'
 import {getNewDataLoader} from '../getNewDataLoader'
 
 test('Result is mapped to correct id', async () => {
-  const dataloader = getNewDataLoader()
+  const dataloader = getNewDataLoader('test')
 
   const existingUsers = await getKysely()
     .selectFrom('User')

@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.23.9](https://github.com/ParabolInc/parabol/compare/v10.23.8...v10.23.9) (2025-09-18)
+
+
+### Fixed
+
+* dispose dataloaders on socket disconnect ([#12070](https://github.com/ParabolInc/parabol/issues/12070)) ([e3f4750](https://github.com/ParabolInc/parabol/commit/e3f475084e2f067ded6db2b4dc7eeeb1b09dd8ed))
+
+## [10.23.8](https://github.com/ParabolInc/parabol/compare/v10.23.7...v10.23.8) (2025-09-17)
+
+
+### Fixed
+
+* dont download packages newer than 2 days old by default ([#12063](https://github.com/ParabolInc/parabol/issues/12063)) ([64aad45](https://github.com/ParabolInc/parabol/commit/64aad45b7a791d897021dbadbb03eb1a726078a8))
+
+
+### Changed
+
+* add dataloader cache debugging field ([#12068](https://github.com/ParabolInc/parabol/issues/12068)) ([7b78fc2](https://github.com/ParabolInc/parabol/commit/7b78fc231d93d43f48b1bc9b3737b740a3ae9299))
+* do not run dev with inspect by default ([#12067](https://github.com/ParabolInc/parabol/issues/12067)) ([485b0c7](https://github.com/ParabolInc/parabol/commit/485b0c724df59babb49ca7e277ab6c7cb8b2f039))
+
 ## [10.23.7](https://github.com/ParabolInc/parabol/compare/v10.23.6...v10.23.7) (2025-09-16)
 
 

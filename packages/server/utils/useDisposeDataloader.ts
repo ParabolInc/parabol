@@ -8,7 +8,7 @@ export const useDisposeDataloader: Plugin<DataLoaderContext, DataLoaderContext> 
     if (context.dataLoader) {
       throw new Error('Dataloader already exists. This is a mem leak')
     }
-    const dataLoader = getNewDataLoader()
+    const dataLoader = getNewDataLoader('useDisposeDataloader')
     extendContext({dataLoader})
   },
   onResultProcess: ({serverContext}) => {
