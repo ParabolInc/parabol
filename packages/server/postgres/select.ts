@@ -315,7 +315,7 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'isParentLinked',
     'isPrivate',
     'parentPageId',
-    'sortOrder',
+    'Page.sortOrder',
     'Page.teamId',
     'title',
     'updatedAt',

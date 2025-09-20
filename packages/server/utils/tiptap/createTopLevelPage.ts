@@ -28,7 +28,13 @@ export const createTopLevelPage = async (
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   const pg = getKysely()
   const isPrivate = !teamId
-  const sortOrder = await getPageNextSortOrder(__START__, viewerId, isPrivate, teamId || null)
+  const sortOrder = await getPageNextSortOrder(
+    __START__,
+    false,
+    viewerId,
+    isPrivate,
+    teamId || null
+  )
   const yDoc = content
     ? Buffer.from(
         encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))

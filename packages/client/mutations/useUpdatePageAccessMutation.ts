@@ -1,17 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
-import {ConnectionHandler, type UseMutationConfig, useMutation} from 'react-relay'
+import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useUpdatePageAccessMutation as TuseUpdatePageAccessMutation} from '../__generated__/useUpdatePageAccessMutation.graphql'
-import findNodeInConn from '../utils/relay/findNodeInConn'
-import safePutNodeInConn from './handlers/safePutNodeInConn'
+import {handleUpdatePage} from './useUpdatePageMutation'
 
 graphql`
   fragment useUpdatePageAccessMutation_notification on UpdatePageAccessPayload {
+    pageSection
     page {
       isPrivate
       isParentLinked
       parentPageId
       teamId
       sortOrder
+      userSortOrder
+      title
       access {
         viewer
         public
@@ -49,33 +51,15 @@ const getServerSubjectId = (subjectId: string) => {
   const PREFIX = 'preview:'
   return subjectId.startsWith(PREFIX) ? subjectId.slice(PREFIX.length) : subjectId
 }
+
 export const useUpdatePageAccessMutation = () => {
   const [commit, submitting] = useMutation<TuseUpdatePageAccessMutation>(mutation)
   const execute = (config: UseMutationConfig<TuseUpdatePageAccessMutation>) => {
     return commit({
-      updater(store) {
-        const page = store.getRootField('updatePageAccess')?.getLinkedRecord('page')
-        if (!page) return
-        const isPrivate = page.getValue('isPrivate')
-        const teamId = page.getValue('teamId')
-        const parentPageId = page.getValue('parentPageId')
-        const pageId = page.getDataID()
-        if (teamId || parentPageId) return
-        // If it's a top-level page, make sure it didn't move from Shared <-> Private
-        const viewer = store.getRoot().getLinkedRecord('viewer')!
-        const sharedConn = ConnectionHandler.getConnection(viewer, 'User_sharedPages', {
-          isPrivate: false,
-          parentPageId: null
-        })!
-        const privateConn = ConnectionHandler.getConnection(viewer, 'User_privatePages', {
-          isPrivate: true
-        })!
-        const targetConn = isPrivate ? privateConn : sharedConn
-        const inTarget = findNodeInConn(targetConn, pageId)
-        if (inTarget) return
-        const sourceConn = isPrivate ? sharedConn : privateConn
-        ConnectionHandler.deleteNode(sourceConn, pageId)
-        safePutNodeInConn(targetConn, page, store, 'sortOrder', true)
+      updater: (store) => {
+        const payload = store.getRootField('updatePageAccess')
+        if (!payload) return
+        handleUpdatePage(payload, {store})
       },
       ...config,
       variables: {

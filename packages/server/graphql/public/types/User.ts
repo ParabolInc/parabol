@@ -9,6 +9,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
+import {positionBefore} from '../../../../client/shared/sortOrder'
 import {
   AUTO_GROUPING_THRESHOLD,
   MAX_REDUCTION_PERCENTAGE,
@@ -23,7 +24,6 @@ import {
   selectPages,
   selectTasks
 } from '../../../postgres/select'
-import type {Page} from '../../../postgres/types'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
@@ -879,7 +879,7 @@ const User: ReqResolvers<'User'> = {
   pages: async (
     _source,
     {parentPageId, isPrivate, first, after, teamId, isArchived, textFilter},
-    {authToken, dataLoader}
+    {authToken}
   ) => {
     if (parentPageId && teamId) {
       throw new GraphQLError('parentPageId and teamId are mutually exclusive')
@@ -920,11 +920,10 @@ const User: ReqResolvers<'User'> = {
         }))
       }
     }
-    let pagesPlusOne: Page[]
     if (isPrivate === false) {
       const pg = getKysely()
       // this is for shared pages, which only return the top-most accessible page
-      pagesPlusOne = await pg
+      const pagesPlusOne = await pg
         .with('teams', (qc) =>
           qc
             .selectFrom('TeamMember')
@@ -936,9 +935,6 @@ const User: ReqResolvers<'User'> = {
           selectPages(qc as any)
             .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
             .where('PageAccess.userId', '=', viewerId)
-            .where('isPrivate', '=', false)
-            .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-            .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
             .where('deletedBy', 'is', null)
         )
 
@@ -962,40 +958,77 @@ const User: ReqResolvers<'User'> = {
             eb('teamId', 'not in', selectFrom('teams').select('teamId'))
           ])
         )
-        .orderBy('sortOrder')
+        .where('isPrivate', '=', false) // this must go down here so a shared child of a private page doesn't show up
+        .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+        .leftJoin('PageUserSortOrder', (join) =>
+          join
+            .on('PageUserSortOrder.userId', '=', viewerId)
+            .onRef('PageUserSortOrder.pageId', '=', 'p.id')
+        )
+        .select(({ref}) => [ref('PageUserSortOrder.sortOrder').as('userSortOrder'), 'p.sortOrder'])
+        .orderBy('userSortOrder', (od) => od.asc().nullsFirst())
+        .$if(!!after, (qb) => qb.where('PageUserSortOrder.sortOrder', '>', after!))
         .limit(first + 1)
         .execute()
+      const hasUnsorted = pagesPlusOne[0]?.userSortOrder === null
+      if (hasUnsorted) {
+        let curSortOrder = ' '
+        // the nulls will be at the beginning of the array
+        await Promise.all(
+          pagesPlusOne.toReversed().map((p) => {
+            if (p.userSortOrder) {
+              curSortOrder = p.userSortOrder
+              return undefined
+            } else {
+              p.userSortOrder = positionBefore(curSortOrder)
+              curSortOrder = p.userSortOrder
+              return pg
+                .insertInto('PageUserSortOrder')
+                .values({
+                  pageId: p.id,
+                  userId: viewerId,
+                  sortOrder: p.userSortOrder
+                })
+                .execute()
+            }
+          })
+        )
+      }
       const hasNextPage = pagesPlusOne.length > first
       const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
-      await Promise.all(
-        pages.map(async (page) => {
-          const userSortOrder = await dataLoader
-            .get('pageUserSortOrder')
-            .load({pageId: page.id, userId: viewerId})
-          page.sortOrder = userSortOrder ?? page.sortOrder
-        })
-      )
-    } else {
-      pagesPlusOne = await selectPages()
-        .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
-        .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
-        .where('PageAccess.userId', '=', viewerId)
-        .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
-        .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
-        .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
-        .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
-        .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-        // TODO make this a variable, but for now, hide summaries from everything
-        .where('summaryMeetingId', 'is', null)
-        .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
-        .where('deletedBy', 'is', null)
-        .orderBy('sortOrder')
-        .limit(first + 1)
-        .execute()
+      return {
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: pages.at(0)?.userSortOrder!,
+          endCursor: pages.at(-1)?.userSortOrder!
+        },
+        edges: pages.map((page) => ({
+          node: page,
+          cursor: page.userSortOrder!
+        }))
+      }
     }
+    const pagesPlusOne = await selectPages()
+      .innerJoin('PageAccess', 'PageAccess.pageId', 'Page.id')
+      .$if(!!dbParentPageId, (qb) => qb.where('parentPageId', '=', dbParentPageId!))
+      .where('PageAccess.userId', '=', viewerId)
+      .$if(!!teamId, (qb) => qb.where('teamId', '=', teamId!))
+      .$if(isPrivateDefined, (qb) => qb.where('isPrivate', '=', isPrivate!))
+      .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
+      .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
+      .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
+      // TODO make this a variable, but for now, hide summaries from everything
+      .where('summaryMeetingId', 'is', null)
+      .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
+      .where('deletedBy', 'is', null)
+      .orderBy('sortOrder')
+      .limit(first + 1)
+      .execute()
     // ok now we have ALL the pages the user has access to, but we need to filter out the ones
     const hasNextPage = pagesPlusOne.length > first
     const pages = hasNextPage ? pagesPlusOne.slice(0, -1) : pagesPlusOne
+
     return {
       pageInfo: {
         hasNextPage,

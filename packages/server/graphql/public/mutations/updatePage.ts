@@ -14,22 +14,24 @@ import {privatizePage} from './helpers/privatizePage'
 export const MAX_PAGE_DEPTH = 10
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
-  {pageId, teamId, sortOrder, makePrivate},
+  {pageId, teamId, sortOrder, sourceSection, targetSection},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const [dbPageId] = CipherId.fromClient(pageId)
-  if (makePrivate && teamId) {
-    throw new GraphQLError('makePrivate can only be true if teamId is null')
+  if (sourceSection === 'private' && targetSection === 'shared') {
+    throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }
-
+  if (targetSection === 'team' && !teamId) {
+    throw new GraphQLError('teamId must be non-null if targetSection is team')
+  }
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
   if (!page) throw new GraphQLError('Invalid pageId')
-  const hasChangedParent = page.teamId !== teamId || page.parentPageId !== null
-  if (hasChangedParent || makePrivate) {
+  const isReorder = sourceSection === targetSection && (!teamId || teamId === page.teamId)
+  if (!isReorder) {
     // changing parents will change permissions.
     const userRole = await dataLoader
       .get('pageAccessByUserId')
@@ -40,30 +42,63 @@ const updatePage: MutationResolvers['updatePage'] = async (
     }
   }
 
-  // sortOrder is only used for pages without a parentPageId
+  // sortOrder is only used for pages without a parentPageId, or shared pages
   // else, the sortOrder is determined by the parent's order of canonical page links
   const nextSortOrder = await getPageNextSortOrder(
     sortOrder,
+    targetSection === 'shared',
     viewerId,
     page.isPrivate,
     teamId || null
   )
   const pg = getKysely()
-  if (makePrivate && !page.isPrivate) {
-    await privatizePage(viewerId, dbPageId, nextSortOrder)
-  } else if (teamId && teamId !== page.teamId) {
-    await movePageToNewTeam(viewerId, dbPageId, teamId, nextSortOrder)
-  } else if (teamId === page.teamId && !page.parentPageId) {
-    // simple reorder
-    await pg
-      .updateTable('Page')
-      .set({sortOrder: nextSortOrder})
-      .where('id', '=', dbPageId)
-      .execute()
-  } else if (!teamId) {
-    await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
+  if (sourceSection === targetSection) {
+    if (targetSection === 'team' && page.teamId !== teamId) {
+      // move from team A to team B
+      await movePageToNewTeam(viewerId, dbPageId, teamId!, nextSortOrder)
+    } else {
+      // simple reorder
+      if (targetSection === 'shared') {
+        await pg
+          .insertInto('PageUserSortOrder')
+          .values({
+            userId: viewerId,
+            pageId: dbPageId,
+            sortOrder: nextSortOrder
+          })
+          .onConflict((oc) =>
+            oc.columns(['userId', 'pageId']).doUpdateSet({
+              sortOrder: nextSortOrder
+            })
+          )
+          .execute()
+      } else {
+        await pg
+          .updateTable('Page')
+          .set({sortOrder: nextSortOrder})
+          .where('id', '=', dbPageId)
+          .execute()
+      }
+    }
   } else {
-    throw new GraphQLError('No page update could be performed')
+    // moving from 1 section to another
+    if (targetSection === 'private') {
+      if (!page.isPrivate) {
+        await privatizePage(viewerId, dbPageId, nextSortOrder)
+      } else {
+        throw new GraphQLError('Page is already private')
+      }
+    } else if (targetSection === 'shared') {
+      if (!page.isPrivate) {
+        // private pages cannot be moved to shared
+        await movePageToTopLevel(viewerId, dbPageId, nextSortOrder)
+      } else {
+        throw new GraphQLError('Private page cannot be moved to shared')
+      }
+    } else {
+      // moving to a team
+      await movePageToNewTeam(viewerId, dbPageId, teamId!, nextSortOrder)
+    }
   }
 
   if (page.parentPageId) {
