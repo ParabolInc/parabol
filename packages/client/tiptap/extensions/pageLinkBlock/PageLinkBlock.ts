@@ -1,5 +1,5 @@
 import {GapCursor} from '@tiptap/pm/gapcursor'
-import {Slice} from '@tiptap/pm/model'
+import {Fragment, type Node, Slice} from '@tiptap/pm/model'
 import {Plugin, TextSelection} from '@tiptap/pm/state'
 import {isNodeSelection, type JSONContent, ReactNodeViewRenderer} from '@tiptap/react'
 import type * as Y from 'yjs'
@@ -89,6 +89,31 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     return [
       new Plugin({
         props: {
+          /**
+           * Intercept slice being copied to the clipboard.
+           * We walk the slice, and if any node is a pageLinkBlock with canonical=true,
+           * we clone it with canonical=false.
+           * That way folks don't accidentally copy a canon page link block & paste it on another page
+           * Which would trigger a move
+           */
+          transformCopied(slice: Slice): Slice {
+            function decanonPageLinks(frag: Fragment): Fragment {
+              const newChildren: Node[] = []
+              frag.forEach((child) => {
+                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical) {
+                  console.log('setting to false')
+                  const newAttrs = {...child.attrs, canonical: false}
+                  newChildren.push(child.type.create(newAttrs, null, child.marks))
+                } else {
+                  newChildren.push(child)
+                }
+              })
+              return Fragment.fromArray(newChildren)
+            }
+            // return slice
+            const newContent = decanonPageLinks(slice.content)
+            return new Slice(newContent, slice.openStart, slice.openEnd)
+          },
           handleKeyDown(view, event) {
             // return false // false means you can backspace to delete pagelinks
             const isBackspace = event.key === 'Backspace'
@@ -107,7 +132,9 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
               : isNodeSelection(selection)
                 ? selection.node
                 : null
-            if (!nextNode || nextNode.type.name !== 'pageLinkBlock') return false
+            // non-canonical pageLinks can be deleted like normal nodes
+            if (!nextNode || nextNode.type.name !== 'pageLinkBlock' || !nextNode.attrs.canonical)
+              return false
             const offset = isBackspace
               ? $from.pos - nextNode.nodeSize
               : $from.pos + nextNode.nodeSize
