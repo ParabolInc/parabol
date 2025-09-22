@@ -17,7 +17,8 @@ export const publishSummaryPage = async (
   // start creating meeting summaries for everyone, feature flag or not
   const page = await createTopLevelPage(userId, dataLoader, {
     teamId,
-    mutatorId
+    mutatorId,
+    summaryMeetingId: meetingId
   })
   const {id: pageId} = page
   await getKysely()
