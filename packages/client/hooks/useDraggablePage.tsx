@@ -3,6 +3,7 @@ import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
+import type {PageSectionEnum} from '../__generated__/useUpdatePageMutation.graphql'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
@@ -105,16 +106,15 @@ export const useDraggablePage = (
     }
     const isDropBelow = dropTarget.hasAttribute('data-drop-below')
     const section = dropTarget.closest('[data-pages-connection]')
-    const topLevelConnectionKey = section
+    const targetConnectionKey = section
       ? (section.getAttribute('data-pages-connection') as PageConnectionKey)
       : 'User_pages'
-    const targetParentPageIdOrTeamId = isDropBelow
+    // A parent section is either the teamId or parentPageId that contains the page
+    const targetParentSection = isDropBelow
       ? dropTarget.getAttribute('data-drop-below') || null
       : dropTarget.getAttribute('data-drop-in')
 
-    const targetParentPageId = targetParentPageIdOrTeamId?.startsWith('page:')
-      ? targetParentPageIdOrTeamId
-      : null
+    const targetParentPageId = targetParentSection?.startsWith('page:') ? targetParentSection : null
     // null means a drop-in, -1 means at the beginning, else below whatever number is there
     const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
     const source = atmosphere.getStore().getSource()
@@ -183,10 +183,9 @@ export const useDraggablePage = (
         frag.insert(nextIdx, [createPageLinkBlock() as any])
       })
     } else {
+      // the target is top-level, under a team, shared pages, or private pages
       const targetTeamId =
-        targetParentPageIdOrTeamId && !targetParentPageId ? targetParentPageIdOrTeamId : undefined
-
-      const targetConnectionKey = targetParentPageIdOrTeamId ? 'User_pages' : topLevelConnectionKey
+        targetParentSection && !targetParentPageId ? targetParentSection : undefined
       const {viewerId} = atmosphere
       const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
       const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
@@ -195,15 +194,19 @@ export const useDraggablePage = (
         teamId: targetTeamId
       })
       const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
+      const connectionToSection: Record<PageConnectionKey, PageSectionEnum> = {
+        User_privatePages: 'private',
+        User_sharedPages: 'shared',
+        User_pages: 'team'
+      }
+
       execute({
         variables: {
           pageId,
           sortOrder,
-          teamId: targetTeamId,
-          makePrivate:
-            !targetParentPageId &&
-            targetConnectionKey === 'User_privatePages' &&
-            sourceConnectionKey !== targetConnectionKey
+          sourceSection: connectionToSection[sourceConnectionKey],
+          targetSection: connectionToSection[targetConnectionKey],
+          teamId: targetTeamId
         },
         onError: snackOnError(atmosphere, 'updatePageErr'),
         sourceTeamId,
@@ -212,8 +215,8 @@ export const useDraggablePage = (
         targetConnectionKey
       })
     }
-    if (sourceParentPageId) {
-      // if the source has a parent, remove the canonical page link. the GQL subscription will propagate the removal
+    if (sourceParentPageId && sourceConnectionKey === 'User_pages') {
+      // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
         const frag = document.getXmlFragment('default')
         const pageCode = Number(pageId.split('page:')[1])

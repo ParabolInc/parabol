@@ -66,7 +66,7 @@ export const updatePageAccessTable = (
     )
 
   if (!skipDeleteOld) {
-    res.with('deleteOld', (qc) =>
+    return res.with('deleteOld', (qc) =>
       qc
         .deleteFrom('PageAccess')
         .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
@@ -80,7 +80,7 @@ export const updatePageAccessTable = (
             )
           )
         )
-    )
+    ) as any as typeof res
   }
   return res
 }

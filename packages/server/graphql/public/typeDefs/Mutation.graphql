@@ -2163,6 +2163,14 @@ type Mutation {
 		"""
 		sortOrder: String!
 		"""
+		The section the page is being moved from
+		"""
+		sourceSection: PageSectionEnum
+		"""
+		The section the page is being moved to
+		"""
+		targetSection: PageSectionEnum
+		"""
 		The new teamId, if moved to a team
 		"""
 		teamId: ID

@@ -6,12 +6,17 @@ export const movePageToTopLevel = async (viewerId: string, pageId: number, sortO
     .with('PageUserSortOrder', (qc) =>
       // this only fires for top-level shared pages
       qc
-        .updateTable('PageUserSortOrder')
-        .set({
+        .insertInto('PageUserSortOrder')
+        .values({
+          userId: viewerId,
+          pageId,
           sortOrder
         })
-        .where('userId', '=', viewerId)
-        .where('pageId', '=', pageId)
+        .onConflict((oc) =>
+          oc.columns(['userId', 'pageId']).doUpdateSet({
+            sortOrder
+          })
+        )
     )
     .updateTable('Page')
     .set({

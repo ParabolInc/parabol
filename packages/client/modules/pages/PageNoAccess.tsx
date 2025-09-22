@@ -1,11 +1,11 @@
 import LockIcon from '@mui/icons-material/Lock'
-import {DialogTitle} from '@mui/material'
 import {useHistory, useLocation} from 'react-router'
 import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 
 interface Props {}
 

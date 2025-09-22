@@ -28,15 +28,14 @@ const archivePage: MutationResolvers['archivePage'] = async (
   if (action === 'delete') {
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
   } else if (action === 'archive') {
+    await pg
+      .updateTable('Page')
+      .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
+      .where('id', '=', dbPageId)
+      .execute()
     if (page.parentPageId) {
+      // this will also set deletedAt/deletedBy, but there may be a bug that causes it to fail
       await removeCanonicalPageLinkFromPage(page.parentPageId, dbPageId)
-      // In the future, all user-defined pages will have a parent so we can get rid of the code below
-    } else {
-      await pg
-        .updateTable('Page')
-        .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
-        .where('id', '=', dbPageId)
-        .execute()
     }
     removeBacklinkedPageLinkBlocks({pageId: dbPageId})
   } else {
@@ -59,6 +58,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
     }
     const sortOrder = await getPageNextSortOrder(
       page.sortOrder,
+      false,
       viewerId,
       page.isPrivate,
       teamId === undefined ? page.teamId : teamId

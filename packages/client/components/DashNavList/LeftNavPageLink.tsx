@@ -46,6 +46,7 @@ export const LeftNavPageLink = (props: Props) => {
         isDraggingFirstChild
         isDraggingLastChild
         currentPageAncestorDepth
+        userSortOrder
         sortOrder # used implicityly in store traversal by useDraggingPage
       }
     `,
@@ -68,6 +69,8 @@ export const LeftNavPageLink = (props: Props) => {
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
+  const isTopLevelShared = connectionKey === 'User_sharedPages'
+  const parentSection = isTopLevelShared ? '' : parentPageId || teamId || ''
   const {onPointerDown, ref} = useDraggablePage(
     id,
     isPrivate,
@@ -81,7 +84,6 @@ export const LeftNavPageLink = (props: Props) => {
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const isSelf = draggingPageId === id
   const isNextPeer = draggingPageId === nextPeerId && !showChildren
-  const isTopLevelShared = connectionKey === 'User_sharedPages'
   const isPrivateToTopLevelShared = isTopLevelShared && draggingPageIsPrivate
   const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
   const canDropBelow =
@@ -112,9 +114,7 @@ export const LeftNavPageLink = (props: Props) => {
             '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
             canDropBelow && 'cursor-pointer'
           )}
-          data-drop-below={
-            canDropBelow ? (showChildren ? id : parentPageId || teamId || '') : undefined
-          }
+          data-drop-below={canDropBelow ? (showChildren ? id : parentSection) : undefined}
           data-drop-idx={showChildren ? -1 : dropIdx}
           aria-expanded={showChildren}
         ></div>
@@ -141,7 +141,10 @@ export const LeftNavPageLink = (props: Props) => {
         </Link>
       </div>
       {showChildren && (
-        <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
+        <div
+          className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}
+          data-pages-connection={'User_pages'}
+        >
           <SubPagesRoot
             parentPageId={id}
             pageAncestors={nextPageAncestors}
