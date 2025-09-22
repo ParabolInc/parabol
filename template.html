@@ -32,8 +32,44 @@
     />
     <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <link href="__PUBLIC_PATH__/favicon.ico" rel="shortcut icon" crossorigin="" />
-    <%= htmlWebpackPlugin.tags.headTags.map((tag) => { tag.attributes.crossorigin=''; return tag
-    }).join('') %>
+    <%=
+      htmlWebpackPlugin.tags.headTags.map((tag) => {
+        tag.attributes.crossorigin=''
+        return tag
+      }).join('')
+    %>
+    <!-- Safari sometimes kills the service worker before it can load the initial script -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        function unregisterSW(event) {
+          console.error('Error loading main script', event, event.message)
+          if (event.message === 'Service Worker context closed') {
+            navigator.serviceWorker.getRegistration().then((req) => {
+              if (!req) return
+              req.unregister().then(() => {
+                location.reload()
+              })
+            })
+          }
+        }
+
+        // because the script tag is `defer` we need to attach the handler via script
+        document.querySelectorAll('script').forEach((script) => {
+          if (script.src) {
+            script.onerror = unregisterSW
+          }
+        })
+
+        // for debugging, maybe Safari closes the SW because there is an update available?
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (!reg) return
+          reg.addEventListener('updatefound', () => {
+            console.log('New service worker found')
+          })
+        })
+      }
+    </script>
+    <!-- End Safari hack -->
   </head>
 
   <body>
