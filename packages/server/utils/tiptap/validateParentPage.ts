@@ -1,8 +1,14 @@
 import {GraphQLError} from 'graphql'
 import {MAX_PAGE_DEPTH} from '../../graphql/public/mutations/updatePage'
+import {PAGE_ROLES} from '../../graphql/public/rules/hasPageAccess'
 import getKysely from '../../postgres/getKysely'
+import type {Pageroleenum} from '../../postgres/types/pg'
 
-export const validateParentPage = async (parentPageId: number, userId: string) => {
+export const validateParentPage = async (
+  parentPageId: number,
+  userId: string,
+  roleRequired: Pageroleenum
+) => {
   const pg = getKysely()
   const parentPageWithRole = await pg
     .selectFrom('Page')
@@ -19,6 +25,9 @@ export const validateParentPage = async (parentPageId: number, userId: string) =
   const {ancestorIds, role} = parentPageWithRole
   if (!role) {
     throw new GraphQLError('Invalid access to parentPageId')
+  }
+  if (PAGE_ROLES.indexOf(roleRequired) < PAGE_ROLES.indexOf(role)) {
+    throw new GraphQLError('Insufficient role on parentPage')
   }
 
   if (ancestorIds.length >= MAX_PAGE_DEPTH) {

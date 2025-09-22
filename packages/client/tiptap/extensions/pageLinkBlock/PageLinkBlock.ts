@@ -136,7 +136,8 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
             if (!nextNode || nextNode.type.name !== 'pageLinkBlock' || !nextNode.attrs.canonical)
               return false
             const offset = isBackspace
-              ? $from.pos - nextNode.nodeSize
+              ? // hitting backspace when the first node is a canonical page link blcok could result in offset = -1
+                Math.max(0, $from.pos - nextNode.nodeSize)
               : $from.pos + nextNode.nodeSize
             // if hitting backspace would put us between 2 nodes with no gap, use a GapCursor
             const pos = state.doc.resolve(offset)

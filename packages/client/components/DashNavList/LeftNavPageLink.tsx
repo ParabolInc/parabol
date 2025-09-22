@@ -60,8 +60,7 @@ export const LeftNavPageLink = (props: Props) => {
     isDraggingLastChild,
     teamId,
     isPrivate,
-    currentPageAncestorDepth,
-    userSortOrder
+    currentPageAncestorDepth
   } = page
   const pageCode = id.split(':')[1]
   const slug = getPageSlug(Number(pageCode), title)
@@ -136,9 +135,7 @@ export const LeftNavPageLink = (props: Props) => {
             draggingPageId={isSelf ? null : draggingPageId}
           />
           <LeftNavItem>
-            <span className='pl-1'>
-              {title || '<Untitled>'} {userSortOrder}
-            </span>
+            <span className='pl-1'>{title || '<Untitled>'}</span>
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>

@@ -141,7 +141,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
               const pageCode = CipherId.encrypt(newPage.id)
               pageLink.setAttribute('pageCode', pageCode)
             } else {
-              // check for duplicates
+              // check for duplicates on the same page
               const existingNode = root
                 .toArray()
                 .filter(
@@ -151,10 +151,12 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
                 .map((item) => item.getAttributes() as any as PageLinkBlockAttributes)
                 .find((attr) => attr.pageCode === childPageCode && attr.canonical === true)
               if (existingNode) {
+                // the viewer is programmatically attempting to inject a second canonical page link
                 pageLink.setAttribute('canonical', false)
                 pageLink.observe(nonCanonlinkObserver)
               } else {
-                // TODO: delete the page from the old document
+                // a page link either got moved or the viewer is trying to programmatically add one
+                // in either case, move the page link from the old parent to new
                 movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
               }
             }
