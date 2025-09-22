@@ -69,10 +69,36 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   const root = document.getXmlFragment('default')
   // FIXME: this gets called once per document load & the context is tied to the user, which it should not be
   // Also, we don't want 2 servers doing the same thing...
+
+  const nonCanonlinkObserver = (e: Y.YXmlEvent) => {
+    // observe all links to make sure client does not change pageCode or canonical values
+    // technically we should monitor canonical links to make sure they don't change the pageCode
+    for (const [key, val] of e.keys) {
+      if (key === 'canonical') {
+        const target = e.target as Y.XmlElement<PageLinkBlockAttributes>
+        const newValue = target.getAttribute('canonical')
+        if (newValue) {
+          target.setAttribute('canonical', false)
+        }
+      } else if (key === 'pageCode' && val.oldValue !== -1) {
+        const target = e.target as Y.XmlElement<PageLinkBlockAttributes>
+        target.setAttribute('pageCode', val.oldValue)
+      }
+    }
+  }
+  root
+    .toArray()
+    .filter(
+      (n): n is Y.XmlElement =>
+        n instanceof Y.XmlElement &&
+        n.nodeName === 'pageLinkBlock' &&
+        n.getAttribute('canonical') === (false as any)
+    )
+    .forEach((link) => link.observe(nonCanonlinkObserver))
+
   root.observe(async (event) => {
     const {changes, transaction} = event
     const {added, deleted} = changes
-    // the
     const userId = transaction.origin?.context?.userId
     // watch for new PageLinks
     // If it's a sentinel, mint a new page
@@ -115,8 +141,28 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
               const pageCode = CipherId.encrypt(newPage.id)
               pageLink.setAttribute('pageCode', pageCode)
             } else {
-              await movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
+              // check for duplicates on the same page
+              const existingNode = root
+                .toArray()
+                .filter(
+                  (n): n is Y.XmlElement =>
+                    n instanceof Y.XmlElement && n.nodeName === 'pageLinkBlock' && n !== pageLink
+                )
+                .map((item) => item.getAttributes() as any as PageLinkBlockAttributes)
+                .find((attr) => attr.pageCode === childPageCode && attr.canonical === true)
+              if (existingNode) {
+                // the viewer is programmatically attempting to inject a second canonical page link
+                pageLink.setAttribute('canonical', false)
+                pageLink.observe(nonCanonlinkObserver)
+              } else {
+                // a page link either got moved or the viewer is trying to programmatically add one
+                // in either case, move the page link from the old parent to new
+                movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
+              }
             }
+          } else {
+            // make sure a client doesn't try to convert a non-canonical link to canonical. Only 1 can exist
+            pageLink.observe(nonCanonlinkObserver)
           }
         }
       } catch (e) {

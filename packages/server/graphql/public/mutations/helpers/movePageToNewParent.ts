@@ -21,7 +21,7 @@ export const movePageToNewParent = async (
     .executeTakeFirstOrThrow()
   // the child page will already have the correct parent if we created a PageLink on the parent doc
   if (childPage.parentPageId === parentPageId) return
-  const parentPageWithRole = await validateParentPage(parentPageId, viewerId)
+  const parentPageWithRole = await validateParentPage(parentPageId, viewerId, 'editor')
   const {ancestorIds, isPrivate} = parentPageWithRole
   if (ancestorIds.includes(pageId) || parentPageId === pageId) {
     throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)

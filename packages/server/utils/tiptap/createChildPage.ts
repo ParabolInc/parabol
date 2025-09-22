@@ -8,7 +8,7 @@ import {validateParentPage} from './validateParentPage'
 
 export const createChildPage = async (parentPageId: number, userId: string) => {
   const pg = getKysely()
-  const parentPageWithRole = await validateParentPage(parentPageId, userId)
+  const parentPageWithRole = await validateParentPage(parentPageId, userId, 'viewer')
   const {isPrivate, ancestorIds} = parentPageWithRole
   const page = await pg
     .insertInto('Page')
