@@ -45,7 +45,7 @@ export const useAuditLogs = (config: Config): Plugin<ServerContext> => {
         operation: operationName,
         variables: sanitizedVaribles
       }
-      console.log(auditLog)
+      console.log(JSON.stringify(auditLog))
     }
   }
 }
