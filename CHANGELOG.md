@@ -5,6 +5,44 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.24.0](https://github.com/ParabolInc/parabol/compare/v10.23.9...v10.24.0) (2025-09-22)
+
+
+### Added
+
+* add audit logs ([#12048](https://github.com/ParabolInc/parabol/issues/12048)) ([ec839f8](https://github.com/ParabolInc/parabol/commit/ec839f85bcddc8917084dd2266c1be8db39e999c))
+
+
+### Fixed
+
+* add error handling on initial script load ([#12073](https://github.com/ParabolInc/parabol/issues/12073)) ([3c3e090](https://github.com/ParabolInc/parabol/commit/3c3e090361df53561856b68a4920fb08804c07a1))
+* user sort order for shared pages ([#12075](https://github.com/ParabolInc/parabol/issues/12075)) ([1f6b890](https://github.com/ParabolInc/parabol/commit/1f6b890991893df9932aa1f5265c525a8b39f636))
+
+
+### Changed
+
+* disable static file handle if not needed ([#12034](https://github.com/ParabolInc/parabol/issues/12034)) ([5e355f3](https://github.com/ParabolInc/parabol/commit/5e355f32d0fce26bf04cdfeeb88c09233ee2e47e))
+
+## [10.23.9](https://github.com/ParabolInc/parabol/compare/v10.23.8...v10.23.9) (2025-09-18)
+
+
+### Fixed
+
+* dispose dataloaders on socket disconnect ([#12070](https://github.com/ParabolInc/parabol/issues/12070)) ([e3f4750](https://github.com/ParabolInc/parabol/commit/e3f475084e2f067ded6db2b4dc7eeeb1b09dd8ed))
+
+## [10.23.8](https://github.com/ParabolInc/parabol/compare/v10.23.7...v10.23.8) (2025-09-17)
+
+
+### Fixed
+
+* dont download packages newer than 2 days old by default ([#12063](https://github.com/ParabolInc/parabol/issues/12063)) ([64aad45](https://github.com/ParabolInc/parabol/commit/64aad45b7a791d897021dbadbb03eb1a726078a8))
+
+
+### Changed
+
+* add dataloader cache debugging field ([#12068](https://github.com/ParabolInc/parabol/issues/12068)) ([7b78fc2](https://github.com/ParabolInc/parabol/commit/7b78fc231d93d43f48b1bc9b3737b740a3ae9299))
+* do not run dev with inspect by default ([#12067](https://github.com/ParabolInc/parabol/issues/12067)) ([485b0c7](https://github.com/ParabolInc/parabol/commit/485b0c724df59babb49ca7e277ab6c7cb8b2f039))
+
 ## [10.23.7](https://github.com/ParabolInc/parabol/compare/v10.23.6...v10.23.7) (2025-09-16)
 
 

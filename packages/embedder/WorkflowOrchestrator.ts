@@ -93,7 +93,7 @@ export class WorkflowOrchestrator {
     if (!step)
       return this.failJob(jobId, retryCount, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
-    const dataLoader = getNewDataLoader()
+    const dataLoader = getNewDataLoader('WorkflowOrchestrator')
     let result: Awaited<ReturnType<typeof run>> = false
     const data = {...jobData, embeddingsMetadataId, model}
     try {

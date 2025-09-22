@@ -94,7 +94,7 @@ test('Result is mapped to correct id', async () => {
     }
   ])
 
-  const dataloader = getNewDataLoader()
+  const dataloader = getNewDataLoader('test')
 
   const activeOrgUsers = await dataloader
     .get('activeOrganizationUsersByOrgId')
@@ -158,7 +158,7 @@ test('Inactive users are ignored', async () => {
     }
   ])
 
-  const dataloader = getNewDataLoader()
+  const dataloader = getNewDataLoader('test')
 
   const activeOrgUsers = await dataloader
     .get('activeOrganizationUsersByOrgId')

@@ -32,8 +32,30 @@
     />
     <link href="/manifest.json" rel="manifest" crossorigin="use-credentials" />
     <link href="__PUBLIC_PATH__/favicon.ico" rel="shortcut icon" crossorigin="" />
-    <%= htmlWebpackPlugin.tags.headTags.map((tag) => { tag.attributes.crossorigin=''; return tag
-    }).join('') %>
+    <%=
+      htmlWebpackPlugin.tags.headTags.map((tag) => {
+        tag.attributes.crossorigin=''
+        return tag
+      }).join('')
+    %>
+    <!-- Safari sometimes kills the service worker before it can load the initial script -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        // for debugging, maybe Safari closes the SW because there is an update available?
+        navigator.serviceWorker.getRegistration().then((reg) => {
+          if (!reg) return
+          reg.addEventListener('updatefound', () => {
+            console.log('New service worker found')
+          })
+          if (reg.active) {
+            reg.active.addEventListener('error', (e) => {
+              console.log('Service worker error', e)
+            })
+          }
+        })
+      }
+    </script>
+    <!-- End Safari hack -->
   </head>
 
   <body>
