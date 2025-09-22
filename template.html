@@ -41,31 +41,17 @@
     <!-- Safari sometimes kills the service worker before it can load the initial script -->
     <script>
       if ('serviceWorker' in navigator) {
-        function unregisterSW(event) {
-          console.error('Error loading main script', event, event.message)
-          if (event.message === 'Service Worker context closed') {
-            navigator.serviceWorker.getRegistration().then((req) => {
-              if (!req) return
-              req.unregister().then(() => {
-                location.reload()
-              })
-            })
-          }
-        }
-
-        // because the script tag is `defer` we need to attach the handler via script
-        document.querySelectorAll('script').forEach((script) => {
-          if (script.src) {
-            script.onerror = unregisterSW
-          }
-        })
-
         // for debugging, maybe Safari closes the SW because there is an update available?
         navigator.serviceWorker.getRegistration().then((reg) => {
           if (!reg) return
           reg.addEventListener('updatefound', () => {
             console.log('New service worker found')
           })
+          if (reg.active) {
+            reg.active.addEventListener('error', (e) => {
+              console.log('Service worker error', e)
+            })
+          }
         })
       }
     </script>

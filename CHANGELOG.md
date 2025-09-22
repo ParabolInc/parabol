@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.24.1](https://github.com/ParabolInc/parabol/compare/v10.24.0...v10.24.1) (2025-09-22)
+
+
+### Fixed
+
+* prevent canonical page link duplicates ([#12083](https://github.com/ParabolInc/parabol/issues/12083)) ([35f924f](https://github.com/ParabolInc/parabol/commit/35f924f2a98ee6e721e14d1ab27ddc43f06f8e74))
+* summaryMeetingId on the Page table ([#12086](https://github.com/ParabolInc/parabol/issues/12086)) ([34c663a](https://github.com/ParabolInc/parabol/commit/34c663a2c6c02207373dfa13de4297abf89be997))
+
+
+### Changed
+
+* more Safari SW debugging ([#12078](https://github.com/ParabolInc/parabol/issues/12078)) ([c1a845a](https://github.com/ParabolInc/parabol/commit/c1a845a00fd46d7f72f0388698fdfe75943d73aa))
+* single line audit logs ([#12081](https://github.com/ParabolInc/parabol/issues/12081)) ([f4aac12](https://github.com/ParabolInc/parabol/commit/f4aac126e69a7c4462293c3fd217a7457cb32282))
+
 ## [10.24.0](https://github.com/ParabolInc/parabol/compare/v10.23.9...v10.24.0) (2025-09-22)
 
 
