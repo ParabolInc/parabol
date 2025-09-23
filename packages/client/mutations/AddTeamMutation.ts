@@ -55,17 +55,12 @@ const popTeamCreatedToast: OnNextHandler<
   history && history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_notification$data> = (
-  payload,
-  {store}
-) => {
-  const team = payload.getLinkedRecord('team')
-  handleAddTeams(team, store)
-}
-
 export const addTeamMutationNotificationUpdater: SharedUpdater<
   AddTeamMutation_notification$data
 > = (payload, {store}) => {
+  const team = payload.getLinkedRecord('team')
+  handleAddTeams(team, store)
+
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
@@ -83,7 +78,7 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHa
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
-      addTeamTeamUpdater(payload, {atmosphere, store})
+      addTeamMutationNotificationUpdater(payload, {atmosphere, store})
     },
     // optimistic updater is too brittle because if we are missing a single field it could break
     onCompleted: (res, errors) => {
