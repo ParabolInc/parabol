@@ -18,9 +18,10 @@ import {SubPagesRoot} from './SubPagesRoot'
 interface Props {
   teamRef: LeftNavTeamLink_team$key
   draggingPageId: string | null
+  closeMobileSidebar?: () => void
 }
 export const LeftNavTeamLink = (props: Props) => {
-  const {teamRef, draggingPageId} = props
+  const {closeMobileSidebar, teamRef, draggingPageId} = props
   const team = useFragment(
     graphql`
       fragment LeftNavTeamLink_team on Team {
@@ -89,6 +90,7 @@ export const LeftNavTeamLink = (props: Props) => {
             if (draggingPageId) {
               e.preventDefault()
             }
+            closeMobileSidebar?.()
           }}
         >
           <ExpandPageChildrenButton

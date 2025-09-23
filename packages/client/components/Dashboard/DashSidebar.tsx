@@ -1,4 +1,15 @@
 import styled from '@emotion/styled'
+import AddIcon from '@mui/icons-material/Add'
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import CreditScoreIcon from '@mui/icons-material/CreditScore'
+import ForumIcon from '@mui/icons-material/Forum'
+import GroupIcon from '@mui/icons-material/Group'
+import GroupsIcon from '@mui/icons-material/Groups'
+import KeyIcon from '@mui/icons-material/Key'
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
@@ -37,11 +48,6 @@ const NavMain = styled('div')({
   overflowY: 'auto'
 })
 
-const NavItem = styled(LeftDashNavItem)({
-  borderRadius: 44,
-  paddingLeft: 16
-})
-
 const NavList = styled(DashNavList)({
   paddingLeft: 16
 })
@@ -70,7 +76,6 @@ const DashSidebar = (props: Props) => {
         ...StandardHub_viewer
         ...DashNavList_viewer
         organizations {
-          ...DashNavList_organization
           id
           name
         }
@@ -93,8 +98,8 @@ const DashSidebar = (props: Props) => {
           <Contents>
             <div className='px-3'>
               <NavItemsWrap>
-                <NavItem
-                  icon={'arrowBack'}
+                <LeftDashNavItem
+                  Icon={ArrowBackIcon}
                   href={'/me/organizations'}
                   label={'Organizations'}
                   exact
@@ -104,33 +109,33 @@ const DashSidebar = (props: Props) => {
                     {name}
                   </span>
                 </div>
-                <NavItem
-                  icon={'creditScore'}
+                <LeftDashNavItem
+                  Icon={CreditScoreIcon}
                   href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                   label={'Plans & Billing'}
                 />
-                <NavItem
-                  icon={'groups'}
+                <LeftDashNavItem
+                  Icon={GroupsIcon}
                   href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
                   label={'Teams'}
                 />
-                <NavItem
-                  icon={'group'}
+                <LeftDashNavItem
+                  Icon={GroupIcon}
                   href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
                   label={'Members'}
                 />
-                <NavItem
-                  icon={'work'}
+                <LeftDashNavItem
+                  Icon={WorkIcon}
                   href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                   label={'Organization Settings'}
                 />
-                <NavItem
-                  icon={'appRegistration'}
+                <LeftDashNavItem
+                  Icon={AppRegistrationIcon}
                   href={`/me/organizations/${orgId}/${ORG_INTEGRATIONS_PAGE}`}
                   label={'Integration Settings'}
                 />
-                <NavItem
-                  icon={'key'}
+                <LeftDashNavItem
+                  Icon={KeyIcon}
                   href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
                   label={'Authentication'}
                 />
@@ -148,13 +153,13 @@ const DashSidebar = (props: Props) => {
       <Nav isOpen={isOpen}>
         <Contents>
           <div className='px-3'>
-            <NavItem icon={'forum'} href={'/meetings'} label={'Meetings'} />
-            <NavItem icon={'timeline'} href={'/me'} label={'History'} exact />
-            <NavItem icon={'playlist_add_check'} href={'/me/tasks'} label={'Tasks'} />
-            <NavItem icon={'add'} href={'/newteam/1'} label={'Add a Team'} />
+            <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
+            <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
+            <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
+            <LeftDashNavItem Icon={AddIcon} href={'/newteam/1'} label={'Add a Team'} />
           </div>
           <NavMain>
-            <NavList viewerRef={viewer} organizationsRef={organizations} />
+            <NavList viewerRef={viewer} />
           </NavMain>
         </Contents>
       </Nav>
