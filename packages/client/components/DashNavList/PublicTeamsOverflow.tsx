@@ -7,10 +7,11 @@ import PublicTeamsModal from './PublicTeamsModal'
 
 type Props = {
   viewerRef: PublicTeamsOverflow_viewer$key
+  closeMobileSidebar?: () => void
 }
 
 export const PublicTeamsOverflow = (props: Props) => {
-  const {viewerRef} = props
+  const {closeMobileSidebar, viewerRef} = props
   const viewer = useFragment(
     graphql`
       fragment PublicTeamsOverflow_viewer on User {
@@ -28,7 +29,7 @@ export const PublicTeamsOverflow = (props: Props) => {
   const {organizations} = viewer
   const publicTeams = organizations
     .flatMap(({teams}) => teams)
-    .filter((team) => !team.isViewerOnTeam && !team.isPublic)
+    .filter((team) => !team.isViewerOnTeam && team.isPublic)
   const [showModal, setShowModal] = useState(false)
   const publicTeamsCount = publicTeams.length
 
@@ -37,6 +38,7 @@ export const PublicTeamsOverflow = (props: Props) => {
   }
 
   const handleClick = () => {
+    closeMobileSidebar?.()
     setShowModal(true)
   }
   return (

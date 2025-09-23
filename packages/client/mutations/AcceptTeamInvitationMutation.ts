@@ -55,7 +55,6 @@ graphql`
         id
         name
         isPaid
-        ...DashNavList_organization
       }
       ...PublicTeamsFrag_team
     }

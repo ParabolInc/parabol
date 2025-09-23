@@ -1,116 +1,46 @@
-import styled from '@emotion/styled'
-import {
-  AccountBox,
-  Add,
-  AppRegistration,
-  ArrowBack,
-  AutoAwesome,
-  CreditScore,
-  ExitToApp,
-  Forum,
-  Group,
-  Groups,
-  Key,
-  ManageAccounts,
-  PlaylistAddCheck,
-  Timeline,
-  Warning,
-  WorkOutline
-} from '@mui/icons-material'
-import {useHistory, useRouteMatch} from 'react-router'
-import PlainButton from '~/components/PlainButton/PlainButton'
-import {PALETTE} from '~/styles/paletteV3'
-import {NavSidebar} from '~/types/constEnums'
-
-const NavItem = styled(PlainButton)<{isActive: boolean}>(({isActive}) => ({
-  alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.SLATE_300 : undefined,
-  borderRadius: 4,
-  color: PALETTE.SLATE_900,
-  display: 'flex',
-  fontSize: NavSidebar.FONT_SIZE,
-  fontWeight: isActive ? 600 : 400,
-  lineHeight: NavSidebar.LINE_HEIGHT,
-  marginBottom: 2,
-  marginTop: 2,
-  paddingBottom: 5,
-  paddingRight: 12,
-  paddingTop: 5,
-  textDecoration: 'none',
-  transition: `background-color 100ms ease-in`,
-  userSelect: 'none',
-  width: '100%',
-  ':hover, :focus, :active': {
-    backgroundColor: PALETTE.SLATE_300
-  }
-}))
-
-const StyledIcon = styled('div')<{isActive: boolean}>(({isActive}) => ({
-  fontSize: 18,
-  height: 18,
-  width: 18,
-  color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600,
-  marginRight: 12
-}))
-
-const Label = styled('div')({
-  flex: 1,
-  wordBreak: 'break-word'
-})
-
-const iconLookup = {
-  userSettings: <AccountBox fontSize='inherit' />,
-  magic: <AutoAwesome fontSize='inherit' />,
-  arrowBack: <ArrowBack fontSize='inherit' />,
-  creditScore: <CreditScore fontSize='inherit' />,
-  forum: <Forum fontSize='inherit' />,
-  playlist_add_check: <PlaylistAddCheck fontSize='inherit' />,
-  add: <Add fontSize='inherit' />,
-  exit_to_app: <ExitToApp fontSize='inherit' />,
-  manageAccounts: <ManageAccounts fontSize='inherit' />,
-  group: <Group fontSize='inherit' />,
-  groups: <Groups fontSize='inherit' />,
-  warning: <Warning fontSize='inherit' />,
-  work: <WorkOutline fontSize='inherit' />,
-  appRegistration: <AppRegistration fontSize='inherit' />,
-  timeline: <Timeline fontSize='inherit' />,
-  key: <Key fontSize='inherit' />
-}
+import type {SvgIconTypeMap} from '@mui/material'
+import type {OverridableComponent} from '@mui/material/OverridableComponent'
+import {useRouteMatch} from 'react-router'
+import {Link} from 'react-router-dom'
+import {cn} from '../../ui/cn'
+import {LeftNavItem} from '../DashNavList/LeftNavItem'
 
 interface Props {
-  className?: string
   onClick?: () => void
   label: string
-  href?: string
-  navState?: unknown
-  //FIXME 6062: change to React.ComponentType
-  icon?: keyof typeof iconLookup
+  href: string
+  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
   exact?: boolean
 }
 
 const LeftDashNavItem = (props: Props) => {
-  const {className, label, icon, href = '', navState, onClick} = props
-  const history = useHistory()
+  const {label, Icon, href, onClick, exact} = props
   const match = useRouteMatch(href)
-  const handleClick = () => {
-    if (href) {
-      history.push(href, navState)
-    }
-    onClick?.()
-  }
+  const isActive = !!match && (match?.isExact || !exact)
   return (
-    <NavItem
-      className={className}
-      onClick={handleClick}
-      isActive={!!match && (match?.isExact || !props.exact)}
-    >
-      {icon && (
-        <StyledIcon isActive={!!match && (match?.isExact || !props.exact)}>
-          {iconLookup[icon]}
-        </StyledIcon>
-      )}
-      <Label>{label}</Label>
-    </NavItem>
+    <div className='relative rounded-md'>
+      <div
+        data-highlighted={isActive ? '' : undefined}
+        className={cn(
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900'
+        )}
+      >
+        <Link draggable={false} to={href} className={'flex w-full items-center'} onClick={onClick}>
+          <div
+            className={cn(
+              'flex size-6 shrink-0 items-center justify-center rounded-sm bg-inherit text-slate-600 group-data-highlighted:bg-slate-300'
+              // className
+            )}
+          >
+            <Icon className={'sm size-5 transition-transform'} />
+          </div>
+          <LeftNavItem>
+            <span className='pl-1'>{label}</span>
+          </LeftNavItem>
+        </Link>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,17 @@
 import styled from '@emotion/styled'
+import AccountBoxIcon from '@mui/icons-material/AccountBox'
+import AddIcon from '@mui/icons-material/Add'
+import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import CreditScoreIcon from '@mui/icons-material/CreditScore'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
+import ForumIcon from '@mui/icons-material/Forum'
+import GroupIcon from '@mui/icons-material/Group'
+import GroupsIcon from '@mui/icons-material/Groups'
+import KeyIcon from '@mui/icons-material/Key'
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+import TimelineIcon from '@mui/icons-material/Timeline'
+import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
@@ -65,11 +78,6 @@ const NavItemsWrap = styled('div')({
   padding: '10px 12px 0'
 })
 
-const NavItem = styled(LeftDashNavItem)({
-  borderRadius: 44,
-  paddingLeft: 16
-})
-
 const DashHR = styled('div')({
   borderBottom: `solid ${PALETTE.SLATE_400} 1px`,
   marginLeft: -8,
@@ -97,7 +105,6 @@ const MobileDashSidebar = (props: Props) => {
         ...StandardHub_viewer
         ...DashNavList_viewer
         organizations {
-          ...DashNavList_organization
           id
           name
         }
@@ -118,15 +125,15 @@ const MobileDashSidebar = (props: Props) => {
         <NavBlock>
           <Nav>
             <TopNavItemsWrap>
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'userSettings'}
+                Icon={AccountBoxIcon}
                 href={'/me/profile'}
                 label={'My Settings'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'exit_to_app'}
+                Icon={ExitToAppIcon}
                 href={'/signout'}
                 label={'Sign Out'}
                 exact
@@ -134,9 +141,9 @@ const MobileDashSidebar = (props: Props) => {
             </TopNavItemsWrap>
             <DashHR />
             <NavItemsWrap>
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'arrowBack'}
+                Icon={ArrowBackIcon}
                 href={'/me/organizations'}
                 label={'Organizations'}
                 exact
@@ -146,39 +153,39 @@ const MobileDashSidebar = (props: Props) => {
                   {name}
                 </span>
               </div>
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'creditScore'}
+                Icon={CreditScoreIcon}
                 href={`/me/organizations/${orgId}/${BILLING_PAGE}`}
                 label={'Plans & Billing'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'groups'}
+                Icon={GroupsIcon}
                 href={`/me/organizations/${orgId}/${TEAMS_PAGE}`}
                 label={'Teams'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'group'}
+                Icon={GroupIcon}
                 href={`/me/organizations/${orgId}/${MEMBERS_PAGE}`}
                 label={'Members'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'work'}
+                Icon={WorkIcon}
                 href={`/me/organizations/${orgId}/${ORG_SETTINGS_PAGE}`}
                 label={'Organization Settings'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'appRegistration'}
+                Icon={AppRegistrationIcon}
                 href={`/me/organizations/${orgId}/${ORG_INTEGRATIONS_PAGE}`}
                 label={'Integration Settings'}
               />
-              <NavItem
+              <LeftDashNavItem
                 onClick={handleMenuClick}
-                icon={'key'}
+                Icon={KeyIcon}
                 href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
                 label={'Authentication'}
               />
@@ -201,15 +208,15 @@ const MobileDashSidebar = (props: Props) => {
       <NavBlock>
         <Nav>
           <TopNavItemsWrap>
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'userSettings'}
+              Icon={AccountBoxIcon}
               href={'/me/profile'}
               label={'My Settings'}
             />
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'exit_to_app'}
+              Icon={ExitToAppIcon}
               href={'/signout'}
               label={'Sign Out'}
               exact
@@ -217,37 +224,33 @@ const MobileDashSidebar = (props: Props) => {
           </TopNavItemsWrap>
           <DashHR />
           <NavItemsWrap>
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'forum'}
+              Icon={ForumIcon}
               href={'/meetings'}
               label={'Meetings'}
             />
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'timeline'}
+              Icon={TimelineIcon}
               href={'/me'}
               label={'History'}
               exact
             />
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'playlist_add_check'}
+              Icon={PlaylistAddCheckIcon}
               href={'/me/tasks'}
               label={'Tasks'}
             />
-            <NavItem
+            <LeftDashNavItem
               onClick={handleMenuClick}
-              icon={'add'}
+              Icon={AddIcon}
               href={'/newteam/1'}
               label={'Add a Team'}
             />
           </NavItemsWrap>
-          <DashNavList
-            onClick={handleMenuClick}
-            organizationsRef={organizations}
-            viewerRef={viewer}
-          />
+          <DashNavList closeMobileSidebar={handleMenuClick} viewerRef={viewer} />
         </Nav>
       </NavBlock>
       <DashHR />

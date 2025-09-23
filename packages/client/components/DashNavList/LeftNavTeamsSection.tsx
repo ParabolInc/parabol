@@ -15,9 +15,10 @@ import PublicTeamsOverflow from './PublicTeamsOverflow'
 
 interface Props {
   viewerRef: LeftNavTeamsSection_viewer$key
+  closeMobileSidebar?: () => void
 }
 export const LeftNavTeamsSection = (props: Props) => {
-  const {viewerRef} = props
+  const {closeMobileSidebar, viewerRef} = props
   const viewer = useFragment(
     graphql`
       fragment LeftNavTeamsSection_viewer on User {
@@ -56,6 +57,7 @@ export const LeftNavTeamsSection = (props: Props) => {
   const history = useHistory()
   return (
     <div>
+      {/* TODO: handle no teams? e.g. {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />} */}
       <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 hover:bg-slate-300'>
         <LeftNavHeader>{'Teams'}</LeftNavHeader>
         <LeftNavItemButtons>
@@ -86,6 +88,7 @@ export const LeftNavTeamsSection = (props: Props) => {
                             {...dragProvided.dragHandleProps}
                           >
                             <LeftNavTeamLink
+                              closeMobileSidebar={closeMobileSidebar}
                               teamRef={team}
                               draggingPageId={draggingPageId ?? null}
                             />
@@ -96,7 +99,7 @@ export const LeftNavTeamsSection = (props: Props) => {
                   )
                 })}
                 {provided.placeholder}
-                <PublicTeamsOverflow viewerRef={viewer} />
+                <PublicTeamsOverflow viewerRef={viewer} closeMobileSidebar={closeMobileSidebar} />
               </div>
             )
           }}
