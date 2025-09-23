@@ -1,11 +1,11 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {isUserOrgAdmin} from '../../utils/authorization'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import MassInvitationPayload from '../types/MassInvitationPayload'
-import {isUserOrgAdmin} from '../../utils/authorization'
 
 export default {
   type: new GraphQLNonNull(MassInvitationPayload),
