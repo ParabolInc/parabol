@@ -5,6 +5,7 @@ import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import MassInvitationPayload from '../types/MassInvitationPayload'
+import {isUserOrgAdmin} from '../../utils/authorization'
 
 export default {
   type: new GraphQLNonNull(MassInvitationPayload),
@@ -28,9 +29,16 @@ export default {
         dataLoader.get('teams').load(teamId)
       ])
 
-      if (!user || !teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
-        // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
+      if (!user || !team || team.isArchived) {
         return {errorType: InvitationTokenError.NOT_FOUND}
+      }
+
+      if (!teamMember || !teamMember.isNotRemoved) {
+        const isOrgAdmin = await isUserOrgAdmin(userId, team.orgId, dataLoader)
+        if (!isOrgAdmin) {
+          // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
+          return {errorType: InvitationTokenError.NOT_FOUND}
+        }
       }
 
       return {
