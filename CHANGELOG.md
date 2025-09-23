@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.25.0](https://github.com/ParabolInc/parabol/compare/v10.24.1...v10.25.0) (2025-09-23)
+
+
+### Added
+
+* Pages to GA ([#12088](https://github.com/ParabolInc/parabol/issues/12088)) ([2fd0893](https://github.com/ParabolInc/parabol/commit/2fd08938549aba2ce605f0d4f6c62d518baf60f2))
+
 ## [10.24.1](https://github.com/ParabolInc/parabol/compare/v10.24.0...v10.24.1) (2025-09-22)
 
 
