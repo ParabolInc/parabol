@@ -1,4 +1,4 @@
-import type {TierEnum} from '../__generated__/AddOrgMutation_organization.graphql'
+import type {TierEnum} from '../__generated__/AddOrgMutation_notification.graphql'
 
 const sortByTier = <T extends readonly {tier: TierEnum | string; name: string}[]>(
   teamsOrOrgs: T

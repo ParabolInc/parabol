@@ -81,23 +81,14 @@ export default {
     })
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
+    const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
     const data = {
       orgId,
       teamId,
-      teamMemberId
+      teamMemberId,
+      removedSuggestedActionId
     }
-
-    const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
-    if (removedSuggestedActionId) {
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        viewerId,
-        'AddOrgPayload',
-        {removedSuggestedActionId},
-        subOptions
-      )
-    }
-    publish(SubscriptionChannel.ORGANIZATION, viewerId, 'AddOrgPayload', data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AddOrgPayload', data, subOptions)
 
     if (invitees?.length) {
       await inviteToTeamHelper(invitees, teamId, undefined, context)

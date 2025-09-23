@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 import type {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
-import type {AddTeamMutation_team$data} from '../__generated__/AddTeamMutation_team.graphql'
 import type {
   HistoryLocalHandler,
   OnNextHandler,
@@ -15,7 +14,8 @@ import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
-  fragment AddTeamMutation_team on AddTeamPayload {
+  fragment AddTeamMutation_notification on AddTeamPayload {
+    removedSuggestedActionId
     team {
       id
       name
@@ -28,12 +28,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment AddTeamMutation_notification on AddTeamPayload {
-    removedSuggestedActionId
-  }
-`
-
 const mutation = graphql`
   mutation AddTeamMutation($newTeam: NewTeamInput!, $invitees: [Email!]) {
     addTeam(newTeam: $newTeam, invitees: $invitees) {
@@ -41,15 +35,15 @@ const mutation = graphql`
         message
       }
       authToken
-      ...AddTeamMutation_team @relay(mask: false)
+      ...AddTeamMutation_notification @relay(mask: false)
     }
   }
 `
 
-const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team$data, OnNextHistoryContext> = (
-  payload,
-  {atmosphere, history}
-) => {
+const popTeamCreatedToast: OnNextHandler<
+  AddTeamMutation_notification$data,
+  OnNextHistoryContext
+> = (payload, {atmosphere, history}) => {
   const {team} = payload
   if (!team) return
   const {id: teamId, name: teamName} = team
@@ -61,14 +55,12 @@ const popTeamCreatedToast: OnNextHandler<AddTeamMutation_team$data, OnNextHistor
   history && history.push(`/team/${teamId}`)
 }
 
-export const addTeamTeamUpdater: SharedUpdater<AddTeamMutation_team$data> = (payload, {store}) => {
-  const team = payload.getLinkedRecord('team')
-  handleAddTeams(team, store)
-}
-
 export const addTeamMutationNotificationUpdater: SharedUpdater<
   AddTeamMutation_notification$data
 > = (payload, {store}) => {
+  const team = payload.getLinkedRecord('team')
+  handleAddTeams(team, store)
+
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
@@ -86,7 +78,7 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHa
     variables,
     updater: (store) => {
       const payload = store.getRootField('addTeam')
-      addTeamTeamUpdater(payload, {atmosphere, store})
+      addTeamMutationNotificationUpdater(payload, {atmosphere, store})
     },
     // optimistic updater is too brittle because if we are missing a single field it could break
     onCompleted: (res, errors) => {
