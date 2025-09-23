@@ -21,9 +21,7 @@ const organizationSubscription: SubscriptionResolvers['organizationSubscription'
     const orgIds = organizationUsers.map(({orgId}) => orgId)
 
     // RESOLUTION
-    const channelNames = orgIds
-      .concat(viewerId)
-      .map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
+    const channelNames = orgIds.map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
     const iter = getPubSub().subscribe(channelNames)
     return broadcastSubscription(iter, context)
   }

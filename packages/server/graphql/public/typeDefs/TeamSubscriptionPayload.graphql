@@ -5,7 +5,6 @@ type TeamSubscriptionPayload {
 	AddAtlassianAuthPayload: AddAtlassianAuthPayload
 	AddGitHubAuthPayload: AddGitHubAuthPayload
 	AddSlackAuthPayload: AddSlackAuthPayload
-	AddTeamPayload: AddTeamPayload
 	ArchiveTeamPayload: ArchiveTeamPayload
 	BatchArchiveTasksSuccess: BatchArchiveTasksSuccess
 	DenyPushInvitationPayload: DenyPushInvitationPayload

@@ -109,16 +109,16 @@ export default {
       }
 
       const removedSuggestedActionId = await removeSuggestedAction(viewerId, 'createNewTeam')
-      if (removedSuggestedActionId) {
-        publish(
-          SubscriptionChannel.NOTIFICATION,
-          viewerId,
-          'AddTeamPayload',
-          {removedSuggestedActionId},
-          subOptions
-        )
-      }
-      publish(SubscriptionChannel.TEAM, viewerId, 'AddTeamPayload', data, subOptions)
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        viewerId,
+        'AddTeamPayload',
+        {
+          ...data,
+          removedSuggestedActionId
+        },
+        subOptions
+      )
 
       if (invitees?.length) {
         await inviteToTeamHelper(invitees, teamId, undefined, context)
