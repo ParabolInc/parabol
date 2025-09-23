@@ -5,6 +5,7 @@ import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
+import getKysely from '../postgres/getKysely'
 import type {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
 import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import getJiraDimensionFieldMap, {
@@ -50,6 +51,7 @@ export const freshAtlassianAuth = (
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
   return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
     async (keys) => {
+      const pg = getKysely()
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
           const userAtlassianAuths = await getAtlassianAuthsByUserId(userId)
@@ -67,6 +69,14 @@ export const freshAtlassianAuth = (
           if (!decodedToken || decodedToken.exp < inAMinute) {
             const oauthRes = await AtlassianServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
+              // If we can't refresh it, it's broken. mark it inactive
+              await pg
+                .updateTable('AtlassianAuth')
+                .set({isActive: false})
+                .where('userId', '=', userId)
+                .where('teamId', '=', teamId)
+                .where('isActive', '=', true)
+                .execute()
               logError(oauthRes)
               return null
             }
