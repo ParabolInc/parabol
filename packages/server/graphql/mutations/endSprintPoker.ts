@@ -10,13 +10,11 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
-import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import type {GQLContext} from '../graphql'
 import isValid from '../isValid'
 import EndSprintPokerPayload from '../types/EndSprintPokerPayload'
-import sendNewMeetingSummary from './helpers/endMeeting/sendNewMeetingSummary'
 import gatherInsights from './helpers/gatherInsights'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
 import removeEmptyTasks from './helpers/removeEmptyTasks'
@@ -121,15 +119,9 @@ export default {
         .get('meetingTemplates')
         .loadNonNull(templateId)
     ])
-    const makePagesSummary = await dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: team.orgId, featureName: 'Pages'})
     IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
-    if (!isKill && !makePagesSummary) {
-      sendNewMeetingSummary(completedMeeting, false, context).catch(Logger.log)
-    }
     const events = teamMembers.map(
       (teamMember) =>
         new TimelineEventPokerComplete({
@@ -142,11 +134,8 @@ export default {
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     const page = await publishSummaryPage(meetingId, context, info)
-    if (makePagesSummary) {
-      sendSummaryEmailV2(meetingId, page.id, context, info)
-    }
+    sendSummaryEmailV2(meetingId, page.id, context, info)
     const data = {
-      gotoPageSummary: makePagesSummary,
       meetingId,
       teamId,
       isKill,

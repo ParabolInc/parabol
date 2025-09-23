@@ -18,7 +18,6 @@ import popEndMeetingToast from './toasts/popEndMeetingToast'
 graphql`
   fragment EndSprintPokerMutation_team on EndSprintPokerSuccess {
     isKill
-    gotoPageSummary
     meeting {
       id
       endedAt
@@ -73,7 +72,7 @@ export const endSprintPokerTeamOnNext: OnNextHandler<
   EndSprintPokerMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {isKill, meeting, gotoPageSummary} = payload
+  const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
   const {id: meetingId, teamId, summaryPageId} = meeting
@@ -81,11 +80,9 @@ export const endSprintPokerTeamOnNext: OnNextHandler<
     if (isKill) {
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
-    } else if (gotoPageSummary && summaryPageId) {
+    } else if (summaryPageId) {
       const pageCode = Number(summaryPageId.split('page:')[1])
       history.push(`/pages/${pageCode}`)
-    } else {
-      history.push(`/new-summary/${meetingId}`)
     }
   }
 }

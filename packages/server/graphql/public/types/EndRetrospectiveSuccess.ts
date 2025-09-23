@@ -2,7 +2,6 @@ import {getUserId} from '../../../utils/authorization'
 import type {EndRetrospectiveSuccessResolvers} from '../resolverTypes'
 
 export type EndRetrospectiveSuccessSource = {
-  gotoPageSummary: boolean
   meetingId: string
   teamId: string
   isKill: boolean

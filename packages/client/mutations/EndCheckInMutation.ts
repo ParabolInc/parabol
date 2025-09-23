@@ -21,7 +21,6 @@ import popEndMeetingToast from './toasts/popEndMeetingToast'
 graphql`
   fragment EndCheckInMutation_team on EndCheckInSuccess {
     isKill
-    gotoPageSummary
     meeting {
       id
       endedAt
@@ -80,7 +79,7 @@ export const endCheckInTeamOnNext: OnNextHandler<
   EndCheckInMutation_team$data,
   OnNextHistoryContext
 > = (payload, context) => {
-  const {isKill, meeting, gotoPageSummary} = payload
+  const {isKill, meeting} = payload
   const {atmosphere, history} = context
   if (!meeting) return
   const {id: meetingId, teamId, summaryPageId} = meeting
@@ -88,11 +87,9 @@ export const endCheckInTeamOnNext: OnNextHandler<
     if (isKill) {
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
-    } else if (gotoPageSummary && summaryPageId) {
+    } else if (summaryPageId) {
       const pageCode = Number(summaryPageId.split('page:')[1])
       history.push(`/pages/${pageCode}`)
-    } else {
-      history.push(`/new-summary/${meetingId}`)
     }
   }
 }
