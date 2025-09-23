@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import getKysely from '../../postgres/getKysely'
 import getAtlassianAuthByUserIdTeamId from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import removeAtlassianAuth from '../../postgres/queries/removeAtlassianAuth'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -28,7 +28,7 @@ export default {
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
-
+    const pg = getKysely()
     // AUTH
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -43,7 +43,14 @@ export default {
       return standardError(new Error('Auth not found'), {userId: viewerId})
     }
 
-    await removeAtlassianAuth(viewerId, teamId)
+    await pg
+      .updateTable('AtlassianAuth')
+      .set({isActive: false})
+      .where('userId', '=', viewerId)
+      .where('teamId', '=', teamId)
+      .where('isActive', '=', true)
+      .execute()
+
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewer, teamId, 'jira')
 

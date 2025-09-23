@@ -1,4 +1,4 @@
-import removeAtlassianAuth from '../../../postgres/queries/removeAtlassianAuth'
+import getKysely from '../../../postgres/getKysely'
 import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
 import type {DataLoaderWorker} from '../../graphql'
@@ -8,8 +8,17 @@ import removeSlackAuths from './removeSlackAuths'
 const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
   Promise.all(teamIds.map((teamId) => removeGitHubAuth(userId, teamId)))
 
-const removeAtlassianAuths = async (userId: string, teamIds: string[]) =>
-  Promise.all(teamIds.map((teamId) => removeAtlassianAuth(userId, teamId)))
+const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
+  if (teamIds.length === 0) return
+  const pg = getKysely()
+  return pg
+    .updateTable('AtlassianAuth')
+    .set({isActive: false})
+    .where('userId', '=', userId)
+    .where('teamId', 'in', teamIds)
+    .where('isActive', '=', true)
+    .execute()
+}
 
 const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWorker) => {
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
