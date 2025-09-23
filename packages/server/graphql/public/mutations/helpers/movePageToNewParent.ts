@@ -229,8 +229,8 @@ export const movePageToNewParent = async (
             eb
               .selectFrom('descendants')
               .select((eb) => [
-                eb.ref('descendants.id').as('pageId'),
                 eb.val(viewerId).as('userId'),
+                eb.ref('descendants.id').as('pageId'),
                 sql`'owner'::"PageRoleEnum"`.as('role')
               ])
           )
