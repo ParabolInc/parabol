@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
+import {pageAccessByUserId} from '../../../../dataloader/pageLoaderMakers'
 import getKysely from '../../../../postgres/getKysely'
 import {selectDescendantPages} from '../../../../postgres/select'
 import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
@@ -14,6 +15,10 @@ export const movePageToNewParent = async (
   parentPageId: number
 ) => {
   const pg = getKysely()
+  const viewerAccess = await pageAccessByUserId({} as any).load({pageId, userId: viewerId})
+  if (viewerAccess !== 'owner') {
+    throw new GraphQLError(`Viewer must own the Page in order to move it to a new parent`)
+  }
   const childPage = await pg
     .selectFrom('Page')
     .select('parentPageId')
@@ -210,7 +215,8 @@ export const movePageToNewParent = async (
 
   // upsert viewer as owner IIF nothing else is the owner
   // nothing else is the owner if PageAccess(pageId) has no owner
-  const strongestRole = await updatePageAccessTable(trx, pageId)
+  await updatePageAccessTable(trx, pageId)
+  const strongestRole = await trx
     .selectFrom('PageAccess')
     .select(({fn}) => fn.min('role').as('role'))
     // since all children will have identical access, no need to query descendants

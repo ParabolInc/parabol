@@ -157,7 +157,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
               } else {
                 // a page link either got moved or the viewer is trying to programmatically add one
                 // in either case, move the page link from the old parent to new
-                movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
+                await movePageToNewParent(userId, CipherId.decrypt(childPageCode), pageId)
               }
             }
           } else {

@@ -1,4 +1,4 @@
-import type {ControlledTransaction, Kysely} from 'kysely'
+import {type ControlledTransaction, type Kysely, sql} from 'kysely'
 import {selectDescendantPages} from './select'
 import type {DB} from './types/pg'
 
@@ -56,7 +56,6 @@ export const updatePageAccessTable = (
         .expression((eb) => eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role']))
         .onConflict((oc) =>
           oc
-
             .columns(['userId', 'pageId'])
             .doUpdateSet((eb) => ({
               role: eb.ref('excluded.role')
@@ -64,9 +63,9 @@ export const updatePageAccessTable = (
             .where(({eb, ref}) => eb('PageAccess.role', 'is distinct from', ref('excluded.role')))
         )
     )
-
-  if (!skipDeleteOld) {
-    return res.with('deleteOld', (qc) =>
+  if (skipDeleteOld) return res.selectNoFrom(sql`1`.as('t')).execute()
+  return res
+    .with('deleteOld', (qc) =>
       qc
         .deleteFrom('PageAccess')
         .where('pageId', 'in', (eb) => eb.selectFrom('descendants').select('id'))
@@ -80,7 +79,7 @@ export const updatePageAccessTable = (
             )
           )
         )
-    ) as any as typeof res
-  }
-  return res
+    )
+    .selectNoFrom(sql`1`.as('t'))
+    .execute()
 }

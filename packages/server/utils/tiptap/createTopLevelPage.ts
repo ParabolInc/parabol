@@ -1,6 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
-import {sql} from 'kysely'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
@@ -64,8 +63,6 @@ export const createTopLevelPage = async (
   }
   await viewerAccessPromise
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-    .selectNoFrom(sql`1`.as('t'))
-    .execute()
   analytics.pageCreated(viewer, pageId)
   const data = {page}
   await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)

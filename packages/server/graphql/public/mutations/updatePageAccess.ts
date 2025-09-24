@@ -149,13 +149,21 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .execute()
   }
 
-  const strongestRole = await updatePageAccessTable(trx, dbPageId)
+  await updatePageAccessTable(trx, dbPageId)
+  const strongestRole = await trx
     .selectFrom('PageAccess')
     .select(({fn}) => fn.min('role').as('role'))
     // since all children will have identical access, no need to query descendants
     .where('pageId', '=', dbPageId)
     .executeTakeFirst()
 
+  const s2 = await trx
+    .selectFrom('PageAccess')
+    .select(({fn}) => fn.min('role').as('role'))
+    .where('pageId', '=', dbPageId)
+    .execute()
+  console.log({s2})
+  console.log({strongestRole})
   if (!strongestRole || strongestRole.role !== 'owner') {
     await trx.rollback().execute()
     throw new GraphQLError('A Page must have at least one owner')
