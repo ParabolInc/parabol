@@ -9,7 +9,7 @@ import {cn} from '../../ui/cn'
 import {LeftNavHeader} from './LeftNavHeader'
 import {LeftNavHeaderButton} from './LeftNavHeaderButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
-import {LeftNavPageLink} from './LeftNavPageLink'
+import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
 
 interface Props {
   viewerRef: LeftNavPrivatePagesSection_viewer$key
@@ -22,6 +22,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
       fragment LeftNavPrivatePagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
+        draggingPageParentSection
+        draggingPageViewerAccess
         privatePages: pages(parentPageId: $nullId, first: 500, isPrivate: true)
           @connection(key: "User_privatePages") {
           edges {
@@ -37,10 +39,18 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
     `,
     viewerRef
   )
-  const {draggingPageId, draggingPageIsPrivate, privatePages} = viewer
+  const {
+    draggingPageId,
+    draggingPageIsPrivate,
+    privatePages,
+    draggingPageParentSection,
+    draggingPageViewerAccess
+  } = viewer
   const {edges} = privatePages
   const firstPageId = edges[0]?.node.id
-  const canDropBelow = draggingPageId && draggingPageId !== firstPageId
+  const isViewerOwnerOfDraggingPage = draggingPageViewerAccess === 'owner'
+  const canDropBelow =
+    draggingPageId && draggingPageId !== firstPageId && isViewerOwnerOfDraggingPage
   const lastPageId = edges.at(-1)?.node.id
   const canDropIn = draggingPageId && draggingPageId !== lastPageId
   const [execute, submitting] = useCreatePageMutation()
@@ -106,6 +116,8 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
               nextPeerId={edges[idx + 1]?.node.id || null}
               connectionKey={connectionKey}
               draggingPageIsPrivate={draggingPageIsPrivate || null}
+              draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
+              draggingPageViewerAccess={draggingPageViewerAccess || null}
             />
           )
         })}

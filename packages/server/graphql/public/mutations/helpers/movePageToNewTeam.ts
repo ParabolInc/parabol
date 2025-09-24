@@ -90,7 +90,5 @@ export const movePageToNewTeam = async (
     .execute()
 
   await updatePageAccessTable(trx, pageId, {skipUnionOrg: true})
-    .selectNoFrom(sql`1`.as('t'))
-    .execute()
   await trx.commit().execute()
 }

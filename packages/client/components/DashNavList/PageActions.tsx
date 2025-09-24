@@ -108,7 +108,13 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              <MenuItem onSelect={archivePage} onClick={(e) => e.stopPropagation()}>
+              <MenuItem
+                onSelect={archivePage}
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
+              >
                 <DeleteIcon className='text-slate-600' />
                 <span className='pl-1'>{'Delete page'}</span>
               </MenuItem>

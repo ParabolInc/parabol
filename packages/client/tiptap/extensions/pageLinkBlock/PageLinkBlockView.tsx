@@ -76,7 +76,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
         )}
       >
         <Icon />
-        <div className='flex-1 pl-1'>{title}</div>
+        <div className='flex-1 pl-1'>{title || '<Untitled>'}</div>
         <Menu
           onOpenChange={(open) => {
             if (open) {

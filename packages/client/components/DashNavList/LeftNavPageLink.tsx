@@ -3,6 +3,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
+import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
@@ -12,15 +13,21 @@ import {PageActions} from './PageActions'
 import {SubPagesRoot} from './SubPagesRoot'
 
 export type PageConnectionKey = 'User_privatePages' | 'User_sharedPages' | 'User_pages'
+export type PageParentSection = 'User_privatePages' | 'User_sharedPages' | `User_pages:${string}`
+
 interface Props {
   pageRef: LeftNavPageLink_page$key
   pageAncestors: string[]
   draggingPageId: string | null | undefined
   draggingPageIsPrivate: boolean | null
+  draggingPageParentSection: PageParentSection | null
+  draggingPageViewerAccess: PageRoleEnum | null
   dropIdx: number
   isLastChild: boolean
   nextPeerId: string | null
   connectionKey: PageConnectionKey
+  // pass this down from the parent to reduce query complexity, since it's only needed in dragging edge cases
+  parentPageViewerAccess?: PageRoleEnum
 }
 export const LeftNavPageLink = (props: Props) => {
   const {
@@ -28,16 +35,22 @@ export const LeftNavPageLink = (props: Props) => {
     pageAncestors,
     draggingPageId,
     draggingPageIsPrivate,
+    draggingPageParentSection,
+    draggingPageViewerAccess,
     dropIdx,
     isLastChild,
     nextPeerId,
-    connectionKey
+    connectionKey,
+    parentPageViewerAccess
   } = props
   const depth = pageAncestors.length
   const page = useFragment(
     graphql`
       fragment LeftNavPageLink_page on Page {
         ...PageActions_page
+        access {
+          viewer
+        }
         id
         title
         parentPageId
@@ -53,6 +66,7 @@ export const LeftNavPageLink = (props: Props) => {
     pageRef
   )
   const {
+    access,
     title,
     id,
     parentPageId,
@@ -62,8 +76,12 @@ export const LeftNavPageLink = (props: Props) => {
     isPrivate,
     currentPageAncestorDepth
   } = page
+  const {viewer: viewerAccess} = access
+
   const pageCode = id.split(':')[1]
   const slug = getPageSlug(Number(pageCode), title)
+  const isViewerPageEditor = ['owner', 'editor'].includes(viewerAccess!)
+  const isViewerParentPageEditor = ['owner', 'editor'].includes(parentPageViewerAccess!)
 
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
@@ -85,14 +103,32 @@ export const LeftNavPageLink = (props: Props) => {
   const isSelf = draggingPageId === id
   const isNextPeer = draggingPageId === nextPeerId && !showChildren
   const isPrivateToTopLevelShared = isTopLevelShared && draggingPageIsPrivate
-  const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild
+  const isViewerOwnerOfDraggingPage = draggingPageViewerAccess === 'owner'
+  const dropInSection = `User_pages:${id}`
+  const dropBelowSection =
+    connectionKey === 'User_pages' ? `${connectionKey}:${parentPageId || teamId}` : connectionKey
+
+  const isDropInReorder = draggingPageParentSection === dropInSection
+  const isDropBelowReorder = draggingPageParentSection === dropBelowSection
+  const hasDragAccess = isViewerOwnerOfDraggingPage || isDropInReorder
+  const hasDragDropInAccess = hasDragAccess && isViewerPageEditor
+  const isEditorOfDroppingSection =
+    connectionKey !== 'User_pages' ? true : teamId ? true : isViewerParentPageEditor
+  const hasDragDropBelowAccess =
+    isDropBelowReorder || (isViewerOwnerOfDraggingPage && isEditorOfDroppingSection)
+
+  const canDropIn =
+    draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild && hasDragDropInAccess
+  const hasDragDropInOrBelow = showChildren ? hasDragDropInAccess : hasDragDropBelowAccess
+
   const canDropBelow =
     draggingPageId &&
     !isSourceDragParent &&
     !isSelf &&
     !isDraggingFirstChild &&
     !isNextPeer &&
-    !isPrivateToTopLevelShared
+    !isPrivateToTopLevelShared &&
+    hasDragDropInOrBelow
   const isActive = (currentPageAncestorDepth && !showChildren) || currentPageAncestorDepth === 0
   return (
     <div className='relative rounded-md' ref={ref}>
@@ -148,8 +184,7 @@ export const LeftNavPageLink = (props: Props) => {
           <SubPagesRoot
             parentPageId={id}
             pageAncestors={nextPageAncestors}
-            draggingPageId={draggingPageId}
-            draggingPageIsPrivate={draggingPageIsPrivate}
+            parentPageViewerAccess={viewerAccess ?? undefined}
           />
         </div>
       )}

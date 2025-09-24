@@ -1,5 +1,4 @@
 import {generateText, type JSONContent} from '@tiptap/core'
-import {sql} from 'kysely'
 import {__START__} from 'parabol-client/shared/sortOrder'
 import {getTitleFromPageText} from 'parabol-client/shared/tiptap/getTitleFromPageText'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
@@ -83,8 +82,6 @@ export const dumpTranscriptToPage = async (
   ])
 
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-    .selectNoFrom(sql`1`.as('t'))
-    .execute()
 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   analytics.pageCreated(viewer, pageId)

@@ -1,4 +1,3 @@
-import {sql} from 'kysely'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
@@ -69,8 +68,6 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
       .execute()
   ])
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
-    .selectNoFrom(sql`1`.as('t'))
-    .execute()
   analytics.pageCreated(viewer, pageId)
   const dataLoader = getNewDataLoader('createChildPage')
   const operationId = dataLoader.share()
