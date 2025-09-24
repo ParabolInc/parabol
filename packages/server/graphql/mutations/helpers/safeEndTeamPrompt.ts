@@ -8,22 +8,16 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
-import sendNewMeetingSummary from './endMeeting/sendNewMeetingSummary'
 import gatherInsights from './gatherInsights'
 import generateStandupMeetingSummary from './generateStandupMeetingSummary'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
 import {publishSummaryPage} from './summaryPage/publishSummaryPage'
 import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
-const summarizeTeamPrompt = async (
-  meeting: TeamPromptMeeting,
-  makePagesSummary: boolean,
-  context: InternalContext
-) => {
+const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId}
@@ -34,9 +28,6 @@ const summarizeTeamPrompt = async (
 
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
-  if (!makePagesSummary) {
-    sendNewMeetingSummary(meeting, false, context).catch(Logger.log)
-  }
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
@@ -87,10 +78,6 @@ const safeEndTeamPrompt = async ({
     getTeamPromptResponsesByMeetingId(meetingId)
   ])
 
-  const makePagesSummary = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: team.orgId, featureName: 'Pages'})
-
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventTeamPromptComplete({
@@ -101,16 +88,13 @@ const safeEndTeamPrompt = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
-  summarizeTeamPrompt(meeting, makePagesSummary, context)
+  summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const page = await publishSummaryPage(meetingId, context, info)
-  if (makePagesSummary) {
-    // do not await sending the email
-    sendSummaryEmailV2(meetingId, page.id, context, info)
-  }
+  // do not await sending the email
+  sendSummaryEmailV2(meetingId, page.id, context, info)
   dataLoader.get('newMeetings').clear(meetingId)
   const data = {
-    gotoPageSummary: makePagesSummary,
     meetingId,
     teamId
   }

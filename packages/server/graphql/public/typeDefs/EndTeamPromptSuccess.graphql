@@ -7,5 +7,4 @@ type EndTeamPromptSuccess {
 	An event that is important to the viewer, e.g. an ended meeting
 	"""
 	timelineEvent: TimelineEvent!
-	gotoPageSummary: Boolean
 }

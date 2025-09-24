@@ -1,6 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
+import {isUserOrgAdmin} from '../../utils/authorization'
 import {verifyMassInviteToken} from '../../utils/massInviteToken'
 import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
@@ -28,9 +29,16 @@ export default {
         dataLoader.get('teams').load(teamId)
       ])
 
-      if (!user || !teamMember || !teamMember.isNotRemoved || !team || team.isArchived) {
-        // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
+      if (!user || !team || team.isArchived) {
         return {errorType: InvitationTokenError.NOT_FOUND}
+      }
+
+      if (!teamMember || !teamMember.isNotRemoved) {
+        const isOrgAdmin = await isUserOrgAdmin(userId, team.orgId, dataLoader)
+        if (!isOrgAdmin) {
+          // this could happen if a team member is no longer on the team or some unseen nefarious action is going on
+          return {errorType: InvitationTokenError.NOT_FOUND}
+        }
       }
 
       return {

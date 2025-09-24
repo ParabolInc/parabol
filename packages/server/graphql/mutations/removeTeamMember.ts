@@ -83,7 +83,7 @@ export default {
     })
 
     // individualized message to the user getting kicked out
-    publish(SubscriptionChannel.TEAM, userId, 'RemoveTeamMemberPayload', data, subOptions)
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'RemoveTeamMemberPayload', data, subOptions)
 
     return data
   }

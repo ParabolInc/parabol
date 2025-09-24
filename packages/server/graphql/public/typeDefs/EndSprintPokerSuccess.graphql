@@ -13,8 +13,4 @@ type EndSprintPokerSuccess {
 	An event that is important to the viewer, e.g. an ended meeting
 	"""
 	timelineEvent: TimelineEvent!
-	"""
-	true if the client should be redirected to the new page summary. this field may be removed in the future
-	"""
-	gotoPageSummary: Boolean
 }

@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {RemoveTeamMemberMutation as TRemoveTeamMemberMutation} from '../__generated__/RemoveTeamMemberMutation.graphql'
+import type {RemoveTeamMemberMutation_notification$data} from '../__generated__/RemoveTeamMemberMutation_notification.graphql'
 import type {RemoveTeamMemberMutation_task$data} from '../__generated__/RemoveTeamMemberMutation_task.graphql'
 import type {RemoveTeamMemberMutation_team$data} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import type {
@@ -54,10 +55,7 @@ graphql`
 `
 
 graphql`
-  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
-    updatedTasks {
-      id
-    }
+  fragment RemoveTeamMemberMutation_notification on RemoveTeamMemberPayload {
     kickOutNotification {
       id
       type
@@ -69,6 +67,24 @@ graphql`
         }
       }
       ...KickedOut_notification
+    }
+    updatedTasks {
+      id
+    }
+    team {
+      id
+    }
+    teamMember {
+      id
+      userId
+    }
+  }
+`
+
+graphql`
+  fragment RemoveTeamMemberMutation_team on RemoveTeamMemberPayload {
+    updatedTasks {
+      id
     }
     team {
       ...RemoveTeamMemberMutation_teamTeam @relay(mask: false)
@@ -92,8 +108,8 @@ const mutation = graphql`
   }
 `
 
-export const removeTeamMemberTeamOnNext: OnNextHandler<
-  RemoveTeamMemberMutation_team$data,
+export const removeTeamMemberNotificationOnNext: OnNextHandler<
+  RemoveTeamMemberMutation_notification$data,
   OnNextHistoryContext
 > = (payload, {atmosphere, history}) => {
   if (!payload) return
@@ -144,9 +160,19 @@ export const removeTeamMemberTeamUpdater: SharedUpdater<RemoveTeamMemberMutation
 ) => {
   const removedUserId = payload.getLinkedRecord('teamMember').getValue('userId')
   const {viewerId} = atmosphere
+  if (removedUserId === viewerId) {
+    return
+  }
+  const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
+  handleRemoveTeamMembers(teamMemberId, store)
+}
+
+export const removeTeamMemberNotificationUpdater: SharedUpdater<
+  RemoveTeamMemberMutation_notification$data
+> = (payload, {atmosphere, store}) => {
+  const removedUserId = payload.getLinkedRecord('teamMember').getValue('userId')
+  const {viewerId} = atmosphere
   if (removedUserId !== viewerId) {
-    const teamMemberId = payload.getLinkedRecord('teamMember').getValue('id')
-    handleRemoveTeamMembers(teamMemberId, store)
     return
   }
   const teamId = payload.getLinkedRecord('team').getValue('id')

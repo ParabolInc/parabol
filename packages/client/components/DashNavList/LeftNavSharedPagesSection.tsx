@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import type {LeftNavSharedPagesSection_viewer$key} from '../../__generated__/LeftNavSharedPagesSection_viewer.graphql'
 import {cn} from '../../ui/cn'
 import {LeftNavHeader} from './LeftNavHeader'
-import {LeftNavPageLink} from './LeftNavPageLink'
+import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
 
 interface Props {
   viewerRef: LeftNavSharedPagesSection_viewer$key
@@ -17,6 +17,8 @@ export const LeftNavSharedPagesSection = (props: Props) => {
       fragment LeftNavSharedPagesSection_viewer on User {
         draggingPageId
         draggingPageIsPrivate
+        draggingPageParentSection
+        draggingPageViewerAccess
         sharedPages: pages(parentPageId: $nullId, first: 500, isPrivate: false)
           @connection(key: "User_sharedPages") {
           edges {
@@ -32,7 +34,13 @@ export const LeftNavSharedPagesSection = (props: Props) => {
     `,
     viewerRef
   )
-  const {draggingPageId, draggingPageIsPrivate, sharedPages} = viewer
+  const {
+    draggingPageId,
+    draggingPageIsPrivate,
+    sharedPages,
+    draggingPageParentSection,
+    draggingPageViewerAccess
+  } = viewer
   const {edges} = sharedPages
   const firstPageId = edges[0]?.node.id
   const canDropBelow = draggingPageId && draggingPageId !== firstPageId && !draggingPageIsPrivate
@@ -77,6 +85,8 @@ export const LeftNavSharedPagesSection = (props: Props) => {
               nextPeerId={edges[idx + 1]?.node.id || null}
               connectionKey={connectionKey}
               draggingPageIsPrivate={draggingPageIsPrivate || null}
+              draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
+              draggingPageViewerAccess={draggingPageViewerAccess || null}
             />
           )
         })}

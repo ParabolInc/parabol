@@ -10,7 +10,6 @@ import {
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
 import type Atmosphere from '../Atmosphere'
-import {addOrgMutationOrganizationUpdater} from '../mutations/AddOrgMutation'
 import {
   removeOrgUsersOrganizationOnNext,
   removeOrgUsersOrganizationUpdater
@@ -29,9 +28,6 @@ const subscription = graphql`
       fieldName
       AddIntegrationProviderSuccess {
         ...AddIntegrationProviderMutation_organization @relay(mask: false)
-      }
-      AddOrgPayload {
-        ...AddOrgMutation_organization @relay(mask: false)
       }
       ArchiveOrganizationPayload {
         ...ArchiveOrganizationMutation_organization @relay(mask: false)
@@ -68,7 +64,6 @@ const onNextHandlers = {
 } as const
 
 const updateHandlers = {
-  AddOrgPayload: addOrgMutationOrganizationUpdater,
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,

@@ -22,5 +22,4 @@ type EndCheckInSuccess {
 	Any tasks that were updated during the meeting
 	"""
 	updatedTasks: [Task!]
-	gotoPageSummary: Boolean
 }

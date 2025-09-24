@@ -1,6 +1,6 @@
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Server} from '@hocuspocus/server'
+import {Document, onStoreDocumentPayload, Server} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -11,6 +11,7 @@ import getKysely from './postgres/getKysely'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
 import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
@@ -143,6 +144,46 @@ export const server = new Server({
     new RedisPublisher()
   ]
 })
+
+// patch hocuspocus to not crash on store errors
+server.hocuspocus.storeDocumentHooks = (
+  document: Document,
+  hookPayload: onStoreDocumentPayload,
+  immediately?: boolean
+) => {
+  const self = server.hocuspocus
+  return self.debouncer.debounce(
+    `onStoreDocument-${document.name}`,
+    () => {
+      return self
+        .hooks('onStoreDocument', hookPayload)
+        .then(() => {
+          self.hooks('afterStoreDocument', hookPayload).then(async () => {
+            // Remove document from memory.
+
+            if (document.getConnectionsCount() > 0) {
+              return
+            }
+
+            await self.unloadDocument(document)
+          })
+        })
+        .catch((error) => {
+          // normally hocuspocus would throw here, but we just want to log the error and continue on
+          logError(error, {tags: {documentName: document.name}})
+          // TODO report error to client so it can retry saving
+
+          if (document.getConnectionsCount() > 0) {
+            return
+          }
+
+          self.unloadDocument(document)
+        })
+    },
+    immediately ? 0 : self.configuration.debounce,
+    self.configuration.maxDebounce
+  )
+}
 
 server.listen()
 

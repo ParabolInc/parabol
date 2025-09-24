@@ -10,20 +10,24 @@ import {getSortOrder} from '../../shared/sortOrder'
 import {LeftNavHeader} from './LeftNavHeader'
 import {LeftNavHeaderButton} from './LeftNavHeaderButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
+import type {PageParentSection} from './LeftNavPageLink'
 import {LeftNavTeamLink} from './LeftNavTeamLink'
 import PublicTeamsOverflow from './PublicTeamsOverflow'
 
 interface Props {
   viewerRef: LeftNavTeamsSection_viewer$key
+  closeMobileSidebar?: () => void
 }
 export const LeftNavTeamsSection = (props: Props) => {
-  const {viewerRef} = props
+  const {closeMobileSidebar, viewerRef} = props
   const viewer = useFragment(
     graphql`
       fragment LeftNavTeamsSection_viewer on User {
         ...PublicTeamsOverflow_viewer
         draggingPageId
         draggingPageIsPrivate
+        draggingPageViewerAccess
+        draggingPageParentSection
         teams {
           id
           sortOrder
@@ -34,7 +38,7 @@ export const LeftNavTeamsSection = (props: Props) => {
     viewerRef
   )
   const [execute, submitting] = useUpdateTeamSortOrderMutation()
-  const {teams, draggingPageId} = viewer
+  const {teams, draggingPageId, draggingPageViewerAccess, draggingPageParentSection} = viewer
   const onDragEnd = useEventCallback((result: DropResult) => {
     const {source, destination} = result
     if (!destination || submitting) return
@@ -56,6 +60,7 @@ export const LeftNavTeamsSection = (props: Props) => {
   const history = useHistory()
   return (
     <div>
+      {/* TODO: handle no teams? e.g. {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />} */}
       <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 hover:bg-slate-300'>
         <LeftNavHeader>{'Teams'}</LeftNavHeader>
         <LeftNavItemButtons>
@@ -86,8 +91,13 @@ export const LeftNavTeamsSection = (props: Props) => {
                             {...dragProvided.dragHandleProps}
                           >
                             <LeftNavTeamLink
+                              closeMobileSidebar={closeMobileSidebar}
                               teamRef={team}
                               draggingPageId={draggingPageId ?? null}
+                              draggingPageViewerAccess={draggingPageViewerAccess ?? null}
+                              draggingPageParentSection={
+                                (draggingPageParentSection as PageParentSection) ?? null
+                              }
                             />
                           </div>
                         )
@@ -96,7 +106,7 @@ export const LeftNavTeamsSection = (props: Props) => {
                   )
                 })}
                 {provided.placeholder}
-                <PublicTeamsOverflow viewerRef={viewer} />
+                <PublicTeamsOverflow viewerRef={viewer} closeMobileSidebar={closeMobileSidebar} />
               </div>
             )
           }}

@@ -7,20 +7,31 @@ import {useFragment} from 'react-relay'
 import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
+import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {LeftNavItem} from './LeftNavItem'
 import {LeftNavItemButton} from './LeftNavItemButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
+import type {PageParentSection} from './LeftNavPageLink'
 import {SubPagesRoot} from './SubPagesRoot'
 
 interface Props {
   teamRef: LeftNavTeamLink_team$key
   draggingPageId: string | null
+  draggingPageViewerAccess: PageRoleEnum | null
+  draggingPageParentSection: PageParentSection | null
+  closeMobileSidebar?: () => void
 }
 export const LeftNavTeamLink = (props: Props) => {
-  const {teamRef, draggingPageId} = props
+  const {
+    closeMobileSidebar,
+    teamRef,
+    draggingPageId,
+    draggingPageViewerAccess,
+    draggingPageParentSection
+  } = props
   const team = useFragment(
     graphql`
       fragment LeftNavTeamLink_team on Team {
@@ -33,7 +44,10 @@ export const LeftNavTeamLink = (props: Props) => {
     `,
     teamRef
   )
+  const isViewerOwnerOfDraggingPage = draggingPageViewerAccess === 'owner'
   const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild, orgId} = team
+  const isDraggingPageFromTheTeam = draggingPageParentSection === teamId
+  const isViewerOwnerOrIsReorder = isViewerOwnerOfDraggingPage || isDraggingPageFromTheTeam
   const match = useRouteMatch(`/team/${teamId}`)
   const isActive = match ?? false
   const [showChildren, setShowChildren] = useState(false)
@@ -44,6 +58,7 @@ export const LeftNavTeamLink = (props: Props) => {
   const [execute, submitting] = useCreatePageMutation()
   const addChildPage = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (submitting) return
     execute({
       variables: {teamId},
@@ -57,8 +72,10 @@ export const LeftNavTeamLink = (props: Props) => {
       }
     })
   }
-  const canDropIn = draggingPageId && (showChildren ? !isDraggingLastChild : true)
-  const canDropBelow = draggingPageId && showChildren && !isDraggingFirstChild
+  const canDropIn =
+    draggingPageId && (showChildren ? !isDraggingLastChild : true) && isViewerOwnerOrIsReorder
+  const canDropBelow =
+    draggingPageId && showChildren && !isDraggingFirstChild && isViewerOwnerOrIsReorder
   return (
     <div className='relative rounded-md'>
       <div
@@ -89,6 +106,7 @@ export const LeftNavTeamLink = (props: Props) => {
             if (draggingPageId) {
               e.preventDefault()
             }
+            closeMobileSidebar?.()
           }}
         >
           <ExpandPageChildrenButton
@@ -115,12 +133,7 @@ export const LeftNavTeamLink = (props: Props) => {
       </div>
       {showChildren && (
         <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
-          <SubPagesRoot
-            teamId={teamId}
-            pageAncestors={['', teamId]}
-            draggingPageId={draggingPageId}
-            draggingPageIsPrivate={null}
-          />
+          <SubPagesRoot teamId={teamId} pageAncestors={['', teamId]} />
         </div>
       )}
     </div>

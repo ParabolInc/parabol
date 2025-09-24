@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 import type {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
-import type {AddOrgMutation_organization$data} from '../__generated__/AddOrgMutation_organization.graphql'
 import type {
   HistoryLocalHandler,
   OnNextHandler,
@@ -15,7 +14,8 @@ import handleAddTeams from './handlers/handleAddTeams'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 
 graphql`
-  fragment AddOrgMutation_organization on AddOrgPayload {
+  fragment AddOrgMutation_notification on AddOrgPayload {
+    removedSuggestedActionId
     organization {
       id
       isBillingLeader
@@ -38,12 +38,6 @@ graphql`
   }
 `
 
-graphql`
-  fragment AddOrgMutation_notification on AddOrgPayload {
-    removedSuggestedActionId
-  }
-`
-
 const mutation = graphql`
   mutation AddOrgMutation($newTeam: NewTeamInput!, $orgName: String!, $invitees: [Email!]) {
     addOrg(newTeam: $newTeam, orgName: $orgName, invitees: $invitees) {
@@ -51,12 +45,12 @@ const mutation = graphql`
         message
       }
       authToken
-      ...AddOrgMutation_organization @relay(mask: false)
+      ...AddOrgMutation_notification @relay(mask: false)
     }
   }
 `
 
-const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization$data> = (
+const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_notification$data> = (
   payload,
   {atmosphere}
 ) => {
@@ -70,7 +64,7 @@ const popOrganizationCreatedToast: OnNextHandler<AddOrgMutation_organization$dat
   })
 }
 
-export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_organization$data> = (
+export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_notification$data> = (
   payload,
   {store}
 ) => {
@@ -79,12 +73,7 @@ export const addOrgMutationOrganizationUpdater: SharedUpdater<AddOrgMutation_org
 
   const team = payload.getLinkedRecord('team')
   handleAddTeams(team, store)
-}
 
-export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_notification$data> = (
-  payload,
-  {store}
-) => {
   const removedSuggestedActionId = payload.getValue('removedSuggestedActionId')
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
@@ -100,7 +89,7 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
     updater: (store) => {
       const payload = store.getRootField('addOrg')
       if (!payload) return
-      addOrgMutationOrganizationUpdater(payload, {atmosphere, store})
+      addOrgMutationNotificationUpdater(payload, {atmosphere, store})
     },
     onCompleted: (res, errors) => {
       if (onCompleted) {

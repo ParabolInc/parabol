@@ -149,7 +149,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .execute()
   }
 
-  const strongestRole = await updatePageAccessTable(trx, dbPageId)
+  await updatePageAccessTable(trx, dbPageId)
+  const strongestRole = await trx
     .selectFrom('PageAccess')
     .select(({fn}) => fn.min('role').as('role'))
     // since all children will have identical access, no need to query descendants

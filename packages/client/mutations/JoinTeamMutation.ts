@@ -20,7 +20,6 @@ graphql`
         id
         name
         isPaid
-        ...DashNavList_organization
       }
       sortOrder
       ...PublicTeamsFrag_team
