@@ -259,11 +259,23 @@ export const useDraggablePage = (
       startVisualDragImage(e)
 
       commitLocalUpdate(atmosphere, (store) => {
+        const draggingPageParentSection =
+          sourceConnectionKey === 'User_pages'
+            ? `${sourceConnectionKey}:${sourceParentPageId || sourceTeamId}`
+            : sourceConnectionKey
+
+        const draggingPageViewerAccess = store
+          .get(pageId)
+          ?.getLinkedRecord('access')
+          ?.getValue('viewer')
+        console.log('starting drag', draggingPageViewerAccess)
         store
           .getRoot()
           .getLinkedRecord('viewer')
           ?.setValue(pageId, 'draggingPageId')
           .setValue(isPageIdPrivate, 'draggingPageIsPrivate')
+          .setValue(draggingPageParentSection, 'draggingPageParentSection')
+          .setValue(draggingPageViewerAccess, 'draggingPageViewerAccess')
         const parentId = sourceParentPageId || sourceTeamId
         const parent = parentId ? store.get(parentId) : null
         parent
@@ -323,6 +335,8 @@ export const useDraggablePage = (
           .getLinkedRecord('viewer')
           ?.setValue(null, 'draggingPageId')
           .setValue(null, 'draggingPageIsPrivate')
+          .setValue(null, 'draggingPageParentSection')
+          .setValue(null, 'draggingPageViewerAccess')
         const parentId = sourceParentPageId || sourceTeamId
         const parent = parentId ? store.get(parentId) : null
         parent?.setValue(null, 'isDraggingFirstChild').setValue(null, 'isDraggingLastChild')

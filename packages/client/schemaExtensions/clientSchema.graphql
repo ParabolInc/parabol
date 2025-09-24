@@ -95,6 +95,10 @@ extend type User {
 	draggingPageId: ID
 	# True if the page being dragged is private (private pages cannot be dragged to top-level shared)
 	draggingPageIsPrivate: Boolean
+	# The area the drag started from, either 'User_privatePages', 'User_sharedPages', teamId, or parentPageId
+	draggingPageParentSection: String
+	# The level of access the viewer has on the dragging page
+	draggingPageViewerAccess: PageRoleEnum
 }
 
 extend type Page {

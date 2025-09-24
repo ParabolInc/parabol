@@ -10,12 +10,10 @@ interface Props {
   parentPageId?: string
   teamId?: string
   pageAncestors: string[]
-  draggingPageId: string | null | undefined
-  draggingPageIsPrivate: boolean | null
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId, pageAncestors, draggingPageId, draggingPageIsPrivate, teamId} = props
+  const {parentPageId, pageAncestors, teamId} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
     parentPageId,
     teamId
@@ -27,13 +25,7 @@ export const SubPagesRoot = (props: Props) => {
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
-        <SubPages
-          queryRef={queryRef}
-          pageAncestors={pageAncestors}
-          draggingPageId={draggingPageId}
-          draggingPageIsPrivate={draggingPageIsPrivate}
-          pageLinks={pageLinks}
-        />
+        <SubPages queryRef={queryRef} pageAncestors={pageAncestors} pageLinks={pageLinks} />
       )}
     </Suspense>
   )

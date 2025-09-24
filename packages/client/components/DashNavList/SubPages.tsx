@@ -3,11 +3,15 @@ import {useMemo} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
-import {LeftNavPageLink} from './LeftNavPageLink'
+import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
 
 graphql`
   query SubPagesQuery($parentPageId: ID, $teamId: ID) {
     viewer {
+      draggingPageId
+      draggingPageIsPrivate
+      draggingPageParentSection
+      draggingPageViewerAccess
       pages(first: 500, parentPageId: $parentPageId, teamId: $teamId)
         @connection(key: "User_pages") {
         edges {
@@ -23,17 +27,21 @@ graphql`
 interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
   pageAncestors: string[]
-  draggingPageId: string | null | undefined
-  draggingPageIsPrivate: boolean | null
   pageLinks: PageLinkBlockAttributes[] | null | undefined
 }
 
 export const SubPages = (props: Props) => {
   const connectionKey = 'User_pages'
-  const {pageAncestors, queryRef, draggingPageId, draggingPageIsPrivate, pageLinks} = props
+  const {pageAncestors, queryRef, pageLinks} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
-  const {pages} = viewer
+  const {
+    pages,
+    draggingPageId,
+    draggingPageIsPrivate,
+    draggingPageParentSection,
+    draggingPageViewerAccess
+  } = viewer
   const {edges} = pages
   const depth = pageAncestors.length
   const children = useMemo(() => {
@@ -76,7 +84,9 @@ export const SubPages = (props: Props) => {
             isLastChild={idx === children.length - 1}
             nextPeerId={nextPeerId}
             connectionKey={connectionKey}
-            draggingPageIsPrivate={draggingPageIsPrivate}
+            draggingPageIsPrivate={draggingPageIsPrivate || null}
+            draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
+            draggingPageViewerAccess={draggingPageViewerAccess || null}
           />
         )
       })}

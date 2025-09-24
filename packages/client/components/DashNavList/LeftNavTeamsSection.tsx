@@ -10,6 +10,7 @@ import {getSortOrder} from '../../shared/sortOrder'
 import {LeftNavHeader} from './LeftNavHeader'
 import {LeftNavHeaderButton} from './LeftNavHeaderButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
+import type {PageParentSection} from './LeftNavPageLink'
 import {LeftNavTeamLink} from './LeftNavTeamLink'
 import PublicTeamsOverflow from './PublicTeamsOverflow'
 
@@ -25,6 +26,8 @@ export const LeftNavTeamsSection = (props: Props) => {
         ...PublicTeamsOverflow_viewer
         draggingPageId
         draggingPageIsPrivate
+        draggingPageViewerAccess
+        draggingPageParentSection
         teams {
           id
           sortOrder
@@ -35,7 +38,7 @@ export const LeftNavTeamsSection = (props: Props) => {
     viewerRef
   )
   const [execute, submitting] = useUpdateTeamSortOrderMutation()
-  const {teams, draggingPageId} = viewer
+  const {teams, draggingPageId, draggingPageViewerAccess, draggingPageParentSection} = viewer
   const onDragEnd = useEventCallback((result: DropResult) => {
     const {source, destination} = result
     if (!destination || submitting) return
@@ -91,6 +94,10 @@ export const LeftNavTeamsSection = (props: Props) => {
                               closeMobileSidebar={closeMobileSidebar}
                               teamRef={team}
                               draggingPageId={draggingPageId ?? null}
+                              draggingPageViewerAccess={draggingPageViewerAccess ?? null}
+                              draggingPageParentSection={
+                                (draggingPageParentSection as PageParentSection) ?? null
+                              }
                             />
                           </div>
                         )
