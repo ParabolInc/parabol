@@ -70,13 +70,15 @@ export const freshAtlassianAuth = (
             const oauthRes = await AtlassianServerManager.refresh(refreshToken)
             if (oauthRes instanceof Error) {
               // If we can't refresh it, it's broken. mark it inactive
-              await pg
-                .updateTable('AtlassianAuth')
-                .set({isActive: false})
-                .where('userId', '=', userId)
-                .where('teamId', '=', teamId)
-                .where('isActive', '=', true)
-                .execute()
+              if (oauthRes.message === 'refresh_token is invalid') {
+                await pg
+                  .updateTable('AtlassianAuth')
+                  .set({isActive: false})
+                  .where('userId', '=', userId)
+                  .where('teamId', '=', teamId)
+                  .where('isActive', '=', true)
+                  .execute()
+              }
               logError(oauthRes)
               return null
             }
