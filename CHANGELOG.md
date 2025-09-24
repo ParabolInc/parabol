@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.25.1](https://github.com/ParabolInc/parabol/compare/v10.25.0...v10.25.1) (2025-09-24)
+
+
+### Fixed
+
+* do not crash on hocus pocus store failures ([#12094](https://github.com/ParabolInc/parabol/issues/12094)) ([92b9106](https://github.com/ParabolInc/parabol/commit/92b9106c9a3dfaf4fd0b08e2127c8ab3d1ec3f73))
+* mark jira integrations as inactive if we cannot refresh them ([#12096](https://github.com/ParabolInc/parabol/issues/12096)) ([ae94fc1](https://github.com/ParabolInc/parabol/commit/ae94fc16e2484c13f8f59c80c2100737f6b9a5bf))
+* sql query column ordering ([#12097](https://github.com/ParabolInc/parabol/issues/12097)) ([aefd648](https://github.com/ParabolInc/parabol/commit/aefd6486bc6d17a903414a857a0a3b845733c4fc))
+* users can accept mass invites from org admins not on the team ([#12091](https://github.com/ParabolInc/parabol/issues/12091)) ([7d4a183](https://github.com/ParabolInc/parabol/commit/7d4a183cd59d2e1d46a62f5c9f39db8265601c19))
+* valid Team.agendaItems for addTeam and addOrg ([#12095](https://github.com/ParabolInc/parabol/issues/12095)) ([f000e3f](https://github.com/ParabolInc/parabol/commit/f000e3f1bdf95e5812706c5ee1fa7c43b7f1409d))
+
+
+### Changed
+
+* only deactivate atlassian integration if token was invalid ([#12098](https://github.com/ParabolInc/parabol/issues/12098)) ([bc99f7b](https://github.com/ParabolInc/parabol/commit/bc99f7b24502c713839e462ab64e06871f0f39cb))
+
 ## [10.25.0](https://github.com/ParabolInc/parabol/compare/v10.24.1...v10.25.0) (2025-09-23)
 
 
