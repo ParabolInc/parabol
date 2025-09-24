@@ -78,8 +78,8 @@ export const freshAtlassianAuth = (
                   .where('teamId', '=', teamId)
                   .where('isActive', '=', true)
                   .execute()
-                logError(oauthRes)
               }
+              logError(oauthRes)
               return null
             }
             const {accessToken, refreshToken: newRefreshToken} = oauthRes
