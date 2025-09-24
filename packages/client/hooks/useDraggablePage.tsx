@@ -268,7 +268,6 @@ export const useDraggablePage = (
           .get(pageId)
           ?.getLinkedRecord('access')
           ?.getValue('viewer')
-        console.log('starting drag', draggingPageViewerAccess)
         store
           .getRoot()
           .getLinkedRecord('viewer')
