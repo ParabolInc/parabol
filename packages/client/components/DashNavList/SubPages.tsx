@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
@@ -28,11 +29,12 @@ interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
   pageAncestors: string[]
   pageLinks: PageLinkBlockAttributes[] | null | undefined
+  parentPageViewerAccess?: PageRoleEnum
 }
 
 export const SubPages = (props: Props) => {
   const connectionKey = 'User_pages'
-  const {pageAncestors, queryRef, pageLinks} = props
+  const {pageAncestors, queryRef, pageLinks, parentPageViewerAccess} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {
@@ -87,6 +89,7 @@ export const SubPages = (props: Props) => {
             draggingPageIsPrivate={draggingPageIsPrivate || null}
             draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
             draggingPageViewerAccess={draggingPageViewerAccess || null}
+            parentPageViewerAccess={parentPageViewerAccess}
           />
         )
       })}

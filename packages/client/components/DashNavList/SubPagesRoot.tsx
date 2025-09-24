@@ -1,4 +1,5 @@
 import {Suspense} from 'react'
+import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import type {SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
 import query from '../../__generated__/SubPagesQuery.graphql'
 import {usePageChildren} from '../../hooks/usePageChildren'
@@ -10,10 +11,11 @@ interface Props {
   parentPageId?: string
   teamId?: string
   pageAncestors: string[]
+  parentPageViewerAccess?: PageRoleEnum
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId, pageAncestors, teamId} = props
+  const {parentPageId, pageAncestors, teamId, parentPageViewerAccess} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
     parentPageId,
     teamId
@@ -25,7 +27,12 @@ export const SubPagesRoot = (props: Props) => {
   return (
     <Suspense fallback={<Loader />}>
       {queryRef && (
-        <SubPages queryRef={queryRef} pageAncestors={pageAncestors} pageLinks={pageLinks} />
+        <SubPages
+          queryRef={queryRef}
+          pageAncestors={pageAncestors}
+          pageLinks={pageLinks}
+          parentPageViewerAccess={parentPageViewerAccess}
+        />
       )}
     </Suspense>
   )

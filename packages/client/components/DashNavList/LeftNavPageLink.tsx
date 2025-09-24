@@ -26,6 +26,8 @@ interface Props {
   isLastChild: boolean
   nextPeerId: string | null
   connectionKey: PageConnectionKey
+  // pass this down from the parent to reduce query complexity, since it's only needed in dragging edge cases
+  parentPageViewerAccess?: PageRoleEnum
 }
 export const LeftNavPageLink = (props: Props) => {
   const {
@@ -38,7 +40,8 @@ export const LeftNavPageLink = (props: Props) => {
     dropIdx,
     isLastChild,
     nextPeerId,
-    connectionKey
+    connectionKey,
+    parentPageViewerAccess
   } = props
   const depth = pageAncestors.length
   const page = useFragment(
@@ -47,13 +50,6 @@ export const LeftNavPageLink = (props: Props) => {
         ...PageActions_page
         access {
           viewer
-        }
-        parentPage {
-          ... on Page {
-            access {
-              viewer
-            }
-          }
         }
         id
         title
@@ -71,7 +67,6 @@ export const LeftNavPageLink = (props: Props) => {
   )
   const {
     access,
-    parentPage,
     title,
     id,
     parentPageId,
@@ -82,7 +77,6 @@ export const LeftNavPageLink = (props: Props) => {
     currentPageAncestorDepth
   } = page
   const {viewer: viewerAccess} = access
-  const parentPageViewerAccess = parentPage?.access?.viewer
 
   const pageCode = id.split(':')[1]
   const slug = getPageSlug(Number(pageCode), title)
@@ -187,7 +181,11 @@ export const LeftNavPageLink = (props: Props) => {
           className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}
           data-pages-connection={'User_pages'}
         >
-          <SubPagesRoot parentPageId={id} pageAncestors={nextPageAncestors} />
+          <SubPagesRoot
+            parentPageId={id}
+            pageAncestors={nextPageAncestors}
+            parentPageViewerAccess={viewerAccess ?? undefined}
+          />
         </div>
       )}
     </div>
