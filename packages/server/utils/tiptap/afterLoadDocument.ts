@@ -2,13 +2,13 @@ import type {Extension} from '@hocuspocus/server'
 import {sql} from 'kysely'
 import * as Y from 'yjs'
 import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
-import {movePageToNewParent} from '../../graphql/public/mutations/helpers/movePageToNewParent'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createChildPage} from './createChildPage'
 import {removeBacklinkedPageLinkBlocks} from './hocusPocusHub'
+import {movePageToNewParent} from './movePageToNewParent'
 
 const updateBacklinks = async (
   fromPageId: number,

@@ -1,13 +1,13 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
-import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
-import {pageAccessByUserId} from '../../../../dataloader/pageLoaderMakers'
-import getKysely from '../../../../postgres/getKysely'
-import {selectDescendantPages} from '../../../../postgres/select'
-import {updatePageAccessTable} from '../../../../postgres/updatePageAccessTable'
-import {publishPageNotification} from '../../../../utils/publishPageNotification'
-import {removeCanonicalPageLinkFromPage} from '../../../../utils/tiptap/removeCanonicalPageLinkFromPage'
-import {validateParentPage} from '../../../../utils/tiptap/validateParentPage'
+import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
+import {pageAccessByUserIdBatchFn} from '../../dataloader/pageLoaderMakers'
+import getKysely from '../../postgres/getKysely'
+import {selectDescendantPages} from '../../postgres/select'
+import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
+import {publishPageNotification} from '../publishPageNotification'
+import {removeCanonicalPageLinkFromPage} from './removeCanonicalPageLinkFromPage'
+import {validateParentPage} from './validateParentPage'
 
 export const movePageToNewParent = async (
   viewerId: string,
@@ -15,7 +15,7 @@ export const movePageToNewParent = async (
   parentPageId: number
 ) => {
   const pg = getKysely()
-  const viewerAccess = await pageAccessByUserId({} as any).load({pageId, userId: viewerId})
+  const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
   if (viewerAccess !== 'owner') {
     throw new GraphQLError(`Viewer must own the Page in order to move it to a new parent`)
   }
