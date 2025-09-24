@@ -23,7 +23,7 @@ const meetingSubscription: SubscriptionResolvers['meetingSubscription'] = {
 
     // RESOLUTION
     const channelName = `${SubscriptionChannel.MEETING}.${meetingId}`
-    const iter = getPubSub().subscribe([channelName])
+    const iter = await getPubSub().subscribe([channelName])
     return broadcastSubscription(iter, context)
   }
 }
