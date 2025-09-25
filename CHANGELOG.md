@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.25.2](https://github.com/ParabolInc/parabol/compare/v10.25.1...v10.25.2) (2025-09-25)
+
+
+### Fixed
+
+* add insights for editors only ([#12105](https://github.com/ParabolInc/parabol/issues/12105)) ([6c7b2e1](https://github.com/ParabolInc/parabol/commit/6c7b2e1da1f72468e14cd1f8d16de97ab142d16e))
+* stop calling redis subscribe with 0 args ([#12104](https://github.com/ParabolInc/parabol/issues/12104)) ([b317ad4](https://github.com/ParabolInc/parabol/commit/b317ad4468d4a72148bccf45ebb2439a9411e832))
+
 ## [10.25.1](https://github.com/ParabolInc/parabol/compare/v10.25.0...v10.25.1) (2025-09-24)
 
 

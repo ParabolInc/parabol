@@ -22,7 +22,7 @@ const organizationSubscription: SubscriptionResolvers['organizationSubscription'
 
     // RESOLUTION
     const channelNames = orgIds.map((id) => `${SubscriptionChannel.ORGANIZATION}.${id}`)
-    const iter = getPubSub().subscribe(channelNames)
+    const iter = await getPubSub().subscribe(channelNames)
     return broadcastSubscription(iter, context)
   }
 }

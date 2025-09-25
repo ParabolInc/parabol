@@ -16,7 +16,7 @@ const notificationSubscription: SubscriptionResolvers['notificationSubscription'
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.NOTIFICATION}.${viewerId}`
 
-    const iter = getPubSub().subscribe([channelName])
+    const iter = await getPubSub().subscribe([channelName])
     return broadcastSubscription(iter, context)
   }
 }

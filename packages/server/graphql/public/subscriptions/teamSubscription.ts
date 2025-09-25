@@ -14,7 +14,7 @@ const teamSubscription: SubscriptionResolvers['teamSubscription'] = {
     // RESOLUTION
     const {tms: teamIds} = authToken
     const channelNames = teamIds.map((id) => `${SubscriptionChannel.TEAM}.${id}`)
-    const iter = getPubSub().subscribe(channelNames)
+    const iter = await getPubSub().subscribe(channelNames)
     return broadcastSubscription(iter, context)
   }
 }
