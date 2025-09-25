@@ -15,7 +15,7 @@ const taskSubscription: SubscriptionResolvers['taskSubscription'] = {
     // RESOLUTION
     const viewerId = getUserId(authToken)
     const channelName = `${SubscriptionChannel.TASK}.${viewerId}`
-    const iter = getPubSub().subscribe([channelName])
+    const iter = await getPubSub().subscribe([channelName])
     return broadcastSubscription(iter, context)
   }
 }

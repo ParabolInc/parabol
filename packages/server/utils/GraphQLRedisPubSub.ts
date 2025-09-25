@@ -28,8 +28,10 @@ export default class GraphQLRedisPubSub {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 
-  subscribe = (channels: string[]) => {
-    this.subscriber.subscribe(...channels)
+  subscribe = async (channels: string[]) => {
+    if (channels.length > 0) {
+      await this.subscriber.subscribe(...channels)
+    }
     const onStart = (listener: SubscriptionListener) => {
       channels.forEach((channel) => {
         this.listenersByChannel[channel] = this.listenersByChannel[channel] || []
