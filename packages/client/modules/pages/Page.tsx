@@ -38,13 +38,12 @@ export const Page = (props: Props) => {
   const {viewer: viewerAccess, public: publicAccess} = access
   const {editor, synced} = useTipTapPageEditor(pageId, {viewerRef})
   const atmosphere = useAtmosphere()
+  const isViewerEditable = ['owner', 'editor'].includes(viewerAccess || '')
+  const isPublicEditable = ['owner', 'editor'].includes(publicAccess || '') && !!atmosphere.authObj
+  const isEditable = isViewerEditable || isPublicEditable
   useEffect(() => {
-    const isViewerEditable = ['owner', 'editor'].includes(viewerAccess || '')
-    const isPublicEditable =
-      ['owner', 'editor'].includes(publicAccess || '') && !!atmosphere.authObj
-    const isEditable = isViewerEditable || isPublicEditable
     editor?.setEditable(isEditable)
-  }, [editor, viewerAccess, publicAccess, atmosphere.authObj])
+  }, [editor, isEditable])
   if (!editor) return <div>No editor</div>
   return (
     <div className='relative flex w-full flex-col items-center bg-white'>
@@ -57,7 +56,7 @@ export const Page = (props: Props) => {
             synced && 'opacity-100'
           )}
         />
-        <StarterActions editor={editor} />
+        {isEditable && <StarterActions editor={editor} />}
       </div>
     </div>
   )
