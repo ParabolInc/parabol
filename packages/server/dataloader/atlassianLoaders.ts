@@ -12,7 +12,6 @@ import getJiraDimensionFieldMap, {
   type GetJiraDimensionFieldMapParams,
   type JiraDimensionFieldMap
 } from '../postgres/queries/getJiraDimensionFieldMap'
-import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import AtlassianServerManager, {
   type JiraGetIssueRes,
@@ -224,22 +223,28 @@ export const jiraIssue = (
                 if (!jiraFieldId) {
                   return undefined
                 }
-                const freshEstimate = String(fields[jiraFieldId as keyof JiraGQLFields])
+                const freshEstimate = String(fields[jiraFieldId as keyof JiraGQLFields]).slice(
+                  0,
+                  100
+                )
                 if (freshEstimate === label) return undefined
                 // mutate current dataloader
                 estimate.label = freshEstimate
-                return insertTaskEstimate({
-                  changeSource: 'external',
-                  // keep the link to the discussion alive, if possible
-                  discussionId,
-                  jiraFieldId,
-                  label: freshEstimate,
-                  name,
-                  meetingId: null,
-                  stageId: null,
-                  taskId,
-                  userId
-                })
+                return getKysely()
+                  .insertInto('TaskEstimate')
+                  .values({
+                    changeSource: 'external',
+                    // keep the link to the discussion alive, if possible
+                    discussionId,
+                    jiraFieldId,
+                    label: freshEstimate,
+                    name,
+                    meetingId: null,
+                    stageId: null,
+                    taskId,
+                    userId
+                  })
+                  .execute()
               })
             )
 

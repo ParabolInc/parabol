@@ -1,7 +1,7 @@
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
+import getKysely from '../../../postgres/getKysely'
 import type {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import getSimilarTaskEstimate from '../../../postgres/queries/getSimilarTaskEstimate'
-import insertTaskEstimate from '../../../postgres/queries/insertTaskEstimate'
 import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
@@ -102,19 +102,22 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           )
           if (!similarEstimate) return
           dataLoader.get('latestTaskEstimates').clear(taskId)
-          return insertTaskEstimate({
-            changeSource: 'external',
-            // keep the link to the discussion alive, if possible
-            discussionId: estimate.discussionId,
-            jiraFieldId: undefined,
-            label: similarEstimate.label,
-            name: estimate.name,
-            meetingId: null,
-            stageId: null,
-            taskId,
-            userId: accessUserId,
-            githubLabelName: similarEstimate.githubLabelName!
-          })
+          return getKysely()
+            .insertInto('TaskEstimate')
+            .values({
+              changeSource: 'external',
+              // keep the link to the discussion alive, if possible
+              discussionId: estimate.discussionId,
+              jiraFieldId: undefined,
+              label: similarEstimate.label,
+              name: estimate.name,
+              meetingId: null,
+              stageId: null,
+              taskId,
+              userId: accessUserId,
+              githubLabelName: similarEstimate.githubLabelName!
+            })
+            .execute()
         })
       )
     }
