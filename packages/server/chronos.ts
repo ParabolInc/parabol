@@ -122,6 +122,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
   Object.entries(jobs).forEach(([name, {onTick, cronTime}]) => {
     try {
       const job = CronJob.from({
+        name,
         start: true,
         // assume non-null & catch on fail
         cronTime: cronTime!,
