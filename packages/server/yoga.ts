@@ -80,7 +80,11 @@ export const yoga = createYoga<ServerContext, UserContext>({
         loginWithPassword: ['password'],
         resetPassword: ['token', 'newPassword'],
         signUpWithPassword: ['password', 'invitationToken'],
-        verifyEmail: ['verificationToken']
+        verifyEmail: ['verificationToken'],
+        uploadIdPMetadata: ['file'],
+        uploadOrgImage: ['file'],
+        uploadUserAsset: ['file'],
+        uploadUserImage: ['file']
       } as ExcludedArgs,
       includeOps: new Set([
         'acceptRequestToJoinDomain',
