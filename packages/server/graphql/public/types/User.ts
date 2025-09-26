@@ -9,6 +9,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import {
   AUTO_GROUPING_THRESHOLD,
@@ -586,7 +587,7 @@ const User: ReqResolvers<'User'> = {
     if (!meetingId && !inTeamId) return {}
     const viewerId = getUserId(authToken)
     if (viewerId !== userId && !isSuperUser(authToken)) return {}
-    const user = (await dataLoader.get('users').load(userId))!
+    const user = await dataLoader.get('users').loadNonNull(userId)
     const {email} = user
     let teamId = inTeamId
     if (!teamId && meetingId) {
@@ -594,6 +595,10 @@ const User: ReqResolvers<'User'> = {
       if (!meeting) return {meetingId}
       teamId = meeting.teamId
     }
+    const teamMember = teamId
+      ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
+      : null
+    if (teamMember) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null
