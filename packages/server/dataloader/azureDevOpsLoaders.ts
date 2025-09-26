@@ -1,8 +1,8 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
+import getKysely from '../postgres/getKysely'
 import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import insertTaskEstimate from '../postgres/queries/insertTaskEstimate'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
@@ -540,17 +540,20 @@ export const azureDevOpsWorkItem = (parent: RootDataLoader) => {
               if (freshEstimate === label) return undefined
               // mutate current dataloader
               estimate.label = freshEstimate
-              return insertTaskEstimate({
-                changeSource: 'external',
-                discussionId,
-                azureDevOpsFieldName,
-                label: freshEstimate,
-                name,
-                meetingId: null,
-                stageId: null,
-                taskId,
-                userId
-              })
+              return getKysely()
+                .insertInto('TaskEstimate')
+                .values({
+                  changeSource: 'external',
+                  discussionId,
+                  azureDevOpsFieldName,
+                  label: freshEstimate,
+                  name,
+                  meetingId: null,
+                  stageId: null,
+                  taskId,
+                  userId
+                })
+                .execute()
             })
           )
           return azureDevOpsWorkItem

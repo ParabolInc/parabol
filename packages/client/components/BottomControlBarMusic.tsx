@@ -52,13 +52,15 @@ const BottomControlBarMusic = ({
           ref={buttonRef}
           status={status}
           onTransitionEnd={onTransitionEnd}
-          className='meeting-control-bar-button flex flex-col items-center justify-center'
           aria-label='Background music'
           onClick={() => setOpen((prev) => !prev)}
         >
-          <span className='flex flex-col items-center justify-center'>
+          <span className='flex flex-col items-center justify-center px-2 pt-2 pb-1'>
             <HeadphonesIcon
-              className={cn(isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700')}
+              className={cn(
+                'size-6',
+                isPlaying ? 'animate-pulse text-slate-700' : 'text-slate-700'
+              )}
               fontSize='medium'
             />
             <span className='mt-0.5 font-medium text-slate-600 text-xs'>Music</span>

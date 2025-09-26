@@ -4,8 +4,8 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
+import getKysely from '../../postgres/getKysely'
 import type {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
-import insertTaskEstimate from '../../postgres/queries/insertTaskEstimate'
 import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
 import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -405,19 +405,22 @@ const setTaskEstimate = {
     })
 
     if (success) {
-      await insertTaskEstimate({
-        changeSource: meeting ? 'meeting' : 'task',
-        discussionId,
-        jiraFieldId,
-        githubLabelName,
-        gitlabLabelId,
-        label: value,
-        name: dimensionName,
-        meetingId,
-        stageId,
-        taskId,
-        userId: viewerId
-      })
+      await getKysely()
+        .insertInto('TaskEstimate')
+        .values({
+          changeSource: meeting ? 'meeting' : 'task',
+          discussionId,
+          jiraFieldId,
+          githubLabelName,
+          gitlabLabelId,
+          label: value,
+          name: dimensionName,
+          meetingId,
+          stageId,
+          taskId,
+          userId: viewerId
+        })
+        .execute()
 
       const data = {meetingId, stageId, taskId}
       publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
