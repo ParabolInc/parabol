@@ -8,6 +8,7 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import getValidRedirectParam from '../utils/getValidRedirectParam'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -25,6 +26,7 @@ const query = graphql`
   query ViewerNotOnTeamQuery($teamId: ID, $meetingId: ID) {
     viewer {
       teamInvitation(teamId: $teamId, meetingId: $meetingId) {
+        isOnTeam
         teamInvitation {
           token
         }
@@ -40,23 +42,26 @@ const ViewerNotOnTeam = (props: Props) => {
   const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef)
   const {viewer} = data
   const {
-    teamInvitation: {teamInvitation, meetingId, teamId}
+    teamInvitation: {teamInvitation, meetingId, teamId, isOnTeam}
   } = viewer
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
   useEffect(() => {
-    if (teamInvitation) {
+    if (isOnTeam) {
+      const redirectTo = getValidRedirectParam() || '/meetings'
+      history.replace(redirectTo)
+    } else if (teamInvitation) {
       // if an invitation already exists, accept it
       AcceptTeamInvitationMutation(
         atmosphere,
         {invitationToken: teamInvitation.token},
         {history, meetingId}
       )
-      return
-    } else if (teamId)
+    } else if (teamId) {
       PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})
+    }
     return undefined
   }, [])
 
