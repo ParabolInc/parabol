@@ -285,7 +285,7 @@ export default class Atmosphere extends Environment {
 
   setAuthToken = async (authToken: string | null | undefined) => {
     this.authToken = authToken || null
-    providerManager.setAuthToken(authToken!)
+    providerManager.setAuthToken(authToken!, this)
     if (!authToken) {
       this.authObj = null
       window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)

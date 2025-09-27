@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.25.3](https://github.com/ParabolInc/parabol/compare/v10.25.2...v10.25.3) (2025-09-27)
+
+
+### Fixed
+
+* center music icon, truncate fields before inserting into DB ([#12116](https://github.com/ParabolInc/parabol/issues/12116)) ([d7286ae](https://github.com/ParabolInc/parabol/commit/d7286ae768c4a9c42e162bf72863353ff22616d1))
+* exclude binary fields from audit logs ([#12119](https://github.com/ParabolInc/parabol/issues/12119)) ([0c33f83](https://github.com/ParabolInc/parabol/commit/0c33f8344888ea09cf3ee9ae3f25db097c0e9bfd))
+* logout user if they have an expired token ([#12120](https://github.com/ParabolInc/parabol/issues/12120)) ([8abdc71](https://github.com/ParabolInc/parabol/commit/8abdc715be51e19bfbb266ae3c633204b846eeeb))
+* name chronos jobs ([#12111](https://github.com/ParabolInc/parabol/issues/12111)) ([5bc5327](https://github.com/ParabolInc/parabol/commit/5bc5327eeb40cdea29eada9244be90657890c02c))
+
 ## [10.25.2](https://github.com/ParabolInc/parabol/compare/v10.25.1...v10.25.2) (2025-09-25)
 
 

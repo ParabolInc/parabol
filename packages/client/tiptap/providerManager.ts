@@ -1,11 +1,14 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
 import * as Y from 'yjs'
+import type Atmosphere from '../Atmosphere'
 
 class ProviderManager {
   authToken: string | null = null
   socket: HocuspocusProviderWebsocket | undefined = undefined
   providers: Record<string, {count: number; provider: HocuspocusProvider}> = {}
-  setAuthToken(authToken: string) {
+  atmosphere?: Atmosphere
+  setAuthToken(authToken: string, atmosphere: Atmosphere) {
+    this.atmosphere = atmosphere
     this.authToken = authToken
   }
   getSocket() {
@@ -37,7 +40,12 @@ class ProviderManager {
     const provider = new HocuspocusProvider({
       websocketProvider: this.getSocket(),
       name: pageId,
-      document: doc
+      document: doc,
+      onAuthenticationFailed: ({reason}) => {
+        if (reason === 'Unauthenticated') {
+          this.atmosphere?.invalidateSession(reason)
+        }
+      }
     })
     provider.attach()
     this.providers[pageId] = {count: 1, provider}

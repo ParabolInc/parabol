@@ -43,13 +43,19 @@ export const server = new Server({
   async onListen(data) {
     Logger.log(`\n🔮🔮🔮 Server ID: ${SERVER_ID}. Ready for Hocus Pocus: Port ${data.port} 🔮🔮🔮`)
   },
-  async onUpgrade(data) {
+  async onConnect(data) {
     const {request} = data
     const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
-    const req = data.request as any
+    const userId = authToken?.sub
+    if (!userId) {
+      const err = new Error('Unauthenticated')
+      ;(err as any).reason = 'Unauthenticated'
+      throw err
+    }
     // put the userId on the request because context isn't available until onAuthenticate
-    req.userId = authToken?.sub
+    const req = data.request as any
+    req.userId = userId
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
