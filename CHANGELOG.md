@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.25.4](https://github.com/ParabolInc/parabol/compare/v10.25.3...v10.25.4) (2025-09-29)
+
+
+### Fixed
+
+* always reset style after remote drag ([#12122](https://github.com/ParabolInc/parabol/issues/12122)) ([a455889](https://github.com/ParabolInc/parabol/commit/a45588968198c0f0aadf378b7dddf98000f8d6b1))
+* do not log failed permission checks ([#12124](https://github.com/ParabolInc/parabol/issues/12124)) ([16842d8](https://github.com/ParabolInc/parabol/commit/16842d8d6c82615e981da50a6365d026619d46d9))
+
+
+### Changed
+
+* reduce number of error logs ([7631d16](https://github.com/ParabolInc/parabol/commit/7631d163de9b28096a7c12ec1a23820cfa6f6061))
+
 ## [10.25.3](https://github.com/ParabolInc/parabol/compare/v10.25.2...v10.25.3) (2025-09-27)
 
 
