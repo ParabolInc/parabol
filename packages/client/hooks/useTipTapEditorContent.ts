@@ -8,10 +8,14 @@ export const useTipTapEditorContent = (content: string) => {
   // When receiving new content, it's important to make sure it's different from the current value
   // Unnecessary re-renders mess up things like the coordinates of the link menu
   const contentJSON = useMemo(() => {
-    const newContentJSON = JSON.parse(content) as JSONContent
-    const oldContentJSON = editorRef.current ? editorRef.current.getJSON() : {}
-    if (!isEqualWhenSerialized(newContentJSON, oldContentJSON)) {
-      contentJSONRef.current = newContentJSON
+    try {
+      const newContentJSON = JSON.parse(content) as JSONContent
+      const oldContentJSON = editorRef.current ? editorRef.current.getJSON() : {}
+      if (!isEqualWhenSerialized(newContentJSON, oldContentJSON)) {
+        contentJSONRef.current = newContentJSON
+      }
+    } catch (e) {
+      console.error(e, content)
     }
     return contentJSONRef.current!
   }, [content])

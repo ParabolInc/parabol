@@ -25,12 +25,17 @@ export const getTaskBlocks = async (meetingId: string, dataLoader: DataLoaderIns
   const validTaskBlocks = taskBlocks.filter(isValid)
   const taskCount = validTaskBlocks.length
   if (taskCount === 0) return []
+  const spacedBlocks = validTaskBlocks.flatMap((taskBlock, idx) => {
+    if (idx === 0) return [taskBlock]
+    return [{type: 'paragraph'}, taskBlock]
+  })
+
   return [
     {
       type: 'heading',
       attrs: {level: 2},
       content: [{type: 'text', text: `${taskCount} ${plural(taskCount, 'Task')}`}]
     },
-    ...validTaskBlocks
+    ...spacedBlocks
   ]
 }
