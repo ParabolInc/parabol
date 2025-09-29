@@ -13,7 +13,7 @@ export const hasOrgRole = <T>(orgIdDotPath: ResolverDotPath<T>, role: Orguserrol
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
-      if (!organizationUser) return new GraphQLError('Organization User not found')
+      if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
       if (organizationUser.role !== role) return new GraphQLError(`User is not ${role}`)
       return true
     }
