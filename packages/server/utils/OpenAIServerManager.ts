@@ -1,7 +1,6 @@
 import OpenAI from 'openai'
 import type {ModifyType} from '../graphql/public/resolverTypes'
 import type {RetroReflection} from '../postgres/types'
-import {Logger} from './Logger'
 import logError from './logError'
 
 type InsightResponse = {
@@ -144,7 +143,6 @@ class OpenAIServerManager {
       return themes.split(', ')
     } catch (e) {
       const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
-      Logger.error(error.message)
       logError(error)
       return null
     }

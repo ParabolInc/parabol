@@ -35,7 +35,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
   }
 
   async putBuildFile() {
-    Logger.error(
+    Logger.warn(
       'Cannot call `putBuildFile` when using Local File Storage. The build files are already there'
     )
     return ''

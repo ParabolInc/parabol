@@ -57,7 +57,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       throw new Error('Request aborted due to deadline')
     }
     if (debug) {
-      Logger.error(`Attempt ${attempt} failed: ${error}`)
+      Logger.warn(`Attempt ${attempt} failed: ${error}`)
     }
     const currentTime = Date.now()
     if (currentTime >= deadline.getTime()) {
