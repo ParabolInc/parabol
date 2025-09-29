@@ -408,6 +408,10 @@ const useCollapsePlaceholder = (
     const {ref} = drag
     if (!ref) return
     const {style, scrollHeight} = ref
+    const reset = () => {
+      style.height = ''
+      style.transition = ''
+    }
     if (staticIdx === -1) {
       // the card has been picked up
       if (staticReflectionCount > 0) return
@@ -421,10 +425,6 @@ const useCollapsePlaceholder = (
         style.height = '0'
       })
     } else if (reflection.isDropping) {
-      const reset = () => {
-        style.height = ''
-        style.transition = ''
-      }
       if (staticReflectionCount === 1) {
         // the card has created a new group, grow a space for it
         style.height = '0'
@@ -437,6 +437,8 @@ const useCollapsePlaceholder = (
         // the card landed on an existing group
         reset()
       }
+    } else {
+      reset()
     }
   }, [staticIdx === -1])
 }
