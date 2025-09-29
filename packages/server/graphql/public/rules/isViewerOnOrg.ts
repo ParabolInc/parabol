@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
@@ -11,7 +12,7 @@ export const isViewerOnOrg = <T>(orgIdDotPath: ResolverDotPath<T>) =>
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
-      if (!organizationUser) return new Error('Viewer is not on Organization')
+      if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
       return true
     }
   )

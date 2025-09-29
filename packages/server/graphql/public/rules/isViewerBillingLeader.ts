@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
@@ -11,10 +12,10 @@ export const isViewerBillingLeader = <T>(orgIdDotPath: ResolverDotPath<T>) =>
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
-      if (!organizationUser) return new Error('Organization User not found')
+      if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
       const {role} = organizationUser
       if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN')
-        return new Error('User is not billing leader')
+        return new GraphQLError('User is not billing leader')
       return true
     }
   )
