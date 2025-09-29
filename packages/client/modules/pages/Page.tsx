@@ -1,15 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {Page_page$key} from '../../__generated__/Page_page.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
-import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {useTipTapPageEditor} from '../../hooks/useTipTapPageEditor'
-import {cn} from '../../ui/cn'
+import {usePageProvider} from '../../hooks/usePageProvider'
+import {PageEditor} from './PageEditor'
 import {PageHeader} from './PageHeader'
 import {PageHeaderPublic} from './PageHeaderPublic'
-import {StarterActions} from './StarterActions'
 
 interface Props {
   viewerRef: useTipTapPageEditor_viewer$key | null
@@ -36,27 +33,18 @@ export const Page = (props: Props) => {
 
   const {id: pageId, access} = page
   const {viewer: viewerAccess, public: publicAccess} = access
-  const {editor, synced} = useTipTapPageEditor(pageId, {viewerRef})
+  const {provider, synced} = usePageProvider(pageId)
   const atmosphere = useAtmosphere()
   const isViewerEditable = ['owner', 'editor'].includes(viewerAccess || '')
   const isPublicEditable = ['owner', 'editor'].includes(publicAccess || '') && !!atmosphere.authObj
   const isEditable = isViewerEditable || isPublicEditable
-  useEffect(() => {
-    editor?.setEditable(isEditable)
-  }, [editor, isEditable])
-  if (!editor) return <div>No editor</div>
+  // The editor is conditionally loaded only after syncing so the forced schema is not injected before
+  // The yjs document loads
   return (
     <div className='relative flex w-full flex-col items-center bg-white'>
       {isPublic ? <PageHeaderPublic /> : <PageHeader pageRef={page} />}
       <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
-        <TipTapEditor
-          editor={editor}
-          className={cn(
-            'page-editor flex w-full px-6 opacity-0 delay-300',
-            synced && 'opacity-100'
-          )}
-        />
-        {isEditable && <StarterActions editor={editor} />}
+        {synced && <PageEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />}
       </div>
     </div>
   )

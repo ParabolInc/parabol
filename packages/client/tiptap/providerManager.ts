@@ -1,4 +1,5 @@
 import {HocuspocusProvider, HocuspocusProviderWebsocket} from '@hocuspocus/provider'
+import {IndexeddbPersistence} from 'y-indexeddb'
 import * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
 
@@ -36,6 +37,8 @@ class ProviderManager {
     const existing = this.use(pageId)
     if (existing) return existing
     const doc = new Y.Doc()
+    // this adds support for offline editing
+    new IndexeddbPersistence(pageId, doc)
     // update the URL to match the title
     const provider = new HocuspocusProvider({
       websocketProvider: this.getSocket(),
