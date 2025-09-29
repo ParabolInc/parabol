@@ -1,7 +1,6 @@
 import ms from 'ms'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {Logger} from '../../../utils/Logger'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import {upsertNotifications} from '../../public/mutations/addSlackAuth'
 
@@ -27,7 +26,6 @@ const activatePrevSlackAuth = async (
     const manager = new SlackServerManager(botAccessToken)
     const authRes = await manager.isValidAuthToken(botAccessToken)
     if (!authRes.ok) {
-      Logger.error(authRes.error)
       return
     }
 

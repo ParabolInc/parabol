@@ -10,7 +10,8 @@ site.
 ## Running the Test Suites
 
 1. Start the dev server according to the main [README instructions](/README.md#installation)
-2. In this directory, run `pnpm test`.
+2. Install playwrigth `pnpm exec playwright install`
+3. In this directory, run `pnpm test`.
 
 ## Debugging a Test
 

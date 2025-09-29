@@ -69,7 +69,7 @@ module.exports = {
   },
   infrastructureLogging: {level: 'warn'},
   watchOptions: {
-    ignored: /node_modules/
+    ignored: ['**/node_modules/**', path.join(PROJECT_ROOT, 'packages/integration-tests/**/*')]
     // aggregateTimeout: 200,
   },
   devtool: 'eval-source-map',

@@ -50,7 +50,7 @@ const upsertHubspotContact = async (
   )
   if (!String(res.status).startsWith('2')) {
     const responseBody = await res.json()
-    Logger.error(`Failed to update HubSpot for ${email}: `, responseBody.message)
+    Logger.warn(`Failed to update HubSpot for ${email}: `, responseBody.message)
   }
 }
 
