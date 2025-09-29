@@ -1,7 +1,9 @@
+import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
 import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
+import {Document} from '@tiptap/extension-document'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
@@ -37,11 +39,10 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
-import {usePageProvider} from './usePageProvider'
 
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
-  pageId: string,
+  provider: HocuspocusProvider,
   options: {
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
@@ -59,16 +60,16 @@ export const useTipTapPageEditor = (
   const preferredName = user?.preferredName
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
-  const {provider, synced} = usePageProvider(pageId)
   const editor = useEditor(
     {
       content: '',
       extensions: [
-        StarterKit.extend({
-          document: {
-            content: 'heading block*'
-          }
-        }).configure({
+        Document.extend({
+          content: 'heading block*'
+        }),
+        StarterKit.configure({
+          paragraph: false,
+          document: false,
           undoRedo: false,
           link: false
         }),
@@ -174,17 +175,17 @@ export const useTipTapPageEditor = (
 
   usePageLinkPlaceholder(editor!, placeholderRef)
 
-  return {editor, provider, synced}
+  return {editor}
 }
 
 export const makeEditorFromYDoc = (document: Y.Doc) => {
   return new Editor({
     extensions: [
-      StarterKit.extend({
-        document: {
-          content: 'heading block*'
-        }
-      }).configure({
+      Document.extend({
+        content: 'heading block*'
+      }),
+      StarterKit.configure({
+        document: false,
         undoRedo: false,
         link: false
       }),
