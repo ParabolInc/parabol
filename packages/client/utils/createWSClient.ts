@@ -46,7 +46,7 @@ export const onDisconnected = (atmosphere: Atmosphere) => {
 
 export const onReconnect = (atmosphere: Atmosphere) => {
   setConnectedStatus(atmosphere, true)
-  atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
+  // atmosphere.eventEmitter.emit('removeSnackbar', ({key}) => key === 'offline')
 }
 
 export function createWSClient(atmosphere: Atmosphere) {
