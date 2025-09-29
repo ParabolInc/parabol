@@ -68,7 +68,6 @@ export const useTipTapPageEditor = (
           content: 'heading block*'
         }),
         StarterKit.configure({
-          paragraph: false,
           document: false,
           undoRedo: false,
           link: false
