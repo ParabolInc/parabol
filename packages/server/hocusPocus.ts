@@ -1,3 +1,4 @@
+import type {IncomingMessage} from 'node:http'
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
 import {Document, onStoreDocumentPayload, Server} from '@hocuspocus/server'
@@ -8,6 +9,7 @@ import tracer from 'dd-trace'
 import {encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
+import type {Pageroleenum} from './postgres/types/pg'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
@@ -36,6 +38,8 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   await publishPageNotification(pageId, 'UpdatePagePayload', data, subOptions, dataLoader)
   dataLoader.dispose()
 }
+
+type Req = IncomingMessage & {userId?: string}
 export const server = new Server({
   stopOnSignals: false,
   port,
@@ -44,29 +48,33 @@ export const server = new Server({
     Logger.log(`\n🔮🔮🔮 Server ID: ${SERVER_ID}. Ready for Hocus Pocus: Port ${data.port} 🔮🔮🔮`)
   },
   async onConnect(data) {
-    const {request} = data
+    const request = data.request as Req
     const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
     const userId = authToken?.sub
-    if (!userId) {
+    if (authTokenStr && !userId) {
+      // If there _is_ an authToken & it is bad (expired, invalid) log out
       const err = new Error('Unauthenticated')
       ;(err as any).reason = 'Unauthenticated'
       throw err
     }
+    // Unauthenticated users are allowed for public pages
     // put the userId on the request because context isn't available until onAuthenticate
-    const req = data.request as any
-    req.userId = userId
+    request.userId = authToken?.sub
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
-    const userId = (request as any).userId as string
+    const userId = (request as Req).userId
     const [dbId] = CipherId.fromClient(documentName)
-    let pageAccess = await getKysely()
-      .selectFrom('PageAccess')
-      .select('role')
-      .where('pageId', '=', dbId)
-      .where('userId', '=', userId)
-      .executeTakeFirst()
+    let pageAccess: {role: Pageroleenum} | undefined
+    if (userId) {
+      pageAccess = await getKysely()
+        .selectFrom('PageAccess')
+        .select('role')
+        .where('pageId', '=', dbId)
+        .where('userId', '=', userId)
+        .executeTakeFirst()
+    }
     if (!pageAccess) {
       pageAccess = await getKysely()
         .selectFrom('PageExternalAccess')

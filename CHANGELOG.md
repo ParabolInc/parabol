@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.2](https://github.com/ParabolInc/parabol/compare/v10.26.1...v10.26.2) (2025-09-30)
+
+
+### Fixed
+
+* improve rate limit logs ([#12138](https://github.com/ParabolInc/parabol/issues/12138)) ([b4f7b57](https://github.com/ParabolInc/parabol/commit/b4f7b57bd49ccb7f3afff6f0b121c76df33519e9))
+* regression on unauthenticated access to public pages ([#12140](https://github.com/ParabolInc/parabol/issues/12140)) ([864d656](https://github.com/ParabolInc/parabol/commit/864d656a02fd67e03b473d17f298c2c9cbac50e4))
+
 ## [10.26.1](https://github.com/ParabolInc/parabol/compare/v10.26.0...v10.26.1) (2025-09-29)
 
 
