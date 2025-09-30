@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.1](https://github.com/ParabolInc/parabol/compare/v10.26.0...v10.26.1) (2025-09-29)
+
+
+### Fixed
+
+* only call on meetingId change setAppLocation ([#12130](https://github.com/ParabolInc/parabol/issues/12130)) ([7f5ef59](https://github.com/ParabolInc/parabol/commit/7f5ef59c09ea91e43268b1531f89f0d62e31b36b))
+
+## [10.26.0](https://github.com/ParabolInc/parabol/compare/v10.25.4...v10.26.0) (2025-09-29)
+
+
+### Added
+
+* Offline Support for Pages (plus fix enforced page titles, selectable task content) ([#12127](https://github.com/ParabolInc/parabol/issues/12127)) ([218b428](https://github.com/ParabolInc/parabol/commit/218b4281bd829b516ed48679fb0f73d3e2ff8cd9))
+
 ## [10.25.4](https://github.com/ParabolInc/parabol/compare/v10.25.3...v10.25.4) (2025-09-29)
 
 

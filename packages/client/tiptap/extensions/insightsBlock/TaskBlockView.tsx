@@ -17,8 +17,15 @@ export const TaskBlockView = (props: NodeViewProps) => {
           status={(status as TaskStatusEnum) || 'active'}
           className='mb-1'
         />
-        {editor && <EditorContent editor={editor} />}
-        <div className='pt-2'>
+        {editor && (
+          <EditorContent
+            editor={editor}
+            onMouseDown={(e) => {
+              e.stopPropagation()
+            }}
+          />
+        )}
+        <div className='select-none pt-2'>
           <div className='flex'>
             <Avatar className='size-6' picture={avatar} />
             <div className='break-words pl-2 font-semibold text-slate-600 text-xs leading-6'>

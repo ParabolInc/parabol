@@ -34,7 +34,6 @@ const MeetingSelector = (props: Props) => {
     graphql`
       query MeetingSelectorQuery($meetingId: ID!) {
         viewer {
-          isConnected
           canAccessMeeting: canAccess(entity: Meeting, id: $meetingId)
           meeting(meetingId: $meetingId) {
             ...MeetingSelector_meeting @relay(mask: false)
@@ -46,10 +45,10 @@ const MeetingSelector = (props: Props) => {
   )
 
   const {viewer} = data
-  const {isConnected, meeting, canAccessMeeting} = viewer
+  const {meeting, canAccessMeeting} = viewer
 
   useEffect(() => {
-    if (!meetingId || !isConnected) return
+    if (!meetingId) return
     const location = `/meet/${meetingId}`
     const setAfterUpgrade = async () => {
       SetAppLocationMutation(atmosphere, {location})
@@ -58,13 +57,14 @@ const MeetingSelector = (props: Props) => {
     return () => {
       SetAppLocationMutation(atmosphere, {location: null})
     }
-  }, [isConnected])
+  }, [meetingId])
   useSubscription('MeetingSelector', NotificationSubscription)
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
 
   if (!canAccessMeeting && !meeting) {
+    console.log('redirecting')
     return (
       <Redirect
         to={{
