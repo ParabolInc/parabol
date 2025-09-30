@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLError, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../utils/authorization'
 import type {GQLContext} from './graphql'
 import massInvitation from './queries/massInvitation'
@@ -13,7 +13,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       resolve: async (_source: unknown, _args: unknown, context: GQLContext) => {
         const {authToken, dataLoader} = context
         const viewerId = getUserId(authToken)
-        if (!viewerId) throw new Error('401 Please log in')
+        if (!viewerId) throw new GraphQLError('Please log in')
         return dataLoader.get('users').load(viewerId)
       }
     },
