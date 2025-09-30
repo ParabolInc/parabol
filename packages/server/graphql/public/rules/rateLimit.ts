@@ -1,5 +1,7 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId} from '../../../utils/authorization'
+import logError from '../../../utils/logError'
 import type {GQLContext} from '../../graphql'
 
 interface RateLimitOptions {
@@ -15,7 +17,9 @@ const rateLimit = ({perMinute, perHour}: RateLimitOptions) =>
       const userId = getUserId(authToken) || ip
       const {lastMinute, lastHour} = rateLimiter.log(userId, fieldName, !!perHour)
       if (lastMinute > perMinute || (lastHour && lastHour > perHour)) {
-        return new Error('429 Too Many Requests')
+        const error = new GraphQLError('Too Many Requests. Contact support to increase rate limit')
+        logError(error, {ip, userId})
+        return error
       }
       return true
     }
