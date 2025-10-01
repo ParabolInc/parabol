@@ -52,9 +52,7 @@ export const onReconnect = (atmosphere: Atmosphere) => {
 export function createWSClient(atmosphere: Atmosphere) {
   return new Promise<Client>((resolve, reject) => {
     const wsProtocol = window.location.protocol.replace('http', 'ws')
-    const host = __PRODUCTION__
-      ? window.location.host
-      : `${window.location.hostname}:${__SOCKET_PORT__}`
+    const host = window.location.host
     const url = `${wsProtocol}//${host}`
     let hasConnected = false
     let abruptlyClosed = false
