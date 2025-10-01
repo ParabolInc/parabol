@@ -1,3 +1,4 @@
+import './hocusPocus'
 import uws from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import {stopChronos} from './chronos'
@@ -7,6 +8,7 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import './hocusPocus'
+import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
@@ -71,6 +73,7 @@ const app = uws
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)
+  .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 
 if (ENABLE_STATIC_FILE_HANDLER) {
