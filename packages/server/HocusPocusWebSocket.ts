@@ -5,11 +5,9 @@ import {EventEmitter} from 'tseep'
 export class HocusPocusWebSocket extends EventEmitter {
   private ws: WebSocket<any>
   readyState = 1
-  remoteAddress: string
-  constructor(ws: WebSocket<any>, ip: string) {
+  constructor(ws: WebSocket<any>) {
     super()
     this.ws = ws
-    this.remoteAddress = ip
     this.on('close', () => {
       this.readyState = 3
     })

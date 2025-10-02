@@ -21,6 +21,7 @@ import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
+import {yjsProxy} from './YJSProxy'
 
 const {HOCUS_POCUS_PORT} = process.env
 const port = Number(HOCUS_POCUS_PORT)
@@ -57,6 +58,11 @@ export const hocuspocus = new Hocuspocus({
     // Unauthenticated users are allowed for public pages
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
+  },
+  async afterUnloadDocument(data) {
+    // if we're done with this document, release the lock so another server can claim it
+    const {documentName} = data
+    yjsProxy.emit(`unload:${documentName}`)
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
