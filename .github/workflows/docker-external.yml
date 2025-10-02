@@ -28,8 +28,8 @@ jobs:
       - name: Push Docker image to the external repository
         run: |-
           gcloud container images add-tag -q \
-          ${{ secrets.GCP_AR_PARABOL }}:${{ github.ref_name	 }}  \
-          ${{ secrets.GCP_AR_PARABOL_EXTERNAL }}:${{ github.ref_name	 }}
+          ${{ secrets.GCP_AR_PARABOL }}:${{ github.ref_name }}  \
+          ${{ secrets.GCP_AR_PARABOL_EXTERNAL }}:${{ github.ref_name }}
 
       - name: Report Status
         if: failure()
