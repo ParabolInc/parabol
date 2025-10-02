@@ -1,11 +1,6 @@
 name: Ironbank Image Upload
 
-on:
-  workflow_dispatch:
-    inputs:
-      version_number:
-        description: "Version number of the Parabol application image to process"
-        required: true
+on: workflow_dispatch
 
 jobs:
   pull-and-upload:
@@ -14,16 +9,13 @@ jobs:
       contents: "read"
       id-token: "write"
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup environment variables
+      - name: Verify if running from a Tag
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
-          DOCKER_REPOSITORY_FOR_REF=${{ secrets.GCP_AR_PARABOL}}
-          echo "DOCKER_REPOSITORY_FOR_REF=${DOCKER_REPOSITORY_FOR_REF}" >> $GITHUB_ENV
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+          echo "This workflow is intended to run only from a Git Tag (e.g., v1.0.0)."
+          echo "Current reference is: ${{ github.ref }}"
+          # Force fail the job
+          exit 1
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
@@ -40,11 +32,11 @@ jobs:
           password: "${{ steps.auth.outputs.access_token }}"
 
       - name: Pull Docker image from GCP
-        run: docker pull ${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ github.event.inputs.version_number }}
+        run: docker pull ${{ secrets.GCP_AR_PARABOL }}:${{ github.ref_name }}
 
       - name: Create temporary container
         run: |
-          docker create --name temp-container ${{ env.DOCKER_REPOSITORY_FOR_REF }}:v${{ github.event.inputs.version_number }}
+          docker create --name temp-container ${{ secrets.GCP_AR_PARABOL }}:${{ github.ref_name }}
 
       - name: Copy files from container
         run: |
@@ -53,15 +45,23 @@ jobs:
           docker cp temp-container:/home/node/tools/ip-to-server_id ./ip-to-server_id
 
       - name: Zip the files
-        run: zip -r ${{ github.event.inputs.version_number }}.zip dist build ip-to-server_id
+        run: zip -r ${{ github.ref_name }}.zip dist build ip-to-server_id
 
       - name: Upload to GCS
         uses: actions-hub/gcloud@master
         env:
           CLOUDSDK_AUTH_ACCESS_TOKEN: "${{ steps.auth.outputs.access_token }}"
         with:
-          args: storage cp ${{ github.event.inputs.version_number }}.zip gs://parabol-ironbank-resources/${{ github.event.inputs.version_number }}.zip
+          args: storage cp ${{ github.ref_name }}.zip gs://parabol-ironbank-resources/${{ github.ref_name }}.zip
           cli: gcloud
+
+      - name: USEFUL INFORMATION
+        run: |
+          release_filename="${{ github.ref_name }}.zip"
+          sha256=$(sha256sum "$release_filename" | awk '{ print $1 }')
+          echo "Parabol version: ${{ github.ref_name }}"
+          echo "File location: gs://parabol-ironbank-resources/$release_filename"
+          echo "SHA-256: $sha256"
 
       - name: Report Status
         if: failure()
