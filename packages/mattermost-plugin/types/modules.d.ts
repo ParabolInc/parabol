@@ -4,8 +4,6 @@ declare module 'string-score'
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: string
 declare const __APP_VERSION__: string
-declare const __SOCKET_PORT__: string
-declare const __HOCUS_POCUS_PORT__: string
 interface Window {
   // the mattermost plugin does not have window.__ACTION__ set, so let's make this optional to enforce proper checks in all included client code
   __ACTION__?: {

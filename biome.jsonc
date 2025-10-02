@@ -160,14 +160,7 @@
       "attributePosition": "auto",
       "bracketSpacing": false
     },
-    "globals": [
-      "__PRODUCTION__",
-      "__APP_VERSION__",
-      "__SOCKET_PORT__",
-      "__HOCUS_POCUS_PORT__",
-      "__webpack_public_path__",
-      "__COMMIT_HASH__"
-    ]
+    "globals": ["__PRODUCTION__", "__APP_VERSION__", "__webpack_public_path__", "__COMMIT_HASH__"]
   },
   "html": {"formatter": {"selfCloseVoidElements": "always"}},
   "overrides": [
