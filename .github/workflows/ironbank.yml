@@ -55,13 +55,18 @@ jobs:
           args: storage cp ${{ github.ref_name }}.zip gs://parabol-ironbank-resources/${{ github.ref_name }}.zip
           cli: gcloud
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: USEFUL INFORMATION
         run: |
+          node_version=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
           release_filename="${{ github.ref_name }}.zip"
           sha256=$(sha256sum "$release_filename" | awk '{ print $1 }')
           echo "Parabol version: ${{ github.ref_name }}"
           echo "File location: gs://parabol-ironbank-resources/$release_filename"
           echo "SHA-256: $sha256"
+          echo "NodeJS version: $node_version"
 
       - name: Report Status
         if: failure()
