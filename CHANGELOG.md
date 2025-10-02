@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.3](https://github.com/ParabolInc/parabol/compare/v10.26.2...v10.26.3) (2025-10-02)
+
+
+### Changed
+
+* **gh-actions:** docker-external and ironbank run only with tags, are improved to run faster and show useful information at the end ([#12145](https://github.com/ParabolInc/parabol/issues/12145)) ([4fab3d0](https://github.com/ParabolInc/parabol/commit/4fab3d07b21f17917185f35f18c3e3a0dcb0cb98))
+* proxy websockets in local dev ([#12142](https://github.com/ParabolInc/parabol/issues/12142)) ([a7278c5](https://github.com/ParabolInc/parabol/commit/a7278c5d803207669cf78439eb5c7b20588b9ca8))
+
 ## [10.26.2](https://github.com/ParabolInc/parabol/compare/v10.26.1...v10.26.2) (2025-09-30)
 
 
