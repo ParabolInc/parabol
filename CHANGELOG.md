@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.4](https://github.com/ParabolInc/parabol/compare/v10.26.3...v10.26.4) (2025-10-02)
+
+
+### Fixed
+
+* **gh-action:** ironbank action checks code out as first step ([#12147](https://github.com/ParabolInc/parabol/issues/12147)) ([bef2c52](https://github.com/ParabolInc/parabol/commit/bef2c52a033117f88a3df8c148550d747ab0b8a2))
+
 ## [10.26.3](https://github.com/ParabolInc/parabol/compare/v10.26.2...v10.26.3) (2025-10-02)
 
 
