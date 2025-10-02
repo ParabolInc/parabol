@@ -15,9 +15,7 @@ class ProviderManager {
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
-      const host = __PRODUCTION__
-        ? `${window.location.host}/yjs`
-        : `${window.location.hostname}:${__SOCKET_PORT__}/yjs`
+      const host = `${window.location.host}/yjs`
       const baseUrl = `${wsProtocol}//${host}?token=${this.authToken || ''}`
       this.socket = new HocuspocusProviderWebsocket({
         url: baseUrl
