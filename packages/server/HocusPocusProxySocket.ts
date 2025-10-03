@@ -1,6 +1,7 @@
 import {pack} from 'msgpackr'
 import {EventEmitter} from 'tseep'
 import getRedis from './utils/getRedis'
+import type {YJSMessageClose, YJSMessagePing, YJSMessageSend} from './YJSProxy'
 
 export class HocusPocusProxySocket extends EventEmitter {
   private replyTo: string
@@ -14,16 +15,19 @@ export class HocusPocusProxySocket extends EventEmitter {
       this.readyState = 3
     })
   }
+  private publish(msg: YJSMessageClose | YJSMessagePing | YJSMessageSend) {
+    getRedis().publish(this.replyTo, pack(msg))
+  }
   close(code?: number, reason?: string) {
-    const msg = pack({type: 'close', code, reason, socketId: this.socketId})
-    getRedis().publish(this.replyTo, msg)
+    const msg: YJSMessageClose = {type: 'close', code, reason, socketId: this.socketId}
+    this.publish(msg)
   }
   ping() {
-    const msg = pack({type: 'ping', socketId: this.socketId})
-    getRedis().publish(this.replyTo, msg)
+    const msg: YJSMessagePing = {type: 'ping', socketId: this.socketId}
+    this.publish(msg)
   }
   send(message: Uint8Array) {
-    const msg = pack({type: 'send', socketId: this.socketId, message})
-    getRedis().publish(this.replyTo, msg)
+    const msg: YJSMessageSend = {type: 'send', socketId: this.socketId, message}
+    this.publish(msg)
   }
 }

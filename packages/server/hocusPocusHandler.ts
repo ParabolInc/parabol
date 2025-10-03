@@ -1,18 +1,21 @@
 import './hocusPocus'
 import type {IncomingHttpHeaders} from 'node:http2'
-import type {UpgradeData} from 'graphql-ws/use/uWebSockets'
 import {hocuspocus} from './hocusPocus'
 import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
 import {IncomingMessage} from '@hocuspocus/server'
-import {Redlock} from '@sesamecare-oss/redlock'
 import {readVarString} from 'lib0/decoding'
 import {pack} from 'msgpackr'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import getRedis from './utils/getRedis'
-import {yjsProxy} from './YJSProxy'
+import {type YJSMessageUnload, yjsProxy} from './YJSProxy'
 
-type HocusPocusRequest = UpgradeData['persistedRequest'] & {socket: {remoteAddress: string}}
+export type HocusPocusRequest = {
+  method: string
+  url: string
+  headers: IncomingHttpHeaders
+  socket: {remoteAddress: string}
+}
 type HocusPocusSocketData = {
   ip: string
   persistedRequest: HocusPocusRequest
@@ -20,8 +23,6 @@ type HocusPocusSocketData = {
 }
 
 const SERVER_ID = process.env.SERVER_ID!
-
-const redlock = new Redlock([getRedis()], {retryCount: 0})
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   upgrade(res, req, context) {
@@ -32,10 +33,11 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     const ip =
       Buffer.from(res.getProxiedRemoteAddressAsText()).toString() ||
       Buffer.from(res.getRemoteAddressAsText()).toString()
+    const pathname = req.getUrl()
+    const query = req.getQuery()
     const persistedRequest = {
       method: req.getMethod(),
-      url: req.getUrl(),
-      query: req.getQuery(),
+      url: query ? `${pathname}?${query}` : pathname,
       headers,
       socket: {remoteAddress: ip}
     }
@@ -64,53 +66,59 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   async message(ws, message) {
     const tmpMsg = new IncomingMessage(message)
     const documentName = readVarString(tmpMsg.decoder)
-    const loadedDoc = hocuspocus.documents.get(documentName)
     // uws detaches the arraybuffer when sync action completes, so clone first
     const messageBuffer = message.slice()
+    const loadedDoc = hocuspocus.documents.has(documentName)
+    const socketData = ws.getUserData()
+    const {socket, persistedRequest} = socketData
     if (loadedDoc) {
-      ws.getUserData().socket.emit('message', messageBuffer)
+      socket.emit('message', messageBuffer)
       return
     }
+
     const redis = getRedis()
     const LOCK_DURATION = 10_000
     const LOCK_RENEWAL = LOCK_DURATION / 2
-    try {
-      // claim the document
-      let lock = await redlock.acquire([`yjsLock:${documentName}`], LOCK_DURATION)
-      // let everyone know we have it
-      await redis.set(`yjsDoc:${documentName}`, SERVER_ID, 'PX', LOCK_DURATION)
-      // handle the message
-      ws.getUserData().socket.emit('message', messageBuffer)
-      // renew the lock so if a server crashes another one can pick up the doc
-      const intervalTimer = setInterval(async () => {
-        const [newLock] = await Promise.all([
-          lock.extend(LOCK_RENEWAL),
-          redis.set(`yjsDoc:${documentName}`, SERVER_ID, 'PX', LOCK_DURATION)
-        ])
-        lock = newLock
-      }, LOCK_RENEWAL)
-      // release the document when no longer used
-      yjsProxy.once(`unload:${documentName}`, async () => {
-        clearInterval(intervalTimer)
-        await Promise.all([lock.release(), redis.del(`yjsDoc:${documentName}`)])
-      })
-    } catch {
-      // if this server can't lock the doc, send it to the server that owns it
-      const proxyTo = await redis.get(`yjsDoc:${documentName}`)
-      if (!proxyTo) {
-        console.log('Could not achieve lock on YJS doc but no record exists in redis', documentName)
-        return
-      }
+
+    let pendingLock = yjsProxy.getPendingLock(documentName)
+    const isFirstWithoutLock = !pendingLock
+    if (isFirstWithoutLock) {
+      // this is the very first claim request for this document by this server
+      // OR the first claim request after the cached value was removed
+      pendingLock = yjsProxy.setPendingLock(documentName, LOCK_DURATION)
+    }
+
+    const proxyTo = await pendingLock
+    if (proxyTo && proxyTo !== SERVER_ID) {
+      // another server owns the doc
       const meta = {
-        persistedRequest: ws.getUserData().persistedRequest,
+        persistedRequest,
         replyTo: `yjsProxy:${SERVER_ID}`,
-        message,
+        message: messageBuffer,
         type: 'proxy'
       }
       const msg = pack(meta)
       redis.publish(`yjsProxy:${proxyTo}`, msg)
       return
     }
+    if (!proxyTo && isFirstWithoutLock) {
+      // This message is the first one, it will manage the claim for doc
+      // Renew the claim every 5 seconds
+      const extendLock = setInterval(() => {
+        redis.set(`yjsDoc:${documentName}`, SERVER_ID, 'PX', LOCK_DURATION)
+      }, LOCK_RENEWAL)
+
+      // End the claim when the doc is unloaded
+      yjsProxy.once(`unload:${documentName}`, () => {
+        clearInterval(extendLock)
+        redis.del(`yjsDoc:${documentName}`)
+        // broadcast to cluster to immediately remove the cached redis value
+        const msg: YJSMessageUnload = {type: 'unload', documentName}
+        redis.publish(`yjsProxy`, pack(msg))
+      })
+    }
+    // Handle the message here
+    socket.emit('message', messageBuffer)
   },
   close(ws, code, message) {
     const socketId = ws.getUserData().persistedRequest.headers['sec-websocket-key']!
