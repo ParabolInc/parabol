@@ -1,14 +1,11 @@
 import type {WebSocket} from 'uWebSockets.js'
-import {unpack} from 'msgpackr'
-import {EventEmitter} from 'tseep'
+import {pack, unpack} from 'msgpackr'
 import {HocusPocusProxySocket} from './HocusPocusProxySocket'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import {hocuspocus} from './hocusPocus'
 import type {HocusPocusRequest} from './hocusPocusHandler'
 import getRedis from './utils/getRedis'
 import RedisInstance from './utils/RedisInstance'
-
-const SERVER_ID = process.env.SERVER_ID!
 
 export type YJSMessageProxy = {
   type: 'proxy'
@@ -45,17 +42,24 @@ type YJSMessage =
   | YJSMessageClose
   | YJSMessagePing
   | YJSMessageSend
-class YJSProxy extends EventEmitter {
+class YJSProxy {
   private proxySockets: Record<string, {socket: HocusPocusProxySocket; cleanup: NodeJS.Timeout}> =
     {}
   private originSockets: Record<string, HocusPocusWebSocket> = {}
-  private pendingLocks: Record<string, Promise<string | null>> = {}
+  private docWorkerIdPromises: Record<string, Promise<string | null>> = {}
+  private locks: Record<string, NodeJS.Timeout> = {}
+  private lockTTL: number
+  private workerId: string
+  constructor(options: {lockTTL: number; workerId: string}) {
+    this.lockTTL = options.lockTTL
+    this.workerId = options.workerId
+  }
   listen() {
     const sub = new RedisInstance('yjsproxy')
-    sub.subscribe('yjsProxy', `yjsProxy:${SERVER_ID}`)
+    sub.subscribe('yjsProxy', `yjsProxy:${this.workerId}`)
     sub.on('messageBuffer', this.handleMessage)
   }
-  handleMessage = (_channel: Buffer, packedMessage: Buffer) => {
+  private handleMessage = (_channel: Buffer, packedMessage: Buffer) => {
     const msg = unpack(packedMessage) as YJSMessage
     const {type} = msg
     if (type === 'proxy') {
@@ -63,7 +67,7 @@ class YJSProxy extends EventEmitter {
       return
     }
     if (type === 'unload') {
-      this.clearPendingLock(msg.documentName)
+      this.clearWorkerIdPromise(msg.documentName)
       return
     }
     const {socketId} = msg
@@ -80,21 +84,69 @@ class YJSProxy extends EventEmitter {
       socket.send(msg.message)
     }
   }
-  getPendingLock(documentName: string) {
-    return this.pendingLocks[documentName]
+
+  async sendToProxy(
+    documentName: string,
+    persistedRequest: HocusPocusRequest,
+    message: ArrayBufferLike
+  ) {
+    const proxyTo = await yjsProxy.getWorkerId(documentName)
+    if (proxyTo && proxyTo !== this.workerId) {
+      // another server owns the doc
+      const meta = {
+        persistedRequest,
+        replyTo: `yjsProxy:${this.workerId}`,
+        message,
+        type: 'proxy'
+      }
+      const msg = pack(meta)
+      getRedis().publish(`yjsProxy:${proxyTo}`, msg)
+      return true
+    }
+    return false
   }
-  setPendingLock(documentName: string, ttl: number) {
-    const pendingLock = getRedis().set(`yjsDoc:${documentName}`, SERVER_ID, 'PX', ttl, 'NX', 'GET')
-    this.pendingLocks[documentName] = pendingLock
+  getWorkerId(documentName: string) {
+    const existingWorkerIdPromise = this.docWorkerIdPromises[documentName]
+    if (existingWorkerIdPromise) return existingWorkerIdPromise
+    // this is the very first claim request for this document by this server
+    // OR the first claim request after the cached value was removed
+    return yjsProxy.setWorkerId(documentName)
+  }
+  private setWorkerId(documentName: string) {
+    const workerIdPromise = getRedis().set(
+      `yjsDoc:${documentName}`,
+      this.workerId,
+      'PX',
+      this.lockTTL,
+      'NX',
+      'GET'
+    )
+    this.docWorkerIdPromises[documentName] = workerIdPromise
     // if a remote server unloads the doc, it sends an unload message to clear this cached value
-    // if the remote server crashes, the `proxyTo` value will be stale for up to ttl
+    // if the remote server crashes, the `proxyTo` value will be stale for up to this.lockTTL
     setTimeout(() => {
-      this.clearPendingLock(documentName)
-    }, ttl / 2)
-    return pendingLock
+      this.clearWorkerIdPromise(documentName)
+    }, this.lockTTL / 2)
+    return workerIdPromise
   }
-  clearPendingLock(documentName: string) {
-    delete this.pendingLocks[documentName]
+
+  maintainLock(documentName: string) {
+    this.locks[documentName] = setInterval(() => {
+      getRedis().set(`yjsDoc:${documentName}`, this.workerId, 'PX', this.lockTTL)
+    }, this.lockTTL / 2)
+  }
+
+  releaseLock(documentName: string) {
+    const redis = getRedis()
+    clearInterval(this.locks[documentName])
+    delete this.locks[documentName]
+    // broadcast to cluster to immediately remove the cached redis value
+    redis.del(`yjsDoc:${documentName}`)
+    const msg: YJSMessageUnload = {type: 'unload', documentName}
+    redis.publish(`yjsProxy`, pack(msg))
+  }
+  private clearWorkerIdPromise(documentName: string) {
+    delete this.docWorkerIdPromises[documentName]
   }
   createOriginSocket(socketId: string, ws: WebSocket<any>) {
     const socket = new HocusPocusWebSocket(ws)
@@ -105,7 +157,7 @@ class YJSProxy extends EventEmitter {
   deleteOriginSocket(socketId: string) {
     delete this.originSockets[socketId]
   }
-  handleProxyMessage(msg: any) {
+  private handleProxyMessage(msg: any) {
     const {replyTo, message, persistedRequest} = msg
     const {headers} = persistedRequest
     const socketId = headers['sec-websocket-key']!
@@ -126,4 +178,4 @@ class YJSProxy extends EventEmitter {
   }
 }
 
-export const yjsProxy = new YJSProxy()
+export const yjsProxy = new YJSProxy({lockTTL: 10_000, workerId: process.env.SERVER_ID!})

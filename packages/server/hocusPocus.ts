@@ -59,10 +59,14 @@ export const hocuspocus = new Hocuspocus({
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
   },
+  async onLoadDocument(data) {
+    const {documentName} = data
+    yjsProxy.maintainLock(documentName)
+  },
   async afterUnloadDocument(data) {
     // if we're done with this document, release the lock so another server can claim it
     const {documentName} = data
-    yjsProxy.emit(`unload:${documentName}`)
+    yjsProxy.releaseLock(documentName)
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
