@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.5](https://github.com/ParabolInc/parabol/compare/v10.26.4...v10.26.5) (2025-10-04)
+
+
+### Fixed
+
+* handle no variableVariables coming from graphiql admin queries ([#12155](https://github.com/ParabolInc/parabol/issues/12155)) ([43cc66a](https://github.com/ParabolInc/parabol/commit/43cc66a79b165ffad523d020fbba510a35b42387))
+
 ## [10.26.4](https://github.com/ParabolInc/parabol/compare/v10.26.3...v10.26.4) (2025-10-02)
 
 
