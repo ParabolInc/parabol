@@ -3,7 +3,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import {sleep} from 'openai/core.mjs'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
-import {server} from '../../../../hocusPocus'
+import {hocuspocus} from '../../../../hocusPocus'
 import {CipherId} from '../../../../utils/CipherId'
 import type {InternalContext} from '../../../graphql'
 import {generateMeetingSummaryPage} from './generateMeetingSummaryPage'
@@ -31,7 +31,7 @@ export const streamSummaryBlocksToPage = async (
 ) => {
   const contentGenerator = await generateMeetingSummaryPage(meetingId, context, info)
   const name = CipherId.toClient(pageId, 'page')
-  const conn = await server.hocuspocus.openDirectConnection(name, {})
+  const conn = await hocuspocus.openDirectConnection(name, {})
   await conn.transact((doc) => {
     const frag = doc.getXmlFragment('default')
     const el = new XmlElement()

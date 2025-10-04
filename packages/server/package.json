@@ -95,6 +95,7 @@
     "js-yaml": "^4.1.0",
     "jsdom": "^20.0.0",
     "jsonwebtoken": "^9.0.0",
+    "lib0": "^0.2.114",
     "mailcomposer": "^4.0.1",
     "mailgun.js": "^9.3.0",
     "md-to-adf": "^0.6.4",

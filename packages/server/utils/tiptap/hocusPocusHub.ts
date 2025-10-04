@@ -1,5 +1,5 @@
 import type {Document} from '@hocuspocus/server'
-import {server} from '../../hocusPocus'
+import {hocuspocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {updateYDocNodes} from './updateYDocNodes'
@@ -17,7 +17,7 @@ export const withBacklinks = async (
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {
       const pageKey = CipherId.toClient(fromPageId, 'page')
-      const docConnection = await server.hocuspocus.openDirectConnection(pageKey, {})
+      const docConnection = await hocuspocus.openDirectConnection(pageKey, {})
       await docConnection.transact(fn)
       await docConnection.disconnect()
     })

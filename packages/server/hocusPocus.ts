@@ -1,7 +1,7 @@
 import type {IncomingMessage} from 'node:http'
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Document, onStoreDocumentPayload, Server} from '@hocuspocus/server'
+import {Document, Hocuspocus, onStoreDocumentPayload} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -12,7 +12,6 @@ import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
 import {CipherId} from './utils/CipherId'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
-import {Logger} from './utils/Logger'
 import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
 import RedisInstance from './utils/RedisInstance'
@@ -22,8 +21,9 @@ import {Redis} from './utils/tiptap/hocusPocusRedis'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
+import {yjsProxy} from './YJSProxy'
 
-const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
+const {HOCUS_POCUS_PORT} = process.env
 const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
@@ -40,15 +40,12 @@ const pushGQLTitleUpdates = async (pageId: number) => {
 }
 
 type Req = IncomingMessage & {userId?: string}
-export const server = new Server({
-  stopOnSignals: false,
-  port,
+
+export const hocuspocus = new Hocuspocus({
   quiet: true,
-  async onListen(data) {
-    Logger.log(`\n🔮🔮🔮 Server ID: ${SERVER_ID}. Ready for Hocus Pocus: Port ${data.port} 🔮🔮🔮`)
-  },
   async onConnect(data) {
     const request = data.request as Req
+    // handle authentication once onConnect vs. on every onAuthenticate
     const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
     const userId = authToken?.sub
@@ -61,6 +58,15 @@ export const server = new Server({
     // Unauthenticated users are allowed for public pages
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
+  },
+  async onLoadDocument(data) {
+    const {documentName} = data
+    yjsProxy.maintainLock(documentName)
+  },
+  async afterUnloadDocument(data) {
+    // if we're done with this document, release the lock so another server can claim it
+    const {documentName} = data
+    yjsProxy.releaseLock(documentName)
   },
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
@@ -160,12 +166,12 @@ export const server = new Server({
 })
 
 // patch hocuspocus to not crash on store errors
-server.hocuspocus.storeDocumentHooks = (
+hocuspocus.storeDocumentHooks = (
   document: Document,
   hookPayload: onStoreDocumentPayload,
   immediately?: boolean
 ) => {
-  const self = server.hocuspocus
+  const self = hocuspocus
   return self.debouncer.debounce(
     `onStoreDocument-${document.name}`,
     () => {
@@ -198,17 +204,3 @@ server.hocuspocus.storeDocumentHooks = (
     self.configuration.maxDebounce
   )
 }
-
-server.listen()
-
-const signalHandler = async () => {
-  await server.destroy()
-  process.exit(0)
-}
-
-process.on('SIGINT', signalHandler)
-process.on('SIGQUIT', signalHandler)
-process.on('SIGTERM', async () => {
-  // DO NOT CALL process.exit(0), let the handler in server.js handle that
-  await server.destroy()
-})

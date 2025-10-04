@@ -970,6 +970,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.0
         version: 9.0.2
+      lib0:
+        specifier: ^0.2.114
+        version: 0.2.114
       mailcomposer:
         specifier: ^4.0.1
         version: 4.0.2
@@ -18007,7 +18010,7 @@ snapshots:
 
   '@pm2/pm2-version-check@1.0.4':
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
