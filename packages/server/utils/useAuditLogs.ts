@@ -25,7 +25,7 @@ export const useAuditLogs = (config: Config): Plugin<ServerContext> => {
       if (!fieldNode) return
       const operationName = fieldNode.name.value
       const {includeOps, excludeArgs} = config
-      const {variableValues} = args
+      const variableValues = args.variableValues || {}
       if (!includeOps.has(operationName)) return
       const excludedOpArgs = excludeArgs?.[operationName] || []
       const sanitizedVaribles = Object.fromEntries(
