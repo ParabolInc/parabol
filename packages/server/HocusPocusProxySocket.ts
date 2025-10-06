@@ -1,33 +1,41 @@
-import {pack} from 'msgpackr'
+import type RedisClient from 'ioredis'
 import {EventEmitter} from 'tseep'
-import getRedis from './utils/getRedis'
-import type {YJSMessageClose, YJSMessagePing, YJSMessageSend} from './YJSProxy'
+import type {
+  Pack,
+  RSAMessageClose,
+  RSAMessagePing,
+  RSAMessageSend
+} from './utils/tiptap/RedisServerAffinity'
 
 export class HocusPocusProxySocket extends EventEmitter {
   private replyTo: string
   private socketId: string
+  private pub: RedisClient
+  private pack: Pack
   readyState = 1
-  constructor(replyTo: string, socketId: string) {
+  constructor(pub: RedisClient, pack: Pack, replyTo: string, socketId: string) {
     super()
     this.replyTo = replyTo
     this.socketId = socketId
+    this.pub = pub
+    this.pack = pack
     this.on('close', () => {
       this.readyState = 3
     })
   }
-  private publish(msg: YJSMessageClose | YJSMessagePing | YJSMessageSend) {
-    getRedis().publish(this.replyTo, pack(msg))
+  private publish(msg: RSAMessageClose | RSAMessagePing | RSAMessageSend) {
+    this.pub.publish(this.replyTo, this.pack(msg))
   }
   close(code?: number, reason?: string) {
-    const msg: YJSMessageClose = {type: 'close', code, reason, socketId: this.socketId}
+    const msg: RSAMessageClose = {type: 'close', code, reason, socketId: this.socketId}
     this.publish(msg)
   }
   ping() {
-    const msg: YJSMessagePing = {type: 'ping', socketId: this.socketId}
+    const msg: RSAMessagePing = {type: 'ping', socketId: this.socketId}
     this.publish(msg)
   }
   send(message: Uint8Array) {
-    const msg: YJSMessageSend = {type: 'send', socketId: this.socketId, message}
+    const msg: RSAMessageSend = {type: 'send', socketId: this.socketId, message}
     this.publish(msg)
   }
 }

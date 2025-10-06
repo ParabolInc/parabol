@@ -1,22 +1,14 @@
 import './hocusPocus'
 import type {IncomingHttpHeaders} from 'node:http2'
-import {hocuspocus} from './hocusPocus'
+import {redisHocusPocus} from './hocusPocus'
 import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
-import {IncomingMessage} from '@hocuspocus/server'
-import {readVarString} from 'lib0/decoding'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
-import {yjsProxy} from './YJSProxy'
+import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
-export type HocusPocusRequest = {
-  method: string
-  url: string
-  headers: IncomingHttpHeaders
-  socket: {remoteAddress: string}
-}
 type HocusPocusSocketData = {
   ip: string
-  persistedRequest: HocusPocusRequest
+  serializedHTTPRequest: SerializedHTTPRequest
   socket: HocusPocusWebSocket
 }
 
@@ -31,7 +23,7 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
       Buffer.from(res.getRemoteAddressAsText()).toString()
     const pathname = req.getUrl()
     const query = req.getQuery()
-    const persistedRequest = {
+    const serializedHTTPRequest = {
       method: req.getMethod(),
       url: query ? `${pathname}?${query}` : pathname,
       headers,
@@ -40,7 +32,7 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     res.upgrade<HocusPocusSocketData>(
       {
         ip,
-        persistedRequest,
+        serializedHTTPRequest,
         socket: undefined as any
       },
       req.getHeader('sec-websocket-key'),
@@ -51,35 +43,19 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   },
   open(ws) {
     const userData = ws.getUserData()
-    const socketId = userData.persistedRequest.headers['sec-websocket-key']!
-    const hocusPocusWebSocket = yjsProxy.createOriginSocket(socketId, ws)
-    userData.socket = hocusPocusWebSocket
-    hocuspocus.handleConnection(hocusPocusWebSocket as any, userData.persistedRequest as any, {})
+    userData.socket = new HocusPocusWebSocket(ws)
+    redisHocusPocus.onSocketOpen(userData.socket, userData.serializedHTTPRequest)
   },
   pong(ws, message) {
     ws.getUserData().socket.emit('pong', message)
   },
   async message(ws, message) {
-    const tmpMsg = new IncomingMessage(message)
-    const documentName = readVarString(tmpMsg.decoder)
-    // uws detaches the arraybuffer when sync action completes, so clone first
-    const messageBuffer = message.slice()
-    const loadedDoc = hocuspocus.documents.has(documentName)
     const socketData = ws.getUserData()
-    const {socket, persistedRequest} = socketData
-    if (loadedDoc) {
-      socket.emit('message', messageBuffer)
-      return
-    }
-    const handled = await yjsProxy.sendToProxy(documentName, persistedRequest, messageBuffer)
-    if (!handled) {
-      // This worker owns the document, but hocuspocus hasn't loaded it yet
-      socket.emit('message', messageBuffer)
-    }
+    const {socket, serializedHTTPRequest} = socketData
+    redisHocusPocus.onSocketMessage(socket, serializedHTTPRequest, message)
   },
-  close(ws, code, message) {
-    const socketId = ws.getUserData().persistedRequest.headers['sec-websocket-key']!
-    yjsProxy.deleteOriginSocket(socketId)
-    ws.getUserData().socket.emit('close', code, message)
+  close(ws, code, reason) {
+    const socketId = ws.getUserData().serializedHTTPRequest.headers['sec-websocket-key']!
+    redisHocusPocus.onSocketClose(socketId, code, reason)
   }
 }

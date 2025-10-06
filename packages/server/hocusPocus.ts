@@ -6,24 +6,26 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import tracer from 'dd-trace'
+import {pack, unpack} from 'msgpackr'
 import {encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
 import {CipherId} from './utils/CipherId'
+import getRedis from './utils/getRedis'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
-import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
-import {withBacklinks} from './utils/tiptap/hocusPocusHub'
-import {Redis} from './utils/tiptap/hocusPocusRedis'
+import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
+import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
+import {RedisServerAffinity} from './utils/tiptap/RedisServerAffinity'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
-import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
-import {yjsProxy} from './YJSProxy'
 
 const {HOCUS_POCUS_PORT} = process.env
+const SERVER_ID = process.env.SERVER_ID!
+
 const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
@@ -41,6 +43,13 @@ const pushGQLTitleUpdates = async (pageId: number) => {
 
 type Req = IncomingMessage & {userId?: string}
 
+export const redisHocusPocus = new RedisServerAffinity({
+  pack,
+  redis: getRedis(),
+  serverId: SERVER_ID,
+  unpack,
+  customEvents: hocusPocusCustomEvents
+})
 export const hocuspocus = new Hocuspocus({
   quiet: true,
   async onConnect(data) {
@@ -59,15 +68,7 @@ export const hocuspocus = new Hocuspocus({
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
   },
-  async onLoadDocument(data) {
-    const {documentName} = data
-    yjsProxy.maintainLock(documentName)
-  },
-  async afterUnloadDocument(data) {
-    // if we're done with this document, release the lock so another server can claim it
-    const {documentName} = data
-    yjsProxy.releaseLock(documentName)
-  },
+
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
     const userId = (request as Req).userId
@@ -125,7 +126,7 @@ export const hocuspocus = new Hocuspocus({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [dbId, pageCode] = CipherId.fromClient(documentName)
+        const [dbId] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const {updatedTitle} = await tracer.trace(
@@ -140,23 +141,12 @@ export const hocuspocus = new Hocuspocus({
             tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
               pushGQLTitleUpdates(dbId)
             ),
-            tracer.trace('hocusPocus.withBacklinks', {tags: {documentName}}, () =>
-              withBacklinks(dbId, (doc) => {
-                tracer.trace('hocusPocus.updateYDocNodes', {tags: {documentName}}, () =>
-                  updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
-                    node.setAttribute('title', updatedTitle)
-                  })
-                )
-              })
-            )
+            updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
           ])
         }
       }
     }),
-    new Redis({
-      redis: new RedisInstance('hocusPocus'),
-      lockTimeout: 2000
-    }),
+    redisHocusPocus,
     new Throttle({
       throttle: 100,
       banTime: 1

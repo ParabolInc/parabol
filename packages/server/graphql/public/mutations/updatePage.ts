@@ -1,10 +1,10 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
+import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
-import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 import {movePageToNewTeam} from './helpers/movePageToNewTeam'
@@ -20,7 +20,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const [dbPageId, pageCode] = CipherId.fromClient(pageId)
   if (sourceSection === 'private' && targetSection === 'shared') {
     throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }
@@ -106,7 +106,8 @@ const updatePage: MutationResolvers['updatePage'] = async (
     // This SHOULD get called from the client, so we delay it to give the client a chance to do the right thing
     const {parentPageId: oldParentpageId} = page
     setTimeout(() => {
-      removeCanonicalPageLinkFromPage(oldParentpageId, dbPageId)
+      const documentName = CipherId.toClient(oldParentpageId, 'page')
+      redisHocusPocus.handleEvent(documentName, 'removeCanonicalPageLinkFromPage', {pageCode})
     }, 5000)
   }
   const data = {pageId: dbPageId}
