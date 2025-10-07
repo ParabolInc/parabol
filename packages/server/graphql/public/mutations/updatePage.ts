@@ -107,7 +107,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
     const {parentPageId: oldParentpageId} = page
     setTimeout(() => {
       const documentName = CipherId.toClient(oldParentpageId, 'page')
-      redisHocusPocus.handleEvent(documentName, 'removeCanonicalPageLinkFromPage', {pageCode})
+      redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
     }, 5000)
   }
   const data = {pageId: dbPageId}

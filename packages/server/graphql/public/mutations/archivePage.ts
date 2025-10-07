@@ -35,7 +35,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
     const documentName = page.parentPageId ? CipherId.toClient(page.parentPageId, 'page') : null
     await Promise.all([
       documentName &&
-        redisHocusPocus.handleEvent(documentName, 'removeCanonicalPageLinkFromPage', {pageCode}),
+        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode}),
       // this will also set deletedAt/deletedBy, but there may be a bug that causes it to fail
       removeAllBacklinkedPageLinkBlocks({pageId: dbPageId})
     ])
@@ -55,7 +55,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
       } else if (parentPage) {
         // add the canonical page link & let the reconciler take care of the rest
         const documentName = CipherId.toClient(page.parentPageId, 'page')
-        await redisHocusPocus.handleEvent(documentName, 'addCanonicalPageLink', {
+        await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
           title: page.title || undefined,
           pageCode
         })

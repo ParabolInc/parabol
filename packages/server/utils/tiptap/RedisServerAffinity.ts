@@ -201,7 +201,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     this.lockPromises[documentName] = lockPromise
     // Briefly cache the serverId that claimed the doc to reduce load on redis
     // When the claimant unloads the doc, it will send an unload message to immediately clear this
-    // a lockTTL / 2 guarantees if a remote server crashes, the value will only be stale for up to lockTTL
+    // a lockTTL / 2 guarantees stale reads < lockTTL upon server crash
     setTimeout(() => {
       delete this.lockPromises[documentName]
     }, this.lockTTL / 2)
@@ -211,8 +211,6 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private getOrClaimLockThrottled(documentName: string) {
     const existingWorkerIdPromise = this.lockPromises[documentName]
     if (existingWorkerIdPromise) return existingWorkerIdPromise
-    // this is the very first claim request for this document by this server
-    // OR the first claim request after the cached value was removed
     return this.getOrClaimLock(documentName)
   }
 
@@ -234,8 +232,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     if (type === 'customEventStart') {
       const {documentName, eventName, payload, replyTo, replyId} = msg
       const res = await this.handleEventLocally(
-        documentName,
         eventName as Extract<keyof TCE, string>,
+        documentName,
         payload
       )
       const reply: RSAMessageCustomEventComplete = {
@@ -277,13 +275,13 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   async releaseLock(documentName: string) {
     clearInterval(this.locks[documentName])
     delete this.locks[documentName]
-    this.pub.del(this.getKey(documentName))
+    return this.pub.del(this.getKey(documentName))
   }
 
   private async handleEventLocally<TName extends Extract<keyof TCE, string>>(
-    documentName: string,
     eventName: TName,
-    payload: SecondParam<TCE[TName]>
+    documentName: string,
+    payload: any
   ) {
     const handler = this.customEvents[eventName]
     if (!handler) throw new Error(`Invalid eventName: ${eventName}`)
@@ -292,14 +290,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   async handleEvent<TName extends Extract<keyof TCE, string>>(
-    documentName: string,
     eventName: TName,
-    payload: SecondParam<TCE[TName]>
+    documentName: string,
+    payload: any
   ) {
     const isDocLoadedOnInstance = this.instance.documents.has(documentName)
 
     if (isDocLoadedOnInstance) {
-      return this.handleEventLocally(documentName, eventName, payload)
+      return this.handleEventLocally(eventName, documentName, payload)
     }
 
     const proxyTo = await this.getOrClaimLockThrottled(documentName)
@@ -325,7 +323,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       return promise as Promise<ReturnType<TCE[TName]>>
     }
     // This server owns the document, but hocuspocus hasn't loaded it yet
-    return this.handleEventLocally(documentName, eventName, payload)
+    return this.handleEventLocally(eventName, documentName, payload)
   }
 
   async lockDocument(documentName: string) {
@@ -334,10 +332,9 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       throw new Error(`Could not lock document: ${documentName}`)
     }
     this.maintainLock(documentName)
-    return () => {
-      this.releaseLock(documentName)
-    }
+    return () => this.releaseLock(documentName)
   }
+
   /* WebSocket Server Hooks */
   onSocketOpen(ws: BaseWebSocket, serializedHTTPRequest: SerializedHTTPRequest, context = {}) {
     const socketId = serializedHTTPRequest.headers['sec-websocket-key']!
@@ -378,11 +375,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
-    console.log('onSocketClose', socketId)
     const socket = this.originSockets[socketId]
-    if (!socket) return
-    socket.emit('close', code, reason)
-    delete this.originSockets[socketId]
+    socket?.emit('close', code, reason)
   }
 
   /* Hocuspocus hooks */
@@ -407,8 +401,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   async onDisconnect(data: onDisconnectPayload) {
     const {requestHeaders} = data
     const socketId = requestHeaders['sec-websocket-key']
-    console.log('called onDisconnect', socketId)
     if (!socketId) return
+    delete this.originSockets[socketId]
     const msg: RSAMessageCloseProxy = {type: 'closeProxy', socketId}
     this.pub.publish(this.msgChannel, this.pack(msg))
   }

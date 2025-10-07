@@ -14,7 +14,7 @@ export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: numbe
   await Promise.all([
     backLinks.map(async ({fromPageId}) => {
       const documentName = CipherId.toClient(fromPageId, 'page')
-      await redisHocusPocus.handleEvent(documentName, 'removeBacklinkedPageLinkBlocks', {pageCode})
+      await redisHocusPocus.handleEvent('removeBacklinkedPageLinkBlocks', documentName, {pageCode})
     })
   ])
 }
@@ -37,7 +37,7 @@ export const updateAllBacklinkedPageLinkTitles = async ({
   await Promise.all([
     backLinks.map(async ({fromPageId}) => {
       const documentName = CipherId.toClient(fromPageId, 'page')
-      await redisHocusPocus.handleEvent(documentName, 'updateBacklinkedPageLinkTitles', {
+      await redisHocusPocus.handleEvent('updateBacklinkedPageLinkTitles', documentName, {
         pageCode,
         title
       })

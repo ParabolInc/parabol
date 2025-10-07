@@ -35,7 +35,7 @@ export const movePageToNewParent = async (
   if (childPage.parentPageId) {
     const documentName = CipherId.toClient(childPage.parentPageId, 'page')
     const pageCode = CipherId.encrypt(pageId)
-    redisHocusPocus.handleEvent(documentName, 'removeCanonicalPageLinkFromPage', {pageCode})
+    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
   }
   const trx = await pg.startTransaction().execute()
 
