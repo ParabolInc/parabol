@@ -38,20 +38,38 @@
         return tag
       }).join('')
     %>
-    <!-- Safari sometimes kills the service worker before it can load the initial script -->
+    <!-- Safari sometimes kills the current service worker before it can load the initial script to load the updated one -->
     <script>
       if ('serviceWorker' in navigator) {
-        // for debugging, maybe Safari closes the SW because there is an update available?
+        let loadError = false
+        let serviceWorkerUpdateFound = false
+
+        function unregisterSW(event) {
+          if (!loadError || !serviceWorkerUpdateFound) return
+          location.reload()
+        }
+
+        // because the script tag is `defer` we need to attach the handler via script
+        document.querySelectorAll('script').forEach((script) => {
+          if (script.src) {
+            script.onerror = () => {
+              loadError = true
+              unregisterSW()
+            }
+            script.onload = () => {
+              loadError = false
+              script.onerror = null
+              script.onload = null
+            }
+          }
+        })
+
+        // context closed event happens because the old service worker is killed because a new one is found
         navigator.serviceWorker.getRegistration().then((reg) => {
           if (!reg) return
           reg.addEventListener('updatefound', () => {
-            console.log('New service worker found')
+            serviceWorkerUpdateFound = true
           })
-          if (reg.active) {
-            reg.active.addEventListener('error', (e) => {
-              console.log('Service worker error', e)
-            })
-          }
         })
       }
     </script>
