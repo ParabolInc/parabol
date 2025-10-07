@@ -9,10 +9,11 @@ import safeIdentify from './safeIdentify'
 graphql`
   fragment handleSuccessfulLogin_UserLogInPayload on UserLogInPayload {
     userId
-    authToken
+    role
     isNewUser
     user {
       id
+      email
       tms
       isPatient0
       ...UserAnalyticsFrag @relay(mask: false)
@@ -41,10 +42,12 @@ export const emitGA4SignUpEvent = (args: GA4SignUpEventEmissionRequiredArgs) => 
 }
 
 export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) => {
-  const email = payload?.user?.email
-  const userId = payload?.user?.id
-  if (!email || !userId) return
-  window.localStorage.setItem(LocalStorageKey.EMAIL, email)
+  if (!payload) return
+  const {role, userId, user} = payload
+  const email = user?.email
+  if (!user || !email || !userId) return
+  //atmosphere.setViewer(userId, role)
+  //window.localStorage.setItem(LocalStorageKey.EMAIL, email)
   safeIdentify(userId, email)
   const isNewUser = payload?.isNewUser ?? false
   commitLocalUpdate(atmosphere, (store) => {
@@ -56,6 +59,6 @@ export const handleSuccessfulLogin = (atmosphere: Atmosphere, payload: Payload) 
   emitGA4SignUpEvent({
     isNewUser,
     userId,
-    isPatient0: payload.user.isPatient0
+    isPatient0: user.isPatient0
   })
 }

@@ -13,7 +13,7 @@ const SAMLRedirect = () => {
   const {history} = useRouter()
   useEffect(() => {
     const params = new URLSearchParams(location.search)
-    const token = params.get('token')
+    const userId = params.get('userId')
     const error = params.get('error')
     let isSameOriginPopup = false
     if (window.opener) {
@@ -27,13 +27,13 @@ const SAMLRedirect = () => {
     }
     if (isSameOriginPopup) {
       // SP-initiated
-      window.opener.postMessage({token, error}, window.location.origin)
+      window.opener.postMessage({userId, error}, window.location.origin)
     } else {
       // IdP-initiated
-      if (!token) {
+      if (!userId) {
         setError(error || 'Error logging in')
       } else {
-        atmosphere.setAuthToken(token)
+        //atmosphere.setViewer(userId)
         history.replace('/meetings')
       }
     }

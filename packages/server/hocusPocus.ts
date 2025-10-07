@@ -12,6 +12,7 @@ import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
+import {getAuthTokenFromCookie} from './utils/authCookie'
 import {CipherId} from './utils/CipherId'
 import getRedis from './utils/getRedis'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -66,10 +67,12 @@ export const hocuspocus = new Hocuspocus({
   async onConnect(data) {
     const request = data.request as Req
     // handle authentication once onConnect vs. on every onAuthenticate
-    const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
-    const authToken = getVerifiedAuthToken(authTokenStr)
+    const cookieToken = await getAuthTokenFromCookie(request.headers['cookie'])
+    const queryToken = new URL(request.url!, 'http://localhost').searchParams.get('token')
+    const token = cookieToken || queryToken
+    const authToken = getVerifiedAuthToken(token)
     const userId = authToken?.sub
-    if (authTokenStr && !userId) {
+    if (token && !userId) {
       const err = new Error('Unauthenticated')
       ;(err as any).reason = 'Unauthenticated'
       throw err

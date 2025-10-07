@@ -1,3 +1,4 @@
+import {CookieStore} from '@whatwg-node/cookie-store'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
@@ -71,8 +72,12 @@ const dehydrateResult = (result: ExecutionResult) => {
 export const wsHandler = makeBehavior<{token?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
-    const token = connectionParams?.token
+    const cookieStore = new CookieStore(extra.persistedRequest.headers['cookie'] || '')
+    const cookieToken = (await cookieStore.get('__Host-Http-authToken'))?.value
+    const connectionToken = connectionParams?.token
+    const token = connectionToken || cookieToken
     if (!(typeof token === 'string')) return false
+
     const authToken = getVerifiedAuthToken(token)
     const {sub: viewerId, iat, tms: teamIds} = authToken
     const [isBlacklistedJWT, socketCount, user] = await Promise.all([
@@ -248,6 +253,7 @@ wsHandler.upgrade = (res, req, context) => {
   const ip =
     Buffer.from(res.getProxiedRemoteAddressAsText()).toString() ||
     Buffer.from(res.getRemoteAddressAsText()).toString()
+  headers['x-georg'] = 'foo'
 
   res.upgrade<UpgradeData & {ip: string}>(
     {

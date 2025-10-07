@@ -206,7 +206,6 @@ export enum LoaderSize {
 }
 
 export enum LocalStorageKey {
-  APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
@@ -467,7 +466,7 @@ export enum ZIndex {
 }
 
 export enum AuthTokenRole {
-  SUPER_USER = 'su'
+  SUPER_USER = 'SU'
 }
 
 export enum SprintPokerDefaults {

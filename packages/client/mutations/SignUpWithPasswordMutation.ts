@@ -47,8 +47,6 @@ const SignUpWithPasswordMutation: StandardMutation<
       handleAcceptTeamInvitationErrors(atmosphere, acceptTeamInvitation)
       if (!uiError && !errors) {
         handleSuccessfulLogin(atmosphere, signUpWithPassword)
-        const authToken = acceptTeamInvitation?.authToken || signUpWithPassword.authToken!
-        atmosphere.setAuthToken(authToken)
         const redirectPath = '/meetings'
 
         handleAuthenticationRedirect(acceptTeamInvitation, {

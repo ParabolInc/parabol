@@ -1,6 +1,7 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import {createCookieHeader} from './authCookie'
 import {callGQL} from './callGQL'
 
 const query = `
@@ -62,9 +63,10 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   }
   res
     .writeStatus('302')
+    .writeHeader('cookie', createCookieHeader(authToken))
     .writeHeader(
       'location',
-      `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
+      `/saml-redirect?userId=${userId}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
     )
     .end()
 })

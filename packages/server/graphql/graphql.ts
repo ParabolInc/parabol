@@ -13,6 +13,7 @@ export interface GQLContext {
   ip: string
   socketId: string
   dataLoader: DataLoaderWorker
+  request: Request
 }
 
 export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>
