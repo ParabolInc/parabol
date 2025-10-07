@@ -86,6 +86,7 @@
     "history": "4.9.0",
     "hoist-non-react-statics": "^3.3.0",
     "humanize-duration": "^3.32.0",
+    "js-cookie": "^3.0.5",
     "json2csv": "5.0.7",
     "jwt-decode": "^2.1.0",
     "linkify-it": "^2.0.3",

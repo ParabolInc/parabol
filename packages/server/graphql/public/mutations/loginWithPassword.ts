@@ -1,5 +1,5 @@
 import {AuthenticationError} from 'parabol-client/types/constEnums'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {setAuthCookie} from '../../../utils/authCookie'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -11,9 +11,10 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   const loginAttempt = await attemptLogin(email, password, context.ip)
   if (loginAttempt.userId) {
     context.authToken = loginAttempt.authToken
+    setAuthCookie(context, loginAttempt.authToken)
     return {
       userId: loginAttempt.userId,
-      authToken: encodeAuthToken(loginAttempt.authToken),
+      role: context.authToken.rol,
       isNewUser: false
     }
   }
