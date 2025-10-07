@@ -12,7 +12,8 @@ const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
 const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
-  const authToken = encodeAuthToken(new AuthToken({sub: 'aTestUser', tms: [], rol: 'su'}))
+  // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
+  const authToken = encodeAuthToken(new AuthToken({sub: 'parabolAIUser', tms: [], rol: 'su'}))
 
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
