@@ -4,7 +4,7 @@ import crypto from 'crypto'
 import faker from 'faker'
 import {sql} from 'kysely'
 import {Doc} from 'yjs'
-import ServerAuthToken from '../database/types/ServerAuthToken'
+import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
@@ -12,7 +12,7 @@ const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
 const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
-  const authToken = encodeAuthToken(new ServerAuthToken())
+  const authToken = encodeAuthToken(new AuthToken({sub: 'aTestUser', tms: [], rol: 'su'}))
 
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',
@@ -60,7 +60,7 @@ export async function sendTipTap<T>(
   cb: (doc: Doc) => Promise<T>
 ) {
   const socket = new HocuspocusProviderWebsocket({
-    url: `ws://localhost:3003?token=${authToken}`
+    url: `ws://localhost:3000/yjs?token=${authToken}`
   })
   const doc = new Doc()
   // update the URL to match the title
