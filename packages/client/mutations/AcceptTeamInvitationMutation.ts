@@ -83,7 +83,6 @@ graphql`
 
 graphql`
   fragment AcceptTeamInvitationMutationReply on AcceptTeamInvitationPayload {
-    authToken
     error {
       message
     }
@@ -220,13 +219,13 @@ const AcceptTeamInvitationMutation: StandardMutation<
         onCompleted(data, errors)
       }
       const {acceptTeamInvitation} = data
-      const {authToken, team} = acceptTeamInvitation
+      const {team} = acceptTeamInvitation
       const serverError = getGraphQLError(data, errors)
       if (serverError) {
         const message = serverError.message
         if (message === InvitationTokenError.NOT_SIGNED_IN) {
           // if the user follows an invitation link with an invalid auth token, invalidate it
-          atmosphere.setAuthToken(null)
+          // TODO what to do here?
         } else if (message === InvitationTokenError.ALREADY_ACCEPTED) {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
@@ -249,7 +248,6 @@ const AcceptTeamInvitationMutation: StandardMutation<
         }
         if (!ignoreApproval) return
       }
-      atmosphere.setAuthToken(authToken)
       if (!team) return
       const {id: teamId, name: teamName} = team
       atmosphere.eventEmitter.emit('addSnackbar', {

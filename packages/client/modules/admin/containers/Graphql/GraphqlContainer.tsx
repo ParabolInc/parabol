@@ -3,7 +3,6 @@ import GraphiQL from 'graphiql'
 import 'graphiql/graphiql.css'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router-dom'
-import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useAuthRoute from '../../../../hooks/useAuthRoute'
 import logoMarkPrimary from '../../../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
 import logoMarkDark from '../../../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
@@ -11,16 +10,12 @@ import logoMarkDark from '../../../../styles/theme/images/brand/lockup_color_mar
 import {AuthTokenRole} from '../../../../types/constEnums'
 
 const GraphqlContainer = () => {
-  const atmosphere = useAtmosphere()
   useAuthRoute({role: AuthTokenRole.SUPER_USER})
   const fetcher = useCallback(
     createGraphiQLFetcher({
-      url: '/graphql',
-      headers: {
-        authorization: `Bearer ${atmosphere.authToken}`
-      }
+      url: '/graphql'
     }),
-    [atmosphere.authToken]
+    []
   )
 
   const [isDarkMode, setIsDarkMode] = useState(false)

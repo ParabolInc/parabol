@@ -32,11 +32,13 @@ const InvalidateSessionsMutation: StandardMutation<TInvalidateSessionsMutation> 
     variables,
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
+      /* TODO why?
       const {invalidateSessions} = res
       const {authToken} = invalidateSessions
       if (authToken) {
         atmosphere.setAuthToken(authToken)
       }
+      */
     },
     onError
   })

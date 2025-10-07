@@ -18,8 +18,19 @@ module.exports = {
   stats: 'errors-warnings',
   devServer: {
     allowedHosts: ['localhost', 'host.docker.internal'],
+    server: 'https',
     client: {
-      logging: 'warn'
+      logging: 'warn',
+      webSocketURL: {
+        pathname: '/dev-server-ws',
+        protocol: 'ws'
+      }
+    },
+    webSocketServer: {
+      type: 'ws',
+      options: {
+        path: '/dev-server-ws'
+      }
     },
     static: [
       {
@@ -60,6 +71,11 @@ module.exports = {
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
       })),
+      {
+        context: '/ws',
+        target: `ws://localhost:${SOCKET_PORT}`,
+        ws: true
+      },
       {
         context: '/components',
         pathRewrite: {'^/components': ''},

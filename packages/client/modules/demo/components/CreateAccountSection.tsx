@@ -88,7 +88,7 @@ const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: numbe
 const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
   const {isDemo, dataCy} = props
   if (!isDemo) return null
-  const isLoggedIn = localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
+  const isLoggedIn = localStorage.getItem(LocalStorageKey.USER_ID) !== null
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
   const primaryActionLink = isLoggedIn ? '/meetings' : '/create-account?from=demo'
   const copyLineOne = isLoggedIn
