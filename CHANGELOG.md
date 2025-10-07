@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.6](https://github.com/ParabolInc/parabol/compare/v10.26.5...v10.26.6) (2025-10-07)
+
+
+### Fixed
+
+* allow meeting queries with 0 own teams ([#12160](https://github.com/ParabolInc/parabol/issues/12160)) ([4a5ff96](https://github.com/ParabolInc/parabol/commit/4a5ff96b4321dfc279d6fbeaf9fbeffdaa43d2da))
+
 ## [10.26.5](https://github.com/ParabolInc/parabol/compare/v10.26.4...v10.26.5) (2025-10-04)
 
 
