@@ -3,6 +3,7 @@ packages:
 minimumReleaseAge: 2880
 minimumReleaseAgeExclude:
   - nest-graphql-endpoint
+  - nodemailer
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'
