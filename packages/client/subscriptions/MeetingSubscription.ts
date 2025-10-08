@@ -26,6 +26,7 @@ import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -189,21 +190,4 @@ const updateHandlers = {
   SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
 } as const
 
-const MeetingSubscription = (
-  atmosphere: Atmosphere,
-  variables: MeetingSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TMeetingSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('meetingSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('meetingSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(MeetingSubscription.name, variables)
-    }
-  })
-}
-MeetingSubscription.key = 'meeting'
-export default MeetingSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)

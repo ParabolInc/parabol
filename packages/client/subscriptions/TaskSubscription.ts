@@ -14,6 +14,7 @@ import {removeOrgUsersTaskUpdater} from '../mutations/RemoveOrgUsersMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -63,21 +64,4 @@ const updateHandlers = {
   UpdateTaskPayload: updateTaskTaskUpdater
 } as const
 
-const TaskSubscription = (
-  atmosphere: Atmosphere,
-  variables: TaskSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TTaskSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('taskSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('taskSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(TaskSubscription.name, variables)
-    }
-  })
-}
-TaskSubscription.key = 'task'
-export default TaskSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)

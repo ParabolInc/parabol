@@ -21,6 +21,7 @@ import {
 import {updateTemplateScopeOrganizationUpdater} from '../mutations/UpdateReflectTemplateScopeMutation'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription OrganizationSubscription {
@@ -70,21 +71,4 @@ const updateHandlers = {
   UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
 } as const
 
-const OrganizationSubscription = (
-  atmosphere: Atmosphere,
-  variables: OrganizationSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TOrganizationSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('organizationSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('organizationSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(OrganizationSubscription.name, variables)
-    }
-  })
-}
-OrganizationSubscription.key = 'organization'
-export default OrganizationSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)
