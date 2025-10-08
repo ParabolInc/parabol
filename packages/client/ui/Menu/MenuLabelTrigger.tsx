@@ -11,7 +11,7 @@ export const MenuLabelTrigger = forwardRef<
     <div
       {...rest}
       ref={ref}
-      className='group flex cursor-pointer items-center justify-between rounded-md bg-white'
+      className='group flex cursor-pointer items-center justify-between rounded-md bg-white px-2'
     >
       <div className={cn('p-2 leading-4', labelClassName)}>{children}</div>
       {icon || (

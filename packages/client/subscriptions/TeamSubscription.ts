@@ -1,17 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {RouterProps} from 'react-router'
-import {requestSubscription} from 'relay-runtime'
 import {endCheckInTeamOnNext, endCheckInTeamUpdater} from '~/mutations/EndCheckInMutation'
 import {
   endRetrospectiveTeamOnNext,
   endRetrospectiveTeamUpdater
 } from '~/mutations/EndRetrospectiveMutation'
 import {navigateMeetingTeamUpdater} from '~/mutations/NavigateMeetingMutation'
-import type {
-  TeamSubscription$variables,
-  TeamSubscription as TTeamSubscription
-} from '../__generated__/TeamSubscription.graphql'
-import type Atmosphere from '../Atmosphere'
 import {
   acceptTeamInvitationTeamOnNext,
   acceptTeamInvitationTeamUpdater
@@ -40,8 +33,7 @@ import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTempla
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
-import subscriptionOnNext from './subscriptionOnNext'
-import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription TeamSubscription {
@@ -220,21 +212,4 @@ const updateHandlers = {
   RemoveTeamMemberPayload: removeTeamMemberTeamUpdater
 } as const
 
-const TeamSubscription = (
-  atmosphere: Atmosphere,
-  variables: TeamSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TTeamSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('teamSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('teamSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(TeamSubscription.name, variables)
-    }
-  })
-}
-TeamSubscription.key = 'team'
-export default TeamSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)

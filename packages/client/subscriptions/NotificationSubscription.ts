@@ -1,6 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {RouterProps} from 'react-router'
-import {requestSubscription} from 'relay-runtime'
 import type {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
 import type {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import type {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
@@ -11,7 +9,6 @@ import type {
   NotificationSubscription$data,
   NotificationSubscription as TNotificationSubscription
 } from '../__generated__/NotificationSubscription.graphql'
-import type Atmosphere from '../Atmosphere'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -38,8 +35,7 @@ import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
-import subscriptionOnNext from './subscriptionOnNext'
-import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 graphql`
   fragment NotificationSubscription_paymentRejected on StripeFailPaymentPayload {
@@ -356,21 +352,4 @@ const onNextHandlers = {
   UpdatedNotification: updateNotificationToastOnNext
 } as const
 
-const NotificationSubscription = (
-  atmosphere: Atmosphere,
-  variables: TNotificationSubscription['variables'],
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TNotificationSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('notificationSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('notificationSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(NotificationSubscription.name, variables)
-    }
-  })
-}
-NotificationSubscription.key = 'notification'
-export default NotificationSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)
