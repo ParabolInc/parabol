@@ -13,12 +13,15 @@ export class HocusPocusWebSocket extends EventEmitter {
     })
   }
   close(code?: number, reason?: string) {
+    if (this.readyState !== 1) return
     this.ws.end(code, reason)
   }
   ping() {
+    if (this.readyState !== 1) return
     this.ws.ping()
   }
   send(message: Uint8Array) {
+    if (this.readyState !== 1) return
     this.ws.send(message, true)
   }
 }
