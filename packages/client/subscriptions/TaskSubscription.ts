@@ -1,19 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {RouterProps} from 'react-router'
-import {requestSubscription} from 'relay-runtime'
-import type {
-  TaskSubscription$variables,
-  TaskSubscription as TTaskSubscription
-} from '~/__generated__/TaskSubscription.graphql'
-import type Atmosphere from '../Atmosphere'
 import {changeTaskTeamTaskUpdater} from '../mutations/ChangeTaskTeamMutation'
 import {createTaskTaskUpdater} from '../mutations/CreateTaskMutation'
 import {deleteTaskTaskUpdater} from '../mutations/DeleteTaskMutation'
 import {editTaskTaskUpdater} from '../mutations/EditTaskMutation'
 import {removeOrgUsersTaskUpdater} from '../mutations/RemoveOrgUsersMutation'
 import {updateTaskTaskOnNext, updateTaskTaskUpdater} from '../mutations/UpdateTaskMutation'
-import subscriptionOnNext from './subscriptionOnNext'
-import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription TaskSubscription {
@@ -63,21 +55,4 @@ const updateHandlers = {
   UpdateTaskPayload: updateTaskTaskUpdater
 } as const
 
-const TaskSubscription = (
-  atmosphere: Atmosphere,
-  variables: TaskSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TTaskSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('taskSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('taskSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(TaskSubscription.name, variables)
-    }
-  })
-}
-TaskSubscription.key = 'task'
-export default TaskSubscription
+export default createSubscription(subscription, onNextHandlers, updateHandlers)

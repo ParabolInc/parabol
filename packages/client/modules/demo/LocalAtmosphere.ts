@@ -49,6 +49,7 @@ export default class LocalAtmosphere extends Environment {
     const {selections, name} = payload
     const nullObj = Object.fromEntries(selections.map(({name}: any) => [name, null]))
     this.subscriptionInterfaces[name] = nullObj
+    return name
   }
 
   registerQuery: Atmosphere['registerQuery'] = async (
