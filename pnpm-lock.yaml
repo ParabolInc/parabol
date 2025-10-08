@@ -998,8 +998,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
       nodemailer:
-        specifier: ^7.0.7
-        version: 7.0.7
+        specifier: ^7.0.9
+        version: 7.0.9
       oauth-1.0a:
         specifier: ^2.2.6
         version: 2.2.6
@@ -1080,7 +1080,7 @@ importers:
         specifier: ^22.14.0
         version: 22.18.1
       '@types/nodemailer':
-        specifier: ^6.4.14
+        specifier: ^6.4.19
         version: 6.4.19
       '@types/sanitize-html':
         specifier: ^2.11.0
@@ -10382,8 +10382,8 @@ packages:
   nodemailer-shared@1.1.0:
     resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
 
-  nodemailer@7.0.7:
-    resolution: {integrity: sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==}
+  nodemailer@7.0.9:
+    resolution: {integrity: sha512-9/Qm0qXIByEP8lEV2qOqcAW7bRpL8CR9jcTwk3NBnHJNmP9fIJ86g2fgmIXqHY+nj55ZEMwWqYAT2QTDpRUYiQ==}
     engines: {node: '>=6.0.0'}
 
   normalize-path@2.1.1:
@@ -24967,7 +24967,7 @@ snapshots:
     dependencies:
       nodemailer-fetch: 1.6.0
 
-  nodemailer@7.0.7: {}
+  nodemailer@7.0.9: {}
 
   normalize-path@2.1.1:
     dependencies:
