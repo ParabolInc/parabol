@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.7](https://github.com/ParabolInc/parabol/compare/v10.26.6...v10.26.7) (2025-10-08)
+
+
+### Fixed
+
+* nodemailer version ([#12170](https://github.com/ParabolInc/parabol/issues/12170)) ([9841083](https://github.com/ParabolInc/parabol/commit/9841083027ff01d68d8bc1184fe3460135be76bd))
+* properly unsubscribe from subscriptions ([#12168](https://github.com/ParabolInc/parabol/issues/12168)) ([332801d](https://github.com/ParabolInc/parabol/commit/332801def0e9d23d2ff17683aecd6af6512d2b01))
+* reload page to work around Service Worker context closed ([#12164](https://github.com/ParabolInc/parabol/issues/12164)) ([6921c87](https://github.com/ParabolInc/parabol/commit/6921c87cf8b33f8968fb3093318eb082dbfc3792))
+
+
+### Changed
+
+* insights block style tweaks ([#12165](https://github.com/ParabolInc/parabol/issues/12165)) ([372190b](https://github.com/ParabolInc/parabol/commit/372190b45cc59f342caecb5959959865226e7022))
+
 ## [10.26.6](https://github.com/ParabolInc/parabol/compare/v10.26.5...v10.26.6) (2025-10-07)
 
 
