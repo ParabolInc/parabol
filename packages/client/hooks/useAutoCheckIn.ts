@@ -46,7 +46,7 @@ const useAutoCheckIn = (meetingRef: useAutoCheckIn_meeting$key) => {
     }
     return () => {
       if (atmosphere.scheduleUnregisterQuery) {
-        atmosphere.scheduleUnregisterQuery(queryKey, 30000)
+        atmosphere.scheduleUnregisterQuery(queryKey, 5000)
       }
     }
   }, [])

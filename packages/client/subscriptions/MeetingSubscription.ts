@@ -1,8 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
+import {commitLocalUpdate} from 'relay-runtime'
+import {
+  type MeetingSubscription,
+  MeetingSubscription$variables
+} from '~/__generated__/MeetingSubscription.graphql'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
+import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
 import {editReflectionMeetingUpdater} from '../mutations/EditReflectionMutation'
@@ -181,4 +187,16 @@ const updateHandlers = {
   SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
 } as const
 
-export default createSubscription(subscription, onNextHandlers, updateHandlers)
+const invalidator = (environment: Atmosphere, variables: MeetingSubscription$variables) => {
+  commitLocalUpdate(environment, (store) => {
+    const meeting = store.get(variables.meetingId)
+    meeting?.invalidateRecord()
+  })
+}
+
+export default createSubscription<MeetingSubscription>(
+  subscription,
+  onNextHandlers,
+  updateHandlers,
+  invalidator
+)

@@ -8,7 +8,8 @@ import subscriptionUpdater from './subscriptionUpdater'
 export const createSubscription = <TSubscription extends OperationType>(
   subscription: GraphQLTaggedNode,
   onNextHandlers: Record<string, OnNextHandler<any, any>>,
-  updateHandlers: Record<string, SharedUpdater<any>>
+  updateHandlers: Record<string, SharedUpdater<any>>,
+  invalidator?: (environment: Atmosphere, variables: TSubscription['variables']) => void
 ) => {
   const name = (subscription as ConcreteRequest).operation.name
   if (!name) throw new Error('Subscription must have a name')
@@ -26,6 +27,7 @@ export const createSubscription = <TSubscription extends OperationType>(
       onNext: subscriptionOnNext(fieldName, onNextHandlers, atmosphere, router),
       onCompleted: () => {
         atmosphere.unregisterSub(name, variables)
+        invalidator?.(atmosphere, variables)
       }
     })
   }

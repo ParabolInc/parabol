@@ -745,16 +745,6 @@ type Mutation {
 	selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
 
 	"""
-	Share where in the app the viewer is
-	"""
-	setAppLocation(
-		"""
-		The location the viewer is currently at
-		"""
-		location: String
-	): SetAppLocationPayload!
-
-	"""
 	Update the default Slack channel where notifications are sent
 	"""
 	setDefaultSlackChannel(

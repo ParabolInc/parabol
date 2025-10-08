@@ -1,9 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import SetAppLocationMutation from '~/mutations/SetAppLocationMutation'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
@@ -29,7 +26,6 @@ const meetingLookup = {
 const MeetingSelector = (props: Props) => {
   const {meetingId, queryRef} = props
 
-  const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<MeetingSelectorQuery>(
     graphql`
       query MeetingSelectorQuery($meetingId: ID!) {
@@ -47,17 +43,6 @@ const MeetingSelector = (props: Props) => {
   const {viewer} = data
   const {meeting, canAccessMeeting} = viewer
 
-  useEffect(() => {
-    if (!meetingId) return
-    const location = `/meet/${meetingId}`
-    const setAfterUpgrade = async () => {
-      SetAppLocationMutation(atmosphere, {location})
-    }
-    setAfterUpgrade()
-    return () => {
-      SetAppLocationMutation(atmosphere, {location: null})
-    }
-  }, [meetingId])
   useSubscription('MeetingSelector', NotificationSubscription)
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
