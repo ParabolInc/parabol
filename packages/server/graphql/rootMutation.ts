@@ -65,7 +65,6 @@ import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
-import setAppLocation from './mutations/setAppLocation'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
@@ -154,7 +153,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       resetPassword,
       resetRetroMeetingToGroupStage,
       selectTemplate,
-      setAppLocation,
       setPhaseFocus,
       setStageTimer,
       startDraggingReflection,

@@ -139,7 +139,7 @@ const subscription = graphql`
         ...SelectTemplateMutation_team @relay(mask: false)
       }
       SetAppLocationSuccess {
-        ...SetAppLocationMutation_team @relay(mask: false)
+        ...SetAppLocationSuccessFrag_team @relay(mask: false)
       }
       SetMeetingSettingsPayload {
         ...SetMeetingSettingsMutation_team @relay(mask: false)
