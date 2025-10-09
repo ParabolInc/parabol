@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.8](https://github.com/ParabolInc/parabol/compare/v10.26.7...v10.26.8) (2025-10-09)
+
+
+### Fixed
+
+* maintain original order from jira API ([#12172](https://github.com/ParabolInc/parabol/issues/12172)) ([f60a954](https://github.com/ParabolInc/parabol/commit/f60a954814642dc4d20a44b090c9a329f8f80bcb))
+
 ## [10.26.7](https://github.com/ParabolInc/parabol/compare/v10.26.6...v10.26.7) (2025-10-08)
 
 
