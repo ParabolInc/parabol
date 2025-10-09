@@ -82,8 +82,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
           }
         })
 
-        const edges = nodes.map((node, _index) => ({
-          node
+        const edges = nodes.map((node, idx) => ({
+          node,
+          cursor: `${idx}`
         }))
 
         return {
@@ -101,7 +102,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     const combinedEdges = cloudResults
       .flatMap((result) => result.edges)
       .filter(Boolean)
-      .sort((a, b) => b.node.lastViewed.localeCompare(a.node.lastViewed))
+      .sort((a, b) => (a.cursor < b.cursor ? -1 : 1))
     const combinedError = cloudResults.find((result) => result.error)
     return {
       edges: combinedEdges.slice(0, first),
