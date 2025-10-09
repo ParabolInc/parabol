@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.10](https://github.com/ParabolInc/parabol/compare/v10.26.9...v10.26.10) (2025-10-09)
+
+
+### Fixed
+
+* collapsing left nav when navigating to/from page route ([#12185](https://github.com/ParabolInc/parabol/issues/12185)) ([1d07450](https://github.com/ParabolInc/parabol/commit/1d074501cbde1a765f7c19643874cafd17afc1da))
+* delete pages from left side bar ([#12181](https://github.com/ParabolInc/parabol/issues/12181)) ([3a55e16](https://github.com/ParabolInc/parabol/commit/3a55e16bb985ef3011bba6d9382a8e58f505722f))
+* increase rate limit fior addTeam ([#12186](https://github.com/ParabolInc/parabol/issues/12186)) ([373ee43](https://github.com/ParabolInc/parabol/commit/373ee431cbfbbcb0ebc7687c54997241907b1aba))
+* limit page invites ([#12183](https://github.com/ParabolInc/parabol/issues/12183)) ([3f42f5e](https://github.com/ParabolInc/parabol/commit/3f42f5ec1cc149b7df280ae83af6f49de579f7e4))
+* Service Worker context closed ([#12179](https://github.com/ParabolInc/parabol/issues/12179)) ([6f6cf96](https://github.com/ParabolInc/parabol/commit/6f6cf96afce89ea5688b3cdaa3d442e0c343d3a4))
+* user of undefined errors ([#12184](https://github.com/ParabolInc/parabol/issues/12184)) ([45ae8f7](https://github.com/ParabolInc/parabol/commit/45ae8f72a1f84cf8d105c889e1313a4b8eb926a3))
+
 ## [10.26.9](https://github.com/ParabolInc/parabol/compare/v10.26.8...v10.26.9) (2025-10-09)
 
 
