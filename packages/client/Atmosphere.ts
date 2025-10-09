@@ -27,12 +27,12 @@ import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
-import type {AuthToken} from './types/AuthToken'
-import {LocalStorageKey} from './types/constEnums'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
-;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
+;import {AuthToken} from './types/AuthToken'
+(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
@@ -124,6 +124,7 @@ export default class Atmosphere extends Environment {
       network: Network.create(noop)
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
+    providerManager.setAtmosphere(this)
   }
 
   private async connectWebsocket() {
@@ -135,13 +136,12 @@ export default class Atmosphere extends Environment {
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    const useHTTP = !!uploadables || !this.authToken || !this.subscriptionClient
+    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient
     if (useHTTP) {
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
           accept: 'application/json',
-          Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
@@ -247,10 +247,13 @@ export default class Atmosphere extends Environment {
       return e as Error
     }
   }
-  getAuthToken = (global: Window) => {
-    if (!global) return
-    const authToken = global.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
+  getAuthToken = async (global: Window) => {
+    const authToken = await getAuthCookie(global)
     this.setAuthToken(authToken)
+
+    onAuthCookieChange(global, (newToken) => {
+      this.setAuthToken(newToken)
+    })
   }
 
   private validateImpersonation = async (iat: number) => {
@@ -272,47 +275,48 @@ export default class Atmosphere extends Environment {
       })
       return Promise.race([sleep(300), askOtherTabs])
     }
+    // impersonation token must be < 10 seconds old (ie log them out automatically)
     const justOpened = iat > Date.now() / 1000 - 10
 
     const anotherTabIsOpen = await isAnotherParabolTabOpen()
     if (anotherTabIsOpen || justOpened) return
-    this.authToken = null
-    this.authObj = null
-    window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+    this.userId = null
     // since this is async, useAuthRoute will have already run
     window.location.href = '/'
   }
 
-  setAuthToken = async (authToken: string | null | undefined) => {
+  private setAuthToken = async (authToken: string | null | undefined) => {
     this.authToken = authToken || null
-    providerManager.setAuthToken(authToken!, this)
     if (!authToken) {
-      this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
       return
     }
     try {
       this.authObj = jwtDecode(authToken)
-    } catch {
+      console.log('GEORG decoded token: ', this.authObj)
+    } catch(e) {
+      console.error('GEORG error decoding token: ', e)
+
       this.authObj = null
       this.authToken = null
     }
 
+    /*
+     * TODO do we need this?
     if (!this.authObj) return
     const {exp, sub: viewerId, rol, iat} = this.authObj
     if (rol === 'impersonate') {
       this.viewerId = viewerId
       return this.validateImpersonation(iat)
     }
-    // impersonation token must be < 10 seconds old (ie log them out automatically)
     if (exp < Date.now() / 1000) {
       this.authToken = null
       this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+      window.localStorage.removeItem(LocalStorageKey.userId)
     } else {
       this.viewerId = viewerId!
-      window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
+      window.localStorage.setItem(LocalStorageKey.USER_ID, userId)
     }
+    */
   }
 
   registerQuery = async (
@@ -404,6 +408,8 @@ export default class Atmosphere extends Environment {
     // does not remove other subs because they may still do interesting things like pop toasts
   }
   invalidateSession(reason: string) {
+    // TODO
+    throw new Error('Method not implemented.')
     this.setAuthToken(null)
     this.eventEmitter.emit('addSnackbar', {
       key: 'logOutJWT',
@@ -416,6 +422,7 @@ export default class Atmosphere extends Environment {
     }, 5000)
   }
   close() {
+    // TODO
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
