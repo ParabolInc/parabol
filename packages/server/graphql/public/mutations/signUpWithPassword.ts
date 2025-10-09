@@ -5,10 +5,28 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
-import isEmailVerificationRequired from '../../../utils/isEmailVerificationRequired'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
+
+const isValidEmailInvitationToken = async (
+  email: string,
+  inviteToken: string | undefined | null
+) => {
+  if (!inviteToken) return false
+  const pg = getKysely()
+  const invitation = await pg
+    .selectFrom('TeamInvitation')
+    .selectAll()
+    .where('token', '=', inviteToken)
+    .where('email', '=', email)
+    .limit(1)
+    .executeTakeFirst()
+  if (!invitation) return false
+  const {expiresAt} = invitation
+  if (expiresAt.getTime() < Date.now()) return false
+  return true
+}
 
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
@@ -45,8 +63,8 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   if (!nickname || !domain) {
     return {error: {message: 'Invalid email'}}
   }
-  const verificationRequired = await isEmailVerificationRequired(email, dataLoader)
-  if (verificationRequired) {
+  const verifiedByInvite = await isValidEmailInvitationToken(email, invitationToken)
+  if (!verifiedByInvite) {
     const existingVerification = await pg
       .selectFrom('EmailVerification')
       .selectAll()

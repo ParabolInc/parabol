@@ -28,7 +28,7 @@ export default class GraphQLRedisPubSub {
     return this.publisher.publish(channel, JSON.stringify(payload))
   }
 
-  subscribe = async (channels: string[]) => {
+  subscribe = async (channels: string[], onCompleted?: () => void) => {
     if (channels.length > 0) {
       await this.subscriber.subscribe(...channels)
     }
@@ -38,10 +38,11 @@ export default class GraphQLRedisPubSub {
         this.listenersByChannel[channel]!.push(listener)
       })
     }
-    const onCompleted = (listener: SubscriptionListener) => {
+    const onCompletedHandler = (listener: SubscriptionListener) => {
+      onCompleted?.()
       this.unsubscribe(channels, listener)
     }
-    return new SubscriptionIterator({onStart, onCompleted})
+    return new SubscriptionIterator({onStart, onCompleted: onCompletedHandler})
   }
 
   unsubscribe = (channels: string[], listener: SubscriptionListener) => {

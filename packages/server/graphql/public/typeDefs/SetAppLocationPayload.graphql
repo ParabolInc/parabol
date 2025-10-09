@@ -1,4 +1,0 @@
-"""
-Return object for SetAppLocationPayload
-"""
-union SetAppLocationPayload = ErrorPayload | SetAppLocationSuccess
