@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import type {PageDeletedHeader_page$key} from '../../__generated__/PageDeletedHeader_page.graphql'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {Button} from '../../ui/Button/Button'
 import relativeDate from '../../utils/date/relativeDate'
@@ -12,12 +13,14 @@ interface Props {
 
 export const PageDeletedHeader = (props: Props) => {
   const {pageRef} = props
+  const atmosphere = useAtmosphere()
   const page = useFragment(
     graphql`
       fragment PageDeletedHeader_page on Page {
         id
         deletedAt
         deletedByUser {
+          id
           preferredName
         }
         access {
@@ -53,10 +56,11 @@ export const PageDeletedHeader = (props: Props) => {
   }
   if (!deletedAt || !deletedByUser) return null
   const relativeTime = relativeDate(deletedAt, {smallDiff: 'just now'})
-  const {preferredName} = deletedByUser
+  const {id: userId, preferredName} = deletedByUser
+  const deletingUserName = userId === atmosphere.viewerId ? 'You' : preferredName
   return (
     <div className='flex h-10 w-full items-center justify-center bg-tomato-500 font-semibold text-white'>
-      <div className='pr-4'>{`${preferredName} moved this page to the trash ${relativeTime}`}</div>
+      <div className='pr-4'>{`${deletingUserName} moved this page to the trash ${relativeTime}`}</div>
       {viewerAccess === 'owner' && (
         <>
           <Button
