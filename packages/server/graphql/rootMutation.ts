@@ -2,11 +2,9 @@ import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -100,8 +98,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
       addGitHubAuth,
-      addOrg,
-      addTeam,
       archiveOrganization,
       archiveTeam,
       archiveTimelineEvent,
