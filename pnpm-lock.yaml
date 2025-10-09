@@ -970,6 +970,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.0
         version: 9.0.2
+      lib0:
+        specifier: ^0.2.114
+        version: 0.2.114
       mailcomposer:
         specifier: ^4.0.1
         version: 4.0.2

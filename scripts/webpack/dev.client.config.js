@@ -66,13 +66,8 @@ module.exports = {
         target: `http://localhost:3002`
       },
       {
-        context: (path) => path === '/',
+        context: (path) => path === '/' || path === '/yjs',
         target: `http://localhost:${SOCKET_PORT}`,
-        ws: true
-      },
-      {
-        context: '/hocuspocus',
-        target: `http://localhost:${HOCUS_POCUS_PORT}`,
         ws: true
       }
     ]
