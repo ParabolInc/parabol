@@ -139,7 +139,7 @@ const UserTasksHeader = (props: Props) => {
 
   const teamMemberFilterName = useMemo(() => {
     const teamMembers = teams.flatMap(({teamMembers}) => teamMembers)
-    const users = teamMembers.flatMap(({user}) => user)
+    const users = teamMembers.filter(Boolean).flatMap(({user}) => user)
     const keySet = new Set()
     const dedupedUsers = [] as {
       id: string
