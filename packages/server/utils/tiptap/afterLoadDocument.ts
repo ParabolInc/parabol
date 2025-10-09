@@ -7,7 +7,7 @@ import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createChildPage} from './createChildPage'
-import {removeBacklinkedPageLinkBlocks} from './hocusPocusHub'
+import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
 import {movePageToNewParent} from './movePageToNewParent'
 
 const updateBacklinks = async (
@@ -53,7 +53,7 @@ const handleDeletedPageLink = async (
         .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: userId})
         .where('id', '=', pageId)
         .execute(),
-      removeBacklinkedPageLinkBlocks({pageId})
+      removeAllBacklinkedPageLinkBlocks({pageId})
     ])
   } else {
     await updateBacklinks(parentPageId, null, pageId)

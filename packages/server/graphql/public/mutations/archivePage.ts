@@ -1,12 +1,11 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
+import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
-import {addCanonicalPageLink} from '../../../utils/tiptap/addCanonicalPageLink'
-import {removeBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
-import {removeCanonicalPageLinkFromPage} from '../../../utils/tiptap/removeCanonicalPageLinkFromPage'
+import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
 
@@ -19,7 +18,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const [dbPageId, pageCode] = CipherId.fromClient(pageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
     throw new GraphQLError('Invalid pageId')
@@ -33,11 +32,13 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
       .where('id', '=', dbPageId)
       .execute()
-    if (page.parentPageId) {
+    const documentName = page.parentPageId ? CipherId.toClient(page.parentPageId, 'page') : null
+    await Promise.all([
+      documentName &&
+        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode}),
       // this will also set deletedAt/deletedBy, but there may be a bug that causes it to fail
-      await removeCanonicalPageLinkFromPage(page.parentPageId, dbPageId)
-    }
-    removeBacklinkedPageLinkBlocks({pageId: dbPageId})
+      removeAllBacklinkedPageLinkBlocks({pageId: dbPageId})
+    ])
   } else {
     // When restoring, if the parent no longer exists, promote the orphan to the same level as its greatest ancestor
     let parentPageId: null | undefined
@@ -53,7 +54,11 @@ const archivePage: MutationResolvers['archivePage'] = async (
         }
       } else if (parentPage) {
         // add the canonical page link & let the reconciler take care of the rest
-        await addCanonicalPageLink(page.parentPageId, dbPageId, page.title)
+        const documentName = CipherId.toClient(page.parentPageId, 'page')
+        await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
+          title: page.title || undefined,
+          pageCode
+        })
       }
     }
     const sortOrder = await getPageNextSortOrder(

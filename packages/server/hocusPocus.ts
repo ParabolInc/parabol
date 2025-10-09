@@ -1,29 +1,31 @@
 import type {IncomingMessage} from 'node:http'
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Document, onStoreDocumentPayload, Server} from '@hocuspocus/server'
+import {Document, Hocuspocus, onStoreDocumentPayload} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import tracer from 'dd-trace'
+import {pack, unpack} from 'msgpackr'
 import {encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
 import {CipherId} from './utils/CipherId'
+import getRedis from './utils/getRedis'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
-import {Logger} from './utils/Logger'
 import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
-import RedisInstance from './utils/RedisInstance'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
-import {withBacklinks} from './utils/tiptap/hocusPocusHub'
-import {Redis} from './utils/tiptap/hocusPocusRedis'
+import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
+import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
+import {RedisServerAffinity} from './utils/tiptap/RedisServerAffinity'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
-import {updateYDocNodes} from './utils/tiptap/updateYDocNodes'
 
-const {SERVER_ID, HOCUS_POCUS_PORT} = process.env
+const {HOCUS_POCUS_PORT} = process.env
+const SERVER_ID = process.env.SERVER_ID!
+
 const port = Number(HOCUS_POCUS_PORT)
 if (isNaN(port) || port < 0 || port > 65536) {
   throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
@@ -40,15 +42,19 @@ const pushGQLTitleUpdates = async (pageId: number) => {
 }
 
 type Req = IncomingMessage & {userId?: string}
-export const server = new Server({
-  stopOnSignals: false,
-  port,
+
+export const redisHocusPocus = new RedisServerAffinity({
+  pack,
+  redis: getRedis(),
+  serverId: SERVER_ID,
+  unpack,
+  customEvents: hocusPocusCustomEvents
+})
+export const hocuspocus = new Hocuspocus({
   quiet: true,
-  async onListen(data) {
-    Logger.log(`\n🔮🔮🔮 Server ID: ${SERVER_ID}. Ready for Hocus Pocus: Port ${data.port} 🔮🔮🔮`)
-  },
   async onConnect(data) {
     const request = data.request as Req
+    // handle authentication once onConnect vs. on every onAuthenticate
     const authTokenStr = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const authToken = getVerifiedAuthToken(authTokenStr)
     const userId = authToken?.sub
@@ -62,6 +68,7 @@ export const server = new Server({
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
   },
+
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
     const userId = (request as Req).userId
@@ -119,7 +126,7 @@ export const server = new Server({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [dbId, pageCode] = CipherId.fromClient(documentName)
+        const [dbId] = CipherId.fromClient(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const {updatedTitle} = await tracer.trace(
@@ -134,23 +141,12 @@ export const server = new Server({
             tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
               pushGQLTitleUpdates(dbId)
             ),
-            tracer.trace('hocusPocus.withBacklinks', {tags: {documentName}}, () =>
-              withBacklinks(dbId, (doc) => {
-                tracer.trace('hocusPocus.updateYDocNodes', {tags: {documentName}}, () =>
-                  updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
-                    node.setAttribute('title', updatedTitle)
-                  })
-                )
-              })
-            )
+            updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
           ])
         }
       }
     }),
-    new Redis({
-      redis: new RedisInstance('hocusPocus'),
-      lockTimeout: 2000
-    }),
+    redisHocusPocus,
     new Throttle({
       throttle: 100,
       banTime: 1
@@ -160,12 +156,12 @@ export const server = new Server({
 })
 
 // patch hocuspocus to not crash on store errors
-server.hocuspocus.storeDocumentHooks = (
+hocuspocus.storeDocumentHooks = (
   document: Document,
   hookPayload: onStoreDocumentPayload,
   immediately?: boolean
 ) => {
-  const self = server.hocuspocus
+  const self = hocuspocus
   return self.debouncer.debounce(
     `onStoreDocument-${document.name}`,
     () => {
@@ -198,17 +194,3 @@ server.hocuspocus.storeDocumentHooks = (
     self.configuration.maxDebounce
   )
 }
-
-server.listen()
-
-const signalHandler = async () => {
-  await server.destroy()
-  process.exit(0)
-}
-
-process.on('SIGINT', signalHandler)
-process.on('SIGQUIT', signalHandler)
-process.on('SIGTERM', async () => {
-  // DO NOT CALL process.exit(0), let the handler in server.js handle that
-  await server.destroy()
-})

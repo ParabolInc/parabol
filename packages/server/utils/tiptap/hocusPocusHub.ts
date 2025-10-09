@@ -1,41 +1,46 @@
-import type {Document} from '@hocuspocus/server'
-import {server} from '../../hocusPocus'
+import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
-import {updateYDocNodes} from './updateYDocNodes'
 
-export const withBacklinks = async (
-  pageId: number,
-  fn: (doc: Document) => void | Promise<void>
-) => {
+export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {
   const pg = getKysely()
   const backLinks = await pg
     .selectFrom('PageBacklink')
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
-  await Promise.all(
+  const pageCode = CipherId.encrypt(pageId)
+
+  await Promise.all([
     backLinks.map(async ({fromPageId}) => {
-      const pageKey = CipherId.toClient(fromPageId, 'page')
-      const docConnection = await server.hocuspocus.openDirectConnection(pageKey, {})
-      await docConnection.transact(fn)
-      await docConnection.disconnect()
+      const documentName = CipherId.toClient(fromPageId, 'page')
+      await redisHocusPocus.handleEvent('removeBacklinkedPageLinkBlocks', documentName, {pageCode})
     })
-  )
+  ])
 }
 
-export const removeBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {
+export const updateAllBacklinkedPageLinkTitles = async ({
+  pageId,
+  title
+}: {
+  pageId: number
+  title: string
+}) => {
+  const pg = getKysely()
+  const backLinks = await pg
+    .selectFrom('PageBacklink')
+    .select('fromPageId')
+    .where('toPageId', '=', pageId)
+    .execute()
   const pageCode = CipherId.encrypt(pageId)
-  await withBacklinks(pageId, (doc) => {
-    updateYDocNodes(
-      doc,
-      'pageLinkBlock',
-      {pageCode},
-      (_, idx, parent) => {
-        parent.delete(idx)
-      },
-      // gotcha: ascending must be false for deletes because Yjs array length will change unlike a JS array
-      {ascending: false}
-    )
-  })
+
+  await Promise.all([
+    backLinks.map(async ({fromPageId}) => {
+      const documentName = CipherId.toClient(fromPageId, 'page')
+      await redisHocusPocus.handleEvent('updateBacklinkedPageLinkTitles', documentName, {
+        pageCode,
+        title
+      })
+    })
+  ])
 }
