@@ -7,5 +7,9 @@ input NewTeamInput {
 	"""
 	The unique orginization ID that pays for the team
 	"""
-	orgId: ID
+	orgId: ID!
+	"""
+	Whether the team is public (can be found and joined) or private (invite-only)
+	"""
+	isPublic: Boolean!
 }

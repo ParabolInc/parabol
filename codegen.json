@@ -49,6 +49,8 @@
       "config": {
         "contextType": "../graphql#GQLContext",
         "mappers": {
+          "AddTeamPayload": "./types/AddTeamPayload#AddTeamPayloadSource",
+          "AddOrgPayload": "./types/AddOrgPayload#AddOrgPayloadSource",
           "EndRetrospectiveSuccess": "./types/EndRetrospectiveSuccess#EndRetrospectiveSuccessSource",
           "AcceptRequestToJoinDomainSuccess": "./types/AcceptRequestToJoinDomainSuccess#AcceptRequestToJoinDomainSuccessSource",
           "AcceptTeamInvitationPayload": "./types/AcceptTeamInvitationPayload#AcceptTeamInvitationPayloadSource",

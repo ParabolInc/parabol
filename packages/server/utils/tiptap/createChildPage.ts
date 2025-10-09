@@ -58,11 +58,11 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
       .execute(),
     pg
       .insertInto('PageExternalAccess')
-      .columns(['email', 'pageId', 'role'])
+      .columns(['email', 'pageId', 'role', 'invitedBy'])
       .expression((eb) =>
         eb
           .selectFrom('PageExternalAccess')
-          .select((eb) => ['email', eb.val(pageId).as('pageId'), 'role'])
+          .select((eb) => ['email', eb.val(pageId).as('pageId'), 'role', 'invitedBy'])
           .where('pageId', '=', parentPageId)
       )
       .execute()

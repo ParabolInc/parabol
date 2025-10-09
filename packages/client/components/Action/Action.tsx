@@ -1,6 +1,7 @@
 import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {GlobalBanner, LoaderSize} from '../../types/constEnums'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
@@ -28,7 +29,9 @@ const TeamInvitation = lazy(
 const InvitationLink = lazy(
   () => import(/* webpackChunkName: 'InvitationLinkRoot' */ '../InvitationLinkRoot')
 )
-const PageRoute = lazy(() => import(/* webpackChunkName: 'PageRoute' */ '../PageRoute'))
+const PageRoot = lazy(
+  () => import(/* webpackChunkName: 'PageRoot' */ '../../modules/pages/PageRoot')
+)
 
 const Action = memo(() => {
   useServiceWorkerUpdater()
@@ -38,6 +41,11 @@ const Action = memo(() => {
   const bannerText = window.__ACTION__.GLOBAL_BANNER_TEXT
   const bannerBgColor = window.__ACTION__.GLOBAL_BANNER_BG_COLOR
   const bannerColor = window.__ACTION__.GLOBAL_BANNER_COLOR
+  const atmosphere = useAtmosphere()
+  // /pages must have the same stable path as the other dashboard routes
+  // to preserve the internal state of the left nav (i.e. which team & pages are expanded)
+  const isAuthenticated = atmosphere.authObj
+
   return (
     <>
       <ErrorBoundary>
@@ -92,7 +100,12 @@ const Action = memo(() => {
               <Route path='/reset-password/:token' component={SetNewPassword} />
               <Route path='/team-invitation/:token' component={TeamInvitation} />
               <Route path='/invitation-link/:token' component={InvitationLink} />
-              <Route path='/pages/:pageSlug' component={PageRoute} />
+              {!isAuthenticated && (
+                <Route
+                  path='/pages/:pageSlug'
+                  render={(routeProps) => <PageRoot {...routeProps} viewerRef={null} isPublic />}
+                />
+              )}
               <Route component={PrivateRoutes} />
             </Switch>
           </div>

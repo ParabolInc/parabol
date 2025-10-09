@@ -53,10 +53,12 @@
         document.querySelectorAll('script').forEach((script) => {
           if (script.src) {
             script.onerror = () => {
+              console.log('Error loading script ', script.src)
               loadError = true
               unregisterSW()
             }
             script.onload = () => {
+              console.log('Load script ', script.src)
               loadError = false
               script.onerror = null
               script.onload = null
@@ -68,7 +70,9 @@
         navigator.serviceWorker.getRegistration().then((reg) => {
           if (!reg) return
           reg.addEventListener('updatefound', () => {
+            console.log('Service worker update found')
             serviceWorkerUpdateFound = true
+            unregisterSW()
           })
         })
       }

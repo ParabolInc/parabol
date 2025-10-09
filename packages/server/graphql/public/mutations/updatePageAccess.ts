@@ -87,6 +87,18 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       nextSubjectType = 'user'
       nextSubjectId = existingUser.id
       dataLoader.get('users').prime(existingUser.id, existingUser)
+    } else {
+      const MAX_UNACCEPTED_INVITES = 20
+      // see how many outstanding email invites exist right now
+      const outstandingInvites = await pg
+        .selectFrom('PageExternalAccess')
+        .select((eb) => eb.fn.count('email').distinct().as('count'))
+        .where('invitedBy', '=', viewerId)
+        .where('email', '!=', '*')
+        .executeTakeFirstOrThrow()
+      if (Number(outstandingInvites.count) > MAX_UNACCEPTED_INVITES) {
+        throw new GraphQLError('Too many pending invitations sent')
+      }
     }
   }
   const table = tableMap[nextSubjectType]
@@ -128,18 +140,36 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .where(trx.dynamic.ref(typeId), '=', nextSubjectId)
       .execute()
   } else {
-    await selectDescendantPages(trx, dbPageId)
-      .insertInto(table)
-      .columns(['pageId', typeId as any, 'role'])
-      .expression((eb) =>
-        eb
-          .selectFrom('descendants')
-          .select(({val, ref}) => [
-            ref('id').as('pageId'),
-            val(nextSubjectId).as(typeId),
-            val(role).as('role')
-          ])
-      )
+    let query = selectDescendantPages(trx, dbPageId).insertInto(table)
+
+    if (table === 'PageExternalAccess') {
+      query = query
+        // log the invitedBy to prevent mass unsolicited invites from a single user
+        .columns(['pageId', typeId as any, 'role', 'invitedBy'])
+        .expression((eb) =>
+          eb
+            .selectFrom('descendants')
+            .select(({val, ref}) => [
+              ref('id').as('pageId'),
+              val(nextSubjectId).as(typeId),
+              val(role).as('role'),
+              val(viewerId).as('invitedBy')
+            ])
+        )
+    } else {
+      query = query
+        .columns(['pageId', typeId as any, 'role'])
+        .expression((eb) =>
+          eb
+            .selectFrom('descendants')
+            .select(({val, ref}) => [
+              ref('id').as('pageId'),
+              val(nextSubjectId).as(typeId),
+              val(role).as('role')
+            ])
+        )
+    }
+    await query
       .onConflict((oc) =>
         oc
           .columns(['pageId', typeId])

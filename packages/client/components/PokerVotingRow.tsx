@@ -44,7 +44,8 @@ const PokerVotingRow = (props: Props) => {
     scoresRef
   )
   const {label, color} = scaleValue
-  const users = scores.map(({user}) => user)
+  // filter shouldn't be necessary, but seeing this error pop up in datadog
+  const users = scores.filter(Boolean).map(({user}) => user)
   return (
     <PokerVotingRowBase>
       <MiniCardWrapper>
