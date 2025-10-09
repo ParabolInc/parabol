@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.0](https://github.com/ParabolInc/parabol/compare/v10.26.10...v10.27.0) (2025-10-09)
+
+
+### Added
+
+* Page affinity ([#12154](https://github.com/ParabolInc/parabol/issues/12154)) ([cee495d](https://github.com/ParabolInc/parabol/commit/cee495d85fea147a97da18c693b3cf7c504d77c9))
+
+
+### Fixed
+
+* use You when addressing the viewer ([#12189](https://github.com/ParabolInc/parabol/issues/12189)) ([19b00b2](https://github.com/ParabolInc/parabol/commit/19b00b2cdf7f23b57505fc0ea52860f5917b478f))
+
 ## [10.26.10](https://github.com/ParabolInc/parabol/compare/v10.26.9...v10.26.10) (2025-10-09)
 
 
