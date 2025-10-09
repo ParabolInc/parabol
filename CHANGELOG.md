@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.9](https://github.com/ParabolInc/parabol/compare/v10.26.8...v10.26.9) (2025-10-09)
+
+
+### Fixed
+
+* infer app location from meeting subscription ([#12169](https://github.com/ParabolInc/parabol/issues/12169)) ([23dbdcb](https://github.com/ParabolInc/parabol/commit/23dbdcbe7834d3ced7bd48c857c2bf7e4b9c0ca3))
+
+
+### Changed
+
+* require email verification for password signup ([#12176](https://github.com/ParabolInc/parabol/issues/12176)) ([42f28fe](https://github.com/ParabolInc/parabol/commit/42f28fecaa97267db2a95ebe0f5fdcf83d1710e8))
+
 ## [10.26.8](https://github.com/ParabolInc/parabol/compare/v10.26.7...v10.26.8) (2025-10-09)
 
 
