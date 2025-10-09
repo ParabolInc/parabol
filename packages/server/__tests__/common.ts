@@ -247,41 +247,6 @@ export const signUpWithEmail = async (emailInput: string) => {
   }
 }
 
-export const inviteToTeam = async (props: {
-  authToken: string
-  invitees: string[]
-  teamId: string
-  meetingId?: string | null
-}) => {
-  const {authToken, invitees, teamId, meetingId} = props
-  const inviteToTeam = await sendPublic({
-    query: `
-      mutation InviteToTeamMutation($meetingId: ID, $teamId: ID!, $invitees: [Email!]!) {
-        inviteToTeam(meetingId: $meetingId, invitees: $invitees, teamId: $teamId) {
-          error {
-            message
-          }
-          invitees
-        }
-      }
-    `,
-    variables: {
-      teamId,
-      invitees,
-      meetingId
-    },
-    authToken
-  })
-  expect(inviteToTeam).toMatchObject({
-    data: {
-      inviteToTeam: {
-        error: null,
-        invitees: expect.arrayContaining(invitees)
-      }
-    }
-  })
-}
-
 export const signUp = async () => {
   const email = faker.internet.email()
   return signUpWithEmail(email)
