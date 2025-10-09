@@ -111,7 +111,7 @@ export const PageActions = (props: Props) => {
               <MenuItem
                 onSelect={archivePage}
                 onClick={(e) => {
-                  e.preventDefault()
+                  //  default is required in order to trigger onSelect
                   e.stopPropagation()
                 }}
               >
