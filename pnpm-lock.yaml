@@ -1001,8 +1001,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
       nodemailer:
-        specifier: ^6.9.9
-        version: 6.10.1
+        specifier: ^7.0.9
+        version: 7.0.9
       oauth-1.0a:
         specifier: ^2.2.6
         version: 2.2.6
@@ -1083,7 +1083,7 @@ importers:
         specifier: ^22.14.0
         version: 22.18.1
       '@types/nodemailer':
-        specifier: ^6.4.14
+        specifier: ^6.4.19
         version: 6.4.19
       '@types/sanitize-html':
         specifier: ^2.11.0
@@ -10385,8 +10385,8 @@ packages:
   nodemailer-shared@1.1.0:
     resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
 
-  nodemailer@6.10.1:
-    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
+  nodemailer@7.0.9:
+    resolution: {integrity: sha512-9/Qm0qXIByEP8lEV2qOqcAW7bRpL8CR9jcTwk3NBnHJNmP9fIJ86g2fgmIXqHY+nj55ZEMwWqYAT2QTDpRUYiQ==}
     engines: {node: '>=6.0.0'}
 
   normalize-path@2.1.1:
@@ -24970,7 +24970,7 @@ snapshots:
     dependencies:
       nodemailer-fetch: 1.6.0
 
-  nodemailer@6.10.1: {}
+  nodemailer@7.0.9: {}
 
   normalize-path@2.1.1:
     dependencies:
@@ -26791,7 +26791,7 @@ snapshots:
 
   spdy-transport@3.0.0:
     dependencies:
-      debug: 4.4.1(supports-color@5.5.0)
+      debug: 4.4.3
       detect-node: 2.1.0
       hpack.js: 2.1.6
       obuf: 1.1.2

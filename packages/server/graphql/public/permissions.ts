@@ -35,6 +35,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
+    addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),

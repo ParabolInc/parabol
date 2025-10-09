@@ -180,9 +180,15 @@ const User: ReqResolvers<'User'> = {
       const allTeamIds = teamMembers.map(({teamId}) => teamId)
       validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
     }
-    if (validTeamIds.length < 1)
-      throw new Error('Must provide at least 1 teamId the viewer is a member of')
-    if (meetingTypes.length < 1) throw new Error('Must provide at least 1 meetingType')
+    if (validTeamIds.length < 1) {
+      return {
+        edges: [],
+        pageInfo: {hasNextPage: false, hasPreviousPage: false, startCursor: null, endCursor: null}
+      }
+    }
+    if (meetingTypes.length < 1) {
+      throw new GraphQLError('Must provide at least 1 meetingType')
+    }
 
     const nodes = await selectNewMeetings()
       .where('teamId', 'in', validTeamIds)

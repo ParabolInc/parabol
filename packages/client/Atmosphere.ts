@@ -334,12 +334,18 @@ export default class Atmosphere extends Environment {
     this.querySubscriptions.push({queryKey, subKey})
   }
 
+  /*
+   * register the field name for this subscription so we know who handles it
+   *
+   * @returns the subscriptions field name, used for defining onNext and update handlers
+   */
   registerSubscription(subscriptionRequest: GraphQLTaggedNode) {
     const request: ConcreteRequest = (subscriptionRequest as any).default ?? subscriptionRequest
     const payload = request.operation.selections[0] as NormalizationLinkedField
     const {selections, name} = payload
     const nullObj = Object.fromEntries(selections.map(({name}: any) => [name, null]))
     this.subscriptionInterfaces[name] = nullObj
+    return name
   }
   /*
    * When a subscription encounters an error, it affects the subscription itself,

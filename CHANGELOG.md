@@ -5,6 +5,68 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.26.9](https://github.com/ParabolInc/parabol/compare/v10.26.8...v10.26.9) (2025-10-09)
+
+
+### Fixed
+
+* infer app location from meeting subscription ([#12169](https://github.com/ParabolInc/parabol/issues/12169)) ([23dbdcb](https://github.com/ParabolInc/parabol/commit/23dbdcbe7834d3ced7bd48c857c2bf7e4b9c0ca3))
+
+
+### Changed
+
+* require email verification for password signup ([#12176](https://github.com/ParabolInc/parabol/issues/12176)) ([42f28fe](https://github.com/ParabolInc/parabol/commit/42f28fecaa97267db2a95ebe0f5fdcf83d1710e8))
+
+## [10.26.8](https://github.com/ParabolInc/parabol/compare/v10.26.7...v10.26.8) (2025-10-09)
+
+
+### Fixed
+
+* maintain original order from jira API ([#12172](https://github.com/ParabolInc/parabol/issues/12172)) ([f60a954](https://github.com/ParabolInc/parabol/commit/f60a954814642dc4d20a44b090c9a329f8f80bcb))
+
+## [10.26.7](https://github.com/ParabolInc/parabol/compare/v10.26.6...v10.26.7) (2025-10-08)
+
+
+### Fixed
+
+* nodemailer version ([#12170](https://github.com/ParabolInc/parabol/issues/12170)) ([9841083](https://github.com/ParabolInc/parabol/commit/9841083027ff01d68d8bc1184fe3460135be76bd))
+* properly unsubscribe from subscriptions ([#12168](https://github.com/ParabolInc/parabol/issues/12168)) ([332801d](https://github.com/ParabolInc/parabol/commit/332801def0e9d23d2ff17683aecd6af6512d2b01))
+* reload page to work around Service Worker context closed ([#12164](https://github.com/ParabolInc/parabol/issues/12164)) ([6921c87](https://github.com/ParabolInc/parabol/commit/6921c87cf8b33f8968fb3093318eb082dbfc3792))
+
+
+### Changed
+
+* insights block style tweaks ([#12165](https://github.com/ParabolInc/parabol/issues/12165)) ([372190b](https://github.com/ParabolInc/parabol/commit/372190b45cc59f342caecb5959959865226e7022))
+
+## [10.26.6](https://github.com/ParabolInc/parabol/compare/v10.26.5...v10.26.6) (2025-10-07)
+
+
+### Fixed
+
+* allow meeting queries with 0 own teams ([#12160](https://github.com/ParabolInc/parabol/issues/12160)) ([4a5ff96](https://github.com/ParabolInc/parabol/commit/4a5ff96b4321dfc279d6fbeaf9fbeffdaa43d2da))
+
+## [10.26.5](https://github.com/ParabolInc/parabol/compare/v10.26.4...v10.26.5) (2025-10-04)
+
+
+### Fixed
+
+* handle no variableVariables coming from graphiql admin queries ([#12155](https://github.com/ParabolInc/parabol/issues/12155)) ([43cc66a](https://github.com/ParabolInc/parabol/commit/43cc66a79b165ffad523d020fbba510a35b42387))
+
+## [10.26.4](https://github.com/ParabolInc/parabol/compare/v10.26.3...v10.26.4) (2025-10-02)
+
+
+### Fixed
+
+* **gh-action:** ironbank action checks code out as first step ([#12147](https://github.com/ParabolInc/parabol/issues/12147)) ([bef2c52](https://github.com/ParabolInc/parabol/commit/bef2c52a033117f88a3df8c148550d747ab0b8a2))
+
+## [10.26.3](https://github.com/ParabolInc/parabol/compare/v10.26.2...v10.26.3) (2025-10-02)
+
+
+### Changed
+
+* **gh-actions:** docker-external and ironbank run only with tags, are improved to run faster and show useful information at the end ([#12145](https://github.com/ParabolInc/parabol/issues/12145)) ([4fab3d0](https://github.com/ParabolInc/parabol/commit/4fab3d07b21f17917185f35f18c3e3a0dcb0cb98))
+* proxy websockets in local dev ([#12142](https://github.com/ParabolInc/parabol/issues/12142)) ([a7278c5](https://github.com/ParabolInc/parabol/commit/a7278c5d803207669cf78439eb5c7b20588b9ca8))
+
 ## [10.26.2](https://github.com/ParabolInc/parabol/compare/v10.26.1...v10.26.2) (2025-09-30)
 
 

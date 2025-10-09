@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
-import {pageAccessByUserIdBatchFn} from '../../dataloader/pageLoaderMakers'
+import {pageAccessByUserIdBatchFn} from '../../dataloader/pageAccessByUserIdBatchFn'
 import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
@@ -181,18 +181,18 @@ export const movePageToNewParent = async (
     .with('upsertExternals', (qc) =>
       qc
         .insertInto('PageExternalAccess')
-        .columns(['pageId', 'email', 'role'])
+        .columns(['pageId', 'email', 'role', 'invitedBy'])
         .expression((eb) =>
           eb
             .selectFrom('descendants as d')
             .crossJoin(
               eb
                 .selectFrom('PageExternalAccess as pea')
-                .select(['pea.email', 'pea.role'])
+                .select(['pea.email', 'pea.role', 'pea.invitedBy'])
                 .where('pea.pageId', '=', parentPageId)
                 .as('pea')
             )
-            .select(['d.id as pageId', 'pea.email', 'pea.role'])
+            .select(['d.id as pageId', 'pea.email', 'pea.role', 'pea.invitedBy'])
         )
         .onConflict((oc) =>
           oc

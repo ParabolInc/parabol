@@ -2,11 +2,9 @@ import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
 import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
-import addOrg from './mutations/addOrg'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
 import addPokerTemplateScaleValue from './mutations/addPokerTemplateScaleValue'
-import addTeam from './mutations/addTeam'
 import archiveOrganization from './mutations/archiveOrganization'
 import archiveTeam from './mutations/archiveTeam'
 import archiveTimelineEvent from './mutations/archiveTimelineEvent'
@@ -65,7 +63,6 @@ import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
 import selectTemplate from './mutations/selectTemplate'
-import setAppLocation from './mutations/setAppLocation'
 import setNotificationStatus from './mutations/setNotificationStatus'
 import setPhaseFocus from './mutations/setPhaseFocus'
 import setPokerSpectate from './mutations/setPokerSpectate'
@@ -101,8 +98,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       addPokerTemplateScale,
       addPokerTemplateScaleValue,
       addGitHubAuth,
-      addOrg,
-      addTeam,
       archiveOrganization,
       archiveTeam,
       archiveTimelineEvent,
@@ -154,7 +149,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       resetPassword,
       resetRetroMeetingToGroupStage,
       selectTemplate,
-      setAppLocation,
       setPhaseFocus,
       setStageTimer,
       startDraggingReflection,

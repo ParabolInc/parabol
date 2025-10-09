@@ -108,7 +108,7 @@ export async function sendPublic(req: {
   return body
 }
 
-const SIGNUP_WITH_PASSWORD_MUTATION = `
+export const SIGNUP_WITH_PASSWORD_MUTATION = `
   mutation SignUpWithPasswordMutation(
     $email: ID!
     $password: String!
@@ -158,7 +158,7 @@ export const signUpWithEmail = async (emailInput: string) => {
   const email = emailInput.toLowerCase()
 
   const password = faker.internet.password()
-  const signUp = await sendIntranet({
+  const signUp = await sendPublic({
     query: SIGNUP_WITH_PASSWORD_MUTATION,
     variables: {
       email,
@@ -172,6 +172,58 @@ export const signUpWithEmail = async (emailInput: string) => {
   expect(signUp).toMatchObject({
     data: {
       signUpWithPassword: {
+        authToken: null,
+        error: {
+          message: 'Verification required. Check your inbox.'
+        },
+        user: null
+      }
+    }
+  })
+
+  const pg = getKysely()
+  const verification = await pg
+    .selectFrom('EmailVerification')
+    .selectAll()
+    .where('email', '=', email)
+    .where('expiration', '>', new Date())
+    .executeTakeFirst()
+
+  const verifyEmail = await sendPublic({
+    query: `
+      mutation VerifyEmailMutation(
+        $verificationToken: ID!
+      ) {
+        verifyEmail(verificationToken: $verificationToken) {
+          error {
+            message
+          }
+          authToken
+          user {
+            tms
+            id
+            email
+            picture
+            preferredName
+            createdAt
+            teams {
+              id
+            }
+            organizations {
+              id
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      verificationToken: verification!.token
+    }
+  })
+
+  expect(verifyEmail).toMatchObject({
+    data: {
+      verifyEmail: {
         error: null,
         authToken: expect.anything(),
         user: {
@@ -181,8 +233,8 @@ export const signUpWithEmail = async (emailInput: string) => {
       }
     }
   })
-  const {signUpWithPassword} = signUp.data
-  const {authToken, user} = signUpWithPassword
+
+  const {authToken, user} = verifyEmail.data.verifyEmail
   const {id: userId, teams, organizations} = user
   const teamId = teams[0]!.id
   const orgId = organizations[0]!.id

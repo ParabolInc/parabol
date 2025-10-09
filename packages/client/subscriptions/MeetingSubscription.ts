@@ -1,15 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {RouterProps} from 'react-router'
-import {requestSubscription} from 'relay-runtime'
-import type {
-  MeetingSubscription$variables,
-  MeetingSubscription as TMeetingSubscription
+import {commitLocalUpdate} from 'relay-runtime'
+import {
+  type MeetingSubscription,
+  MeetingSubscription$variables
 } from '~/__generated__/MeetingSubscription.graphql'
 import {addCommentMeetingUpdater} from '~/mutations/AddCommentMutation'
 import {createPollMeetingUpdater} from '~/mutations/CreatePollMutation'
 import {deleteCommentMeetingUpdater} from '~/mutations/DeleteCommentMutation'
 import {upsertTeamPromptResponseUpdater} from '~/mutations/UpsertTeamPromptResponseMutation'
-import type Atmosphere from '../Atmosphere'
+import Atmosphere from '../Atmosphere'
 import {createReflectionMeetingUpdater} from '../mutations/CreateReflectionMutation'
 import {dragDiscussionTopicMeetingUpdater} from '../mutations/DragDiscussionTopicMutation'
 import {editReflectionMeetingUpdater} from '../mutations/EditReflectionMutation'
@@ -24,8 +23,7 @@ import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeeti
 import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
-import subscriptionOnNext from './subscriptionOnNext'
-import subscriptionUpdater from './subscriptionUpdater'
+import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
   subscription MeetingSubscription($meetingId: ID!) {
@@ -189,21 +187,16 @@ const updateHandlers = {
   SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
 } as const
 
-const MeetingSubscription = (
-  atmosphere: Atmosphere,
-  variables: MeetingSubscription$variables,
-  router: {history: RouterProps['history']}
-) => {
-  atmosphere.registerSubscription(subscription)
-  return requestSubscription<TMeetingSubscription>(atmosphere, {
-    subscription,
-    variables,
-    updater: subscriptionUpdater('meetingSubscription', updateHandlers, atmosphere),
-    onNext: subscriptionOnNext('meetingSubscription', onNextHandlers, atmosphere, router),
-    onCompleted: () => {
-      atmosphere.unregisterSub(MeetingSubscription.name, variables)
-    }
+const invalidator = (environment: Atmosphere, variables: MeetingSubscription$variables) => {
+  commitLocalUpdate(environment, (store) => {
+    const meeting = store.get(variables.meetingId)
+    meeting?.invalidateRecord()
   })
 }
-MeetingSubscription.key = 'meeting'
-export default MeetingSubscription
+
+export default createSubscription<MeetingSubscription>(
+  subscription,
+  onNextHandlers,
+  updateHandlers,
+  invalidator
+)
