@@ -46,6 +46,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
               id
             }
           }
+          summaryPageId
         }
         team {
           id
@@ -65,12 +66,15 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
     commentCount,
     taskCount,
     locked,
-    organization
+    organization,
+    summaryPageId
   } = meeting
   const {name: teamName} = team
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
-
+  const summaryURL = summaryPageId
+    ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+    : `/new-summary/${meetingId}`
   const atmosphere = useAtmosphere()
   const onUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
@@ -113,7 +117,7 @@ const TimelineEventCompletedActionMeeting = (props: Props) => {
           <>
             <Link to={`/meet/${meetingId}/agendaitems/1`}>See the discussion</Link>
             {' in your meeting or '}
-            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+            <Link to={summaryURL}>review a summary</Link>
           </>
         )}
       </TimelineEventBody>

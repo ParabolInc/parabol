@@ -60,6 +60,7 @@ const RetroMeetingSidebar = (props: Props) => {
             readyUserIds
           }
         }
+        summaryPageId
       }
     `,
     meetingRef
@@ -72,7 +73,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localPhase,
     localStage,
     phases,
-    meetingMembers
+    meetingMembers,
+    summaryPageId
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -166,7 +168,10 @@ const RetroMeetingSidebar = (props: Props) => {
               if (isDemoRoute()) {
                 history.push('/retrospective-demo-summary')
               } else {
-                history.push(`/new-summary/${meetingId}`)
+                const summaryURL = summaryPageId
+                  ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+                  : `/new-summary/${meetingId}`
+                history.push(summaryURL)
               }
             }}
             phaseType='SUMMARY'

@@ -42,6 +42,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
               id
             }
           }
+          summaryPageId
         }
         team {
           id
@@ -66,12 +67,15 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     commentCount,
     taskCount,
     locked,
-    organization
+    organization,
+    summaryPageId
   } = meeting
   const {name: teamName} = team
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
-
+  const summaryURL = summaryPageId
+    ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+    : `/new-summary/${meetingId}`
   const onUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'timelineHistoryLock',
@@ -116,7 +120,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           <>
             <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
             {' or '}
-            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+            <Link to={summaryURL}>review a summary</Link>
           </>
         )}
       </TimelineEventBody>

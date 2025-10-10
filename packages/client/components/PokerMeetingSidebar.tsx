@@ -45,6 +45,7 @@ const PokerMeetingSidebar = (props: Props) => {
         localStage {
           id
         }
+        summaryPageId
         phases {
           phaseType
           stages {
@@ -68,7 +69,8 @@ const PokerMeetingSidebar = (props: Props) => {
     facilitatorStageId,
     localPhase,
     localStage,
-    phases
+    phases,
+    summaryPageId
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -135,7 +137,10 @@ const PokerMeetingSidebar = (props: Props) => {
             isFacilitatorPhase={false}
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
-              history.push(`/new-summary/${meetingId}`)
+              const summaryURL = summaryPageId
+                ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+                : `/new-summary/${meetingId}`
+              history.push(summaryURL)
             }}
             phaseType='SUMMARY'
           />
