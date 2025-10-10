@@ -12,6 +12,7 @@ import type {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
+import {GQLID} from '../utils/GQLID'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
 import handleRemoveTasks from './handlers/handleRemoveTasks'
@@ -88,7 +89,7 @@ export const endCheckInTeamOnNext: OnNextHandler<
       history.push(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else if (summaryPageId) {
-      const pageCode = Number(summaryPageId.split('page:')[1])
+      const pageCode = GQLID.fromKey(summaryPageId)[0]
       history.push(`/pages/${pageCode}`)
     }
   }

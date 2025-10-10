@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventPokerComplete_timelineEvent$key} from '../__generated__/TimelineEventPokerComplete_timelineEvent.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import CardsSVG from './CardsSVG'
@@ -84,7 +85,7 @@ const TimelineEventPokerComplete = (props: Props) => {
     })
   }
   const summaryURL = summaryPageId
-    ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+    ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
   return (
     <TimelineEventCard

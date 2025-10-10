@@ -9,6 +9,7 @@ import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import {GQLID} from '../utils/GQLID'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import isPhaseComplete from '../utils/meetings/isPhaseComplete'
@@ -60,6 +61,7 @@ const RetroMeetingSidebar = (props: Props) => {
             readyUserIds
           }
         }
+        summaryPageId
       }
     `,
     meetingRef
@@ -72,7 +74,8 @@ const RetroMeetingSidebar = (props: Props) => {
     localPhase,
     localStage,
     phases,
-    meetingMembers
+    meetingMembers,
+    summaryPageId
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -166,7 +169,10 @@ const RetroMeetingSidebar = (props: Props) => {
               if (isDemoRoute()) {
                 history.push('/retrospective-demo-summary')
               } else {
-                history.push(`/new-summary/${meetingId}`)
+                const summaryURL = summaryPageId
+                  ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
+                  : `/new-summary/${meetingId}`
+                history.push(summaryURL)
               }
             }}
             phaseType='SUMMARY'

@@ -11,6 +11,7 @@ import type {
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
+import {GQLID} from '../utils/GQLID'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 
 graphql`
@@ -69,7 +70,7 @@ export const endTeamPromptTeamOnNext: OnNextHandler<
   const {id: meetingId, summaryPageId} = meeting
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (summaryPageId) {
-      const pageCode = Number(summaryPageId.split('page:')[1])
+      const pageCode = GQLID.fromKey(summaryPageId)[0]
       history.push(`/pages/${pageCode}`)
     }
   }

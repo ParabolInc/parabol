@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import StyledLink from './StyledLink'
@@ -42,6 +43,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
               id
             }
           }
+          summaryPageId
         }
         team {
           id
@@ -66,12 +68,15 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
     commentCount,
     taskCount,
     locked,
-    organization
+    organization,
+    summaryPageId
   } = meeting
   const {name: teamName} = team
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
-
+  const summaryURL = summaryPageId
+    ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
+    : `/new-summary/${meetingId}`
   const onUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'timelineHistoryLock',
@@ -116,7 +121,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
           <>
             <Link to={`/meet/${meetingId}/responses`}>See responses and discussions</Link>
             {' or '}
-            <Link to={`/new-summary/${meetingId}`}>review a summary</Link>
+            <Link to={summaryURL}>review a summary</Link>
           </>
         )}
       </TimelineEventBody>

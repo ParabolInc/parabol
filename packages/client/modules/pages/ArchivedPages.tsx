@@ -6,6 +6,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useHistory} from 'react-router'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
+import {GQLID} from '../../utils/GQLID'
 import {ArchivedPagesButton} from './ArchivedPagesButton'
 
 interface Props {
@@ -46,8 +47,8 @@ export const ArchivedPages = (props: Props) => {
     })
   }
   const deletePage = (pageId: string) => {
-    const pageCode = pageId.split('page:')[1]!
-    if (location.href.endsWith(pageCode)) {
+    const pageCode = GQLID.fromKey(pageId)[0]
+    if (location.href.endsWith(`${pageCode}`)) {
       history.push('/me')
     }
     execute({

@@ -6,6 +6,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {Button} from '../../ui/Button/Button'
 import relativeDate from '../../utils/date/relativeDate'
+import {GQLID} from '../../utils/GQLID'
 
 interface Props {
   pageRef: PageDeletedHeader_page$key
@@ -43,8 +44,8 @@ export const PageDeletedHeader = (props: Props) => {
     })
   }
   const deletePage = () => {
-    const pageCode = pageId.split('page:')[1]!
-    if (location.href.endsWith(pageCode)) {
+    const pageCode = GQLID.fromKey(pageId)[0]
+    if (location.href.endsWith(`${pageCode}`)) {
       history.push('/me')
     }
     execute({

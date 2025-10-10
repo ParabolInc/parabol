@@ -13,9 +13,9 @@ import {
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
 import {providerManager} from '../tiptap/providerManager'
+import {GQLID} from '../utils/GQLID'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
-
 import {makeEditorFromYDoc} from './useTipTapPageEditor'
 
 const makeDragRef = () => ({
@@ -123,7 +123,7 @@ export const useDraggablePage = (
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
       const frag = document.getXmlFragment('default')
-      const pageCode = Number(pageId.split('page:')[1])
+      const pageCode = GQLID.fromKey(pageId)[0]
       // Yjs doesn't support moves
       // You cannot delete an item and then insert it elsewhere because once an object is deleted it is gone
       // Prosemirror accomplishes moves by swapping the attributes of every item between source and target
@@ -160,7 +160,7 @@ export const useDraggablePage = (
       // when making something a child page, we don't use GraphQL, we use yjs
       // in the future, I hope every user-defined page is a child so this is the only code path
       providerManager.withDoc(targetParentPageId, (doc) => {
-        const pageCode = Number(pageId.split('page:')[1])
+        const pageCode = GQLID.fromKey(pageId)[0]
         const title = source.get(pageId)?.title as string
         const createPageLinkBlock = () => createPageLinkElement(pageCode, title)
         const frag = doc.getXmlFragment('default')
@@ -219,7 +219,7 @@ export const useDraggablePage = (
       // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
         const frag = document.getXmlFragment('default')
-        const pageCode = Number(pageId.split('page:')[1])
+        const pageCode = GQLID.fromKey(pageId)[0]
         const idxToRemove = frag
           .toArray()
           .findIndex(
