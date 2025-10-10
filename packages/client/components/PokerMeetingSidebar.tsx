@@ -8,6 +8,7 @@ import type {
 import useRouter from '~/hooks/useRouter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import {GQLID} from '../utils/GQLID'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import MeetingNavList from './MeetingNavList'
@@ -138,7 +139,7 @@ const PokerMeetingSidebar = (props: Props) => {
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
               const summaryURL = summaryPageId
-                ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+                ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
                 : `/new-summary/${meetingId}`
               history.push(summaryURL)
             }}

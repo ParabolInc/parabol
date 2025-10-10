@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventTeamPromptComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamPromptComplete_timelineEvent.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {GQLID} from '../utils/GQLID'
 import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import StyledLink from './StyledLink'
@@ -74,7 +75,7 @@ const TimelineEventTeamPromptComplete = (props: Props) => {
   const {id: orgId, viewerOrganizationUser} = organization
   const canUpgrade = !!viewerOrganizationUser
   const summaryURL = summaryPageId
-    ? `/pages/${Number(summaryPageId.split('page:')[1])}`
+    ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
     : `/new-summary/${meetingId}`
   const onUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
