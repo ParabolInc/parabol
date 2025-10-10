@@ -11,7 +11,7 @@ const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redi
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
-const {PORT, SOCKET_PORT, HOCUS_POCUS_PORT} = process.env
+const {PORT, SOCKET_PORT} = process.env
 
 const USE_REFRESH = false
 module.exports = {
