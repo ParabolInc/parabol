@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.1](https://github.com/ParabolInc/parabol/compare/v10.27.0...v10.27.1) (2025-10-10)
+
+
+### Changed
+
+* remove HOCUS_POCUS_PORT environment variable ([#12196](https://github.com/ParabolInc/parabol/issues/12196)) ([9c2fa6e](https://github.com/ParabolInc/parabol/commit/9c2fa6e140f5870871d8d8ad5362652da3d22c62))
+
 ## [10.27.0](https://github.com/ParabolInc/parabol/compare/v10.26.10...v10.27.0) (2025-10-09)
 
 
