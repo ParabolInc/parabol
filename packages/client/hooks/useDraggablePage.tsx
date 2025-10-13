@@ -12,11 +12,10 @@ import {
 } from '../mutations/useUpdatePageMutation'
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
+import {getCanonicalPageLinks} from '../shared/tiptap/getCanonicalPageLinks'
 import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
-
-import {makeEditorFromYDoc} from './useTipTapPageEditor'
 
 const makeDragRef = () => ({
   startY: null as number | null,
@@ -98,6 +97,7 @@ export const useDraggablePage = (
 
   const onPointerUp = useEventCallback((e: PointerEvent) => {
     e.preventDefault()
+    if (!drag.isDrag) return
     const dropCurrentTarget = document.elementFromPoint(e.clientX, e.clientY)
     const dropTarget = dropCurrentTarget?.closest('[data-drop-below], [data-drop-in]')
     if (!dropTarget) {
@@ -122,36 +122,39 @@ export const useDraggablePage = (
       // move within the same document
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
-      const frag = document.getXmlFragment('default')
       const pageCode = Number(pageId.split('page:')[1])
-      // Yjs doesn't support moves
-      // You cannot delete an item and then insert it elsewhere because once an object is deleted it is gone
-      // Prosemirror accomplishes moves by swapping the attributes of every item between source and target
-      // So, we convert this to an editor and let it create that transaction
-      const editor = makeEditorFromYDoc(document)
-      const children = frag.toArray()
-      const fromIdx = children.findIndex(
-        (child) =>
-          child instanceof Y.XmlElement &&
-          child.getAttribute('pageCode') === (pageCode as any) &&
-          child.getAttribute('canonical') === (true as any)
-      )
-      let toIdx: number | undefined
-      let curCanonIdx = -1
-      children.forEach((child, idx) => {
-        if (child instanceof Y.XmlElement && child.getAttribute('canonical') === (true as any)) {
-          curCanonIdx++
-          if (dropIdx === -1) {
-            // put it at the beginning
-            toIdx = toIdx === undefined ? idx : toIdx
-          } else if (dropIdx === null || curCanonIdx === dropIdx) {
-            // if we drop at the end, put it after the last one
-            // if we want to drop it after the current one, add 1 to it
-            toIdx = idx + 1
-          }
-        }
-      })
-      editor.commands.movePageLink({fromIndex: fromIdx, toIndex: toIdx!})
+      const children = getCanonicalPageLinks(document)
+      const fromNodeIdx = children.findIndex((child) => child.getAttribute('pageCode') === pageCode)
+      if (fromNodeIdx === -1) return
+      const fromNode = children.at(fromNodeIdx)!
+
+      // yjs nodes cannot be moved, only created and destroyed, so clone the old, delete the old, add the new
+      const nodeToMove = [
+        createPageLinkElement(
+          fromNode.getAttribute('pageCode') as number,
+          fromNode.getAttribute('title') as string
+        ) as Y.XmlElement
+      ]
+
+      // delete the old node first, but flag it as isMoving so it doesn't trigger side effects
+      fromNode.setAttribute('isMoving', true)
+      const parent = fromNode.parent as Y.XmlElement
+      const fromIdx = parent.toArray().findIndex((child) => child === fromNode)
+      parent.delete(fromIdx)
+
+      if (dropIdx === -1) {
+        // put it at the beginning
+        const dropTarget = children.at(0)!
+        const firstChildParent = dropTarget.parent as Y.XmlElement
+        const firstChildIdx = firstChildParent.toArray().findIndex((child) => child === dropTarget)
+        firstChildParent.insert(firstChildIdx, nodeToMove)
+      } else {
+        // if null, put after the last one, else, put after the dropIdx
+        const idx = dropIdx === null ? -1 : dropIdx
+        const dropTarget = children.at(idx) as Y.XmlElement
+        const dropTargetParent = dropTarget.parent as Y.XmlElement
+        dropTargetParent.insertAfter(dropTarget, nodeToMove)
+      }
       providerManager.unregister(targetParentPageId)
       cleanupDrag()
       return

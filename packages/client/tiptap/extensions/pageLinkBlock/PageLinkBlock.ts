@@ -7,11 +7,11 @@ import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlock
 import {PageLinkBlockView} from './PageLinkBlockView'
 
 declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    movePageLink: {
-      movePageLink: (params: {fromIndex: number; toIndex: number}) => ReturnType
-    }
-  }
+  // interface Commands<ReturnType> {
+  //   exampleMethod: {
+  //     exampleMethod: (params: {fromIndex: number; toIndex: number}) => ReturnType
+  //   }
+  // }
   interface Storage {
     pageLinkBlock: PageLinkBlockStorage
   }
@@ -38,39 +38,6 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
         ({commands}) => {
           const content = [{type: 'pageLinkBlock', attrs}, {type: 'paragraph'}] as JSONContent[]
           return commands.insertContent(content)
-        },
-      movePageLink:
-        ({fromIndex, toIndex}) =>
-        ({state, dispatch}) => {
-          const blocks = state.doc.content.content
-          const blockCount = blocks.length
-
-          if (fromIndex < 0 || fromIndex >= blockCount) {
-            console.error(`movePageLink: Invalid fromIndex ${fromIndex}`)
-            return false
-          }
-
-          const block = blocks[fromIndex]!
-
-          // Calculate delete range
-          const fromPos = blocks.slice(0, fromIndex).reduce((pos, node) => pos + node.nodeSize, 0)
-          const toDeleteEnd = fromPos + block.nodeSize
-
-          let tr = state.tr.replace(fromPos, toDeleteEnd, Slice.empty)
-
-          // Adjust toIndex if the delete shifts subsequent positions
-          let adjustedToIndex = toIndex > fromIndex ? toIndex - 1 : toIndex
-          adjustedToIndex = Math.max(0, Math.min(tr.doc.childCount, adjustedToIndex))
-
-          // Compute insertion position
-          const newBlocks = tr.doc.content.content
-          const insertPos = newBlocks
-            .slice(0, adjustedToIndex)
-            .reduce((pos, node) => pos + node.nodeSize, 0)
-
-          tr = tr.insert(insertPos, block.copy())
-          dispatch?.(tr)
-          return true
         }
     }
   },

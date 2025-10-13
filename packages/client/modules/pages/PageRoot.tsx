@@ -17,7 +17,8 @@ export const PageRoot = (props: Props) => {
   const {params} = match
   const {pageSlug} = params
   const pageCodeIdx = pageSlug.lastIndexOf('-')
-  const pageId = `page:${Number(pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1))}`
+  const pageCode = pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1)
+  const pageId = `page:${Number(pageCode)}`
 
   const queryRef = useQueryLoaderNow<PageEntryQuery>(pageQuery, {pageId})
   return (

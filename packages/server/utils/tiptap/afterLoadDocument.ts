@@ -10,6 +10,9 @@ import {createChildPage} from './createChildPage'
 import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
 import {movePageToNewParent} from './movePageToNewParent'
 
+// A same-document move consists of a delete followed by an add
+// We could get clever here & debounce delete calls & if an add call is received
+// for the same parent & child then cancel them both out
 const updateBacklinks = async (
   fromPageId: number,
   addToPageId?: number | null,

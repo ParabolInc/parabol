@@ -8,7 +8,7 @@ import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
 import {Focus, Placeholder} from '@tiptap/extensions'
-import {Editor, useEditor} from '@tiptap/react'
+import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
@@ -16,7 +16,6 @@ import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
 import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
-import type * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
@@ -175,37 +174,4 @@ export const useTipTapPageEditor = (
   usePageLinkPlaceholder(editor!, placeholderRef)
 
   return {editor}
-}
-
-export const makeEditorFromYDoc = (document: Y.Doc) => {
-  return new Editor({
-    extensions: [
-      Document.extend({
-        content: 'heading block*'
-      }),
-      StarterKit.configure({
-        document: false,
-        undoRedo: false,
-        link: false
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true
-      }),
-      Focus,
-      ImageUpload,
-      ImageBlock,
-      LoomExtension,
-      Mention.configure(mentionConfig),
-      Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-      Collaboration.configure({
-        document
-      }),
-      InsightsBlock,
-      PageLinkBlock.configure({yDoc: document}),
-      TaskBlock,
-      ThinkingBlock,
-      ResponseBlock
-    ]
-  })
 }
