@@ -65,7 +65,7 @@ export function createWSClient(atmosphere: Atmosphere) {
       },
       retryAttempts: 20,
       shouldRetry: () => {
-        if (!atmosphere.viewerId) return false
+        if (!atmosphere.authObj) return false
         return true
       },
       keepAlive: 10_000,

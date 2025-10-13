@@ -6,8 +6,6 @@ type UserLogInPayload {
 
 	userId: ID
 
-	role: AuthRoleEnum
-
 	"""
 	if a new user is created
 	"""

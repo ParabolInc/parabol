@@ -466,7 +466,7 @@ export enum ZIndex {
 }
 
 export enum AuthTokenRole {
-  SUPER_USER = 'SU'
+  SUPER_USER = 'su'
 }
 
 export enum SprintPokerDefaults {

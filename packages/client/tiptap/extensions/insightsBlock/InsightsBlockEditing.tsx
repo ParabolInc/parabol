@@ -126,7 +126,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       sink
     )
   }
-  if (!atmosphere.viewerId) {
+  if (!atmosphere.authObj) {
     return (
       <div className='font-semibold text-slate-700 text-sm'>Please login to generate insights</div>
     )

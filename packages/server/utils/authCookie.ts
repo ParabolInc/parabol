@@ -1,5 +1,4 @@
 import {CookieListItem, CookieStore, getCookieString} from '@whatwg-node/cookie-store'
-import {Threshold} from 'parabol-client/types/constEnums'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'
 import {sign} from 'jsonwebtoken'
@@ -19,9 +18,10 @@ const encodeClientAuthToken = (authToken: AuthToken) => {
   return sign(JSON.parse(JSON.stringify(authToken)), noSecret, {algorithm: 'none'})
 }
 
-const createCookies = (token: AuthToken | null, expires: number) => {
+const createCookies = (token: AuthToken | null) => {
   const serverValue = token ? encodeAuthToken(token) : ''
   const clientValue = token ? encodeClientAuthToken(token) : ''
+  const expires = token ? token.exp * 1000 : Date.now()
 
   return [{
     name: serverCookie,
@@ -43,25 +43,21 @@ const createCookies = (token: AuthToken | null, expires: number) => {
 
 export const setAuthCookie = (
   context: GQLContext,
-  authToken: AuthToken,
-  lifespan: number = Threshold.JWT_LIFESPAN
+  authToken: AuthToken
 ) => {
-  const cookies = createCookies(authToken, Date.now() + lifespan)
+  const cookies = createCookies(authToken)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)
   })
 }
 
-export const createCookieHeader = (
-  authToken: AuthToken,
-  lifespan: number = Threshold.JWT_LIFESPAN
-) => {
-  const cookies = createCookies(authToken, Date.now() + lifespan)
+export const createCookieHeader = (authToken: AuthToken) => {
+  const cookies = createCookies(authToken)
   return cookies.map(getCookieString).join(', ')
 }
 
 export const unsetAuthCookie = (context: GQLContext) => {
-  const cookies = createCookies(null, Date.now())
+  const cookies = createCookies(null)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)
   })

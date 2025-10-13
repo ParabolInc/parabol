@@ -668,6 +668,9 @@ importers:
       '@types/humanize-duration':
         specifier: 3.27.1
         version: 3.27.1
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/json2csv':
         specifier: ^4.4.0
         version: 4.5.1
@@ -680,9 +683,6 @@ importers:
       '@types/mousetrap':
         specifier: ^1.6.2
         version: 1.6.15
-      '@types/react':
-        specifier: 17.0.2
-        version: 17.0.2
       '@types/react-beautiful-dnd':
         specifier: ^11.0.3
         version: 11.0.11
@@ -6285,6 +6285,9 @@ packages:
 
   '@types/jest@29.5.14':
     resolution: {integrity: sha512-ZN+4sdnLUbo8EVvVc2ao0GFW6oVrQRPn4K2lglySj7APvSrgzxHiNNK99us4WDMi57xxA2yggblIAMNhXOotLQ==}
+
+  '@types/js-cookie@3.0.6':
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
 
   '@types/js-yaml@4.0.9':
     resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
@@ -20270,6 +20273,8 @@ snapshots:
     dependencies:
       expect: 29.7.0
       pretty-format: 29.7.0
+
+  '@types/js-cookie@3.0.6': {}
 
   '@types/js-yaml@4.0.9': {}
 
