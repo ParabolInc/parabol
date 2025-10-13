@@ -7,7 +7,6 @@ import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import type {
   NotificationSubscription$data,
-  NotificationSubscription as TNotificationSubscription
 } from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'

@@ -280,7 +280,6 @@ export default class Atmosphere extends Environment {
 
     const anotherTabIsOpen = await isAnotherParabolTabOpen()
     if (anotherTabIsOpen || justOpened) return
-    this.userId = null
     // since this is async, useAuthRoute will have already run
     window.location.href = '/'
   }
@@ -292,10 +291,7 @@ export default class Atmosphere extends Environment {
     }
     try {
       this.authObj = jwtDecode(authToken)
-      console.log('GEORG decoded token: ', this.authObj)
     } catch(e) {
-      console.error('GEORG error decoding token: ', e)
-
       this.authObj = null
       this.authToken = null
     }

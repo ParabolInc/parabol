@@ -20,7 +20,6 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   context
 ) => {
   const {dataLoader} = context
-  console.log('GEORG loginWithGoogle', code, invitationToken, pseudoId)
   const manager = await GoogleServerManager.init(code)
   const {id} = manager
   if (!id) {

@@ -20,17 +20,7 @@ module.exports = {
     allowedHosts: ['localhost', 'host.docker.internal'],
     server: 'https',
     client: {
-      logging: 'warn',
-      webSocketURL: {
-        pathname: '/dev-server-ws',
-        protocol: 'ws'
-      }
-    },
-    webSocketServer: {
-      type: 'ws',
-      options: {
-        path: '/dev-server-ws'
-      }
+      logging: 'warn'
     },
     static: [
       {
@@ -71,11 +61,6 @@ module.exports = {
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
       })),
-      {
-        context: '/ws',
-        target: `ws://localhost:${SOCKET_PORT}`,
-        ws: true
-      },
       {
         context: '/components',
         pathRewrite: {'^/components': ''},

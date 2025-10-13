@@ -1,8 +1,10 @@
 import type * as React from 'react'
 import {PALETTE} from '~/styles/paletteV3'
-import {ExternalLinks, LocalStorageKey} from '~/types/constEnums'
+import {ExternalLinks} from '~/types/constEnums'
 import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
+import {useAuthCookie} from '../../../hooks/useAuthCookie'
+import {getAuthCookie} from '../../../utils/authCookie'
 
 const tableStyle = {
   ...emailTableBase,
@@ -88,7 +90,9 @@ const makeFeatureRow = (featureIconFile: string, featureCopy: string, idx: numbe
 const CreateAccountSection = (props: {isDemo?: boolean; dataCy?: string}) => {
   const {isDemo, dataCy} = props
   if (!isDemo) return null
-  const isLoggedIn = localStorage.getItem(LocalStorageKey.USER_ID) !== null
+
+  const authCookie = useAuthCookie(window)
+  const isLoggedIn = authCookie !== null
   const primaryActionLabel = isLoggedIn ? 'Go to My Dashboard' : 'Create a Free Account'
   const primaryActionLink = isLoggedIn ? '/meetings' : '/create-account?from=demo'
   const copyLineOne = isLoggedIn
