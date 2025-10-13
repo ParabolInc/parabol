@@ -28,6 +28,17 @@ const isValidEmailInvitationToken = async (
   return true
 }
 
+const isBlockedDomain = async (domain: string) => {
+  const pg = getKysely()
+  const blockedDomain = await pg
+    .selectFrom('BlockedDomain')
+    .selectAll()
+    .where('domain', '=', domain)
+    .limit(1)
+    .executeTakeFirst()
+  return !!blockedDomain
+}
+
 const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   _source,
   {invitationToken, password, pseudoId, email: denormEmail, params},
@@ -63,7 +74,17 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   if (!nickname || !domain) {
     return {error: {message: 'Invalid email'}}
   }
-  const verifiedByInvite = await isValidEmailInvitationToken(email, invitationToken)
+  const [verifiedByInvite, domainBlocked] = await Promise.all([
+    isValidEmailInvitationToken(email, invitationToken),
+    isBlockedDomain(domain)
+  ])
+  if (domainBlocked) {
+    return {
+      error: {
+        message: `You are using a temporary email provider or your provider was marked because it had suspicious activity.\nPlease contact love@parabol.co if you think this is a mistake.`
+      }
+    }
+  }
   if (!verifiedByInvite) {
     const existingVerification = await pg
       .selectFrom('EmailVerification')
