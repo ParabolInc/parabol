@@ -53,11 +53,11 @@ export const pageRoles = {
 
 export interface PageSharedInviteProps {
   appOrigin: string
-  ownerName: string
+  ownerName: string | null
   ownerEmail: string
   ownerAvatar: string
   pageLink: string
-  pageName: string
+  pageName: string | null
   role: PageRoleEnum
   corsOptions: CorsOptions
 }
@@ -66,10 +66,11 @@ const PageSharedInvite = (props: PageSharedInviteProps) => {
   const {appOrigin, ownerName, ownerEmail, ownerAvatar, pageLink, pageName, role, corsOptions} =
     props
   const pageAccess = pageRoles[role] || 'view'
+  const owner = ownerName ? ownerName : ownerEmail
   return (
     <Layout maxWidth={544}>
       <EmailBlock innerMaxWidth={innerMaxWidth}>
-        <h1 style={emailHeadingStyle}>{ownerName} shared a page</h1>
+        <h1 style={emailHeadingStyle}>{owner} shared a page</h1>
         <p style={emailCopyStyle}>
           <table style={emailTableBase} width='100%'>
             <tbody>
@@ -84,50 +85,68 @@ const PageSharedInvite = (props: PageSharedInviteProps) => {
                   />
                 </td>
                 <td style={{paddingLeft: '18px'}}>
-                  <span style={boldStyle}>{ownerName}</span>
-                  {' ('}
-                  <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
-                    {ownerEmail}
-                  </a>
-                  {') has invited you to '}
+                  {ownerName ? (
+                    <>
+                      <span style={boldStyle}>{ownerName}</span>
+                      {' ('}
+                      <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
+                        {ownerEmail}
+                      </a>
+                      {')'}
+                    </>
+                  ) : (
+                    <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
+                      {ownerEmail}
+                    </a>
+                  )}
+                  {' has invited you to '}
                   <b>{pageAccess}</b>
-                  {' this page in Parabol.'}
+                  {` ${pageName ? 'this' : 'a'} page in Parabol.`}
                 </td>
               </tr>
             </tbody>
           </table>
-          <table
+          {pageName && (
+            <table
+              style={{
+                border: `2px solid ${PALETTE.SLATE_300}`,
+                borderRadius: '8px',
+                borderCollapse: 'separate',
+                marginTop: '16px',
+                padding: '4px'
+              }}
+              width='100%'
+            >
+              <tbody>
+                <tr>
+                  <td align='center' valign='middle' width='32px'>
+                    <DescriptionIcon
+                      style={{verticalAlign: 'middle', width: '24px', height: '24px'}}
+                    />
+                  </td>
+                  <td
+                    valign='baseline'
+                    style={{
+                      lineHeight: '20px',
+                      padding: '8px 0 6px',
+                      fontWeight: 600,
+                      color: PALETTE.SLATE_900
+                    }}
+                  >
+                    {pageName}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+          <Button
             style={{
-              border: `2px solid ${PALETTE.SLATE_300}`,
-              borderRadius: '8px',
-              borderCollapse: 'separate',
-              margin: '16px 0',
-              padding: '4px'
+              marginTop: '16px'
             }}
-            width='100%'
+            url={pageLink}
           >
-            <tbody>
-              <tr>
-                <td align='center' valign='middle' width='32px'>
-                  <DescriptionIcon
-                    style={{verticalAlign: 'middle', width: '24px', height: '24px'}}
-                  />
-                </td>
-                <td
-                  valign='baseline'
-                  style={{
-                    lineHeight: '20px',
-                    padding: '8px 0 6px',
-                    fontWeight: 600,
-                    color: PALETTE.SLATE_900
-                  }}
-                >
-                  {pageName}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <Button url={pageLink}>Open Page</Button>
+            Open Page
+          </Button>
         </p>
         <EmptySpace height={24} />
         <p style={emailCopyStyle}>

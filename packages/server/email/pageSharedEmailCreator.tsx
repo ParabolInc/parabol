@@ -11,8 +11,12 @@ const subjectLine = (ownerName: string): string =>
 const teamInviteText = (props: PageSharedInviteProps) => {
   const {ownerName, ownerEmail, pageName, pageLink, role} = props
   const pageAccess = pageRoles[role] || 'view'
+
+  const owner = ownerName ? `${ownerName} (${ownerEmail})` : ownerEmail
+  const page = pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'
+
   return `
-${ownerName} (${ownerEmail}) has invited you to ${pageAccess} this page in Parabol: ${pageName}
+${owner} has invited you to ${pageAccess} ${page}
 
 Open Page here: ${pageLink}
 
@@ -22,7 +26,7 @@ The Parabol Product Team
 }
 
 export default (props: PageSharedInviteProps) => {
-  const subject = subjectLine(props.ownerName)
+  const subject = subjectLine(props.ownerName ?? props.ownerEmail)
   return {
     subject,
     body: teamInviteText(props),
