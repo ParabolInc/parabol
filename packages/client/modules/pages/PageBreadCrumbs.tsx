@@ -17,7 +17,7 @@ const useSetCurrentPageAncestor = (pageId: string, ancestors: readonly {readonly
   const atmosphere = useAtmosphere()
   const lastPageIds = useRef<string[]>([])
   useEffect(() => {
-    const pageIds = [pageId, ...ancestors.map(({id}) => id).toReversed()]
+    const pageIds = [pageId, ...ancestors.map(({id}) => id).reverse()]
     commitLocalUpdate(atmosphere, (store) => {
       pageIds.forEach((pageId, idx) => {
         store.get(pageId)?.setValue(idx, 'currentPageAncestorDepth')

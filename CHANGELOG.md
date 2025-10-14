@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.2](https://github.com/ParabolInc/parabol/compare/v10.27.1...v10.27.2) (2025-10-14)
+
+
+### Fixed
+
+* toReversed is not a function ([#12204](https://github.com/ParabolInc/parabol/issues/12204)) ([683ee28](https://github.com/ParabolInc/parabol/commit/683ee2851552abc3093aeda90ff47a8c30f8b7f9))
+
+
+### Changed
+
+* reduced page invite email for new users ([#12207](https://github.com/ParabolInc/parabol/issues/12207)) ([d800cc9](https://github.com/ParabolInc/parabol/commit/d800cc92947c7651c7bbb08b16a08780ae0b6a52))
+
+## [10.27.1](https://github.com/ParabolInc/parabol/compare/v10.27.0...v10.27.1) (2025-10-10)
+
+
+### Changed
+
+* remove HOCUS_POCUS_PORT environment variable ([#12196](https://github.com/ParabolInc/parabol/issues/12196)) ([9c2fa6e](https://github.com/ParabolInc/parabol/commit/9c2fa6e140f5870871d8d8ad5362652da3d22c62))
+
 ## [10.27.0](https://github.com/ParabolInc/parabol/compare/v10.26.10...v10.27.0) (2025-10-09)
 
 

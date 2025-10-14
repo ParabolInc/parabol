@@ -23,13 +23,7 @@ import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {RedisServerAffinity} from './utils/tiptap/RedisServerAffinity'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 
-const {HOCUS_POCUS_PORT} = process.env
 const SERVER_ID = process.env.SERVER_ID!
-
-const port = Number(HOCUS_POCUS_PORT)
-if (isNaN(port) || port < 0 || port > 65536) {
-  throw new Error('Invalid Env Var: HOCUS_POCUS_PORT must be >= 0 and < 65536')
-}
 
 const pushGQLTitleUpdates = async (pageId: number) => {
   // This is necessary for titles of top-level items (shared, team, private) to propagate in real time
