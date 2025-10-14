@@ -1,6 +1,6 @@
 {
   "name": "parabol-mattermost-plugin",
-  "version": "10.27.1",
+  "version": "10.27.2",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Georg Bremer <github@dschoordsch.de>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/mattermost-plugin#readme",
