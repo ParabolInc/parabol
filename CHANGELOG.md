@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.3](https://github.com/ParabolInc/parabol/compare/v10.27.2...v10.27.3) (2025-10-14)
+
+
+### Fixed
+
+* bump happy-dom to v20 ([#12212](https://github.com/ParabolInc/parabol/issues/12212)) ([4f4931d](https://github.com/ParabolInc/parabol/commit/4f4931d3a16d98545815b455336a936226227dd4))
+* redirect to meeting summary page instead of /new-summary ([#12203](https://github.com/ParabolInc/parabol/issues/12203)) ([297463d](https://github.com/ParabolInc/parabol/commit/297463df352b22b7db73e0863142b275299fc13e))
+
 ## [10.27.2](https://github.com/ParabolInc/parabol/compare/v10.27.1...v10.27.2) (2025-10-14)
 
 
