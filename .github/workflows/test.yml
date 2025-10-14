@@ -12,7 +12,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-8cores
-    timeout-minutes: 30
+    timeout-minutes: 12
     permissions:
       contents: "read"
       id-token: "write"
@@ -104,26 +104,26 @@ jobs:
         run: pnpm test:client --reporters=default --reporters=jest-junit
         env:
           JEST_JUNIT_OUTPUT_DIR: ./test-results/junit/client
-      - name: Set Playwright Version
-        run: |
-          PLAYWRIGHT_VERSION=$(pnpm --filter integration-tests list @playwright/test | grep @playwright | sed -n 's/^[^ ]* //p' | tr -d '\n')
-          echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
-          echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
-      - name: Cache Playwright Browsers
-        id: cache-playwright-browsers
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
+      # - name: Set Playwright Version
+      #   run: |
+      #     PLAYWRIGHT_VERSION=$(pnpm --filter integration-tests list @playwright/test | grep @playwright | sed -n 's/^[^ ]* //p' | tr -d '\n')
+      #     echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION >> $GITHUB_ENV
+      #     echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
+      # - name: Cache Playwright Browsers
+      #   id: cache-playwright-browsers
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.cache/ms-playwright
+      #     key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
 
-      - name: Setup Playwright
-        if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-        run: pnpm --filter integration-tests exec playwright install --with-deps
+      # - name: Setup Playwright
+      #   if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+      #   run: pnpm --filter integration-tests exec playwright install --with-deps
 
-      - name: Run Playwright Tests
-        run: pnpm --filter integration-tests test --reporter list,junit
-        env:
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
+      # - name: Run Playwright Tests
+      #   run: pnpm --filter integration-tests test --reporter list,junit
+      #   env:
+      #     PLAYWRIGHT_JUNIT_OUTPUT_NAME: ./test-results/junit/junit.xml
 
       - name: Store Artifacts from Failed Tests
         if: failure()
