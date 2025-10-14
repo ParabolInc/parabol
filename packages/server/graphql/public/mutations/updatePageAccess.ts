@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
+import ms from 'ms'
 import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
@@ -14,6 +15,7 @@ import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
+import {DataLoaderWorker} from '../../graphql'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
 import {PAGE_ROLES} from '../rules/hasPageAccess'
 import publishNotification from './helpers/publishNotification'
@@ -22,6 +24,33 @@ const utmParams = {
   utm_source: 'shared page email',
   utm_medium: 'email',
   utm_campaign: 'invitations'
+}
+
+const isTrustworthy = async (dataLoader: DataLoaderWorker, userId: string) => {
+  const [viewer, highestTier] = await Promise.all([
+    dataLoader.get('users').loadNonNull(userId),
+    dataLoader.get('highestTierForUserId').load(userId)
+  ])
+  if (!highestTier) return false
+  if (highestTier !== 'starter') return true
+
+  if (viewer.createdAt < new Date(Date.now() - ms('30d'))) return false
+
+  const meetingMembers = await dataLoader.get('meetingMembersByUserId').load(userId)
+  if (meetingMembers.length < 3) return false
+
+  const pg = getKysely()
+  const colleagues = await pg
+    .selectFrom('TeamMember as ut')
+    .innerJoin('TeamMember as ot', 'ut.teamId', 'ot.teamId')
+    .where('ut.userId', '=', userId)
+    .where('ot.userId', '!=', userId)
+    .select('ot.userId')
+    .distinct()
+    .execute()
+  if (colleagues.length < 4) return false
+
+  return true
 }
 
 const getNextIsPrivate = async (
@@ -246,6 +275,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     }
     if (invitationEmail) {
       const viewer = await dataLoader.get('users').loadNonNull(viewerId)
+      const trustworthy = await isTrustworthy(dataLoader, viewerId)
       const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
         searchParams: {
           ...utmParams,
@@ -254,10 +284,10 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       })
       const {html, subject, body} = pageSharedEmailCreator({
         appOrigin,
-        ownerName: viewer.preferredName,
+        ownerName: trustworthy ? viewer.preferredName : null,
         ownerEmail: viewer.email,
         ownerAvatar: viewer.picture,
-        pageName: page.title ?? 'Untitled',
+        pageName: trustworthy ? (page.title ?? 'Untitled') : null,
         pageLink,
         role,
         corsOptions: EMAIL_CORS_OPTIONS
