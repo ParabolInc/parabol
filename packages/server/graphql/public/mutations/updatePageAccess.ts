@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
 import ms from 'ms'
-import {EMAIL_CORS_OPTIONS} from '../../../../client/types/cors'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
@@ -248,9 +247,11 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   // notifications
   if (role) {
     let invitationEmail: string | null = null
+    let newUser = false
 
     if (nextSubjectType === 'external') {
       invitationEmail = nextSubjectId
+      newUser = true
     }
     if (nextSubjectType === 'user') {
       const [user, notification] = await Promise.all([
@@ -279,18 +280,17 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
         searchParams: {
           ...utmParams,
-          email: invitationEmail
+          ...(newUser ? {email: invitationEmail} : {})
         }
       })
       const {html, subject, body} = pageSharedEmailCreator({
-        appOrigin,
         ownerName: trustworthy ? viewer.preferredName : null,
         ownerEmail: viewer.email,
         ownerAvatar: viewer.picture,
         pageName: trustworthy ? (page.title ?? 'Untitled') : null,
         pageLink,
         role,
-        corsOptions: EMAIL_CORS_OPTIONS
+        newUser
       })
       await getMailManager().sendEmail({
         to: invitationEmail,
