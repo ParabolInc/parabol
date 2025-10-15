@@ -68,7 +68,7 @@ const renderSuggestion =
 
       onExit() {
         document.removeEventListener('pointerdown', handlePointerDown)
-        component.element.remove()
+        component?.element?.remove()
         component?.destroy()
       }
     }
