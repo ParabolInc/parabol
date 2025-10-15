@@ -20,7 +20,7 @@ export const onAuthCookieChange = (global: Window, callback: (token: string | nu
   if (!cookieStore) {
     return
   }
-  cookieStore.addEventListener('change', (event) => {
+  return cookieStore.addEventListener('change', (event) => {
     const authCookieChange = event.changed.find(change => change.name === cookieName)
     if (authCookieChange) {
       const newValue = authCookieChange.value ?? null

@@ -31,8 +31,9 @@ import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
-;import {AuthToken} from './types/AuthToken'
-(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
+import {AuthToken} from './types/AuthToken'
+
+;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
 
 interface QuerySubscription {
@@ -99,7 +100,6 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
   _network: typeof Network
-  authToken: string | null = null
   authObj: AuthToken | null = null
   querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
@@ -285,15 +285,14 @@ export default class Atmosphere extends Environment {
   }
 
   private setAuthToken = async (authToken: string | null | undefined) => {
-    this.authToken = authToken || null
     if (!authToken) {
+      this.authObj = null
       return
     }
     try {
       this.authObj = jwtDecode(authToken)
-    } catch(e) {
+    } catch {
       this.authObj = null
-      this.authToken = null
     }
 
     /*
@@ -425,7 +424,6 @@ export default class Atmosphere extends Environment {
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
-    this.authToken = null
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!

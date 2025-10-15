@@ -1,7 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {getAuthCookie} from "../utils/authCookie";
 
-// with React 18 this should be simplified to `use(getAuthCookie())`
 export function useAuthCookie(global: Window): string | null {
   const pending = useRef<Promise<void> | null>(null)
   const [value, setValue] = useState<string | null>(null)

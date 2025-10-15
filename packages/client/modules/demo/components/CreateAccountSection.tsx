@@ -4,7 +4,6 @@ import {ExternalLinks} from '~/types/constEnums'
 import EmailBorderBottom from '../../email/components/SummaryEmail/MeetingSummaryEmail/EmailBorderBottom'
 import {emailFontFamily, emailPrimaryButtonStyle, emailTableBase} from '../../email/styles'
 import {useAuthCookie} from '../../../hooks/useAuthCookie'
-import {getAuthCookie} from '../../../utils/authCookie'
 
 const tableStyle = {
   ...emailTableBase,
