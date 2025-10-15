@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.4](https://github.com/ParabolInc/parabol/compare/v10.27.3...v10.27.4) (2025-10-15)
+
+
+### Fixed
+
+* crash when @-mentioning in reflections ([#12217](https://github.com/ParabolInc/parabol/issues/12217)) ([20e74e7](https://github.com/ParabolInc/parabol/commit/20e74e78d5fa5d73c0b11f26006e207accd8aae1))
+
+
+### Changed
+
+* update page shared invite email ([#12210](https://github.com/ParabolInc/parabol/issues/12210)) ([e6ec992](https://github.com/ParabolInc/parabol/commit/e6ec9928f05b36ffe1682f2c6a63569bd179830d))
+
 ## [10.27.3](https://github.com/ParabolInc/parabol/compare/v10.27.2...v10.27.3) (2025-10-14)
 
 
