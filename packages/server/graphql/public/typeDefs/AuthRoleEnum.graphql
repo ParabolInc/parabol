@@ -1,7 +1,0 @@
-"""
-Special authentication roles
-"""
-enum AuthRoleEnum {
-	SU
-	IMPERSONATE
-}

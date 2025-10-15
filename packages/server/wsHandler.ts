@@ -253,7 +253,6 @@ wsHandler.upgrade = (res, req, context) => {
   const ip =
     Buffer.from(res.getProxiedRemoteAddressAsText()).toString() ||
     Buffer.from(res.getRemoteAddressAsText()).toString()
-  headers['x-georg'] = 'foo'
 
   res.upgrade<UpgradeData & {ip: string}>(
     {

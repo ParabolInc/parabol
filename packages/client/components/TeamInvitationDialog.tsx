@@ -61,8 +61,8 @@ const TeamInvitationDialog = (props: Props) => {
     case 'expired':
       return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
   }
-  const {authToken} = atmosphere
-  if (authToken) {
+  const {authObj} = atmosphere
+  if (authObj) {
     return <TeamInvitationAccept invitationToken={invitationToken} />
   }
   if (ssoURL) {

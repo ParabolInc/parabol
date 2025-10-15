@@ -33,7 +33,6 @@ const SAMLRedirect = () => {
       if (!userId) {
         setError(error || 'Error logging in')
       } else {
-        //atmosphere.setViewer(userId)
         history.replace('/meetings')
       }
     }

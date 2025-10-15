@@ -84,7 +84,6 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     setAuthCookie(context, context.authToken)
     return {
       userId: viewerId,
-      role: context.authToken.rol,
       isNewUser: false
     }
   }
@@ -109,7 +108,6 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   setAuthCookie(context, context.authToken)
   return {
     userId,
-    role: context.authToken.rol,
     isNewUser: true
   }
 }
