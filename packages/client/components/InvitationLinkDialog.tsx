@@ -58,8 +58,8 @@ const InvitationLinkDialog = (props: Props) => {
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
-  const {authToken} = atmosphere
-  if (authToken) {
+  const {authObj} = atmosphere
+  if (authObj) {
     return <TeamInvitationAccept invitationToken={token} />
   }
   return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token} />

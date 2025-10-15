@@ -6,7 +6,7 @@ import generateUID from '../../../generateUID'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {setAuthCookie} from '../../../utils/authCookie'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import MicrosoftServerManager from '../../../utils/MicrosoftServerManager'
 import standardError from '../../../utils/standardError'
@@ -83,10 +83,10 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
       rol,
       tms: existingUser.tms
     })
+    setAuthCookie(context, context.authToken)
     return {
       userId: viewerId,
-      // create a brand new auth token using the tms in our DB
-      authToken: encodeAuthToken(context.authToken),
+      role: context.authToken.rol,
       isNewUser: false
     }
   }
@@ -109,9 +109,10 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
     pseudoId
   })
   context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader)
+  setAuthCookie(context, context.authToken)
   return {
     userId,
-    authToken: encodeAuthToken(context.authToken),
+    role: context.authToken.rol,
     isNewUser: true
   }
 }

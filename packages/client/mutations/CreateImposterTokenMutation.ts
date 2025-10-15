@@ -1,6 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {LocalStorageKey} from '~/types/constEnums'
 import type {CreateImposterTokenMutation as ICreateImposterTokenMutation} from '../__generated__/CreateImposterTokenMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {SimpleMutation} from '../types/relayMutations'
@@ -8,7 +7,6 @@ import getGraphQLError from '../utils/relay/getGraphQLError'
 
 graphql`
   fragment CreateImposterTokenMutation_agendaItem on CreateImposterTokenPayload {
-    authToken
     user {
       id
       email
@@ -50,10 +48,11 @@ const CreateImposterTokenMutation: SimpleMutation<ICreateImposterTokenMutation> 
         return
       }
       const {createImposterToken} = res
-      const {authToken} = createImposterToken
-      if (!authToken) return
-      atmosphere.close()
-      window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
+      const user = createImposterToken?.user
+      if (!user) {
+        onError(new Error('No user returned'))
+        return
+      }
       window.location.href = window.location.origin
     },
     onError

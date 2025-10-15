@@ -7,7 +7,6 @@ import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
 import type {
   NotificationSubscription$data,
-  NotificationSubscription as TNotificationSubscription
 } from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
@@ -198,11 +197,6 @@ const subscription = graphql`
   }
 `
 
-type NextHandler = OnNextHandler<
-  TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
-  OnNextHistoryContext
->
-
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
   NotificationSubscription_paymentRejected$data,
   OnNextHistoryContext
@@ -264,17 +258,11 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
   viewer?.setLinkedRecord(newFeature, 'newFeature')
 }
 
-const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
-  if (!payload) return
-  const {id} = payload as any
-  atmosphere.setAuthToken(id)
-}
-
 const invalidateSessionsNotificationOnNext: OnNextHandler<
   InvalidateSessionsMutation_notification$data,
   OnNextHistoryContext
 > = (_payload, {atmosphere, history}) => {
-  atmosphere.setAuthToken(null)
+  //atmosphere.setViewer(null)
   atmosphere.eventEmitter.emit('addSnackbar', {
     key: 'logOutJWT',
     message: 'You’ve been logged out from another device',
@@ -340,7 +328,6 @@ const updateHandlers = {
 } as const
 
 const onNextHandlers = {
-  AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,

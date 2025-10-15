@@ -1,3 +1,4 @@
+import {CookieStore} from '@whatwg-node/cookie-store'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
@@ -98,8 +99,12 @@ const dehydrateResult = (result: ExecutionResult) => {
 export const wsHandler = makeBehavior<{token?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
-    const token = connectionParams?.token
+    const cookieStore = new CookieStore(extra.persistedRequest.headers['cookie'] || '')
+    const cookieToken = (await cookieStore.get('__Host-Http-authToken'))?.value
+    const connectionToken = connectionParams?.token
+    const token = connectionToken || cookieToken
     if (!(typeof token === 'string')) return false
+
     const authToken = getVerifiedAuthToken(token)
     const {sub: userId, iat} = authToken
     const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)

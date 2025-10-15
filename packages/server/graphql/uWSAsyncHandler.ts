@@ -7,7 +7,7 @@ export type uWSHandler = (res: HttpResponse, req: HttpRequest) => Promise<void>
 const uWSAsyncHandler =
   (handler: uWSHandler, ignoreDone?: boolean) => async (res: HttpResponse, req: HttpRequest) => {
     safetyPatchRes(res)
-    const authToken = getReqAuth(req)
+    const authToken = await getReqAuth(req)
     try {
       await handler(res, req)
       if (!ignoreDone && !res.done) {

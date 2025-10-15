@@ -6,7 +6,7 @@ import generateUID from '../../../generateUID'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {setAuthCookie} from '../../../utils/authCookie'
 import GoogleServerManager from '../../../utils/GoogleServerManager'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import standardError from '../../../utils/standardError'
@@ -81,10 +81,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
       rol,
       tms: existingUser.tms
     })
+    setAuthCookie(context, context.authToken)
     return {
       userId: viewerId,
-      // create a brand new auth token using the tms in our DB
-      authToken: encodeAuthToken(context.authToken),
       isNewUser: false
     }
   }
@@ -106,9 +105,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     pseudoId
   })
   context.authToken = await bootstrapNewUser(newUser, !invitationToken, dataLoader)
+  setAuthCookie(context, context.authToken)
   return {
     userId,
-    authToken: encodeAuthToken(context.authToken),
     isNewUser: true
   }
 }

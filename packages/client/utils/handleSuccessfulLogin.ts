@@ -9,10 +9,10 @@ import safeIdentify from './safeIdentify'
 graphql`
   fragment handleSuccessfulLogin_UserLogInPayload on UserLogInPayload {
     userId
-    authToken
     isNewUser
     user {
       id
+      email
       tms
       isPatient0
       ...UserAnalyticsFrag @relay(mask: false)

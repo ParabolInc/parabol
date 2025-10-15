@@ -69,7 +69,6 @@ const DeleteAccountModal = () => {
       reason: validReason
     })
     setTimeout(() => {
-      atmosphere.setAuthToken(null)
       window.location.href = ExternalLinks.RESOURCES
     }, 100)
   }
