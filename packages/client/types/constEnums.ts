@@ -55,7 +55,7 @@ export enum Card {
 }
 
 export enum ContactInfo {
-  TELEPHONE = '612-227-5673',
+  TELEPHONE = '+1 772-519-7250',
   EMAIL_BILLING = 'billing@parabol.co',
   EMAIL_LOVE = 'love@parabol.co'
 }
