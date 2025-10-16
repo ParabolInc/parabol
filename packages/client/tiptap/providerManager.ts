@@ -34,7 +34,6 @@ class ProviderManager {
   register(documentName: string) {
     const existing = this.use(documentName)
     if (existing) return existing
-    console.log('register new', documentName)
     const doc = new Y.Doc()
     // this adds support for offline editing
     new IndexeddbPersistence(documentName, doc)
@@ -81,7 +80,6 @@ class ProviderManager {
     const prevProviderEntry = this.providers[documentName!]
     if (!prevProviderEntry) return
     if (prevProviderEntry.count === 0) {
-      console.log('destroy', documentName)
       prevProviderEntry.provider.destroy()
       delete this.providers[documentName!]
     }

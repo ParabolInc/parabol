@@ -102,7 +102,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'createOAuth1AuthorizeUrl',
         'deleteUser',
         'denyPushInvitation',
-        'disconnectSocket',
         'emailPasswordReset',
         'hardDeleteUser',
         'invalidateSessions',

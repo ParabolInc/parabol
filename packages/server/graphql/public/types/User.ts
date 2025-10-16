@@ -29,8 +29,8 @@ import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
-import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
@@ -313,9 +313,10 @@ const User: ReqResolvers<'User'> = {
     )
   },
 
-  isConnected: async ({id: userId}) => {
-    const redis = getRedis()
-    const socketCount = await redis.get(`awareness:${userId}`)
+  isConnected: async ({id: userId, isConnected}: {isConnected?: boolean; id: string}) => {
+    // isConnected is provided when the socket connects/disconnects
+    if (typeof isConnected === 'boolean') return isConnected
+    const socketCount = await getUserSocketCount(userId)
     return Number(socketCount) > 0
   },
 

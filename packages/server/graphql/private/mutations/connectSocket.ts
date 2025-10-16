@@ -1,13 +1,10 @@
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getRedis, {type RedisPipelineResponse} from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
-import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
-import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
@@ -22,7 +19,6 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   _args,
   {authToken, dataLoader, socketId}
 ) => {
-  const redis = getRedis()
   const now = new Date()
 
   // AUTH
@@ -39,7 +35,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   if (!user) {
     throw new Error('User does not exist')
   }
-  const {inactive, lastSeenAt, tms} = user
+  const {inactive, lastSeenAt} = user
 
   // no need to wait for this, it's just for billing
   if (inactive) {
@@ -55,31 +51,6 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       userId
     )
   }
-  const [[, socketCount]] = (await redis
-    .multi()
-    .incr(`awareness:${userId}`)
-    .pexpire(`awareness:${userId}`, 10_000)
-    .exec()) as [RedisPipelineResponse<number>, RedisPipelineResponse<number>]
-
-  // If this is the first socket, tell everyone they're online
-  if (socketCount === 1) {
-    const teamUserIds = (await dataLoader.get('teamMembersByTeamId').loadMany(tms))
-      .filter(isValid)
-      .flat()
-      .map((tm) => tm.userId)
-    const distinctTeamUserIds = [...new Set(teamUserIds)]
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId: socketId, operationId}
-    distinctTeamUserIds.forEach((userId) => {
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'User', user, subOptions)
-    })
-  }
-
-  analytics.websocketConnected(user, {
-    socketCount: socketCount || 0,
-    socketId,
-    tms
-  })
   analytics.identify({
     userId,
     email: user.email,
