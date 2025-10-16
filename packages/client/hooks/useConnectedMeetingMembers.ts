@@ -6,9 +6,6 @@ import {providerManager} from '../tiptap/providerManager'
 import {isNotNull} from '../utils/predicates'
 import useAtmosphere from './useAtmosphere'
 
-// this hook only needs to run once per meetingId, but can be used anywhere without reprocussion
-let activeCount = 0
-
 export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: boolean) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -16,8 +13,7 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
   const providerRef = useRef<HocuspocusProvider>()
 
   useEffect(() => {
-    if (!meetingId || activeCount > 0) return
-    activeCount++
+    if (!meetingId) return
     // viewer joins room
     const room = `meeting:${meetingId}`
     const provider = providerManager.register(room)
@@ -57,9 +53,10 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
     setConnectedUserIdsThunk()
 
     return () => {
-      activeCount--
       provider.awareness?.off('update', setConnectedUserIdsThunk)
-      providerManager.unregister(room, 100)
+      // when going from meeting to team dash, it takes awhile before MeetingCard calls this hook
+      // make sure we don't unregister until then
+      providerManager.unregister(room, 2000)
     }
   }, [meetingId])
 
