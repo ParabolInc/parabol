@@ -66,11 +66,21 @@ export const hocuspocus = new Hocuspocus({
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
     const userId = (request as Req).userId
-    const [dbId, , entity] = CipherId.fromClient(documentName)
-    if (entity === 'meeting') {
-      // TODO see if they're on the right team
+    if (documentName.startsWith('meeting:')) {
+      const [, meetingId] = documentName.split(':')
+      if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
+      if (!userId) throw new Error(`Meeting awareness requires a userId`)
+      const isOnTeam = await getKysely()
+        .selectFrom('NewMeeting')
+        .innerJoin('TeamMember', 'TeamMember.teamId', 'NewMeeting.teamId')
+        .select('TeamMember.userId')
+        .where('NewMeeting.id', '=', meetingId!)
+        .where('TeamMember.userId', '=', userId)
+        .executeTakeFirst()
+      if (!isOnTeam) throw new Error(`Meeting awareness requires being on the team`)
       return {userId}
     }
+    const [dbId] = CipherId.fromClient(documentName)
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()

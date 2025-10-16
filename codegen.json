@@ -172,7 +172,6 @@
           "RetrospectiveMeetingSettings": "../../postgres/types/index#RetrospectiveMeetingSettings as RetrospectiveMeetingSettingsDB",
           "SAML": "./types/SAML#SAMLSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
-          "SetAppLocationSuccess": "./types/SetAppLocationSuccess#SetAppLocationSuccessSource",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",

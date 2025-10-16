@@ -108,7 +108,6 @@ const NewMeetingAvatarGroup = (props: Props) => {
   )
 
   const {id: meetingId, team, meetingMembers} = meeting
-
   const {id: teamId, teamMembers} = team
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
 

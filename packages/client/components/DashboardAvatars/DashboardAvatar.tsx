@@ -44,7 +44,6 @@ const DashboardAvatar = (props: Props) => {
     throw new Error(`User Avatar unavailable. ${JSON.stringify(teamMember)}`)
   }
   const {isConnected, preferredName, picture} = user
-  console.log({preferredName, isConnected})
   const atmosphere = useAtmosphere()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
