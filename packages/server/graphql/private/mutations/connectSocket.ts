@@ -3,18 +3,12 @@ import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import getRedis from '../../../utils/getRedis'
+import getRedis, {type RedisPipelineResponse} from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
+import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
-
-export interface UserPresence {
-  lastSeenAtURL: string | null
-  socketInstanceId: string
-  socketId: string
-}
 
 const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
@@ -25,7 +19,7 @@ const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
 
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
-  {socketInstanceId},
+  _args,
   {authToken, dataLoader, socketId}
 ) => {
   const redis = getRedis()
@@ -61,27 +55,28 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       userId
     )
   }
-  const socketCount = await redis.rpush(
-    `presence:${userId}`,
-    JSON.stringify({
-      lastSeenAtURL: null,
-      socketInstanceId,
-      socketId
-    } as UserPresence)
-  )
+  const [[, socketCount]] = (await redis
+    .multi()
+    .incr(`awareness:${userId}`)
+    .pexpire(`awareness:${userId}`, 10_000)
+    .exec()) as [RedisPipelineResponse<number>, RedisPipelineResponse<number>]
 
   // If this is the first socket, tell everyone they're online
   if (socketCount === 1) {
-    const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)
+    const teamUserIds = (await dataLoader.get('teamMembersByTeamId').loadMany(tms))
+      .filter(isValid)
+      .flat()
+      .map((tm) => tm.userId)
+    const distinctTeamUserIds = [...new Set(teamUserIds)]
     const operationId = dataLoader.share()
     const subOptions = {mutatorId: socketId, operationId}
-    listeningUserIds.forEach((onlineUserId) => {
-      publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
+    distinctTeamUserIds.forEach((userId) => {
+      publish(SubscriptionChannel.NOTIFICATION, userId, 'User', user, subOptions)
     })
   }
 
   analytics.websocketConnected(user, {
-    socketCount,
+    socketCount: socketCount || 0,
     socketId,
     tms
   })

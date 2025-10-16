@@ -107,16 +107,13 @@ const Facilitator = (props: Props) => {
         endedAt
         facilitatorUserId
         meetingMembers {
-          user {
-            id
-            isConnected
-          }
+          isConnectedAt
+          userId
         }
         facilitator {
           user {
             picture
             preferredName
-            isConnected
           }
         }
       }
@@ -124,11 +121,10 @@ const Facilitator = (props: Props) => {
     meetingRef
   )
   const {endedAt, facilitatorUserId, meetingMembers, facilitator} = meeting
-  const connectedMemberIds = meetingMembers
-    .filter(({user}) => user.isConnected)
-    .map(({user}) => user.id)
+  const connectedMemberIds = meetingMembers.filter((mm) => mm.isConnectedAt).map((mm) => mm.userId)
+  const facilitatingMeetingMember = meetingMembers.find((mm) => mm.userId === facilitatorUserId)
   const {user} = facilitator
-  const {picture = '', preferredName = '', isConnected = false} = user ?? {}
+  const {picture = '', preferredName = ''} = user ?? {}
   const {togglePortal, menuProps, menuPortal, originRef, portalStatus} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT,
     {
@@ -154,7 +150,7 @@ const Facilitator = (props: Props) => {
         onMouseEnter={handleOnMouseEnter}
         ref={originRef}
       >
-        <AvatarBlock isConnected={isConnected}>
+        <AvatarBlock isConnected={!!facilitatingMeetingMember?.isConnectedAt}>
           <Avatar alt='' src={picture} />
         </AvatarBlock>
         <div>

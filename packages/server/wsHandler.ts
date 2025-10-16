@@ -1,3 +1,4 @@
+import type {WebSocket} from 'uWebSockets.js'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
@@ -17,6 +18,7 @@ import privateSchema from './graphql/private/rootSchema'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
+import getRedis from './utils/getRedis'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
 import {Logger} from './utils/Logger'
@@ -27,6 +29,7 @@ declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
     closed?: true
+    userId?: string
   }
   interface Extra {
     ip: string
@@ -95,154 +98,177 @@ const dehydrateResult = (result: ExecutionResult) => {
   const dehydratedData = {[subscriptionName]: fields}
   return {...rest, data: dehydratedData}
 }
-export const wsHandler = makeBehavior<{token?: string}>({
-  onConnect: async (ctx) => {
-    const {connectionParams, extra} = ctx
-    const token = connectionParams?.token
-    if (!(typeof token === 'string')) return false
-    const authToken = getVerifiedAuthToken(token)
-    const {sub: userId, iat} = authToken
-    const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
-    if (isBlacklistedJWT) return false
-    extra.authToken = authToken
-    const forwarded = extra.persistedRequest.headers['x-forwarded-for']
-    const clientIP =
-      typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
-    extra.ip = clientIP || extra.socket.ip
-    extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
-    extra.resubscribe = {}
-    extra.dataLoaders = {}
-    const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader('wsHandler.onConnect')
-    const {data} = await execute({
-      document: parse(connectQuery),
-      variableValues: {socketInstanceId: INSTANCE_ID},
-      schema: privateSchema,
-      contextValue: {
-        dataLoader,
-        ip: extra.ip,
-        authToken,
-        socketId: extra.socketId
-      }
-    })
-    dataLoader.dispose()
-    const tms = data?.connectSocket?.tms
-    const freshToken = setFreshTokenIfNeeded(extra, tms)
-    activeClients.set(extra.socketId, extra.socket)
-    return {version: __APP_VERSION__, authToken: freshToken}
-  },
-  async onNext(context, id, _payload, {contextValue}, result) {
-    const isSubscription = !!context.subscriptions[id]
-    if (!isSubscription) return result
-    const subResult = dehydrateResult(result)
-    const notificationSub = subResult.data?.notificationSubscription as
-      | {
-          AuthTokenPayload?: {id: string}
-          InvalidateSessionsPayload?: any
-        }
-      | undefined
-    const jwt = notificationSub?.AuthTokenPayload?.id
-    if (jwt) {
-      const {extra} = context
-      const {resubscribe} = extra
-      const nextAuthToken = new AuthToken(decode(jwt) as any)
-      extra.authToken = (contextValue as ServerContext).authToken = nextAuthToken
-      // wait for other payloads to get flushed to the client before resubscribing
-      setTimeout(() => {
-        Object.keys(resubscribe).forEach((key) => {
-          resubscribe[key]!()
-        })
-      }, 1000)
-    } else if (notificationSub?.InvalidateSessionsPayload) {
-      throw new GraphQLError('Session invalidated', {
-        extensions: {
-          code: 'SESSION_INVALIDATED'
+const socketTimers = new WeakMap<WebSocket<unknown>, ReturnType<typeof setTimeout>>()
+
+export const wsHandler = makeBehavior<{token?: string}>(
+  {
+    onConnect: async (ctx) => {
+      const {connectionParams, extra} = ctx
+      const token = connectionParams?.token
+      if (!(typeof token === 'string')) return false
+      const authToken = getVerifiedAuthToken(token)
+      const {sub: userId, iat} = authToken
+      const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
+      if (isBlacklistedJWT) return false
+      extra.authToken = authToken
+      extra.socket.userId = authToken.sub
+      const forwarded = extra.persistedRequest.headers['x-forwarded-for']
+      const clientIP =
+        typeof forwarded === 'string' ? forwarded.split(',').at(CLIENT_IP_POS)?.trim() : ''
+      extra.ip = clientIP || extra.socket.ip
+      extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
+      extra.resubscribe = {}
+      extra.dataLoaders = {}
+      const {execute, parse} = yoga.getEnveloped(ctx)
+      const dataLoader = getNewDataLoader('wsHandler.onConnect')
+      const {data} = await execute({
+        document: parse(connectQuery),
+        variableValues: {socketInstanceId: INSTANCE_ID},
+        schema: privateSchema,
+        contextValue: {
+          dataLoader,
+          ip: extra.ip,
+          authToken,
+          socketId: extra.socketId
         }
       })
-    }
-    return subResult
-  },
-  execute: (args) => {
-    return (args as EnvelopedExecutionArgs).rootValue.execute(args)
-  },
-  subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
-  onSubscribe: async (ctx, id, params) => {
-    const {extra} = ctx
-    const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, parse} = yoga.getEnveloped(ctx)
-    const docId = extractPersistedOperationId(params as any)
-    const query = await getPersistedOperation(docId!)
-    const document = parse(query)
-    const rateLimiter = getRateLimiter()
-    const isSubscription = docId.startsWith('s')
+      dataLoader.dispose()
+      const tms = data?.connectSocket?.tms
+      const freshToken = setFreshTokenIfNeeded(extra, tms)
+      activeClients.set(extra.socketId, extra.socket)
+      return {version: __APP_VERSION__, authToken: freshToken}
+    },
+    async onNext(context, id, _payload, {contextValue}, result) {
+      const isSubscription = !!context.subscriptions[id]
+      if (!isSubscription) return result
+      const subResult = dehydrateResult(result)
+      const notificationSub = subResult.data?.notificationSubscription as
+        | {
+            AuthTokenPayload?: {id: string}
+            InvalidateSessionsPayload?: any
+          }
+        | undefined
+      const jwt = notificationSub?.AuthTokenPayload?.id
+      if (jwt) {
+        const {extra} = context
+        const {resubscribe} = extra
+        const nextAuthToken = new AuthToken(decode(jwt) as any)
+        extra.authToken = (contextValue as ServerContext).authToken = nextAuthToken
+        // wait for other payloads to get flushed to the client before resubscribing
+        setTimeout(() => {
+          Object.keys(resubscribe).forEach((key) => {
+            resubscribe[key]!()
+          })
+        }, 1000)
+      } else if (notificationSub?.InvalidateSessionsPayload) {
+        throw new GraphQLError('Session invalidated', {
+          extensions: {
+            code: 'SESSION_INVALIDATED'
+          }
+        })
+      }
+      return subResult
+    },
+    execute: (args) => {
+      return (args as EnvelopedExecutionArgs).rootValue.execute(args)
+    },
+    subscribe: (args) => (args as EnvelopedExecutionArgs).rootValue.subscribe(args),
+    onSubscribe: async (ctx, id, params) => {
+      const {extra} = ctx
+      const {ip, authToken, socketId, resubscribe} = extra
+      const {schema, execute, subscribe, parse} = yoga.getEnveloped(ctx)
+      const docId = extractPersistedOperationId(params as any)
+      const query = await getPersistedOperation(docId!)
+      const document = parse(query)
+      const rateLimiter = getRateLimiter()
+      const isSubscription = docId.startsWith('s')
 
-    if (isSubscription) {
-      resubscribe[id] = async () => {
-        const oldSub = ctx.subscriptions[id]
-        delete ctx.subscriptions[id]
-        if (!oldSub || !('return' in oldSub)) return
-        await oldSub.return(undefined)
-        const encoder = new TextEncoder()
-        const arrayBuffer = encoder.encode(JSON.stringify({type: 'subscribe', id, payload: params}))
-          .buffer as ArrayBuffer
-        // wait a tick for the old subscriptions to get removed before starting them again
-        await sleep(1)
-        if (!ctx.extra.socket.closed) {
-          wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+      if (isSubscription) {
+        resubscribe[id] = async () => {
+          const oldSub = ctx.subscriptions[id]
+          delete ctx.subscriptions[id]
+          if (!oldSub || !('return' in oldSub)) return
+          await oldSub.return(undefined)
+          const encoder = new TextEncoder()
+          const arrayBuffer = encoder.encode(
+            JSON.stringify({type: 'subscribe', id, payload: params})
+          ).buffer as ArrayBuffer
+          // wait a tick for the old subscriptions to get removed before starting them again
+          await sleep(1)
+          if (!ctx.extra.socket.closed) {
+            wsHandler?.message?.(ctx.extra.socket, arrayBuffer, false)
+          }
+        }
+      } else {
+        // subscribe functions don't need a dataloader since they just kickstart an async iterator
+        if (extra.dataLoaders[id]) {
+          Logger.error('Overwriting an existing dataloader on wsHandler.onSubscribe')
+        }
+        extra.dataLoaders[id] = getNewDataLoader('wsHandler.onSubscribe')
+      }
+      const args: EnvelopedExecutionArgs = {
+        schema: authToken.rol === 'su' ? privateSchema : schema,
+        operationName: params.operationName,
+        document,
+        variableValues: params.variables,
+        // dataLoader will be null for subscriptions
+        contextValue: {
+          dataLoader: extra.dataLoaders[id] || null,
+          rateLimiter,
+          ip,
+          authToken,
+          socketId
+        },
+        rootValue: {
+          execute,
+          subscribe
         }
       }
-    } else {
-      // subscribe functions don't need a dataloader since they just kickstart an async iterator
-      if (extra.dataLoaders[id]) {
-        Logger.error('Overwriting an existing dataloader on wsHandler.onSubscribe')
-      }
-      extra.dataLoaders[id] = getNewDataLoader('wsHandler.onSubscribe')
+      return args
+    },
+    onComplete: (ctx, id) => {
+      const {extra} = ctx
+      const {dataLoaders} = extra
+      dataLoaders[id]?.dispose()
+      delete dataLoaders[id]
+    },
+    onDisconnect: async (ctx) => {
+      const {extra} = ctx
+      const {authToken, socketId, socket} = extra
+      socketTimers.delete(socket)
+      const {sub: userId} = authToken
+      Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
+      extra.dataLoaders = {}
+      activeClients.delete(extra.socketId)
+      const {execute, parse} = yoga.getEnveloped(ctx)
+      const dataLoader = getNewDataLoader('wsHandler.onDisconnect')
+      extra.socket.closed = true
+      await execute({
+        document: parse(disconnectQuery),
+        variableValues: {userId, socketId},
+        schema: privateSchema,
+        contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
+      })
+      dataLoader.dispose()
     }
-    const args: EnvelopedExecutionArgs = {
-      schema: authToken.rol === 'su' ? privateSchema : schema,
-      operationName: params.operationName,
-      document,
-      variableValues: params.variables,
-      // dataLoader will be null for subscriptions
-      contextValue: {
-        dataLoader: extra.dataLoaders[id] || null,
-        rateLimiter,
-        ip,
-        authToken,
-        socketId
-      },
-      rootValue: {
-        execute,
-        subscribe
-      }
+  },
+  {
+    message(socket) {
+      // graphql-ws doesn't expose the "WebSocket" they use that requires the onPing method
+      // So instead of refreshing Redis on ping, we do it every max 8 seconds
+      // That way we don't have to sniff what's in the message
+      const existing = socketTimers.get(socket)
+      if (existing) clearTimeout(existing)
+      const timer = setTimeout(() => {
+        socketTimers.delete(socket)
+        const {userId, closed} = socket as WebSocket<any> & UpgradeData
+        if (closed) return
+        getRedis().pexpire(`awareness:${userId}`, 10_000)
+      }, 8_000)
+      socketTimers.set(socket, timer)
     }
-    return args
-  },
-  onComplete: (ctx, id) => {
-    const {extra} = ctx
-    const {dataLoaders} = extra
-    dataLoaders[id]?.dispose()
-    delete dataLoaders[id]
-  },
-  onDisconnect: async (ctx) => {
-    const {extra} = ctx
-    const {authToken, socketId} = extra
-    const {sub: userId} = authToken
-    Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
-    extra.dataLoaders = {}
-    activeClients.delete(extra.socketId)
-    const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader('wsHandler.onDisconnect')
-    extra.socket.closed = true
-    await execute({
-      document: parse(disconnectQuery),
-      variableValues: {userId, socketId},
-      schema: privateSchema,
-      contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
-    })
-    dataLoader.dispose()
   }
-})
+)
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
 wsHandler.upgrade = (res, req, context) => {

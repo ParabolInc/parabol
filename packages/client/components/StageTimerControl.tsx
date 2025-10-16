@@ -28,9 +28,7 @@ const StageTimerControl = (props: Props) => {
       fragment StageTimerControl_meeting on NewMeeting {
         id
         meetingMembers {
-          user {
-            isConnected
-          }
+          isConnectedAt
         }
         localStage {
           ...StageTimerControlStage @relay(mask: false)
@@ -49,7 +47,7 @@ const StageTimerControl = (props: Props) => {
   )
   const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
   const {isAsync} = localStage
-  const connectedMemberCount = meetingMembers.filter((member) => member.user.isConnected).length
+  const connectedMemberCount = meetingMembers.filter((member) => member.isConnectedAt).length
   const color = 'green'
   const icon = isAsync ? 'event' : 'timer'
   const label = isAsync ? MeetingLabels.TIME_LIMIT : MeetingLabels.TIMER

@@ -1,9 +1,8 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {analytics} from '../../../utils/analytics/analytics'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
-import type {UserPresence} from '../../private/mutations/connectSocket'
+import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
@@ -14,43 +13,31 @@ const disconnectSocket: MutationResolvers['disconnectSocket'] = async (
   const redis = getRedis()
 
   // RESOLUTION
-  const [user, userPresence] = await Promise.all([
+  const [user, socketCount] = await Promise.all([
     dataLoader.get('users').load(userId),
-    redis.lrange(`presence:${userId}`, 0, -1)
+    redis.decr(`awareness:${userId}`)
   ])
   if (!user) {
     // user could've been deleted & then key not wiped
-    await redis.del(`presence:${userId}`)
+    await redis.del(`awareness:${userId}`)
     throw new Error(`User does not exist: ${userId}`)
   }
   const tms = user.tms ?? []
-  const disconnectingSocket = userPresence.find(
-    (socket) => (JSON.parse(socket) as UserPresence).socketId === socketId
-  )
-  if (!disconnectingSocket) {
-    // this happens a lot on server restart in dev mode
-    if (!__PRODUCTION__) return {user}
-    throw new Error(`Called disconnect without a valid socket: ${socketId}`)
-  }
-  await redis.lrem(`presence:${userId}`, 0, disconnectingSocket)
-
   // If this is the last socket, tell everyone they're offline
-  if (userPresence.length === 1) {
-    const listeningUserIds = await getListeningUserIds(RedisCommand.REMOVE, tms, userId)
+  if (socketCount <= 0) {
+    const teamUserIds = (await dataLoader.get('teamMembersByTeamId').loadMany(tms))
+      .filter(isValid)
+      .flat()
+      .map((tm) => tm.userId)
+    const distinctTeamUserIds = [...new Set(teamUserIds)]
     const subOptions = {mutatorId: socketId}
     const data = {user}
-    listeningUserIds.forEach((onlineUserId) => {
-      publish(
-        SubscriptionChannel.NOTIFICATION,
-        onlineUserId,
-        'DisconnectSocketPayload',
-        data,
-        subOptions
-      )
+    distinctTeamUserIds.forEach((userId) => {
+      publish(SubscriptionChannel.NOTIFICATION, userId, 'DisconnectSocketPayload', data, subOptions)
     })
   }
   analytics.websocketDisconnected(user, {
-    socketCount: userPresence.length,
+    socketCount: socketCount + 1,
     socketId,
     tms
   })

@@ -315,8 +315,8 @@ const User: ReqResolvers<'User'> = {
 
   isConnected: async ({id: userId}) => {
     const redis = getRedis()
-    const connectedSocketsCount = await redis.llen(`presence:${userId}`)
-    return connectedSocketsCount > 0
+    const socketCount = await redis.get(`awareness:${userId}`)
+    return Number(socketCount) > 0
   },
 
   isPatientZero: ({isPatient0}) => isPatient0,
@@ -453,12 +453,7 @@ const User: ReqResolvers<'User'> = {
     return newFeatureId ? dataLoader.get('newFeatures').loadNonNull(newFeatureId) : null
   },
 
-  lastSeenAtURLs: async ({id: userId}) => {
-    const redis = getRedis()
-    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    if (!userPresence || userPresence.length === 0) return null
-    return userPresence.map((socket) => JSON.parse(socket).lastSeenAtURL)
-  },
+  lastSeenAtURLs: () => [],
 
   meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = toTeamMemberId(meetingId, userId)

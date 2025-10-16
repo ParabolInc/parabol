@@ -103,7 +103,7 @@ export default {
     dataLoader.clearAll('tasks')
     const newTask = await dataLoader.get('tasks').loadNonNull(taskId)
     // TODO: get users in the same location
-    const usersToIgnore = await getUsersToIgnore(viewerId, teamId)
+    const usersToIgnore = await getUsersToIgnore(newTask.meetingId)
 
     // send task updated messages
     const isPrivate = newTask.tags.includes('private')

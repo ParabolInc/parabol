@@ -7,7 +7,7 @@ import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import tracer from 'dd-trace'
 import {pack, unpack} from 'msgpackr'
-import {encodeStateAsUpdate} from 'yjs'
+import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
@@ -66,7 +66,11 @@ export const hocuspocus = new Hocuspocus({
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
     const userId = (request as Req).userId
-    const [dbId] = CipherId.fromClient(documentName)
+    const [dbId, , entity] = CipherId.fromClient(documentName)
+    if (entity === 'meeting') {
+      // TODO see if they're on the right team
+      return {userId}
+    }
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()
@@ -99,7 +103,10 @@ export const hocuspocus = new Hocuspocus({
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({documentName}) => {
-        const [dbId] = CipherId.fromClient(documentName)
+        const [dbId, , entity] = CipherId.fromClient(documentName)
+        if (entity === 'meeting') {
+          return Buffer.from(encodeStateAsUpdate(new Doc()))
+        }
         const pg = getKysely()
         const res = await pg
           .selectFrom('Page')
@@ -120,7 +127,8 @@ export const hocuspocus = new Hocuspocus({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [dbId] = CipherId.fromClient(documentName)
+        const [dbId, , entity] = CipherId.fromClient(documentName)
+        if (entity === 'meeting') return
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const {updatedTitle} = await tracer.trace(

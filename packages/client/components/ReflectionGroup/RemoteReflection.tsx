@@ -197,10 +197,8 @@ const RemoteReflection = (props: Props) => {
           phaseType
         }
         meetingMembers {
+          isConnectedAt
           userId
-          user {
-            isConnected
-          }
         }
       }
     `,
@@ -244,7 +242,7 @@ const RemoteReflection = (props: Props) => {
   useEffect(() => {
     if (!remoteDrag || !meeting) return
     const remoteDragUser = meetingMembers.find((user) => user.userId === remoteDrag.dragUserId)
-    if (!remoteDragUser || !remoteDragUser.user.isConnected) {
+    if (!remoteDragUser || !remoteDragUser.isConnectedAt) {
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)!
         reflection.setValue(true, 'isDropping')

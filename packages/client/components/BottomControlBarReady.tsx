@@ -88,10 +88,7 @@ const BottomControlBarReady = (props: Props) => {
         meetingMembers {
           id
           userId
-          user {
-            isConnected
-            lastSeenAtURLs
-          }
+          isConnectedAt
         }
         phases {
           stages {
@@ -109,10 +106,7 @@ const BottomControlBarReady = (props: Props) => {
 
   const connectedMeetingMembers = useMemo(() => {
     return meetingMembers.filter(
-      (meetingMember) =>
-        meetingMember.userId === viewerId ||
-        (meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
-          meetingMember.user.isConnected)
+      (meetingMember) => meetingMember.userId === viewerId || meetingMember.isConnectedAt
     )
   }, [meetingMembers])
   const activeCount = connectedMeetingMembers.length
