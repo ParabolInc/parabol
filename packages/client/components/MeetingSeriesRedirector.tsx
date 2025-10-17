@@ -15,7 +15,6 @@ const MeetingSeriesRedirector = (props: Props) => {
     graphql`
       query MeetingSeriesRedirectorQuery($meetingId: ID!) {
         viewer {
-          isConnected
           canAccessMeeting: canAccess(entity: Meeting, id: $meetingId)
           meeting(meetingId: $meetingId) {
             ... on TeamPromptMeeting {
