@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.5](https://github.com/ParabolInc/parabol/compare/v10.27.4...v10.27.5) (2025-10-17)
+
+
+### Fixed
+
+* add TTL to awareness ([#12221](https://github.com/ParabolInc/parabol/issues/12221)) ([38654b2](https://github.com/ParabolInc/parabol/commit/38654b2b6a2d9709da3b0bd04e32c26c4a3f435b))
+
 ## [10.27.4](https://github.com/ParabolInc/parabol/compare/v10.27.3...v10.27.4) (2025-10-15)
 
 
