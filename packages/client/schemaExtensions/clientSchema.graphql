@@ -182,3 +182,23 @@ extend type Query {
 	# True iff it's the first time the viewer has logged in.
 	isNewUser: Boolean
 }
+
+extend type TeamPromptMeetingMember {
+	isConnectedAt: DateTime
+}
+
+extend type ActionMeetingMember {
+	isConnectedAt: DateTime
+}
+
+extend type RetrospectiveMeetingMember {
+	isConnectedAt: DateTime
+}
+
+extend type PokerMeetingMember {
+	isConnectedAt: DateTime
+}
+
+extend interface MeetingMember {
+	isConnectedAt: DateTime
+}

@@ -9,8 +9,7 @@ import type {Resolvers} from './resolverTypes'
 const permissionMap: PermissionMap<Resolvers> = {
   Mutation: {
     '*': isSuperUser,
-    connectSocket: allow,
-    disconnectSocket: allow
+    connectSocket: allow
   },
   Query: {
     '*': isSuperUser

@@ -29,8 +29,8 @@ import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
-import getRedis from '../../../utils/getRedis'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
+import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
@@ -313,10 +313,11 @@ const User: ReqResolvers<'User'> = {
     )
   },
 
-  isConnected: async ({id: userId}) => {
-    const redis = getRedis()
-    const connectedSocketsCount = await redis.llen(`presence:${userId}`)
-    return connectedSocketsCount > 0
+  isConnected: async ({id: userId, isConnected}: {isConnected?: boolean; id: string}) => {
+    // isConnected is provided when the socket connects/disconnects
+    if (typeof isConnected === 'boolean') return isConnected
+    const socketCount = await getUserSocketCount(userId)
+    return Number(socketCount) > 0
   },
 
   isPatientZero: ({isPatient0}) => isPatient0,
@@ -453,12 +454,7 @@ const User: ReqResolvers<'User'> = {
     return newFeatureId ? dataLoader.get('newFeatures').loadNonNull(newFeatureId) : null
   },
 
-  lastSeenAtURLs: async ({id: userId}) => {
-    const redis = getRedis()
-    const userPresence = await redis.lrange(`presence:${userId}`, 0, -1)
-    if (!userPresence || userPresence.length === 0) return null
-    return userPresence.map((socket) => JSON.parse(socket).lastSeenAtURL)
-  },
+  lastSeenAtURLs: () => [],
 
   meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = toTeamMemberId(meetingId, userId)

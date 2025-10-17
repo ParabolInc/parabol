@@ -1,20 +1,11 @@
-import {InvoiceItemType, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {InvoiceItemType} from 'parabol-client/types/constEnums'
 import adjustUserCount from '../../../billing/helpers/adjustUserCount'
 import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import getListeningUserIds, {RedisCommand} from '../../../utils/getListeningUserIds'
-import getRedis from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
-import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
 import type {MutationResolvers} from '../resolverTypes'
-
-export interface UserPresence {
-  lastSeenAtURL: string | null
-  socketInstanceId: string
-  socketId: string
-}
 
 const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
@@ -25,10 +16,9 @@ const handleInactive = async (userId: string, dataLoader: DataLoaderWorker) => {
 
 const connectSocket: MutationResolvers['connectSocket'] = async (
   _source,
-  {socketInstanceId},
+  _args,
   {authToken, dataLoader, socketId}
 ) => {
-  const redis = getRedis()
   const now = new Date()
 
   // AUTH
@@ -45,7 +35,7 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
   if (!user) {
     throw new Error('User does not exist')
   }
-  const {inactive, lastSeenAt, tms} = user
+  const {inactive, lastSeenAt} = user
 
   // no need to wait for this, it's just for billing
   if (inactive) {
@@ -61,30 +51,6 @@ const connectSocket: MutationResolvers['connectSocket'] = async (
       userId
     )
   }
-  const socketCount = await redis.rpush(
-    `presence:${userId}`,
-    JSON.stringify({
-      lastSeenAtURL: null,
-      socketInstanceId,
-      socketId
-    } as UserPresence)
-  )
-
-  // If this is the first socket, tell everyone they're online
-  if (socketCount === 1) {
-    const listeningUserIds = await getListeningUserIds(RedisCommand.ADD, tms, userId)
-    const operationId = dataLoader.share()
-    const subOptions = {mutatorId: socketId, operationId}
-    listeningUserIds.forEach((onlineUserId) => {
-      publish(SubscriptionChannel.NOTIFICATION, onlineUserId, 'User', user, subOptions)
-    })
-  }
-
-  analytics.websocketConnected(user, {
-    socketCount,
-    socketId,
-    tms
-  })
   analytics.identify({
     userId,
     email: user.email,

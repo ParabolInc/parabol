@@ -9,7 +9,6 @@ interface Input {
   email: string
   favoriteTemplateIds?: string[]
   lastSeenAt?: Date
-  lastSeenAtURLs?: string[]
   updatedAt?: Date
   picture: string
   inactive?: boolean
@@ -27,7 +26,6 @@ export default class User {
   email: string
   favoriteTemplateIds: string[]
   lastSeenAt: Date
-  lastSeenAtURLs: string[] | null
   updatedAt: Date
   newFeatureId?: number | null
   overLimitCopy?: string | null
@@ -52,7 +50,6 @@ export default class User {
       updatedAt,
       favoriteTemplateIds,
       lastSeenAt,
-      lastSeenAtURLs,
       identities,
       inactive,
       isWatched,
@@ -72,7 +69,6 @@ export default class User {
     this.inactive = inactive || false
     this.isWatched = isWatched || false
     this.lastSeenAt = lastSeenAt ?? new Date()
-    this.lastSeenAtURLs = lastSeenAtURLs ?? null
     this.preferredName = preferredName.trim().slice(0, USER_PREFERRED_NAME_LIMIT)
     this.pseudoId = pseudoId ?? undefined
     this.sendSummaryEmail = sendSummaryEmail ?? true

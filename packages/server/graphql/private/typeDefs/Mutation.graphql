@@ -141,19 +141,6 @@ type Mutation {
 	"""
 	profileCPU: String
 
-	"""
-	a server-side mutation called when a client disconnects
-	"""
-	disconnectSocket(
-		"""
-		the userId to disconnect
-		"""
-		userId: ID!
-		"""
-		the socketId of the user that disconnected
-		"""
-		socketId: ID!
-	): DisconnectSocketPayload
 
 	"""
 	Create a stripe customer & subscription in stripe, send them an invoice for an enterprise license

@@ -27,11 +27,7 @@ const StyledHeader = styled(PhaseHeaderTitle)({
   overflowWrap: 'break-word'
 })
 
-const getQuestion = (
-  isConnected: boolean | null | undefined,
-  taskCount: number,
-  preferredName: string
-) => {
+const getQuestion = (isConnected: boolean, taskCount: number, preferredName: string) => {
   if (isConnected) {
     return taskCount > 0 ? 'what’s changed with your tasks?' : 'what are you working on?'
   }
@@ -56,10 +52,10 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
         }
         meetingMembers {
           ...ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember
+          isConnectedAt
           user {
             picture
             preferredName
-            isConnected
           }
           teamMember {
             id
@@ -84,10 +80,10 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
     (meetingMember) => meetingMember.teamMember.id === localStage.teamMemberId
   )
   if (!currentMeetingMember) return null
-  const {teamMember, user} = currentMeetingMember
+  const {teamMember, user, isConnectedAt} = currentMeetingMember
   const {isSelf: isViewerMeetingSection} = teamMember
-  const {picture, preferredName, isConnected} = user
-  const prefix = isConnected ? `${preferredName}, ` : ''
+  const {picture, preferredName} = user
+  const prefix = isConnectedAt ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (
     <StyledPrompt>
@@ -95,7 +91,7 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
       <PromptText>
         <StyledHeader className='max-w-full'>
           {prefix}
-          <i>{getQuestion(isConnected, taskCount, preferredName)}</i>
+          <i>{getQuestion(!!isConnectedAt, taskCount, preferredName)}</i>
         </StyledHeader>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}

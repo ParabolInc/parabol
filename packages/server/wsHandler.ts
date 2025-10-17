@@ -5,7 +5,7 @@ import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
 import {isEqualWhenSerialized} from '../client/shared/isEqualWhenSerialized'
-import {Threshold} from '../client/types/constEnums'
+import {SubscriptionChannel, Threshold} from '../client/types/constEnums'
 import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
@@ -14,12 +14,16 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
+import {analytics} from './utils/analytics/analytics'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import encodeAuthToken from './utils/encodeAuthToken'
 import {fromEpochSeconds} from './utils/epochTime'
+import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
+import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {INSTANCE_ID} from './utils/instanceId'
 import {Logger} from './utils/Logger'
+import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
 import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
 
@@ -51,15 +55,6 @@ const connectQuery = `
 mutation ConnectSocket($socketInstanceId: ID!) {
   connectSocket(socketInstanceId: $socketInstanceId) {
     tms
-  }
-}`
-
-export const disconnectQuery = `
-mutation DisconnectSocket($userId: ID!, $socketId: ID!) {
-  disconnectSocket(userId: $userId, socketId: $socketId) {
-    user {
-      id
-    }
   }
 }`
 
@@ -101,8 +96,12 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const token = connectionParams?.token
     if (!(typeof token === 'string')) return false
     const authToken = getVerifiedAuthToken(token)
-    const {sub: userId, iat} = authToken
-    const isBlacklistedJWT = await checkBlacklistJWT(userId, iat)
+    const {sub: viewerId, iat, tms: teamIds} = authToken
+    const [isBlacklistedJWT, socketCount] = await Promise.all([
+      checkBlacklistJWT(viewerId, iat),
+      // getUserSocketCount must run before the notification subscription start is received
+      getUserSocketCount(viewerId)
+    ])
     if (isBlacklistedJWT) return false
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
@@ -112,6 +111,21 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.resubscribe = {}
     extra.dataLoaders = {}
+
+    const user = {id: viewerId, isConnected: true, lastSeenAt: new Date()}
+    if (socketCount === 0) {
+      const userIds = await getTeamMemberUserIds(teamIds)
+      userIds.forEach(({userId}) => {
+        publish(SubscriptionChannel.NOTIFICATION, userId, 'User', user)
+      })
+    }
+    analytics.websocketConnected(user, {
+      // must run here so we have access to socketCount
+      // TODO: Considering removing connectSocket mutation altogether
+      socketCount,
+      socketId: extra.socketId,
+      tms: teamIds
+    })
     const {execute, parse} = yoga.getEnveloped(ctx)
     const dataLoader = getNewDataLoader('wsHandler.onConnect')
     const {data} = await execute({
@@ -227,20 +241,31 @@ export const wsHandler = makeBehavior<{token?: string}>({
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
-    const {sub: userId} = authToken
+    const {sub: viewerId, tms: teamIds} = authToken
     Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
     extra.dataLoaders = {}
     activeClients.delete(extra.socketId)
-    const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader('wsHandler.onDisconnect')
     extra.socket.closed = true
-    await execute({
-      document: parse(disconnectQuery),
-      variableValues: {userId, socketId},
-      schema: privateSchema,
-      contextValue: {dataLoader, ip: extra.ip, authToken, socketId}
+
+    // Wait for the notification subscription to unsubscribe
+    // Don't do it in notificationSubscription because
+    // subscriptions get re-run when the authToken updates.
+    // A client may also reconnect quickly
+    await sleep(1000)
+    const socketCount = await getUserSocketCount(viewerId)
+    const user = {id: viewerId, isConnected: false}
+    analytics.websocketDisconnected(user, {
+      socketCount: socketCount + 1,
+      socketId,
+      tms: teamIds
     })
-    dataLoader.dispose()
+    if (socketCount === 0) {
+      const userIds = await getTeamMemberUserIds(teamIds)
+      const data = {user}
+      userIds.forEach(({userId}) => {
+        publish(SubscriptionChannel.NOTIFICATION, userId, 'DisconnectSocketPayload', data)
+      })
+    }
   }
 })
 

@@ -1,35 +1,15 @@
-import getRedis, {type RedisPipelineResponse} from '../../../utils/getRedis'
-import type {UserPresence} from '../../private/mutations/connectSocket'
+import {redisHocusPocus} from '../../../hocusPocus'
 
 // finds all the users who are at the same url
-const getUsersToIgnore = async (viewerId: string, teamId: string) => {
-  const redis = getRedis()
-  const [lrangeRes, sMembersRes] = (await redis
-    .multi()
-    .lrange(`presence:${viewerId}`, 0, -1)
-    .smembers(`team:${teamId}`)
-    .exec()) as [RedisPipelineResponse<string[]>, RedisPipelineResponse<string[]>]
-  const userPresence = lrangeRes[1]!
-  const activeTeamMemberIds = sMembersRes[1]!
-  const parsedUserPresence = userPresence.map((socket) => JSON.parse(socket)) as UserPresence[]
-  const userLastSeenAtURLs = parsedUserPresence.map(({lastSeenAtURL}) => lastSeenAtURL)
-
-  const usersAtSameURL = [] as string[]
-  const commands = activeTeamMemberIds.map((id) => ['lrange', `presence:${id}`, '0', '-1'])
-  await redis.multi(commands).exec((_execErr, results) => {
-    results?.forEach((result, index) => {
-      const teamMemberUserPresence = result[1] as string[]
-      const teamMemberLastSeenAtURLs = teamMemberUserPresence.map(
-        (socket) => JSON.parse(socket).lastSeenAtURL
-      )
-      const isAtSameURL = teamMemberLastSeenAtURLs.find((url) => userLastSeenAtURLs.includes(url))
-      if (isAtSameURL && activeTeamMemberIds) {
-        const userId = activeTeamMemberIds[index]!
-        usersAtSameURL.push(userId)
-      }
-    })
-  })
-  return usersAtSameURL
+const getUsersToIgnore = async (meetingId: string | null | undefined) => {
+  if (!meetingId) return []
+  const documentName = `meeting:${meetingId}`
+  const usersInMeeting = await redisHocusPocus.handleEvent(
+    'fetchUserIdsInSameMeeting',
+    documentName,
+    {}
+  )
+  return usersInMeeting
 }
 
 export default getUsersToIgnore

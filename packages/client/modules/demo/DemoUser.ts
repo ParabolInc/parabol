@@ -11,7 +11,6 @@ export default class DemoUser {
   facilitatorName: string
   inactive = false
   isConnected = true
-  lastSeenAtURLs = [`/meet/${RetroDemo.MEETING_ID}`]
   lastSeenAt = new Date().toJSON()
 
   rasterPicture: string
