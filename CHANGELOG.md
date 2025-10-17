@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.6](https://github.com/ParabolInc/parabol/compare/v10.27.5...v10.27.6) (2025-10-17)
+
+
+### Fixed
+
+* connectedMeetingMembers retry until value pushed to MeetingMember ([#12230](https://github.com/ParabolInc/parabol/issues/12230)) ([1d3ee8d](https://github.com/ParabolInc/parabol/commit/1d3ee8dcbd984ad64c83fdea4021eff671b9dcb3))
+* vuln in happy-dom ([#12232](https://github.com/ParabolInc/parabol/issues/12232)) ([e8f2565](https://github.com/ParabolInc/parabol/commit/e8f2565bf3639c0a65b361b8e73b904dbd5d46d4))
+
 ## [10.27.5](https://github.com/ParabolInc/parabol/compare/v10.27.4...v10.27.5) (2025-10-17)
 
 
