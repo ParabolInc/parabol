@@ -37,15 +37,20 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
         commitLocalUpdate(atmosphere, (store) => {
           add.forEach((userId) => {
             const meetingMember = store.get(MeetingMemberId.join(meetingId, userId))
-            meetingMember?.setValue(new Date().toJSON(), 'isConnectedAt')
+            if (meetingMember) {
+              meetingMember.setValue(new Date().toJSON(), 'isConnectedAt')
+              oldUserIds.add(userId)
+            }
           })
           remove.forEach((userId) => {
             const meetingMember = store.get(MeetingMemberId.join(meetingId, userId))
-            meetingMember?.setValue(undefined, 'isConnectedAt')
+            if (meetingMember) {
+              meetingMember.setValue(undefined, 'isConnectedAt')
+              oldUserIds.delete(userId)
+            }
           })
         })
       }
-      oldUserIdsRef.current = nextUserIds
     }
     provider.awareness?.on('update', setConnectedUserIdsThunk)
 
