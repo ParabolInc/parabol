@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.7](https://github.com/ParabolInc/parabol/compare/v10.27.6...v10.27.7) (2025-10-20)
+
+
+### Fixed
+
+* awareness auth: closing uWS sockets only once ([#12236](https://github.com/ParabolInc/parabol/issues/12236)) ([facae4b](https://github.com/ParabolInc/parabol/commit/facae4bd2854b5368118829fad0c0efffbb06d9e))
+
 ## [10.27.6](https://github.com/ParabolInc/parabol/compare/v10.27.5...v10.27.6) (2025-10-17)
 
 
