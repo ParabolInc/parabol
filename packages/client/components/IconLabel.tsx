@@ -1,64 +1,33 @@
-import styled from '@emotion/styled'
-import {
-  Add,
-  Archive,
-  ArrowBack,
-  ArrowForward,
-  Close,
-  Code,
-  FormatBold,
-  FormatItalic,
-  FormatQuote,
-  FormatStrikethrough,
-  FormatUnderlined,
-  Keyboard,
-  Label as LabelIcon,
-  Link,
-  MoreVert,
-  OpenInNew,
-  PersonPin,
-  RemoveCircle,
-  Reply,
-  Search,
-  SentimentSatisfied,
-  TaskAlt,
-  Tune,
-  UnfoldLess,
-  UnfoldMore,
-  WebAsset,
-  Widgets
-} from '@mui/icons-material'
+import Add from '@mui/icons-material/Add'
+import Archive from '@mui/icons-material/Archive'
+import ArrowBack from '@mui/icons-material/ArrowBack'
+import ArrowForward from '@mui/icons-material/ArrowForward'
+import Close from '@mui/icons-material/Close'
+import Code from '@mui/icons-material/Code'
+import FormatBold from '@mui/icons-material/FormatBold'
+import FormatItalic from '@mui/icons-material/FormatItalic'
+import FormatQuote from '@mui/icons-material/FormatQuote'
+import FormatStrikethrough from '@mui/icons-material/FormatStrikethrough'
+import FormatUnderlined from '@mui/icons-material/FormatUnderlined'
+import Keyboard from '@mui/icons-material/Keyboard'
+import LabelIcon from '@mui/icons-material/Label'
+import Link from '@mui/icons-material/Link'
+import MoreVert from '@mui/icons-material/MoreVert'
+import OpenInNew from '@mui/icons-material/OpenInNew'
+import PersonPin from '@mui/icons-material/PersonPin'
+import RemoveCircle from '@mui/icons-material/RemoveCircle'
+import Reply from '@mui/icons-material/Reply'
+import Search from '@mui/icons-material/Search'
+import SentimentSatisfied from '@mui/icons-material/SentimentSatisfied'
+import TaskAlt from '@mui/icons-material/TaskAlt'
+import Tune from '@mui/icons-material/Tune'
+import UnfoldLess from '@mui/icons-material/UnfoldLess'
+import UnfoldMore from '@mui/icons-material/UnfoldMore'
+import WebAsset from '@mui/icons-material/WebAsset'
+import Widgets from '@mui/icons-material/Widgets'
 import {forwardRef, type ReactNode, useMemo} from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-
-const LabelBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center'
-})
-
-const Label = styled('div')<{iconAfter?: boolean}>(({iconAfter}) => ({
-  color: 'inherit',
-  fontSize: 'inherit',
-  lineHeight: 'inherit',
-  margin: iconAfter ? `0 8px 0 0` : `0 0 0 8px`,
-  whiteSpace: 'nowrap'
-}))
-
-const StyledIcon = styled('div')<{
-  iconAfter: boolean | undefined
-  iconLarge: boolean | undefined
-}>(({iconAfter, iconLarge}) => ({
-  color: 'inherit',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  order: iconAfter ? 2 : undefined,
-  svg: {
-    fontSize: iconLarge ? 24 : 18
-  }
-}))
 
 interface Props {
   icon: string | React.ComponentType<any>
@@ -143,18 +112,21 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
   }, [icon, iconMapping])
 
   return (
-    <LabelBlock
+    <div
       ref={mergedRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={onClick}
+      className='flex items-center justify-center'
     >
-      <StyledIcon iconAfter={iconAfter} iconLarge={iconLarge}>
+      <div
+        className={`flex items-center justify-center ${iconAfter ? 'order-2' : ''} ${iconLarge ? '[&_svg]:text-2xl' : '[&_svg]:text-lg'}`}
+      >
         {iconElement}
-      </StyledIcon>
-      {label && <Label iconAfter={iconAfter}>{label}</Label>}
+      </div>
+      {label && <div className={`whitespace-nowrap ${iconAfter ? 'mr-2' : 'ml-2'}`}>{label}</div>}
       {tooltip && tooltipPortal(tooltip)}
-    </LabelBlock>
+    </div>
   )
 })
 
