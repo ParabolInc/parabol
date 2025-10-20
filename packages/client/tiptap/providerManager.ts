@@ -35,8 +35,6 @@ class ProviderManager {
     const existing = this.use(documentName)
     if (existing) return existing
     const doc = new Y.Doc()
-    // this adds support for offline editing
-    new IndexeddbPersistence(documentName, doc)
     // update the URL to match the title
     const provider = new HocuspocusProvider({
       websocketProvider: this.getSocket(),
@@ -50,6 +48,10 @@ class ProviderManager {
     })
     provider.attach()
     this.providers[documentName] = {count: 1, provider}
+    if (documentName.startsWith('page:')) {
+      // this adds support for offline editing
+      new IndexeddbPersistence(documentName, doc)
+    }
     return provider
   }
   unregister(documentName: string | undefined, delay = 10000) {

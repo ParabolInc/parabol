@@ -186,7 +186,8 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
             id: orgId,
             name: organization.name,
             isPaid: organization.isPaid,
-            unpaidMessageHTML: organization.unpaidMessageHTML
+            unpaidMessageHTML: organization.unpaidMessageHTML,
+            useAI: organization.useAI
           }
         }
         return organization
