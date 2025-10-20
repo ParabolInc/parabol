@@ -102,7 +102,7 @@ interface Configuration<TCE> {
 
 interface BaseWebSocket extends EventEmitter {
   readyState: number
-  close(code?: number, reason?: string): void
+  close(code?: number, reason?: string | ArrayBufferLike): void
   ping(): void
   send(message: Uint8Array): void
 }
@@ -376,6 +376,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
     const socket = this.originSockets[socketId]
+    // at this point the socket is considered GC'd and we cannot call close
     socket?.emit('close', code, reason)
   }
 

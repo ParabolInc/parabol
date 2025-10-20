@@ -14,6 +14,7 @@ export class HocusPocusWebSocket extends EventEmitter {
   }
   close(code?: number, reason?: string) {
     if (this.readyState !== 1) return
+    this.readyState = 3
     this.ws.end(code, reason)
   }
   ping() {
