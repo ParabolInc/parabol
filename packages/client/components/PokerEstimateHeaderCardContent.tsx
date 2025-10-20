@@ -87,16 +87,20 @@ export type PokerEstimateHeaderCardContentProps = {
   url: string
   linkTitle: string
   linkText: string
+  onRefresh?: () => void
+  isRefreshing?: boolean
 }
 
 const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentProps) => {
-  const {cardTitle, descriptionHTML, url, linkTitle, linkText} = props
+  const {cardTitle, descriptionHTML, url, linkTitle, linkText, onRefresh, isRefreshing} = props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
   const handleRefresh = () => {
-    // TODO: Implement refresh functionality
+    if (onRefresh) {
+      onRefresh()
+    }
   }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
@@ -106,7 +110,11 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
           <CardTitle>{cardTitle}</CardTitle>
           <CardIcons>
             <CardButton>
-              <IconLabel icon='refresh' onClick={handleRefresh} tooltip='Refresh contents' />
+              <IconLabel
+                icon='refresh'
+                onClick={isRefreshing ? undefined : handleRefresh}
+                tooltip='Refresh contents'
+              />
             </CardButton>
             <CardButton>
               {isExpanded ? (

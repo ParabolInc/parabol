@@ -1,10 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import RefreshPokerEstimateIntegrationMutation from '../mutations/RefreshPokerEstimateIntegrationMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import renderMarkdown from '../utils/renderMarkdown'
 import PokerEstimateHeaderCardContent, {
@@ -90,6 +92,7 @@ const getHeaderFields = (
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage: stageRef} = props
   const atmosphere = useAtmosphere()
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const stage = useFragment(
     graphql`
       fragment PokerEstimateHeaderCard_stage on EstimateStage {
@@ -208,7 +211,31 @@ const PokerEstimateHeaderCard = (props: Props) => {
     }
     return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
-  return <PokerEstimateHeaderCardContent {...headerFields} />
+
+  const handleRefresh = () => {
+    if (!integrationHash) return
+    setIsRefreshing(true)
+    RefreshPokerEstimateIntegrationMutation(
+      atmosphere,
+      {taskId: stage.taskId, meetingId},
+      {
+        onCompleted: () => {
+          setIsRefreshing(false)
+        },
+        onError: () => {
+          setIsRefreshing(false)
+        }
+      }
+    )
+  }
+
+  return (
+    <PokerEstimateHeaderCardContent
+      {...headerFields}
+      onRefresh={handleRefresh}
+      isRefreshing={isRefreshing}
+    />
+  )
 }
 
 export default PokerEstimateHeaderCard
