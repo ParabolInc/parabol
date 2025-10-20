@@ -376,7 +376,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
     const socket = this.originSockets[socketId]
-    socket?.close(code, reason)
+    // at this point the socket is considered GC'd and we cannot call close
+    socket?.emit('close', code, reason)
   }
 
   /* Hocuspocus hooks */
