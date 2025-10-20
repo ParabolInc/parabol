@@ -81,6 +81,11 @@ export const hocuspocus = new Hocuspocus({
       return {userId}
     }
     const [dbId] = CipherId.fromClient(documentName)
+    if (dbId === 0) {
+      const error = new Error(`Invalid document request from client: ${documentName}`)
+      logError(error, {userId, tags: {dbId, documentName}})
+      throw error
+    }
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()
@@ -99,7 +104,11 @@ export const hocuspocus = new Hocuspocus({
         .limit(1)
         .executeTakeFirst()
       if (!pageAccess) {
-        throw new Error(`Document does not exist or user is not authorized: ${dbId}`)
+        const error = new Error(
+          `Document does not exist or user is not authorized: ${documentName}`
+        )
+        logError(error, {userId, extras: {dbId}})
+        throw error
       }
     }
     const {role} = pageAccess
