@@ -103,7 +103,11 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
           <CardTitle>{cardTitle}</CardTitle>
           <CardIcons>
             <CardButton>
-              <IconLabel icon='unfold_more' onClick={toggleExpand} />
+              {isExpanded ? (
+                <IconLabel icon='unfold_less' onClick={toggleExpand} tooltip='Collapse contents' />
+              ) : (
+                <IconLabel icon='unfold_more' onClick={toggleExpand} tooltip='Expand contents' />
+              )}
             </CardButton>
           </CardIcons>
         </CardTitleWrapper>
