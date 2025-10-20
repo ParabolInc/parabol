@@ -15,6 +15,7 @@ import Link from '@mui/icons-material/Link'
 import MoreVert from '@mui/icons-material/MoreVert'
 import OpenInNew from '@mui/icons-material/OpenInNew'
 import PersonPin from '@mui/icons-material/PersonPin'
+import Refresh from '@mui/icons-material/Refresh'
 import RemoveCircle from '@mui/icons-material/RemoveCircle'
 import Reply from '@mui/icons-material/Reply'
 import Search from '@mui/icons-material/Search'
@@ -91,6 +92,7 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
       add: <Add />,
       keyboard: <Keyboard />,
       search: <Search />,
+      refresh: <Refresh />,
       reply: <Reply />,
       arrow_forward: <ArrowForward />,
       archive: <Archive />,

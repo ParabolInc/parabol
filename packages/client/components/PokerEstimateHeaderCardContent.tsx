@@ -95,6 +95,9 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
+  const handleRefresh = () => {
+    // TODO: Implement refresh functionality
+  }
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
@@ -102,6 +105,9 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
         <CardTitleWrapper>
           <CardTitle>{cardTitle}</CardTitle>
           <CardIcons>
+            <CardButton>
+              <IconLabel icon='refresh' onClick={handleRefresh} tooltip='Refresh contents' />
+            </CardButton>
             <CardButton>
               {isExpanded ? (
                 <IconLabel icon='unfold_less' onClick={toggleExpand} tooltip='Collapse contents' />
