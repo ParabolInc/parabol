@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.9](https://github.com/ParabolInc/parabol/compare/v10.27.8...v10.27.9) (2025-10-21)
+
+
+### Fixed
+
+* onDisconnect without teams ([#12246](https://github.com/ParabolInc/parabol/issues/12246)) ([7777d8c](https://github.com/ParabolInc/parabol/commit/7777d8ca09944649c37614afe9789440c74deb18))
+
 ## [10.27.8](https://github.com/ParabolInc/parabol/compare/v10.27.7...v10.27.8) (2025-10-21)
 
 
