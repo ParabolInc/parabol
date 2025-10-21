@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.0](https://github.com/ParabolInc/parabol/compare/v10.27.10...v10.28.0) (2025-10-21)
+
+
+### Added
+
+* add pnpm-lock to ironbank zip ([#12252](https://github.com/ParabolInc/parabol/issues/12252)) ([5afdad8](https://github.com/ParabolInc/parabol/commit/5afdad8e1291a8e3f25cb9e563888a0a17a26f06))
+
 ## [10.27.10](https://github.com/ParabolInc/parabol/compare/v10.27.9...v10.27.10) (2025-10-21)
 
 
