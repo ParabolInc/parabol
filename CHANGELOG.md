@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.1](https://github.com/ParabolInc/parabol/compare/v10.28.0...v10.28.1) (2025-10-21)
+
+
+### Fixed
+
+* include pnpm-lock.yaml in zip ([#12255](https://github.com/ParabolInc/parabol/issues/12255)) ([6e4278e](https://github.com/ParabolInc/parabol/commit/6e4278edd4196737738e497213a5955cb0cd893e))
+
 ## [10.28.0](https://github.com/ParabolInc/parabol/compare/v10.27.10...v10.28.0) (2025-10-21)
 
 
