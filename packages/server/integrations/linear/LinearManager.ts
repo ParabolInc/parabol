@@ -25,23 +25,26 @@ export default class LinearManager extends OAuth2Manager {
     })
   }
 
-  async refresh(_refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
-    throw new Error('Linear does not support refresh tokens')
+  async refresh(refreshToken: string): Promise<Error | OAuth2AuthorizeResponse> {
+    return this.fetchToken<OAuth2AuthorizeResponse>({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    })
   }
 
   protected async fetchToken<TSuccess>(
     partialAuthParams: OAuth2AuthorizationParams | OAuth2RefreshAuthorizationParams
   ): Promise<TSuccess | Error> {
     // Linear has some peculiarities: the server hostname changes from
-    // linear.app -> api.linear.app between code and token retrieval,
-    // also, it does not provide a refresh token, but its access token
-    // lives for 10 years!
+    // linear.app -> api.linear.app between code and token retrieval.
+    // Linear now provides refresh tokens with short-lived access tokens (~24 hours).
     const authUrlObj = new URL('/oauth/token', this.apiServerBaseUrl)
     const body = {
       client_id: this.clientId,
       client_secret: this.clientSecret,
       ...partialAuthParams
     }
+    console.log('Body being sent to Linear token endpoint:', body)
     return authorizeOAuth2<TSuccess>({
       authUrl: authUrlObj.toString(),
       body,

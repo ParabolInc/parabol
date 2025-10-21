@@ -37,7 +37,7 @@ class LinearClientManager {
     url.searchParams.set('state', providerState)
     url.searchParams.set('redirect_uri', redirectUri)
     url.searchParams.set('response_type', 'code')
-    url.searchParams.set('actor', 'application')
+    url.searchParams.set('actor', 'user')
 
     // Open the popup with the target URL directly
     const popup = window.open(

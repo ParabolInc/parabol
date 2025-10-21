@@ -102,9 +102,7 @@ export const resolveTaskIntegration = async (
     return data
   } else if (integration.service === 'linear') {
     const {accessUserId} = integration
-    const linearAuth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'linear', teamId, userId: accessUserId})
+    const linearAuth = await dataLoader.get('freshLinearAuth').load({teamId, userId: accessUserId})
     if (!linearAuth?.accessToken) return null
     const {issueId} = integration
     const query = `
