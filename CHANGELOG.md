@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.8](https://github.com/ParabolInc/parabol/compare/v10.27.7...v10.27.8) (2025-10-21)
+
+
+### Fixed
+
+* use internal closed flag + try/catch for cleaned up ws ([#12241](https://github.com/ParabolInc/parabol/issues/12241)) ([67b2db8](https://github.com/ParabolInc/parabol/commit/67b2db841cb3d621a9b4373c317aaba9630c5aa4))
+
 ## [10.27.7](https://github.com/ParabolInc/parabol/compare/v10.27.6...v10.27.7) (2025-10-20)
 
 
