@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.27.10](https://github.com/ParabolInc/parabol/compare/v10.27.9...v10.27.10) (2025-10-21)
+
+
+### Fixed
+
+* prevent fatal crashes on html_inline markdown parsing ([#12249](https://github.com/ParabolInc/parabol/issues/12249)) ([2af4437](https://github.com/ParabolInc/parabol/commit/2af44370c27c7b7e37df2e38675bb80591595685))
+
+## [10.27.9](https://github.com/ParabolInc/parabol/compare/v10.27.8...v10.27.9) (2025-10-21)
+
+
+### Fixed
+
+* onDisconnect without teams ([#12246](https://github.com/ParabolInc/parabol/issues/12246)) ([7777d8c](https://github.com/ParabolInc/parabol/commit/7777d8ca09944649c37614afe9789440c74deb18))
+
+## [10.27.8](https://github.com/ParabolInc/parabol/compare/v10.27.7...v10.27.8) (2025-10-21)
+
+
+### Fixed
+
+* use internal closed flag + try/catch for cleaned up ws ([#12241](https://github.com/ParabolInc/parabol/issues/12241)) ([67b2db8](https://github.com/ParabolInc/parabol/commit/67b2db841cb3d621a9b4373c317aaba9630c5aa4))
+
 ## [10.27.7](https://github.com/ParabolInc/parabol/compare/v10.27.6...v10.27.7) (2025-10-20)
 
 

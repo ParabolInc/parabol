@@ -1,7 +1,7 @@
 import getKysely from '../postgres/getKysely'
 
 export const getTeamMemberUserIds = async (teamIds: string[]) => {
-  if (!teamIds) return []
+  if (!teamIds || teamIds.length === 0) return []
   const pg = getKysely()
   return pg
     .selectFrom('TeamMember')
