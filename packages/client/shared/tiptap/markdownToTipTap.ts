@@ -4,6 +4,7 @@
 import {Editor, type JSONContent} from '@tiptap/core'
 import {MarkdownParser} from '@tiptap/pm/markdown'
 import markdownit from 'markdown-it'
+import {Logger} from '../../../server/utils/Logger'
 import {serverTipTapExtensions} from './serverTipTapExtensions'
 
 // No table support yet!
@@ -26,6 +27,7 @@ const getParser = () => {
       blockquote: {block: 'blockquote'},
       paragraph: {block: 'paragraph'},
       list_item: {block: 'listItem'},
+      html_inline: {mark: 'code'}, // this is probably wrong, should move to TipTap parser
       ordered_list: {
         block: 'orderedList',
         getAttrs: (t) => ({order: +t.attrGet('order')! || 1})
@@ -65,7 +67,12 @@ const getParser = () => {
 }
 export const markdownToTipTap = (str: string) => {
   const parser = getParser()
-  const parsed = parser.parse(str)
-  // remove constructors
-  return JSON.parse(JSON.stringify(parsed.content)) as JSONContent[]
+  try {
+    const parsed = parser.parse(str)
+    // remove constructors
+    return JSON.parse(JSON.stringify(parsed.content)) as JSONContent[]
+  } catch (e) {
+    Logger.error(e)
+    return {}
+  }
 }
