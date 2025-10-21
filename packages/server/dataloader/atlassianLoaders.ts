@@ -260,16 +260,22 @@ export const jiraIssue = (
                   })
                 }
                 if (schema.type === 'timetracking') {
-                  possibleEstimationFields.push({
-                    fieldId: 'timeestimate',
-                    fieldName: issueRes.names['timeestimate'],
-                    fieldType: 'string'
-                  })
-                  possibleEstimationFields.push({
-                    fieldId: 'timeoriginalestimate',
-                    fieldName: issueRes.names['timeoriginalestimate'],
-                    fieldType: 'string'
-                  })
+                  const timeEstimate = issueRes.names['timeestimate']
+                  if (timeEstimate) {
+                    possibleEstimationFields.push({
+                      fieldId: 'timeestimate',
+                      fieldName: timeEstimate,
+                      fieldType: 'string'
+                    })
+                  }
+                  const timeOriginalEstimate = issueRes.names['timeoriginalestimate']
+                  if (timeOriginalEstimate) {
+                    possibleEstimationFields.push({
+                      fieldId: 'timeoriginalestimate',
+                      fieldName: timeOriginalEstimate,
+                      fieldType: 'string'
+                    })
+                  }
                 }
               }
             )
