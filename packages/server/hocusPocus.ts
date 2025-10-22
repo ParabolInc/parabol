@@ -35,7 +35,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   dataLoader.dispose()
 }
 
-type Req = IncomingMessage & {userId?: string}
+type Req = IncomingMessage & {userId?: string; tms: string[]}
 
 export const redisHocusPocus = new RedisServerAffinity({
   pack,
@@ -53,7 +53,6 @@ export const hocuspocus = new Hocuspocus({
     const authToken = getVerifiedAuthToken(authTokenStr)
     const userId = authToken?.sub
     if (authTokenStr && !userId) {
-      // If there _is_ an authToken & it is bad (expired, invalid) log out
       const err = new Error('Unauthenticated')
       ;(err as any).reason = 'Unauthenticated'
       throw err
@@ -61,22 +60,26 @@ export const hocuspocus = new Hocuspocus({
     // Unauthenticated users are allowed for public pages
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
+    request.tms = authToken?.tms ?? []
   },
 
   async onAuthenticate(data) {
     const {documentName, request, connectionConfig} = data
     const userId = (request as Req).userId
     if (documentName.startsWith('meeting:')) {
+      const tms = (request as Req).tms
       const [, meetingId] = documentName.split(':')
       if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
       if (!userId) throw new Error(`Meeting awareness requires a userId`)
-      const isOnTeam = await getKysely()
+      if (tms.length === 0)
+        throw new Error(`Meeting awareness requires being on the team, viewer is on none`)
+
+      const meetingTeamId = await getKysely()
         .selectFrom('NewMeeting')
-        .innerJoin('TeamMember', 'TeamMember.teamId', 'NewMeeting.teamId')
-        .select('TeamMember.userId')
-        .where('NewMeeting.id', '=', meetingId!)
-        .where('TeamMember.userId', '=', userId)
+        .select('teamId')
+        .where('id', '=', meetingId)
         .executeTakeFirst()
+      const isOnTeam = tms.includes(meetingTeamId?.teamId ?? '')
       if (!isOnTeam) throw new Error(`Meeting awareness requires being on the team`)
       return {userId}
     }
@@ -200,7 +203,6 @@ hocuspocus.storeDocumentHooks = (
           })
         })
         .catch((error) => {
-          // normally hocuspocus would throw here, but we just want to log the error and continue on
           logError(error, {tags: {documentName: document.name}})
           // TODO report error to client so it can retry saving
 
