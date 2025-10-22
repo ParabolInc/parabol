@@ -46,7 +46,6 @@ import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDi
 import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
 import promoteToTeamLead from './mutations/promoteToTeamLead'
 import pushInvitation from './mutations/pushInvitation'
-import refreshPokerEstimateIntegration from './mutations/refreshPokerEstimateIntegration'
 import removeAtlassianAuth from './mutations/removeAtlassianAuth'
 import removeGitHubAuth from './mutations/removeGitHubAuth'
 import removeIntegrationProvider from './mutations/removeIntegrationProvider'
@@ -149,7 +148,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       removeTeamMember,
       resetPassword,
       resetRetroMeetingToGroupStage,
-      refreshPokerEstimateIntegration,
       selectTemplate,
       setPhaseFocus,
       setStageTimer,

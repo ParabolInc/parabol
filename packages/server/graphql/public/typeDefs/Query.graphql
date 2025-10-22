@@ -53,6 +53,21 @@ type Query {
 	): String
 
 	"""
+	Fetch the latest integration data for a poker estimate task
+	"""
+	refreshPokerEstimateIntegration(
+		"""
+		The ID of the poker meeting
+		"""
+		meetingId: ID!
+
+		"""
+		The ID of the task to refresh
+		"""
+		taskId: ID!
+	): RefreshPokerEstimateIntegrationPayload!
+
+	"""
 	A root for public access to pages and other public objects which change access based on whether the viewer is logged in or not.
 	"""
 	public: PublicRoot!

@@ -5,8 +5,9 @@ import type {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
+import type {RefreshPokerEstimateIntegrationQuery as TRefreshPokerEstimateIntegrationQuery} from '../__generated__/RefreshPokerEstimateIntegrationQuery.graphql'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import RefreshPokerEstimateIntegrationMutation from '../mutations/RefreshPokerEstimateIntegrationMutation'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import renderMarkdown from '../utils/renderMarkdown'
 import PokerEstimateHeaderCardContent, {
@@ -14,6 +15,87 @@ import PokerEstimateHeaderCardContent, {
 } from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
+
+graphql`
+  fragment RefreshPokerEstimateIntegrationQuery_task on Task {
+    ...PokerEstimateHeaderCardParabol_task
+    integrationHash
+    integration {
+      ... on AzureDevOpsWorkItem {
+        __typename
+        id
+        title
+        teamProject
+        type
+        state
+        url
+        descriptionHTML
+      }
+      ... on JiraIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on JiraServerIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on _xGitHubIssue {
+        __typename
+        number
+        title
+        bodyHTML
+        ghUrl: url
+      }
+      ... on _xGitLabIssue {
+        __typename
+        descriptionHtml
+        title
+        webUrl
+        iid
+      }
+      ... on _xLinearIssue {
+        __typename
+        description
+        title
+        url
+        identifier
+      }
+    }
+  }
+`
+
+const refreshPokerEstimateIntegrationQuery = graphql`
+  query RefreshPokerEstimateIntegrationQuery($taskId: ID!, $meetingId: ID!) {
+    refreshPokerEstimateIntegration(taskId: $taskId, meetingId: $meetingId) {
+      ... on ErrorPayload {
+        error {
+          message
+        }
+      }
+      ... on RefreshPokerEstimateIntegrationSuccess {
+        task {
+          ...RefreshPokerEstimateIntegrationQuery_task @relay(mask: false)
+        }
+      }
+    }
+  }
+`
+
+const RefreshPokerEstimateIntegrationQuery = async (
+  atmosphere: Atmosphere,
+  variables: {taskId: string; meetingId: string}
+) => {
+  return atmosphere.fetchQuery<TRefreshPokerEstimateIntegrationQuery>(
+    refreshPokerEstimateIntegrationQuery,
+    variables
+  )
+}
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage$key
@@ -212,21 +294,17 @@ const PokerEstimateHeaderCard = (props: Props) => {
     return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     if (!integrationHash) return
     setIsRefreshing(true)
-    RefreshPokerEstimateIntegrationMutation(
-      atmosphere,
-      {taskId: stage.taskId, meetingId},
-      {
-        onCompleted: () => {
-          setIsRefreshing(false)
-        },
-        onError: () => {
-          setIsRefreshing(false)
-        }
-      }
-    )
+    try {
+      await RefreshPokerEstimateIntegrationQuery(atmosphere, {
+        taskId: stage.taskId,
+        meetingId
+      })
+    } finally {
+      setIsRefreshing(false)
+    }
   }
 
   return (

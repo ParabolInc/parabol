@@ -2,6 +2,7 @@ import {GraphQLError, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import {getUserId} from '../utils/authorization'
 import type {GQLContext} from './graphql'
 import massInvitation from './queries/massInvitation'
+import refreshPokerEstimateIntegration from './queries/refreshPokerEstimateIntegration'
 import verifiedInvitation from './queries/verifiedInvitation'
 import User from './types/User'
 
@@ -18,6 +19,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       }
     },
     massInvitation,
+    refreshPokerEstimateIntegration,
     verifiedInvitation
   })
 })

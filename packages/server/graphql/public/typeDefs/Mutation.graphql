@@ -718,21 +718,6 @@ type Mutation {
 	): RemoveTeamMemberPayload
 
 	"""
-	Refresh the integration data for a poker estimate task
-	"""
-	refreshPokerEstimateIntegration(
-		"""
-		The ID of the task to refresh
-		"""
-		taskId: ID!
-
-		"""
-		The ID of the poker meeting
-		"""
-		meetingId: ID!
-	): RefreshPokerEstimateIntegrationPayload!
-
-	"""
 	Reset the password for an account
 	"""
 	resetPassword(
