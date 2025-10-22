@@ -27,8 +27,9 @@ import UnfoldMore from '@mui/icons-material/UnfoldMore'
 import WebAsset from '@mui/icons-material/WebAsset'
 import Widgets from '@mui/icons-material/Widgets'
 import {forwardRef, type ReactNode, useMemo} from 'react'
-import {MenuPosition} from '../hooks/useCoords'
-import useTooltip from '../hooks/useTooltip'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   icon: string | React.ComponentType<any>
@@ -43,31 +44,6 @@ interface Props {
 
 const IconLabel = forwardRef((props: Props, ref: any) => {
   const {icon, label, onClick, onMouseEnter, onMouseLeave, iconAfter, iconLarge, tooltip} = props
-
-  const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER,
-    {disabled: !tooltip}
-  )
-
-  const handleMouseEnter = () => {
-    if (tooltip) openTooltip()
-    onMouseEnter?.()
-  }
-
-  const handleMouseLeave = () => {
-    if (tooltip) closeTooltip()
-    onMouseLeave?.()
-  }
-
-  // Merge refs
-  const mergedRef = (node: HTMLDivElement) => {
-    originRef.current = node
-    if (typeof ref === 'function') {
-      ref(node)
-    } else if (ref) {
-      ref.current = node
-    }
-  }
 
   // Icon mapping for string-based icons
   const iconMapping: Record<string, ReactNode> = useMemo(
@@ -113,11 +89,11 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
     return <IconComponent />
   }, [icon, iconMapping])
 
-  return (
+  const content = (
     <div
-      ref={mergedRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onClick={onClick}
       className='flex items-center justify-center'
     >
@@ -127,9 +103,19 @@ const IconLabel = forwardRef((props: Props, ref: any) => {
         {iconElement}
       </div>
       {label && <div className={`whitespace-nowrap ${iconAfter ? 'mr-2' : 'ml-2'}`}>{label}</div>}
-      {tooltip && tooltipPortal(tooltip)}
     </div>
   )
+
+  if (tooltip) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>{content}</TooltipTrigger>
+        <TooltipContent side='top'>{tooltip}</TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  return content
 })
 
 export default IconLabel
