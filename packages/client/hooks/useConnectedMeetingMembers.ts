@@ -77,6 +77,8 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
     }
     return () => {
       if (addViewer) {
+        // destroying the awareness (i.e setLocalState == null) as prescribed
+        // seems to break reconnects, so we only remove the userId
         awareness.setLocalStateField('userId', null)
         commitLocalUpdate(atmosphere, (store) => {
           const meetingMember = store.get(MeetingMemberId.join(meetingId, viewerId))

@@ -321,12 +321,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         selectedAll
       })
     },
-    onError,
-    cacheConfig: {
-      metadata: {
-        casualOrderingGroup: 'updatePokerScope'
-      }
-    }
+    onError
   })
 }
 
