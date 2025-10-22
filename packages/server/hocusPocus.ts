@@ -6,6 +6,7 @@ import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import tracer from 'dd-trace'
+import ms from 'ms'
 import {pack, unpack} from 'msgpackr'
 import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
@@ -37,6 +38,22 @@ const pushGQLTitleUpdates = async (pageId: number) => {
 
 type Req = IncomingMessage & {userId?: string; tms: string[]}
 
+const getMeetingTeamId = async (meetingId: string) => {
+  // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
+  const redis = getRedis()
+  const key = `meetingTeamId:${meetingId}`
+  const cachedTeamId = await redis.get(key)
+  if (cachedTeamId) return cachedTeamId
+  const meeting = await getKysely()
+    .selectFrom('NewMeeting')
+    .select('teamId')
+    .where('id', '=', meetingId)
+    .executeTakeFirst()
+  if (!meeting) return null
+  const {teamId} = meeting
+  redis.set(key, teamId, 'PX', ms('3h')).catch(() => {})
+  return teamId
+}
 export const redisHocusPocus = new RedisServerAffinity({
   pack,
   redis: getRedis(),
@@ -73,13 +90,8 @@ export const hocuspocus = new Hocuspocus({
       if (!userId) throw new Error(`Meeting awareness requires a userId`)
       if (tms.length === 0)
         throw new Error(`Meeting awareness requires being on the team, viewer is on none`)
-
-      const meetingTeamId = await getKysely()
-        .selectFrom('NewMeeting')
-        .select('teamId')
-        .where('id', '=', meetingId)
-        .executeTakeFirst()
-      const isOnTeam = tms.includes(meetingTeamId?.teamId ?? '')
+      const meetingTeamId = await getMeetingTeamId(meetingId)
+      const isOnTeam = tms.includes(meetingTeamId ?? '')
       if (!isOnTeam) throw new Error(`Meeting awareness requires being on the team`)
       return {userId}
     }
