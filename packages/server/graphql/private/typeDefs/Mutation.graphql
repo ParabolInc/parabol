@@ -127,16 +127,6 @@ type Mutation {
 	backupOrganization(orgIds: [ID!]!): String!
 
 	"""
-	a server-side mutation called when a client connects
-	"""
-	connectSocket(
-		"""
-		The ID of the server this socket is connected to
-		"""
-		socketInstanceId: ID!
-	): User!
-
-	"""
 	profile the CPU
 	"""
 	profileCPU: String
