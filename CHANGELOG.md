@@ -5,6 +5,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.2](https://github.com/ParabolInc/parabol/compare/v10.28.1...v10.28.2) (2025-10-22)
+
+
+### Fixed
+
+* simplify onAuth query, delay provider unregister for 5s ([#12258](https://github.com/ParabolInc/parabol/issues/12258)) ([331885e](https://github.com/ParabolInc/parabol/commit/331885e8680cdc6905bfd3700cbfd926d88475dc))
+
+## [10.28.1](https://github.com/ParabolInc/parabol/compare/v10.28.0...v10.28.1) (2025-10-21)
+
+
+### Fixed
+
+* include pnpm-lock.yaml in zip ([#12255](https://github.com/ParabolInc/parabol/issues/12255)) ([6e4278e](https://github.com/ParabolInc/parabol/commit/6e4278edd4196737738e497213a5955cb0cd893e))
+
+## [10.28.0](https://github.com/ParabolInc/parabol/compare/v10.27.10...v10.28.0) (2025-10-21)
+
+
+### Added
+
+* add pnpm-lock to ironbank zip ([#12252](https://github.com/ParabolInc/parabol/issues/12252)) ([5afdad8](https://github.com/ParabolInc/parabol/commit/5afdad8e1291a8e3f25cb9e563888a0a17a26f06))
+
 ## [10.27.10](https://github.com/ParabolInc/parabol/compare/v10.27.9...v10.27.10) (2025-10-21)
 
 
