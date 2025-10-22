@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.3](https://github.com/ParabolInc/parabol/compare/v10.28.2...v10.28.3) (2025-10-22)
+
+
+### Fixed
+
+* cache meeting teamId in redis for faster onAuth awareness ([#12265](https://github.com/ParabolInc/parabol/issues/12265)) ([e24d246](https://github.com/ParabolInc/parabol/commit/e24d246ca074bc76b19150a5430f05b492a20093))
+* reduce connectSocket load on pg ([#12263](https://github.com/ParabolInc/parabol/issues/12263)) ([a1da972](https://github.com/ParabolInc/parabol/commit/a1da972af0e839cd53941ac961d007d494652fe7))
+
 ## [10.28.2](https://github.com/ParabolInc/parabol/compare/v10.28.1...v10.28.2) (2025-10-22)
 
 

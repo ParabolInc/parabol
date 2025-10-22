@@ -349,11 +349,6 @@ export enum Security {
   MASS_INVITATION_TOKEN_LENGTH = 12
 }
 
-export enum ServerChannel {
-  GQL_EXECUTOR_STREAM = 'gqlStream',
-  GQL_EXECUTOR_CONSUMER_GROUP = 'gqlConsumerGroup'
-}
-
 export enum SubscriptionChannel {
   TASK = 'task',
   TEAM = 'team',

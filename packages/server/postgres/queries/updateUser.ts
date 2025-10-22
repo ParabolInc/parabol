@@ -1,20 +1,12 @@
-import type AuthIdentity from '../../database/types/AuthIdentity'
-import getPg from '../getPg'
-import {type IUpdateUserQueryParams, updateUserQuery} from './generated/updateUserQuery'
+import type {UpdateObject} from 'kysely'
+import getKysely from '../getKysely'
+import type {DB} from '../types/pg'
 
-interface UpdateUserQueryParams extends Omit<IUpdateUserQueryParams, 'identities'> {
-  identities: AuthIdentity[]
-}
-
-const updateUser = async (update: Partial<UpdateUserQueryParams>, userIds: string | string[]) => {
-  userIds = typeof userIds === 'string' ? [userIds] : userIds
-  return updateUserQuery.run(
-    {
-      ...update,
-      ids: userIds
-    } as any,
-    getPg()
-  )
+const updateUser = async (update: UpdateObject<DB, 'User', 'User'>, userIds: string | string[]) => {
+  const dbUserIds = typeof userIds === 'string' ? [userIds] : userIds
+  if (dbUserIds.length === 0) return
+  // TODO bust the redis cache here, if we start caching users in redis
+  return getKysely().updateTable('User').set(update).where('id', 'in', dbUserIds).execute()
 }
 
 export default updateUser

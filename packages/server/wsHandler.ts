@@ -4,8 +4,7 @@ import {handleProtocols} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
 import {decode} from 'jsonwebtoken'
-import {isEqualWhenSerialized} from '../client/shared/isEqualWhenSerialized'
-import {SubscriptionChannel, Threshold} from '../client/types/constEnums'
+import {SubscriptionChannel} from '../client/types/constEnums'
 import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
@@ -14,14 +13,15 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import privateSchema from './graphql/private/rootSchema'
+import {handleFirstConnection} from './handleFirstConnection'
+import {logOperation} from './logOperation'
+import getKysely from './postgres/getKysely'
+import {setFreshTokenIfNeeded} from './setFreshTokenIfNeeded'
 import {analytics} from './utils/analytics/analytics'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
-import encodeAuthToken from './utils/encodeAuthToken'
-import {fromEpochSeconds} from './utils/epochTime'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
-import {INSTANCE_ID} from './utils/instanceId'
 import {Logger} from './utils/Logger'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
@@ -50,28 +50,6 @@ type EnvelopedExecutionArgs = ExecutionArgs & {
     subscribe: typeof subscribe
   }
 }
-
-const connectQuery = `
-mutation ConnectSocket($socketInstanceId: ID!) {
-  connectSocket(socketInstanceId: $socketInstanceId) {
-    tms
-  }
-}`
-
-const setFreshTokenIfNeeded = (extra: {authToken: AuthToken}, tmsDB: string[]) => {
-  const {authToken} = extra
-  const {exp, tms} = authToken
-  const tokenExpiration = fromEpochSeconds(exp)
-  const timeLeftOnToken = tokenExpiration.getTime() - Date.now()
-  const tmsIsValid = isEqualWhenSerialized(tmsDB, tms)
-  if (timeLeftOnToken < Threshold.REFRESH_JWT_AFTER || !tmsIsValid) {
-    const nextAuthToken = new AuthToken({...authToken, tms: tmsDB})
-    extra.authToken = nextAuthToken
-    return encodeAuthToken(nextAuthToken)
-  }
-  return null
-}
-
 const dehydrateResult = (result: ExecutionResult) => {
   const {data, ...rest} = result
   if (!data) return result
@@ -97,12 +75,17 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (!(typeof token === 'string')) return false
     const authToken = getVerifiedAuthToken(token)
     const {sub: viewerId, iat, tms: teamIds} = authToken
-    const [isBlacklistedJWT, socketCount] = await Promise.all([
+    const [isBlacklistedJWT, socketCount, user] = await Promise.all([
       checkBlacklistJWT(viewerId, iat),
       // getUserSocketCount must run before the notification subscription start is received
-      getUserSocketCount(viewerId)
+      getUserSocketCount(viewerId),
+      getKysely()
+        .selectFrom('User')
+        .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+        .where('id', '=', viewerId)
+        .executeTakeFirst()
     ])
-    if (isBlacklistedJWT) return false
+    if (isBlacklistedJWT || !user) return false
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
     const clientIP =
@@ -111,38 +94,17 @@ export const wsHandler = makeBehavior<{token?: string}>({
     extra.socketId = extra.persistedRequest.headers['sec-websocket-key']!
     extra.resubscribe = {}
     extra.dataLoaders = {}
-
-    const user = {id: viewerId, isConnected: true, lastSeenAt: new Date()}
-    if (socketCount === 0) {
-      const userIds = await getTeamMemberUserIds(teamIds)
-      userIds.forEach(({userId}) => {
-        publish(SubscriptionChannel.NOTIFICATION, userId, 'User', user)
-      })
-    }
+    activeClients.set(extra.socketId, extra.socket)
+    logOperation(viewerId, extra.ip, 'connectSocket', {})
     analytics.websocketConnected(user, {
-      // must run here so we have access to socketCount
-      // TODO: Considering removing connectSocket mutation altogether
       socketCount,
       socketId: extra.socketId,
       tms: teamIds
     })
-    const {execute, parse} = yoga.getEnveloped(ctx)
-    const dataLoader = getNewDataLoader('wsHandler.onConnect')
-    const {data} = await execute({
-      document: parse(connectQuery),
-      variableValues: {socketInstanceId: INSTANCE_ID},
-      schema: privateSchema,
-      contextValue: {
-        dataLoader,
-        ip: extra.ip,
-        authToken,
-        socketId: extra.socketId
-      }
-    })
-    dataLoader.dispose()
-    const tms = data?.connectSocket?.tms
-    const freshToken = setFreshTokenIfNeeded(extra, tms)
-    activeClients.set(extra.socketId, extra.socket)
+    if (socketCount === 0) {
+      handleFirstConnection(user, teamIds).catch(Logger.log)
+    }
+    const freshToken = setFreshTokenIfNeeded(extra, user.tms)
     return {version: __APP_VERSION__, authToken: freshToken}
   },
   async onNext(context, id, _payload, {contextValue}, result) {

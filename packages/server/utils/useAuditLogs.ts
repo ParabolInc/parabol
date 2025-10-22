@@ -1,5 +1,6 @@
 import {getOperationAST, Kind} from 'graphql'
 import type {Plugin} from 'graphql-yoga'
+import {logOperation} from '../logOperation'
 import type {ServerContext} from '../yoga'
 
 interface Config {
@@ -36,16 +37,7 @@ export const useAuditLogs = (config: Config): Plugin<ServerContext> => {
       )
       const {authToken, ip} = context
       const userId = authToken?.sub ?? ''
-      const auditLog = {
-        time: new Date().toISOString(),
-        level: 'info',
-        type: 'audit',
-        userId,
-        ipAddress: ip,
-        operation: operationName,
-        variables: sanitizedVaribles
-      }
-      console.log(JSON.stringify(auditLog))
+      logOperation(userId, ip, operationName, sanitizedVaribles)
     }
   }
 }
