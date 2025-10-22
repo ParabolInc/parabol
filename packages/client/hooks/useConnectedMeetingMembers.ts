@@ -61,7 +61,7 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
       provider.awareness?.off('update', setConnectedUserIdsThunk)
       // when going from meeting to team dash, it takes awhile before MeetingCard calls this hook
       // make sure we don't unregister until then
-      providerManager.unregister(room, 2000)
+      providerManager.unregister(room, 5000)
     }
   }, [meetingId])
 
