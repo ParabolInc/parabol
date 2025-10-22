@@ -75,7 +75,7 @@ const resetPassword = {
       localIdentity.hashedPassword = await bcrypt.hash(newPassword, Security.SALT_ROUNDS)
       localIdentity.isEmailVerified = true
       await Promise.all([
-        updateUser({identities}, userId),
+        updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId),
         pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
       ])
       context.authToken = new AuthToken({sub: userId, tms, rol})

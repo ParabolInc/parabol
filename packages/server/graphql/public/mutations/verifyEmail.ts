@@ -44,12 +44,7 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
     if (!localIdentity.isEmailVerified) {
       // mutative
       localIdentity.isEmailVerified = true
-      await updateUser(
-        {
-          identities
-        },
-        userId
-      )
+      await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)
     }
     return {authToken, userId, isNewUser: false}
   }

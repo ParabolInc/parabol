@@ -37,7 +37,7 @@ const processEmailPasswordReset = async (
     })
     .execute()
 
-  await updateUser({identities}, userId)
+  await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)
 
   if (sendEmail === false) return {success: true}
 
