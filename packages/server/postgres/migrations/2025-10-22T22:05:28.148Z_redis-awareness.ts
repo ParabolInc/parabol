@@ -27,6 +27,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   return delsCount;`
 
   await Promise.all([redis.eval(script, 1, 'presence:*'), redis.eval(script, 1, 'team:*')])
+  redis.disconnect()
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
