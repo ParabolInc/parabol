@@ -97,7 +97,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
         'addTeamMemberIntegrationAuth',
         'assignSAMLIdToOrg',
         'changeEmailDomain',
-        'connectSocket',
         'createImposterToken',
         'createOAuth1AuthorizeUrl',
         'deleteUser',
