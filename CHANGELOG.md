@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.2](https://github.com/ParabolInc/parabol/compare/v10.28.1...v10.28.2) (2025-10-22)
+
+
+### Fixed
+
+* simplify onAuth query, delay provider unregister for 5s ([#12258](https://github.com/ParabolInc/parabol/issues/12258)) ([331885e](https://github.com/ParabolInc/parabol/commit/331885e8680cdc6905bfd3700cbfd926d88475dc))
+
 ## [10.28.1](https://github.com/ParabolInc/parabol/compare/v10.28.0...v10.28.1) (2025-10-21)
 
 
