@@ -5,7 +5,7 @@ import type {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
-import type {RefreshPokerEstimateIntegrationQuery as TRefreshPokerEstimateIntegrationQuery} from '../__generated__/RefreshPokerEstimateIntegrationQuery.graphql'
+import type {PokerEstimateHeaderCardQuery as TPokerEstimateHeaderCardQuery} from '../__generated__/PokerEstimateHeaderCardQuery.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
@@ -16,84 +16,78 @@ import PokerEstimateHeaderCardContent, {
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
-graphql`
-  fragment RefreshPokerEstimateIntegrationQuery_task on Task {
-    ...PokerEstimateHeaderCardParabol_task
-    integrationHash
-    integration {
-      ... on AzureDevOpsWorkItem {
-        __typename
-        id
-        title
-        teamProject
-        type
-        state
-        url
-        descriptionHTML
-      }
-      ... on JiraIssue {
-        __typename
-        issueKey
-        summary
-        descriptionHTML
-        jiraUrl: url
-      }
-      ... on JiraServerIssue {
-        __typename
-        issueKey
-        summary
-        descriptionHTML
-        jiraUrl: url
-      }
-      ... on _xGitHubIssue {
-        __typename
-        number
-        title
-        bodyHTML
-        ghUrl: url
-      }
-      ... on _xGitLabIssue {
-        __typename
-        descriptionHtml
-        title
-        webUrl
-        iid
-      }
-      ... on _xLinearIssue {
-        __typename
-        description
-        title
-        url
-        identifier
-      }
-    }
-  }
-`
-
-const refreshPokerEstimateIntegrationQuery = graphql`
-  query RefreshPokerEstimateIntegrationQuery($taskId: ID!, $meetingId: ID!) {
-    refreshPokerEstimateIntegration(taskId: $taskId, meetingId: $meetingId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
-      ... on RefreshPokerEstimateIntegrationSuccess {
-        task {
-          ...RefreshPokerEstimateIntegrationQuery_task @relay(mask: false)
+const refreshStoryIntegrationQuery = graphql`
+  query PokerEstimateHeaderCardQuery($meetingId: ID!, $storyId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        ... on PokerMeeting {
+          story(storyId: $storyId) {
+            ...PokerEstimateHeaderCardParabol_task
+            integrationHash
+            integration {
+              ... on AzureDevOpsWorkItem {
+                __typename
+                id
+                title
+                teamProject
+                type
+                state
+                url
+                descriptionHTML
+              }
+              ... on JiraIssue {
+                __typename
+                issueKey
+                summary
+                descriptionHTML
+                jiraUrl: url
+              }
+              ... on JiraServerIssue {
+                __typename
+                issueKey
+                summary
+                descriptionHTML
+                jiraUrl: url
+              }
+              ... on _xGitHubIssue {
+                __typename
+                number
+                title
+                bodyHTML
+                ghUrl: url
+              }
+              ... on _xGitLabIssue {
+                __typename
+                descriptionHtml
+                title
+                webUrl
+                iid
+              }
+              ... on _xLinearIssue {
+                __typename
+                description
+                title
+                url
+                identifier
+              }
+            }
+          }
         }
       }
     }
   }
 `
 
-const RefreshPokerEstimateIntegrationQuery = async (
+const RefreshStoryIntegration = async (
   atmosphere: Atmosphere,
-  variables: {taskId: string; meetingId: string}
+  variables: {meetingId: string; storyId: string}
 ) => {
-  return atmosphere.fetchQuery<TRefreshPokerEstimateIntegrationQuery>(
-    refreshPokerEstimateIntegrationQuery,
-    variables
+  return atmosphere.fetchQuery<TPokerEstimateHeaderCardQuery>(
+    refreshStoryIntegrationQuery,
+    variables,
+    {
+      fetchPolicy: 'network-only'
+    }
   )
 }
 
@@ -298,8 +292,8 @@ const PokerEstimateHeaderCard = (props: Props) => {
     if (!integrationHash) return
     setIsRefreshing(true)
     try {
-      await RefreshPokerEstimateIntegrationQuery(atmosphere, {
-        taskId: stage.taskId,
+      await RefreshStoryIntegration(atmosphere, {
+        storyId: stage.taskId,
         meetingId
       })
     } finally {

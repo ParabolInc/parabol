@@ -1,6 +1,0 @@
-type RefreshPokerEstimateIntegrationSuccess {
-	"""
-	The refreshed task with updated integration data
-	"""
-	task: Task!
-}
