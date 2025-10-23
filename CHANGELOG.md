@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.29.0](https://github.com/ParabolInc/parabol/compare/v10.28.5...v10.29.0) (2025-10-23)
+
+
+### Added
+
+* Adds refresh button to Sprint Poker ([#12239](https://github.com/ParabolInc/parabol/issues/12239)) ([4bb327f](https://github.com/ParabolInc/parabol/commit/4bb327ff57b9b4d129c120dfce5e0f98fcf10517))
+
+
+### Fixed
+
+* use ping/pong between origin and proxy sockets ([#12278](https://github.com/ParabolInc/parabol/issues/12278)) ([3d7d0a1](https://github.com/ParabolInc/parabol/commit/3d7d0a132c79ef5fa3bdb2e9d48b21776fcedfd5))
+
 ## [10.28.5](https://github.com/ParabolInc/parabol/compare/v10.28.4...v10.28.5) (2025-10-23)
 
 
