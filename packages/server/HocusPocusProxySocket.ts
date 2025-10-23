@@ -22,6 +22,9 @@ export class HocusPocusProxySocket extends EventEmitter {
     this.on('close', () => {
       this.readyState = 3
     })
+    setInterval(() => {
+      this.emit('pong')
+    }, 30_000)
   }
   private publish(msg: RSAMessageClose | RSAMessagePing | RSAMessageSend) {
     this.pub.publish(this.replyTo, this.pack(msg))
