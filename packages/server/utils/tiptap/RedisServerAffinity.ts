@@ -175,7 +175,11 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     const socketId = headers['sec-websocket-key']!
     let socketRecord = this.proxySockets[socketId]
     const cleanup = setTimeout(() => {
-      delete this.proxySockets[socketId]
+      const proxySocket = this.proxySockets[socketId]
+      if (proxySocket) {
+        proxySocket.socket.destroy()
+        delete this.proxySockets[socketId]
+      }
     }, this.proxySocketTTL)
     if (!socketRecord) {
       const socket = new HocusPocusProxySocket(this.pub, this.pack, replyTo, socketId)
