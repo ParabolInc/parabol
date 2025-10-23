@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.4](https://github.com/ParabolInc/parabol/compare/v10.28.3...v10.28.4) (2025-10-23)
+
+
+### Fixed
+
+* keep proxy sockets alive ([#12271](https://github.com/ParabolInc/parabol/issues/12271)) ([5d8f05d](https://github.com/ParabolInc/parabol/commit/5d8f05d54bed43a64b37ab73d480b071a8e2b401))
+
 ## [10.28.3](https://github.com/ParabolInc/parabol/compare/v10.28.2...v10.28.3) (2025-10-22)
 
 
