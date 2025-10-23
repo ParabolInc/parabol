@@ -1,9 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   PokerEstimateHeaderCard_stage$data,
   PokerEstimateHeaderCard_stage$key
 } from '../__generated__/PokerEstimateHeaderCard_stage.graphql'
+import type {PokerEstimateHeaderCardQuery as TPokerEstimateHeaderCardQuery} from '../__generated__/PokerEstimateHeaderCardQuery.graphql'
+import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
 import renderMarkdown from '../utils/renderMarkdown'
@@ -12,6 +15,33 @@ import PokerEstimateHeaderCardContent, {
 } from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
+
+const refreshStoryIntegrationQuery = graphql`
+  query PokerEstimateHeaderCardQuery($meetingId: ID!, $storyId: ID!) {
+    viewer {
+      meeting(meetingId: $meetingId) {
+        ... on PokerMeeting {
+          story(storyId: $storyId) {
+            ... PokerEstimateHeaderCardTask @relay(mask: false)
+          }
+        }
+      }
+    }
+  }
+`
+
+const RefreshStoryIntegration = async (
+  atmosphere: Atmosphere,
+  variables: {meetingId: string; storyId: string}
+) => {
+  return atmosphere.fetchQuery<TPokerEstimateHeaderCardQuery>(
+    refreshStoryIntegrationQuery,
+    variables,
+    {
+      fetchPolicy: 'network-only'
+    }
+  )
+}
 
 interface Props {
   stage: PokerEstimateHeaderCard_stage$key
@@ -87,64 +117,71 @@ const getHeaderFields = (
   return null
 }
 
+graphql`
+  fragment PokerEstimateHeaderCardTask on Task {
+    ...PokerEstimateHeaderCardParabol_task
+    integrationHash
+    integration {
+      ... on AzureDevOpsWorkItem {
+        __typename
+        id
+        title
+        teamProject
+        type
+        state
+        url
+        descriptionHTML
+      }
+      ... on JiraIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on JiraServerIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on _xGitHubIssue {
+        __typename
+        number
+        title
+        bodyHTML
+        ghUrl: url
+      }
+      ... on _xGitLabIssue {
+        __typename
+        descriptionHtml
+        title
+        webUrl
+        iid
+      }
+      ... on _xLinearIssue {
+        __typename
+        description
+        title
+        url
+        identifier
+      }
+    }
+  }
+`
+
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage: stageRef} = props
   const atmosphere = useAtmosphere()
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const stage = useFragment(
     graphql`
       fragment PokerEstimateHeaderCard_stage on EstimateStage {
         meetingId
         taskId
         task {
-          ...PokerEstimateHeaderCardParabol_task
-          integrationHash
-          integration {
-            ... on AzureDevOpsWorkItem {
-              __typename
-              id
-              title
-              teamProject
-              type
-              state
-              url
-              descriptionHTML
-            }
-            ... on JiraIssue {
-              __typename
-              issueKey
-              summary
-              descriptionHTML
-              jiraUrl: url
-            }
-            ... on JiraServerIssue {
-              __typename
-              issueKey
-              summary
-              descriptionHTML
-              jiraUrl: url
-            }
-            ... on _xGitHubIssue {
-              __typename
-              number
-              title
-              bodyHTML
-              ghUrl: url
-            }
-            ... on _xGitLabIssue {
-              __typename
-              descriptionHtml
-              title
-              webUrl
-              iid
-            }
-            ... on _xLinearIssue {
-              __typename
-              description
-              title
-              url
-              identifier
-            }
-          }
+          ...PokerEstimateHeaderCardTask @relay(mask: false)
         }
       }
     `,
@@ -208,7 +245,27 @@ const PokerEstimateHeaderCard = (props: Props) => {
     }
     return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
-  return <PokerEstimateHeaderCardContent {...headerFields} />
+
+  const handleRefresh = async () => {
+    if (!integrationHash) return
+    setIsRefreshing(true)
+    try {
+      await RefreshStoryIntegration(atmosphere, {
+        storyId: stage.taskId,
+        meetingId
+      })
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
+  return (
+    <PokerEstimateHeaderCardContent
+      {...headerFields}
+      onRefresh={handleRefresh}
+      isRefreshing={isRefreshing}
+    />
+  )
 }
 
 export default PokerEstimateHeaderCard
