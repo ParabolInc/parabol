@@ -59,6 +59,7 @@ export const redisHocusPocus = new RedisServerAffinity({
   redis: getRedis(),
   serverId: SERVER_ID,
   unpack,
+  proxySocketTTL: ms('1h'),
   customEvents: hocusPocusCustomEvents
 })
 export const hocuspocus = new Hocuspocus({
