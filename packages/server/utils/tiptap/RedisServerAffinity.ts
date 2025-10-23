@@ -41,6 +41,12 @@ export type RSAMessageClose = {
 export type RSAMessagePing = {
   type: 'ping'
   socketId: string
+  replyTo: string
+}
+
+export type RSAMessagePong = {
+  type: 'pong'
+  socketId: string
 }
 
 export type RSAMessageSend = {
@@ -70,6 +76,7 @@ export type RSAMessage =
   | RSAMessageUnload
   | RSAMessageClose
   | RSAMessagePing
+  | RSAMessagePong
   | RSAMessageSend
   | RSAMessageCustomEventStart
   | RSAMessageCustomEventComplete
@@ -95,7 +102,6 @@ interface Configuration<TCE> {
   serverId: ServerId
   lockTTL?: number
   customEventTTL?: number
-  proxySocketTTL?: number
   prefix?: string
   customEvents?: TCE
 }
@@ -116,38 +122,26 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private originSockets: Record<SocketId, BaseWebSocket> = {}
   private locks: Record<DocumentName, NodeJS.Timeout> = {}
   private lockPromises: Record<DocumentName, Promise<ServerId | null>> = {}
-  private proxySockets: Record<SocketId, {socket: HocusPocusProxySocket; cleanup: NodeJS.Timeout}> =
-    {}
+  private proxySockets: Record<SocketId, HocusPocusProxySocket> = {}
   private prefix: string
   private lockPrefix: string
   private msgChannel: string
   private serverId: ServerId
   private customEventTTL: number
   private lockTTL: number
-  private proxySocketTTL: number
   private instance!: Hocuspocus
   private customEvents: TCE
   private replyIdCounter: number = 0
   private pendingReplies: Record<number, PromiseWithResolvers<any>['resolve']> = {}
   constructor(configuration: Configuration<TCE>) {
-    const {
-      redis,
-      pack,
-      unpack,
-      serverId,
-      lockTTL,
-      prefix,
-      proxySocketTTL,
-      customEvents,
-      customEventTTL
-    } = configuration
+    const {redis, pack, unpack, serverId, lockTTL, prefix, customEvents, customEventTTL} =
+      configuration
     this.pub = redis.duplicate()
     this.sub = redis.duplicate()
     this.pack = pack
     this.unpack = unpack
     this.serverId = serverId
     this.lockTTL = lockTTL ?? 10_000
-    this.proxySocketTTL = proxySocketTTL ?? 30_000
     this.customEventTTL = customEventTTL ?? 30_000
     this.prefix = prefix ?? 'rsa'
     this.lockPrefix = `${this.prefix}Lock`
@@ -161,10 +155,11 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   private closeProxy(socketId: string) {
-    const socketRecord = this.proxySockets[socketId]
-    if (!socketRecord) return
-    clearTimeout(socketRecord.cleanup)
-    delete this.proxySockets[socketId]
+    this.proxySockets[socketId]?.emit('close', 1000, Buffer.from('provider_initiated', 'utf-8'))
+  }
+
+  private pongProxy(socketId: string) {
+    this.proxySockets[socketId]?.emit('pong')
   }
 
   private handleProxyMessage(
@@ -173,24 +168,22 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     const {replyTo, message, serializedHTTPRequest} = msg
     const {headers} = serializedHTTPRequest
     const socketId = headers['sec-websocket-key']!
-    let socketRecord = this.proxySockets[socketId]
-    const cleanup = setTimeout(() => {
-      const proxySocket = this.proxySockets[socketId]
-      if (proxySocket) {
-        proxySocket.socket.destroy()
+    let socket = this.proxySockets[socketId]
+    if (!socket) {
+      socket = new HocusPocusProxySocket(
+        this.pub,
+        this.pack,
+        replyTo,
+        `${this.msgChannel}:${this.serverId}`,
+        socketId
+      )
+      socket.once('close', () => {
         delete this.proxySockets[socketId]
-      }
-    }, this.proxySocketTTL)
-    if (!socketRecord) {
-      const socket = new HocusPocusProxySocket(this.pub, this.pack, replyTo, socketId)
-      socketRecord = {socket, cleanup}
-      this.proxySockets[socketId] = socketRecord
+      })
+      this.proxySockets[socketId] = socket
       this.instance.handleConnection(socket as any, serializedHTTPRequest as any, {})
-    } else {
-      clearTimeout(socketRecord.cleanup)
-      socketRecord.cleanup = cleanup
     }
-    socketRecord.socket.emit('message', message)
+    socket.emit('message', message)
   }
 
   private getOrClaimLock(documentName: string) {
@@ -229,6 +222,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       this.closeProxy(msg.socketId)
       return
     }
+    if (type === 'pong') {
+      this.pongProxy(msg.socketId)
+      return
+    }
     if (type === 'unload') {
       delete this.lockPromises[msg.documentName]
       return
@@ -264,7 +261,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     if (type === 'close') {
       socket.close(msg.code, msg.reason)
     } else if (type === 'ping') {
-      socket.ping()
+      // Reply instantly to the proxy socket, without forwarding to client
+      // The origin socket handles heartbeat for itself
+      const {replyTo, socketId} = msg
+      const reply: RSAMessagePong = {
+        type: 'pong',
+        socketId
+      }
+      this.pub.publish(`${replyTo}`, this.pack(reply))
     } else if (type === 'send') {
       socket.send(msg.message)
     }
