@@ -13,6 +13,7 @@ export class HocusPocusProxySocket extends EventEmitter {
   private pub: RedisClient
   private pack: Pack
   readyState = 1
+  private pongInterval: undefined | NodeJS.Timeout
   constructor(pub: RedisClient, pack: Pack, replyTo: string, socketId: string) {
     super()
     this.replyTo = replyTo
@@ -22,7 +23,7 @@ export class HocusPocusProxySocket extends EventEmitter {
     this.on('close', () => {
       this.readyState = 3
     })
-    setInterval(() => {
+    this.pongInterval = setInterval(() => {
       this.emit('pong')
     }, 30_000)
   }
@@ -40,5 +41,8 @@ export class HocusPocusProxySocket extends EventEmitter {
   send(message: Uint8Array) {
     const msg: RSAMessageSend = {type: 'send', socketId: this.socketId, message}
     this.publish(msg)
+  }
+  destroy() {
+    clearInterval(this.pongInterval)
   }
 }
