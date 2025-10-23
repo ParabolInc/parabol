@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.28.5](https://github.com/ParabolInc/parabol/compare/v10.28.4...v10.28.5) (2025-10-23)
+
+
+### Fixed
+
+* reduce pong from 30 to 15s ([#12274](https://github.com/ParabolInc/parabol/issues/12274)) ([de25d45](https://github.com/ParabolInc/parabol/commit/de25d4580b677b409da1f11ea13ee12f2ec6a6f6))
+
 ## [10.28.4](https://github.com/ParabolInc/parabol/compare/v10.28.3...v10.28.4) (2025-10-23)
 
 
