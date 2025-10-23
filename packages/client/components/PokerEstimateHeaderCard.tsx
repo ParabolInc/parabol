@@ -22,55 +22,7 @@ const refreshStoryIntegrationQuery = graphql`
       meeting(meetingId: $meetingId) {
         ... on PokerMeeting {
           story(storyId: $storyId) {
-            ...PokerEstimateHeaderCardParabol_task
-            integrationHash
-            integration {
-              ... on AzureDevOpsWorkItem {
-                __typename
-                id
-                title
-                teamProject
-                type
-                state
-                url
-                descriptionHTML
-              }
-              ... on JiraIssue {
-                __typename
-                issueKey
-                summary
-                descriptionHTML
-                jiraUrl: url
-              }
-              ... on JiraServerIssue {
-                __typename
-                issueKey
-                summary
-                descriptionHTML
-                jiraUrl: url
-              }
-              ... on _xGitHubIssue {
-                __typename
-                number
-                title
-                bodyHTML
-                ghUrl: url
-              }
-              ... on _xGitLabIssue {
-                __typename
-                descriptionHtml
-                title
-                webUrl
-                iid
-              }
-              ... on _xLinearIssue {
-                __typename
-                description
-                title
-                url
-                identifier
-              }
-            }
+            ... PokerEstimateHeaderCardTask @relay(mask: false)
           }
         }
       }
@@ -165,6 +117,60 @@ const getHeaderFields = (
   return null
 }
 
+graphql`
+  fragment PokerEstimateHeaderCardTask on Task {
+    ...PokerEstimateHeaderCardParabol_task
+    integrationHash
+    integration {
+      ... on AzureDevOpsWorkItem {
+        __typename
+        id
+        title
+        teamProject
+        type
+        state
+        url
+        descriptionHTML
+      }
+      ... on JiraIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on JiraServerIssue {
+        __typename
+        issueKey
+        summary
+        descriptionHTML
+        jiraUrl: url
+      }
+      ... on _xGitHubIssue {
+        __typename
+        number
+        title
+        bodyHTML
+        ghUrl: url
+      }
+      ... on _xGitLabIssue {
+        __typename
+        descriptionHtml
+        title
+        webUrl
+        iid
+      }
+      ... on _xLinearIssue {
+        __typename
+        description
+        title
+        url
+        identifier
+      }
+    }
+  }
+`
+
 const PokerEstimateHeaderCard = (props: Props) => {
   const {stage: stageRef} = props
   const atmosphere = useAtmosphere()
@@ -175,55 +181,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
         meetingId
         taskId
         task {
-          ...PokerEstimateHeaderCardParabol_task
-          integrationHash
-          integration {
-            ... on AzureDevOpsWorkItem {
-              __typename
-              id
-              title
-              teamProject
-              type
-              state
-              url
-              descriptionHTML
-            }
-            ... on JiraIssue {
-              __typename
-              issueKey
-              summary
-              descriptionHTML
-              jiraUrl: url
-            }
-            ... on JiraServerIssue {
-              __typename
-              issueKey
-              summary
-              descriptionHTML
-              jiraUrl: url
-            }
-            ... on _xGitHubIssue {
-              __typename
-              number
-              title
-              bodyHTML
-              ghUrl: url
-            }
-            ... on _xGitLabIssue {
-              __typename
-              descriptionHtml
-              title
-              webUrl
-              iid
-            }
-            ... on _xLinearIssue {
-              __typename
-              description
-              title
-              url
-              identifier
-            }
-          }
+          ...PokerEstimateHeaderCardTask @relay(mask: false)
         }
       }
     `,
