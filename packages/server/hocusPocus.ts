@@ -99,10 +99,13 @@ export const hocuspocus = new Hocuspocus({
           .where('userId', '=', userId)
           .where('isNotRemoved', '=', true)
           .executeTakeFirst()
-        if (!teamMember)
-          throw new Error(
+        if (!teamMember) {
+          const error = new Error(
             `Meeting awareness requires being on the team: ${userId} ${meetingTeamId}`
           )
+          ;(error as any).reason = 'Unauthorized'
+          throw error
+        }
       }
       return {userId}
     }
