@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.29.1](https://github.com/ParabolInc/parabol/compare/v10.29.0...v10.29.1) (2025-10-24)
+
+
+### Fixed
+
+* onAuth retries ([#12280](https://github.com/ParabolInc/parabol/issues/12280)) ([1f52c92](https://github.com/ParabolInc/parabol/commit/1f52c92a5ba4fc2a87efe653fac92f04ba4c2933))
+
 ## [10.29.0](https://github.com/ParabolInc/parabol/compare/v10.28.5...v10.29.0) (2025-10-23)
 
 

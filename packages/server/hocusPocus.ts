@@ -88,11 +88,25 @@ export const hocuspocus = new Hocuspocus({
       const [, meetingId] = documentName.split(':')
       if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
       if (!userId) throw new Error(`Meeting awareness requires a userId`)
-      if (tms.length === 0)
-        throw new Error(`Meeting awareness requires being on the team, viewer is on none`)
       const meetingTeamId = await getMeetingTeamId(meetingId)
-      const isOnTeam = tms.includes(meetingTeamId ?? '')
-      if (!isOnTeam) throw new Error(`Meeting awareness requires being on the team`)
+      if (!tms.includes(meetingTeamId ?? '')) {
+        // They may have a stale token or client is making a request it shouldn't.
+        // Unsure how to reproduce, but I see errors in DD logs.
+        const teamMember = await getKysely()
+          .selectFrom('TeamMember')
+          .select('id')
+          .where('teamId', '=', meetingTeamId)
+          .where('userId', '=', userId)
+          .where('isNotRemoved', '=', true)
+          .executeTakeFirst()
+        if (!teamMember) {
+          const error = new Error(
+            `Meeting awareness requires being on the team: ${userId} ${meetingTeamId}`
+          )
+          ;(error as any).reason = 'Unauthorized'
+          throw error
+        }
+      }
       return {userId}
     }
     const [dbId] = CipherId.fromClient(documentName)
