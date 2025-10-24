@@ -14,7 +14,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
-import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
@@ -147,10 +146,11 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        GlobalDragHandle.configure({
-          // hide handle on custom block contents
-          excludedTags: ['taskBlock', 'insightsBlock'].map((name) => `div.node-${name} *`)
-        }),
+        // GlobalDragHandle.configure({
+        //   // hide handle on custom block contents
+        //   customTags: ['pageLinkBlock'],
+        //   excludedTags: ['taskBlock', 'insightsBlock'].map((name) => `div.node-${name} *`)
+        // }),
         AutoJoiner,
         Markdown.configure({
           html: true,

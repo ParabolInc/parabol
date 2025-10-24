@@ -618,7 +618,7 @@
   white-space: nowrap;
 }
 
-.drag-handle {
+/* .drag-handle {
   position: fixed;
   opacity: 1;
   transition: opacity ease-in 0.2s;
@@ -653,7 +653,7 @@
     display: none;
     pointer-events: none;
   }
-}
+} */
 
 .details {
   display: flex;

@@ -1,8 +1,8 @@
 import type {Document} from '@hocuspocus/server'
-import type {XmlElement} from 'yjs'
+import {XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
+import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {hocuspocus} from '../../hocusPocus'
-import {updateYDocNodes} from './updateYDocNodes'
 
 const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
@@ -31,16 +31,19 @@ export const removeCanonicalPageLinkFromPage = async (
 ) => {
   const {pageCode} = payload
   await withDoc(documentName, (doc) => {
-    updateYDocNodes(
-      doc,
-      'pageLinkBlock',
-      {canonical: true, pageCode},
-      (_, idx, parent) => {
-        parent.delete(idx)
-        return 'DONE'
-      },
-      {maxDepth: 0, ascending: false}
-    )
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('canonical') === true
+    })
+    for (const node of walker) {
+      const parent = node.parent as XmlElement
+      const parentIdx = parent.toArray().findIndex((child) => child === node)
+      if (parentIdx !== -1) {
+        parent.delete(parentIdx)
+        break
+      }
+    }
   })
 }
 
@@ -50,16 +53,20 @@ export const removeBacklinkedPageLinkBlocks = async (
 ) => {
   const {pageCode} = payload
   await withDoc(documentName, (doc) => {
-    updateYDocNodes(
-      doc,
-      'pageLinkBlock',
-      {pageCode},
-      (_, idx, parent) => {
-        parent.delete(idx)
-      },
-      // gotcha: ascending must be false for deletes because Yjs array length will change unlike a JS array
-      {ascending: false}
-    )
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode
+    })
+    // create the array since Yjs length would change upon deletion
+    const nodes = Array.from(walker)
+    for (const node of nodes) {
+      const parent = node.parent as XmlElement
+      const parentIdx = parent.toArray().findIndex((child) => child === node)
+      if (parentIdx !== -1) {
+        parent.delete(parentIdx)
+      }
+    }
   })
 }
 
@@ -69,8 +76,13 @@ export const updateBacklinkedPageLinkTitles = async (
 ) => {
   const {pageCode, title} = payload
   await withDoc(documentName, (doc) => {
-    updateYDocNodes(doc, 'pageLinkBlock', {pageCode}, (node) => {
-      node.setAttribute('title', title)
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!isPageLink(yxml)) return false
+      return yxml.getAttribute('pageCode') === pageCode
     })
+    for (const node of walker) {
+      ;(node as XmlElement).setAttribute('title', title)
+    }
   })
 }

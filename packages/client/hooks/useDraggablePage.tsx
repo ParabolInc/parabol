@@ -12,7 +12,7 @@ import {
 } from '../mutations/useUpdatePageMutation'
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
-import {getCanonicalPageLinks} from '../shared/tiptap/getCanonicalPageLinks'
+import {getPageLinks} from '../shared/tiptap/getPageLinks'
 import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
@@ -97,7 +97,6 @@ export const useDraggablePage = (
 
   const onPointerUp = useEventCallback((e: PointerEvent) => {
     e.preventDefault()
-    if (!drag.isDrag) return
     const dropCurrentTarget = document.elementFromPoint(e.clientX, e.clientY)
     const dropTarget = dropCurrentTarget?.closest('[data-drop-below], [data-drop-in]')
     if (!dropTarget) {
@@ -123,7 +122,7 @@ export const useDraggablePage = (
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
       const pageCode = Number(pageId.split('page:')[1])
-      const children = getCanonicalPageLinks(document)
+      const children = getPageLinks(document, true)
       const fromNodeIdx = children.findIndex((child) => child.getAttribute('pageCode') === pageCode)
       if (fromNodeIdx === -1) return
       const fromNode = children.at(fromNodeIdx)!
@@ -160,30 +159,22 @@ export const useDraggablePage = (
       return
     }
     if (targetParentPageId) {
-      // when making something a child page, we don't use GraphQL, we use yjs
-      // in the future, I hope every user-defined page is a child so this is the only code path
       providerManager.withDoc(targetParentPageId, (doc) => {
         const pageCode = Number(pageId.split('page:')[1])
         const title = source.get(pageId)?.title as string
-        const createPageLinkBlock = () => createPageLinkElement(pageCode, title)
-        const frag = doc.getXmlFragment('default')
-        let pageLinkCount = -1
-        const childArrIdxForDropIdx = frag.toArray().findIndex((node) => {
-          if (
-            node instanceof Y.XmlElement &&
-            node.nodeName === 'pageLinkBlock' &&
-            (node.getAttribute('canonical') as any) === true
-          ) {
-            pageLinkCount++
-            if (pageLinkCount === dropIdx) {
-              return true
-            }
-          }
-          return false
-        })
-
-        const nextIdx = childArrIdxForDropIdx === -1 ? 1 : childArrIdxForDropIdx + 1
-        frag.insert(nextIdx, [createPageLinkBlock() as any])
+        const children = getPageLinks(doc, true)
+        const idx = dropIdx === null ? -1 : dropIdx
+        const dropTarget = children.at(idx) as Y.XmlElement
+        if (dropTarget) {
+          const dropTargetParent = dropTarget.parent as Y.XmlElement
+          dropTargetParent.insertAfter(dropTarget, [
+            createPageLinkElement(pageCode, title) as Y.XmlElement
+          ])
+        } else {
+          // this will be the first page link, put it at the top just below the title
+          const frag = doc.getXmlFragment('default')
+          frag.insert(1, [createPageLinkElement(pageCode, title) as Y.XmlElement])
+        }
       })
     } else {
       // the target is top-level, under a team, shared pages, or private pages
@@ -221,24 +212,20 @@ export const useDraggablePage = (
     if (sourceParentPageId && sourceConnectionKey === 'User_pages') {
       // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
-        const frag = document.getXmlFragment('default')
         const pageCode = Number(pageId.split('page:')[1])
-        const idxToRemove = frag
-          .toArray()
-          .findIndex(
-            (node) =>
-              node instanceof Y.XmlElement &&
-              node.nodeName === 'pageLinkBlock' &&
-              (node.getAttribute('pageCode') as any) === pageCode &&
-              (node.getAttribute('canonical') as any) === true
-          )
-        if (idxToRemove === -1) {
+        const canonChildren = getPageLinks(document, true)
+        const childToRemove = canonChildren.find(
+          (child) => child.getAttribute('pageCode') === pageCode
+        )
+        if (!childToRemove) {
           console.warn('idx for source element not found')
-        } else {
-          // first mark it as isMoving so the server doesn't delete the underlying page
-          frag.get(idxToRemove).setAttribute('isMoving', true)
-          frag.delete(idxToRemove)
+          return
         }
+        // first mark it as isMoving so the server doesn't delete the underlying page
+        childToRemove.setAttribute('isMoving', true)
+        const parent = childToRemove.parent as Y.XmlElement
+        const idxToRemove = parent.toArray().findIndex((child) => child === childToRemove)
+        parent.delete(idxToRemove)
       })
     }
     cleanupDrag()

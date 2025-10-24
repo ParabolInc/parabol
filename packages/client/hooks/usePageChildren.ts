@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import type {PageLinkBlockAttributes} from '../shared/tiptap/extensions/PageLinkBlockBase'
-import {getCanonicalPageLinks} from '../shared/tiptap/getCanonicalPageLinks'
+import {getPageLinks} from '../shared/tiptap/getPageLinks'
 import {usePageProvider} from './usePageProvider'
 
 export const usePageChildren = (pageId: string) => {
@@ -10,7 +10,7 @@ export const usePageChildren = (pageId: string) => {
   useEffect(() => {
     const root = provider.document.getXmlFragment('default')
     const update = () => {
-      const items = getCanonicalPageLinks(provider.document).map(
+      const items = getPageLinks(provider.document, true).map(
         (item) => item.getAttributes() as PageLinkBlockAttributes
       )
       setChildren(items)
