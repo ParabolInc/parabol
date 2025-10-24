@@ -59,7 +59,9 @@ const renameMeeting = {
     meeting.name = name
     await getKysely().updateTable('NewMeeting').set({name}).where('id', '=', meetingId).execute()
     const data = {meetingId}
-    IntegrationNotifier.updateMeeting?.(dataLoader, meetingId, teamId)
+    IntegrationNotifier.updateMeeting?.(dataLoader, meetingId, teamId).catch(() => {
+      // The message may not exist
+    })
     publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingSuccess', data, subOptions)
 
     return data
