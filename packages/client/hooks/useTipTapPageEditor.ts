@@ -22,6 +22,7 @@ import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import {CollaborationFriendlyFormatting} from '../tiptap/extensions/collaborationFriendlyFormatting/CollaborationFriendlyFormatting'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
@@ -137,6 +138,7 @@ export const useTipTapPageEditor = (
           openOnClick: false
         }),
         SearchAndReplace.configure(),
+        CollaborationFriendlyFormatting,
         Collaboration.configure({
           document: provider?.document
         }),
