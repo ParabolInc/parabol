@@ -1,4 +1,3 @@
-import Link from '@mui/icons-material/Link'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import graphql from 'babel-plugin-relay/macro'
@@ -11,9 +10,6 @@ import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {MenuLabelTrigger} from '../../ui/Menu/MenuLabelTrigger'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   pageRef: PageSharingGeneralAccess_page$key
@@ -53,11 +49,6 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const {public: publicAccess} = access
   const [GAValue, setGAValue] = useState<GAValue>(publicAccess ? 'public' : 'restricted')
   const [execute, submitting] = useUpdatePageAccessMutation()
-
-  const handleCopyLink = () => {
-    const urlWithoutParams = `${window.location.origin}${window.location.pathname}`
-    navigator.clipboard.writeText(urlWithoutParams)
-  }
 
   const updateGAValue = (value: GAValue) => {
     setGAValue(value)
@@ -122,20 +113,6 @@ export const PageSharingGeneralAccess = (props: Props) => {
                 pageId={pageId}
               />
             )}
-          </div>
-          <div className='mt-2 flex justify-end pr-2'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={handleCopyLink}
-                  className='flex cursor-pointer items-center gap-1 text-sky-500 hover:text-sky-700'
-                >
-                  <Link className='h-4 w-4' />
-                  <span>Copy link</span>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>{'Copy link to clipboard'}</TooltipContent>
-            </Tooltip>
           </div>
         </>
       }

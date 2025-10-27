@@ -80,7 +80,7 @@ export const PageSharingAccessList = (props: Props) => {
     })
   }
   return (
-    <div className='overflow-y-auto pt-3 pb-4'>
+    <div className='overflow-y-auto pt-3'>
       {!isParentLinked && parentPageId && (
         <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
           {'Share settings on this page differ from its '}
