@@ -45,6 +45,9 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     // By convention, components rendered here are named with a *View suffix
     return ReactNodeViewRenderer(PageLinkBlockView, {
       className: 'group',
+      attrs: {
+        'data-type': 'pageLinkBlock'
+      },
       stopEvent() {
         // TipTap is being bad about intercepting drag/drop handling
         //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110

@@ -4,6 +4,7 @@ import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {Document} from '@tiptap/extension-document'
+import DragHandle from '@tiptap/extension-drag-handle'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
@@ -96,6 +97,7 @@ export const useTipTapPageEditor = (
         }),
         ImageBlock,
         LoomExtension,
+        DragHandle.configure({}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
@@ -146,11 +148,6 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        // GlobalDragHandle.configure({
-        //   // hide handle on custom block contents
-        //   customTags: ['pageLinkBlock'],
-        //   excludedTags: ['taskBlock', 'insightsBlock'].map((name) => `div.node-${name} *`)
-        // }),
         AutoJoiner,
         Markdown.configure({
           html: true,
