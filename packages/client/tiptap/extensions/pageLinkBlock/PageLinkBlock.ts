@@ -59,28 +59,50 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     return [
       new Plugin({
         props: {
-          /**
-           * Intercept slice being copied to the clipboard.
-           * We walk the slice, and if any node is a pageLinkBlock with canonical=true,
-           * we clone it with canonical=false.
-           * That way folks don't accidentally copy a canon page link block & paste it on another page
-           * Which would trigger a move
-           */
-          transformCopied(slice: Slice): Slice {
+          // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!
+          // if it's pasted from different doc, then the server will handle this as a move
+          transformPasted(slice, view) {
+            const {state} = view
+            let canonicals: Set<number> | undefined = undefined
+
+            const checkIfExists = (pageCode: number) => {
+              if (!canonicals) {
+                canonicals = new Set()
+                // collect all canonical pageLinkBlocks in the current doc
+                state.doc.descendants((node: Node) => {
+                  if (node.type.name === 'pageLinkBlock' && node.attrs.canonical) {
+                    canonicals!.add(node.attrs.pageCode)
+                  }
+                })
+              }
+              return canonicals.has(pageCode)
+            }
+
             function decanonPageLinks(frag: Fragment): Fragment {
               const newChildren: Node[] = []
               frag.forEach((child) => {
-                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical) {
-                  console.log('setting to false')
-                  const newAttrs = {...child.attrs, canonical: false}
-                  newChildren.push(child.type.create(newAttrs, null, child.marks))
+                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
+                  const alreadyExists = checkIfExists(child.attrs.pageCode)
+                  if (alreadyExists) {
+                    const linkChild = child.type.create(
+                      {...child.attrs, canonical: false},
+                      child.content,
+                      child.marks
+                    )
+                    newChildren.push(linkChild)
+                  } else {
+                    newChildren.push(child)
+                  }
+                } else if (child.content?.size) {
+                  // recurse into nested fragments
+                  const newContent = decanonPageLinks(child.content)
+                  newChildren.push(child.copy(newContent))
                 } else {
                   newChildren.push(child)
                 }
               })
               return Fragment.fromArray(newChildren)
             }
-            // return slice
             const newContent = decanonPageLinks(slice.content)
             return new Slice(newContent, slice.openStart, slice.openEnd)
           },
