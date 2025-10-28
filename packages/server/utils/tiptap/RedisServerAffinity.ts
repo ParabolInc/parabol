@@ -6,7 +6,6 @@ import {
   type Hocuspocus,
   IncomingMessage,
   type onConfigurePayload,
-  type onDisconnectPayload,
   type onLoadDocumentPayload
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
@@ -155,7 +154,11 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   private closeProxy(socketId: string) {
-    this.proxySockets[socketId]?.emit('close', 1000, Buffer.from('provider_initiated', 'utf-8'))
+    const proxySocket = this.proxySockets[socketId]
+    if (proxySocket) {
+      proxySocket.emit('close', 1000, Buffer.from('provider_initiated', 'utf-8'))
+      delete this.proxySockets[socketId]
+    }
   }
 
   private pongProxy(socketId: string) {
@@ -177,9 +180,6 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
         `${this.msgChannel}:${this.serverId}`,
         socketId
       )
-      socket.once('close', () => {
-        delete this.proxySockets[socketId]
-      })
       this.proxySockets[socketId] = socket
       this.instance.handleConnection(socket as any, serializedHTTPRequest as any, {})
     }
@@ -249,6 +249,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       const {replyId, payload} = msg
       const resolveFn = this.pendingReplies[replyId]
       if (!resolveFn) return
+      delete this.pendingReplies[replyId]
       resolveFn(payload)
       return
     }
@@ -384,8 +385,13 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
     const socket = this.originSockets[socketId]
+    if (!socket) return
     // at this point the socket is considered GC'd and we cannot call close
+    // The origin socket did not set up any connections for the proxy, so none of the hooks will work if we just emit
     socket?.emit('close', code, reason)
+    delete this.originSockets[socketId]
+    const msg: RSAMessageCloseProxy = {type: 'closeProxy', socketId}
+    this.pub.publish(this.msgChannel, this.pack(msg)).catch(() => {})
   }
 
   /* Hocuspocus hooks */
@@ -404,15 +410,6 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     this.releaseLock(documentName)
     // Broadcast to cluster to immediately remove the cached redis value
     const msg: RSAMessageUnload = {type: 'unload', documentName}
-    this.pub.publish(this.msgChannel, this.pack(msg))
-  }
-
-  async onDisconnect(data: onDisconnectPayload) {
-    const {requestHeaders} = data
-    const socketId = requestHeaders['sec-websocket-key']
-    if (!socketId) return
-    delete this.originSockets[socketId]
-    const msg: RSAMessageCloseProxy = {type: 'closeProxy', socketId}
     this.pub.publish(this.msgChannel, this.pack(msg))
   }
 

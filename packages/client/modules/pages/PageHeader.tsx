@@ -25,25 +25,23 @@ export const PageHeader = (props: Props) => {
 
   const {id: pageId} = page
   return (
-    <>
-      <div className='flex w-full items-center justify-between pt-2'>
+    <div className='sticky top-0 z-10 w-full bg-white'>
+      <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
-        <div className='px-2'>
-          <Popover.Root>
-            <Popover.Trigger asChild>
-              <button className='cursor-pointer bg-white pt-1 font-semibold text-md'>Share</button>
-            </Popover.Trigger>
-            <Popover.Portal>
-              <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>
-                <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-                  <PageSharingRoot pageId={pageId} />
-                </div>
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover.Root>
-        </div>
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <button className='cursor-pointer bg-white pt-1 font-semibold text-md'>Share</button>
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>
+              <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
+                <PageSharingRoot pageId={pageId} />
+              </div>
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
       </div>
       <PageDeletedHeader pageRef={page} />
-    </>
+    </div>
   )
 }

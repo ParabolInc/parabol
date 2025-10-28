@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.30.0](https://github.com/ParabolInc/parabol/compare/v10.29.1...v10.30.0) (2025-10-28)
+
+
+### Added
+
+* add h1, h2, h3, bullet slash shortcuts ([#12289](https://github.com/ParabolInc/parabol/issues/12289)) ([f45eb62](https://github.com/ParabolInc/parabol/commit/f45eb62b19cb8b9d5ff4a2312978e9076655b864))
+* added Copy Link to Page's Share menu ([#12283](https://github.com/ParabolInc/parabol/issues/12283)) ([d1a6e88](https://github.com/ParabolInc/parabol/commit/d1a6e88cb0931c146ec3092dd580890df15d4648))
+* float the PageHeader (base: feat/pages-copy-link) ([#12284](https://github.com/ParabolInc/parabol/issues/12284)) ([11feb39](https://github.com/ParabolInc/parabol/commit/11feb39b4368bd748a536794e4ce9c299f6279d9))
+
+
+### Fixed
+
+* memory leak on proxy sockets ([#12293](https://github.com/ParabolInc/parabol/issues/12293)) ([90c3593](https://github.com/ParabolInc/parabol/commit/90c3593679d0840325f83b26e3893475c41a3b0f))
+
+
+### Changed
+
+* remove Pages feature flag ([#12287](https://github.com/ParabolInc/parabol/issues/12287)) ([17e258c](https://github.com/ParabolInc/parabol/commit/17e258cb66d742e46c288063dd6449c810b3e45f))
+
 ## [10.29.1](https://github.com/ParabolInc/parabol/compare/v10.29.0...v10.29.1) (2025-10-24)
 
 
