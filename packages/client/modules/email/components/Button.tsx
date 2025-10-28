@@ -14,10 +14,15 @@ const linkStyle = {
   width: '100%'
 } as React.CSSProperties
 
-const Button = (props: {url: string; width?: number; children: ReactNode}) => {
-  const {url, width = 240} = props
+const Button = (props: {
+  url: string
+  width?: number
+  children: ReactNode
+  style?: React.CSSProperties
+}) => {
+  const {url, width = 240, style = {}} = props
   return (
-    <table style={{...emailTableBase, width}} width={width}>
+    <table style={{...emailTableBase, width, ...style}} width={width}>
       <tbody>
         <tr>
           <td align='center' style={cellStyle}>

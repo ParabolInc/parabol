@@ -75,7 +75,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
       })
       identities.push(microsoftIdentity) // mutative
 
-      await updateUser({identities}, viewerId)
+      await updateUser({identities: identities.map((id) => JSON.stringify(id))}, viewerId)
     }
     // MUTATIVE
     context.authToken = new AuthToken({

@@ -67,11 +67,12 @@ const handleAddTaskNotifications = async (
   task: Pick<Task, 'id' | 'content' | 'tags' | 'userId'>,
   viewerId: string,
   teamId: string,
+  meetingId: string | undefined | null,
   subOptions: SubOptions
 ) => {
   const pg = getKysely()
   const {id: taskId, content, tags, userId} = task
-  const usersIdsToIgnore = await getUsersToIgnore(viewerId, teamId)
+  const usersIdsToIgnore = await getUsersToIgnore(meetingId)
 
   // Handle notifications
   // Almost always you start out with a blank card assigned to you (except for filtered team dash)
@@ -232,7 +233,7 @@ export default {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     await pg.insertInto('Task').values(task).execute()
     // FIXME
-    handleAddTaskNotifications(teamMembers, task, viewerId, teamId, {
+    handleAddTaskNotifications(teamMembers, task, viewerId, teamId, meetingId, {
       operationId,
       mutatorId
     }).catch(() => {

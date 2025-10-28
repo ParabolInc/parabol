@@ -6,10 +6,11 @@ import type {WebSocketBehavior} from 'uWebSockets.js'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
-type HocusPocusSocketData = {
+export type HocusPocusSocketData = {
   ip: string
   serializedHTTPRequest: SerializedHTTPRequest
   socket: HocusPocusWebSocket
+  closed?: true
 }
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
@@ -55,7 +56,9 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     redisHocusPocus.onSocketMessage(socket, serializedHTTPRequest, message)
   },
   close(ws, code, reason) {
-    const socketId = ws.getUserData().serializedHTTPRequest.headers['sec-websocket-key']!
+    const userData = ws.getUserData()
+    userData.closed = true
+    const socketId = userData.serializedHTTPRequest.headers['sec-websocket-key']!
     redisHocusPocus.onSocketClose(socketId, code, reason)
   }
 }

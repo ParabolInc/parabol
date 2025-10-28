@@ -43,7 +43,7 @@ const EmailFooter = () => {
               {'United States'}
               <br />
               <a
-                href={`tel:${ContactInfo.TELEPHONE.replace('-', '')}`}
+                href={`tel:${ContactInfo.TELEPHONE.replace('-', '').replace(' ', '')}`}
                 title={`Call us: ${ContactInfo.TELEPHONE}`}
                 style={linkStyle}
               >

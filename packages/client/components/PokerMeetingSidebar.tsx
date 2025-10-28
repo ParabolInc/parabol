@@ -8,6 +8,7 @@ import type {
 import useRouter from '~/hooks/useRouter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import {GQLID} from '../utils/GQLID'
 import getSidebarItemStage from '../utils/getSidebarItemStage'
 import findStageById from '../utils/meetings/findStageById'
 import MeetingNavList from './MeetingNavList'
@@ -45,6 +46,7 @@ const PokerMeetingSidebar = (props: Props) => {
         localStage {
           id
         }
+        summaryPageId
         phases {
           phaseType
           stages {
@@ -68,7 +70,8 @@ const PokerMeetingSidebar = (props: Props) => {
     facilitatorStageId,
     localPhase,
     localStage,
-    phases
+    phases,
+    summaryPageId
   } = meeting
   const localPhaseType = localPhase ? localPhase.phaseType : ''
   const facilitatorStageRes = findStageById(phases, facilitatorStageId)
@@ -135,7 +138,10 @@ const PokerMeetingSidebar = (props: Props) => {
             isFacilitatorPhase={false}
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
-              history.push(`/new-summary/${meetingId}`)
+              const summaryURL = summaryPageId
+                ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
+                : `/new-summary/${meetingId}`
+              history.push(summaryURL)
             }}
             phaseType='SUMMARY'
           />

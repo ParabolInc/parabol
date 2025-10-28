@@ -5,6 +5,143 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.29.1](https://github.com/ParabolInc/parabol/compare/v10.29.0...v10.29.1) (2025-10-24)
+
+
+### Fixed
+
+* onAuth retries ([#12280](https://github.com/ParabolInc/parabol/issues/12280)) ([1f52c92](https://github.com/ParabolInc/parabol/commit/1f52c92a5ba4fc2a87efe653fac92f04ba4c2933))
+
+## [10.29.0](https://github.com/ParabolInc/parabol/compare/v10.28.5...v10.29.0) (2025-10-23)
+
+
+### Added
+
+* Adds refresh button to Sprint Poker ([#12239](https://github.com/ParabolInc/parabol/issues/12239)) ([4bb327f](https://github.com/ParabolInc/parabol/commit/4bb327ff57b9b4d129c120dfce5e0f98fcf10517))
+
+
+### Fixed
+
+* use ping/pong between origin and proxy sockets ([#12278](https://github.com/ParabolInc/parabol/issues/12278)) ([3d7d0a1](https://github.com/ParabolInc/parabol/commit/3d7d0a132c79ef5fa3bdb2e9d48b21776fcedfd5))
+
+## [10.28.5](https://github.com/ParabolInc/parabol/compare/v10.28.4...v10.28.5) (2025-10-23)
+
+
+### Fixed
+
+* reduce pong from 30 to 15s ([#12274](https://github.com/ParabolInc/parabol/issues/12274)) ([de25d45](https://github.com/ParabolInc/parabol/commit/de25d4580b677b409da1f11ea13ee12f2ec6a6f6))
+
+## [10.28.4](https://github.com/ParabolInc/parabol/compare/v10.28.3...v10.28.4) (2025-10-23)
+
+
+### Fixed
+
+* keep proxy sockets alive ([#12271](https://github.com/ParabolInc/parabol/issues/12271)) ([5d8f05d](https://github.com/ParabolInc/parabol/commit/5d8f05d54bed43a64b37ab73d480b071a8e2b401))
+
+## [10.28.3](https://github.com/ParabolInc/parabol/compare/v10.28.2...v10.28.3) (2025-10-22)
+
+
+### Fixed
+
+* cache meeting teamId in redis for faster onAuth awareness ([#12265](https://github.com/ParabolInc/parabol/issues/12265)) ([e24d246](https://github.com/ParabolInc/parabol/commit/e24d246ca074bc76b19150a5430f05b492a20093))
+* reduce connectSocket load on pg ([#12263](https://github.com/ParabolInc/parabol/issues/12263)) ([a1da972](https://github.com/ParabolInc/parabol/commit/a1da972af0e839cd53941ac961d007d494652fe7))
+
+## [10.28.2](https://github.com/ParabolInc/parabol/compare/v10.28.1...v10.28.2) (2025-10-22)
+
+
+### Fixed
+
+* simplify onAuth query, delay provider unregister for 5s ([#12258](https://github.com/ParabolInc/parabol/issues/12258)) ([331885e](https://github.com/ParabolInc/parabol/commit/331885e8680cdc6905bfd3700cbfd926d88475dc))
+
+## [10.28.1](https://github.com/ParabolInc/parabol/compare/v10.28.0...v10.28.1) (2025-10-21)
+
+
+### Fixed
+
+* include pnpm-lock.yaml in zip ([#12255](https://github.com/ParabolInc/parabol/issues/12255)) ([6e4278e](https://github.com/ParabolInc/parabol/commit/6e4278edd4196737738e497213a5955cb0cd893e))
+
+## [10.28.0](https://github.com/ParabolInc/parabol/compare/v10.27.10...v10.28.0) (2025-10-21)
+
+
+### Added
+
+* add pnpm-lock to ironbank zip ([#12252](https://github.com/ParabolInc/parabol/issues/12252)) ([5afdad8](https://github.com/ParabolInc/parabol/commit/5afdad8e1291a8e3f25cb9e563888a0a17a26f06))
+
+## [10.27.10](https://github.com/ParabolInc/parabol/compare/v10.27.9...v10.27.10) (2025-10-21)
+
+
+### Fixed
+
+* prevent fatal crashes on html_inline markdown parsing ([#12249](https://github.com/ParabolInc/parabol/issues/12249)) ([2af4437](https://github.com/ParabolInc/parabol/commit/2af44370c27c7b7e37df2e38675bb80591595685))
+
+## [10.27.9](https://github.com/ParabolInc/parabol/compare/v10.27.8...v10.27.9) (2025-10-21)
+
+
+### Fixed
+
+* onDisconnect without teams ([#12246](https://github.com/ParabolInc/parabol/issues/12246)) ([7777d8c](https://github.com/ParabolInc/parabol/commit/7777d8ca09944649c37614afe9789440c74deb18))
+
+## [10.27.8](https://github.com/ParabolInc/parabol/compare/v10.27.7...v10.27.8) (2025-10-21)
+
+
+### Fixed
+
+* use internal closed flag + try/catch for cleaned up ws ([#12241](https://github.com/ParabolInc/parabol/issues/12241)) ([67b2db8](https://github.com/ParabolInc/parabol/commit/67b2db841cb3d621a9b4373c317aaba9630c5aa4))
+
+## [10.27.7](https://github.com/ParabolInc/parabol/compare/v10.27.6...v10.27.7) (2025-10-20)
+
+
+### Fixed
+
+* awareness auth: closing uWS sockets only once ([#12236](https://github.com/ParabolInc/parabol/issues/12236)) ([facae4b](https://github.com/ParabolInc/parabol/commit/facae4bd2854b5368118829fad0c0efffbb06d9e))
+
+## [10.27.6](https://github.com/ParabolInc/parabol/compare/v10.27.5...v10.27.6) (2025-10-17)
+
+
+### Fixed
+
+* connectedMeetingMembers retry until value pushed to MeetingMember ([#12230](https://github.com/ParabolInc/parabol/issues/12230)) ([1d3ee8d](https://github.com/ParabolInc/parabol/commit/1d3ee8dcbd984ad64c83fdea4021eff671b9dcb3))
+* vuln in happy-dom ([#12232](https://github.com/ParabolInc/parabol/issues/12232)) ([e8f2565](https://github.com/ParabolInc/parabol/commit/e8f2565bf3639c0a65b361b8e73b904dbd5d46d4))
+
+## [10.27.5](https://github.com/ParabolInc/parabol/compare/v10.27.4...v10.27.5) (2025-10-17)
+
+
+### Fixed
+
+* add TTL to awareness ([#12221](https://github.com/ParabolInc/parabol/issues/12221)) ([38654b2](https://github.com/ParabolInc/parabol/commit/38654b2b6a2d9709da3b0bd04e32c26c4a3f435b))
+
+## [10.27.4](https://github.com/ParabolInc/parabol/compare/v10.27.3...v10.27.4) (2025-10-15)
+
+
+### Fixed
+
+* crash when @-mentioning in reflections ([#12217](https://github.com/ParabolInc/parabol/issues/12217)) ([20e74e7](https://github.com/ParabolInc/parabol/commit/20e74e78d5fa5d73c0b11f26006e207accd8aae1))
+
+
+### Changed
+
+* update page shared invite email ([#12210](https://github.com/ParabolInc/parabol/issues/12210)) ([e6ec992](https://github.com/ParabolInc/parabol/commit/e6ec9928f05b36ffe1682f2c6a63569bd179830d))
+
+## [10.27.3](https://github.com/ParabolInc/parabol/compare/v10.27.2...v10.27.3) (2025-10-14)
+
+
+### Fixed
+
+* bump happy-dom to v20 ([#12212](https://github.com/ParabolInc/parabol/issues/12212)) ([4f4931d](https://github.com/ParabolInc/parabol/commit/4f4931d3a16d98545815b455336a936226227dd4))
+* redirect to meeting summary page instead of /new-summary ([#12203](https://github.com/ParabolInc/parabol/issues/12203)) ([297463d](https://github.com/ParabolInc/parabol/commit/297463df352b22b7db73e0863142b275299fc13e))
+
+## [10.27.2](https://github.com/ParabolInc/parabol/compare/v10.27.1...v10.27.2) (2025-10-14)
+
+
+### Fixed
+
+* toReversed is not a function ([#12204](https://github.com/ParabolInc/parabol/issues/12204)) ([683ee28](https://github.com/ParabolInc/parabol/commit/683ee2851552abc3093aeda90ff47a8c30f8b7f9))
+
+
+### Changed
+
+* reduced page invite email for new users ([#12207](https://github.com/ParabolInc/parabol/issues/12207)) ([d800cc9](https://github.com/ParabolInc/parabol/commit/d800cc92947c7651c7bbb08b16a08780ae0b6a52))
+
 ## [10.27.1](https://github.com/ParabolInc/parabol/compare/v10.27.0...v10.27.1) (2025-10-10)
 
 

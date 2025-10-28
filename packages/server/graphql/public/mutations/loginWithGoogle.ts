@@ -73,7 +73,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
       })
       identities.push(googleIdentity) // mutative
 
-      await updateUser({identities}, viewerId)
+      await updateUser({identities: identities.map((id) => JSON.stringify(id))}, viewerId)
     }
     // MUTATIVE
     context.authToken = new AuthToken({

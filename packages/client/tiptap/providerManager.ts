@@ -23,24 +23,22 @@ class ProviderManager {
     }
     return this.socket
   }
-  use(pageId: string) {
-    const existing = this.providers[pageId]
+  use(documentName: string) {
+    const existing = this.providers[documentName]
     if (existing) {
       existing.count++
       return existing.provider
     }
     return null
   }
-  register(pageId: string) {
-    const existing = this.use(pageId)
+  register(documentName: string) {
+    const existing = this.use(documentName)
     if (existing) return existing
     const doc = new Y.Doc()
-    // this adds support for offline editing
-    new IndexeddbPersistence(pageId, doc)
     // update the URL to match the title
     const provider = new HocuspocusProvider({
       websocketProvider: this.getSocket(),
-      name: pageId,
+      name: documentName,
       document: doc,
       onAuthenticationFailed: ({reason}) => {
         if (reason === 'Unauthenticated') {
@@ -49,25 +47,29 @@ class ProviderManager {
       }
     })
     provider.attach()
-    this.providers[pageId] = {count: 1, provider}
+    this.providers[documentName] = {count: 1, provider}
+    if (documentName.startsWith('page:')) {
+      // this adds support for offline editing
+      new IndexeddbPersistence(documentName, doc)
+    }
     return provider
   }
-  unregister(pageId: string | undefined, delay = 10000) {
-    const prevProviderEntry = this.providers[pageId!]
+  unregister(documentName: string | undefined, delay = 10000) {
+    const prevProviderEntry = this.providers[documentName!]
     if (!prevProviderEntry) return
     if (--prevProviderEntry.count === 0) {
       setTimeout(() => {
-        this.destroy(pageId!)
+        this.destroy(documentName!)
       }, delay)
     }
   }
 
-  async withDoc(pageId: string, callbackFn: (document: Y.Doc) => void | Promise<void>) {
-    const provider = this.register(pageId)
+  async withDoc(documentName: string, callbackFn: (document: Y.Doc) => void | Promise<void>) {
+    const provider = this.register(documentName)
     const callAndComplete = async () => {
       const {document} = provider
       await callbackFn(document)
-      this.unregister(pageId)
+      this.unregister(documentName)
     }
     if (provider.synced) {
       callAndComplete()
@@ -76,12 +78,12 @@ class ProviderManager {
     }
   }
 
-  destroy(pageId: string) {
-    const prevProviderEntry = this.providers[pageId!]
+  destroy(documentName: string) {
+    const prevProviderEntry = this.providers[documentName!]
     if (!prevProviderEntry) return
     if (prevProviderEntry.count === 0) {
       prevProviderEntry.provider.destroy()
-      delete this.providers[pageId!]
+      delete this.providers[documentName!]
     }
   }
 

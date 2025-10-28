@@ -97,11 +97,9 @@ const NewMeetingAvatarGroup = (props: Props) => {
         meetingMembers {
           id
           userId
+          isConnectedAt
           user {
             ...NewMeetingAvatar_user
-            isConnected
-            lastSeenAt
-            lastSeenAtURLs
           }
         }
       }
@@ -116,14 +114,8 @@ const NewMeetingAvatarGroup = (props: Props) => {
   // all connected teamMembers except self
   const connectedMeetingMembers = useMemo(() => {
     return meetingMembers
-      .filter((meetingMember) => {
-        return (
-          meetingMember.userId === viewerId ||
-          (meetingMember.user.lastSeenAtURLs?.includes(`/meet/${meetingId}`) &&
-            meetingMember.user.isConnected)
-        )
-      })
-      .sort((a, b) => (a.userId === viewerId ? -1 : a.user.lastSeenAt < b.user.lastSeenAt ? -1 : 1))
+      .filter((meetingMember) => meetingMember.isConnectedAt)
+      .sort((a, b) => (a.userId === viewerId ? -1 : a.isConnectedAt! < b.isConnectedAt! ? -1 : 1))
       .map((tm) => ({
         ...tm,
         key: tm.userId

@@ -60,7 +60,7 @@ export const slashCommands = [
       {
         title: 'Heading 1',
         description: 'Big section heading',
-        searchTerms: ['title', 'big', 'large', 'heading'],
+        searchTerms: ['title', 'big', 'large', 'heading', 'h1'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 1}).run()
@@ -69,7 +69,7 @@ export const slashCommands = [
       {
         title: 'Heading 2',
         description: 'Medium section heading',
-        searchTerms: ['subtitle', 'medium', 'heading'],
+        searchTerms: ['subtitle', 'medium', 'heading', 'h2'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 2}).run()
@@ -78,7 +78,7 @@ export const slashCommands = [
       {
         title: 'Heading 3',
         description: 'Small section heading',
-        searchTerms: ['subtitle', 'small', 'heading'],
+        searchTerms: ['subtitle', 'small', 'heading', 'h3'],
         icon: TitleIcon,
         action: (editor: Editor) => {
           editor.chain().focus().setNode('heading', {level: 3}).run()
@@ -87,7 +87,7 @@ export const slashCommands = [
       {
         title: 'Bullet list',
         description: 'Create a simple bullet list',
-        searchTerms: ['unordered', 'point', 'list'],
+        searchTerms: ['unordered', 'point', 'list', 'bullet'],
         icon: FormatListBulletedIcon,
         action: (editor: Editor) => {
           editor.chain().focus().toggleBulletList().run()

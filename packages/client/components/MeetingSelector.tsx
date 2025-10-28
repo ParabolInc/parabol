@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect} from 'react-router'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
+import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
@@ -47,9 +48,8 @@ const MeetingSelector = (props: Props) => {
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
-
+  useConnectedMeetingMembers(meeting ? meetingId : null, true)
   if (!canAccessMeeting && !meeting) {
-    console.log('redirecting')
     return (
       <Redirect
         to={{

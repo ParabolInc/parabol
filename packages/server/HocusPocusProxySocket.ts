@@ -10,16 +10,24 @@ import type {
 export class HocusPocusProxySocket extends EventEmitter {
   private replyTo: string
   private socketId: string
+  private serverChannel: string
   private pub: RedisClient
   private pack: Pack
   readyState = 1
-  constructor(pub: RedisClient, pack: Pack, replyTo: string, socketId: string) {
+  constructor(
+    pub: RedisClient,
+    pack: Pack,
+    replyTo: string,
+    serverChannel: string,
+    socketId: string
+  ) {
     super()
     this.replyTo = replyTo
     this.socketId = socketId
+    this.serverChannel = serverChannel
     this.pub = pub
     this.pack = pack
-    this.on('close', () => {
+    this.once('close', () => {
       this.readyState = 3
     })
   }
@@ -27,14 +35,17 @@ export class HocusPocusProxySocket extends EventEmitter {
     this.pub.publish(this.replyTo, this.pack(msg))
   }
   close(code?: number, reason?: string) {
+    if (this.readyState !== 1) return
     const msg: RSAMessageClose = {type: 'close', code, reason, socketId: this.socketId}
     this.publish(msg)
   }
   ping() {
-    const msg: RSAMessagePing = {type: 'ping', socketId: this.socketId}
+    if (this.readyState !== 1) return
+    const msg: RSAMessagePing = {type: 'ping', socketId: this.socketId, replyTo: this.serverChannel}
     this.publish(msg)
   }
   send(message: Uint8Array) {
+    if (this.readyState !== 1) return
     const msg: RSAMessageSend = {type: 'send', socketId: this.socketId, message}
     this.publish(msg)
   }

@@ -45,10 +45,11 @@ jobs:
         run: |
           docker cp temp-container:/home/node/parabol/dist ./dist
           docker cp temp-container:/home/node/parabol/build ./build
+          docker cp temp-container:/home/node/parabol/pnpm-lock.yaml ./pnpm-lock.yaml
           docker cp temp-container:/home/node/tools/ip-to-server_id ./ip-to-server_id
 
       - name: Zip the files
-        run: zip -r ${{ github.ref_name }}.zip dist build ip-to-server_id
+        run: zip -r ${{ github.ref_name }}.zip dist build pnpm-lock.yaml ip-to-server_id
 
       - name: Upload to GCS
         uses: actions-hub/gcloud@master

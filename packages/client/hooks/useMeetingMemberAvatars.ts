@@ -3,6 +3,7 @@ import {useMemo} from 'react'
 import {readInlineData} from 'relay-runtime'
 import type {useMeetingMemberAvatars_meeting$key} from '../__generated__/useMeetingMemberAvatars_meeting.graphql'
 import useAtmosphere from './useAtmosphere'
+import {useConnectedMeetingMembers} from './useConnectedMeetingMembers'
 
 const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key) => {
   const atmosphere = useAtmosphere()
@@ -12,12 +13,10 @@ const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key
         id
         meetingMembers {
           id
+          isConnectedAt
           user {
             ...AvatarList_users
             id
-            isConnected
-            lastSeenAt
-            lastSeenAtURLs
           }
         }
       }
@@ -26,13 +25,12 @@ const useMeetingMemberAvatars = (meetingRef: useMeetingMemberAvatars_meeting$key
   )
   const {viewerId} = atmosphere
   const {id: meetingId, meetingMembers} = meeting
+  useConnectedMeetingMembers(meetingId, false)
   const connectedMeetingMembers = useMemo(() => {
     return meetingMembers
+      .filter((mm) => mm.isConnectedAt)
+      .sort((a, b) => (a.id === viewerId ? -1 : a.isConnectedAt! < b.isConnectedAt! ? -1 : 1))
       .map(({user}) => user)
-      .filter((user) => {
-        return user?.lastSeenAtURLs?.includes(`/meet/${meetingId}`) && user?.isConnected
-      })
-      .sort((a, b) => (a.id === viewerId ? -1 : a.lastSeenAt < b.lastSeenAt ? -1 : 1))
   }, [meetingMembers])
   return connectedMeetingMembers
 }

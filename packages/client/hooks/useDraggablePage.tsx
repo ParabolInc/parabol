@@ -14,6 +14,7 @@ import {__END__, positionAfter, positionBefore, positionBetween} from '../shared
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
 import {getPageLinks} from '../shared/tiptap/getPageLinks'
 import {providerManager} from '../tiptap/providerManager'
+import {GQLID} from '../utils/GQLID'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
 
@@ -160,7 +161,7 @@ export const useDraggablePage = (
     }
     if (targetParentPageId) {
       providerManager.withDoc(targetParentPageId, (doc) => {
-        const pageCode = Number(pageId.split('page:')[1])
+        const pageCode = GQLID.fromKey(pageId)[0]
         const title = source.get(pageId)?.title as string
         const children = getPageLinks(doc, true)
         const idx = dropIdx === null ? -1 : dropIdx

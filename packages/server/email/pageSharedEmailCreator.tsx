@@ -1,18 +1,18 @@
-import Oy from 'oy-vey'
-import PageSharedInvite, {
-  type PageSharedInviteProps,
-  pageRoles
-} from 'parabol-client/modules/email/components/PageSharedInvite'
-import {headCSS} from 'parabol-client/modules/email/styles'
+import ReactDOMServer from 'react-dom/server'
+import PageSharedInvite, {type PageSharedInviteProps, pageRoles} from './PageSharedInvite'
 
 const subjectLine = (ownerName: string): string =>
   `${ownerName} has shared a Page with you on Parabol`
 
-const teamInviteText = (props: PageSharedInviteProps) => {
+const teamInviteText = (props: Omit<PageSharedInviteProps, 'title'>) => {
   const {ownerName, ownerEmail, pageName, pageLink, role} = props
   const pageAccess = pageRoles[role] || 'view'
+
+  const owner = ownerName ? `${ownerName} (${ownerEmail})` : ownerEmail
+  const page = pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'
+
   return `
-${ownerName} (${ownerEmail}) has invited you to ${pageAccess} this page in Parabol: ${pageName}
+${owner} has invited you to ${pageAccess} ${page}
 
 Open Page here: ${pageLink}
 
@@ -21,15 +21,19 @@ The Parabol Product Team
 `
 }
 
-export default (props: PageSharedInviteProps) => {
-  const subject = subjectLine(props.ownerName)
+const pageSharedEmailCreator = (props: Omit<PageSharedInviteProps, 'title'>) => {
+  const subject = subjectLine(props.ownerName ?? props.ownerEmail)
+  const rawHTML = ReactDOMServer.renderToStaticMarkup(
+    <PageSharedInvite {...props} title={subject} />
+  )
+  const doctype =
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+  const html = `${doctype}${rawHTML.replace(/<!DOCTYPE.*?>/, '')}`
+
   return {
     subject,
     body: teamInviteText(props),
-    html: Oy.renderTemplate(<PageSharedInvite {...props} />, {
-      headCSS,
-      title: subject,
-      previewText: subject
-    })
+    html
   }
 }
+export default pageSharedEmailCreator

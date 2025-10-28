@@ -5,6 +5,7 @@ import sleep from 'parabol-client/utils/sleep'
 import type AtlassianServerManager from '../AtlassianServerManager'
 import type {JiraGetIssueRes} from '../AtlassianServerManager'
 import getRedis from '../getRedis'
+import {Logger} from '../Logger'
 
 const ISSUE_TTL_MS = ms('1d')
 const MAX_ATTEMPT_DURATION = ms('9s')
@@ -32,7 +33,7 @@ const getIssueFromJira = async (
   issueKey: string,
   pushUpdateToClient: (
     issue: JiraGetIssueRes
-  ) => void /* cb invoked when we get a fresher jira issue */,
+  ) => Promise<void> /* cb invoked when we get a fresher jira issue */,
   extraFieldIds: string[],
   extraExpand: string[] = [],
   redisKey: string,
@@ -81,7 +82,9 @@ const getIssueFromJira = async (
     // there was a cached value in redis, firstToResolve already called
     if (issueFromJiraStr !== requests.cachedIssue) {
       // update redis & push an update via pubsub
-      pushUpdateToClient(res as JiraGetIssueRes)
+      pushUpdateToClient(res as JiraGetIssueRes).catch((e) => {
+        Logger.error(e)
+      })
       redis.set(redisKey, issueFromJiraStr, 'PX', ISSUE_TTL_MS) // set cache behind
     }
     // if they're equal, do nothing
@@ -94,7 +97,7 @@ export const getIssue = async (
   issueKey: string,
   pushUpdateToClient: (
     issue: JiraGetIssueRes
-  ) => void /* cb invoked when we get a fresher issue from jira */,
+  ) => Promise<void> /* cb invoked when we get a fresher issue from jira */,
   extraFieldIds: string[] = [],
   extraExpand: string[] = []
 ) => {
