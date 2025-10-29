@@ -973,9 +973,6 @@ importers:
       lib0:
         specifier: ^0.2.114
         version: 0.2.114
-      mailcomposer:
-        specifier: ^4.0.1
-        version: 4.0.2
       mailgun.js:
         specifier: ^9.3.0
         version: 9.4.1
@@ -1001,8 +998,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
       nodemailer:
-        specifier: ^7.0.9
-        version: 7.0.9
+        specifier: ^7.0.10
+        version: 7.0.10
       oauth-1.0a:
         specifier: ^2.2.6
         version: 2.2.6
@@ -6671,9 +6668,6 @@ packages:
   adaptivecards@2.10.0:
     resolution: {integrity: sha512-QcgXGFlX3rgIfZkxvQY896zEVBh30mE37z3XKhcQW2OqSUrVH6dNT78MkM//W4wRdrZizSHqXKLaKyVVxAgVFg==}
 
-  addressparser@1.0.1:
-    resolution: {integrity: sha512-aQX7AISOMM7HFE0iZ3+YnD07oIeJqWGVnJ+ZIKaBZAk03ftmVYVqsGas/rbXKR21n4D/hKCSHypvcyOkds/xzg==}
-
   adf-builder@3.3.0:
     resolution: {integrity: sha512-zl5Sk2HtJk/E+gBnD0g51w5wIEEujaAbzsBhSsteO8Fnef7v+7pvas0FeQuLCAgOxrwy945HWAB1gQ4yjPI3/g==}
     deprecated: Use @atlaskit/adf-utils instead
@@ -7068,10 +7062,6 @@ packages:
   buildcheck@0.0.6:
     resolution: {integrity: sha512-8f9ZJCUXyT1M35Jx7MkBgmBMo3oHTTBIPLiY9xyL0pl3T5RwcPEY8cUHr5LBNfu/fk6c2T4DJZuVM/8ZZT2D2A==}
     engines: {node: '>=10.0.0'}
-
-  buildmail@4.0.1:
-    resolution: {integrity: sha512-PteB0jkrHMtrHaN5YSlEubdLBuYJQAq/ue11RC5uKpfWiTbxy4vqcvRWRgkHK09K+4fAjt2A6jl5D9k8/7imqg==}
-    deprecated: This project is unmaintained
 
   builtin-modules@3.3.0:
     resolution: {integrity: sha512-zhaCDicdLuWN5UbN5IMnFqNMhNfo919sH85y2/ea+5Yg9TsTkeZxpL+JLbp6cgYFS4sRLp3YV4S6yDuqVWHYOw==}
@@ -8899,10 +8889,6 @@ packages:
     resolution: {integrity: sha512-Y93lCzHYgGWdrJ66yIktxiaGULYc6oGiABxhcO5AufBeOyoIdZF7bIfLaOrbM0iGIOXQQgxxRrFEnb+Y6w1n4A==}
     engines: {node: '>=10.18'}
 
-  iconv-lite@0.4.15:
-    resolution: {integrity: sha512-RGR+c9Lm+tLsvU57FTJJtdbv2hQw42Yl2n26tVIBaYmZzLN+EGfroUugN/z9nJf9kOXd49hBmpoGr4FEm+A4pw==}
-    engines: {node: '>=0.10.0'}
-
   iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
@@ -9740,15 +9726,6 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  libbase64@0.1.0:
-    resolution: {integrity: sha512-B91jifmFw1DKEqEWstSpg1PbtUbBzR4yQAPT86kCQXBtud1AJVA+Z6RSklSrqmKe4q2eiEufgnhqJKPgozzfIQ==}
-
-  libmime@3.0.0:
-    resolution: {integrity: sha512-o1VR5Qjw4i89trcJ+VOhomgqsztBWukQY9MQLV3aMEdtzMa+V6pBSz+0qO55+hTET2lpSOuDTj1Ke/X20D459w==}
-
-  libqp@1.1.0:
-    resolution: {integrity: sha512-4Rgfa0hZpG++t1Vi2IiqXG9Ad1ig4QTmtuZF946QJP4bPqOYC78ixUXgz5TW/wE7lNaNKlplSYTxQ+fR2KZ0EA==}
-
   lie@3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
@@ -10000,10 +9977,6 @@ packages:
 
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
-
-  mailcomposer@4.0.2:
-    resolution: {integrity: sha512-+VXBGApQ0OaiwX8D0ZuD0XACl6lsg76tRp07hdEhGMk8TuZ+k3USFLUz179MfM//sDYR8/GlooMXp/XholOhRg==}
-    deprecated: This project is unmaintained
 
   mailgun.js@9.4.1:
     resolution: {integrity: sha512-PUXZvSR6MImDHIf/EhF7uajkv2pP0fbwVfKnRCQ2xDO8uR731U6pWkGHscUxebDkU8tsLb+0zCH5t1+KP6cX3g==}
@@ -10379,14 +10352,8 @@ packages:
     resolution: {integrity: sha512-OXdegQq03OmXEjt2hZP33W2YPs/E5BcFQks46+G2gAxs4gHOIVD1u7EqlYLYSKsaIpyKCK9Gbk0ta1/gjRSMRQ==}
     engines: {node: '>=6'}
 
-  nodemailer-fetch@1.6.0:
-    resolution: {integrity: sha512-P7S5CEVGAmDrrpn351aXOLYs1R/7fD5NamfMCHyi6WIkbjS2eeZUB/TkuvpOQr0bvRZicVqo59+8wbhR3yrJbQ==}
-
-  nodemailer-shared@1.1.0:
-    resolution: {integrity: sha512-68xW5LSyPWv8R0GLm6veAvm7E+XFXkVgvE3FW0FGxNMMZqMkPFeGDVALfR1DPdSfcoO36PnW7q5AAOgFImEZGg==}
-
-  nodemailer@7.0.9:
-    resolution: {integrity: sha512-9/Qm0qXIByEP8lEV2qOqcAW7bRpL8CR9jcTwk3NBnHJNmP9fIJ86g2fgmIXqHY+nj55ZEMwWqYAT2QTDpRUYiQ==}
+  nodemailer@7.0.10:
+    resolution: {integrity: sha512-Us/Se1WtT0ylXgNFfyFSx4LElllVLJXQjWi2Xz17xWw7amDKO2MLtFnVp1WACy7GkVGs+oBlRopVNUzlrGSw1w==}
     engines: {node: '>=6.0.0'}
 
   normalize-path@2.1.1:
@@ -20725,8 +20692,6 @@ snapshots:
 
   adaptivecards@2.10.0: {}
 
-  addressparser@1.0.1: {}
-
   adf-builder@3.3.0: {}
 
   adm-zip@0.5.16: {}
@@ -21169,16 +21134,6 @@ snapshots:
 
   buildcheck@0.0.6:
     optional: true
-
-  buildmail@4.0.1:
-    dependencies:
-      addressparser: 1.0.1
-      libbase64: 0.1.0
-      libmime: 3.0.0
-      libqp: 1.1.0
-      nodemailer-fetch: 1.6.0
-      nodemailer-shared: 1.1.0
-      punycode: 1.4.1
 
   builtin-modules@3.3.0: {}
 
@@ -23324,8 +23279,6 @@ snapshots:
 
   hyperdyperid@1.2.0: {}
 
-  iconv-lite@0.4.15: {}
-
   iconv-lite@0.4.24:
     dependencies:
       safer-buffer: 2.1.2
@@ -24375,16 +24328,6 @@ snapshots:
     dependencies:
       isomorphic.js: 0.2.5
 
-  libbase64@0.1.0: {}
-
-  libmime@3.0.0:
-    dependencies:
-      iconv-lite: 0.4.15
-      libbase64: 0.1.0
-      libqp: 1.1.0
-
-  libqp@1.1.0: {}
-
   lie@3.3.0:
     dependencies:
       immediate: 3.0.6
@@ -24622,11 +24565,6 @@ snapshots:
   magic-string@0.30.19:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  mailcomposer@4.0.2:
-    dependencies:
-      buildmail: 4.0.1
-      libmime: 3.0.0
 
   mailgun.js@9.4.1:
     dependencies:
@@ -24964,13 +24902,7 @@ snapshots:
       long-timeout: 0.1.1
       sorted-array-functions: 1.3.0
 
-  nodemailer-fetch@1.6.0: {}
-
-  nodemailer-shared@1.1.0:
-    dependencies:
-      nodemailer-fetch: 1.6.0
-
-  nodemailer@7.0.9: {}
+  nodemailer@7.0.10: {}
 
   normalize-path@2.1.1:
     dependencies:
