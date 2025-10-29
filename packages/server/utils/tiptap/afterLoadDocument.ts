@@ -5,7 +5,6 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {CipherId} from '../CipherId'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
-import {isTransactionAMovedPageLink} from './isTransactionAMovedPageLink'
 
 const changedPageLinkAttributesAreAMove = (events: Y.YEvent<any>[]) => {
   const newHashes: string[] = []
@@ -75,10 +74,8 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
 }) => {
   const [pageId] = CipherId.fromClient(documentName)
   const root = document.getXmlFragment('default')
-
   root.observeDeep((events) => {
     // Ignore any transactions where the page link is "moved" (deleted, then inserted)
-    if (isTransactionAMovedPageLink(events)) return
     events.forEach((e) => {
       handleAddedPageLinks(e, pageId)
       handleDeletedPageLinks(e, pageId)

@@ -47,11 +47,6 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
       className: 'group',
       attrs: {
         'data-type': 'pageLinkBlock'
-      },
-      stopEvent() {
-        // TipTap is being bad about intercepting drag/drop handling
-        //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
-        return false
       }
     })
   },
@@ -62,15 +57,22 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
           // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!
           // if it's pasted from different doc, then the server will handle this as a move
           transformPasted(slice, view) {
+            // return slice
             const {state} = view
             let canonicals: Set<number> | undefined = undefined
 
-            const checkIfExists = (pageCode: number) => {
+            const checkIfExists = (slicedNode: Node) => {
+              const {pageCode} = slicedNode.attrs
               if (!canonicals) {
                 canonicals = new Set()
                 // collect all canonical pageLinkBlocks in the current doc
                 state.doc.descendants((node: Node) => {
-                  if (node.type.name === 'pageLinkBlock' && node.attrs.canonical) {
+                  // node === slicedNode when dragging & dropping since the add happens before the delete
+                  if (
+                    node.type.name === 'pageLinkBlock' &&
+                    node.attrs.canonical &&
+                    node !== slicedNode
+                  ) {
                     canonicals!.add(node.attrs.pageCode)
                   }
                 })
@@ -82,7 +84,7 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
               const newChildren: Node[] = []
               frag.forEach((child) => {
                 if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
-                  const alreadyExists = checkIfExists(child.attrs.pageCode)
+                  const alreadyExists = checkIfExists(child)
                   if (alreadyExists) {
                     const linkChild = child.type.create(
                       {...child.attrs, canonical: false},

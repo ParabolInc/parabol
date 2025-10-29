@@ -122,7 +122,7 @@ export const useDraggablePage = (
       // move within the same document
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
-      const pageCode = Number(pageId.split('page:')[1])
+      const pageCode = GQLID.fromKey(pageId)[0]
       const children = getPageLinks(document, true)
       const fromNodeIdx = children.findIndex((child) => child.getAttribute('pageCode') === pageCode)
       if (fromNodeIdx === -1) return
@@ -213,7 +213,7 @@ export const useDraggablePage = (
     if (sourceParentPageId && sourceConnectionKey === 'User_pages') {
       // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
-        const pageCode = Number(pageId.split('page:')[1])
+        const pageCode = GQLID.fromKey(pageId)[0]
         const canonChildren = getPageLinks(document, true)
         const childToRemove = canonChildren.find(
           (child) => child.getAttribute('pageCode') === pageCode
