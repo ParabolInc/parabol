@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.31.0](https://github.com/ParabolInc/parabol/compare/v10.30.0...v10.31.0) (2025-10-29)
+
+
+### Added
+
+* support MAIL_SMTP_URL ([#12296](https://github.com/ParabolInc/parabol/issues/12296)) ([2717f24](https://github.com/ParabolInc/parabol/commit/2717f24a4be9f8898a82f97496051343967725e4))
+
 ## [10.30.0](https://github.com/ParabolInc/parabol/compare/v10.29.1...v10.30.0) (2025-10-28)
 
 
