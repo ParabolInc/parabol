@@ -1,5 +1,5 @@
 export const GQLID = {
-  toKey: (code: number, entity: string) => `${entity}:${code}`,
+  toKey: (code: number | string, entity: string) => `${entity}:${code}`,
   fromKey: (key: string) => {
     const [entity, codeStr] = key.split(':')
     const code = Number(codeStr)

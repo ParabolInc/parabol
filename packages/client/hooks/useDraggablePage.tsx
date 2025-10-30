@@ -12,11 +12,11 @@ import {
 } from '../mutations/useUpdatePageMutation'
 import {__END__, positionAfter, positionBefore, positionBetween} from '../shared/sortOrder'
 import {createPageLinkElement} from '../shared/tiptap/createPageLinkElement'
+import {getPageLinks} from '../shared/tiptap/getPageLinks'
 import {providerManager} from '../tiptap/providerManager'
 import {GQLID} from '../utils/GQLID'
 import useAtmosphere from './useAtmosphere'
 import useEventCallback from './useEventCallback'
-import {makeEditorFromYDoc} from './useTipTapPageEditor'
 
 const makeDragRef = () => ({
   startY: null as number | null,
@@ -122,65 +122,60 @@ export const useDraggablePage = (
       // move within the same document
       const provider = providerManager.register(targetParentPageId)
       const {document} = provider
-      const frag = document.getXmlFragment('default')
       const pageCode = GQLID.fromKey(pageId)[0]
-      // Yjs doesn't support moves
-      // You cannot delete an item and then insert it elsewhere because once an object is deleted it is gone
-      // Prosemirror accomplishes moves by swapping the attributes of every item between source and target
-      // So, we convert this to an editor and let it create that transaction
-      const editor = makeEditorFromYDoc(document)
-      const children = frag.toArray()
-      const fromIdx = children.findIndex(
-        (child) =>
-          child instanceof Y.XmlElement &&
-          child.getAttribute('pageCode') === (pageCode as any) &&
-          child.getAttribute('canonical') === (true as any)
-      )
-      let toIdx: number | undefined
-      let curCanonIdx = -1
-      children.forEach((child, idx) => {
-        if (child instanceof Y.XmlElement && child.getAttribute('canonical') === (true as any)) {
-          curCanonIdx++
-          if (dropIdx === -1) {
-            // put it at the beginning
-            toIdx = toIdx === undefined ? idx : toIdx
-          } else if (dropIdx === null || curCanonIdx === dropIdx) {
-            // if we drop at the end, put it after the last one
-            // if we want to drop it after the current one, add 1 to it
-            toIdx = idx + 1
-          }
-        }
-      })
-      editor.commands.movePageLink({fromIndex: fromIdx, toIndex: toIdx!})
+      const children = getPageLinks(document, true)
+      const fromNodeIdx = children.findIndex((child) => child.getAttribute('pageCode') === pageCode)
+      if (fromNodeIdx === -1) return
+      const fromNode = children.at(fromNodeIdx)!
+
+      // yjs nodes cannot be moved, only created and destroyed, so clone the old, delete the old, add the new
+      const nodeToMove = [
+        createPageLinkElement(
+          fromNode.getAttribute('pageCode') as number,
+          fromNode.getAttribute('title') as string
+        ) as Y.XmlElement
+      ]
+
+      // delete the old node first, but flag it as isMoving so it doesn't trigger side effects
+      fromNode.setAttribute('isMoving', true)
+      const parent = fromNode.parent as Y.XmlElement
+      const fromIdx = parent.toArray().findIndex((child) => child === fromNode)
+      parent.delete(fromIdx)
+
+      if (dropIdx === -1) {
+        // put it at the beginning
+        const dropTarget = children.at(0)!
+        const firstChildParent = dropTarget.parent as Y.XmlElement
+        const firstChildIdx = firstChildParent.toArray().findIndex((child) => child === dropTarget)
+        firstChildParent.insert(firstChildIdx, nodeToMove)
+      } else {
+        // if null, put after the last one, else, put after the dropIdx
+        const idx = dropIdx === null ? -1 : dropIdx
+        const dropTarget = children.at(idx) as Y.XmlElement
+        const dropTargetParent = dropTarget.parent as Y.XmlElement
+        dropTargetParent.insertAfter(dropTarget, nodeToMove)
+      }
       providerManager.unregister(targetParentPageId)
       cleanupDrag()
       return
     }
     if (targetParentPageId) {
-      // when making something a child page, we don't use GraphQL, we use yjs
-      // in the future, I hope every user-defined page is a child so this is the only code path
       providerManager.withDoc(targetParentPageId, (doc) => {
         const pageCode = GQLID.fromKey(pageId)[0]
         const title = source.get(pageId)?.title as string
-        const createPageLinkBlock = () => createPageLinkElement(pageCode, title)
-        const frag = doc.getXmlFragment('default')
-        let pageLinkCount = -1
-        const childArrIdxForDropIdx = frag.toArray().findIndex((node) => {
-          if (
-            node instanceof Y.XmlElement &&
-            node.nodeName === 'pageLinkBlock' &&
-            (node.getAttribute('canonical') as any) === true
-          ) {
-            pageLinkCount++
-            if (pageLinkCount === dropIdx) {
-              return true
-            }
-          }
-          return false
-        })
-
-        const nextIdx = childArrIdxForDropIdx === -1 ? 1 : childArrIdxForDropIdx + 1
-        frag.insert(nextIdx, [createPageLinkBlock() as any])
+        const children = getPageLinks(doc, true)
+        const idx = dropIdx === null ? -1 : dropIdx
+        const dropTarget = children.at(idx) as Y.XmlElement
+        if (dropTarget) {
+          const dropTargetParent = dropTarget.parent as Y.XmlElement
+          dropTargetParent.insertAfter(dropTarget, [
+            createPageLinkElement(pageCode, title) as Y.XmlElement
+          ])
+        } else {
+          // this will be the first page link, put it at the top just below the title
+          const frag = doc.getXmlFragment('default')
+          frag.insert(1, [createPageLinkElement(pageCode, title) as Y.XmlElement])
+        }
       })
     } else {
       // the target is top-level, under a team, shared pages, or private pages
@@ -218,24 +213,20 @@ export const useDraggablePage = (
     if (sourceParentPageId && sourceConnectionKey === 'User_pages') {
       // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
       providerManager.withDoc(sourceParentPageId, (document) => {
-        const frag = document.getXmlFragment('default')
         const pageCode = GQLID.fromKey(pageId)[0]
-        const idxToRemove = frag
-          .toArray()
-          .findIndex(
-            (node) =>
-              node instanceof Y.XmlElement &&
-              node.nodeName === 'pageLinkBlock' &&
-              (node.getAttribute('pageCode') as any) === pageCode &&
-              (node.getAttribute('canonical') as any) === true
-          )
-        if (idxToRemove === -1) {
+        const canonChildren = getPageLinks(document, true)
+        const childToRemove = canonChildren.find(
+          (child) => child.getAttribute('pageCode') === pageCode
+        )
+        if (!childToRemove) {
           console.warn('idx for source element not found')
-        } else {
-          // first mark it as isMoving so the server doesn't delete the underlying page
-          frag.get(idxToRemove).setAttribute('isMoving', true)
-          frag.delete(idxToRemove)
+          return
         }
+        // first mark it as isMoving so the server doesn't delete the underlying page
+        childToRemove.setAttribute('isMoving', true)
+        const parent = childToRemove.parent as Y.XmlElement
+        const idxToRemove = parent.toArray().findIndex((child) => child === childToRemove)
+        parent.delete(idxToRemove)
       })
     }
     cleanupDrag()

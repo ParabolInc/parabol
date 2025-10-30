@@ -4,6 +4,7 @@ import pageQuery from '../../__generated__/PageEntryQuery.graphql'
 import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import useRouter from '../../hooks/useRouter'
+import {GQLID} from '../../utils/GQLID'
 import {PageEntry} from './PageEntry'
 
 interface Props {
@@ -17,7 +18,8 @@ export const PageRoot = (props: Props) => {
   const {params} = match
   const {pageSlug} = params
   const pageCodeIdx = pageSlug.lastIndexOf('-')
-  const pageId = `page:${Number(pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1))}`
+  const pageCode = pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1)
+  const pageId = GQLID.toKey(pageCode, 'page')
 
   const queryRef = useQueryLoaderNow<PageEntryQuery>(pageQuery, {pageId})
   return (

@@ -16,17 +16,27 @@ export const movePageToNewParent = async (
   parentPageId: number
 ) => {
   const pg = getKysely()
+  const childPage = await pg
+    .selectFrom('Page')
+    .select(['parentPageId', 'deletedAt'])
+    .where('id', '=', pageId)
+    .executeTakeFirstOrThrow()
+  if (childPage.parentPageId === parentPageId) {
+    // the child page will already have the correct parent if we created a PageLink on the parent doc
+    if (!childPage.deletedAt) return
+    // if the user e.g. cut a page link & pasted it back in the same doc, we need to undelete it
+    await pg
+      .updateTable('Page')
+      .set({deletedAt: null, deletedBy: null})
+      .where('id', '=', pageId)
+      .execute()
+    return
+  }
+
   const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
   if (viewerAccess !== 'owner') {
     throw new GraphQLError(`Full Access required to move a Page to a new parent`)
   }
-  const childPage = await pg
-    .selectFrom('Page')
-    .select('parentPageId')
-    .where('id', '=', pageId)
-    .executeTakeFirstOrThrow()
-  // the child page will already have the correct parent if we created a PageLink on the parent doc
-  if (childPage.parentPageId === parentPageId) return
   const parentPageWithRole = await validateParentPage(parentPageId, viewerId, 'editor')
   const {ancestorIds, isPrivate} = parentPageWithRole
   if (ancestorIds.includes(pageId) || parentPageId === pageId) {
