@@ -161,9 +161,7 @@ const createTaskInService = async (
       integrationRepoId
     }
   } else if (service === 'linear') {
-    const linearAuth = await dataLoader
-      .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-      .load({service: 'linear', teamId, userId: accessUserId})
+    const linearAuth = await dataLoader.get('freshLinearAuth').load({teamId, userId: accessUserId})
     if (!linearAuth?.accessToken) {
       return {
         error: new Error('Cannot create Linear task without a valid token')
