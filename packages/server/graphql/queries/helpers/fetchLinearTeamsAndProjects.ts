@@ -12,9 +12,7 @@ export const fetchLinearProjects = async (
 ) => {
   try {
     const {dataLoader} = context
-    const auth = await dataLoader
-      .get('freshLinearAuth')
-      .load({teamId, userId})
+    const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
 
     if (!auth?.accessToken) {
       return []
@@ -59,9 +57,7 @@ export const fetchLinearTeams = async (
 ) => {
   try {
     const {dataLoader} = context
-    const auth = await dataLoader
-      .get('freshLinearAuth')
-      .load({teamId, userId})
+    const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
 
     if (!auth?.accessToken) {
       return []
