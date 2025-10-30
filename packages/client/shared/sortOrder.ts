@@ -43,9 +43,12 @@ export function positionBetween(firstPos: string, secondPos: string) {
   let flag = false
   let position = ''
   const maxLength = Math.max(firstPos.length, secondPos.length)
+  // ensure the firstPos is smaller
+  const minPos = firstPos < secondPos ? firstPos : secondPos
+  const maxPos = minPos === firstPos ? secondPos : firstPos
   for (let i = 0; i < maxLength; i++) {
-    const lower = i < firstPos.length ? firstPos.charCodeAt(i) : START_CHAR_CODE
-    const upper = i < secondPos.length && !flag ? secondPos.charCodeAt(i) : END_CHAR_CODE
+    const lower = i < minPos.length ? minPos.charCodeAt(i) : START_CHAR_CODE
+    const upper = i < maxPos.length && !flag ? maxPos.charCodeAt(i) : END_CHAR_CODE
     if (lower === upper) {
       position += String.fromCharCode(lower)
     } else if (upper - lower > 1) {
