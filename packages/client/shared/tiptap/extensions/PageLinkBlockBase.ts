@@ -23,6 +23,7 @@ export const PageLinkBlockBase = Node.create({
 
   isolating: true,
   atom: true,
+  draggable: false,
   addAttributes() {
     return {
       pageCode: {

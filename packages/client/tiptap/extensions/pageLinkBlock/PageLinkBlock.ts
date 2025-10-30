@@ -7,11 +7,11 @@ import {PageLinkBlockBase} from '../../../shared/tiptap/extensions/PageLinkBlock
 import {PageLinkBlockView} from './PageLinkBlockView'
 
 declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    movePageLink: {
-      movePageLink: (params: {fromIndex: number; toIndex: number}) => ReturnType
-    }
-  }
+  // interface Commands<ReturnType> {
+  //   exampleMethod: {
+  //     exampleMethod: (params: {fromIndex: number; toIndex: number}) => ReturnType
+  //   }
+  // }
   interface Storage {
     pageLinkBlock: PageLinkBlockStorage
   }
@@ -38,39 +38,6 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
         ({commands}) => {
           const content = [{type: 'pageLinkBlock', attrs}, {type: 'paragraph'}] as JSONContent[]
           return commands.insertContent(content)
-        },
-      movePageLink:
-        ({fromIndex, toIndex}) =>
-        ({state, dispatch}) => {
-          const blocks = state.doc.content.content
-          const blockCount = blocks.length
-
-          if (fromIndex < 0 || fromIndex >= blockCount) {
-            console.error(`movePageLink: Invalid fromIndex ${fromIndex}`)
-            return false
-          }
-
-          const block = blocks[fromIndex]!
-
-          // Calculate delete range
-          const fromPos = blocks.slice(0, fromIndex).reduce((pos, node) => pos + node.nodeSize, 0)
-          const toDeleteEnd = fromPos + block.nodeSize
-
-          let tr = state.tr.replace(fromPos, toDeleteEnd, Slice.empty)
-
-          // Adjust toIndex if the delete shifts subsequent positions
-          let adjustedToIndex = toIndex > fromIndex ? toIndex - 1 : toIndex
-          adjustedToIndex = Math.max(0, Math.min(tr.doc.childCount, adjustedToIndex))
-
-          // Compute insertion position
-          const newBlocks = tr.doc.content.content
-          const insertPos = newBlocks
-            .slice(0, adjustedToIndex)
-            .reduce((pos, node) => pos + node.nodeSize, 0)
-
-          tr = tr.insert(insertPos, block.copy())
-          dispatch?.(tr)
-          return true
         }
     }
   },
@@ -78,10 +45,17 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     // By convention, components rendered here are named with a *View suffix
     return ReactNodeViewRenderer(PageLinkBlockView, {
       className: 'group',
-      stopEvent() {
+      stopEvent({event}) {
+        // stopping the mousedown event prevents dragging the node directly when it's active
+        // we only want to allow drags from the drag handler
+        if (event.type === 'mousedown') return true
+
         // TipTap is being bad about intercepting drag/drop handling
         //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
         return false
+      },
+      attrs: {
+        'data-type': 'pageLinkBlock'
       }
     })
   },
@@ -89,28 +63,57 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     return [
       new Plugin({
         props: {
-          /**
-           * Intercept slice being copied to the clipboard.
-           * We walk the slice, and if any node is a pageLinkBlock with canonical=true,
-           * we clone it with canonical=false.
-           * That way folks don't accidentally copy a canon page link block & paste it on another page
-           * Which would trigger a move
-           */
-          transformCopied(slice: Slice): Slice {
+          // if a canonical link gets pasted, make sure it doesn't already exist in the doc. There can only be 1!
+          // if it's pasted from different doc, then the server will handle this as a move
+          transformPasted(slice, view) {
+            // return slice
+            const {state} = view
+            let canonicals: Set<number> | undefined = undefined
+
+            const checkIfExists = (slicedNode: Node) => {
+              const {pageCode} = slicedNode.attrs
+              if (!canonicals) {
+                canonicals = new Set()
+                // collect all canonical pageLinkBlocks in the current doc
+                state.doc.descendants((node: Node) => {
+                  // node === slicedNode when dragging & dropping since the add happens before the delete
+                  if (
+                    node.type.name === 'pageLinkBlock' &&
+                    node.attrs.canonical &&
+                    node !== slicedNode
+                  ) {
+                    canonicals!.add(node.attrs.pageCode)
+                  }
+                })
+              }
+              return canonicals.has(pageCode)
+            }
+
             function decanonPageLinks(frag: Fragment): Fragment {
               const newChildren: Node[] = []
               frag.forEach((child) => {
-                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical) {
-                  console.log('setting to false')
-                  const newAttrs = {...child.attrs, canonical: false}
-                  newChildren.push(child.type.create(newAttrs, null, child.marks))
+                if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
+                  const alreadyExists = checkIfExists(child)
+                  if (alreadyExists) {
+                    const linkChild = child.type.create(
+                      {...child.attrs, canonical: false},
+                      child.content,
+                      child.marks
+                    )
+                    newChildren.push(linkChild)
+                  } else {
+                    newChildren.push(child)
+                  }
+                } else if (child.content?.size) {
+                  // recurse into nested fragments
+                  const newContent = decanonPageLinks(child.content)
+                  newChildren.push(child.copy(newContent))
                 } else {
                   newChildren.push(child)
                 }
               })
               return Fragment.fromArray(newChildren)
             }
-            // return slice
             const newContent = decanonPageLinks(slice.content)
             return new Slice(newContent, slice.openStart, slice.openEnd)
           },

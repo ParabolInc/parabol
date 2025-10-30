@@ -4,19 +4,19 @@ import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {Document} from '@tiptap/extension-document'
+import DragHandle from '@tiptap/extension-drag-handle'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
 import {Focus, Placeholder} from '@tiptap/extensions'
-import {Editor, useEditor} from '@tiptap/react'
+import type {Node} from '@tiptap/pm/model'
+import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
-import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
 import {Markdown} from 'tiptap-markdown'
-import type * as Y from 'yjs'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
@@ -39,6 +39,11 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
+
+function isEmptyParagraph(node: Node) {
+  return node.type.name === 'paragraph' && node.textContent.length === 0
+}
+const dragHandleElement = document.createElement('div')
 
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
@@ -98,6 +103,25 @@ export const useTipTapPageEditor = (
         }),
         ImageBlock,
         LoomExtension,
+        DragHandle.configure({
+          // drag-handle-react breaks when clicking pageLinkBlocks because it removes a react child w/o telling react
+          // So we do this outside of react
+          render: () => {
+            dragHandleElement.classList.add('drag-handle', 'hide')
+            return dragHandleElement
+          },
+          onNodeChange: ({node}) => {
+            const isEmpty = node ? isEmptyParagraph(node) : false
+            const isHidden = dragHandleElement.classList.contains('hide')
+            if (isEmpty !== isHidden) {
+              if (isEmpty) {
+                dragHandleElement.classList.add('hide')
+              } else {
+                dragHandleElement.classList.remove('hide')
+              }
+            }
+          }
+        }),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
@@ -148,10 +172,6 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        GlobalDragHandle.configure({
-          // hide handle on custom block contents
-          excludedTags: ['taskBlock', 'insightsBlock'].map((name) => `div.node-${name} *`)
-        }),
         AutoJoiner,
         Markdown.configure({
           html: true,
@@ -175,37 +195,4 @@ export const useTipTapPageEditor = (
   usePageLinkPlaceholder(editor!, placeholderRef)
 
   return {editor}
-}
-
-export const makeEditorFromYDoc = (document: Y.Doc) => {
-  return new Editor({
-    extensions: [
-      Document.extend({
-        content: 'heading block*'
-      }),
-      StarterKit.configure({
-        document: false,
-        undoRedo: false,
-        link: false
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true
-      }),
-      Focus,
-      ImageUpload,
-      ImageBlock,
-      LoomExtension,
-      Mention.configure(mentionConfig),
-      Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-      Collaboration.configure({
-        document
-      }),
-      InsightsBlock,
-      PageLinkBlock.configure({yDoc: document}),
-      TaskBlock,
-      ThinkingBlock,
-      ResponseBlock
-    ]
-  })
 }

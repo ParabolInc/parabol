@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
-import * as Y from 'yjs'
 import type {PageLinkBlockAttributes} from '../shared/tiptap/extensions/PageLinkBlockBase'
+import {getPageLinks} from '../shared/tiptap/getPageLinks'
 import {usePageProvider} from './usePageProvider'
 
 export const usePageChildren = (pageId: string) => {
@@ -10,12 +10,9 @@ export const usePageChildren = (pageId: string) => {
   useEffect(() => {
     const root = provider.document.getXmlFragment('default')
     const update = () => {
-      const items = root
-        .toArray()
-        .filter(
-          (n): n is Y.XmlElement => n instanceof Y.XmlElement && n.nodeName === 'pageLinkBlock'
-        )
-        .map((item) => item.getAttributes() as any as PageLinkBlockAttributes)
+      const items = getPageLinks(provider.document, true).map(
+        (item) => item.getAttributes() as PageLinkBlockAttributes
+      )
       setChildren(items)
     }
     update()
