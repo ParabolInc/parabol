@@ -125,15 +125,11 @@ export const CollaborationFriendlyFormatting = Extension.create({
           let insertedLength = 0
 
           for (const tr of transactions) {
-            tr.steps.forEach((step) => {
-              const stepJSON = step.toJSON()
-              if (stepJSON.stepType === 'replace' && stepJSON.slice?.content) {
-                const content = stepJSON.slice.content
-                if (content.length > 0 && content[0].type === 'text') {
-                  textInserted = true
-                  insertPos = stepJSON.from
-                  insertedLength = content[0].text?.length || 0
-                }
+            tr.steps.forEach((step: any) => {
+              if (step.slice?.content?.firstChild?.isText) {
+                textInserted = true
+                insertPos = step.from
+                insertedLength = step.slice.content.firstChild.text.length
               }
             })
           }
