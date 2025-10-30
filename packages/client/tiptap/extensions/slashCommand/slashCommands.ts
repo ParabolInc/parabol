@@ -216,5 +216,40 @@ export const slashCommands = [
         }
       }
     ]
+  },
+  {
+    group: 'Database',
+    commands: [
+      {
+        title: 'Database',
+        description: 'Create a new database',
+        searchTerms: ['database', 'import'],
+        icon: TableIcon,
+        action: (editor: Editor) => {
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          console.log('Inserting database at position', from)
+          console.log('databseBlock', schema.nodes.databaseBlock)
+
+          const databaseNode = schema.nodes.databaseBlock!.create({
+            pageCode: -1,
+            title: '<Untitled>',
+            canonical: true
+          })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, databaseNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
+        }
+      }
+    ]
   }
 ] as const
