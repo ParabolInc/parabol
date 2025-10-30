@@ -29,8 +29,8 @@ const pushEstimateToLinear = async (
   const {accessUserId, issueId, repoId} = linearIntegration
 
   const auth = await dataLoader
-    .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-    .load({service: 'linear', teamId, userId: accessUserId})
+    .get('freshLinearAuth')
+    .load({teamId, userId: accessUserId})
   if (!auth?.accessToken) return new Error('User no longer has access to Linear')
 
   const fieldMap = await dataLoader

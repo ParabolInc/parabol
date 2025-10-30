@@ -200,8 +200,8 @@ const EstimateStage: EstimateStageResolvers = {
       // Load issue from Linear API
       const {dataLoader} = context
       const auth = await dataLoader
-        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-        .load({service: 'linear', teamId, userId: accessUserId})
+        .get('freshLinearAuth')
+        .load({teamId, userId: accessUserId})
 
       if (!auth?.accessToken) return NULL_FIELD
 

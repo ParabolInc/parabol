@@ -107,8 +107,8 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'linear') {
       const auth = await dataLoader
-        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-        .load({service: 'linear', teamId, userId})
+        .get('freshLinearAuth')
+        .load({teamId, userId})
 
       if (!auth) {
         return null

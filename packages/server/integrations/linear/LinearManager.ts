@@ -44,7 +44,6 @@ export default class LinearManager extends OAuth2Manager {
       client_secret: this.clientSecret,
       ...partialAuthParams
     }
-    console.log('Body being sent to Linear token endpoint:', body)
     return authorizeOAuth2<TSuccess>({
       authUrl: authUrlObj.toString(),
       body,
