@@ -45,6 +45,15 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
     // By convention, components rendered here are named with a *View suffix
     return ReactNodeViewRenderer(PageLinkBlockView, {
       className: 'group',
+      stopEvent({event}) {
+        // stopping the mousedown event prevents dragging the node directly when it's active
+        // we only want to allow drags from the drag handler
+        if (event.type === 'mousedown') return true
+
+        // TipTap is being bad about intercepting drag/drop handling
+        //github.com/ueberdosis/tiptap/issues/3199#issuecomment-1438873110
+        return false
+      },
       attrs: {
         'data-type': 'pageLinkBlock'
       }
