@@ -1,12 +1,15 @@
 import type {CommandProps} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
 import type {Mark} from '@tiptap/pm/model'
-import type {EditorState} from '@tiptap/pm/state'
+import type {EditorState, Transaction} from '@tiptap/pm/state'
 import {Plugin, PluginKey} from '@tiptap/pm/state'
 import './types'
 
+const MARK_TYPES = ['bold', 'italic', 'underline'] as const
+type MarkType = (typeof MARK_TYPES)[number]
+
 interface PendingMark {
-  markType: string
+  markType: MarkType
   action: 'add' | 'remove'
 }
 
@@ -19,7 +22,7 @@ interface PendingMarksState {
 
 const pendingMarksKey = new PluginKey<PendingMarksState>('pendingMarks')
 
-function createToggleMarkCommand(markType: string, toggleCommand: (commands: any) => boolean) {
+function createToggleMarkCommand(markType: MarkType, toggleCommand: (commands: any) => boolean) {
   return () =>
     ({commands, state, tr, dispatch}: CommandProps) => {
       const {selection} = state
@@ -49,7 +52,7 @@ function createToggleMarkCommand(markType: string, toggleCommand: (commands: any
     }
 }
 
-function isInMark(state: EditorState, markType: string, tr: any): boolean {
+function isInMark(state: EditorState, markType: MarkType, tr: Transaction): boolean {
   const {$from} = state.selection
   const pos = $from.pos
 
@@ -146,8 +149,7 @@ export const CollaborationFriendlyFormatting = Extension.create({
               else finalMarkTypes.delete(pendingMark.markType)
             }
 
-            const allMarkTypes = ['bold', 'italic', 'underline']
-            for (const markType of allMarkTypes) {
+            for (const markType of MARK_TYPES) {
               const markSchema = schema.marks[markType]
               if (markSchema)
                 tr.removeMark(insertPos, insertPos + insertedLength, markSchema.create())
