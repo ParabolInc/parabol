@@ -18,20 +18,17 @@ This creates an unbreakable cycle where any attempt to restore marks triggers mo
 
 ## Solution
 
-Instead of relying on `storedMarks`, this extension inserts actual mark nodes into the document:
+This extension uses a "pending marks" state to defer mark application until actual content is typed:
 
-1. **When toggling ON a mark** (e.g., Cmd+B):
-   - Inserts a zero-width space (`\u200B`) wrapped in the mark (e.g., `<strong>\u200B</strong>`)
-   - Positions the cursor inside the marked region
-   - User can now type, and text receives the mark naturally
+1. **When you press a formatting shortcut** (e.g., Cmd+B):
+   - The extension stores a "pending mark" in plugin state (not in the document)
+   - Records whether to add or remove the mark based on current cursor position
+   - No changes are made to the document yet, so nothing syncs to other clients
 
-2. **When toggling OFF a mark**:
-   - Inserts a zero-width space after the current mark to move cursor outside
-   - User can now type unformatted text
-
-3. **Cleanup**:
-   - A ProseMirror plugin removes lone zero-width spaces after user types real content
-   - This prevents placeholder characters from accumulating in the document
+2. **When you type your first character**:
+   - The extension detects the text insertion
+   - Applies all pending marks to the newly inserted text
+   - Clears the pending marks state
 
 ## Usage
 
@@ -46,4 +43,3 @@ const editor = useEditor({
     // ...
   ]
 })
-```

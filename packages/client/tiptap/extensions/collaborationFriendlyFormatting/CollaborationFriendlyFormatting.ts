@@ -1,24 +1,62 @@
 import type {CommandProps} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
 import type {Mark} from '@tiptap/pm/model'
-import type {EditorState, Transaction} from '@tiptap/pm/state'
-import {Plugin, PluginKey, TextSelection} from '@tiptap/pm/state'
+import type {EditorState} from '@tiptap/pm/state'
+import {Plugin, PluginKey} from '@tiptap/pm/state'
 import './types'
 
-function insertMarkAndPosition(
-  markType: string,
-  state: EditorState,
-  tr: Transaction,
-  dispatch: ((tr: Transaction) => void) | undefined
-): boolean {
-  const {selection, schema} = state
-  const {$from} = selection
+interface PendingMark {
+  markType: string
+  action: 'add' | 'remove'
+}
+
+interface PendingMarksState {
+  marks: PendingMark[]
+  position: number | null
+  storedMarks: readonly Mark[]
+  justSet: boolean
+}
+
+const pendingMarksKey = new PluginKey<PendingMarksState>('pendingMarks')
+
+function createToggleMarkCommand(markType: string, toggleCommand: (commands: any) => boolean) {
+  return () =>
+    ({commands, state, tr, dispatch}: CommandProps) => {
+      const {selection} = state
+
+      if (!selection.empty) return toggleCommand(commands)
+      if (!dispatch) return true
+
+      const pendingState = pendingMarksKey.getState(state)
+      const currentMarks = pendingState?.marks || []
+      const pos = selection.$from.pos
+      const inMark = isInMark(state, markType, tr)
+      const pendingIndex = currentMarks.findIndex((m) => m.markType === markType)
+
+      const newMarks: PendingMark[] =
+        pendingIndex !== -1
+          ? currentMarks.filter((m) => m.markType !== markType)
+          : [...currentMarks, {markType, action: inMark ? 'remove' : 'add'}]
+
+      tr.setMeta(pendingMarksKey, {
+        marks: newMarks,
+        position: pos,
+        storedMarks: tr.storedMarks || selection.$from.marks()
+      })
+
+      dispatch(tr)
+      return true
+    }
+}
+
+function isInMark(state: EditorState, markType: string, tr: any): boolean {
+  const {$from} = state.selection
   const pos = $from.pos
 
-  // Check if cursor is in a mark of this type
   const hasMark = $from.marks().some((mark: Mark) => mark.type.name === markType)
+  const storedMarks = tr.storedMarks || $from.marks()
+  const hasStoredMark = storedMarks.some((mark: Mark) => mark.type.name === markType)
 
-  // Also check the next position (edge case: cursor at start of marked text)
   const nextPos = pos + 1
   const hasMarkNext =
     nextPos < state.doc.content.size &&
@@ -27,48 +65,7 @@ function insertMarkAndPosition(
       .marks()
       .some((m: Mark) => m.type.name === markType)
 
-  const isInMark = hasMark || hasMarkNext
-
-  if (!dispatch) return true
-
-  if (isInMark) {
-    // Insert a zero-width space at cursor position to exit the mark
-    const zeroWidthSpace = '\u200B'
-    tr.insertText(zeroWidthSpace, pos)
-
-    // Remove the mark from the inserted zero-width space
-    // Without this, the zero-width space inherits the mark and cursor stays in marked region
-    const markSchema = schema.marks[markType]
-    if (markSchema) {
-      const mark = markSchema.create()
-      tr.removeMark(pos, pos + 1, mark)
-    }
-
-    // Position cursor after the zero-width space (now truly outside the mark)
-    const newPos = pos + 1
-    tr.setSelection(TextSelection.create(tr.doc, newPos))
-
-    dispatch(tr)
-    return true
-  } else {
-    // CASE 2: Not in marked region - create a marked span
-    const markSchema = schema.marks[markType]
-
-    if (!markSchema) return false
-
-    const mark = markSchema.create()
-
-    // Insert zero-width space with mark
-    const zeroWidthSpace = '\u200B'
-    tr.insertText(zeroWidthSpace, pos)
-    tr.addMark(pos, pos + 1, mark)
-
-    // Position cursor at the marked position (will be inside the mark for typing)
-    tr.setSelection(TextSelection.create(tr.doc, pos + 1))
-
-    dispatch(tr)
-    return true
-  }
+  return hasMark || hasStoredMark || hasMarkNext
 }
 
 export const CollaborationFriendlyFormatting = Extension.create({
@@ -76,99 +73,105 @@ export const CollaborationFriendlyFormatting = Extension.create({
 
   addKeyboardShortcuts() {
     return {
-      'Mod-b': () => this.editor.commands.toggleBoldWithMarks(),
-      'Mod-i': () => this.editor.commands.toggleItalicWithMarks(),
-      'Mod-u': () => this.editor.commands.toggleUnderlineWithMarks()
+      'Mod-b': () => this.editor.commands.toggleBold(),
+      'Mod-i': () => this.editor.commands.toggleItalic(),
+      'Mod-u': () => this.editor.commands.toggleUnderline()
     }
   },
 
   addCommands() {
     return {
-      toggleBoldWithMarks:
-        () =>
-        ({commands, state, tr, dispatch}: CommandProps) => {
-          const {selection} = state
-
-          // If there's a selection, use normal toggle behavior
-          if (!selection.empty) {
-            return commands.toggleBold()
-          }
-
-          // No selection: insert mark nodes and position cursor
-          return insertMarkAndPosition('bold', state, tr, dispatch)
-        },
-
-      toggleItalicWithMarks:
-        () =>
-        ({commands, state, tr, dispatch}: CommandProps) => {
-          const {selection} = state
-
-          if (!selection.empty) {
-            return commands.toggleItalic()
-          }
-
-          return insertMarkAndPosition('italic', state, tr, dispatch)
-        },
-
-      toggleUnderlineWithMarks:
-        () =>
-        ({commands, state, tr, dispatch}: CommandProps) => {
-          const {selection} = state
-
-          if (!selection.empty) {
-            return commands.toggleUnderline()
-          }
-
-          return insertMarkAndPosition('underline', state, tr, dispatch)
-        }
+      toggleBold: createToggleMarkCommand('bold', (commands) => commands.toggleBold()),
+      toggleItalic: createToggleMarkCommand('italic', (commands) => commands.toggleItalic()),
+      toggleUnderline: createToggleMarkCommand('underline', (commands) =>
+        commands.toggleUnderline()
+      )
     }
   },
 
   addProseMirrorPlugins() {
     return [
       new Plugin({
-        key: new PluginKey('collaborationFriendlyFormattingCleanup'),
+        key: pendingMarksKey,
 
-        /**
-         * Clean up zero-width spaces that are no longer needed
-         * This runs after each transaction to prevent accumulation
-         */
-        appendTransaction(_transactions, _oldState, newState) {
-          const tr = newState.tr
-          let modified = false
+        state: {
+          init(): PendingMarksState {
+            return {marks: [], position: null, storedMarks: [], justSet: false}
+          },
 
-          // Find lone zero-width spaces (not between real content)
-          newState.doc.descendants((node, pos) => {
-            if (node.isText && node.text) {
-              // Look for zero-width space that's alone or at boundaries
-              const text = node.text
+          apply(tr, value): PendingMarksState {
+            const meta = tr.getMeta(pendingMarksKey)
+            if (meta !== undefined) return {...meta, justSet: true}
 
-              // Check if it's ONLY a zero-width space
-              if (text === '\u200B') {
-                // Only remove if there's actual content after it AND that content has the same marks
-                // (user has started typing with the mark applied)
-                const $pos = newState.doc.resolve(pos + 1)
-                const after = $pos.nodeAfter
+            if (value.justSet) return {...value, justSet: false}
 
-                if (after && after.isText && after.text && after.text !== '\u200B') {
-                  // Check if the zero-width space and the following text have the same marks
-                  const zwsMarks = node.marks.map((m: Mark) => m.type.name).sort()
-                  const afterMarks = after.marks.map((m: Mark) => m.type.name).sort()
-                  const sameMarks =
-                    zwsMarks.length === afterMarks.length &&
-                    zwsMarks.every((mark: string, i: number) => mark === afterMarks[i])
+            if (tr.selectionSet && !tr.getMeta('pointer')) {
+              const oldPos = value.position
+              const newPos = tr.selection.from
+              if (oldPos !== null && oldPos !== newPos)
+                return {marks: [], position: null, storedMarks: [], justSet: false}
+            }
 
-                  if (sameMarks) {
-                    // The text after has the same marks - user has successfully used the placeholder
-                    tr.delete(pos, pos + 1)
-                    modified = true
-                  }
+            return value
+          }
+        },
+
+        appendTransaction(transactions, _oldState, newState) {
+          const pendingState = pendingMarksKey.getState(newState)
+          if (!pendingState || pendingState.marks.length === 0) return null
+
+          let textInserted = false
+          let insertPos = -1
+          let insertedLength = 0
+
+          for (const tr of transactions) {
+            tr.steps.forEach((step) => {
+              const stepJSON = step.toJSON()
+              if (stepJSON.stepType === 'replace' && stepJSON.slice?.content) {
+                const content = stepJSON.slice.content
+                if (content.length > 0 && content[0].type === 'text') {
+                  textInserted = true
+                  insertPos = stepJSON.from
+                  insertedLength = content[0].text?.length || 0
                 }
               }
-            }
-          })
+            })
+          }
 
-          return modified ? tr : null
+          if (textInserted && insertPos === pendingState.position) {
+            const tr = newState.tr
+            const {schema} = newState
+
+            const baseMarkTypes = new Set(pendingState.storedMarks.map((mark) => mark.type.name))
+            const finalMarkTypes = new Set(baseMarkTypes)
+
+            for (const pendingMark of pendingState.marks) {
+              if (pendingMark.action === 'add') finalMarkTypes.add(pendingMark.markType)
+              else finalMarkTypes.delete(pendingMark.markType)
+            }
+
+            const allMarkTypes = ['bold', 'italic', 'underline']
+            for (const markType of allMarkTypes) {
+              const markSchema = schema.marks[markType]
+              if (markSchema)
+                tr.removeMark(insertPos, insertPos + insertedLength, markSchema.create())
+            }
+
+            for (const markType of finalMarkTypes) {
+              const markSchema = schema.marks[markType]
+              if (markSchema) tr.addMark(insertPos, insertPos + insertedLength, markSchema.create())
+            }
+
+            tr.setMeta(pendingMarksKey, {
+              marks: [],
+              position: null,
+              storedMarks: [],
+              justSet: false
+            })
+            return tr
+          }
+
+          return null
         }
       })
     ]
