@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.32.0](https://github.com/ParabolInc/parabol/compare/v10.31.0...v10.32.0) (2025-10-30)
+
+
+### Added
+
+* update Linear integration to use refresh tokens ([#12243](https://github.com/ParabolInc/parabol/issues/12243)) ([b266795](https://github.com/ParabolInc/parabol/commit/b266795d1dd49988706a449ea8d037d71de1d07a))
+
 ## [10.31.0](https://github.com/ParabolInc/parabol/compare/v10.30.0...v10.31.0) (2025-10-29)
 
 
