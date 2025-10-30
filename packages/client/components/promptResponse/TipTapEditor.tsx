@@ -7,10 +7,9 @@ interface Props extends EditorContentProps {
   editor: Editor
   showBubbleMenu?: boolean
   useLinkEditor?: () => void
-  showDragHandle?: boolean
 }
 export const TipTapEditor = (props: Props) => {
-  const {className, editor, showBubbleMenu, useLinkEditor, ref, showDragHandle, ...rest} = props
+  const {className, editor, showBubbleMenu, useLinkEditor, ref, ...rest} = props
   return (
     <>
       <StandardBubbleMenu editor={editor} />
