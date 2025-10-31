@@ -9,6 +9,8 @@ import {
 } from '@tiptap/react'
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
+import {toSlug} from '../../../shared/toSlug'
+import {quickHash} from '../../../shared/utils/quickHash'
 import {cn} from '../../../ui/cn'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
@@ -90,7 +92,7 @@ function Component(props: NodeViewProps) {
 
   const focus = (what: Highlight) => () => setHighlight(what)
   const blur = () => setHighlight(null)
-  const exportToCSV = () => {
+  const exportToCSV = async () => {
     const content = node.content.content
     const tableData: string[][] = []
     content.forEach((row) => {
@@ -107,16 +109,15 @@ function Component(props: NodeViewProps) {
       })
       tableData.push(rowData)
     })
-    console.log(tableData)
-    const pageTitle = 'foo'
-    const date = new Date()
-    const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    const pageTitle = editor.state.doc.firstChild?.textContent ?? 'Untitled'
+    const pageTitleSlug = toSlug(pageTitle)
     const csvString = tableData.map((row) => row.join(',')).join('\n')
+    const hash = await quickHash([csvString])
     const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `Parabol_${pageTitle}_table${numDate}.csv`)
+    link.setAttribute('download', `Parabol_${pageTitleSlug}_table_${hash}.csv`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
