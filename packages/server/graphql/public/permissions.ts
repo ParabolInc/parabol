@@ -71,7 +71,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
     archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
     updatePageAccess: and(
-      hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'owner'),
+      hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),
       // limit looking up users by email
       rateLimit({perMinute: 50, perHour: 100})
     ),

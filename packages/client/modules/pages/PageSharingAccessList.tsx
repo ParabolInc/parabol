@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
+import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
 import type {PageSharingAccessList_page$key} from '../../__generated__/PageSharingAccessList_page.graphql'
 import Avatar from '../../components/Avatar/Avatar'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
@@ -71,11 +73,27 @@ export const PageSharingAccessList = (props: Props) => {
   const {id: pageId, isParentLinked, access, parentPageId} = page
   const {users, teams, organizations, guests, viewer: viewerRole} = access
   const [execute] = useUpdatePageParentLinkMutation()
+  const [executeClaimOwnership] = useUpdatePageAccessMutation()
+  const isOrphan = useMemo(() => {
+    const subjects = [...users, ...teams, ...organizations]
+    return !subjects.some((subject) => subject.role === 'owner')
+  }, [access])
   const relink = () => {
     execute({
       variables: {
         pageId,
         isParentLinked: true
+      }
+    })
+  }
+  const claimOwnership = () => {
+    executeClaimOwnership({
+      variables: {
+        pageId,
+        subjectId: viewerId,
+        subjectType: 'user',
+        unlinkApproved: true,
+        role: 'owner'
       }
     })
   }
@@ -99,7 +117,20 @@ export const PageSharingAccessList = (props: Props) => {
           </span>
         </div>
       )}
-
+      {isOrphan && (
+        <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
+          {'The owner of this page has left Parabol.'}
+          <span className={'inline'}>
+            {' To claim ownership, '}
+            <span
+              className='cursor-pointer font-semibold hover:text-sky-500'
+              onClick={claimOwnership}
+            >
+              {'Click here'}
+            </span>
+          </span>
+        </div>
+      )}
       <div className='space-y-2'>
         {guests.map(({role, email}) => {
           return (
