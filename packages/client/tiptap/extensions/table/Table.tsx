@@ -1,3 +1,4 @@
+import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
@@ -8,7 +9,12 @@ import {
 } from '@tiptap/react'
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
+import {toSlug} from '../../../shared/toSlug'
+import {quickHash} from '../../../shared/utils/quickHash'
 import {cn} from '../../../ui/cn'
+import {Tooltip} from '../../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {twStyled} from '../../../ui/twStyled'
 import AddColumnLeft from './icons/AddColumnLeftSVG'
 import AddColumnRight from './icons/AddColumnRightSVG'
@@ -86,7 +92,37 @@ function Component(props: NodeViewProps) {
 
   const focus = (what: Highlight) => () => setHighlight(what)
   const blur = () => setHighlight(null)
-
+  const exportToCSV = async () => {
+    const content = node.content.content
+    const tableData: string[][] = []
+    content.forEach((row) => {
+      const rowData: string[] = []
+      row.content.forEach((rowNode) => {
+        if (['tableCell', 'tableHeader'].includes(rowNode.type.name)) {
+          const cellText = rowNode.content.content
+            .map((cellNode) => {
+              return cellNode.content.content.map((item) => item.text).join('')
+            })
+            .join('')
+          rowData.push(cellText)
+        }
+      })
+      tableData.push(rowData)
+    })
+    const pageTitle = editor.state.doc.firstChild?.textContent ?? 'Untitled'
+    const pageTitleSlug = toSlug(pageTitle)
+    const csvString = tableData.map((row) => row.join(',')).join('\n')
+    const hash = await quickHash([csvString])
+    const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'})
+    const encodedUri = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', `Parabol_${pageTitleSlug}_table_${hash}.csv`)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
   return (
     <NodeViewWrapper className='relative' data-highlight={highlight}>
       <NodeViewContent as={'table' as 'div'} {...props.HTMLAttributes} />
@@ -94,7 +130,7 @@ function Component(props: NodeViewProps) {
         <DropdownMenu.Trigger asChild>
           <PlainButton
             className={cn(
-              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
+              '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
               {hidden: !selected}
             )}
           >
@@ -162,6 +198,20 @@ function Component(props: NodeViewProps) {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PlainButton
+            className={cn(
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
+              {hidden: !selected}
+            )}
+            onClick={exportToCSV}
+          >
+            <FileDownloadIcon />
+          </PlainButton>
+        </TooltipTrigger>
+        <TooltipContent className='text-xs'>{'Export to CSV'}</TooltipContent>
+      </Tooltip>
     </NodeViewWrapper>
   )
 }
