@@ -15,7 +15,11 @@ function extractTitleOrSummary(obj: Record<string, any>): string | undefined {
   // Look for 'title' or 'summary' at the current level
   for (const key of ['title', 'summary']) {
     if (key in obj && typeof obj[key] === 'string') {
-      return obj[key]
+      const story = obj[key]
+      return story
+        .slice(0, 256)
+        .replace(/\n|\r/g, '')
+        .replace(/\s{2,}/g, ' ')
     }
   }
 
