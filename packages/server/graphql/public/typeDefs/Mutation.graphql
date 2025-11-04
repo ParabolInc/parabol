@@ -2141,6 +2141,26 @@ type Mutation {
 	): UpdatePageAccessPayload
 
 	"""
+	Requests access to a page
+	"""
+	requestPageAccess(
+		"""
+		The id of the page to request access to
+		"""
+		pageId: ID!
+
+		"""
+		Reason for requesting access
+		"""
+		reason: String!
+
+		"""
+		The requested access role
+		"""
+		role: PageRoleEnum!
+	): Boolean
+
+	"""
 	Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
 	"""
 	updatePage(

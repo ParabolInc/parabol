@@ -1,19 +1,34 @@
 import LockIcon from '@mui/icons-material/Lock'
+import {useState} from 'react'
 import {useHistory, useLocation} from 'react-router'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import {RequestPageAccess} from './RequestPageAccess'
 
-interface Props {}
+interface Props {
+  pageId: string
+}
 
-export const PageNoAccess = (_props: Props) => {
+export const PageNoAccess = (props: Props) => {
+  const {pageId} = props
+  const atmosphere = useAtmosphere()
+  const isLoggedIn = !!atmosphere.authObj
+
+  const [showRequest, setShowRequest] = useState(false)
+
   const email = localStorage.getItem('email')
   const history = useHistory()
   const searchParams = new URLSearchParams(useLocation().search)
   const inviteEmail = searchParams.get('email')
+
+  if (showRequest) {
+    return <RequestPageAccess pageId={pageId} close={() => setShowRequest(false)} />
+  }
 
   return (
     <div>
@@ -43,7 +58,7 @@ export const PageNoAccess = (_props: Props) => {
             </div>
           </DialogTitle>
           <DialogDescription className='text-center'>
-            {email
+            {isLoggedIn
               ? 'Ask a page owner to share the page with you'
               : inviteEmail
                 ? 'Create an account first'
@@ -55,8 +70,8 @@ export const PageNoAccess = (_props: Props) => {
               variant='secondary'
               className='p-3 px-4'
               onClick={() => {
-                if (email) {
-                  history.push('/me')
+                if (isLoggedIn) {
+                  history.push('/meetings')
                 } else if (inviteEmail) {
                   history.replace({
                     pathname: '/create-account',
@@ -70,8 +85,18 @@ export const PageNoAccess = (_props: Props) => {
                 }
               }}
             >
-              {email ? 'Go home' : inviteEmail ? 'Create Account' : 'Login'}
+              {isLoggedIn ? 'Go home' : inviteEmail ? 'Create Account' : 'Login'}
             </Button>
+            {isLoggedIn && (
+              <Button
+                shape='pill'
+                variant='primary'
+                className='p-3 px-4'
+                onClick={() => setShowRequest(true)}
+              >
+                Request Access
+              </Button>
+            )}
           </DialogActions>
         </DialogContent>
       </Dialog>
