@@ -805,17 +805,17 @@
     border-collapse: collapse;
     margin: 0;
     overflow: hidden;
-    table-layout: fixed;
-    width: 100%;
+    /*table-layout: fixed;*/
+    /*width: 100%;*/
 
     td,
     th {
       /*border: 1px solid var(--color-slate-200);*/
       box-sizing: border-box;
       min-width: 1em;
-      padding: 6px 8px;
+      /*padding: 6px 8px;*/
       position: relative;
-      vertical-align: top;
+      vertical-align: center;
 
       > * {
         margin-bottom: 0;
@@ -823,7 +823,7 @@
     }
 
     th {
-      background-color: var(--color-slate-200);
+      /*background-color: var(--color-slate-200);*/
       /*border: 1px solid var(--color-slate-300);*/
       font-weight: bold;
       text-align: left;

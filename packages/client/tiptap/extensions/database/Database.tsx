@@ -7,7 +7,7 @@ function Component(props: NodeViewProps) {
   const {extension} = props
 
   return (
-    <NodeViewWrapper className='relative'>
+    <NodeViewWrapper className='relative overflow-auto'>
       <DatabaseView doc={extension.options.document} />
     </NodeViewWrapper>
   )
