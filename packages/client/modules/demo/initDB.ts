@@ -292,7 +292,8 @@ const initDemoMeetingMember = (user: DemoUser) => {
     tasks: [] as ITask[],
     user,
     userId: user.id,
-    votesRemaining: 5
+    votesRemaining: 5,
+    isConnectedAt: new Date().toJSON()
   }
 }
 
