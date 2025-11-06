@@ -9,7 +9,6 @@ import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
-import {DatabaseBlockBase} from './extensions/DatabaseBlockBase'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
@@ -66,7 +65,6 @@ export const serverTipTapExtensions: Extensions = [
   InsightsBlockBase,
   UniqueID,
   PageLinkBlockBase,
-  DatabaseBlockBase,
   Database,
   TaskBlockBase,
   ThinkingBlockBase,

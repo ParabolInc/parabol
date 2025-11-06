@@ -22,7 +22,6 @@ import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
-import {DatabaseBlock} from '../tiptap/extensions/databaseBlock/DatabaseBlock'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
@@ -183,7 +182,6 @@ export const useTipTapPageEditor = (
           atmosphere
         }),
         PageLinkBlock.configure({yDoc: provider.document}),
-        DatabaseBlock.configure({yDoc: provider.document}),
         TaskBlock,
         ThinkingBlock,
         ResponseBlock

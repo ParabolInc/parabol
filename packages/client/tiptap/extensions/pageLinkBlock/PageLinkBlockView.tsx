@@ -2,6 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DescriptionIcon from '@mui/icons-material/Description'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import StorageIcon from '@mui/icons-material/Storage'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {Link} from 'react-router-dom'
@@ -20,9 +21,9 @@ import {getPageSlug} from '../../getPageSlug'
 export const PageLinkBlockView = (props: NodeViewProps) => {
   const {node, getPos, view} = props
   const attrs = node.attrs as PageLinkBlockAttributes
-  const {pageCode, title, canonical} = attrs
+  const {pageCode, title, canonical, isDatabase} = attrs
   const pageSlug = getPageSlug(pageCode, title)
-  const Icon = canonical ? DescriptionIcon : FileOpenIcon
+  const Icon = canonical ? (isDatabase ? StorageIcon : DescriptionIcon) : FileOpenIcon
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const isOptimistic = pageCode === -1
