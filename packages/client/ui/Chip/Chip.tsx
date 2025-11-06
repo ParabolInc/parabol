@@ -7,7 +7,7 @@ interface Props {
   picture?: string | null
   icon?: React.ReactElement | null
   className?: string
-  onDelete?: (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => void
+  onDelete?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 export const Chip = (props: Props) => {

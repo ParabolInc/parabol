@@ -9,35 +9,42 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {useCallback} from 'react'
+import {FormEvent} from 'react'
 import * as Y from 'yjs'
+import useForm from '../../../hooks/useForm'
 import {Input} from '../../../ui/Input/Input'
-import {ColumnId, deleteColumn, duplicateColumn, insertColumnAt} from './data'
-import {useYText} from './hooks'
-import {DataTypeIcons, DataTypes} from './types'
+import {
+  ColumnId,
+  ColumnMeta,
+  changeColumn,
+  deleteColumn,
+  duplicateColumn,
+  insertColumnAt
+} from './data'
+import {DataType, DataTypeIcons} from './types'
 
-export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
-  const {doc, columnId} = props
-  const title = useYText(doc.getText(`${columnId}-name`))
-  const type = useYText(doc.getText(`${columnId}-type`))
+export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: ColumnId}) => {
+  const {doc, columnId, columnMeta} = props
 
-  const changeType = useCallback(
-    (newType: string) => {
-      const type = doc.getText(`${columnId}-type`)
-      type.delete(0, type.length)
-      type.insert(0, newType)
-    },
-    [doc]
-  )
+  const {name, type} = columnMeta
+  const changeType = (newType: string) => {
+    changeColumn(doc, columnId, {name, type: newType as DataType})
+  }
+  const changeTitle = (newTitle: string) => {
+    changeColumn(doc, columnId, {name: newTitle, type})
+  }
 
-  const changeTitle = useCallback(
-    (newTitle: string) => {
-      const title = doc.getText(`${columnId}-name`)
-      title.delete(0, title.length)
-      title.insert(0, newTitle)
-    },
-    [doc]
-  )
+  const {fields, onChange} = useForm({
+    newTitle: {
+      getDefault: () => name
+    }
+  })
+
+  const handleChangeTitle = (e: FormEvent) => {
+    e.preventDefault()
+    changeTitle(fields.newTitle.value)
+    fields.newTitle.resetValue()
+  }
 
   const dataActions = [
     {
@@ -78,8 +85,8 @@ export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <div className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
-          {DataTypeIcons[type as DataTypes] || <Notes />}
-          <span className='truncate'>{title}</span>
+          {DataTypeIcons[type as DataType] || <Notes />}
+          <span className='truncate'>{name}</span>
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
@@ -90,11 +97,14 @@ export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
           collisionPadding={8}
         >
           <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-            <Input
-              className='mb-2 w-full border-slate-300 border-b pb-1'
-              value={title}
-              onChange={(e) => changeTitle(e.target.value)}
-            />
+            <form onSubmit={handleChangeTitle}>
+              <Input
+                className='mb-2 w-full border-slate-300 border-b pb-1'
+                name='newTitle'
+                defaultValue={name}
+                onChange={onChange}
+              />
+            </form>
             <DropdownMenu.Sub>
               <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-slate-100'>
                 <SwapHoriz />
@@ -124,10 +134,7 @@ export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
               <DropdownMenu.Item
                 key={label}
                 className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-slate-100'
-                onSelect={(e) => {
-                  e.preventDefault()
-                  action()
-                }}
+                onSelect={action}
               >
                 {icon}
                 {label}

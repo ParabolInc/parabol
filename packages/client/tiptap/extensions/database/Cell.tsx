@@ -3,6 +3,9 @@ import {Input} from '../../../ui/Input/Input'
 import {twStyled} from '../../../ui/twStyled'
 import {ColumnId, RowId} from './data'
 import {useCell, useYText} from './hooks'
+import {StatusCell} from './StatusCell'
+import {TagsCell} from './TagsCell'
+import {DataType} from './types'
 
 const CellInput = twStyled(Input)('w-full border-none')
 
@@ -65,10 +68,9 @@ const CheckCell = ({text}: {text: Y.Text}) => {
   )
 }
 
-export const Cell = (props: {doc: Y.Doc; rowId: RowId; columnId: ColumnId}) => {
-  const {doc, rowId, columnId} = props
+export const Cell = (props: {type: DataType; doc: Y.Doc; rowId: RowId; columnId: ColumnId}) => {
+  const {type, doc, rowId, columnId} = props
 
-  const type = useYText(doc.getText(`${columnId}-type`))
   const text = useCell(doc, rowId, columnId)
 
   switch (type) {
@@ -76,6 +78,10 @@ export const Cell = (props: {doc: Y.Doc; rowId: RowId; columnId: ColumnId}) => {
       return <NumberCell text={text} />
     case 'check':
       return <CheckCell text={text} />
+    case 'status':
+      return <StatusCell doc={doc} rowId={rowId} columnId={columnId} />
+    case 'tags':
+      return <TagsCell doc={doc} rowId={rowId} columnId={columnId} />
     default:
       return <TextCell text={text} />
   }

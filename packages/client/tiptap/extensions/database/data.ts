@@ -1,17 +1,44 @@
 import * as Y from 'yjs'
-
-const generateId = () => {
-  return Math.random().toString(36).substring(2, 9)
-}
+import {DataType} from './types'
 
 export type ColumnId = string
 export type RowId = string
+export type ColumnMeta = {
+  name: string
+  type: DataType
+}
+
+const cloneColumnMeta = (meta: ColumnMeta): ColumnMeta => {
+  return {
+    name: meta.name,
+    type: meta.type
+  }
+}
+
+const generateId = (doc: Y.Doc) => {
+  const id = Math.random().toString(36).substring(2, 9)
+  for (const column of doc.getArray<ColumnId>('columns')) {
+    if (id === column) {
+      return generateId(doc)
+    }
+  }
+  for (const row of doc.getArray<RowId>('rows')) {
+    if (id === row) {
+      return generateId(doc)
+    }
+  }
+  return id
+}
+
+export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
+  const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
+  columnMeta.set(columnId, newMeta)
+}
 
 // Needs to be added to a column!
 const createDanglingColumn = (doc: Y.Doc) => {
-  const id = generateId()
-  doc.getText(`${id}-type`).insert(0, 'text')
-  doc.getText(`${id}-name`).insert(0, `New column`)
+  const id = generateId(doc)
+  doc.getMap<ColumnMeta>('columnMeta').set(id, {name: 'New column', type: 'text'})
 
   const rows = doc.getArray<RowId>('rows')
   const data = doc.getMap<Y.Text>('data')
@@ -35,9 +62,13 @@ export const appendColumn = (doc: Y.Doc) => {
 }
 
 export const duplicateColumn = (doc: Y.Doc, columnId: ColumnId) => {
-  const id = generateId()
-  doc.getText(`${id}-type`).insert(0, doc.getText(`${columnId}-type`).toString())
-  doc.getText(`${id}-name`).insert(0, doc.getText(`${columnId}-name`).toString())
+  const id = generateId(doc)
+  const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
+  const existingMeta = columnMeta.get(columnId)
+  if (!existingMeta) {
+    throw new Error(`Column meta not found for columnId: ${columnId}`)
+  }
+  columnMeta.set(id, cloneColumnMeta(existingMeta))
 
   const rows = doc.getArray<RowId>('rows')
   const data = doc.getMap<Y.Text>('data')
@@ -64,7 +95,7 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
 }
 
 export const appendRow = (doc: Y.Doc) => {
-  const id = generateId()
+  const id = generateId(doc)
   const rows = doc.getArray<RowId>('rows')
   const columns = doc.getArray<ColumnId>('columns')
   const data = doc.getMap<Y.Text>('data')
