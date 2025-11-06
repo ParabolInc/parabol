@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.33.0](https://github.com/ParabolInc/parabol/compare/v10.32.1...v10.33.0) (2025-11-06)
+
+
+### Added
+
+* page adoption ([#12304](https://github.com/ParabolInc/parabol/issues/12304)) ([0f27b34](https://github.com/ParabolInc/parabol/commit/0f27b34ad4d24f127d82a263a15070ea89e35bd1))
+
+
+### Fixed
+
+* remove newlines from story titles when creating table ([#12307](https://github.com/ParabolInc/parabol/issues/12307)) ([be9f263](https://github.com/ParabolInc/parabol/commit/be9f2635a22e5c39021c13ddd839c29574bc7293))
+* sanitize querymap before persisting ([#12306](https://github.com/ParabolInc/parabol/issues/12306)) ([e4ae60f](https://github.com/ParabolInc/parabol/commit/e4ae60ffd18cb5f4e602aba499692abf5f8d2053))
+
+
+### Changed
+
+* send email summaries to whole team ([#12314](https://github.com/ParabolInc/parabol/issues/12314)) ([9cf389b](https://github.com/ParabolInc/parabol/commit/9cf389b88cbe57d2005eb4c5e384415a604ae4a4))
+
 ## [10.32.1](https://github.com/ParabolInc/parabol/compare/v10.32.0...v10.32.1) (2025-10-30)
 
 

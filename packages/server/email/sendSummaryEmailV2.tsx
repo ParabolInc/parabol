@@ -14,9 +14,8 @@ export const sendSummaryEmailV2 = async (
   info: GraphQLResolveInfo
 ) => {
   const {dataLoader} = context
-  const [MeetingSummaryV2, meetingMembers, meeting] = await Promise.all([
+  const [MeetingSummaryV2, meeting] = await Promise.all([
     makeSummaryEmailV2(meetingId, pageId, context, info),
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('newMeetings').loadNonNull(meetingId)
   ])
   if (!MeetingSummaryV2) return
@@ -24,17 +23,18 @@ export const sendSummaryEmailV2 = async (
   const doctype =
     '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
   const html = `${doctype}${rawHTML.replace(/<!DOCTYPE.*?>/, '')}`
-  const userIds = meetingMembers.map((m) => m.userId)
   const {teamId, name: meetingName} = meeting
-  const [team, users] = await Promise.all([
+  const [team, teamMembers] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadMany(userIds),
+    dataLoader.get('teamMembersByTeamId').load(teamId),
     getKysely()
       .updateTable('NewMeeting')
       .set({summarySentAt: sql`CURRENT_TIMESTAMP`})
       .where('id', '=', meetingId)
       .execute()
   ])
+  const userIds = teamMembers.map(({userId}) => userId)
+  const users = await dataLoader.get('users').loadMany(userIds)
   const {orgId, name: teamName} = team
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)
   const {tier, name: orgName} = organization

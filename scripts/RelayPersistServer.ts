@@ -68,7 +68,11 @@ export default class RelayPersistServer {
       return
     }
     const id = this.makeHash(text)
-    this.queryMap[id] = text.replace(/\n|\r/g, '').replace(/\s{2,}/g, ' ')
+    this.queryMap[id] = text
+      .replace(/\n|\r/g, '')
+      .replace(/\s{2,}/g, ' ')
+      // biome-ignore lint/suspicious/noControlCharactersInRegex: disallow null char
+      .replace(/\u0000/g, '')
     fs.writeFileSync(this.queryMapPath, JSON.stringify(this.queryMap))
     res.writeHead(200, {
       'Content-Type': 'application/json'
