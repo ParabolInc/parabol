@@ -1,7 +1,9 @@
 import {Node} from '@tiptap/core'
 import {type NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
+import {lazy} from 'react'
 import * as Y from 'yjs'
-import {DatabaseView} from './DatabaseView'
+
+const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
 
 function Component(props: NodeViewProps) {
   const {extension} = props

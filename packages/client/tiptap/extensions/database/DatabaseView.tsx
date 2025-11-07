@@ -10,7 +10,7 @@ import {useYArray, useYMap} from './hooks'
 
 const getRowId = (row: RowId) => row
 
-export function DatabaseView(props: {doc: Y.Doc}) {
+export default function DatabaseView(props: {doc: Y.Doc}) {
   const {doc} = props
 
   const yColumns = useYArray(doc.getArray<ColumnId>('columns'))
