@@ -16,19 +16,15 @@ export const useYMap = <T>(ymap: Y.Map<T>) => {
   const [items, setItems] = useState<Map<string, T>>(yMapToMap(ymap))
 
   useEffect(() => {
-    const updateItems = (ymap: Y.Map<T>) => {
+    const updateItems = () => {
       setItems(yMapToMap(ymap))
     }
 
-    const observe = (event: Y.YMapEvent<T>) => {
-      updateItems(event.target)
-    }
-
-    ymap.observe(observe)
-    updateItems(ymap)
+    ymap.observe(updateItems)
+    updateItems()
 
     return () => {
-      ymap.unobserve(observe)
+      ymap.unobserve(updateItems)
     }
   }, [ymap])
 
@@ -40,19 +36,15 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
   const [items, setItems] = useState<T[]>(yarray.toArray())
 
   useEffect(() => {
-    const updateItems = (yarray: Y.Array<T>) => {
+    const updateItems = () => {
       setItems(yarray.toArray())
     }
 
-    const observeArray = (event: Y.YArrayEvent<T>) => {
-      updateItems(event.target)
-    }
-
-    yarray.observe(observeArray)
-    updateItems(yarray)
+    yarray.observe(updateItems)
+    updateItems()
 
     return () => {
-      yarray.unobserve(observeArray)
+      yarray.unobserve(updateItems)
     }
   }, [yarray])
 
@@ -64,19 +56,15 @@ export const useYText = (ytext: Y.Text) => {
   const [text, setText] = useState<string>(ytext.toString())
 
   useEffect(() => {
-    const updateText = (ytext: Y.Text) => {
+    const updateText = () => {
       setText(ytext.toString())
     }
 
-    const observeText = (event: Y.YTextEvent) => {
-      updateText(event.target)
-    }
-
-    ytext.observe(observeText)
-    updateText(ytext)
+    ytext.observe(updateText)
+    updateText()
 
     return () => {
-      ytext.unobserve(observeText)
+      ytext.unobserve(updateText)
     }
   }, [ytext])
 
@@ -103,64 +91,3 @@ export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
 
   return values
 }
-
-/*
-type ObserverCallback = () => void
-type Observer = (event: Y.YMapEvent<any>, transaction: Y.Transaction) => void
-
-const observers = new Map<string, {observer: Observer, listeners: Map<string, ObserverCallback>}>()
-
-const registerListener = (key: string, map: Y.Map<any>, id: string, callback: ObserverCallback) => {
-  const existing = observers.get(key)
-  if (existing) {
-    existing.listeners.set(id, callback)
-    return
-  }
-
-  const listeners = new Map<string, ObserverCallback>()
-  const observer: Observer = (event, _transaction) => {
-    event.keysChanged.forEach((changedKey) => {
-      listeners.get(changedKey)?.()
-    })
-  }
-
-  listeners.set(id, callback)
-  observers.set(key, {observer, listeners})
-  map.observe(observer)
-}
-
-const unregisterListener = (key: string, map: Y.Map<any>, id: string) => {
-  const existing = observers.get(key)
-  if (!existing) return
-
-  existing.listeners.delete(id)
-  if (existing.listeners.size === 0) {
-    map.unobserve(existing.observer)
-    observers.delete(key)
-  }
-}
-
-export const useColumnMeta = (doc: Y.Doc, columnId: ColumnId) => {
-  const columnMetaMap = doc.getMap<ColumnMeta>('columnMeta')
-  const [meta, setMeta] = useState<ColumnMeta | undefined>(columnMetaMap.get(columnId))
-
-  useEffect(() => {
-    const updateMeta = () => {
-      setMeta(columnMetaMap.get(columnId))
-    }
-
-    const observeMeta = (event: Y.YMapEvent<{name: string; type: string}>) => {
-      if (event.keysChanged.has(columnId)) {
-        updateMeta()
-      }
-    }
-    columnMetaMap.observe(observeMeta)
-
-    return () => {
-      columnMetaMap.unobserve(observeMeta)
-    }
-  }, [columnMetaMap, columnId])
-
-  return meta
-}
-*/

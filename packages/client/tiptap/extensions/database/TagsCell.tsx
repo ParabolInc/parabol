@@ -1,11 +1,13 @@
 import {createFilterOptions, useAutocomplete} from '@mui/base/useAutocomplete'
 import CheckIcon from '@mui/icons-material/Check'
+import * as Popover from '@radix-ui/react-popover'
 import {useMemo} from 'react'
 import * as Y from 'yjs'
 import {Chip} from '../../../ui/Chip/Chip'
 import {cn} from '../../../ui/cn'
+import {Input} from '../../../ui/Input/Input'
 import {ColumnId, RowId} from './data'
-import {useCell, useColumnValues} from './hooks'
+import {useCell, useColumnValues, useYText} from './hooks'
 import {getColor} from './types'
 
 const useTagsType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
@@ -16,7 +18,7 @@ const useTagsType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
       new Set(
         columnValues.flatMap((value) => value?.split(',').map((s) => s.trim())).filter(Boolean)
       )
-    ).sort()
+    ).sort() as string[]
   }, [columnValues])
 
   return options
@@ -29,39 +31,36 @@ type Option = {
 
 const filter = createFilterOptions<Option>()
 
-export const TagsCell = ({
-  doc,
-  rowId,
-  columnId
+const AutocompleteInput = ({
+  values,
+  tags,
+  setValues
 }: {
-  doc: Y.Doc
-  rowId: RowId
-  columnId: ColumnId
+  values: string[]
+  setValues: (newValues: string[]) => void
+  tags: string[]
 }) => {
-  const cell = useCell(doc, rowId, columnId)
-
-  const options = useTagsType({doc, columnId}).map((value) => ({value})) as Option[]
-
-  const values = cell
-    .toString()
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+  const options = tags.map((tag) => ({value: tag})) as Option[]
 
   const {
     getRootProps,
     getInputProps,
-    getTagProps,
     getListboxProps,
     getOptionProps,
     groupedOptions,
     setAnchorEl
   } = useAutocomplete({
+    open: true,
     multiple: true,
     autoSelect: true,
     options,
     value: values,
     freeSolo: true,
+    isOptionEqualToValue: (option, value) => {
+      const a = typeof option === 'string' ? option : option.value
+      const b = typeof value === 'string' ? value : value.value
+      return a === b
+    },
     getOptionLabel: (option) => {
       if (typeof option === 'string') {
         return option
@@ -73,7 +72,6 @@ export const TagsCell = ({
     },
     onChange: (_event, values) => {
       const normalized = [] as string[]
-      // TODO: handle CSV
       for (const value of values) {
         if (typeof value === 'string') {
           normalized.push(value)
@@ -82,8 +80,7 @@ export const TagsCell = ({
         }
       }
       const uniqueNormalized = Array.from(new Set(normalized)).sort()
-      cell.delete(0, cell.length)
-      cell.insert(0, uniqueNormalized.join(', '))
+      setValues(uniqueNormalized)
     },
     filterOptions: (options, params) => {
       const filtered = filter(options, params)
@@ -94,7 +91,7 @@ export const TagsCell = ({
       if (inputValue !== '' && !isExisting) {
         filtered.push({
           inputValue,
-          value: `Add "${inputValue}"`
+          value: inputValue
         })
       }
 
@@ -103,39 +100,73 @@ export const TagsCell = ({
   })
 
   return (
-    <div>
+    <Popover.Content
+      sideOffset={5}
+      className='z-50 max-h-64 w-[300px] overflow-y-auto rounded-sm bg-white p-2 shadow-card-1'
+    >
       <div {...getRootProps()}>
         <div
           ref={setAnchorEl}
-          className='flex min-h-[44px] w-full flex-wrap items-center gap-2 p-1 text-sm'
+          className='flex min-h-[44px] w-full flex-wrap items-center gap-2 px-1 py-0.5 text-sm'
         >
-          {values.map((value, index: number) => (
-            <Chip
-              label={value}
-              {...getTagProps({index})}
-              key={value}
-              className={cn('rounded-lg', getColor(value))}
-            />
-          ))}
-          <input
-            {...getInputProps()}
-            className='m-0 min-h-[36px] w-0 min-w-[30px] grow border-none pl-1 outline-hidden'
-          />
+          <Input {...getInputProps()} />
         </div>
       </div>
-      {groupedOptions.length > 0 ? (
-        <ul
-          {...getListboxProps()}
-          className='absolute z-50 mt-0.5 h-auto max-h-64 w-[300px] list-none overflow-y-auto rounded-sm bg-white p-0 shadow-card-1'
-        >
-          {(groupedOptions as Option[]).map((option, index) => (
-            <li {...getOptionProps({option, index})} className='group' key={option.value}>
-              <span className={'grow'}>{option.value}</span>
-              <CheckIcon className='hidden h-5 w-5 group-data[selected]:inline' />
-            </li>
+      <ul {...getListboxProps()} className='list-none px-1'>
+        {(groupedOptions as Option[]).map((option, index) => (
+          <li {...getOptionProps({option, index})} className='group flex p-1' key={option.value}>
+            <span className={'grow'}>
+              {option.inputValue && 'Add '}
+              <Chip
+                label={option.value}
+                key={option.value}
+                className={cn('rounded-lg', getColor(option.value))}
+              />
+            </span>
+            <CheckIcon className='hidden h-5 w-5 group-aria-selected:inline' />
+          </li>
+        ))}
+      </ul>
+    </Popover.Content>
+  )
+}
+
+export const TagsCell = ({
+  doc,
+  rowId,
+  columnId
+}: {
+  doc: Y.Doc
+  rowId: RowId
+  columnId: ColumnId
+}) => {
+  const cell = useCell(doc, rowId, columnId)
+
+  const tags = useTagsType({doc, columnId})
+
+  const values = useYText(cell)
+    .toString()
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+  const setValues = (newValues: string[]) => {
+    cell.delete(0, cell.length)
+    cell.insert(0, newValues.join(', '))
+  }
+
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <button className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100'>
+          {values.map((value) => (
+            <Chip key={value} label={value} className={cn('m-0.5 rounded-lg', getColor(value))} />
           ))}
-        </ul>
-      ) : null}
-    </div>
+        </button>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <AutocompleteInput values={values} setValues={setValues} tags={tags} />
+      </Popover.Portal>
+    </Popover.Root>
   )
 }
