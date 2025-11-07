@@ -186,9 +186,6 @@ export const slashCommands = [
           if (!selection) return
           const {from} = selection
 
-          console.log('Inserting database at position', from)
-          console.log('databseBlock', schema.nodes.pageLinkBlock)
-
           const databaseNode = schema.nodes.pageLinkBlock!.create({
             pageCode: -1,
             title: '<Untitled>',
