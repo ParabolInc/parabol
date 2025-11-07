@@ -81,12 +81,17 @@ export function DatabaseView(props: {doc: Y.Doc}) {
       style={{
         width: table.getTotalSize()
       }}
+      draggable={false}
     >
       <thead>
         {table.getHeaderGroups().map((hg) => (
           <tr key={hg.id} className='text-slate-600'>
             {hg.headers.map((header) => (
-              <th key={header.id} className='p-0' style={{width: header.getSize()}}>
+              <th
+                key={header.id}
+                className='border-slate-400 border-b-1 p-0'
+                style={{width: header.getSize()}}
+              >
                 {flexRender(header.column.columnDef.header, header.getContext())}
                 {header.column.getCanResize() && (
                   <div
@@ -107,10 +112,7 @@ export function DatabaseView(props: {doc: Y.Doc}) {
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className='border-1 border-slate-400 first:border-l-0 last:border-r-0'
-              >
+              <td key={cell.id} className='border-slate-400 border-b-1 border-l-1 first:border-l-0'>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
