@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.33.1](https://github.com/ParabolInc/parabol/compare/v10.33.0...v10.33.1) (2025-11-06)
+
+
+### Fixed
+
+* demo meeting avatars ([#12319](https://github.com/ParabolInc/parabol/issues/12319)) ([9e21aa8](https://github.com/ParabolInc/parabol/commit/9e21aa82724cdeffd96c4ac0b007b11b1f92a1dc))
+
 ## [10.33.0](https://github.com/ParabolInc/parabol/compare/v10.32.1...v10.33.0) (2025-11-06)
 
 
