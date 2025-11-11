@@ -25,7 +25,7 @@ export async function down(db: Kysely<any>): Promise<void> {
 
   await db
     .deleteFrom('FeatureFlag')
-    .where('featureName', '=', 'Pages')
+    .where('featureName', '=', 'Databases')
     .where('scope', '=', 'Organization')
     .execute()
 }
