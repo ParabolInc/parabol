@@ -20,7 +20,7 @@ const NotifyPageAccessRequested: NotifyPageAccessRequestedResolvers = {
       __typename: 'PagePreview',
       ...page
     }
-  },
+  }
 }
 
 export default NotifyPageAccessRequested

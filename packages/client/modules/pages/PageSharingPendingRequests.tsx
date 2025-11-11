@@ -28,7 +28,7 @@ export const PageSharingPendingRequests = (props: Props) => {
               picture
             }
             role
-            createdAt
+            reason
           }
         }
       }
@@ -59,23 +59,24 @@ export const PageSharingPendingRequests = (props: Props) => {
     <>
       <div className='p-2 font-semibold text-slate-600 text-sm'>Pending requests...</div>
       <div className='space-y-4'>
-        {[...pendingRequests, ...pendingRequests].map((request) => {
-          const {user, role} = request
+        {pendingRequests.map((request) => {
+          const {user, role, reason} = request
           const {id: userId, preferredName: name, email, picture} = user
           return (
-            <div key={userId} className='flex items-center justify-between'>
-              <div className='flex items-center gap-3 pr-2'>
+            <div key={userId} className='flex items-start justify-between'>
+              <div className='flex items-start gap-3 pr-2'>
                 <Avatar className='h-10 w-10' picture={picture} />
-                <div className='flex flex-col'>
+                <div className='flex flex-col py-0.5'>
                   <div className='font-medium text-slate-700 text-sm'>{name}</div>
                   <div className='text-slate-800 text-xs'>{email}</div>
+                  {reason && <div className='pt-2 text-slate-800 text-sm italic'>{reason}</div>}
                 </div>
               </div>
 
               <Button
                 variant='outline'
                 shape='pill'
-                className='flex items-center gap-1 pr-4 pl-3 text-slate-700'
+                className='mt-1 flex items-center gap-1 pr-4 pl-3 text-slate-700'
                 onClick={() => acceptRequest(userId, role)}
                 disabled={submitting}
               >
