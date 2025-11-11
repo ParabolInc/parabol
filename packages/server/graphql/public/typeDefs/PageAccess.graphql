@@ -5,4 +5,8 @@ type PageAccess {
 	users: [PageAccessUser!]!
 	teams: [PageAccessTeam!]!
 	organizations: [PageAccessOrganization!]!
+	"""
+	Users who have requested access to this page withing the last 30 days but have not yet been granted access.
+	"""
+	pendingRequests: [PageAccessRequest!]!
 }

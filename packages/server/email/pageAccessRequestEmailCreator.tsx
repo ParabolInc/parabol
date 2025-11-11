@@ -1,28 +1,31 @@
 import ReactDOMServer from 'react-dom/server'
 import PageAccessRequest, {type PageAccessRequestProps, pageRoles} from './PageAccessRequest'
 
-const subjectLine = (ownerName: string): string =>
-  `${ownerName} has shared a Page with you on Parabol`
+const subjectLine = (requesterName: string): string =>
+  `${requesterName} has requested access to a Page on Parabol`
 
-const teamInviteText = (props: Omit<PageAccessRequestProps, 'title'>) => {
-  const {ownerName, ownerEmail, pageName, pageLink, role} = props
+const plaintext = (props: Omit<PageAccessRequestProps, 'title'>) => {
+  const {requesterName, requesterEmail, pageName, pageLink, role, reason} = props
   const pageAccess = pageRoles[role] || 'view'
 
-  const owner = ownerName ? `${ownerName} (${ownerEmail})` : ownerEmail
+  const requester = requesterName ? `${requesterName} (${requesterEmail})` : requesterEmail
   const page = pageName ? `this page in Parabol: ${pageName}` : 'a page in Parabol'
 
-  return `
-${owner} has invited you to ${pageAccess} ${page}
+  const reasonBlock = reason ? `${reason}`.replace(/^/gm, '| ') : ''
 
-Open Page here: ${pageLink}
+  return `
+${requester} has requested to ${pageAccess} ${page}
+${reasonBlock}
+
+Review the Page permissions here: ${pageLink}
 
 Your friends,
 The Parabol Product Team
 `
 }
 
-const pageSharedEmailCreator = (props: Omit<PageAccessRequestProps, 'title'>) => {
-  const subject = subjectLine(props.ownerName ?? props.ownerEmail)
+const pageAccessRequestEmailCreator = (props: Omit<PageAccessRequestProps, 'title'>) => {
+  const subject = subjectLine(props.requesterName ?? props.requesterEmail)
   const rawHTML = ReactDOMServer.renderToStaticMarkup(
     <PageAccessRequest {...props} title={subject} />
   )
@@ -32,8 +35,8 @@ const pageSharedEmailCreator = (props: Omit<PageAccessRequestProps, 'title'>) =>
 
   return {
     subject,
-    body: teamInviteText(props),
+    body: plaintext(props),
     html
   }
 }
-export default pageSharedEmailCreator
+export default pageAccessRequestEmailCreator

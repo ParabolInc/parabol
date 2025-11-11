@@ -36,7 +36,7 @@ const imageStyle = {
 }
 
 export const pageRoles = {
-  owner: 'edit',
+  owner: 'own',
   editor: 'edit',
   commenter: 'comment on',
   viewer: 'view'
@@ -110,26 +110,11 @@ const UnsubscribeFooter = () => {
   )
 }
 
-const HelpFooter = () => {
-  return (
-    <Section>
-      <Text style={{fontSize: '12px', marginBottom: '0px'}}>
-        {'Get in touch if we can help in any way,'}
-      </Text>
-      <Text style={{fontSize: '12px', marginTop: '0px', lineHeight: '12px'}}>
-        <a href='mailto:love@parabol.co' style={unsubscribeLink} title='love@parabol.co'>
-          {'love@parabol.co'}
-        </a>
-      </Text>
-    </Section>
-  )
-}
-
 export interface PageAccessRequestProps {
-  newUser?: boolean
-  ownerName: string | null
-  ownerEmail: string
-  ownerAvatar: string
+  requesterName: string | null
+  requesterEmail: string
+  requesterAvatar: string
+  reason: string | null
   pageLink: string
   pageName: string | null
   title: string
@@ -137,9 +122,9 @@ export interface PageAccessRequestProps {
 }
 
 const PageAccessRequest = (props: PageAccessRequestProps) => {
-  const {newUser, ownerName, ownerEmail, ownerAvatar, pageLink, pageName, title, role} = props
+  const {requesterName, requesterEmail, requesterAvatar, reason, pageLink, pageName, title, role} =
+    props
   const pageAccess = pageRoles[role] || 'view'
-  const owner = ownerName ? ownerName : ownerEmail
 
   return (
     <Html>
@@ -148,7 +133,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
       <Body style={main}>
         <Container style={container}>
           <Section style={{marginBottom: '20px'}}>
-            <h1 style={emailHeadingStyle}>{owner} shared a page</h1>
+            <h1 style={emailHeadingStyle}>{requesterName} requested access to a page</h1>
             <p style={emailCopyStyle}>
               <table style={emailTableBase} width='100%'>
                 <tbody>
@@ -159,31 +144,46 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
                         height='48px'
                         alt='Avatar'
                         style={{borderRadius: '24px'}}
-                        src={ownerAvatar}
+                        src={requesterAvatar}
                       />
                     </td>
                     <td style={{paddingLeft: '18px'}}>
-                      {ownerName ? (
+                      {requesterName ? (
                         <>
-                          <span style={boldStyle}>{ownerName}</span>
+                          <span style={boldStyle}>{requesterName}</span>
                           {' ('}
-                          <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
-                            {ownerEmail}
+                          <a href={`mailto:${requesterEmail}`} style={emailLinkStyle}>
+                            {requesterEmail}
                           </a>
                           {')'}
                         </>
                       ) : (
-                        <a href={`mailto:${ownerEmail}`} style={emailLinkStyle}>
-                          {ownerEmail}
+                        <a href={`mailto:${requesterEmail}`} style={emailLinkStyle}>
+                          {requesterEmail}
                         </a>
                       )}
-                      {' has invited you to '}
+                      {' requested to '}
                       <b>{pageAccess}</b>
                       {` ${pageName ? 'this' : 'a'} page in Parabol.`}
                     </td>
                   </tr>
                 </tbody>
               </table>
+              {reason && (
+                <p
+                  style={{
+                    ...emailCopyStyle,
+                    fontStyle: 'italic',
+                    backgroundColor: PALETTE.SLATE_100,
+                    padding: '12px',
+                    borderRadius: '4px',
+                    marginTop: '16px',
+                    marginBottom: '8px'
+                  }}
+                >
+                  {reason}
+                </p>
+              )}
               {pageName && (
                 <table
                   style={{
@@ -229,7 +229,7 @@ const PageAccessRequest = (props: PageAccessRequestProps) => {
           </Section>
 
           <Brand />
-          {newUser ? <HelpFooter /> : <UnsubscribeFooter />}
+          <UnsubscribeFooter />
         </Container>
       </Body>
     </Html>

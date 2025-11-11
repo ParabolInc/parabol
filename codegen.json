@@ -143,6 +143,7 @@
           "PageAccessUser": "../../postgres/types/index#PageAccessUser as PageAccessUserDB",
           "PageAccessTeam": "../../postgres/types/index#PageAccessTeam as PageAccessTeamDB",
           "PageAccessOrganization": "../../postgres/types/index#PageAccessOrganization as PageAccessOrganizationDB",
+          "PageAccessRequest": "../../postgres/types/index#PageAccessRequest as PageAccessRequestDB",
           "PagePartial": "../../postgres/types/index#PagePartial as PagePartialDB",
           "PagePreview": "../../postgres/types/index#PagePreview as PagePreviewDB",
           "PokerMeeting": "../../postgres/types/Meeting#PokerMeeting as PokerMeetingDB",

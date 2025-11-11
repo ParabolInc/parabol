@@ -1,10 +1,15 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
+import makeAppURL from '../../../../client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
+import getMailManager from '../../../email/getMailManager'
+import pageAccessRequestEmailCreator from '../../../email/pageAccessRequestEmailCreator'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import isValid from '../../isValid'
 import type {MutationResolvers, PageRoleEnum} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
 
@@ -17,9 +22,10 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId, _pageSlug] = CipherId.fromClient(pageId)
+  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
 
-  const [page, existingRequest, owners] = await Promise.all([
+  const [viewer, page, existingRequest, owners] = await Promise.all([
+    dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('pages').load(dbPageId),
     pg
       .selectFrom('PageAccessRequest')
@@ -72,6 +78,35 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   notificationsToInsert.forEach((notification) => {
     publishNotification(notification, subOptions)
   })
+
+  // TODO send email
+  const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}?share`, {
+    searchParams: {
+      share: true
+    }
+  })
+  const {html, subject, body} = pageAccessRequestEmailCreator({
+    requesterName: viewer.preferredName,
+    requesterEmail: viewer.email,
+    requesterAvatar: viewer.picture,
+    reason,
+    pageName: page.title ?? 'Untitled',
+    pageLink,
+    role
+  })
+  const ownerUsers = await dataLoader.get('users').loadMany(owners.map(({userId}) => userId))
+  await Promise.all(
+    ownerUsers.filter(isValid).map(({email}) =>
+      getMailManager().sendEmail({
+        to: email,
+        html,
+        subject,
+        body,
+        tags: ['type:pageSharedInvitation']
+      })
+    )
+  )
+
   return true
 }
 

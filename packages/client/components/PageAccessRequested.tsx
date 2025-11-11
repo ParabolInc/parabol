@@ -45,7 +45,7 @@ const PageAccessRequested = (props: Props) => {
 
   const goThere = () => {
     const pageSlug = pageId.split(':')[1]
-    history.push(`/pages/${pageSlug}`)
+    history.push(`/pages/${pageSlug}?share`)
   }
 
   return (

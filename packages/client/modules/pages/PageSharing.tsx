@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {PageSharingQuery} from '../../__generated__/PageSharingQuery.graphql'
 import {PageSharingAccessList} from './PageSharingAccessList'
+import {PageSharingCopyLink} from './PageSharingCopyLink'
 import {PageSharingInput} from './PageSharingInput'
 import {PageSharingInviteOptions} from './PageSharingInviteOptions'
 import {usePageSharingAutocomplete} from './usePageSharingAutocomplete'
@@ -41,26 +42,31 @@ export const PageSharing = (props: Props) => {
     setValue
   } = usePageSharingAutocomplete(query)
   return (
-    <div className='flex max-h-96 w-96 flex-col bg-white p-4 pb-0 text-slate-700'>
-      <PageSharingInput
-        pageId={page.id}
-        setValue={setValue}
-        getRootProps={getRootProps}
-        getInputProps={getInputProps}
-        getTagProps={getTagProps}
-        setAnchorEl={setAnchorEl}
-        value={value}
-      />
-      {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
-      {groupedOptions.length ? (
-        <PageSharingInviteOptions
-          getListboxProps={getListboxProps}
-          getOptionProps={getOptionProps}
-          groupedOptions={groupedOptions}
+    <div className='flex w-96 flex-col bg-white pt-3 text-slate-700'>
+      <div className='flex flex-col px-3'>
+        <PageSharingInput
+          pageId={page.id}
+          setValue={setValue}
+          getRootProps={getRootProps}
+          getInputProps={getInputProps}
+          getTagProps={getTagProps}
+          setAnchorEl={setAnchorEl}
+          value={value}
         />
-      ) : (
-        <PageSharingAccessList pageRef={page} />
-      )}
+        {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
+        {groupedOptions.length ? (
+          <PageSharingInviteOptions
+            getListboxProps={getListboxProps}
+            getOptionProps={getOptionProps}
+            groupedOptions={groupedOptions}
+          />
+        ) : (
+          <PageSharingAccessList pageRef={page} />
+        )}
+      </div>
+      <div className='border-slate-300 border-t p-3'>
+        <PageSharingCopyLink />
+      </div>
     </div>
   )
 }

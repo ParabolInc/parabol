@@ -1,5 +1,4 @@
 import LockIcon from '@mui/icons-material/Lock'
-import {useState} from 'react'
 import {useHistory, useLocation} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
@@ -19,60 +18,39 @@ export const PageNoAccess = (props: Props) => {
   const atmosphere = useAtmosphere()
   const isLoggedIn = !!atmosphere.authObj
 
-  const [showRequest, setShowRequest] = useState(false)
-
-  const email = localStorage.getItem('email')
   const history = useHistory()
   const searchParams = new URLSearchParams(useLocation().search)
   const inviteEmail = searchParams.get('email')
 
-  if (showRequest) {
-    return <RequestPageAccess pageId={pageId} close={() => setShowRequest(false)} />
+  if (isLoggedIn) {
+    return <RequestPageAccess pageId={pageId} />
   }
 
   return (
     <div>
       <Dialog isOpen>
         <DialogContent
-          className='flex w-80 flex-col items-center justify-center p-6 md:w-80'
+          className='flex w-110 flex-col items-center justify-center px-14 py-8 pb-12 md:w-110'
           noClose
         >
           <DialogTitle className='flex w-full flex-col items-center justify-center'>
-            <LockIcon />
-            <div>No access to this page</div>
-            <div className='text-center text-xs'>
-              {email && (
-                <>
-                  You are logged in as
-                  <br />
-                  <b>{email}</b>
-                </>
-              )}
-              {inviteEmail && (
-                <>
-                  This page was shared with
-                  <br />
-                  <b>{inviteEmail}</b>
-                </>
-              )}
+            <div className='h-12 w-12 rounded-full bg-slate-300 p-3 text-slate-600'>
+              <LockIcon />
             </div>
+            <div>Login Required</div>
           </DialogTitle>
           <DialogDescription className='text-center'>
-            {isLoggedIn
-              ? 'Ask a page owner to share the page with you'
-              : inviteEmail
-                ? 'Create an account first'
-                : 'Try logging in first'}
+            {inviteEmail
+              ? 'Create an account to get access to this page.'
+              : 'Log in to view pages you have access to.'}
           </DialogDescription>
-          <DialogActions>
+          <DialogActions className='mt-0'>
             <Button
               shape='pill'
-              variant='secondary'
-              className='p-3 px-4'
+              variant='dialogPrimary'
+              className='p-3 px-6'
               onClick={() => {
-                if (isLoggedIn) {
-                  history.push('/meetings')
-                } else if (inviteEmail) {
+                if (inviteEmail) {
                   history.replace({
                     pathname: '/create-account',
                     search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&email=${encodeURIComponent(inviteEmail)}`
@@ -85,18 +63,8 @@ export const PageNoAccess = (props: Props) => {
                 }
               }}
             >
-              {isLoggedIn ? 'Go home' : inviteEmail ? 'Create Account' : 'Login'}
+              {inviteEmail ? 'Create Account' : 'Log in'}
             </Button>
-            {isLoggedIn && (
-              <Button
-                shape='pill'
-                variant='primary'
-                className='p-3 px-4'
-                onClick={() => setShowRequest(true)}
-              >
-                Request Access
-              </Button>
-            )}
           </DialogActions>
         </DialogContent>
       </Dialog>

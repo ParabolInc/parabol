@@ -1,5 +1,6 @@
 import LockIcon from '@mui/icons-material/Lock'
 import {useState} from 'react'
+import {useHistory} from 'react-router'
 import BasicTextArea from '../../components/InputField/BasicTextArea'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useRequestPageAccessMutation} from '../../mutations/useRequestPageAccessMutation'
@@ -12,15 +13,21 @@ import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 
 interface Props {
   pageId: string
-  close: () => void
 }
 
 export const RequestPageAccess = (props: Props) => {
-  const {pageId, close} = props
+  const {pageId} = props
   const [reason, setReason] = useState('')
 
   const atmosphere = useAtmosphere()
   const [execute, submitting] = useRequestPageAccessMutation()
+
+  const history = useHistory()
+
+  const cancel = () => {
+    if (submitting) return
+    history.push('/meetings')
+  }
 
   const submit = () => {
     if (submitting) return
@@ -62,7 +69,7 @@ export const RequestPageAccess = (props: Props) => {
           autoDismiss: 5,
           key: 'requestedPageAccess'
         })
-        close()
+        cancel()
       }
     })
   }
@@ -71,29 +78,32 @@ export const RequestPageAccess = (props: Props) => {
     <div>
       <Dialog isOpen>
         <DialogContent
-          className='flex w-80 flex-col items-center justify-center p-6 md:w-80'
+          className='flex w-110 flex-col items-center justify-center px-14 py-8 pb-12 md:w-110'
           noClose
         >
           <DialogTitle className='flex w-full flex-col items-center justify-center'>
-            <LockIcon />
-            <div>Request access to this page</div>
+            <div className='h-12 w-12 rounded-full bg-slate-300 p-3 text-slate-600'>
+              <LockIcon />
+            </div>
+            <div>Request Access</div>
           </DialogTitle>
           <DialogDescription className='text-center'>
-            Ask a page owner to share the page with you
+            Ask a page owner to share the page with you.
             <BasicTextArea
               autoFocus
+              className='mt-6 resize-none border-slate-500 px-3 py-2.5'
               name='reason'
               onChange={(e) => setReason(e.target.value)}
-              placeholder=''
+              placeholder='Optional message...'
               value={reason}
               maxLength={255}
             />
           </DialogDescription>
-          <DialogActions>
-            <Button shape='pill' variant='secondary' className='p-3 px-4' onClick={close}>
+          <DialogActions className='mt-0 flex w-full justify-between gap-4'>
+            <Button shape='pill' variant='outline' className='p-3 px-6' onClick={cancel}>
               Cancel
             </Button>
-            <Button shape='pill' variant='primary' className='p-3 px-4' onClick={submit}>
+            <Button shape='pill' variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
               Request Access
             </Button>
           </DialogActions>

@@ -1,0 +1,5 @@
+type PageAccessRequest {
+	user: UserPreview!
+	role: PageRoleEnum!
+	createdAt: DateTime!
+}

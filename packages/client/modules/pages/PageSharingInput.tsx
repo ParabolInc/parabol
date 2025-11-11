@@ -100,12 +100,8 @@ export const PageSharingInput = (props: Props) => {
         />
       </div>
       <div className='flex shrink-0 flex-col self-center'>
-        <Button
-          variant='secondary'
-          className='rounded-full bg-sky-500 px-3 py-1 hover:bg-sky-600'
-          onClick={onSubmit}
-        >
-          Invite
+        <Button variant='dialogPrimary' shape='pill' className='h-10 px-6' onClick={onSubmit}>
+          Share
         </Button>
         {value.length > 0 && (
           <div className=''>
