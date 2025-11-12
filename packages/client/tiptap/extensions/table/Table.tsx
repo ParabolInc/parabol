@@ -7,6 +7,8 @@ import {
   NodeViewWrapper,
   ReactNodeViewRenderer
 } from '@tiptap/react'
+import type JSON2CSVParser from 'json2csv/JSON2CSVParser'
+import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
 import {toSlug} from '../../../shared/toSlug'
@@ -94,24 +96,26 @@ function Component(props: NodeViewProps) {
   const blur = () => setHighlight(null)
   const exportToCSV = async () => {
     const content = node.content.content
-    const tableData: string[][] = []
-    content.forEach((row) => {
-      const rowData: string[] = []
-      row.content.forEach((rowNode) => {
-        if (['tableCell', 'tableHeader'].includes(rowNode.type.name)) {
-          const cellText = rowNode.content.content
-            .map((cellNode) => {
-              return cellNode.content.content.map((item) => item.text).join('')
-            })
-            .join('')
-          rowData.push(cellText)
-        }
-      })
-      tableData.push(rowData)
+    const headers = content[0]!.content.content.map((tableHeaderRow) => {
+      return tableHeaderRow.textContent ?? '<Untitled>'
     })
+    const rows = [] as Record<string, string>[]
+    for (let i = 1; i < content.length; i++) {
+      const row = {} as Record<string, string>
+      const rowContent = content[i]!.content.content
+      rowContent.forEach((cell, idx) => {
+        const key = headers[idx]!
+        row[key] = cell.textContent
+      })
+      rows.push(row)
+    }
     const pageTitle = editor.state.doc.firstChild?.textContent ?? 'Untitled'
     const pageTitleSlug = toSlug(pageTitle)
-    const csvString = tableData.map((row) => row.join(',')).join('\n')
+    const parser = new Parser({
+      withBOM: true,
+      eol: '\n'
+    }) as JSON2CSVParser<any>
+    const csvString = parser.parse(rows)
     const hash = await quickHash([csvString])
     const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'})
     const encodedUri = URL.createObjectURL(blob)
