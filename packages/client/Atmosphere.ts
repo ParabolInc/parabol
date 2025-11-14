@@ -1,7 +1,8 @@
+import graphql from 'babel-plugin-relay/macro'
 import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
-import type {Disposable} from 'react-relay'
+import {type Disposable, commitMutation} from 'react-relay'
 import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
@@ -25,6 +26,7 @@ import {
 } from 'relay-runtime'
 import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
+import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
 import {createWSClient} from './utils/createWSClient'
@@ -35,6 +37,12 @@ import {AuthToken} from './types/AuthToken'
 
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
+
+const signOutMutation = graphql`
+  mutation AtmosphereSignOutMutation {
+    signOut
+  }
+`
 
 interface QuerySubscription {
   subKey: string
@@ -295,8 +303,6 @@ export default class Atmosphere extends Environment {
       this.authObj = null
     }
 
-    /*
-     * TODO do we need this?
     if (!this.authObj) return
     const {exp, sub: viewerId, rol, iat} = this.authObj
     if (rol === 'impersonate') {
@@ -304,14 +310,10 @@ export default class Atmosphere extends Environment {
       return this.validateImpersonation(iat)
     }
     if (exp < Date.now() / 1000) {
-      this.authToken = null
-      this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.userId)
+      this.invalidateSession('Your session has expired. Please log in again.')
     } else {
       this.viewerId = viewerId!
-      window.localStorage.setItem(LocalStorageKey.USER_ID, userId)
     }
-    */
   }
 
   registerQuery = async (
@@ -403,18 +405,23 @@ export default class Atmosphere extends Environment {
     // does not remove other subs because they may still do interesting things like pop toasts
   }
   invalidateSession(reason: string) {
-    // TODO
-    throw new Error('Method not implemented.')
+    // clearing the auth token will cause the mutation to be sent via http
     this.setAuthToken(null)
-    this.eventEmitter.emit('addSnackbar', {
-      key: 'logOutJWT',
-      message: reason,
-      autoDismiss: 5
+    commitMutation<AtmosphereSignOutMutation>(this, {
+      mutation: signOutMutation,
+      variables: {},
+      onCompleted: (_res, _err) => {
+        this.eventEmitter.emit('addSnackbar', {
+          key: 'logOutJWT',
+          message: reason,
+          autoDismiss: 5
+        })
+        this.close()
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 5000)
+      }
     })
-    this.close()
-    setTimeout(() => {
-      window.location.href = '/'
-    }, 5000)
   }
   close() {
     // TODO

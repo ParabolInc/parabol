@@ -31,14 +31,8 @@ const InvalidateSessionsMutation: StandardMutation<TInvalidateSessionsMutation> 
     mutation,
     variables,
     onCompleted: (res, errors) => {
-      onCompleted(res, errors)
-      /* TODO why?
-      const {invalidateSessions} = res
-      const {authToken} = invalidateSessions
-      if (authToken) {
-        atmosphere.setAuthToken(authToken)
-      }
-      */
+      atmosphere.invalidateSession('You’ve been logged out successfully.')
+      return onCompleted(res, errors)
     },
     onError
   })
