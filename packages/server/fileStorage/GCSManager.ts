@@ -164,7 +164,7 @@ export default class GCSManager extends FileStoreManager {
   }
   async presignUrl(partialPath: PartialPath): Promise<string> {
     // not implemented yet!
-    const fullPath = encodeURIComponent(this.prependPath(partialPath, 'store'))
+    const fullPath = this.prependPath(partialPath, 'store')
     return this.getPublicFileLocation(fullPath)
   }
 }

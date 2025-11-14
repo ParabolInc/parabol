@@ -48,11 +48,13 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const hashName = base64url.fromBase64(createHash('sha256').update(buffer).digest('base64'))
   const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
   if (compressedBuffer.byteLength > 2 ** 23) {
     return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
   }
+  const hashName = base64url.fromBase64(
+    createHash('sha256').update(compressedBuffer).digest('base64')
+  )
   // RESOLUTION
   const manager = getFileStoreManager()
   const hostedUrl = await manager.putUserFile(

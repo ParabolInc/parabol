@@ -1,8 +1,6 @@
 import base64url from 'base64url'
 import {createHash} from 'crypto'
 import mime from 'mime-types'
-import makeAppURL from '../../../../client/utils/makeAppURL'
-import appOrigin from '../../../appOrigin'
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
@@ -56,20 +54,20 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const hashName = base64url.fromBase64(createHash('sha256').update(buffer).digest('base64'))
   const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
   if (compressedBuffer.byteLength > 2 ** 23) {
     return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
   }
+  const hashName = base64url.fromBase64(
+    createHash('sha256').update(compressedBuffer).digest('base64')
+  )
   // RESOLUTION
   const manager = getFileStoreManager()
-  const publicURL = await manager.putUserFile(
+  const url = await manager.putUserFile(
     compressedBuffer,
     `${scope}/${scopeCode}/assets/${hashName}.${extension}`
   )
-  const partialPath = publicURL.split('/').slice(-4).join('/')
-  const imageProxyURL = makeAppURL(appOrigin, `assets/${partialPath}`)
-  return {url: imageProxyURL}
+  return {url}
 }
 
 export default uploadUserAsset
