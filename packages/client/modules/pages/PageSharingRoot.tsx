@@ -20,7 +20,7 @@ export const PageSharingRoot = (props: Props) => {
   )
 
   return (
-    <Suspense fallback={<div className='p-4'>Loading...</div>}>
+    <Suspense fallback={''}>
       {queryRef && <PageSharing queryRef={queryRef} pageId={pageId} />}
     </Suspense>
   )

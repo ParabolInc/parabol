@@ -79,7 +79,6 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     publishNotification(notification, subOptions)
   })
 
-  // TODO send email
   const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}?share`, {
     searchParams: {
       share: true
