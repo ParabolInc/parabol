@@ -1,4 +1,5 @@
 import generateUID from '../generateUID'
+import type {AssetScopeEnum} from '../graphql/public/resolverTypes'
 
 export type FileAssetDir = 'store' | 'build'
 
@@ -23,12 +24,22 @@ export default abstract class FileStoreManager {
 
   abstract presignUrl(url: string): Promise<string>
 
-  async putUserAsset(file: Buffer<ArrayBufferLike>, userId: string, ext: string, name?: string) {
-    const filename = name ?? generateUID()
+  async putAsset(
+    file: Buffer<ArrayBufferLike>,
+    scope: AssetScopeEnum,
+    scopeCode: string,
+    filename: string,
+    ext: string
+  ) {
     // replace the first dot, if there is one, but not any other dots
     const dotfreeExt = ext.replace(/^\./, '')
-    const partialPath = `User/${userId}/assets/${filename}.${dotfreeExt}`
+    const partialPath = `${scope}/${scopeCode}/assets/${filename}.${dotfreeExt}`
     return this.putUserFile(file, partialPath)
+  }
+
+  async putUserAsset(file: Buffer<ArrayBufferLike>, userId: string, ext: string, name?: string) {
+    const filename = name ?? generateUID()
+    return this.putAsset(file, 'User', userId, filename, ext)
   }
   async putUserAvatar(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,

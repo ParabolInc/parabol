@@ -1,16 +1,41 @@
 import base64url from 'base64url'
 import {createHash} from 'crypto'
 import mime from 'mime-types'
+import makeAppURL from '../../../../client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
 import type {MutationResolvers} from '../resolverTypes'
 
-const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (_, {file}, {authToken}) => {
+const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
+  _,
+  {file, scope, scopeKey},
+  {authToken, dataLoader}
+) => {
   // AUTH
-  const userId = getUserId(authToken)
+  const viewerId = getUserId(authToken)
 
   // VALIDATION
+  let scopeCode = scopeKey
+  if (scope === 'User' && scopeKey !== viewerId) {
+    return {error: {message: 'scopeKey must match your viewerId'}}
+  } else if (scope === 'Team' && !isTeamMember(authToken, scopeKey)) {
+    return {error: {message: 'scopeKey must match one of your teams'}}
+  } else if (scope === 'Organization') {
+    const inOrg = await isUserInOrg(viewerId, scopeKey, dataLoader)
+    if (!inOrg) {
+      return {error: {message: 'scopeKey must match one of your organizations'}}
+    }
+  } else if (scope === 'Page') {
+    const [pageId, pageCode] = CipherId.fromClient(scopeKey)
+    scopeCode = `${pageCode}`
+    const pageAccess = await dataLoader.get('pageAccessByUserId').load({pageId, userId: viewerId})
+    if (!pageAccess || pageAccess === 'viewer') {
+      return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
+    }
+  }
   const contentType = file.type
   const buffer = Buffer.from(await file.arrayBuffer())
   const ext = mime.extension(contentType)
@@ -26,8 +51,10 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (_, {file}, 
   }
   // RESOLUTION
   const manager = getFileStoreManager()
-  const url = await manager.putUserAsset(compressedBuffer, userId, extension, hashName)
-  return {url}
+  const publicURL = await manager.putAsset(compressedBuffer, scope, scopeCode, hashName, extension)
+  const partialPath = publicURL.split('/').slice(-4).join('/')
+  const imageProxyURL = makeAppURL(appOrigin, `images/${partialPath}`)
+  return {url: imageProxyURL}
 }
 
 export default uploadUserAsset

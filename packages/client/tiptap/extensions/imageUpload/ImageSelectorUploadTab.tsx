@@ -6,10 +6,11 @@ import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 interface Props {
   setImageURL: (url: string) => void
+  pageId: string
 }
 
 export const ImageSelectorUploadTab = (props: Props) => {
-  const {setImageURL} = props
+  const {setImageURL, pageId} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const [commit] = useUploadUserAsset()
@@ -25,7 +26,7 @@ export const ImageSelectorUploadTab = (props: Props) => {
       })
     }
     commit({
-      variables: {},
+      variables: {scope: 'Page', scopeKey: pageId},
       uploadables: {file: file},
       onCompleted: (res) => {
         const {uploadUserAsset} = res

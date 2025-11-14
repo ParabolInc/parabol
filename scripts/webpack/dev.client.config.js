@@ -54,6 +54,7 @@ module.exports = {
         'ready',
         'self-hosted',
         'mattermost',
+        'images',
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/'
       ].map((name) => ({

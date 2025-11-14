@@ -44,7 +44,14 @@ export const Page = (props: Props) => {
     <div className='relative flex w-full flex-col items-center bg-white'>
       {isPublic ? <PageHeaderPublic /> : <PageHeader pageRef={page} />}
       <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
-        {synced && <PageEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />}
+        {synced && (
+          <PageEditor
+            viewerRef={viewerRef}
+            isEditable={isEditable}
+            provider={provider}
+            pageId={pageId}
+          />
+        )}
       </div>
     </div>
   )
