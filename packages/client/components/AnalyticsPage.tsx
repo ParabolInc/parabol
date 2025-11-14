@@ -7,8 +7,8 @@ import type {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphq
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
-import getContentGroup from '../utils/getContentGroup'
 import {getAuthCookie} from '../utils/authCookie'
+import getContentGroup from '../utils/getContentGroup'
 
 const query = graphql`
   query AnalyticsPageQuery {

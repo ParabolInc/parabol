@@ -7,7 +7,7 @@ export const getAuthCookie = async (global: Window) => {
   if (!global) return null
   const cookieStore = global.cookieStore
   if (!cookieStore) {
-    return Cookies.get(cookieName) ?? null;
+    return Cookies.get(cookieName) ?? null
   }
   const authCookie = await cookieStore.get(cookieName)
   const authToken = authCookie?.value ?? null
@@ -21,7 +21,7 @@ export const onAuthCookieChange = (global: Window, callback: (token: string | nu
     return
   }
   return cookieStore.addEventListener('change', (event) => {
-    const authCookieChange = event.changed.find(change => change.name === cookieName)
+    const authCookieChange = event.changed.find((change) => change.name === cookieName)
     if (authCookieChange) {
       const newValue = authCookieChange.value ?? null
       callback(newValue)

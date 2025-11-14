@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
-import {type Disposable, commitMutation} from 'react-relay'
+import {commitMutation, type Disposable} from 'react-relay'
 import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
@@ -25,15 +25,15 @@ import {
   type Variables
 } from 'relay-runtime'
 import type StrictEventEmitter from 'strict-event-emitter-types'
-import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
+import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
+import {AuthToken} from './types/AuthToken'
+import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
-import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
-import {AuthToken} from './types/AuthToken'
 
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true

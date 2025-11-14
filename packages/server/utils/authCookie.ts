@@ -1,7 +1,7 @@
 import {CookieListItem, CookieStore, getCookieString} from '@whatwg-node/cookie-store'
+import {sign} from 'jsonwebtoken'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'
-import {sign} from 'jsonwebtoken'
 import encodeAuthToken from './encodeAuthToken'
 // for the cookieStore declaration
 import '@whatwg-node/server-plugin-cookies'
@@ -23,28 +23,28 @@ const createCookies = (token: AuthToken | null) => {
   const clientValue = token ? encodeClientAuthToken(token) : ''
   const expires = token ? token.exp * 1000 : Date.now()
 
-  return [{
-    name: serverCookie,
-    value: serverValue,
-    expires,
-    domain: null,
-    path: '/',
-    httpOnly: true,
-    sameSite: 'strict',
-    secure: true
-  }, {
-    name: clientCookie,
-    value: clientValue,
-    expires,
-    domain: null,
-    path: '/',
-  }] as CookieListItem[]
+  return [
+    {
+      name: serverCookie,
+      value: serverValue,
+      expires,
+      domain: null,
+      path: '/',
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true
+    },
+    {
+      name: clientCookie,
+      value: clientValue,
+      expires,
+      domain: null,
+      path: '/'
+    }
+  ] as CookieListItem[]
 }
 
-export const setAuthCookie = (
-  context: GQLContext,
-  authToken: AuthToken
-) => {
+export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
   const cookies = createCookies(authToken)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)

@@ -5,9 +5,7 @@ import type {NotificationSubscription_paymentRejected$data} from '~/__generated_
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import type {
-  NotificationSubscription$data,
-} from '../__generated__/NotificationSubscription.graphql'
+import type {NotificationSubscription$data} from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
