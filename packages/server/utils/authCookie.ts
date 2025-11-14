@@ -5,6 +5,7 @@ import {GQLContext} from '../graphql/graphql'
 import encodeAuthToken from './encodeAuthToken'
 // for the cookieStore declaration
 import '@whatwg-node/server-plugin-cookies'
+import {Logger} from './Logger'
 
 /**
  * We use one secure httpOnly cookie which is signed and used for authentication
@@ -45,6 +46,10 @@ const createCookies = (token: AuthToken | null) => {
 }
 
 export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
+  if (!context.request) {
+    Logger.warn('No request object on context, cannot set auth cookie')
+    return
+  }
   const cookies = createCookies(authToken)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)
@@ -57,6 +62,10 @@ export const createCookieHeader = (authToken: AuthToken) => {
 }
 
 export const unsetAuthCookie = (context: GQLContext) => {
+  if (!context.request) {
+    Logger.warn('No request object on context, cannot unset auth cookie')
+    return
+  }
   const cookies = createCookies(null)
   cookies.forEach((cookie) => {
     context.request.cookieStore?.set(cookie)

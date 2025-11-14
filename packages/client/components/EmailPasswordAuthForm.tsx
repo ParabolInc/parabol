@@ -191,8 +191,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       onError(new Error(response.error || 'Error logging in'))
       return true
     }
-    const {token, ga4Args} = response
-    atmosphere.setAuthToken(token)
+    const {ga4Args} = response
     commitLocalUpdate(atmosphere, (store) => {
       const root = store.getRoot()
       root.setValue(ga4Args.isNewUser, 'isNewUser')

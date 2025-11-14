@@ -1566,6 +1566,11 @@ type Mutation {
 	signOut: Boolean!
 
 	"""
+	Refresh the session token
+	"""
+	refreshSession: Boolean!
+
+	"""
 	Describe the mutation here
 	"""
 	modifyCheckInQuestion(

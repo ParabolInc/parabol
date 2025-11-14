@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -9,7 +8,6 @@ import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
   const [error, setError] = useState('')
-  const atmosphere = useAtmosphere()
   const {history} = useRouter()
   useEffect(() => {
     const params = new URLSearchParams(location.search)

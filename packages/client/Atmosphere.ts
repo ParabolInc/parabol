@@ -44,6 +44,12 @@ const signOutMutation = graphql`
   }
 `
 
+const refreshSessionMutation = graphql`
+  mutation AtmosphereRefreshSessionMutation {
+    refreshSession
+  }
+`
+
 interface QuerySubscription {
   subKey: string
   queryKey: string
@@ -144,7 +150,8 @@ export default class Atmosphere extends Environment {
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient
+    const isAuth = request.name.startsWith('Atmosphere')
+    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
     if (useHTTP) {
       const response = fetch('/graphql', {
         method: 'POST',
@@ -405,12 +412,11 @@ export default class Atmosphere extends Environment {
     // does not remove other subs because they may still do interesting things like pop toasts
   }
   invalidateSession(reason: string) {
-    // clearing the auth token will cause the mutation to be sent via http
-    this.setAuthToken(null)
     commitMutation<AtmosphereSignOutMutation>(this, {
       mutation: signOutMutation,
       variables: {},
       onCompleted: (_res, _err) => {
+        this.setAuthToken(null)
         this.eventEmitter.emit('addSnackbar', {
           key: 'logOutJWT',
           message: reason,
@@ -423,8 +429,13 @@ export default class Atmosphere extends Environment {
       }
     })
   }
+  refreshSession() {
+    commitMutation<AtmosphereSignOutMutation>(this, {
+      mutation: refreshSessionMutation,
+      variables: {}
+    })
+  }
   close() {
-    // TODO
     this.querySubscriptions.forEach((querySub) => {
       this.unregisterQuery(querySub.queryKey)
     })
