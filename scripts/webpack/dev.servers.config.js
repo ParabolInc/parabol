@@ -108,14 +108,10 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]'
-            }
-          }
-        ]
+        type: 'asset/resource',
+        generator: {
+          filename: '[name][ext]'
+        }
       },
       {
         include: [/node_modules/],
