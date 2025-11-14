@@ -4,6 +4,7 @@ import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
 import updateUser from '../../postgres/queries/updateUser'
 import {analytics} from '../../utils/analytics/analytics'
+import {unsetAuthCookie} from '../../utils/authCookie'
 import {getUserId, isSuperUser} from '../../utils/authorization'
 import type {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
@@ -43,8 +44,9 @@ export default {
   resolve: async (
     _source: unknown,
     {userId, email, reason}: {userId: string; email: string; reason: string},
-    {authToken, dataLoader}: GQLContext
+    context: GQLContext
   ) => {
+    const {authToken, dataLoader} = context
     // AUTH
     if (userId && email) {
       return {error: {message: 'Provide userId XOR email'}}
@@ -70,6 +72,10 @@ export default {
     await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
 
     analytics.accountRemoved(user, validReason)
+
+    if (userId === viewerId) {
+      unsetAuthCookie(context)
+    }
 
     return {}
   }

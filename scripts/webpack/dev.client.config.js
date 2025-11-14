@@ -18,6 +18,7 @@ module.exports = {
   stats: 'errors-warnings',
   devServer: {
     allowedHosts: ['localhost', 'host.docker.internal'],
+    server: 'https',
     client: {
       logging: 'warn'
     },

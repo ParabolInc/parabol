@@ -1,0 +1,81 @@
+import {CookieListItem, CookieStore, getCookieString} from '@whatwg-node/cookie-store'
+import {sign} from 'jsonwebtoken'
+import AuthToken from '../database/types/AuthToken'
+import {GQLContext} from '../graphql/graphql'
+import encodeAuthToken from './encodeAuthToken'
+// for the cookieStore declaration
+import '@whatwg-node/server-plugin-cookies'
+import {Logger} from './Logger'
+
+/**
+ * We use one secure httpOnly cookie which is signed and used for authentication
+ * A second one is client readable and just used for the client to determine the auth state
+ */
+const serverCookie = '__Host-Http-authToken'
+const clientCookie = 'authToken'
+
+const encodeClientAuthToken = (authToken: AuthToken) => {
+  const noSecret = ''
+  return sign(JSON.parse(JSON.stringify(authToken)), noSecret, {algorithm: 'none'})
+}
+
+const createCookies = (token: AuthToken | null) => {
+  const serverValue = token ? encodeAuthToken(token) : ''
+  const clientValue = token ? encodeClientAuthToken(token) : ''
+  const expires = token ? token.exp * 1000 : Date.now()
+
+  return [
+    {
+      name: serverCookie,
+      value: serverValue,
+      expires,
+      domain: null,
+      path: '/',
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true
+    },
+    {
+      name: clientCookie,
+      value: clientValue,
+      expires,
+      domain: null,
+      path: '/'
+    }
+  ] as CookieListItem[]
+}
+
+export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
+  if (!context.request) {
+    Logger.warn('No request object on context, cannot set auth cookie')
+    return
+  }
+  const cookies = createCookies(authToken)
+  cookies.forEach((cookie) => {
+    context.request.cookieStore?.set(cookie)
+  })
+}
+
+export const createCookieHeader = (authToken: AuthToken) => {
+  const cookies = createCookies(authToken)
+  return cookies.map(getCookieString).join(', ')
+}
+
+export const unsetAuthCookie = (context: GQLContext) => {
+  if (!context.request) {
+    Logger.warn('No request object on context, cannot unset auth cookie')
+    return
+  }
+  const cookies = createCookies(null)
+  cookies.forEach((cookie) => {
+    context.request.cookieStore?.set(cookie)
+  })
+}
+
+export const getAuthTokenFromCookie = async (
+  cookieHeader: string | null | undefined
+): Promise<string | null> => {
+  const cookieStore = new CookieStore(cookieHeader || '')
+  const cookie = await cookieStore.get(serverCookie)
+  return cookie?.value ?? null
+}

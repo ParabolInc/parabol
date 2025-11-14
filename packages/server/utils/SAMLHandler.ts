@@ -1,7 +1,9 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
+import {createCookieHeader} from './authCookie'
 import {callGQL} from './callGQL'
+import getVerifiedAuthToken from './getVerifiedAuthToken'
 
 const query = `
 mutation LoginSAML($queryString: String!, $samlName: ID!) {
@@ -55,16 +57,18 @@ const SAMLHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) 
   }
   const {loginSAML} = data
   const {error, userId, authToken, isNewUser, user} = loginSAML
-  if (!authToken) {
+  const authObj = getVerifiedAuthToken(authToken)
+  if (!authToken || !authObj.sub) {
     const message = error?.message || GENERIC_ERROR
     redirectOnError(res, message)
     return
   }
   res
     .writeStatus('302')
+    .writeHeader('cookie', createCookieHeader(authObj))
     .writeHeader(
       'location',
-      `/saml-redirect?userId=${userId}&token=${authToken}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
+      `/saml-redirect?userId=${userId}&isNewUser=${isNewUser}&isPatient0=${user.isPatient0}`
     )
     .end()
 })

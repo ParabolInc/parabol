@@ -68,10 +68,10 @@ const app = uws
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
-  .post('/graphql', (res, req) => {
+  .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
-    const authToken = getReqAuth(req)
     const ip = uwsGetIP(res, req)
+    const authToken = await getReqAuth(req)
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)
