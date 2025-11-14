@@ -1559,7 +1559,7 @@ type Mutation {
 	Login using an email address and password
 	"""
 	loginWithPassword(email: ID!, password: String!): UserLogInPayload!
-	
+
 	"""
 	Sign out the current user by unsetting the session cookie
 	"""
@@ -2081,6 +2081,14 @@ type Mutation {
 		the asset URL
 		"""
 		url: String!
+		"""
+		the scope of who can access the file, either user or page
+		"""
+		scope: AssetScopeEnum!
+		"""
+		The client ID of the scope, e.g. userId, teamId, orgId, pageKey
+		"""
+		scopeKey: ID!
 	): UploadUserAssetPayload
 
 	"""

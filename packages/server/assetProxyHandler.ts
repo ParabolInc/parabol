@@ -3,6 +3,7 @@ import {fetch} from '@whatwg-node/fetch'
 import imageNotSupportedPlaceholder from '../../static/images/illustrations/imageNotSupportedPlaceholder.png'
 import type AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import type {PartialPath} from './fileStorage/FileStoreManager'
 import getFileStoreManager from './fileStorage/getFileStoreManager'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
@@ -64,13 +65,13 @@ const checkAccess = async (authToken: AuthToken, scope: AssetScopeEnum, scopeCod
   return true
 }
 
-export const imageProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const partialPath = req.getUrl().slice('/images'.length + 1)
+export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const partialPath = req.getUrl().slice('/assets'.length + 1)
   if (!partialPath) {
     res.writeStatus('404').end()
     return
   }
-  const authToken = getReqAuth(req)
+  const authToken = await getReqAuth(req)
   const [scope, scopeCode, _type, _filename] = partialPath.split('/') as [
     AssetScopeEnum,
     string,
@@ -84,13 +85,11 @@ export const imageProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
 
   const manager = getFileStoreManager()
-  const fullPath = manager.prependPath(partialPath)
-  const publicURL = manager.getPublicFileLocation(fullPath)
   // TODO: cache presigned values in redis for a bit to reduce a roundtrip
-  const privateURL = await manager.presignUrl(publicURL)
+  const url = await manager.presignUrl(partialPath as PartialPath)
   res
     .writeStatus('307')
-    .writeHeader('Location', privateURL)
+    .writeHeader('Location', url)
     .writeHeader('Vary', 'Authorization, X-Application-Authorization')
     .writeHeader('Cache-Control', 'no-store, max-age=0')
     .end()

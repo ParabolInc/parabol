@@ -1,6 +1,18 @@
 import type {Kysely} from 'kysely'
-import getTemplateIllustrationUrl from '../../graphql/mutations/helpers/getTemplateIllustrationUrl'
+import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 
+const getTemplateIllustrationUrl = (filename: string) => {
+  const cdnType = process.env.FILE_STORE_PROVIDER as string | undefined
+  const manager = getFileStoreManager()
+
+  const partialPath = `Organization/aGhostOrg/template/${filename}`
+  if (cdnType === 'local') {
+    return `/self-hosted/${partialPath}`
+  } else {
+    const fullPath = manager.prependPath(partialPath)
+    return manager.getPublicFileLocation(fullPath)
+  }
+}
 export async function up(db: Kysely<any>): Promise<void> {
   await db
     .insertInto('MeetingTemplate')

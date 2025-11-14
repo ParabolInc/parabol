@@ -15,15 +15,10 @@ export default class LocalFileStoreManager extends FileStoreManager {
     }
   }
 
-  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
-    return this.putFile(file, fullPath)
-  }
   protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
     await fs.promises.writeFile(fsAbsLocation, Buffer.from(file) as any)
-    return this.getPublicFileLocation(fullPath)
   }
 
   prependPath(partialPath: string): string {

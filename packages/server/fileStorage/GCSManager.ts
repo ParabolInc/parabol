@@ -3,7 +3,7 @@ import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
 import path from 'path'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type FileAssetDir} from './FileStoreManager'
+import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
 
 interface CloudKey {
   clientEmail: string
@@ -113,11 +113,6 @@ export default class GCSManager extends FileStoreManager {
     return this.accessToken
   }
 
-  protected async putUserFile(file: Buffer<ArrayBufferLike>, partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
-    return this.putFile(file, fullPath)
-  }
-
   protected async putFile(file: Buffer<ArrayBufferLike>, fullPath: string) {
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
     url.searchParams.append('uploadType', 'media')
@@ -147,12 +142,12 @@ export default class GCSManager extends FileStoreManager {
         throw e
       }
     }
-    return this.getPublicFileLocation(fullPath)
   }
 
-  putBuildFile(file: Buffer<ArrayBufferLike>, partialPath: string): Promise<string> {
+  async putBuildFile(file: Buffer<ArrayBufferLike>, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
-    return this.putFile(file, fullPath)
+    await this.putFile(file, fullPath)
+    return this.getPublicFileLocation(fullPath)
   }
 
   prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
@@ -167,8 +162,9 @@ export default class GCSManager extends FileStoreManager {
     const res = await fetch(url)
     return res.status !== 404
   }
-  async presignUrl(url: string): Promise<string> {
+  async presignUrl(partialPath: PartialPath): Promise<string> {
     // not implemented yet!
-    return url
+    const fullPath = encodeURIComponent(this.prependPath(partialPath, 'store'))
+    return this.getPublicFileLocation(fullPath)
   }
 }

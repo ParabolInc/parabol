@@ -8,8 +8,8 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import './hocusPocus'
+import {assetProxyHandler} from './assetProxyHandler'
 import {hocusPocusHandler} from './hocusPocusHandler'
-import {imageProxyHandler} from './imageProxyHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
@@ -63,7 +63,7 @@ const app = uws
   .get('/email/createics', ICSHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
-  .get('/images/*', imageProxyHandler)
+  .get('/assets/*', assetProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)

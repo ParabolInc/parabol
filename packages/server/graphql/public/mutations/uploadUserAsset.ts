@@ -3,21 +3,21 @@ import {createHash} from 'crypto'
 import mime from 'mime-types'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
+import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
-import type {MutationResolvers} from '../resolverTypes'
+import type {DataLoaderWorker} from '../../graphql'
+import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
-const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
-  _,
-  {file, scope, scopeKey},
-  {authToken, dataLoader}
+export const validateScope = async (
+  authToken: AuthToken,
+  scope: AssetScopeEnum,
+  scopeKey: string,
+  dataLoader: DataLoaderWorker
 ) => {
-  // AUTH
   const viewerId = getUserId(authToken)
-
-  // VALIDATION
   let scopeCode = scopeKey
   if (scope === 'User' && scopeKey !== viewerId) {
     return {error: {message: 'scopeKey must match your viewerId'}}
@@ -36,6 +36,18 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }
   }
+  return scopeCode
+}
+
+const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
+  _,
+  {file, scope, scopeKey},
+  {authToken, dataLoader}
+) => {
+  // VALIDATION
+  const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
+  if (typeof scopeCode !== 'string') return scopeCode
+
   const contentType = file.type
   const buffer = Buffer.from(await file.arrayBuffer())
   const ext = mime.extension(contentType)
@@ -51,9 +63,12 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   }
   // RESOLUTION
   const manager = getFileStoreManager()
-  const publicURL = await manager.putAsset(compressedBuffer, scope, scopeCode, hashName, extension)
+  const publicURL = await manager.putUserFile(
+    compressedBuffer,
+    `${scope}/${scopeCode}/assets/${hashName}.${extension}`
+  )
   const partialPath = publicURL.split('/').slice(-4).join('/')
-  const imageProxyURL = makeAppURL(appOrigin, `images/${partialPath}`)
+  const imageProxyURL = makeAppURL(appOrigin, `assets/${partialPath}`)
   return {url: imageProxyURL}
 }
 
