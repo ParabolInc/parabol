@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.34.0](https://github.com/ParabolInc/parabol/compare/v10.33.1...v10.34.0) (2025-11-14)
+
+
+### Added
+
+* CSV Export on tables ([#12308](https://github.com/ParabolInc/parabol/issues/12308)) ([2a1c700](https://github.com/ParabolInc/parabol/commit/2a1c7000a7ee6e393b30838a1ca1b2d4cfa5c525))
+* request page access ([#12325](https://github.com/ParabolInc/parabol/issues/12325)) ([bb40bdf](https://github.com/ParabolInc/parabol/commit/bb40bdf370141d283323c75a7cb3f680b729cb9d))
+
+
+### Changed
+
+* **docs:** changelog by major version ([#12324](https://github.com/ParabolInc/parabol/issues/12324)) ([2e9e2dc](https://github.com/ParabolInc/parabol/commit/2e9e2dccd43e6b134753a7a0e8e61e4bf6cbaed4))
+
 ## [10.33.1](https://github.com/ParabolInc/parabol/compare/v10.33.0...v10.33.1) (2025-11-06)
 
 
