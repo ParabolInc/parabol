@@ -24,7 +24,9 @@ export const PageRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<PageEntryQuery>(pageQuery, {pageId})
   return (
     <Suspense fallback={''}>
-      {queryRef && <PageEntry queryRef={queryRef} viewerRef={viewerRef} isPublic={isPublic} />}
+      {queryRef && (
+        <PageEntry queryRef={queryRef} viewerRef={viewerRef} isPublic={isPublic} pageId={pageId} />
+      )}
     </Suspense>
   )
 }
