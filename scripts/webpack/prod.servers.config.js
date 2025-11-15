@@ -101,11 +101,6 @@ module.exports = (config) => {
         'process.arch': JSON.stringify(process.arch),
         'process.versions.modules': JSON.stringify(process.versions.modules)
       }),
-      // if we need canvas for SSR we can just install it to our own package.json
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^canvas$/,
-        contextRegExp: /jsdom$/
-      }),
       // native bindings might be faster, but abandonware & not currently used
       new webpack.IgnorePlugin({
         resourceRegExp: /^pg-native$/,

@@ -66,7 +66,8 @@
     "react-dom": "17.0.2",
     "@babel/runtime": "^7.27.1",
     "brace-expansion@1.1.11": "1.1.12",
-    "brace-expansion@2.0.1": "2.0.2"
+    "brace-expansion@2.0.1": "2.0.2",
+    "source-map": "0.7.6"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -149,7 +150,7 @@
     "webpack-dev-server": "^5.2.2",
     "webpack-hot-middleware": "^2.26.1",
     "webpack-node-externals": "^3.0.0",
-    "workbox-webpack-plugin": "^6.5.4",
+    "workbox-webpack-plugin": "^7.3.0",
     "yargs": "^17.7.2"
   },
   "dependencies": {
