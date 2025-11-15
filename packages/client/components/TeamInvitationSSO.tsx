@@ -32,8 +32,7 @@ const TeamInvitationSSO = (props: Props) => {
         onError(new Error(response.error || 'Error logging in'))
         return
       }
-      const {token, ga4Args} = response
-      atmosphere.setAuthToken(token)
+      const {ga4Args} = response
       emitGA4SignUpEvent(ga4Args)
       AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
     }

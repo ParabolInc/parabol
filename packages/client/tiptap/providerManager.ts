@@ -4,21 +4,18 @@ import * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
 
 class ProviderManager {
-  authToken: string | null = null
   socket: HocuspocusProviderWebsocket | undefined = undefined
   providers: Record<string, {count: number; provider: HocuspocusProvider}> = {}
   atmosphere?: Atmosphere
-  setAuthToken(authToken: string, atmosphere: Atmosphere) {
+  setAtmosphere(atmosphere: Atmosphere) {
     this.atmosphere = atmosphere
-    this.authToken = authToken
   }
   getSocket() {
     if (!this.socket) {
       const wsProtocol = window.location.protocol.replace('http', 'ws')
-      const host = `${window.location.host}/yjs`
-      const baseUrl = `${wsProtocol}//${host}?token=${this.authToken || ''}`
+      const url = `${wsProtocol}//${window.location.host}/yjs`
       this.socket = new HocuspocusProviderWebsocket({
-        url: baseUrl
+        url
       })
     }
     return this.socket

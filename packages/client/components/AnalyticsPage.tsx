@@ -7,6 +7,7 @@ import type {AnalyticsPageQuery} from '~/__generated__/AnalyticsPageQuery.graphq
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {LocalStorageKey} from '~/types/constEnums'
 import safeIdentify from '~/utils/safeIdentify'
+import {getAuthCookie} from '../utils/authCookie'
 import getContentGroup from '../utils/getContentGroup'
 
 const query = graphql`
@@ -128,15 +129,16 @@ const AnalyticsPage = () => {
   const {href, pathname} = location
 
   useEffect(() => {
-    const token = window.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
-    // no token means authentication is required & authentication handles identify on its own
-    if (!token) return
-    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-    if (email) {
-      safeIdentify(atmosphere.viewerId, email)
-      return
-    }
     const cacheEmail = async () => {
+      const token = await getAuthCookie(window)
+      // no token means authentication is required & authentication handles identify on its own
+      if (!token) return
+      const cachedEmail = window.localStorage.getItem(LocalStorageKey.EMAIL)
+      if (cachedEmail) {
+        safeIdentify(atmosphere.viewerId, cachedEmail)
+        return
+      }
+
       const res = await atmosphere.fetchQuery<AnalyticsPageQuery>(query)
       if (!res || res instanceof Error) return
       const {viewer} = res

@@ -34,7 +34,6 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
       ...AddTeamMutation_notification @relay(mask: false)
     }
   }
@@ -86,8 +85,6 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHa
       const error = getGraphQLError(res, errors)
       const {addTeam} = res
       if (!error) {
-        const {authToken} = addTeam
-        atmosphere.setAuthToken(authToken)
         if (showTeamCreatedToast) {
           popTeamCreatedToast(addTeam, {atmosphere, history})
         }
