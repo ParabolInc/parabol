@@ -517,6 +517,15 @@ importers:
       '@stripe/stripe-js':
         specifier: ^4.0.0
         version: 4.10.0
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@tiptap/extension-heading':
+        specifier: ^3.9.0
+        version: 3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
+      '@tiptap/extension-text':
+        specifier: ^3.9.0
+        version: 3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
       '@types/history':
         specifier: ^4.7.0
         version: 4.7.11
@@ -5912,11 +5921,22 @@ packages:
   '@tailwindcss/postcss@4.1.13':
     resolution: {integrity: sha512-HLgx6YSFKJT7rJqh9oJs/TkBFhxuMOfUKSBEPYwV+t78POOBsdQ7crhZLzwcH3T0UyUuOzU/GK5pk5eKr3wCiQ==}
 
+  '@tanstack/react-table@8.21.3':
+    resolution: {integrity: sha512-5nNMTSETP4ykGegmVkhjcS8tTLW6Vl4axfEGQN3v0zdHYbK4UfoqfPChclTrJ4EoK9QynqAu9oUf8VEmrpZ5Ww==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: 17.0.2
+      react-dom: 17.0.2
+
   '@tanstack/react-virtual@3.13.8':
     resolution: {integrity: sha512-meS2AanUg50f3FBSNoAdBSRAh8uS0ue01qm7zrw65KGJtiXB9QXfybqZwkh4uFpRv2iX/eu5tjcH5wqUpwYLPg==}
     peerDependencies:
       react: 17.0.2
       react-dom: 17.0.2
+
+  '@tanstack/table-core@8.21.3':
+    resolution: {integrity: sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg==}
+    engines: {node: '>=12'}
 
   '@tanstack/virtual-core@3.13.8':
     resolution: {integrity: sha512-BT6w89Hqy7YKaWewYzmecXQzcJh6HTBbKYJIIkMaNU49DZ06LoTV3z32DWWEdUsgW6n1xTmwTLs4GtWrZC261w==}
@@ -6016,6 +6036,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.9.1
 
+  '@tiptap/extension-heading@3.9.0':
+    resolution: {integrity: sha512-GD8OrwHJw38T2KCiKlBHHL65n/6ywA4FqAsKaUz/9uDU4npdf94MxS6xv4AYoxuPi+3BtYTll4MuMtERcD37LA==}
+    peerDependencies:
+      '@tiptap/core': ^3.9.0
+
   '@tiptap/extension-heading@3.9.1':
     resolution: {integrity: sha512-r3H5nejZ/SYUF9DUbDT2rZS3ZeQkHUNljP7lmI5JdHDrFc5/UrvtkQr+E2mLwmn0xA+8Dwccoc9fPwnTh3YyeA==}
     peerDependencies:
@@ -6097,6 +6122,11 @@ packages:
     resolution: {integrity: sha512-t9Nc/UkrbCfnSHEUi1gvUQ2ZPzvfdYFT5TExoV2DTiUCkhG6+mecT5bTVFGW3QkPmbToL+nFhGn4ZRMDD0SP3Q==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
+
+  '@tiptap/extension-text@3.9.0':
+    resolution: {integrity: sha512-OKtqeFjeraxzmK/cK4Uah20lDWHhSn1dVz4W/cjbY7VfRQxNTDF81/qQ5+bYUUBppFpi5fwbhvXSN2Y7hqi5rA==}
+    peerDependencies:
+      '@tiptap/core': ^3.9.0
 
   '@tiptap/extension-text@3.9.1':
     resolution: {integrity: sha512-giNTcXxG2DP/B5xU8wNM9d441f6FNMYCkbW6bUtjg3USLUWazYmEvp/F6vJ2wa4PSnahH+mNiiylUi2imTnzDg==}
@@ -19841,11 +19871,19 @@ snapshots:
       postcss: 8.5.3
       tailwindcss: 4.1.13
 
+  '@tanstack/react-table@8.21.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+    dependencies:
+      '@tanstack/table-core': 8.21.3
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+
   '@tanstack/react-virtual@3.13.8(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
     dependencies:
       '@tanstack/virtual-core': 3.13.8
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
+
+  '@tanstack/table-core@8.21.3': {}
 
   '@tanstack/virtual-core@3.13.8': {}
 
@@ -19932,6 +19970,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
 
+  '@tiptap/extension-heading@3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
+    dependencies:
+      '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
+
   '@tiptap/extension-heading@3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
@@ -19997,6 +20039,10 @@ snapshots:
       '@tiptap/pm': 3.9.1
 
   '@tiptap/extension-text-style@2.26.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
+    dependencies:
+      '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
+
+  '@tiptap/extension-text@3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
 

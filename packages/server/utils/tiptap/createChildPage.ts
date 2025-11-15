@@ -5,7 +5,11 @@ import {analytics} from '../../utils/analytics/analytics'
 import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 
-export const createChildPage = async (parentPageId: number, userId: string) => {
+export const createChildPage = async (
+  parentPageId: number,
+  userId: string,
+  isDatabase: boolean
+) => {
   const pg = getKysely()
   const parentPageWithRole = await validateParentPage(parentPageId, userId, 'viewer')
   const {isPrivate, ancestorIds} = parentPageWithRole
@@ -16,7 +20,8 @@ export const createChildPage = async (parentPageId: number, userId: string) => {
       parentPageId,
       isPrivate,
       ancestorIds: ancestorIds.concat(parentPageId),
-      sortOrder: ''
+      sortOrder: '',
+      isDatabase
     })
     .returningAll()
     .executeTakeFirstOrThrow()

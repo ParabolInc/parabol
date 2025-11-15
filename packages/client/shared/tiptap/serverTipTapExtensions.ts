@@ -5,6 +5,7 @@ import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/exten
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
+import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
@@ -64,6 +65,7 @@ export const serverTipTapExtensions: Extensions = [
   InsightsBlockBase,
   UniqueID,
   PageLinkBlockBase,
+  Database,
   TaskBlockBase,
   ThinkingBlockBase,
   ResponseBlockBase

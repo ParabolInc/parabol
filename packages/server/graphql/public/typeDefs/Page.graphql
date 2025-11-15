@@ -13,6 +13,7 @@ type Page implements PagePartial {
 	team: Team
 	isParentLinked: Boolean!
 	isPrivate: Boolean!
+	isDatabase: Boolean!
 	sortOrder: String!
 	userSortOrder: String!
 	deletedAt: DateTime
