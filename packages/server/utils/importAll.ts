@@ -8,7 +8,7 @@ const importAll = (context: __WebpackModuleApi.RequireContext) => {
     if (['Query', 'Mutation', 'Subscription'].includes(name)) {
       throw new Error(`Overwriting root type ${name} with ${relativePath}`)
     }
-    collector[name] = context(relativePath)
+    collector[name] = context(relativePath).default
   })
   return collector
 }
