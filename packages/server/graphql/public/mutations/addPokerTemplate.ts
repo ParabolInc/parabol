@@ -8,7 +8,6 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import getTemplateIllustrationUrl from '../../mutations/helpers/getTemplateIllustrationUrl'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -114,7 +113,7 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
       teamId,
       orgId,
       mainCategory: 'estimation',
-      illustrationUrl: getTemplateIllustrationUrl('estimatedEffortTemplate.png')
+      illustrationUrl: `/assets/Organization/aGhostOrg/template/estimatedEffortTemplate.png`
     })
     const templateId = newTemplate.id
 

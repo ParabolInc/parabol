@@ -34,7 +34,9 @@ const useHideWhenTriggerHidden = (setOpen: (open: boolean) => void) => {
 }
 
 export const ImageUploadView = (props: NodeViewProps) => {
-  const {editor} = props
+  const {editor, extension} = props
+  const {options} = extension
+  const {pageId} = options
   const [open, setOpen] = useState(false)
   const onOpenChange = (willOpen: boolean) => {
     const {isEditable} = editor
@@ -74,7 +76,7 @@ export const ImageUploadView = (props: NodeViewProps) => {
           <Popover.Content asChild align='start' alignOffset={8} collisionPadding={8}>
             {/* z-30 is for expanded reflection stacks using Zindex.DIALOG */}
             <div className='top-0 left-0 z-30 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-              <ImageSelector editor={editor} />
+              <ImageSelector editor={editor} pageId={pageId} />
             </div>
           </Popover.Content>
         </Popover.Portal>

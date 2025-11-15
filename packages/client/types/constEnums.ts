@@ -206,7 +206,6 @@ export enum LoaderSize {
 }
 
 export enum LocalStorageKey {
-  APP_TOKEN_KEY = 'Action:token',
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',

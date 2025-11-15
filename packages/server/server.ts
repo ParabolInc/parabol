@@ -8,6 +8,7 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import './hocusPocus'
+import {assetProxyHandler} from './assetProxyHandler'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
@@ -62,14 +63,15 @@ const app = uws
   .get('/email/createics', ICSHandler)
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
+  .get('/assets/*', assetProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
-  .post('/graphql', (res, req) => {
+  .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
-    const authToken = getReqAuth(req)
     const ip = uwsGetIP(res, req)
+    const authToken = await getReqAuth(req)
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)

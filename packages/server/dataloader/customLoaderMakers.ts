@@ -2,6 +2,7 @@ import DataLoader from 'dataloader'
 import {type SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import type MeetingTemplate from '../database/types/MeetingTemplate'
+import type {PartialPath} from '../fileStorage/FileStoreManager'
 import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
@@ -790,6 +791,7 @@ export const favoriteTemplateIds = (parent: RootDataLoader, dependsOn: RegisterD
   )
 }
 
+// This should be removed once we've migrated the DB hyperlinks to using the asset proxy URLs
 export const fileStoreAsset = (parent: RootDataLoader) => {
   return new DataLoader<string, string, string>(
     async (urls) => {
@@ -802,7 +804,8 @@ export const fileStoreAsset = (parent: RootDataLoader) => {
           // if the image is not hosted by us, ignore it
           if (!url.startsWith(baseUrl)) return url
           try {
-            return await manager.presignUrl(url)
+            const partialPath = url.slice(baseUrl.length)
+            return await manager.presignUrl(partialPath as PartialPath)
           } catch (e) {
             Logger.log('Unable to presign url', url, e)
             return url

@@ -18,6 +18,7 @@ module.exports = {
   stats: 'errors-warnings',
   devServer: {
     allowedHosts: ['localhost', 'host.docker.internal'],
+    server: 'https',
     client: {
       logging: 'warn'
     },
@@ -54,6 +55,7 @@ module.exports = {
         'ready',
         'self-hosted',
         'mattermost',
+        'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/'
       ].map((name) => ({

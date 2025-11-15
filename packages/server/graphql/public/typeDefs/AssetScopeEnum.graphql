@@ -1,0 +1,9 @@
+"""
+The scope of who has access to the asset
+"""
+enum AssetScopeEnum {
+	Page
+	User
+	Team
+	Organization
+}

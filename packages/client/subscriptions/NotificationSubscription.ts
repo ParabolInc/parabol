@@ -264,26 +264,15 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
   viewer?.setLinkedRecord(newFeature, 'newFeature')
 }
 
-const authTokenNotificationOnNext: NextHandler = (payload, {atmosphere}) => {
-  if (!payload) return
-  const {id} = payload as any
-  atmosphere.setAuthToken(id)
+const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
+  atmosphere.refreshSession()
 }
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<
   InvalidateSessionsMutation_notification$data,
   OnNextHistoryContext
-> = (_payload, {atmosphere, history}) => {
-  atmosphere.setAuthToken(null)
-  atmosphere.eventEmitter.emit('addSnackbar', {
-    key: 'logOutJWT',
-    message: 'You’ve been logged out from another device',
-    autoDismiss: 5
-  })
-  setTimeout(() => {
-    atmosphere.close()
-    history.replace('/')
-  })
+> = (_payload, {atmosphere}) => {
+  atmosphere.invalidateSession('You’ve been logged out from another device')
 }
 
 const addedNotificationUpdater: SharedUpdater<any> = (payload, context) => {

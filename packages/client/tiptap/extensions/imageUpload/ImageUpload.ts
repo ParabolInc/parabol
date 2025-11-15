@@ -5,6 +5,7 @@ import {ImageUploadView} from './ImageUploadView'
 interface ImageUploadStorage {
   editorWidth: number
   editorHeight: number
+  pageId: string
 }
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -19,13 +20,15 @@ export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage>({
   addOptions() {
     return {
       editorWidth: 300,
-      editorHeight: 112
+      editorHeight: 112,
+      pageId: ''
     }
   },
   addStorage(this) {
     return {
       editorWidth: this.options.editorWidth,
-      editorHeight: this.options.editorHeight
+      editorHeight: this.options.editorHeight,
+      pageId: this.options.pageId
     }
   },
 

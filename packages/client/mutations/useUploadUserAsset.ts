@@ -3,8 +3,8 @@ import {useMutation} from 'react-relay'
 import type {useUploadUserAssetMutation as TuseUploadUserAssetMutation} from '../__generated__/useUploadUserAssetMutation.graphql'
 
 const mutation = graphql`
-  mutation useUploadUserAssetMutation($file: File!) {
-    uploadUserAsset(file: $file) {
+  mutation useUploadUserAssetMutation($file: File!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
+    uploadUserAsset(file: $file, scope: $scope, scopeKey: $scopeKey) {
       ... on ErrorPayload {
         error {
           message

@@ -65,7 +65,7 @@ export function createWSClient(atmosphere: Atmosphere) {
       },
       retryAttempts: 20,
       shouldRetry: () => {
-        if (!atmosphere.authToken) return false
+        if (!atmosphere.authObj) return false
         return true
       },
       keepAlive: 10_000,
@@ -83,12 +83,8 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
         },
         connected: async (_socket, payload, _wasRetry) => {
-          const {version, authToken} = payload as {
+          const {version} = payload as {
             version: string
-            authToken?: string | null
-          }
-          if (authToken) {
-            atmosphere.setAuthToken(authToken)
           }
           const isNewVersion = version !== __APP_VERSION__
           if (isNewVersion) {
@@ -140,12 +136,7 @@ export function createWSClient(atmosphere: Atmosphere) {
           }
         }
       },
-      url,
-      connectionParams: () => {
-        return {
-          token: atmosphere.authToken
-        }
-      }
+      url
     })
   })
 }
