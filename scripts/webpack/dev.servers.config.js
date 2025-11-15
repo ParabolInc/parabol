@@ -59,11 +59,6 @@ module.exports = {
       __PRODUCTION__: false,
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
     }),
-    // if we need canvas for SSR we can just install it to our own package.json
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^canvas$/,
-      contextRegExp: /jsdom$/
-    }),
     // native bindings might be faster, but abandonware & not currently used
     new webpack.IgnorePlugin({
       resourceRegExp: /^pg-native$/,
@@ -108,14 +103,10 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]'
-            }
-          }
-        ]
+        type: 'asset/resource',
+        generator: {
+          filename: '[name][ext]'
+        }
       },
       {
         include: [/node_modules/],
