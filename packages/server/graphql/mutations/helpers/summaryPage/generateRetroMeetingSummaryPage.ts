@@ -4,6 +4,7 @@ import type {RetrospectiveMeeting} from '../../../../postgres/types/Meeting'
 import {getInsightsBlocks} from './getInsightsBlocks'
 import {getParticipantBlocks} from './getParticipantBlocks'
 import {getRetroMetaBlock} from './getRetroMetaBlock'
+import {getRetroSummaryTable} from './getRetroSummaryTable'
 import {getSubtitleBlock} from './getSubtitleBlock'
 import {getTaskBlocks} from './getTaskBlocks'
 import {getTitleBlock} from './getTitleBlock'
@@ -24,7 +25,8 @@ export const generateRetroMeetingSummaryPage = async function* (
     getInsightsBlocks(meetingId, dataLoader),
     getTaskBlocks(meetingId, dataLoader),
     getTopicBlocks(meetingId, dataLoader),
-    getParticipantBlocks(meetingId, dataLoader)
+    getParticipantBlocks(meetingId, dataLoader),
+    getRetroSummaryTable(meetingId, dataLoader)
   ] as Promise<JSONContent[] | null>[]
   for (const promise of promises) {
     const blocks = await promise

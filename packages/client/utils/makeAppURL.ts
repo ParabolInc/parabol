@@ -11,6 +11,7 @@ interface Options {
     responseId?: string
     redirectTo?: string
     email?: string
+    share?: boolean
   } & (UTMParams | Partial<Record<keyof UTMParams, never>>)
 }
 

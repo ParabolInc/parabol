@@ -6,7 +6,7 @@ interface MenuProps extends DropdownMenu.DropdownMenuProps {
   trigger: React.ReactNode
 }
 
-export const Menu: React.FC<MenuProps> = ({trigger, className, children, ...props}) => {
+export const Menu: React.FC<MenuProps> = ({trigger, children, ...props}) => {
   return (
     <DropdownMenu.Root {...props}>
       <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>

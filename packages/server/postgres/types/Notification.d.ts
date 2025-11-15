@@ -118,6 +118,13 @@ export interface PageAccessGrantedNotification extends BaseNotification {
   role: Pageroleenum
 }
 
+export interface PageAccessRequestedNotification extends BaseNotification {
+  type: 'PAGE_ACCESS_REQUESTED'
+  requestCreatedBy: string
+  pageId: number
+  role: Pageroleenum
+}
+
 export type AnyNotification =
   | DiscussionMentionedNotification
   | KickedOutNotification

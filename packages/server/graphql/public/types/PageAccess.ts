@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {PageAccessResolvers} from '../resolverTypes'
@@ -65,6 +66,29 @@ const PageAccess: PageAccessResolvers = {
       .where('pageId', '=', id)
       .execute()
     return access
+  },
+  pendingRequests: async ({id}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+
+    const pg = getKysely()
+    const access = await pg
+      .selectFrom('PageAccess')
+      .select('role')
+      .where('pageId', '=', id)
+      .where('userId', '=', viewerId)
+      .executeTakeFirst()
+    if (access?.role !== 'owner') {
+      return []
+    }
+
+    const requests = await pg
+      .selectFrom('PageAccessRequest')
+      .selectAll()
+      .where('pageId', '=', id)
+      .where('createdAt', '>=', sql<Date>`now() - interval '30 days'`)
+      .orderBy('createdAt', 'desc')
+      .execute()
+    return requests
   }
 }
 

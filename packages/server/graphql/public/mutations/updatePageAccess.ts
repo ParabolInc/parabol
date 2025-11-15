@@ -228,6 +228,15 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       .execute()
   }
 
+  if (nextSubjectType === 'user') {
+    // remove pending requests for this user
+    await trx
+      .deleteFrom('PageAccessRequest')
+      .where('pageId', '=', dbPageId)
+      .where('userId', '=', nextSubjectId)
+      .execute()
+  }
+
   await updatePageAccessTable(trx, dbPageId)
   const strongestRole = await trx
     .selectFrom('PageAccess')

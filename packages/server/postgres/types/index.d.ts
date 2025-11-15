@@ -28,6 +28,7 @@ import {
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
+  PageAccessRequest as PageAccessRequestPG,
   PageExternalAccess as PageExternalAccessPG,
   PageOrganizationAccess as PageOrganizationAccessPG,
   PageTeamAccess as PageTeamAccessPG,
@@ -121,6 +122,7 @@ export type PagePreview = PagePartial & {
   __typename: 'PagePreview'
 }
 export type MassInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectMassInvitations>
+export type PageAccessRequest = Selectable<PageAccessRequestPG>
 export type PageExternalAccess = Selectable<PageExternalAccessPG>
 export type PageAccessUser = Omit<Selectable<PageUserAccessPG>, 'pageId'>
 export type PageAccessTeam = Omit<Selectable<PageTeamAccessPG>, 'pageId'>
