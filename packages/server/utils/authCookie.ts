@@ -56,9 +56,9 @@ export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
   })
 }
 
-export const createCookieHeader = (authToken: AuthToken) => {
+export const createCookieHeaders = (authToken: AuthToken) => {
   const cookies = createCookies(authToken)
-  return cookies.map(getCookieString).join(', ')
+  return cookies.map(getCookieString)
 }
 
 export const unsetAuthCookie = (context: GQLContext) => {
