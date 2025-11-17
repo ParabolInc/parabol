@@ -8,8 +8,8 @@ import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
-const HOST = process.env.GRAPHQL_HOST || 'localhost:3000'
-const PROTOCOL = process.env.GRAPHQL_PROTOCOL || 'http'
+const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
+const PROTOCOL = process.env.PROTO || 'http'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
@@ -57,11 +57,13 @@ const persistQuery = async (query: string) => {
 }
 
 export async function sendTipTap<T>(
-  {authToken, pageId}: {authToken: string; pageId: string},
+  {cookie, pageId}: {cookie: string; pageId: string},
   cb: (doc: Doc) => Promise<T>
 ) {
+  // The browser would normally set the cookie. The WebSocket API however does not allow to set custom headers
+  const token = cookie.split('__Host-Http-authToken=')[1]?.split(';')[0]
   const socket = new HocuspocusProviderWebsocket({
-    url: `ws://localhost:3000/yjs?token=${authToken}`
+    url: `wss://localhost:3000/yjs?token=${token}`
   })
   const doc = new Doc()
   // update the URL to match the title
@@ -84,9 +86,9 @@ export async function sendTipTap<T>(
 export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
-  authToken?: string
+  cookie?: string
 }) {
-  const authToken = req.authToken ?? ''
+  const cookie = req.cookie ?? ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
 
@@ -96,7 +98,7 @@ export async function sendPublic(req: {
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
-      authorization: `Bearer ${authToken}`
+      cookie
     },
     body: JSON.stringify({
       docId,
@@ -104,8 +106,13 @@ export async function sendPublic(req: {
     })
   })
 
+  const authCookie = response.headers.get('set-cookie')
   const body = await response.json()
-  return body
+  // add the cookie directly on the body for convenience in tests
+  return {
+    ...body,
+    ...(authCookie ? {cookie: authCookie} : {})
+  }
 }
 
 export const SIGNUP_WITH_PASSWORD_MUTATION = `
@@ -120,7 +127,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
       error {
         message
       }
-      authToken
       user {
         tms
         id
@@ -137,7 +143,6 @@ export const SIGNUP_WITH_PASSWORD_MUTATION = `
       }
     }
     acceptTeamInvitation(invitationToken: $invitationToken) {
-      authToken
       error {
         message
       }
@@ -172,7 +177,6 @@ export const signUpWithEmail = async (emailInput: string) => {
   expect(signUp).toMatchObject({
     data: {
       signUpWithPassword: {
-        authToken: null,
         error: {
           message: 'Verification required. Check your inbox.'
         },
@@ -198,7 +202,6 @@ export const signUpWithEmail = async (emailInput: string) => {
           error {
             message
           }
-          authToken
           user {
             tms
             id
@@ -222,10 +225,10 @@ export const signUpWithEmail = async (emailInput: string) => {
   })
 
   expect(verifyEmail).toMatchObject({
+    cookie: expect.anything(),
     data: {
       verifyEmail: {
         error: null,
-        authToken: expect.anything(),
         user: {
           id: expect.anything(),
           email
@@ -234,7 +237,8 @@ export const signUpWithEmail = async (emailInput: string) => {
     }
   })
 
-  const {authToken, user} = verifyEmail.data.verifyEmail
+  const {data, cookie} = verifyEmail
+  const {user} = data.verifyEmail
   const {id: userId, teams, organizations} = user
   const teamId = teams[0]!.id
   const orgId = organizations[0]!.id
@@ -242,9 +246,9 @@ export const signUpWithEmail = async (emailInput: string) => {
     userId,
     email,
     password,
-    authToken,
     teamId,
-    orgId
+    orgId,
+    cookie
   }
 }
 

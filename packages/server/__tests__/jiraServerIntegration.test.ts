@@ -47,7 +47,7 @@ const setOrgUserRole = async (orgId: string, userId: string, role: string) => {
 }
 
 test('Add integration provider', async () => {
-  const {userId, authToken} = await signUp()
+  const {userId, cookie} = await signUp()
 
   const orgId = (await getUserOrgs(userId))[0].id
   const teamId = (await getUserTeams(userId))[0].id
@@ -86,7 +86,7 @@ test('Add integration provider', async () => {
         }
       }
     },
-    authToken
+    cookie
   })
 
   expect(addIntegrationProvider).toMatchObject({
@@ -127,7 +127,7 @@ test('Add integration provider', async () => {
     variables: {
       teamId
     },
-    authToken
+    cookie
   })
 
   expect(integrationViewer).toMatchObject({

@@ -3,6 +3,7 @@ import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import createEmailVerification from '../../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
+import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
@@ -92,6 +93,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   })
   // MUTATIVE
   context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
+  setAuthCookie(context, context.authToken)
   return {
     userId: newUser.id,
     authToken: encodeAuthToken(context.authToken),

@@ -1,7 +1,7 @@
 import {getUserTeams, sendPublic, signUp} from './common'
 
 test('Retro is named Retro #1 by default', async () => {
-  const {userId, authToken} = await signUp()
+  const {userId, cookie} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
   const newRetro = await sendPublic({
@@ -25,7 +25,7 @@ test('Retro is named Retro #1 by default', async () => {
     variables: {
       teamId
     },
-    authToken
+    cookie
   })
   expect(newRetro).toMatchObject({
     data: {
@@ -40,7 +40,7 @@ test('Retro is named Retro #1 by default', async () => {
 })
 
 test('Single Retro can be named', async () => {
-  const {userId, authToken} = await signUp()
+  const {userId, cookie} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
 
   const name = 'My Retro'
@@ -66,7 +66,7 @@ test('Single Retro can be named', async () => {
       teamId,
       name
     },
-    authToken
+    cookie
   })
   expect(newRetro).toMatchObject({
     data: {

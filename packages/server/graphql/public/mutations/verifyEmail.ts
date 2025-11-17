@@ -4,6 +4,7 @@ import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
+import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
 import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
@@ -64,9 +65,9 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   // edge case because that requires the invitation token to have expired
   const isOrganic = !invitationToken
   context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
+  setAuthCookie(context, context.authToken)
   return {
     userId: newUser.id,
-    authToken: encodeAuthToken(context.authToken),
     isNewUser: true
   }
 }
