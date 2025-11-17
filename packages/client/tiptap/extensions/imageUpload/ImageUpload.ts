@@ -1,11 +1,13 @@
 import {type Editor, ReactNodeViewRenderer} from '@tiptap/react'
+import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
 interface ImageUploadStorage {
   editorWidth: number
   editorHeight: number
-  pageId: string
+  assetScope: AssetScopeEnum
+  scopeKey: string
 }
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -21,14 +23,16 @@ export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage>({
     return {
       editorWidth: 300,
       editorHeight: 112,
-      pageId: ''
+      assetScope: '' as any,
+      scopeKey: ''
     }
   },
   addStorage(this) {
     return {
       editorWidth: this.options.editorWidth,
       editorHeight: this.options.editorHeight,
-      pageId: this.options.pageId
+      assetScope: this.options.assetScope,
+      scopeKey: this.options.scopeKey
     }
   },
 

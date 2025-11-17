@@ -3,7 +3,7 @@ import {fetch} from '@whatwg-node/fetch'
 import imageNotSupportedPlaceholder from '../../static/images/illustrations/imageNotSupportedPlaceholder.png'
 import type AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
-import type {PartialPath} from './fileStorage/FileStoreManager'
+import type {AssetType, PartialPath} from './fileStorage/FileStoreManager'
 import getFileStoreManager from './fileStorage/getFileStoreManager'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
@@ -33,27 +33,37 @@ const servePlaceholderImage = async (res: HttpResponse) => {
     .end(placeholderBuffer)
 }
 
-const checkAccess = async (authToken: AuthToken, scope: AssetScopeEnum, scopeCode: string) => {
+const checkAccess = async (
+  authToken: AuthToken,
+  scope: AssetScopeEnum,
+  scopeCode: string,
+  assetType: AssetType
+) => {
   const viewerId = getUserId(authToken)
   const scopes = ['User', 'Team', 'Organization', 'Page'] as const
 
   if (!scope || !scopes.includes(scope)) {
     return false
-  } else if (scope === 'User' && scopeCode !== viewerId && scopeCode !== 'aGhostUser') {
-    return false
-  } else if (scope === 'Team' && !isTeamMember(authToken, scopeCode)) {
-    return false
-  } else if (scope === 'Organization' && scopeCode !== 'aGhostOrg') {
-    const inOrg = await getKysely()
-      .selectFrom('OrganizationUser')
-      .select('id')
-      .where('userId', '=', viewerId)
-      .where('orgId', '=', scopeCode)
-      .where('removedAt', 'is', null)
-      .limit(1)
-      .executeTakeFirst()
-    if (!inOrg) {
-      return false
+  } else if (scope === 'User') {
+    // all user avatars are visible to all users
+    if (assetType !== 'picture' && ![viewerId, 'aGhostUser'].includes(scopeCode)) return false
+  } else if (scope === 'Team') {
+    // all team avatars (not yet implemented) are visible to all users
+    if (assetType !== 'picture' && !isTeamMember(authToken, scopeCode)) return false
+  } else if (scope === 'Organization') {
+    // all org avatars are visible to all users, but no other assets
+    if (assetType !== 'picture' && scopeCode !== 'aGhostOrg') {
+      const inOrg = await getKysely()
+        .selectFrom('OrganizationUser')
+        .select('id')
+        .where('userId', '=', viewerId)
+        .where('orgId', '=', scopeCode)
+        .where('removedAt', 'is', null)
+        .limit(1)
+        .executeTakeFirst()
+      if (!inOrg) {
+        return false
+      }
     }
   } else if (scope === 'Page') {
     const dataLoader = getNewDataLoader('imageProxyPage')
@@ -72,13 +82,13 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     return
   }
   const authToken = await getReqAuth(req)
-  const [scope, scopeCode, _type, _filename] = partialPath.split('/') as [
+  const [scope, scopeCode, assetType, _filename] = partialPath.split('/') as [
     AssetScopeEnum,
     string,
-    string,
+    AssetType,
     string
   ]
-  const canAccess = await checkAccess(authToken, scope, scopeCode)
+  const canAccess = await checkAccess(authToken, scope, scopeCode, assetType)
   if (!canAccess) {
     await servePlaceholderImage(res)
     return
