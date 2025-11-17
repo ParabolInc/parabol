@@ -6,7 +6,6 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -41,13 +40,13 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
     ) as AuthIdentityLocal
     context.authToken = new AuthToken({sub: userId, tms, rol})
-    const authToken = encodeAuthToken(context.authToken)
+    setAuthCookie(context, context.authToken)
     if (!localIdentity.isEmailVerified) {
       // mutative
       localIdentity.isEmailVerified = true
       await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)
     }
-    return {authToken, userId, isNewUser: false}
+    return {userId, isNewUser: false}
   }
   if (!hashedPassword) {
     // should be impossible

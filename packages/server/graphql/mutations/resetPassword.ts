@@ -7,8 +7,8 @@ import AuthToken from '../../database/types/AuthToken'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import updateUser from '../../postgres/queries/updateUser'
+import {setAuthCookie} from '../../utils/authCookie'
 import blacklistJWT from '../../utils/blacklistJWT'
-import encodeAuthToken from '../../utils/encodeAuthToken'
 import standardError from '../../utils/standardError'
 import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
@@ -79,10 +79,10 @@ const resetPassword = {
         pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
       ])
       context.authToken = new AuthToken({sub: userId, tms, rol})
+      setAuthCookie(context, context.authToken)
       await blacklistJWT(userId, context.authToken.iat, context.socketId)
       return {
-        userId,
-        authToken: encodeAuthToken(context.authToken)
+        userId
       }
     }
   )

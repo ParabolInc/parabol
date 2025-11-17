@@ -8,7 +8,6 @@ import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
@@ -165,10 +164,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   }
   const isNewUser = viewer.createdAt.getDate() === viewer.lastSeenAt.getDate()
   analytics.inviteAccepted(viewer, inviter, teamId, isNewUser, acceptAt)
-  return {
-    ...data,
-    authToken: encodeAuthToken(nextAuthToken)
-  }
+  return data
 }
 
 export default acceptTeamInvitation

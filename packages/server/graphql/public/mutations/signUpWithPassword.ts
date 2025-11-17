@@ -5,7 +5,6 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
@@ -44,9 +43,9 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const loginAttempt = await attemptLogin(email, password, ip)
   if (loginAttempt.userId) {
     context.authToken = loginAttempt.authToken
+    setAuthCookie(context, context.authToken)
     return {
       userId: loginAttempt.userId,
-      authToken: encodeAuthToken(loginAttempt.authToken),
       isNewUser: false
     }
   }
@@ -96,7 +95,6 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   setAuthCookie(context, context.authToken)
   return {
     userId: newUser.id,
-    authToken: encodeAuthToken(context.authToken),
     isNewUser: true
   }
 }
