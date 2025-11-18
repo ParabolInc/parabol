@@ -17,7 +17,6 @@ import privateSchema from './graphql/private/rootSchema'
 import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
 import getKysely from './postgres/getKysely'
-import {setFreshTokenIfNeeded} from './setFreshTokenIfNeeded'
 import {analytics} from './utils/analytics/analytics'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
@@ -109,8 +108,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (socketCount === 0) {
       handleFirstConnection(user, teamIds).catch(Logger.log)
     }
-    const freshToken = setFreshTokenIfNeeded(extra, user.tms)
-    return {version: __APP_VERSION__, authToken: freshToken}
+    return {version: __APP_VERSION__}
   },
   async onNext(context, id, _payload, {contextValue}, result) {
     const isSubscription = !!context.subscriptions[id]
