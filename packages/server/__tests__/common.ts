@@ -10,6 +10,7 @@ import encodeAuthToken from '../utils/encodeAuthToken'
 
 const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
 const PROTOCOL = process.env.PROTO || 'http'
+const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
@@ -63,7 +64,7 @@ export async function sendTipTap<T>(
   // The browser would normally set the cookie. The WebSocket API however does not allow to set custom headers
   const token = cookie.split('__Host-Http-authToken=')[1]?.split(';')[0]
   const socket = new HocuspocusProviderWebsocket({
-    url: `wss://localhost:3000/yjs?token=${token}`
+    url: `${WS_PROTOCOL}://${HOST}/yjs?token=${token}`
   })
   const doc = new Doc()
   // update the URL to match the title
