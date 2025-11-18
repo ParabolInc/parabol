@@ -71,6 +71,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             .replace(prefix, '/assets')
             .replace(/User\/(.+)\/assets/, `Page/${pageCode}/assets`)
           imageBlock.setAttribute('src', nextSrc)
+          console.log(`Updated Image URL in ${pageId} from ${oldPartialPath} to ${newPartialPath}`)
         }
       }
       if (!changed) return
@@ -89,8 +90,6 @@ export async function up(db: Kysely<any>): Promise<void> {
           .where('id', '=', pageId)
           .execute()
       } else {
-        console.log('sending delta update to proxy', pageId, proxyTo)
-
         // if the document is already open, we must send the update to that worker
         const update = encodeStateAsUpdate(doc, yDoc)
         const proxyMessage = pack({
