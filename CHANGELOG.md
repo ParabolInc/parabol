@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.34.1](https://github.com/ParabolInc/parabol/compare/v10.34.0...v10.34.1) (2025-11-18)
+
+
+### Fixed
+
+* comment pluralization in summary ([#12336](https://github.com/ParabolInc/parabol/issues/12336)) ([cc7df96](https://github.com/ParabolInc/parabol/commit/cc7df9698320ea26e9db915bd4a5c51f0b3764a6))
+
 ## [10.34.0](https://github.com/ParabolInc/parabol/compare/v10.33.1...v10.34.0) (2025-11-14)
 
 
