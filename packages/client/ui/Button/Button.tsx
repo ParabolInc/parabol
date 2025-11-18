@@ -2,7 +2,15 @@ import {Slot} from '@radix-ui/react-slot'
 import * as React from 'react'
 import {cn} from '../cn'
 
-type Variant = 'primary' | 'secondary' | 'destructive' | 'ghost' | 'link' | 'outline' | 'flat'
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'destructive'
+  | 'ghost'
+  | 'link'
+  | 'outline'
+  | 'flat'
+  | 'dialogPrimary'
 type Size = 'sm' | 'md' | 'lg' | 'default'
 type Shape = 'pill' | 'circle' | 'default'
 
@@ -15,6 +23,8 @@ const VARIANT_STYLES: Record<Variant, string> = {
   destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
   outline:
     'text-slate-900 border border-slate-400 hover:bg-slate-200 px-2.5 py-1 bg-transparent font-semibold',
+  dialogPrimary:
+    'text-white bg-grape-700 hover:bg-grape-600 focus-visible:ring-grape-500 font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',
