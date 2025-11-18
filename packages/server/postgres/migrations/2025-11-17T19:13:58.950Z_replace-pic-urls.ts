@@ -30,7 +30,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   const pages = await db
     .selectFrom('Page')
     .select(['id', 'yDoc'])
-    .where('meetingSummaryId', 'is', null)
+    .where('summaryMeetingId', 'is', null)
     .where('deletedAt', 'is', null)
     .execute()
   if (pages.length === 0) return
@@ -43,8 +43,37 @@ export async function up(db: Kysely<any>): Promise<void> {
   const fileMoves = [] as {from: PartialPath; to: PartialPath}[]
   await Promise.all(
     pages.map(async ({id: pageId, yDoc}) => {
-      const documentName = `page:${pageId}`
       const pageCode = CipherId.encrypt(pageId)
+      const documentName = `page:${pageCode}`
+      if (!yDoc) return
+      const doc = new Doc()
+      applyUpdate(doc, yDoc)
+      const frag = doc.getXmlFragment('default')
+      const walker = frag.createTreeWalker((yxml) => {
+        if (!(yxml instanceof XmlElement) || yxml.nodeName !== 'imageBlock') return false
+        return true
+      })
+      let changed = false
+      for (const node of walker) {
+        const imageBlock = node as XmlElement
+        const src = imageBlock.getAttribute('src')
+        if (src?.startsWith(prefix)) {
+          changed = true
+          const decodedSrc = decodeURI(src)
+          const parts = decodedSrc.split('/')
+          const oldPartialPath = parts.slice(-4).join('/') as PartialPath
+          const newPartialPath = oldPartialPath.replace(
+            /User\/(.+)\/assets/,
+            `Page/${pageCode}/assets`
+          ) as PartialPath
+          fileMoves.push({from: oldPartialPath, to: newPartialPath})
+          const nextSrc = decodedSrc
+            .replace(prefix, '/assets')
+            .replace(/User\/(.+)\/assets/, `Page/${pageCode}/assets`)
+          imageBlock.setAttribute('src', nextSrc)
+        }
+      }
+      if (!changed) return
       const proxyTo = await redis.set(
         `rsaLock:${documentName}`,
         SERVER_ID,
@@ -53,40 +82,17 @@ export async function up(db: Kysely<any>): Promise<void> {
         'NX',
         'GET'
       )
-      const startingDoc = encodeStateAsUpdate(yDoc)
-      const doc = new Doc()
-      applyUpdate(doc, startingDoc)
-      const frag = doc.getXmlFragment('default')
-      const walker = frag.createTreeWalker((yxml) => {
-        if (!(yxml instanceof XmlElement) || yxml.nodeName !== 'imageBlock') return false
-        return true
-      })
-      for (const node of walker) {
-        const imageBlock = node as XmlElement
-        const src = imageBlock.getAttribute('src')
-        if (src?.startsWith(prefix)) {
-          const parts = src.split('/')
-          const oldPartialPath = parts.slice(-4).join('/') as PartialPath
-          const newPartialPath = oldPartialPath.replace(
-            /User\/(.+)\/assets/,
-            `Page/${pageCode}/assets`
-          ) as PartialPath
-          fileMoves.push({from: oldPartialPath, to: newPartialPath})
-          const nextSrc = src
-            .replace(prefix, '/assets')
-            .replace(/User\/(.+)\/assets/, `Page/${pageCode}/assets`)
-          imageBlock.setAttribute('src', nextSrc)
-        }
-      }
-      if (proxyTo && proxyTo !== SERVER_ID) {
+      if (!proxyTo) {
         await db
           .updateTable('Page')
           .set({yDoc: Buffer.from(encodeStateAsUpdate(doc))})
           .where('id', '=', pageId)
           .execute()
       } else {
+        console.log('sending delta update to proxy', pageId, proxyTo)
+
         // if the document is already open, we must send the update to that worker
-        const update = encodeStateAsUpdate(doc, startingDoc)
+        const update = encodeStateAsUpdate(doc, yDoc)
         const proxyMessage = pack({
           eventName: 'applyYjsUpdate',
           documentName,
@@ -95,7 +101,6 @@ export async function up(db: Kysely<any>): Promise<void> {
           replyId: 0,
           type: 'customEventStart'
         })
-        console.log('sending delta update to proxy', pageId, proxyTo)
         await redis.publish(`rsaMsg:${proxyTo}`, proxyMessage)
       }
       // there are a couple race conditions here, since the migration is locking the doc, but not accepting messages for it

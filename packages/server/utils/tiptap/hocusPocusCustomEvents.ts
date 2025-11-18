@@ -101,7 +101,9 @@ export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<s
 
 export const applyYjsUpdate = async (documentName: string, payload: {update: Uint8Array}) => {
   const {update} = payload
+  console.log('applying yjs update', update)
   await withDoc(documentName, (doc) => {
     applyUpdate(doc, update)
   })
+  console.log('update applied')
 }
