@@ -37,7 +37,11 @@ export const PageAccessComboboxControl = (props: Props) => {
   const roleLabel = pageRoles.find((role) => role.value === defaultRole)!.label
   return (
     <Menu
-      trigger={<MenuLabelTrigger labelClassName={'pr-0'}>{roleLabel}</MenuLabelTrigger>}
+      trigger={
+        <MenuLabelTrigger labelClassName={'pr-0 text-md font-medium text-slate-700 w-28'}>
+          {roleLabel}
+        </MenuLabelTrigger>
+      }
       className='group'
     >
       <MenuContent align='end' sideOffset={4} className='max-h-80'>

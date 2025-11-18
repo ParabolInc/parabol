@@ -54,17 +54,17 @@ const serializeTasks = async (
     })
   )
 }
-const makeRetroMeetingInsightInput = async (
+export const makeRetroMeetingInsightInput = async (
   meeting: RetrospectiveMeeting,
-  dataLoader: DataLoaderInstance
+  dataLoader: DataLoaderInstance,
+  minReflectionCount = 3,
+  minReflectionGroupVotes = 2
 ) => {
-  const MIN_REFLECTION_COUNT = 3
-  const MIN_REFLECTION_GROUP_VOTES = 2
   const {id: meetingId, meetingType, reflectionCount, disableAnonymity, phases} = meeting
-  if (!reflectionCount || reflectionCount < MIN_REFLECTION_COUNT) return null
+  if (!reflectionCount || reflectionCount < minReflectionCount) return null
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const votedReflectionGroups = reflectionGroups.filter(
-    (group) => group.voterIds.length >= MIN_REFLECTION_GROUP_VOTES
+    (group) => group.voterIds.length >= minReflectionGroupVotes
   )
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase

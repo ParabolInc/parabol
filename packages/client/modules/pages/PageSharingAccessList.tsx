@@ -11,10 +11,12 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUpdatePageParentLinkMutation} from '../../mutations/useUpdatePageParentLinkMutation'
 import {cn} from '../../ui/cn'
 import {PageSharingGeneralAccess} from './PageSharingGeneralAccess'
+import {PageSharingPendingRequests} from './PageSharingPendingRequests'
 
 graphql`
   fragment PageSharingAccessList_pageAccess on Page {
     ...PageSharingGeneralAccess_page
+    ...PageSharingPendingRequests_page
     id
     isParentLinked
     access {
@@ -98,7 +100,7 @@ export const PageSharingAccessList = (props: Props) => {
     })
   }
   return (
-    <div className='overflow-y-auto pt-3 pb-4'>
+    <div className='space-y-2 overflow-y-auto pt-3 pb-4'>
       {!isParentLinked && parentPageId && (
         <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
           {'Share settings on this page differ from its '}
@@ -131,12 +133,12 @@ export const PageSharingAccessList = (props: Props) => {
           </span>
         </div>
       )}
-      <div className='space-y-2'>
+      <div className='space-y-4'>
         {guests.map(({role, email}) => {
           return (
             <div className='flex items-center justify-between' key={email}>
               <div className='flex items-center gap-3 pr-2'>
-                <TeamAvatar className='mr-0 h-8 w-8' teamId={email} teamName={email} />
+                <TeamAvatar className='mr-0 h-10 w-10' teamId={email} teamName={email} />
                 <div className='flex flex-col'>
                   <div className='font-medium text-slate-700 text-sm'>{email}</div>
                 </div>
@@ -156,7 +158,7 @@ export const PageSharingAccessList = (props: Props) => {
           return (
             <div className='flex items-center justify-between' key={userId}>
               <div className='flex items-center gap-3 pr-2'>
-                <Avatar className='h-8 w-8' picture={picture} />
+                <Avatar className='h-10 w-10' picture={picture} />
                 <div className='flex flex-col'>
                   <div className='font-medium text-slate-700 text-sm'>{name}</div>
                   <div className='text-slate-800 text-xs'>{email}</div>
@@ -176,7 +178,7 @@ export const PageSharingAccessList = (props: Props) => {
           return (
             <div className='flex items-center justify-between' key={teamId}>
               <div className='flex items-center gap-3 pr-2'>
-                <TeamAvatar className='mr-0 h-8 w-8' teamId={teamId} teamName={teamName} />
+                <TeamAvatar className='mr-0 h-10 w-10' teamId={teamId} teamName={teamName} />
                 <div className='flex flex-col'>
                   <div className='font-medium text-slate-700 text-sm'>{teamName}</div>
                 </div>
@@ -213,8 +215,9 @@ export const PageSharingAccessList = (props: Props) => {
             </div>
           )
         })}
-        <PageSharingGeneralAccess pageRef={page} />
       </div>
+      <PageSharingPendingRequests pageRef={page} />
+      <PageSharingGeneralAccess pageRef={page} />
     </div>
   )
 }
