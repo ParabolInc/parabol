@@ -7,4 +7,9 @@ const encodeAuthToken = (authToken: AuthToken) => {
   return sign(JSON.parse(JSON.stringify(authToken)), secret)
 }
 
+export const encodeUnsignedAuthToken = (authToken: AuthToken) => {
+  const noSecret = ''
+  return sign(JSON.parse(JSON.stringify(authToken)), noSecret, {algorithm: 'none'})
+}
+
 export default encodeAuthToken
