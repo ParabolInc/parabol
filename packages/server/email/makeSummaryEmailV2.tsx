@@ -58,7 +58,7 @@ const makeFallbackInsights = async (meetingId: string, dataLoader: DataLoaderIns
           const commentCount = comments.length
           const voteLabel = `${voteCount} ${plural(voteCount || 0, 'vote')}`
           const taskLabel = `${taskCount} ${plural(taskCount || 0, 'task')}`
-          const commentLabel = `${commentCount} ${plural(commentCount || 0, 'comments')}`
+          const commentLabel = `${commentCount} ${plural(commentCount || 0, 'comment')}`
           const str = `${title} (${voteLabel}, ${taskLabel}, ${commentLabel})`
           return (
             <Text style={paragraph} key={idx}>
