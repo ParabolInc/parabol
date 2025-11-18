@@ -7,7 +7,7 @@ import {Chip} from '../../../ui/Chip/Chip'
 import {cn} from '../../../ui/cn'
 import {Input} from '../../../ui/Input/Input'
 import {ColumnId, RowId} from './data'
-import {useCell, useColumnValues, useYText} from './hooks'
+import {useCell, useColumnValues} from './hooks'
 import {getColor} from './types'
 
 const useStatusType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
@@ -32,7 +32,7 @@ const AutocompleteInput = ({
   tags,
   setValue
 }: {
-  value?: string
+  value: string | null
   setValue: (newValue: string) => void
   tags: string[]
 }) => {
@@ -134,15 +134,8 @@ export const StatusCell = ({
   rowId: RowId
   columnId: ColumnId
 }) => {
-  const cell = useCell(doc, rowId, columnId)
-  const value = useYText(cell)
-
+  const [value, setValue] = useCell(doc, rowId, columnId)
   const tags = useStatusType({doc, columnId})
-
-  const setValue = (newValue: string) => {
-    cell.delete(0, cell.length)
-    cell.insert(0, newValue)
-  }
 
   return (
     <Popover.Root>

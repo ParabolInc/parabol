@@ -1,8 +1,9 @@
 import {CheckBox, Label, Numbers, Sell, Title} from '@mui/icons-material'
 import {ReactNode} from 'react'
+import {DataType} from './data'
 
+export type {DataType} from './data'
 // TODO add User, Task, Meeting would make sense as well
-export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
 export const DataTypeIcons: Record<DataType, ReactNode> = {
   text: <Title />,
   number: <Numbers />,
@@ -24,10 +25,6 @@ const TagColors = [
   'bg-fuscia-200',
   'bg-rose-200'
 ]
-
-export function randomColor() {
-  return `hsl(${Math.floor(Math.random() * 360)}, 95%, 90%)`
-}
 
 export const getColor = (tag: string) => {
   let hash = 0

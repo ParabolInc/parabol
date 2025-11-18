@@ -12,7 +12,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .values({
       featureName: 'Databases',
       description: 'Experimental databases in pages',
-      expiresAt: new Date('2026-02-01'),
+      expiresAt: new Date('2026-03-01'),
       scope: 'Organization'
     })
     .execute()

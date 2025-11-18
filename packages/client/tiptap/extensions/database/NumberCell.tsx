@@ -1,11 +1,20 @@
 import * as Y from 'yjs'
 import {Input} from '../../../ui/Input/Input'
-import {useYText} from './hooks'
+import {ColumnId, RowId} from './data'
+import {useCell} from './hooks'
 
-export const NumberCell = ({text}: {text: Y.Text}) => {
-  const rawValue = useYText(text)
+export const NumberCell = ({
+  doc,
+  rowId,
+  columnId
+}: {
+  doc: Y.Doc
+  rowId: RowId
+  columnId: ColumnId
+}) => {
+  const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
 
-  const convertToNumber = (rawValue?: string) => {
+  const convertToNumber = (rawValue: string | null) => {
     if (!rawValue) return ''
     const conv = parseInt(rawValue, 10)
     if (isNaN(conv)) return ''
@@ -22,10 +31,7 @@ export const NumberCell = ({text}: {text: Y.Text}) => {
       onChange={(e) => {
         const rawValue = e.target.value
         const value = convertToNumber(rawValue)
-        text.delete(0, text.length)
-        if (value) {
-          text.insert(0, value)
-        }
+        setRawValue(value)
       }}
     />
   )

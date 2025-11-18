@@ -1,6 +1,6 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import * as Y from 'yjs'
-import {ColumnId, RowId} from './data'
+import {ColumnId, RowData, RowId} from './data'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
   const result = new Map<string, T>()
@@ -72,22 +72,47 @@ export const useYText = (ytext: Y.Text) => {
 }
 
 export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
-  const id = `${rowId}-${columnId}`
-  const data = doc.getMap<Y.Text>('data')
-  const ytext = data.get(id)
-  if (ytext) {
-    return ytext
-  }
-  const newText = new Y.Text()
-  data.set(id, newText)
-  return newText
+  const data = doc.getMap<RowData>('data')
+  const row = data.get(rowId)
+
+  const [value, setValueState] = useState<string | null>(row?.get(columnId) ?? null)
+
+  useEffect(() => {
+    const updateValue = () => {
+      const cellValue = row?.get(columnId)
+      setValueState(cellValue ?? null)
+    }
+
+    const observer = (event: Y.YMapEvent<string>) => {
+      if (event.keysChanged.has(columnId)) {
+        updateValue()
+      }
+    }
+    updateValue()
+    row?.observe(observer)
+
+    return () => {
+      row?.unobserve(observer)
+    }
+  }, [row, columnId])
+
+  const setValue = useCallback(
+    (value: string | null) => {
+      if (value === null) {
+        row?.delete(columnId)
+      } else {
+        row?.set(columnId, value)
+      }
+    },
+    [row, columnId]
+  )
+
+  return [value, setValue] as const
 }
 
 export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
-  const rows = useYArray<RowId>(doc.getArray<RowId>('rows'))
-
-  const data = doc.getMap<Y.Text>('data')
-  const values = rows.map((rowId) => data.get(`${rowId}-${columnId}`)?.toString())
-
-  return values
+  const data = doc.getMap<RowData>('data')
+  return Array.from(data.values())
+    .map((row) => row.get(columnId))
+    .filter(Boolean) as string[]
 }

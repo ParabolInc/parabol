@@ -1,17 +1,24 @@
 import * as Y from 'yjs'
 import {Input} from '../../../ui/Input/Input'
-import {useYText} from './hooks'
+import {ColumnId, RowId} from './data'
+import {useCell} from './hooks'
 
-export const TextCell = ({text}: {text: Y.Text}) => {
-  const value = useYText(text)
+export const TextCell = ({
+  doc,
+  rowId,
+  columnId
+}: {
+  doc: Y.Doc
+  rowId: RowId
+  columnId: ColumnId
+}) => {
+  const [value, setValue] = useCell(doc, rowId, columnId)
   return (
     <Input
-      value={value}
+      value={value ?? ''}
       className='w-full border-none'
       onChange={(e) => {
-        // TODO this is wrong
-        text.delete(0, text.length)
-        text.insert(0, e.target.value)
+        setValue(e.target.value || null)
       }}
     />
   )

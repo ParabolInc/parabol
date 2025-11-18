@@ -7,7 +7,7 @@ import {Chip} from '../../../ui/Chip/Chip'
 import {cn} from '../../../ui/cn'
 import {Input} from '../../../ui/Input/Input'
 import {ColumnId, RowId} from './data'
-import {useCell, useColumnValues, useYText} from './hooks'
+import {useCell, useColumnValues} from './hooks'
 import {getColor} from './types'
 
 const useTagsType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
@@ -140,19 +140,18 @@ export const TagsCell = ({
   rowId: RowId
   columnId: ColumnId
 }) => {
-  const cell = useCell(doc, rowId, columnId)
+  const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
 
   const tags = useTagsType({doc, columnId})
 
-  const values = useYText(cell)
-    .toString()
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
+  const values =
+    rawValue
+      ?.split(',')
+      .map((s) => s.trim())
+      .filter(Boolean) ?? []
 
   const setValues = (newValues: string[]) => {
-    cell.delete(0, cell.length)
-    cell.insert(0, newValues.join(', '))
+    setRawValue(newValues.join(', '))
   }
 
   return (
