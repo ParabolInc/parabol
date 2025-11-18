@@ -101,7 +101,8 @@ export const useTipTapPageEditor = (
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
           editorHeight: 88,
-          pageId
+          scopeKey: pageId,
+          assetScope: 'Page'
         }),
         ImageBlock,
         LoomExtension,
