@@ -8,7 +8,7 @@ import {ImageSelectorUploadTab} from './ImageSelectorUploadTab'
 
 interface Props {
   editor: Editor
-  pageId: string
+  scopeKey: string
 }
 
 const tabs = [
@@ -33,7 +33,7 @@ const tabs = [
 ] as const
 
 export const ImageSelector = (props: Props) => {
-  const {pageId, editor} = props
+  const {scopeKey, editor} = props
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
   const setImageURL = (url: string) => {
@@ -66,7 +66,7 @@ export const ImageSelector = (props: Props) => {
             />
           ))}
       </Tabs>
-      <Component setImageURL={setImageURL} editor={editor} pageId={pageId} />
+      <Component setImageURL={setImageURL} editor={editor} scopeKey={scopeKey} />
     </div>
   )
 }

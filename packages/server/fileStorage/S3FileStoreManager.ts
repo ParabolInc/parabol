@@ -1,4 +1,11 @@
-import {GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
 import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
 import {StandardRetryStrategy} from '@smithy/util-retry'
@@ -115,9 +122,29 @@ export default class S3Manager extends FileStoreManager {
     return true
   }
 
+  async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
+    const oldFullPath = decodeURI(this.prependPath(oldPartialPath))
+    const newFullPath = decodeURI(this.prependPath(newPartialPath))
+
+    await this.s3.send(
+      new CopyObjectCommand({
+        Bucket: this.bucket,
+        CopySource: oldFullPath,
+        Key: newFullPath
+      })
+    )
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: oldFullPath
+      })
+    )
+  }
+
   async presignUrl(partialPath: PartialPath) {
     // Important to decodeURI so `getSignedUrl` doesn't double encode e.g. local|123/avatars/123.jpg
-    const key = decodeURI(partialPath)
+    const fullPath = this.prependPath(partialPath)
+    const key = decodeURI(fullPath)
     const command = new GetObjectCommand({Bucket: this.bucket, Key: key})
     const encodedUri = await getSignedUrl(this.s3, command, {
       expiresIn: 604800

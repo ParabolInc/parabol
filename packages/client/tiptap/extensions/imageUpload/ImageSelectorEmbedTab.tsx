@@ -5,11 +5,11 @@ import {Button} from '../../../ui/Button/Button'
 
 interface Props {
   setImageURL: (url: string) => void
-  pageId: string
+  scopeKey: string
 }
 
 export const ImageSelectorEmbedTab = (props: Props) => {
-  const {pageId, setImageURL} = props
+  const {scopeKey, setImageURL} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const [commit] = useEmbedUserAsset()
@@ -18,7 +18,7 @@ export const ImageSelectorEmbedTab = (props: Props) => {
     const url = ref.current?.value
     if (!url) return
     commit({
-      variables: {url, scope: 'Page', scopeKey: pageId},
+      variables: {url, scope: 'Page', scopeKey},
       onCompleted: (res) => {
         const {embedUserAsset} = res
         const {url} = embedUserAsset!

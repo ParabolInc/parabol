@@ -150,6 +150,39 @@ export default class GCSManager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
+  async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath): Promise<void> {
+    const accessToken = await this.getAccessToken()
+    const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
+    const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
+
+    const copyUrl = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/copyTo/b/${this.bucket}/o/${newFullPath}`
+    const copyRes = await fetch(copyUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      }
+    })
+    if (!copyRes.ok) {
+      const text = await copyRes.text()
+      throw new Error(`GCS Copy Error: ${copyRes.status} ${text}`)
+    }
+
+    const deleteUrl = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}`
+    const deleteRes = await fetch(deleteUrl, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'User-Agent': 'parabol'
+      }
+    })
+
+    if (!deleteRes.ok) {
+      const text = await deleteRes.text()
+      throw new Error(`GCS Delete Error: ${deleteRes.status} ${text}`)
+    }
+  }
   prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
     return path.join(this.envSubDir, assetDir, partialPath)
   }
