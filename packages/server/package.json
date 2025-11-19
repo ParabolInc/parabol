@@ -91,7 +91,7 @@
     "happy-dom": "^20.0.2",
     "http-message-signatures": "^1.0.4",
     "ioredis": "^5.6.1",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "jsonwebtoken": "^9.0.0",
     "lib0": "^0.2.114",
     "mailgun.js": "^9.3.0",
