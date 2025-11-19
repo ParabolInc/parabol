@@ -105,6 +105,7 @@ export interface AtmosphereEvents {
   ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
+  authChanged: () => void
 }
 
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
@@ -302,12 +303,15 @@ export default class Atmosphere extends Environment {
   private setAuthToken = async (authToken: string | null | undefined) => {
     if (!authToken) {
       this.authObj = null
+      this.eventEmitter.emit('authChanged')
       return
     }
     try {
       this.authObj = jwtDecode(authToken)
+      this.eventEmitter.emit('authChanged')
     } catch {
       this.authObj = null
+      this.eventEmitter.emit('authChanged')
     }
 
     if (!this.authObj) return
@@ -442,6 +446,7 @@ export default class Atmosphere extends Environment {
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
+    this.eventEmitter.emit('authChanged')
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!

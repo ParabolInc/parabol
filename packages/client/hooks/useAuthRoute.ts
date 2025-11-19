@@ -1,6 +1,7 @@
 import {useEffect} from 'react'
 import {AuthTokenRole} from '../types/constEnums'
 import useAtmosphere from './useAtmosphere'
+import useAtmosphereListener from './useAtmosphereListener'
 import useDeepEqual from './useDeepEqual'
 import useRouter from './useRouter'
 
@@ -50,6 +51,7 @@ const useAuthRoute = (inOptions: Options = {}) => {
   }
 
   useEffect(checkAuth, [atmosphere.authObj, history, options])
+  useAtmosphereListener('authChanged', checkAuth)
 }
 
 export default useAuthRoute
