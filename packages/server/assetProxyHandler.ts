@@ -12,10 +12,10 @@ import {getUserId, isTeamMember} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
+import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
 
 let placeholderBuffer: Buffer | undefined
 const servePlaceholderImage = async (res: HttpResponse) => {
-  console.log({imageNotSupportedPlaceholder})
   if (!placeholderBuffer) {
     try {
       const res = await fetch(imageNotSupportedPlaceholder)
@@ -24,7 +24,6 @@ const servePlaceholderImage = async (res: HttpResponse) => {
       Logger.error('Placeholder image could not be fetched', e)
     }
   }
-  console.log('serving buff', imageNotSupportedPlaceholder, placeholderBuffer?.buffer.byteLength)
   res
     .writeStatus('200')
     .writeHeader('Content-Type', 'image/png')
@@ -81,7 +80,7 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     res.writeStatus('404').end()
     return
   }
-  const authToken = await getReqAuth(req)
+  const authToken = getReqAuth(req)
   const [scope, scopeCode, assetType, _filename] = partialPath.split('/') as [
     AssetScopeEnum,
     string,
@@ -95,8 +94,11 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
 
   const manager = getFileStoreManager()
-  // TODO: cache presigned values in redis for a bit to reduce a roundtrip
-  const url = await manager.presignUrl(partialPath as PartialPath)
+  const url = await redisStoreOrNetwork(
+    `presignedURL:${partialPath}`,
+    () => manager.presignUrl(partialPath as PartialPath),
+    60_000
+  )
   res
     .writeStatus('307')
     .writeHeader('Location', url)

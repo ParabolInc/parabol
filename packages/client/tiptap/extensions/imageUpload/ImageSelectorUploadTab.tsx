@@ -1,3 +1,4 @@
+import type {Editor} from '@tiptap/core'
 import {useRef} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
@@ -6,11 +7,11 @@ import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 interface Props {
   setImageURL: (url: string) => void
-  scopeKey: string
+  editor: Editor
 }
 
 export const ImageSelectorUploadTab = (props: Props) => {
-  const {setImageURL, scopeKey} = props
+  const {setImageURL, editor} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const [commit] = useUploadUserAsset()
@@ -25,8 +26,9 @@ export const ImageSelectorUploadTab = (props: Props) => {
         autoDismiss: 5
       })
     }
+    const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
     commit({
-      variables: {scope: 'Page', scopeKey},
+      variables: {scope: assetScope, scopeKey},
       uploadables: {file: file},
       onCompleted: (res) => {
         const {uploadUserAsset} = res
