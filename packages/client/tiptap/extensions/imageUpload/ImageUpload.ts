@@ -18,7 +18,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage>({
+export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploadStorage>({
   addOptions() {
     return {
       editorWidth: 300,
