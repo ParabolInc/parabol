@@ -263,11 +263,11 @@ export default class Atmosphere extends Environment {
       return e as Error
     }
   }
-  getAuthToken = async (global: Window) => {
+  registerCookieListener = async (global: Window) => {
     const authToken = await getAuthCookie(global)
     this.setAuthToken(authToken)
 
-    onAuthCookieChange(global, (newToken) => {
+    return onAuthCookieChange(global, (newToken) => {
       this.setAuthToken(newToken)
     })
   }
