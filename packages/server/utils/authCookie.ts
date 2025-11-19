@@ -1,4 +1,4 @@
-import {CookieListItem, CookieStore, getCookieString} from '@whatwg-node/cookie-store'
+import {CookieListItem, getCookieString, parse} from '@whatwg-node/cookie-store'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'
 import encodeAuthToken, {encodeUnsignedAuthToken} from './encodeAuthToken'
@@ -66,10 +66,8 @@ export const unsetAuthCookie = (context: GQLContext) => {
   })
 }
 
-export const getAuthTokenFromCookie = async (
-  cookieHeader: string | null | undefined
-): Promise<string | null> => {
-  const cookieStore = new CookieStore(cookieHeader || '')
-  const cookie = await cookieStore.get(serverCookie)
-  return cookie?.value ?? null
+export const getAuthTokenFromCookie = (cookieHeader: string | null | undefined): string | null => {
+  const cookies = parse(cookieHeader || '')
+  const cookieToken = cookies.get(serverCookie)?.value ?? null
+  return cookieToken
 }

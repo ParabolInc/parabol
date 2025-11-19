@@ -67,7 +67,7 @@ export const hocuspocus = new Hocuspocus({
   async onConnect(data) {
     const request = data.request as Req
     // handle authentication once onConnect vs. on every onAuthenticate
-    const cookieToken = await getAuthTokenFromCookie(request.headers['cookie'])
+    const cookieToken = getAuthTokenFromCookie(request.headers['cookie'])
     const queryToken = new URL(request.url!, 'http://localhost').searchParams.get('token')
     const token = cookieToken || queryToken
     const authToken = getVerifiedAuthToken(token)

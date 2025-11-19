@@ -1,4 +1,3 @@
-import {CookieStore} from '@whatwg-node/cookie-store'
 import type {ExecutionArgs, ExecutionResult} from 'graphql'
 import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
@@ -10,6 +9,7 @@ import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
 import AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import {getFreshTokenIfNeeded} from './getFreshTokenIfNeeded'
 import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
@@ -18,6 +18,7 @@ import {handleFirstConnection} from './handleFirstConnection'
 import {logOperation} from './logOperation'
 import getKysely from './postgres/getKysely'
 import {analytics} from './utils/analytics/analytics'
+import {createCookieHeaders, getAuthTokenFromCookie} from './utils/authCookie'
 import checkBlacklistJWT from './utils/checkBlacklistJWT'
 import {getTeamMemberUserIds} from './utils/getTeamMemberUserIds'
 import {getUserSocketCount} from './utils/getUserSocketCount'
@@ -31,6 +32,14 @@ declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
     ip: string
     closed?: true
+    authToken?: AuthToken
+    user?: {
+      id: string
+      inactive: boolean
+      lastSeenAt: Date
+      email: string
+      tms: string[]
+    }
   }
   interface Extra {
     ip: string
@@ -71,25 +80,32 @@ const dehydrateResult = (result: ExecutionResult) => {
 export const wsHandler = makeBehavior<{token?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
-    const cookieStore = new CookieStore(extra.persistedRequest.headers['cookie'] || '')
-    const cookieToken = (await cookieStore.get('__Host-Http-authToken'))?.value
-    const connectionToken = connectionParams?.token
-    const token = connectionToken || cookieToken
-    if (!(typeof token === 'string')) return false
 
-    const authToken = getVerifiedAuthToken(token)
-    const {sub: viewerId, iat, tms: teamIds} = authToken
-    const [isBlacklistedJWT, socketCount, user] = await Promise.all([
-      checkBlacklistJWT(viewerId, iat),
+    let authToken = extra.socket.authToken
+    // When the clients updated to use cookies for auth, then this if can be removed and we simply reject on missing token
+    if (!authToken) {
+      const token = connectionParams?.token
+      if (!(typeof token === 'string')) return false
+
+      authToken = getVerifiedAuthToken(token)
+      const {sub: viewerId, iat} = authToken
+      const [isBlacklistedJWT] = await Promise.all([checkBlacklistJWT(viewerId, iat)])
+      if (isBlacklistedJWT) return false
+    }
+    if (!authToken) return false
+    const {sub: viewerId, tms: teamIds} = authToken
+    const [socketCount, user] = await Promise.all([
       // getUserSocketCount must run before the notification subscription start is received
       getUserSocketCount(viewerId),
-      getKysely()
-        .selectFrom('User')
-        .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
-        .where('id', '=', viewerId)
-        .executeTakeFirst()
+      extra.socket.user ??
+        getKysely()
+          .selectFrom('User')
+          .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+          .where('id', '=', viewerId)
+          .executeTakeFirst()
     ])
-    if (isBlacklistedJWT || !user) return false
+    if (!user) return false
+
     extra.authToken = authToken
     const forwarded = extra.persistedRequest.headers['x-forwarded-for']
     const clientIP =
@@ -235,7 +251,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
 })
 
 // Hack because graphql-ws doesn't support a way to extract the IP address, so we override the upgrade method
-wsHandler.upgrade = (res, req, context) => {
+wsHandler.upgrade = async (res, req, context) => {
   // check isShuttingDown here instead of the onConnect handler because onConnect can only send a 4403 FORBIDDEN
   // which is what we send when we want to invalidate a session (ie log them out)
   // Here, we want them to keep trying, and hopefully they get proxied to a different server that is not shutting down
@@ -251,20 +267,67 @@ wsHandler.upgrade = (res, req, context) => {
   const ip =
     Buffer.from(res.getProxiedRemoteAddressAsText()).toString() ||
     Buffer.from(res.getRemoteAddressAsText()).toString()
+  const upgradeData: UpgradeData = {
+    ip,
+    persistedRequest: {
+      method: req.getMethod(),
+      url: req.getUrl(),
+      query: req.getQuery(),
+      headers
+    }
+  }
+  const webSocketKey = req.getHeader('sec-websocket-key')
+  const webSocketProtocol =
+    handleProtocols(req.getHeader('sec-websocket-protocol')) || new Uint8Array()
+  const webSocketExtensions = req.getHeader('sec-websocket-extensions')
 
-  res.upgrade<UpgradeData & {ip: string}>(
-    {
-      ip,
-      persistedRequest: {
-        method: req.getMethod(),
-        url: req.getUrl(),
-        query: req.getQuery(),
-        headers
-      }
-    },
-    req.getHeader('sec-websocket-key'),
-    handleProtocols(req.getHeader('sec-websocket-protocol')) || new Uint8Array(),
-    req.getHeader('sec-websocket-extensions'),
-    context
-  )
+  let isAborted = false
+  res.onAborted(() => {
+    isAborted = true
+  })
+
+  const token = getAuthTokenFromCookie(headers['cookie'])
+  // previous clients send the token via the connectionParams in onConnect
+  // thus we should not reject them here atm. if the cookie is not present
+  //if (!(typeof token === 'string')) {
+  //  res.writeStatus('401 Unauthorized').end()
+  //  return
+  //}
+  let freshToken: AuthToken | null = null
+  if (typeof token === 'string') {
+    const authToken = getVerifiedAuthToken(token)
+    const {sub: viewerId, iat} = authToken
+    const [isBlacklistedJWT, user] = await Promise.all([
+      checkBlacklistJWT(viewerId, iat),
+      getKysely()
+        .selectFrom('User')
+        .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+        .where('id', '=', viewerId)
+        .executeTakeFirst()
+    ])
+
+    if (isAborted) {
+      return
+    }
+    if (isBlacklistedJWT || !user) {
+      res.cork(() => {
+        res.writeStatus('401 Unauthorized').end()
+      })
+      return
+    }
+    upgradeData.user = user
+    freshToken = getFreshTokenIfNeeded(authToken, user.tms)
+    upgradeData.authToken = freshToken || authToken
+  }
+
+  res.cork(() => {
+    res.writeStatus('101 Switching Protocols')
+    if (freshToken) {
+      const cookieHeaders = createCookieHeaders(freshToken)
+      cookieHeaders.forEach((header) => {
+        res.writeHeader('set-cookie', header)
+      })
+    }
+    res.upgrade(upgradeData, webSocketKey, webSocketProtocol, webSocketExtensions, context)
+  })
 }
