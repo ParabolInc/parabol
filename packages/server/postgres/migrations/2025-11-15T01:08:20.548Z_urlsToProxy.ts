@@ -20,9 +20,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .set({
         picture: sql`REPLACE("picture", ${prefix}, '/assets')`
       })
-      .where((eb) =>
-        eb.or([eb('picture', 'like', `${prefix}/%`), eb('rasterPicture', 'like', `${prefix}/%`)])
-      )
+      .where('picture', 'like', `${prefix}/%`)
       .execute(),
     db
       .updateTable('MeetingTemplate')
