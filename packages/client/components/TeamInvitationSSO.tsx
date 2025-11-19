@@ -5,8 +5,8 @@ import useMutationProps from '../hooks/useMutationProps'
 import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import {LocalStorageKey} from '../types/constEnums'
-import getTokenFromSSO from '../utils/getTokenFromSSO'
 import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
+import loginSSO from '../utils/loginSSO'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -27,7 +27,7 @@ const TeamInvitationSSO = (props: Props) => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!
       submitMutation()
-      const response = await getTokenFromSSO(ssoURL)
+      const response = await loginSSO(ssoURL)
       if ('error' in response) {
         onError(new Error(response.error || 'Error logging in'))
         return

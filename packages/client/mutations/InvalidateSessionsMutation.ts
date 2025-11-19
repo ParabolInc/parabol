@@ -5,8 +5,9 @@ import type {StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment InvalidateSessionsMutation_notification on InvalidateSessionsPayload {
-    # we won't really get it, but we gotta ask for something (and __typename results in a dupe req bug)
-    authToken
+    error {
+      message
+    }
   }
 `
 
@@ -16,7 +17,6 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
       ...InvalidateSessionsMutation_notification @relay(mask: false)
     }
   }

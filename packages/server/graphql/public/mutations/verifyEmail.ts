@@ -4,8 +4,8 @@ import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
+import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -40,13 +40,13 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
     ) as AuthIdentityLocal
     context.authToken = new AuthToken({sub: userId, tms, rol})
-    const authToken = encodeAuthToken(context.authToken)
+    setAuthCookie(context, context.authToken)
     if (!localIdentity.isEmailVerified) {
       // mutative
       localIdentity.isEmailVerified = true
       await updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId)
     }
-    return {authToken, userId, isNewUser: false}
+    return {userId, isNewUser: false}
   }
   if (!hashedPassword) {
     // should be impossible
@@ -64,9 +64,9 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   // edge case because that requires the invitation token to have expired
   const isOrganic = !invitationToken
   context.authToken = await bootstrapNewUser(newUser, isOrganic, dataLoader)
+  setAuthCookie(context, context.authToken)
   return {
     userId: newUser.id,
-    authToken: encodeAuthToken(context.authToken),
     isNewUser: true
   }
 }

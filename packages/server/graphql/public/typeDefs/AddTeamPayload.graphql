@@ -1,10 +1,6 @@
 type AddTeamPayload {
 	error: StandardMutationError
 
-	"""
-	The new auth token sent to the mutator
-	"""
-	authToken: ID
 	team: Team
 
 	"""

@@ -14,7 +14,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
 import {Button} from '../../../../ui/Button/Button'
 import getOAuthPopupFeatures from '../../../../utils/getOAuthPopupFeatures'
-import getTokenFromSSO from '../../../../utils/getTokenFromSSO'
+import loginSSO from '../../../../utils/loginSSO'
 
 graphql`
   query OrgAuthenticationMetadataQuery($metadataURL: String!, $domain: String!) {
@@ -89,7 +89,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
     const url = parseSAMLMetadata.url!
 
     // Attempt logging in to test for errors
-    const response = await getTokenFromSSO(url)
+    const response = await loginSSO(url)
     if ('error' in response) {
       onError(new Error(response.error || 'Error logging in'))
       return

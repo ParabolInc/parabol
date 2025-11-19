@@ -53,7 +53,7 @@ const UPDATE_PAGE_ACCESS = `
     `
 test('Access propagates to linked children', async () => {
   const [user1, user2] = await Promise.all([signUp(), signUp()])
-  const {authToken} = user1
+  const {cookie} = user1
 
   const parentPage = await sendPublic({
     query: `
@@ -66,7 +66,7 @@ test('Access propagates to linked children', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(parentPage).toMatchObject({
@@ -80,24 +80,21 @@ test('Access propagates to linked children', async () => {
   })
   const parentPageId = parentPage.data.createPage.page.id
 
-  const childPageCode = await sendTipTap(
-    {authToken, pageId: parentPageId},
-    async (document: Doc) => {
-      return new Promise((resolve) => {
-        const frag = document.getXmlFragment('default')
-        const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
-        pageLinkBlock.observe((e: YXmlEvent) => {
-          for (const [key] of e.keys) {
-            if (key === 'pageCode') {
-              const pageCode = pageLinkBlock.getAttribute('pageCode')
-              resolve(pageCode)
-            }
+  const childPageCode = await sendTipTap({cookie, pageId: parentPageId}, async (document: Doc) => {
+    return new Promise((resolve) => {
+      const frag = document.getXmlFragment('default')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      pageLinkBlock.observe((e: YXmlEvent) => {
+        for (const [key] of e.keys) {
+          if (key === 'pageCode') {
+            const pageCode = pageLinkBlock.getAttribute('pageCode')
+            resolve(pageCode)
           }
-        })
-        frag.insert(1, [pageLinkBlock] as any)
+        }
       })
-    }
-  )
+      frag.insert(1, [pageLinkBlock] as any)
+    })
+  })
   const childPageId = `page:${childPageCode}`
   const childPage = {childPageId}
 
@@ -113,7 +110,7 @@ test('Access propagates to linked children', async () => {
       subjectId: user2.userId,
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   expect(pageUpdatesUser).toMatchObject({
@@ -147,7 +144,7 @@ test('Access propagates to linked children', async () => {
       subjectId: user1.teamId,
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   expect(pageUpdatesTeam).toMatchObject({
@@ -176,7 +173,7 @@ test('Access propagates to linked children', async () => {
       subjectId: user1.orgId,
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   expect(pageUpdatesOrg).toMatchObject({
@@ -205,7 +202,7 @@ test('Access propagates to linked children', async () => {
       subjectId: 'foo@example.com',
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   expect(pageUpdatesExt).toMatchObject({
@@ -232,7 +229,7 @@ test('Access propagates to linked children', async () => {
       subjectId: '*',
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   expect(pageUpdatesGlobal).toMatchObject({
@@ -280,7 +277,7 @@ test('Access propagates to linked children', async () => {
     variables: {
       pageId: childPageId
     },
-    authToken
+    cookie
   })
 
   expect(childPageRes).toMatchObject({
@@ -317,7 +314,7 @@ test('Access propagates to linked children', async () => {
 
 test('Revoking access unlinks children', async () => {
   const [user1] = await Promise.all([signUp()])
-  const {authToken} = user1
+  const {cookie} = user1
 
   const parentPage = await sendPublic({
     query: `
@@ -330,27 +327,24 @@ test('Revoking access unlinks children', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
   const parentPageId = parentPage.data.createPage.page.id
-  const childPageCode = await sendTipTap(
-    {authToken, pageId: parentPageId},
-    async (document: Doc) => {
-      return new Promise((resolve) => {
-        const frag = document.getXmlFragment('default')
-        const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
-        pageLinkBlock.observe((e: YXmlEvent) => {
-          for (const [key] of e.keys) {
-            if (key === 'pageCode') {
-              const pageCode = pageLinkBlock.getAttribute('pageCode')
-              resolve(pageCode)
-            }
+  const childPageCode = await sendTipTap({cookie, pageId: parentPageId}, async (document: Doc) => {
+    return new Promise((resolve) => {
+      const frag = document.getXmlFragment('default')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      pageLinkBlock.observe((e: YXmlEvent) => {
+        for (const [key] of e.keys) {
+          if (key === 'pageCode') {
+            const pageCode = pageLinkBlock.getAttribute('pageCode')
+            resolve(pageCode)
           }
-        })
-        frag.insert(1, [pageLinkBlock] as any)
+        }
       })
-    }
-  )
+      frag.insert(1, [pageLinkBlock] as any)
+    })
+  })
   const childPageId = `page:${childPageCode}`
 
   await sendPublic({
@@ -361,7 +355,7 @@ test('Revoking access unlinks children', async () => {
       subjectId: '*',
       role: 'owner'
     },
-    authToken
+    cookie
   })
 
   const childPageRevokeError = await sendPublic({
@@ -372,7 +366,7 @@ test('Revoking access unlinks children', async () => {
       subjectId: '*',
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   expect(childPageRevokeError).toMatchObject({
@@ -394,7 +388,7 @@ test('Revoking access unlinks children', async () => {
       role: 'viewer',
       unlinkApproved: true
     },
-    authToken
+    cookie
   })
 
   expect(childPageRevokeGood).toMatchObject({
@@ -418,7 +412,7 @@ test('Revoking access unlinks children', async () => {
       subjectId: '*',
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   await sendPublic({
@@ -454,7 +448,7 @@ test('Revoking access unlinks children', async () => {
     variables: {
       pageId: parentPageId
     },
-    authToken
+    cookie
   })
 
   expect(childPageRevokeGood).toMatchObject({
@@ -473,7 +467,7 @@ test('Revoking access unlinks children', async () => {
 test('New User adopts external access', async () => {
   const owner = await signUp()
   const inviteeEmail = faker.internet.email().toLowerCase()
-  const {authToken} = owner
+  const {cookie} = owner
 
   const page = await sendPublic({
     query: `
@@ -486,7 +480,7 @@ test('New User adopts external access', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(page).toMatchObject({
@@ -507,7 +501,7 @@ test('New User adopts external access', async () => {
       subjectId: inviteeEmail,
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   expect(updatedAccess).toEqual({
@@ -541,7 +535,7 @@ test('New User adopts external access', async () => {
     variables: {
       pageId
     },
-    authToken: invitee.authToken
+    cookie: invitee.cookie
   })
 
   expect(pageAccess).toEqual({
@@ -557,7 +551,7 @@ test('New User adopts external access', async () => {
 
 test('Rando has no access', async () => {
   const [owner, rando] = await Promise.all([signUp(), signUp()])
-  const {authToken} = owner
+  const {cookie} = owner
 
   const page = await sendPublic({
     query: `
@@ -570,7 +564,7 @@ test('Rando has no access', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(page).toMatchObject({
@@ -597,7 +591,7 @@ test('Rando has no access', async () => {
     variables: {
       pageId
     },
-    authToken: rando.authToken
+    cookie: rando.cookie
   })
 
   expect(pageAccess).toEqual({
@@ -616,7 +610,7 @@ test('Rando has no access', async () => {
 
 test('Rando has access to public page', async () => {
   const [owner, rando] = await Promise.all([signUp(), signUp()])
-  const {authToken} = owner
+  const {cookie} = owner
 
   const page = await sendPublic({
     query: `
@@ -629,7 +623,7 @@ test('Rando has access to public page', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(page).toMatchObject({
@@ -651,7 +645,7 @@ test('Rando has access to public page', async () => {
       subjectId: '*',
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   const pageAccess = await sendPublic({
@@ -667,7 +661,7 @@ test('Rando has access to public page', async () => {
     variables: {
       pageId
     },
-    authToken: rando.authToken
+    cookie: rando.cookie
   })
 
   expect(pageAccess).toEqual({
@@ -683,7 +677,7 @@ test('Rando has access to public page', async () => {
 
 test('Public has access to public page', async () => {
   const owner = await signUp()
-  const {authToken} = owner
+  const {cookie} = owner
 
   const page = await sendPublic({
     query: `
@@ -696,7 +690,7 @@ test('Public has access to public page', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(page).toMatchObject({
@@ -718,7 +712,7 @@ test('Public has access to public page', async () => {
       subjectId: '*',
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   const pageAccess = await sendPublic({
@@ -749,7 +743,7 @@ test('Public has access to public page', async () => {
 
 test('Page can be made private again', async () => {
   const owner = await signUp()
-  const {authToken} = owner
+  const {cookie} = owner
 
   const page = await sendPublic({
     query: `
@@ -762,7 +756,7 @@ test('Page can be made private again', async () => {
       }
     `,
     variables: {},
-    authToken
+    cookie
   })
 
   expect(page).toMatchObject({
@@ -784,7 +778,7 @@ test('Page can be made private again', async () => {
       subjectId: '*',
       role: 'editor'
     },
-    authToken
+    cookie
   })
 
   const privateAccess = await sendPublic({
@@ -795,7 +789,7 @@ test('Page can be made private again', async () => {
       subjectId: '*',
       role: null
     },
-    authToken
+    cookie
   })
 
   expect(privateAccess).toMatchObject({
