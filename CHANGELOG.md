@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.34.2](https://github.com/ParabolInc/parabol/compare/v10.34.1...v10.34.2) (2025-11-19)
+
+
+### Fixed
+
+* bump deps to remove older versions of punycode ([#12332](https://github.com/ParabolInc/parabol/issues/12332)) ([2c96b36](https://github.com/ParabolInc/parabol/commit/2c96b36239136533b02ab6dd8d2e8d0a56d0a4d5))
+
 ## [10.34.1](https://github.com/ParabolInc/parabol/compare/v10.34.0...v10.34.1) (2025-11-18)
 
 
