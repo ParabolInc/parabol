@@ -1,8 +1,7 @@
-import {CookieListItem, CookieStore, getCookieString} from '@whatwg-node/cookie-store'
-import {sign} from 'jsonwebtoken'
+import {CookieListItem, getCookieString, parse} from '@whatwg-node/cookie-store'
 import AuthToken from '../database/types/AuthToken'
 import {GQLContext} from '../graphql/graphql'
-import encodeAuthToken from './encodeAuthToken'
+import encodeAuthToken, {encodeUnsignedAuthToken} from './encodeAuthToken'
 // for the cookieStore declaration
 import '@whatwg-node/server-plugin-cookies'
 import {Logger} from './Logger'
@@ -14,14 +13,9 @@ import {Logger} from './Logger'
 const serverCookie = '__Host-Http-authToken'
 const clientCookie = 'authToken'
 
-const encodeClientAuthToken = (authToken: AuthToken) => {
-  const noSecret = ''
-  return sign(JSON.parse(JSON.stringify(authToken)), noSecret, {algorithm: 'none'})
-}
-
 const createCookies = (token: AuthToken | null) => {
   const serverValue = token ? encodeAuthToken(token) : ''
-  const clientValue = token ? encodeClientAuthToken(token) : ''
+  const clientValue = token ? encodeUnsignedAuthToken(token) : ''
   const expires = token ? token.exp * 1000 : Date.now()
 
   return [
@@ -56,9 +50,9 @@ export const setAuthCookie = (context: GQLContext, authToken: AuthToken) => {
   })
 }
 
-export const createCookieHeader = (authToken: AuthToken) => {
+export const createCookieHeaders = (authToken: AuthToken) => {
   const cookies = createCookies(authToken)
-  return cookies.map(getCookieString).join(', ')
+  return cookies.map(getCookieString)
 }
 
 export const unsetAuthCookie = (context: GQLContext) => {
@@ -72,10 +66,8 @@ export const unsetAuthCookie = (context: GQLContext) => {
   })
 }
 
-export const getAuthTokenFromCookie = async (
-  cookieHeader: string | null | undefined
-): Promise<string | null> => {
-  const cookieStore = new CookieStore(cookieHeader || '')
-  const cookie = await cookieStore.get(serverCookie)
-  return cookie?.value ?? null
+export const getAuthTokenFromCookie = (cookieHeader: string | null | undefined): string | null => {
+  const cookies = parse(cookieHeader || '')
+  const cookieToken = cookies.get(serverCookie)?.value ?? null
+  return cookieToken
 }

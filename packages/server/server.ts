@@ -71,7 +71,7 @@ const app = uws
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)
-    const authToken = await getReqAuth(req)
+    const authToken = getReqAuth(req)
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)

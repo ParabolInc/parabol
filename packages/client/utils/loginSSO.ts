@@ -2,7 +2,6 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import type {GA4SignUpEventEmissionRequiredArgs} from './handleSuccessfulLogin'
 
 type SucessReturnType = {
-  token: string
   ga4Args: GA4SignUpEventEmissionRequiredArgs
 }
 
@@ -12,7 +11,7 @@ type ErrorReturnType = {
 
 type ReturnType = SucessReturnType | ErrorReturnType
 
-const getTokenFromSSO = (url: string, top?: number): ReturnType | Promise<ReturnType> => {
+const loginSSO = (url: string, top?: number): ReturnType | Promise<ReturnType> => {
   // It's possible we prematurely opened a popup named SSO at the URL about:blank to avoid popup blockers
   // Calling window.open again will get a reference to that popup
   // Then, we can update the href to the valid URL
@@ -24,12 +23,14 @@ const getTokenFromSSO = (url: string, top?: number): ReturnType | Promise<Return
     const handler = (event: MessageEvent) => {
       // an extension posted to the opener
       if (typeof event.data !== 'object') return
-      const {token, error} = event.data
-      if (!token && !error) return
-      if (event.origin !== window.location.origin) return
+      const {error, userId} = event.data
+      if (!userId || event.origin !== window.location.origin) return
 
       const params = new URLSearchParams(popup.location.search)
-      const userId = params.get('userId')
+      if (userId !== params.get('userId')) {
+        resolve({error: 'Error logging in.'})
+        return
+      }
       const isNewUser = params.get('isNewUser') === 'true'
       const isPatient0 = params.get('isPatient0') === 'true'
 
@@ -38,7 +39,7 @@ const getTokenFromSSO = (url: string, top?: number): ReturnType | Promise<Return
       window.removeEventListener('message', handler)
 
       if (userId) {
-        resolve({token, ga4Args: {userId, isNewUser, isPatient0}})
+        resolve({ga4Args: {userId, isNewUser, isPatient0}})
       } else {
         resolve({error: error || 'userId is null'})
       }
@@ -55,4 +56,4 @@ const getTokenFromSSO = (url: string, top?: number): ReturnType | Promise<Return
   })
 }
 
-export default getTokenFromSSO
+export default loginSSO

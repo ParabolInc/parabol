@@ -36,7 +36,6 @@ const signUpVerified = async (email: string) => {
     query: `
       mutation VerifyEmail($verificationToken: ID!) {
         verifyEmail(verificationToken: $verificationToken) {
-          authToken
           user {
             id
             tms
@@ -55,9 +54,9 @@ const signUpVerified = async (email: string) => {
     }
   })
   expect(verifyEmail).toMatchObject({
+    cookie: expect.any(String),
     data: {
       verifyEmail: {
-        authToken: expect.any(String),
         user: {
           id: expect.any(String)
         }
@@ -68,9 +67,9 @@ const signUpVerified = async (email: string) => {
   return {
     email,
     password,
-    authToken: verifyEmail.data.verifyEmail.authToken,
     userId: verifyEmail.data.verifyEmail.user.id,
-    user: verifyEmail.data.verifyEmail.user
+    user: verifyEmail.data.verifyEmail.user,
+    cookie: verifyEmail.cookie
   }
 }
 
@@ -78,7 +77,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
   const domain = `${faker.internet.domainWord()}.parabol.fun`
 
   const email = `${faker.internet.userName()}@${domain}`.toLowerCase()
-  const {authToken, user, userId} = await signUpVerified(email)
+  const {cookie, user, userId} = await signUpVerified(email)
   const orgId = user.organizations[0].id
 
   // set up 2nd teams for autoJoin
@@ -98,7 +97,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
     variables: {
       orgId
     },
-    authToken
+    cookie
   })
 
   const teamIds = (await getUserTeams(userId)).map(({id}) => id)
@@ -116,7 +115,7 @@ test('autoJoin on multiple teams does not create duplicate `OrganizationUser`s',
     variables: {
       teamIds
     },
-    authToken
+    cookie
   })
   expect(autoJoin).toMatchObject({
     data: {
