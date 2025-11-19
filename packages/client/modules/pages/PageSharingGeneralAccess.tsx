@@ -1,4 +1,3 @@
-import Link from '@mui/icons-material/Link'
 import LockIcon from '@mui/icons-material/Lock'
 import PublicIcon from '@mui/icons-material/Public'
 import graphql from 'babel-plugin-relay/macro'
@@ -11,9 +10,6 @@ import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {MenuLabelTrigger} from '../../ui/Menu/MenuLabelTrigger'
-import {Tooltip} from '../../ui/Tooltip/Tooltip'
-import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
-import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 
 interface Props {
   pageRef: PageSharingGeneralAccess_page$key
@@ -54,11 +50,6 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const [GAValue, setGAValue] = useState<GAValue>(publicAccess ? 'public' : 'restricted')
   const [execute, submitting] = useUpdatePageAccessMutation()
 
-  const handleCopyLink = () => {
-    const urlWithoutParams = `${window.location.origin}${window.location.pathname}`
-    navigator.clipboard.writeText(urlWithoutParams)
-  }
-
   const updateGAValue = (value: GAValue) => {
     setGAValue(value)
     if (submitting) return
@@ -78,67 +69,53 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const {icon: AccessIcon, label} = GARole
   return (
     <>
-      <div className='pt-2 font-semibold text-slate-700 text-sm'>General access</div>
-      {
-        <>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3 pr-2'>
-              <AccessIcon className='h-8 w-8' />
-              <div className='flex flex-col'>
-                <Menu
-                  trigger={
-                    <MenuLabelTrigger labelClassName={'pr-0'}>
-                      <div className='font-medium text-slate-700 text-sm'>{label}</div>
-                    </MenuLabelTrigger>
-                  }
-                  className='group'
-                >
-                  <MenuContent align='end' sideOffset={4} className='max-h-80'>
-                    {gaRoles.map(({value, label, description}) => {
-                      return (
-                        <MenuItem
-                          className='py-1'
-                          key={value}
-                          onSelect={() => {
-                            updateGAValue(value)
-                          }}
-                        >
-                          <div className='flex flex-col'>
-                            <div className='font-semibold text-slate-700 text-sm'>{label}</div>
-                            <div className='text-md text-slate-600 text-xs'>{description}</div>
-                          </div>
-                        </MenuItem>
-                      )
-                    })}
-                  </MenuContent>
-                </Menu>
-              </div>
-            </div>
-            {GAValue === 'public' && (
-              <PageAccessCombobox
-                defaultRole={publicAccess || null}
-                subjectId={'*'}
-                subjectType='external'
-                pageId={pageId}
-              />
-            )}
+      <div className='p-2 font-semibold text-slate-600 text-sm'>General access</div>
+      <div className='flex w-full items-center justify-between'>
+        <div className='flex items-center gap-3'>
+          <div className='h-10 w-10 rounded-full bg-slate-300 p-2 text-slate-800'>
+            <AccessIcon className='h-6 w-6' />
           </div>
-          <div className='mt-2 flex justify-end pr-2'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={handleCopyLink}
-                  className='flex cursor-pointer items-center gap-1 text-sky-500 hover:text-sky-700'
+          <div className='flex flex-col'>
+            <Menu
+              trigger={
+                <MenuLabelTrigger
+                  className='px-0'
+                  labelClassName='ml-0 px-0 text-md font-medium text-slate-700 w-30'
                 >
-                  <Link className='h-4 w-4' />
-                  <span>Copy link</span>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>{'Copy link to clipboard'}</TooltipContent>
-            </Tooltip>
+                  {label}
+                </MenuLabelTrigger>
+              }
+            >
+              <MenuContent align='end' sideOffset={4} className='max-h-80'>
+                {gaRoles.map(({value, label, description}) => {
+                  return (
+                    <MenuItem
+                      className='py-1'
+                      key={value}
+                      onSelect={() => {
+                        updateGAValue(value)
+                      }}
+                    >
+                      <div className='flex flex-col'>
+                        <div className='font-semibold text-slate-700 text-sm'>{label}</div>
+                        <div className='text-md text-slate-600 text-xs'>{description}</div>
+                      </div>
+                    </MenuItem>
+                  )
+                })}
+              </MenuContent>
+            </Menu>
           </div>
-        </>
-      }
+        </div>
+        {GAValue === 'public' && (
+          <PageAccessCombobox
+            defaultRole={publicAccess || null}
+            subjectId={'*'}
+            subjectType='external'
+            pageId={pageId}
+          />
+        )}
+      </div>
     </>
   )
 }

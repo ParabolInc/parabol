@@ -1,6 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useLocation} from 'react-router'
 import type {PageHeader_page$key} from '../../__generated__/PageHeader_page.graphql'
 import {PageBreadCrumbs} from './PageBreadCrumbs'
 import {PageDeletedHeader} from './PageDeletedHeader'
@@ -23,17 +24,29 @@ export const PageHeader = (props: Props) => {
     pageRef
   )
 
+  const searchParams = new URLSearchParams(useLocation().search)
+  const sharePageDefaultOpen = searchParams.get('share') !== null
+
   const {id: pageId} = page
   return (
     <div className='sticky top-0 z-10 w-full bg-white'>
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
-        <Popover.Root>
+        <Popover.Root key={`${page.id}-${sharePageDefaultOpen}`} defaultOpen={sharePageDefaultOpen}>
           <Popover.Trigger asChild>
             <button className='cursor-pointer bg-white pt-1 font-semibold text-md'>Share</button>
           </Popover.Trigger>
           <Popover.Portal>
-            <Popover.Content asChild align='end' alignOffset={8} collisionPadding={8}>
+            <Popover.Content
+              asChild
+              align='end'
+              collisionPadding={8}
+              className='z-10'
+              onFocusOutside={(e) => {
+                // Prevent closing directly on first editor load
+                e.preventDefault()
+              }}
+            >
               <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
                 <PageSharingRoot pageId={pageId} />
               </div>

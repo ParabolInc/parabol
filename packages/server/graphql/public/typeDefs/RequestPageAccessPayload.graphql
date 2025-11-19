@@ -1,0 +1,4 @@
+type RequestPageAccessPayload {
+	page: Page!
+	pageSection: PageSectionEnum!
+}

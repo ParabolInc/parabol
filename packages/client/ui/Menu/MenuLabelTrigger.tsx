@@ -4,14 +4,17 @@ import {cn} from '../cn'
 
 export const MenuLabelTrigger = forwardRef<
   HTMLDivElement,
-  {children: ReactNode; icon?: ReactNode; labelClassName?: string}
+  {children: ReactNode; icon?: ReactNode; className?: string; labelClassName?: string}
 >((props, ref) => {
-  const {children, icon, labelClassName, ...rest} = props
+  const {children, icon, labelClassName, className, ...rest} = props
   return (
     <div
       {...rest}
       ref={ref}
-      className='group flex cursor-pointer items-center justify-between rounded-md bg-white px-2'
+      className={cn(
+        'group flex cursor-pointer items-center justify-between rounded-md bg-white px-2',
+        className
+      )}
     >
       <div className={cn('p-2 leading-4', labelClassName)}>{children}</div>
       {icon || (
