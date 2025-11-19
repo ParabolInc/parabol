@@ -1,5 +1,5 @@
 import sanitizeSVG from '@mattkrick/sanitize-svg'
-import {JSDOM} from 'jsdom'
+import {Window} from 'happy-dom'
 import mime from 'mime-types'
 
 const validateAvatarUpload = async (
@@ -14,10 +14,15 @@ const validateAvatarUpload = async (
     throw new Error(`unable to determine extension for ${contentType}`)
   }
   if (ext === 'svg') {
-    const {window} = new JSDOM()
-    const safeBuffer = await sanitizeSVG(buffer, window as any)
-    if (!safeBuffer) throw new Error('Attempted Stored XSS attack')
-    return [ext, safeBuffer as Buffer]
+    const localWindow = new Window()
+    try {
+      const safeBuffer = await sanitizeSVG(buffer, localWindow as any)
+      if (!safeBuffer) throw new Error('Attempted Stored XSS attack')
+      return [ext, safeBuffer as Buffer]
+    } finally {
+      localWindow.happyDOM.abort()
+      localWindow.happyDOM.close()
+    }
   }
   return [ext, buffer]
 }
