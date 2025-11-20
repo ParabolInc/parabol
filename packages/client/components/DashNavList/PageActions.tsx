@@ -32,11 +32,12 @@ export const PageActions = (props: Props) => {
         access {
           viewer
         }
+        isDatabase
       }
     `,
     pageRef
   )
-  const {id: pageId, access} = page
+  const {id: pageId, access, isDatabase} = page
   const {viewer: viewerAccess} = access
   const history = useHistory()
   const [executeArchive] = useArchivePageMutation()
@@ -122,7 +123,9 @@ export const PageActions = (props: Props) => {
           </Menu>
         </div>
       )}
-      <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
+      {!isDatabase && (
+        <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
+      )}
     </LeftNavItemButtons>
   )
 }

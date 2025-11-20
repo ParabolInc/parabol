@@ -107,6 +107,8 @@ export const FAILED = 'FAILED'
 
 /* character limits */
 export const TASK_MAX_CHARS = 51200
+export const DATABASE_CELL_MAX_CHARS = TASK_MAX_CHARS
+export const DATABASE_COLUMN_NAME_MAX_CHARS = 255
 
 /* Task tags */
 export const tags = [

@@ -71,6 +71,7 @@
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^4.0.0",
+    "@tanstack/react-table": "^8.21.3",
     "@types/history": "^4.7.0",
     "cleave.js": "^1.6.0",
     "clsx": "^1.2.1",

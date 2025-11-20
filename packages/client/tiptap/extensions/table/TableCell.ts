@@ -20,5 +20,8 @@ export const TableCell = TiptapTableCell.extend({
         */
       }
     }
+  },
+  renderHTML({HTMLAttributes}) {
+    return ['td', {...HTMLAttributes, class: 'px-2 py-1.5 border-1 border-slate-300'}, 0]
   }
 })
