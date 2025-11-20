@@ -374,9 +374,21 @@ export const selectGitLabDimensionFieldMap = () => {
   return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
 }
 
+export const selectJiraDimensionFieldMap = () => {
+  return getKysely().selectFrom('JiraDimensionFieldMap').selectAll()
+}
+
+export const selectJiraServerDimensionFieldMap = () => {
+  return getKysely().selectFrom('JiraServerDimensionFieldMap').selectAll()
+}
+
 export const selectIntegrationProvider = () => {
   return getKysely()
     .selectFrom('IntegrationProvider')
     .selectAll()
     .$narrowType<TIntegrationProvider>()
+}
+
+export const selectIntegrationSearchQuery = () => {
+  return getKysely().selectFrom('IntegrationSearchQuery').selectAll()
 }

@@ -7,6 +7,8 @@ import {
   type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
+  type selectJiraDimensionFieldMap,
+  type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
   selectMeetingSettings,
   selectNewFeatures,
@@ -155,4 +157,12 @@ export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
 >
 export type GitHubDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
   typeof selectGitHubDimensionFieldMap
+>
+
+export type JiraDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectJiraDimensionFieldMap
+>
+
+export type JiraServerDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectJiraServerDimensionFieldMap
 >

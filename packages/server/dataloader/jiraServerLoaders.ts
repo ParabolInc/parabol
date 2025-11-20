@@ -3,10 +3,8 @@ import JiraServerRestManager, {
   type JiraServerFieldType,
   type JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import getJiraServerDimensionFieldMap, {
-  type GetJiraServerDimensionFieldMapParams,
-  type JiraServerDimensionFieldMap
-} from '../postgres/queries/getJiraServerDimensionFieldMap'
+import {selectJiraServerDimensionFieldMap} from '../postgres/select'
+import type {JiraServerDimensionFieldMap} from '../postgres/types'
 import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
@@ -162,11 +160,29 @@ export const jiraServerFieldTypes = (parent: RootDataLoader) =>
   )
 
 export const jiraServerDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<GetJiraServerDimensionFieldMapParams, JiraServerDimensionFieldMap | null, string>(
+  new DataLoader<
+    {
+      teamId: string
+      projectId: string
+      dimensionName: string
+      issueType: string
+      providerId: number
+    },
+    JiraServerDimensionFieldMap | null,
+    string
+  >(
     async (keys) => {
       return Promise.all(
         keys.map(async (params) => {
-          return getJiraServerDimensionFieldMap(params)
+          const {teamId, projectId, dimensionName, issueType, providerId} = params
+          const res = await selectJiraServerDimensionFieldMap()
+            .where('teamId', '=', teamId)
+            .where('providerId', '=', providerId)
+            .where('projectId', '=', projectId)
+            .where('issueType', '=', issueType)
+            .where('dimensionName', '=', dimensionName)
+            .executeTakeFirst()
+          return res || null
         })
       )
     },
