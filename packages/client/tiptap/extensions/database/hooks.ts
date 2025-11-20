@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from 'react'
 import * as Y from 'yjs'
+import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
 import {ColumnId, RowData, RowId} from './data'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
@@ -81,7 +82,8 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
       if (value === null) {
         row?.delete(columnId)
       } else {
-        row?.set(columnId, value)
+        // TODO validate and set an error here
+        row?.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
       }
     },
     [row, columnId]

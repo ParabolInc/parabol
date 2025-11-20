@@ -13,6 +13,7 @@ import {FormEvent} from 'react'
 import * as Y from 'yjs'
 import useForm from '../../../hooks/useForm'
 import {Input} from '../../../ui/Input/Input'
+import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 import {
   ColumnId,
   ColumnMeta,
@@ -103,6 +104,7 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
                 name='newTitle'
                 defaultValue={name}
                 onChange={onChange}
+                maxLength={DATABASE_COLUMN_NAME_MAX_CHARS}
               />
             </form>
             <DropdownMenu.Sub>

@@ -1,4 +1,5 @@
 import * as Y from 'yjs'
+import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
 export type ColumnId = string
 export type RowId = string
@@ -29,13 +30,16 @@ export const getColumns = (doc: Y.Doc) => {
 
 export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
   const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
-  columnMeta.set(columnId, newMeta)
+  columnMeta.set(columnId, {
+    ...newMeta,
+    name: newMeta.name.substring(0, DATABASE_COLUMN_NAME_MAX_CHARS)
+  })
 }
 
 export const insertColumnAt = (doc: Y.Doc, index: number, meta: ColumnMeta = defaultColumnMeta) => {
   const id = generateId(doc)
   doc.transact(() => {
-    doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
+    changeColumn(doc, id, meta)
     const columns = doc.getArray<ColumnId>('columns')
     columns.insert(index, [id])
   })
@@ -45,7 +49,7 @@ export const insertColumnAt = (doc: Y.Doc, index: number, meta: ColumnMeta = def
 export const appendColumn = (doc: Y.Doc, meta: ColumnMeta = defaultColumnMeta) => {
   const id = generateId(doc)
   doc.transact(() => {
-    doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
+    changeColumn(doc, id, meta)
     const columns = doc.getArray<ColumnId>('columns')
     columns.push([id])
   })
