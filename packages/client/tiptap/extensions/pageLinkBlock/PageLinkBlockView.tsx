@@ -21,9 +21,9 @@ import {getPageSlug} from '../../getPageSlug'
 export const PageLinkBlockView = (props: NodeViewProps) => {
   const {node, getPos, view} = props
   const attrs = node.attrs as PageLinkBlockAttributes
-  const {pageCode, title, canonical, isDatabase} = attrs
+  const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
-  const Icon = canonical ? (isDatabase ? StorageIcon : DescriptionIcon) : FileOpenIcon
+  const Icon = canonical ? (database ? StorageIcon : DescriptionIcon) : FileOpenIcon
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const isOptimistic = pageCode === -1

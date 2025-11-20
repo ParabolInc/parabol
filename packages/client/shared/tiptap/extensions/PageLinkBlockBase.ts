@@ -5,7 +5,7 @@ export type PageLinkBlockAttributes = {
   title: string
   canonical?: boolean
   isMoving?: boolean
-  isDatabase?: boolean
+  database?: boolean
 }
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -51,13 +51,13 @@ export const PageLinkBlockBase = Node.create({
           }
         }
       },
-      isDatabase: {
+      database: {
         parseHTML: (element) => {
-          return element.getAttribute('data-isDatabase') === '' ? true : false
+          return element.getAttribute('data-database') === '' ? true : false
         },
         renderHTML: (attributes) => {
           return {
-            'data-isDatabase': attributes.isDatabase ? '' : undefined
+            'data-database': attributes.database ? '' : undefined
           }
         }
       }

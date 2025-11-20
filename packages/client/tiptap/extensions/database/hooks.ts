@@ -51,31 +51,11 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
   return items
 }
 
-export const useYText = (ytext: Y.Text) => {
-  if (!ytext) throw new Error('ytext is undefined')
-  const [text, setText] = useState<string>(ytext.toString())
-
-  useEffect(() => {
-    const updateText = () => {
-      setText(ytext.toString())
-    }
-
-    ytext.observe(updateText)
-    updateText()
-
-    return () => {
-      ytext.unobserve(updateText)
-    }
-  }, [ytext])
-
-  return text
-}
-
 export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
   const data = doc.getMap<RowData>('data')
   const row = data.get(rowId)
 
-  const [value, setValueState] = useState<string | null>(row?.get(columnId) ?? null)
+  const [value, setValueState] = useState<string | null>(() => row?.get(columnId) ?? null)
 
   useEffect(() => {
     const updateValue = () => {

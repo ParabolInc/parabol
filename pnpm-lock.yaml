@@ -69,6 +69,9 @@ importers:
       '@tiptap/extension-drag-handle':
         specifier: 3.9.1
         version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))(@tiptap/extension-collaboration@3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))(@tiptap/pm@3.9.1)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))(yjs@13.6.27))(@tiptap/extension-node-range@3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))(@tiptap/pm@3.9.1))(@tiptap/pm@3.9.1)(@tiptap/y-tiptap@3.0.0(prosemirror-model@1.25.3)(prosemirror-state@1.4.3)(prosemirror-view@1.41.1)(y-protocols@1.0.6(yjs@13.6.27))(yjs@13.6.27))
+      '@tiptap/extension-heading':
+        specifier: ^3.9.0
+        version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
       '@tiptap/extension-image':
         specifier: 3.9.1
         version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
@@ -87,6 +90,9 @@ importers:
       '@tiptap/extension-table':
         specifier: 3.9.1
         version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))(@tiptap/pm@3.9.1)
+      '@tiptap/extension-text':
+        specifier: ^3.9.0
+        version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
       '@tiptap/extensions':
         specifier: 3.9.1
         version: 3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))(@tiptap/pm@3.9.1)
@@ -520,12 +526,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      '@tiptap/extension-heading':
-        specifier: ^3.9.0
-        version: 3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
-      '@tiptap/extension-text':
-        specifier: ^3.9.0
-        version: 3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))
       '@types/history':
         specifier: ^4.7.0
         version: 4.7.11
@@ -6036,11 +6036,6 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.9.1
 
-  '@tiptap/extension-heading@3.9.0':
-    resolution: {integrity: sha512-GD8OrwHJw38T2KCiKlBHHL65n/6ywA4FqAsKaUz/9uDU4npdf94MxS6xv4AYoxuPi+3BtYTll4MuMtERcD37LA==}
-    peerDependencies:
-      '@tiptap/core': ^3.9.0
-
   '@tiptap/extension-heading@3.9.1':
     resolution: {integrity: sha512-r3H5nejZ/SYUF9DUbDT2rZS3ZeQkHUNljP7lmI5JdHDrFc5/UrvtkQr+E2mLwmn0xA+8Dwccoc9fPwnTh3YyeA==}
     peerDependencies:
@@ -6122,11 +6117,6 @@ packages:
     resolution: {integrity: sha512-t9Nc/UkrbCfnSHEUi1gvUQ2ZPzvfdYFT5TExoV2DTiUCkhG6+mecT5bTVFGW3QkPmbToL+nFhGn4ZRMDD0SP3Q==}
     peerDependencies:
       '@tiptap/core': ^2.7.0
-
-  '@tiptap/extension-text@3.9.0':
-    resolution: {integrity: sha512-OKtqeFjeraxzmK/cK4Uah20lDWHhSn1dVz4W/cjbY7VfRQxNTDF81/qQ5+bYUUBppFpi5fwbhvXSN2Y7hqi5rA==}
-    peerDependencies:
-      '@tiptap/core': ^3.9.0
 
   '@tiptap/extension-text@3.9.1':
     resolution: {integrity: sha512-giNTcXxG2DP/B5xU8wNM9d441f6FNMYCkbW6bUtjg3USLUWazYmEvp/F6vJ2wa4PSnahH+mNiiylUi2imTnzDg==}
@@ -7199,8 +7189,8 @@ packages:
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
 
-  chai@6.2.0:
-    resolution: {integrity: sha512-aUTnJc/JipRzJrNADXVvpVqi6CO0dn3nx4EVPxijri+fj3LUUDyZQOgVeW54Ob3Y1Xh9Iz8f+CgaCl8v0mn9bA==}
+  chai@6.2.1:
+    resolution: {integrity: sha512-p4Z49OGG5W/WBCPSS/dH3jQ73kD6tiMmUM+bckNK6Jr5JHMG3k9bg/BvKR8lKmtVBKmOiuVaV2ws8s9oSbwysg==}
     engines: {node: '>=18'}
 
   chalk@2.4.2:
@@ -19970,10 +19960,6 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
 
-  '@tiptap/extension-heading@3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
-    dependencies:
-      '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
-
   '@tiptap/extension-heading@3.9.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
@@ -20039,10 +20025,6 @@ snapshots:
       '@tiptap/pm': 3.9.1
 
   '@tiptap/extension-text-style@2.26.1(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
-    dependencies:
-      '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
-
-  '@tiptap/extension-text@3.9.0(@tiptap/core@3.9.1(@tiptap/pm@3.9.1))':
     dependencies:
       '@tiptap/core': 3.9.1(@tiptap/pm@3.9.1)
 
@@ -21301,7 +21283,7 @@ snapshots:
       tslib: 2.8.1
       upper-case-first: 2.0.2
 
-  chai@6.2.0: {}
+  chai@6.2.1: {}
 
   chalk@2.4.2:
     dependencies:
@@ -24923,7 +24905,7 @@ snapshots:
 
   node-env-flag@0.1.0:
     dependencies:
-      chai: 6.2.0
+      chai: 6.2.1
 
   node-fetch-native@1.6.6: {}
 

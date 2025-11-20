@@ -190,7 +190,7 @@ export const slashCommands = [
             pageCode: -1,
             title: '<Untitled>',
             canonical: true,
-            isDatabase: true
+            database: true
           })
 
           editor
