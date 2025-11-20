@@ -9,9 +9,7 @@ const transformRules = (projectRoot, isProd) => {
     {
       test: /\.graphql$/,
       include: SERVER_ROOT,
-      use: {
-        loader: 'raw-loader'
-      }
+      type: 'asset/source'
     },
     {
       test: /\.tsx?$/,

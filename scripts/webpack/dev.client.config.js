@@ -206,14 +206,12 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 4096
-            }
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 4096
           }
-        ]
+        }
       },
       {
         test: /\.(eot|ttf|wav|mp3|woff|woff2|otf)$/,
