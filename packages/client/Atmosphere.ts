@@ -115,7 +115,15 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
   _network: typeof Network
-  authObj: AuthToken | null = null
+  _authObj: AuthToken | null = null
+  get authObj() {
+    return this._authObj
+  }
+  set authObj(value: AuthToken | null) {
+    this._authObj = value
+    this.eventEmitter.emit('authChanged')
+  }
+
   querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
     [queryKey: string]: number
@@ -263,8 +271,8 @@ export default class Atmosphere extends Environment {
       return e as Error
     }
   }
-  registerCookieListener = async (global: Window) => {
-    const authToken = await getAuthCookie(global)
+  registerCookieListener = (global: Window) => {
+    const authToken = getAuthCookie(global)
     this.setAuthToken(authToken)
 
     return onAuthCookieChange(global, (newToken) => {
@@ -303,15 +311,12 @@ export default class Atmosphere extends Environment {
   private setAuthToken = async (authToken: string | null | undefined) => {
     if (!authToken) {
       this.authObj = null
-      this.eventEmitter.emit('authChanged')
       return
     }
     try {
       this.authObj = jwtDecode(authToken)
-      this.eventEmitter.emit('authChanged')
     } catch {
       this.authObj = null
-      this.eventEmitter.emit('authChanged')
     }
 
     if (!this.authObj) return
@@ -446,7 +451,6 @@ export default class Atmosphere extends Environment {
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
-    this.eventEmitter.emit('authChanged')
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!

@@ -21,9 +21,7 @@ class AtmosphereProvider extends Component<Props> {
       })
     } else {
       this.atmosphere = new Atmosphere()
-      this.atmosphere.registerCookieListener(window).then((cleanup) => {
-        this.cleanup = cleanup
-      })
+      this.cleanup = this.atmosphere.registerCookieListener(window)
     }
   }
 

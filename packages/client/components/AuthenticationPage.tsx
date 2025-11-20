@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import useCanonical from '~/hooks/useCanonical'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import GenericAuthentication, {type AuthPageSlug, type GotoAuthPage} from './GenericAuthentication'
-import {useIsAuthenticated} from './IsAuthenticatedProvider'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const CopyBlock = styled('div')({
@@ -22,9 +22,9 @@ interface Props {
 const AuthenticationPage = (props: Props) => {
   const {history} = useRouter()
   const {page} = props
-  const isLoggedIn = useIsAuthenticated()
+  const {authObj} = useAtmosphere()
   useCanonical(page)
-  if (isLoggedIn) {
+  if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
     setTimeout(() => history.replace(nextUrl))

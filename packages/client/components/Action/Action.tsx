@@ -1,12 +1,12 @@
 import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {GlobalBanner, LoaderSize} from '../../types/constEnums'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
 import Banner from '../GlobalBanner'
-import {useIsAuthenticated} from '../IsAuthenticatedProvider'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
@@ -43,7 +43,8 @@ const Action = memo(() => {
   const bannerColor = window.__ACTION__.GLOBAL_BANNER_COLOR
   // /pages must have the same stable path as the other dashboard routes
   // to preserve the internal state of the left nav (i.e. which team & pages are expanded)
-  const isAuthenticated = useIsAuthenticated()
+  const {authObj} = useAtmosphere()
+  const isAuthenticated = !!authObj
 
   return (
     <>
