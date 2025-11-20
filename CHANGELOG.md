@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.35.0](https://github.com/ParabolInc/parabol/compare/v10.34.2...v10.35.0) (2025-11-20)
+
+
+### Added
+
+* add databases behind feature flag ([#12323](https://github.com/ParabolInc/parabol/issues/12323)) ([dec1e55](https://github.com/ParabolInc/parabol/commit/dec1e558743b05574fc17540260eafe31eb4e031))
+
 ## [10.34.2](https://github.com/ParabolInc/parabol/compare/v10.34.1...v10.34.2) (2025-11-19)
 
 
