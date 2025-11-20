@@ -174,6 +174,34 @@ export const slashCommands = [
             .setTextSelection(from + 2)
             .run()
         }
+      },
+      {
+        title: 'Database',
+        description: 'Create a new database',
+        searchTerms: ['database', 'import'],
+        icon: TableIcon,
+        action: (editor: Editor) => {
+          const {state, schema} = editor
+          const {selection} = state
+          if (!selection) return
+          const {from} = selection
+
+          const databaseNode = schema.nodes.pageLinkBlock!.create({
+            pageCode: -1,
+            title: '<Untitled>',
+            canonical: true,
+            database: true
+          })
+
+          editor
+            .chain()
+            .focus()
+            .insertContentAt(from, databaseNode)
+            .setTextSelection(from + 1)
+            .insertContent('<p></p>')
+            .setTextSelection(from + 2)
+            .run()
+        }
       }
     ]
   },

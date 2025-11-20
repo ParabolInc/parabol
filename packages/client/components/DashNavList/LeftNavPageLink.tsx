@@ -1,3 +1,4 @@
+import StorageIcon from '@mui/icons-material/Storage'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -61,6 +62,7 @@ export const LeftNavPageLink = (props: Props) => {
         currentPageAncestorDepth
         userSortOrder
         sortOrder # used implicityly in store traversal by useDraggingPage
+        isDatabase
       }
     `,
     pageRef
@@ -74,7 +76,8 @@ export const LeftNavPageLink = (props: Props) => {
     isDraggingLastChild,
     teamId,
     isPrivate,
-    currentPageAncestorDepth
+    currentPageAncestorDepth,
+    isDatabase
   } = page
   const {viewer: viewerAccess} = access
 
@@ -165,11 +168,17 @@ export const LeftNavPageLink = (props: Props) => {
             }
           }}
         >
-          <ExpandPageChildrenButton
-            showChildren={showChildren}
-            expandChildPages={expandChildPages}
-            draggingPageId={isSelf ? null : draggingPageId}
-          />
+          {isDatabase ? (
+            <div className='flex size-6 shrink-0 items-center justify-center rounded-sm bg-slate-200 text-slate-600 group-data-highlighted:bg-slate-300'>
+              <StorageIcon className='size-5' />
+            </div>
+          ) : (
+            <ExpandPageChildrenButton
+              showChildren={showChildren}
+              expandChildPages={expandChildPages}
+              draggingPageId={isSelf ? null : draggingPageId}
+            />
+          )}
           <LeftNavItem>
             <span className='pl-1'>{title || '<Untitled>'}</span>
           </LeftNavItem>

@@ -26,6 +26,8 @@ type OptionalFun<E extends Record<string, boolean>> = ClassValueFun<E> | ClassVa
  *     isHighlighted && 'shadow-lg'
  *   ])
  *   const StyledCustomComponent = twStyled(MyCustomComponent)('bg-tomato-500 p-4')
+ *
+ * For VSCode autocomplete, add `twStyled` to the "Tailwind CSS: Class Functions" setting.
  */
 export const twStyled =
   <P extends PropsType<E>, E extends keyof ReactHTML | FunctionComponent<any>>(element: E) =>
