@@ -134,12 +134,12 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
 
   jiraSearchQueries: async ({teamId, userId, jiraSearchQueries}) => {
     const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh)
+    const thresh = new Date(Date.now() - expirationThresh).toISOString()
     const searchQueries = jiraSearchQueries || []
     const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
     if (unexpiredQueries.length < searchQueries.length) {
       await updateJiraSearchQueries({
-        jiraSearchQueries: searchQueries,
+        jiraSearchQueries: searchQueries as any,
         teamId,
         userId
       })

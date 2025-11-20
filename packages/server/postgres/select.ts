@@ -3,7 +3,13 @@ import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import type {JiraDimensionField, ReactjiDB, TaskTag} from './types'
+import type {
+  GitHubSearchQuery,
+  JiraDimensionField,
+  JiraSearchQuery,
+  ReactjiDB,
+  TaskTag
+} from './types'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
@@ -166,14 +172,6 @@ export const selectTeamPromptResponses = () =>
     ])
     .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
-
-export type JiraSearchQuery = {
-  id: string
-  queryString: string
-  isJQL: boolean
-  projectKeyFilters?: string[]
-  lastUsedAt: Date
-}
 
 export const selectMeetingSettings = () =>
   getKysely()
@@ -346,3 +344,23 @@ export const selectDescendantPages = (
           .select(['p.id', 'p.parentPageId'])
       )
   )
+
+export const selectGitHubAuth = () => {
+  const query = getKysely()
+    .selectFrom('GitHubAuth')
+    .selectAll()
+    .select(({fn}) => [
+      fn<GitHubSearchQuery[]>('to_json', ['githubSearchQueries']).as('githubSearchQueries')
+    ])
+  return query as AssertedQuery<typeof query, {githubSearchQueries: GitHubSearchQuery[]}>
+}
+
+export const selectAtlassianAuth = () => {
+  const query = getKysely()
+    .selectFrom('AtlassianAuth')
+    .selectAll()
+    .select(({fn}) => [
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
+    ])
+  return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
+}

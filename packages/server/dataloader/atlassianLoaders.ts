@@ -6,13 +6,13 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import getKysely from '../postgres/getKysely'
-import type {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
 import getJiraDimensionFieldMap, {
   type GetJiraDimensionFieldMapParams,
   type JiraDimensionFieldMap
 } from '../postgres/queries/getJiraDimensionFieldMap'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
+import {selectAtlassianAuth} from '../postgres/select'
+import type {AtlassianAuth} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraGetIssueRes,
   type JiraGQLFields,
@@ -53,7 +53,10 @@ export const freshAtlassianAuth = (
       const pg = getKysely()
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const userAtlassianAuths = await getAtlassianAuthsByUserId(userId)
+          const userAtlassianAuths = await selectAtlassianAuth()
+            .where('userId', '=', userId)
+            .where('isActive', '=', true)
+            .execute()
           const atlassianAuthToRefresh = userAtlassianAuths.find(
             (atlassianAuth) => atlassianAuth.teamId === teamId
           )

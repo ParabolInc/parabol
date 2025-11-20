@@ -200,7 +200,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
         queryString: query.queryString || '',
         isJQL: query.isJQL,
         projectKeyFilters: query.projectKeyFilters || [],
-        lastUsedAt: searchQuery.lastUsedAt
+        lastUsedAt: searchQuery.lastUsedAt.toJSON()
       }
     })
   }

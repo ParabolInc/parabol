@@ -1,8 +1,10 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import {
   selectAgendaItems,
+  type selectAtlassianAuth,
   selectComments,
   type selectDiscussion,
+  type selectGitHubAuth,
   type selectMassInvitations,
   selectMeetingSettings,
   selectNewFeatures,
@@ -129,3 +131,20 @@ export type PageAccessTeam = Omit<Selectable<PageTeamAccessPG>, 'pageId'>
 export type PageAccessOrganization = Omit<Selectable<PageOrganizationAccessPG>, 'pageId'>
 
 export type AIPrompt = Selectable<AIPromptPG>
+
+export type JiraSearchQuery = {
+  id: string
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters?: string[]
+  lastUsedAt: string
+}
+
+export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
+
+export interface GitHubSearchQuery {
+  id: string
+  queryString: string
+  lastUsedAt: string
+}
+export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>

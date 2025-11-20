@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getKysely from '../postgres/getKysely'
-import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
 import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
@@ -410,13 +409,15 @@ export const azureDevOpsDimensionFieldMap = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
-          const azureDevOpsDimensionFieldMap = await getAzureDevOpsDimensionFieldMaps(
-            teamId,
-            dimensionName,
-            instanceId,
-            projectKey,
-            workItemType
-          )
+          const azureDevOpsDimensionFieldMap = await getKysely()
+            .selectFrom('AzureDevOpsDimensionFieldMap')
+            .selectAll()
+            .where('teamId', '=', teamId)
+            .where('dimensionName', '=', dimensionName)
+            .where('instanceId', '=', instanceId)
+            .where('projectKey', '=', projectKey)
+            .where('workItemType', '=', workItemType)
+            .executeTakeFirst()
           if (!azureDevOpsDimensionFieldMap) {
             return null
           }

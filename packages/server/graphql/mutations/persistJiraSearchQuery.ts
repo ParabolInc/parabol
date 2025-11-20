@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import JiraSearchQuery from '../../database/types/JiraSearchQuery'
+import generateUID from '../../generateUID'
 import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -61,18 +61,20 @@ const persistJiraSearchQuery = {
       } else {
         const queryToUpdate = jiraSearchQueries[existingIdx]!
         // MUTATIVE
-        queryToUpdate.lastUsedAt = new Date()
+        queryToUpdate.lastUsedAt = new Date().toISOString()
         jiraSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))
         if (jiraSearchQueries[existingIdx] === queryToUpdate) {
           isChange = false
         }
       }
     } else if (!isRemove) {
-      const newQuery = new JiraSearchQuery({
+      const newQuery = {
+        id: generateUID(),
+        lastUsedAt: new Date().toJSON(),
         queryString,
         isJQL,
         projectKeyFilters: projectKeyFilters ?? undefined
-      })
+      }
       // MUTATIVE
       jiraSearchQueries.unshift(newQuery)
       jiraSearchQueries.slice(0, MAX_QUERIES)
@@ -80,7 +82,7 @@ const persistJiraSearchQuery = {
     const data = {teamId, userId: viewerId}
     if (isChange) {
       await updateJiraSearchQueries({
-        jiraSearchQueries,
+        jiraSearchQueries: jiraSearchQueries as any,
         teamId,
         userId: viewerId
       })

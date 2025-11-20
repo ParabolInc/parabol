@@ -8,9 +8,6 @@ import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getGitHubAuthByUserIdTeamId, {
-  type GitHubAuth
-} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
 import getGitHubDimensionFieldMaps, {
   type GitHubDimensionFieldMap
 } from '../postgres/queries/getGitHubDimensionFieldMaps'
@@ -206,22 +203,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: serializeUserTasksKey
-    }
-  )
-}
-
-export const githubAuth = (parent: RootDataLoader) => {
-  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
     }
   )
 }
