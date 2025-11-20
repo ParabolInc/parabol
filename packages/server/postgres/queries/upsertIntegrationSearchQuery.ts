@@ -3,14 +3,14 @@ import type {
   JiraServerSearchQueryInput
 } from '../../graphql/public/resolverTypes'
 import getPg from '../getPg'
-import type {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import type {Integrationproviderserviceenum} from '../types/pg'
 import {upsertIntegrationSearchQueryQuery} from './generated/upsertIntegrationSearchQueryQuery'
 import {upsertIntegrationSearchQueryWithProviderIdQuery} from './generated/upsertIntegrationSearchQueryWithProviderIdQuery'
 
 interface IUpsertIntegrationSearchQueryInput {
   userId: string
   teamId: string
-  service: IntegrationProviderServiceEnum
+  service: Integrationproviderserviceenum
   query: JiraServerSearchQueryInput | JiraSearchQueryInput
   providerId: number | null
 }

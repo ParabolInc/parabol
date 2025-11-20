@@ -1,11 +1,7 @@
-import getPg from '../getPg'
-import {
-  getIntegrationProvidersByIdsQuery,
-  type IGetIntegrationProvidersByIdsQueryResult,
-  type IntegrationProviderScopeEnum
-} from './generated/getIntegrationProvidersByIdsQuery'
+import type {Selectable} from 'kysely'
+import {IntegrationProvider} from './pg.d'
 
-interface IntegrationProviderActive extends IGetIntegrationProvidersByIdsQueryResult {
+interface IntegrationProviderActive extends Selectable<IntegrationProvider> {
   isActive: true
 }
 
@@ -88,10 +84,3 @@ export type TIntegrationProvider =
   | IntegrationProviderMSTeams
   | IntegrationProviderGcalOAuth2
   | IntegrationProviderLinear
-
-const getIntegrationProvidersByIds = async <T = TIntegrationProvider>(ids: readonly number[]) => {
-  const providers = await getIntegrationProvidersByIdsQuery.run({ids}, getPg())
-  return providers as any as T[]
-}
-
-export default getIntegrationProvidersByIds

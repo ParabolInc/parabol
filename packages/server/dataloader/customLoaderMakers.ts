@@ -8,17 +8,12 @@ import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getGitHubDimensionFieldMaps, {
-  type GitHubDimensionFieldMap
-} from '../postgres/queries/getGitHubDimensionFieldMaps'
-import getGitLabDimensionFieldMaps, {
-  type GitLabDimensionFieldMap
-} from '../postgres/queries/getGitLabDimensionFieldMaps'
 import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
 import getMeetingTaskEstimates, {
   type MeetingTaskEstimatesResult
 } from '../postgres/queries/getMeetingTaskEstimates'
 import {
+  selectGitLabDimensionFieldMap,
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
@@ -27,6 +22,7 @@ import {
 } from '../postgres/select'
 import type {
   FeatureFlag,
+  GitLabDimensionFieldMap,
   Insight,
   MassInvitation,
   MeetingSettings,
@@ -221,7 +217,12 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
-          getGitLabDimensionFieldMaps(teamId, dimensionName, projectId, providerId)
+          selectGitLabDimensionFieldMap()
+            .where('teamId', '=', teamId)
+            .where('dimensionName', '=', dimensionName)
+            .where('projectId', '=', projectId)
+            .where('providerId', '=', providerId)
+            .executeTakeFirstOrThrow()
         )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
@@ -231,29 +232,6 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
         `${teamId}:${dimensionName}:${projectId}:${providerId}`
-    }
-  )
-}
-
-export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {teamId: string; dimensionName: string; nameWithOwner: string},
-    GitHubDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
-          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
-        `${teamId}:${dimensionName}:${nameWithOwner}`
     }
   )
 }

@@ -1,5 +1,5 @@
 import getPg from '../getPg'
-import type {IntegrationProviderServiceEnum} from './generated/getIntegrationProvidersByIdsQuery'
+import type {Integrationproviderserviceenum} from '../types/pg'
 import {getLatestIntegrationSearchQueriesQuery} from './generated/getLatestIntegrationSearchQueriesQuery'
 import {getLatestIntegrationSearchQueriesWithProviderIdQuery} from './generated/getLatestIntegrationSearchQueriesWithProviderIdQuery'
 
@@ -7,7 +7,7 @@ interface Params {
   teamId: string
   userId: string
   providerId: number | null
-  service: IntegrationProviderServiceEnum
+  service: Integrationproviderserviceenum
 }
 
 const getLatestIntegrationSearchQueries = async (params: Params) => {

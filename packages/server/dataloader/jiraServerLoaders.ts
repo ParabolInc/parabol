@@ -3,11 +3,11 @@ import JiraServerRestManager, {
   type JiraServerFieldType,
   type JiraServerRestProject
 } from '../integrations/jiraServer/JiraServerRestManager'
-import type {IntegrationProviderJiraServer} from '../postgres/queries/getIntegrationProvidersByIds'
 import getJiraServerDimensionFieldMap, {
   type GetJiraServerDimensionFieldMapParams,
   type JiraServerDimensionFieldMap
 } from '../postgres/queries/getJiraServerDimensionFieldMap'
+import type {IntegrationProviderJiraServer} from '../postgres/types/IntegrationProvider'
 import logError from '../utils/logError'
 import type RootDataLoader from './RootDataLoader'
 

@@ -5,6 +5,8 @@ import {
   selectComments,
   type selectDiscussion,
   type selectGitHubAuth,
+  type selectGitHubDimensionFieldMap,
+  type selectGitLabDimensionFieldMap,
   type selectMassInvitations,
   selectMeetingSettings,
   selectNewFeatures,
@@ -148,3 +150,9 @@ export interface GitHubSearchQuery {
   lastUsedAt: string
 }
 export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
+export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectGitLabDimensionFieldMap
+>
+export type GitHubDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectGitHubDimensionFieldMap
+>

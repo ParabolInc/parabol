@@ -10,6 +10,7 @@ import type {
   ReactjiDB,
   TaskTag
 } from './types'
+import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
@@ -363,4 +364,19 @@ export const selectAtlassianAuth = () => {
       fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
     ])
   return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
+}
+
+export const selectGitHubDimensionFieldMap = () => {
+  return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()
+}
+
+export const selectGitLabDimensionFieldMap = () => {
+  return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
+}
+
+export const selectIntegrationProvider = () => {
+  return getKysely()
+    .selectFrom('IntegrationProvider')
+    .selectAll()
+    .$narrowType<TIntegrationProvider>()
 }

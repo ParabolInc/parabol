@@ -1,10 +1,10 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getKysely from '../postgres/getKysely'
-import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
 import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
+import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager, {
   type ProjectRes,
   type Resource,

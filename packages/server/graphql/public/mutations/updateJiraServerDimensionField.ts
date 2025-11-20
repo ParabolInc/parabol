@@ -1,7 +1,7 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import type {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertJiraServerDimensionFieldMap from '../../../postgres/queries/upsertJiraServerDimensionFieldMap'
+import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'

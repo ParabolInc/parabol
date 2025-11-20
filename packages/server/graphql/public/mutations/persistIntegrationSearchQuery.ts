@@ -1,7 +1,7 @@
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrationProvidersByIds'
 import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
+import {selectIntegrationProvider} from '../../../postgres/select'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {
@@ -39,7 +39,10 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const dbProviderId = providerId ? IntegrationProviderId.split(providerId) : null
 
   if (dbProviderId) {
-    const integrationProvider = (await getIntegrationProvidersByIds([dbProviderId]))[0]
+    const integrationProvider = await selectIntegrationProvider()
+      .where('id', '=', dbProviderId)
+      .where('isActive', '=', true)
+      .executeTakeFirst()
 
     if (
       !integrationProvider ||
