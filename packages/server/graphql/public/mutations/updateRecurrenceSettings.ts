@@ -5,10 +5,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
-import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
+import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import type {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
@@ -48,9 +46,13 @@ export const startNewMeetingSeries = async (
     teamId,
     facilitatorId
   } as const
-  const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values(newMeetingSeriesParams)
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const newMeetingSeriesId = newMeetingSeries.id
   const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
-
   await pg
     .updateTable('NewMeeting')
     .set({
@@ -73,10 +75,12 @@ const updateMeetingSeries = async (
   const pg = getKysely()
   const {id: meetingSeriesId} = meetingSeries
 
-  await restartMeetingSeries(meetingSeriesId, {
-    recurrenceRule: newRecurrenceRule.toString()
-  })
-
+  await pg
+    .updateTable('MeetingSeries')
+    .set({recurrenceRule: newRecurrenceRule.toString()})
+    .where('id', '=', meetingSeriesId)
+    .where('cancelledAt', '=', null)
+    .execute()
   // lets close all active meetings at the time when
   // a new meeting will be created (tomorrow at 9 AM, same as date start of new recurrence rule)
   const activeMeetings = await dataLoader

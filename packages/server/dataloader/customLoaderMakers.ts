@@ -7,34 +7,24 @@ import isValid from '../graphql/isValid'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getGitHubAuthByUserIdTeamId, {
-  type GitHubAuth
-} from '../postgres/queries/getGitHubAuthByUserIdTeamId'
-import getGitHubDimensionFieldMaps, {
-  type GitHubDimensionFieldMap
-} from '../postgres/queries/getGitHubDimensionFieldMaps'
-import getGitLabDimensionFieldMaps, {
-  type GitLabDimensionFieldMap
-} from '../postgres/queries/getGitLabDimensionFieldMaps'
-import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getMeetingTaskEstimates, {
-  type MeetingTaskEstimatesResult
-} from '../postgres/queries/getMeetingTaskEstimates'
 import {
+  selectGitLabDimensionFieldMap,
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
+  selectTaskEstimate,
   selectTasks,
   selectTeams
 } from '../postgres/select'
 import type {
   FeatureFlag,
+  GitLabDimensionFieldMap,
   Insight,
   MassInvitation,
   MeetingSettings,
   OrganizationUser,
   Task,
+  TaskEstimate,
   Team
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
@@ -111,9 +101,15 @@ export const commentCountByDiscussionId = (
   )
 }
 export const latestTaskEstimates = (parent: RootDataLoader) => {
-  return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
+  return new DataLoader<string, TaskEstimate[], string>(
     async (taskIds) => {
-      const rows = await getLatestTaskEstimates(taskIds)
+      const rows = await selectTaskEstimate()
+        .distinctOn(['taskId', 'name'])
+        .where('taskId', 'in', taskIds)
+        .orderBy('taskId')
+        .orderBy('name')
+        .orderBy('createdAt', 'desc')
+        .execute()
       return taskIds.map((taskId) => rows.filter((row) => row.taskId === taskId))
     },
     {
@@ -123,12 +119,18 @@ export const latestTaskEstimates = (parent: RootDataLoader) => {
 }
 
 export const meetingTaskEstimates = (parent: RootDataLoader) => {
-  return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
+  return new DataLoader<{meetingId: string; taskId: string}, TaskEstimate[], string>(
     async (keys) => {
       const meetingIds = keys.map(({meetingId}) => meetingId)
       const taskIds = keys.map(({taskId}) => taskId)
-
-      const rows = await getMeetingTaskEstimates(taskIds, meetingIds)
+      const rows = await selectTaskEstimate()
+        .distinctOn(['taskId', 'name'])
+        .where('meetingId', 'in', meetingIds)
+        .where('taskId', 'in', taskIds)
+        .orderBy('taskId')
+        .orderBy('name')
+        .orderBy('createdAt', 'desc')
+        .execute()
       return keys.map(({meetingId, taskId}) =>
         rows.filter((row) => row.taskId === taskId && row.meetingId === meetingId)
       )
@@ -210,22 +212,6 @@ export const userTasks = (parent: RootDataLoader, dependsOn: RegisterDependsOn) 
   )
 }
 
-export const githubAuth = (parent: RootDataLoader) => {
-  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, userId}) => getGitHubAuthByUserIdTeamId(userId, teamId))
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`
-    }
-  )
-}
-
 export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
   return new DataLoader<
     {
@@ -240,7 +226,12 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, projectId, providerId}) =>
-          getGitLabDimensionFieldMaps(teamId, dimensionName, projectId, providerId)
+          selectGitLabDimensionFieldMap()
+            .where('teamId', '=', teamId)
+            .where('dimensionName', '=', dimensionName)
+            .where('projectId', '=', projectId)
+            .where('providerId', '=', providerId)
+            .executeTakeFirstOrThrow()
         )
       )
       const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
@@ -250,29 +241,6 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
       ...parent.dataLoaderOptions,
       cacheKeyFn: ({teamId, dimensionName, projectId, providerId}) =>
         `${teamId}:${dimensionName}:${projectId}:${providerId}`
-    }
-  )
-}
-
-export const githubDimensionFieldMaps = (parent: RootDataLoader) => {
-  return new DataLoader<
-    {teamId: string; dimensionName: string; nameWithOwner: string},
-    GitHubDimensionFieldMap | null,
-    string
-  >(
-    async (keys) => {
-      const results = await Promise.allSettled(
-        keys.map(async ({teamId, dimensionName, nameWithOwner}) =>
-          getGitHubDimensionFieldMaps(teamId, dimensionName, nameWithOwner)
-        )
-      )
-      const vals = results.map((result) => (result.status === 'fulfilled' ? result.value : null))
-      return vals
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: ({teamId, dimensionName, nameWithOwner}) =>
-        `${teamId}:${dimensionName}:${nameWithOwner}`
     }
   )
 }

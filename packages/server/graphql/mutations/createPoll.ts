@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
-import insertPollWithOptions from '../../postgres/queries/insertPollWithOptions'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -93,17 +93,31 @@ const createPoll = {
     }
 
     // RESOLUTION
-    const insertPollResult = await insertPollWithOptions({
-      poll: {
-        createdById: viewerId,
-        teamId,
-        meetingId,
-        discussionId,
-        threadSortOrder,
-        title
-      },
-      pollOptions: options
-    })
+    // this is broken, but we're not using polls, so not fixing it!
+    const insertPollResult = await getKysely()
+      .with('poll', (qc) =>
+        qc
+          .insertInto('Poll')
+          .values({
+            createdById: viewerId,
+            teamId,
+            meetingId,
+            discussionId,
+            threadSortOrder,
+            title
+          })
+          .returningAll()
+      )
+      .insertInto('PollOption')
+      .columns(['title', 'pollId'])
+      .expression((eb) =>
+        eb
+          .selectFrom('poll')
+          .select((eb) => [eb.val(options).as('userId'), eb.ref('poll.id').as('pollId')])
+      )
+      .returning('PollOption.pollId')
+      .execute()
+
     if (insertPollResult.length === 0) {
       return {error: {message: `Couldn't create a poll`}}
     }

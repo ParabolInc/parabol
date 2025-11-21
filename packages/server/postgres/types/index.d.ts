@@ -1,14 +1,23 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
 import {
   selectAgendaItems,
+  type selectAtlassianAuth,
   selectComments,
   type selectDiscussion,
+  type selectGitHubAuth,
+  type selectGitHubDimensionFieldMap,
+  type selectGitLabDimensionFieldMap,
+  type selectJiraDimensionFieldMap,
+  type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
+  type selectMeetingSeries,
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
   type selectPages,
+  type selectPoll,
+  type selectPollOption,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -21,7 +30,8 @@ import {
   selectTeams,
   type selectTemplateDimension,
   selectTemplateScale,
-  selectTemplateScaleRef
+  selectTemplateScaleRef,
+  type selectUser
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
@@ -129,3 +139,48 @@ export type PageAccessTeam = Omit<Selectable<PageTeamAccessPG>, 'pageId'>
 export type PageAccessOrganization = Omit<Selectable<PageOrganizationAccessPG>, 'pageId'>
 
 export type AIPrompt = Selectable<AIPromptPG>
+
+export type JiraSearchQuery = {
+  id: string
+  queryString: string
+  isJQL: boolean
+  projectKeyFilters?: string[]
+  lastUsedAt: string
+}
+
+export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
+
+export interface GitHubSearchQuery {
+  id: string
+  queryString: string
+  lastUsedAt: string
+}
+export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
+export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectGitLabDimensionFieldMap
+>
+export type GitHubDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectGitHubDimensionFieldMap
+>
+
+export type JiraDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectJiraDimensionFieldMap
+>
+
+export type JiraServerDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
+  typeof selectJiraServerDimensionFieldMap
+>
+
+export type TAuthIdentity = 'GOOGLE' | 'LOCAL' | 'MICROSOFT'
+
+export type UserAuthIdentity = {
+  id: string
+  isEmailVerified?: boolean
+  type: TAuthIdentity
+}
+export type User = ExtractTypeFromQueryBuilderSelect<typeof selectUser>
+
+export type Poll = ExtractTypeFromQueryBuilderSelect<typeof selectPoll>
+
+export type PollOption = ExtractTypeFromQueryBuilderSelect<typeof selectPollOption>
+export type MeetingSeries = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSeries>

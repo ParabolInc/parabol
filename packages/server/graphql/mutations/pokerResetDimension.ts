@@ -3,7 +3,6 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getKysely from '../../postgres/getKysely'
-import removeMeetingTaskEstimates from '../../postgres/queries/removeMeetingTaskEstimates'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import publish from '../../utils/publish'
@@ -92,7 +91,11 @@ const pokerResetDimension = {
         })
         .where('id', '=', meetingId)
         .execute(),
-      removeMeetingTaskEstimates(meetingId, stageId)
+      pg
+        .deleteFrom('TaskEstimate')
+        .where('meetingId', '=', meetingId)
+        .where('stageId', '=', stageId)
+        .execute()
     ])
     dataLoader.clearAll('newMeetings')
     const data = {meetingId, stageId}

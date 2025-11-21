@@ -1,4 +1,4 @@
-import type User from '../database/types/User'
+import type {User} from '../postgres/types'
 
 const isUserVerified = (user: Pick<User, 'identities'>) => {
   const {identities} = user

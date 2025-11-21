@@ -1,6 +1,6 @@
-import type User from '../database/types/User'
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import type {DataLoaderWorker} from '../graphql/graphql'
+import type {User} from '../postgres/types'
 import isUserVerified from './isUserVerified'
 
 export const getEligibleOrgIdsByDomain = async (
@@ -66,7 +66,7 @@ export const getEligibleOrgIdsByDomain = async (
 
 const isRequestToJoinDomainAllowed = async (
   domain: string,
-  user: User,
+  user: Pick<User, 'identities' | 'id'>,
   dataLoader: DataLoaderWorker
 ) => {
   if (!isUserVerified(user)) return false

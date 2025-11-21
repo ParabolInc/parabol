@@ -8,7 +8,7 @@ import JiraServerOAuth1Manager, {
 import LinearManager from '../../../integrations/linear/LinearManager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
-import type {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
+import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'

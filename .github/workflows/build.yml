@@ -75,7 +75,6 @@ jobs:
         run: |
           cp ${{ env.PARABOL_BUILD_ENV_PATH }} ./.env
           pnpm kysely migrate:latest
-          pnpm pg:build
           pnpm pg:generate
 
       - name: Build for release

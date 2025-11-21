@@ -7,10 +7,10 @@ import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../../../client/shared/rruleUtil'
 import AuthToken from '../../../database/types/AuthToken'
-import {getActiveMeetingSeries} from '../../../postgres/queries/getActiveMeetingSeries'
+import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
+import type {MeetingSeries} from '../../../postgres/types'
 import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
-import type {MeetingSeries} from '../../../postgres/types/MeetingSeries'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish, {type SubOptions} from '../../../utils/publish'
@@ -165,10 +165,11 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
 
     // For each active meeting series, get the meeting start times (according to rrule) after the most
     // recent meeting start time and before now.
-    const activeMeetingSeries = await tracer.trace(
-      'processRecurrence.getActiveMeetingSeries',
-      getActiveMeetingSeries
-    )
+    const activeMeetingSeries = await getKysely()
+      .selectFrom('MeetingSeries')
+      .selectAll()
+      .where('cancelledAt', 'is', null)
+      .execute()
     await tracer.trace('processRecurrence.startActiveMeetingSeries', async () =>
       Promise.allSettled(
         activeMeetingSeries.map(async (meetingSeries) => {

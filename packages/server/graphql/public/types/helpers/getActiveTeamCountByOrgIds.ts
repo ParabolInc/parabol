@@ -1,4 +1,4 @@
-import getTeamIdsByOrgIds from '../../../../postgres/queries/getTeamIdsByOrgIds'
+import getKysely from '../../../../postgres/getKysely'
 import getActiveTeamCountByTeamIds from './getActiveTeamCountByTeamIds'
 
 // Active team is the team that completed 3 meetings with more than 1 attendee
@@ -8,7 +8,13 @@ import getActiveTeamCountByTeamIds from './getActiveTeamCountByTeamIds'
 
 const getActiveTeamCountByOrgIds = async (orgIds: string | string[]) => {
   const organizationIds = Array.isArray(orgIds) ? orgIds : [orgIds]
-  const teamIds = await getTeamIdsByOrgIds(organizationIds)
+  const teams = await getKysely()
+    .selectFrom('Team')
+    .select('id')
+    .where('orgId', 'in', organizationIds)
+    .where('isArchived', '=', false)
+    .execute()
+  const teamIds = teams.map(({id}) => id)
   return getActiveTeamCountByTeamIds(teamIds)
 }
 

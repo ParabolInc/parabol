@@ -56,7 +56,6 @@
     "@hocuspocus/transformer": "3.2.3",
     "@mattkrick/sanitize-svg": "0.4.1",
     "@octokit/graphql-schema": "^10.36.0",
-    "@pgtyped/runtime": "^2.4.2",
     "@react-email/body": "^0.1.0",
     "@react-email/button": "^0.2.0",
     "@react-email/column": "^0.0.13",

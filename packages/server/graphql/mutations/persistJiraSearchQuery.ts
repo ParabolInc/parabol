@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import JiraSearchQuery from '../../database/types/JiraSearchQuery'
-import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
+import generateUID from '../../generateUID'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import type {GQLContext} from '../graphql'
@@ -61,29 +61,32 @@ const persistJiraSearchQuery = {
       } else {
         const queryToUpdate = jiraSearchQueries[existingIdx]!
         // MUTATIVE
-        queryToUpdate.lastUsedAt = new Date()
+        queryToUpdate.lastUsedAt = new Date().toISOString()
         jiraSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))
         if (jiraSearchQueries[existingIdx] === queryToUpdate) {
           isChange = false
         }
       }
     } else if (!isRemove) {
-      const newQuery = new JiraSearchQuery({
+      const newQuery = {
+        id: generateUID(),
+        lastUsedAt: new Date().toJSON(),
         queryString,
         isJQL,
         projectKeyFilters: projectKeyFilters ?? undefined
-      })
+      }
       // MUTATIVE
       jiraSearchQueries.unshift(newQuery)
       jiraSearchQueries.slice(0, MAX_QUERIES)
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateJiraSearchQueries({
-        jiraSearchQueries,
-        teamId,
-        userId: viewerId
-      })
+      await getKysely()
+        .updateTable('AtlassianAuth')
+        .set({jiraSearchQueries: jiraSearchQueries.map((jsq) => JSON.stringify(jsq))})
+        .where('teamId', '=', teamId)
+        .where('userId', '=', viewerId)
+        .execute()
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,
