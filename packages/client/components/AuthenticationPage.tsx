@@ -22,8 +22,7 @@ interface Props {
 const AuthenticationPage = (props: Props) => {
   const {history} = useRouter()
   const {page} = props
-  const atmosphere = useAtmosphere()
-  const {authObj} = atmosphere
+  const {authObj} = useAtmosphere()
   useCanonical(page)
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
