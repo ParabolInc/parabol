@@ -1,8 +1,8 @@
 type CreateImposterTokenPayload {
-	error: StandardMutationError
+  error: StandardMutationError
 
-	"""
-	The user you have assumed
-	"""
-	user: User
+  """
+  The user you have assumed
+  """
+  user: User
 }

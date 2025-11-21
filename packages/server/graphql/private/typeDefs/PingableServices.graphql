@@ -1,11 +1,11 @@
 type PingableServices {
-	"""
-	Response time for Postgres (in milliseconds) -1 if unreachable after 5 seconds
-	"""
-	postgres: Int!
+  """
+  Response time for Postgres (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  postgres: Int!
 
-	"""
-	Response time for Redis (in milliseconds) -1 if unreachable after 5 seconds
-	"""
-	redis: Int!
+  """
+  Response time for Redis (in milliseconds) -1 if unreachable after 5 seconds
+  """
+  redis: Int!
 }

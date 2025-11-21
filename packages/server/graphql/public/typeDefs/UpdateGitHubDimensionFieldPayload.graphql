@@ -1,6 +1,4 @@
 """
 Return object for UpdateGitHubDimensionFieldPayload
 """
-union UpdateGitHubDimensionFieldPayload =
-	| ErrorPayload
-	| UpdateGitHubDimensionFieldSuccess
+union UpdateGitHubDimensionFieldPayload = ErrorPayload | UpdateGitHubDimensionFieldSuccess

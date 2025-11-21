@@ -1,12 +1,12 @@
 type PokerAnnounceDeckHoverSuccess {
-	meetingId: ID!
-	stageId: ID!
-	userId: ID!
-	user: User!
-	isHover: Boolean!
+  meetingId: ID!
+  stageId: ID!
+  userId: ID!
+  user: User!
+  isHover: Boolean!
 
-	"""
-	The stage that holds the updated scores
-	"""
-	stage: EstimateStage!
+  """
+  The stage that holds the updated scores
+  """
+  stage: EstimateStage!
 }

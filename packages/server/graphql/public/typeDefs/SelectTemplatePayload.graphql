@@ -1,4 +1,4 @@
 type SelectTemplatePayload {
-	error: StandardMutationError
-	meetingSettings: TeamMeetingSettings
+  error: StandardMutationError
+  meetingSettings: TeamMeetingSettings
 }

@@ -2,13 +2,13 @@
 An edge in a connection.
 """
 type PokerTemplateEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: PokerTemplate!
+  """
+  The item at the end of the edge
+  """
+  node: PokerTemplate!
 
-	"""
-	A cursor for use in pagination
-	"""
-	cursor: String!
+  """
+  A cursor for use in pagination
+  """
+  cursor: String!
 }

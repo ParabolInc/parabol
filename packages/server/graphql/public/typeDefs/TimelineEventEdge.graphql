@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type TimelineEventEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: TimelineEvent!
-	cursor: DateTime
+  """
+  The item at the end of the edge
+  """
+  node: TimelineEvent!
+  cursor: DateTime
 }

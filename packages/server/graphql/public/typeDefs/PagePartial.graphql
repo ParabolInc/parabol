@@ -1,6 +1,6 @@
 interface PagePartial {
-	id: ID!
-	title: String
-	teamId: ID
-	team: TeamPartial
+  id: ID!
+  title: String
+  teamId: ID
+  team: TeamPartial
 }

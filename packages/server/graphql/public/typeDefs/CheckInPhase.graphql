@@ -2,26 +2,26 @@
 The meeting phase where all team members check in one-by-one
 """
 type CheckInPhase implements NewMeetingPhase {
-	"""
-	shortid
-	"""
-	id: ID!
-	meetingId: ID!
-	teamId: ID!
+  """
+  shortid
+  """
+  id: ID!
+  meetingId: ID!
+  teamId: ID!
 
-	"""
-	The type of phase
-	"""
-	phaseType: NewMeetingPhaseTypeEnum!
-	stages: [CheckInStage!]!
+  """
+  The type of phase
+  """
+  phaseType: NewMeetingPhaseTypeEnum!
+  stages: [CheckInStage!]!
 
-	"""
-	The checkIn greeting (fun language)
-	"""
-	checkInGreeting: MeetingGreeting!
+  """
+  The checkIn greeting (fun language)
+  """
+  checkInGreeting: MeetingGreeting!
 
-	"""
-	The checkIn question of the week (Stringified TipTap JSON format)
-	"""
-	checkInQuestion: String!
+  """
+  The checkIn question of the week (Stringified TipTap JSON format)
+  """
+  checkInQuestion: String!
 }

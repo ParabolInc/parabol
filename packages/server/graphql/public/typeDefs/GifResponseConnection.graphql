@@ -2,13 +2,13 @@
 A connection to list the returned gifs
 """
 type GifResponseConnection {
-	"""
-	Page info with cursors as strings
-	"""
-	pageInfo: PageInfo
+  """
+  Page info with cursors as strings
+  """
+  pageInfo: PageInfo
 
-	"""
-	A list of edges.
-	"""
-	edges: [GifResponseEdge!]!
+  """
+  A list of edges.
+  """
+  edges: [GifResponseEdge!]!
 }

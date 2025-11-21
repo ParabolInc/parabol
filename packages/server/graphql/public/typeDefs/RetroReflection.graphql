@@ -2,99 +2,99 @@
 A reflection created during the reflect phase of a retrospective
 """
 type RetroReflection implements Reactable {
-	"""
-	shortid
-	"""
-	id: ID!
+  """
+  shortid
+  """
+  id: ID!
 
-	"""
-	All the reactjis for the given reflection
-	"""
-	reactjis: [Reactji!]!
+  """
+  All the reactjis for the given reflection
+  """
+  reactjis: [Reactji!]!
 
-	"""
-	The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
-	"""
-	autoReflectionGroupId: ID
+  """
+  The ID of the group that the autogrouper assigned the reflection. Error rate = Sum(autoId != Id) / autoId.count()
+  """
+  autoReflectionGroupId: ID
 
-	"""
-	The timestamp the meeting was created
-	"""
-	createdAt: DateTime
+  """
+  The timestamp the meeting was created
+  """
+  createdAt: DateTime
 
-	"""
-	The userId that created the reflection (or unique Id if not a team member)
-	"""
-	creatorId: ID
+  """
+  The userId that created the reflection (or unique Id if not a team member)
+  """
+  creatorId: ID
 
-	"""
-	an array of all the socketIds that are currently editing the reflection
-	"""
-	editorIds: [ID!]!
+  """
+  an array of all the socketIds that are currently editing the reflection
+  """
+  editorIds: [ID!]!
 
-	"""
-	True if the reflection was not removed, else false
-	"""
-	isActive: Boolean!
+  """
+  True if the reflection was not removed, else false
+  """
+  isActive: Boolean!
 
-	"""
-	true if the viewer (userId) is the creator of the retro reflection, else false
-	"""
-	isViewerCreator: Boolean!
+  """
+  true if the viewer (userId) is the creator of the retro reflection, else false
+  """
+  isViewerCreator: Boolean!
 
-	"""
-	The stringified TipTap JSONContent content
-	"""
-	content: String!
+  """
+  The stringified TipTap JSONContent content
+  """
+  content: String!
 
-	"""
-	The foreign key to link a reflection to its meeting
-	"""
-	meetingId: ID!
+  """
+  The foreign key to link a reflection to its meeting
+  """
+  meetingId: ID!
 
-	"""
-	The retrospective meeting this reflection was created in
-	"""
-	meeting: RetrospectiveMeeting!
+  """
+  The retrospective meeting this reflection was created in
+  """
+  meeting: RetrospectiveMeeting!
 
-	"""
-	The plaintext version of content
-	"""
-	plaintextContent: String!
+  """
+  The plaintext version of content
+  """
+  plaintextContent: String!
 
-	"""
-	The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
-	"""
-	promptId: ID!
-	prompt: ReflectPrompt!
+  """
+  The foreign key to link a reflection to its prompt. Immutable. For sorting, use prompt on the group.
+  """
+  promptId: ID!
+  prompt: ReflectPrompt!
 
-	"""
-	The foreign key to link a reflection to its group
-	"""
-	reflectionGroupId: ID!
+  """
+  The foreign key to link a reflection to its group
+  """
+  reflectionGroupId: ID!
 
-	"""
-	The group the reflection belongs to, if any
-	"""
-	retroReflectionGroup: RetroReflectionGroup
+  """
+  The group the reflection belongs to, if any
+  """
+  retroReflectionGroup: RetroReflectionGroup
 
-	"""
-	The sort order of the reflection in the group (increments starting from 0)
-	"""
-	sortOrder: Float!
+  """
+  The sort order of the reflection in the group (increments starting from 0)
+  """
+  sortOrder: Float!
 
-	"""
-	The team that is running the meeting that contains this reflection
-	"""
-	team: Team!
+  """
+  The team that is running the meeting that contains this reflection
+  """
+  team: Team!
 
-	"""
-	The timestamp the meeting was updated. Used to determine how long it took to write a reflection
-	"""
-	updatedAt: DateTime
+  """
+  The timestamp the meeting was updated. Used to determine how long it took to write a reflection
+  """
+  updatedAt: DateTime
 
-	"""
-	The user that created the reflection, only visible if anonymity is disabled
-	"""
-	creator: User
+  """
+  The user that created the reflection, only visible if anonymity is disabled
+  """
+  creator: User
 }

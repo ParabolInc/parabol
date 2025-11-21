@@ -2,13 +2,13 @@
 The name of the service of the Integration Provider
 """
 enum IntegrationProviderServiceEnum {
-	jira
-	github
-	gitlab
-	mattermost
-	jiraServer
-	gcal
-	azureDevOps
-	msTeams
-	linear
+  jira
+  github
+  gitlab
+  mattermost
+  jiraServer
+  gcal
+  azureDevOps
+  msTeams
+  linear
 }

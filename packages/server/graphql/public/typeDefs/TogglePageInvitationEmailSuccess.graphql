@@ -1,6 +1,6 @@
 type TogglePageInvitationEmailSuccess {
-	"""
-	The user whose summary email settings have changed
-	"""
-	user: User!
+  """
+  The user whose summary email settings have changed
+  """
+  user: User!
 }

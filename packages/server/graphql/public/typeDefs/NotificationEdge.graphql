@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type NotificationEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: Notification!
-	cursor: DateTime
+  """
+  The item at the end of the edge
+  """
+  node: Notification!
+  cursor: DateTime
 }

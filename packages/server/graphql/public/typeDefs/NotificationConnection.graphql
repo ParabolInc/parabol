@@ -2,13 +2,13 @@
 A connection to a list of items.
 """
 type NotificationConnection {
-	"""
-	Page info with cursors coerced to ISO8601 dates
-	"""
-	pageInfo: PageInfoDateCursor
+  """
+  Page info with cursors coerced to ISO8601 dates
+  """
+  pageInfo: PageInfoDateCursor
 
-	"""
-	A list of edges.
-	"""
-	edges: [NotificationEdge!]!
+  """
+  A list of edges.
+  """
+  edges: [NotificationEdge!]!
 }
