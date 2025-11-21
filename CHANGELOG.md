@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.35.1](https://github.com/ParabolInc/parabol/compare/v10.35.0...v10.35.1) (2025-11-21)
+
+
+### Fixed
+
+* biome support for graphql ([#12348](https://github.com/ParabolInc/parabol/issues/12348)) ([fc34bc8](https://github.com/ParabolInc/parabol/commit/fc34bc8ce1225f4fed98f52e40e6608a934cb2e9))
+* ensure ext is at the end for assets in dev ([#12345](https://github.com/ParabolInc/parabol/issues/12345)) ([622a8ba](https://github.com/ParabolInc/parabol/commit/622a8ba95308a6ffc6c92c1d46a4d56540ff1d0d))
+* move access token to httpOnly cookie ([#12163](https://github.com/ParabolInc/parabol/issues/12163)) ([85d3512](https://github.com/ParabolInc/parabol/commit/85d3512a68450767b41088319580beed2d3e5733))
+* remove pgtyped ([#12347](https://github.com/ParabolInc/parabol/issues/12347)) ([70c8038](https://github.com/ParabolInc/parabol/commit/70c80388eebb24a243240e04909edee87c1c7faa))
+* update glob package ([#12344](https://github.com/ParabolInc/parabol/issues/12344)) ([af502b3](https://github.com/ParabolInc/parabol/commit/af502b39d62e52833409ec6b2eb6795a41fdebbe))
+
 ## [10.35.0](https://github.com/ParabolInc/parabol/compare/v10.34.2...v10.35.0) (2025-11-20)
 
 
