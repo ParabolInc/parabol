@@ -5,6 +5,8 @@ import {useHistory} from 'react-router'
 import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
+import MCPServerIntegration from './MCPServerIntegration'
+import OAuthIntegration from './OAuthIntegration'
 
 type Props = {
   organizationRef: OrgIntegrations_organization$key
@@ -80,6 +82,8 @@ const OrgIntegrations = (props: Props) => {
               ) : null}
             </div>
           )}
+          <OAuthIntegration />
+          <MCPServerIntegration />
           <GitLabProviders organizationRef={organization} />
         </div>
       </div>
