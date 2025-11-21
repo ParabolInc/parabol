@@ -27,7 +27,8 @@ import {
   selectTeams,
   type selectTemplateDimension,
   selectTemplateScale,
-  selectTemplateScaleRef
+  selectTemplateScaleRef,
+  type selectUser
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
@@ -166,3 +167,12 @@ export type JiraDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
 export type JiraServerDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
   typeof selectJiraServerDimensionFieldMap
 >
+
+export type TAuthIdentity = 'GOOGLE' | 'LOCAL' | 'MICROSOFT'
+
+export type UserAuthIdentity = {
+  id: string
+  isEmailVerified?: boolean
+  type: TAuthIdentity
+}
+export type User = ExtractTypeFromQueryBuilderSelect<typeof selectUser>

@@ -38,7 +38,7 @@
           "Team": "../../postgres/types/index#Team as TeamDB",
           "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
-          "User": "../../postgres/types/IUser#default as IUser",
+          "User": "../../postgres/types/index#User as UserDB",
           "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource"
         }
       },
@@ -239,7 +239,7 @@
           "UpdatedNotification": "./types/UpdatedNotification#UpdatedNotificationSource",
           "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
-          "User": "../../postgres/types/IUser#default as IUser",
+          "User": "../../postgres/types/index#User as UserDB",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
           "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject"
         },

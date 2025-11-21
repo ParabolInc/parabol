@@ -4,14 +4,14 @@ import {InvitationTokenError} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
-import type IUser from '../../postgres/types/IUser'
+import type {User} from '../../postgres/types'
 import getBestInvitationMeeting from '../../utils/getBestInvitationMeeting'
 import getSAMLURLFromEmail from '../../utils/getSAMLURLFromEmail'
 import type {GQLContext} from '../graphql'
 import rateLimit from '../rateLimit'
 import VerifiedInvitationPayload from '../types/VerifiedInvitationPayload'
 
-const getIsGoogleProvider = async (user: IUser | null, email: string) => {
+const getIsGoogleProvider = async (user: User | null, email: string) => {
   const identities = user?.identities
   if (identities) {
     return !!identities.find((identity) => identity.type === AuthIdentityTypeEnum.GOOGLE)

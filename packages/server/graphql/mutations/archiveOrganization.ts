@@ -5,7 +5,6 @@ import removeTeamsLimitObjects from '../../billing/helpers/removeTeamsLimitObjec
 import type Team from '../../database/types/Team'
 import type User from '../../database/types/User'
 import getKysely from '../../postgres/getKysely'
-import type IUser from '../../postgres/types/IUser'
 import safeArchiveTeam from '../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../utils/authorization'
@@ -98,7 +97,7 @@ export default {
     }
     publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
     const users = await dataLoader.get('users').loadMany(uniqueUserIds)
-    users.filter(isValid).forEach((user?: IUser) => {
+    users.filter(isValid).forEach((user) => {
       if (!user) return
       const {id, tms} = user
       publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {

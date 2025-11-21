@@ -8,7 +8,8 @@ import type {
   JiraDimensionField,
   JiraSearchQuery,
   ReactjiDB,
-  TaskTag
+  TaskTag,
+  UserAuthIdentity
 } from './types'
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
@@ -411,4 +412,12 @@ export const selectMeetingSeries = () => {
 
 export const selectTaskEstimate = () => {
   return getKysely().selectFrom('TaskEstimate').selectAll()
+}
+
+export const selectUser = () => {
+  const query = getKysely()
+    .selectFrom('User')
+    .selectAll()
+    .select(({fn}) => [fn<UserAuthIdentity[]>('to_json', ['identities']).as('identities')])
+  return query as AssertedQuery<typeof query, {identities: UserAuthIdentity[]}>
 }
