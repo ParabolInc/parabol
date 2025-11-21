@@ -1,12 +1,10 @@
 import DataLoader from 'dataloader'
 import getKysely from '../postgres/getKysely'
-import type {IGetPollOptionsByPollIdsQueryResult} from '../postgres/queries/generated/getPollOptionsByPollIdsQuery'
-import type {IGetPollsByDiscussionIdsQueryResult} from '../postgres/queries/generated/getPollsByDiscussionIdsQuery'
-import type {IGetPollsByIdsQueryResult} from '../postgres/queries/generated/getPollsByIdsQuery'
+import type {Poll, PollOption} from '../postgres/types'
 import type RootDataLoader from './RootDataLoader'
 
 export const pollOptions = (parent: RootDataLoader) => {
-  return new DataLoader<number, IGetPollOptionsByPollIdsQueryResult[], string>(
+  return new DataLoader<number, PollOption[], string>(
     async (pollIds) => {
       const rows = await getKysely()
         .selectFrom('PollOption')
@@ -22,7 +20,7 @@ export const pollOptions = (parent: RootDataLoader) => {
 }
 
 export const polls = (parent: RootDataLoader) => {
-  return new DataLoader<number, IGetPollsByIdsQueryResult | null, string>(
+  return new DataLoader<number, Poll | null, string>(
     async (pollIds) => {
       const rows = await getKysely()
         .selectFrom('Poll')
@@ -38,7 +36,7 @@ export const polls = (parent: RootDataLoader) => {
 }
 
 export const pollsByDiscussionId = (parent: RootDataLoader) => {
-  return new DataLoader<string, IGetPollsByDiscussionIdsQueryResult[], string>(
+  return new DataLoader<string, Poll[], string>(
     async (discussionIds) => {
       const rows = await getKysely()
         .selectFrom('Poll')

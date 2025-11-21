@@ -1,6 +1,5 @@
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import getKysely from '../../../postgres/getKysely'
-import type {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {selectTaskEstimate} from '../../../postgres/select'
 import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
@@ -87,7 +86,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       if (!labelNodes) return estimates
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
       await Promise.all(
-        estimates.map(async (estimate: IGetLatestTaskEstimatesQueryResult) => {
+        estimates.map(async (estimate) => {
           const {githubLabelName, name: dimensionName} = estimate
           const existingLabel = ghIssueLabels.includes(githubLabelName!)
           if (existingLabel) return

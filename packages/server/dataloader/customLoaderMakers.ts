@@ -7,7 +7,6 @@ import isValid from '../graphql/isValid'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
-import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
 import {
   selectGitLabDimensionFieldMap,
   selectMassInvitations,
@@ -102,7 +101,7 @@ export const commentCountByDiscussionId = (
   )
 }
 export const latestTaskEstimates = (parent: RootDataLoader) => {
-  return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
+  return new DataLoader<string, TaskEstimate[], string>(
     async (taskIds) => {
       const rows = await selectTaskEstimate()
         .distinctOn(['taskId', 'name'])

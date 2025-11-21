@@ -10,11 +10,14 @@ import {
   type selectJiraDimensionFieldMap,
   type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
+  type selectMeetingSeries,
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
   selectOrganizations,
   type selectPages,
+  type selectPoll,
+  type selectPollOption,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -176,3 +179,8 @@ export type UserAuthIdentity = {
   type: TAuthIdentity
 }
 export type User = ExtractTypeFromQueryBuilderSelect<typeof selectUser>
+
+export type Poll = ExtractTypeFromQueryBuilderSelect<typeof selectPoll>
+
+export type PollOption = ExtractTypeFromQueryBuilderSelect<typeof selectPollOption>
+export type MeetingSeries = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSeries>

@@ -17,7 +17,7 @@ interface ValidNewTeam {
 
 // used for addorg, addTeam
 export default async function createTeamAndLeader(
-  user: User,
+  user: Pick<User, 'id'>,
   newTeam: ValidNewTeam,
   dataLoader: DataLoaderInstance
 ) {

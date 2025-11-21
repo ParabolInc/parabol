@@ -7,14 +7,18 @@ import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import type {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
 import type {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
-import type {SlackNotification, TeamPromptResponse, TemplateScale} from '../../postgres/types'
+import type {
+  MeetingSeries,
+  SlackNotification,
+  TeamPromptResponse,
+  TemplateScale
+} from '../../postgres/types'
 import type {
   AnyMeeting,
   AnyMeetingMember,
   MeetingTypeEnum,
   RetrospectiveMeeting
 } from '../../postgres/types/Meeting'
-import type {MeetingSeries} from '../../postgres/types/MeetingSeries'
 import type {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
@@ -32,7 +36,7 @@ export type MeetingSeriesAnalyticsProperties = Pick<
 export type IdentifyOptions = {
   userId: string
   email: string
-  anonymousId?: string
+  anonymousId?: string | null
   name?: string
   isActive?: boolean
   highestTier?: string

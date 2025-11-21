@@ -421,3 +421,11 @@ export const selectUser = () => {
     .select(({fn}) => [fn<UserAuthIdentity[]>('to_json', ['identities']).as('identities')])
   return query as AssertedQuery<typeof query, {identities: UserAuthIdentity[]}>
 }
+
+export const selectPoll = () => {
+  return getKysely().selectFrom('Poll').selectAll()
+}
+
+export const selectPollOption = () => {
+  return getKysely().selectFrom('PollOption').selectAll()
+}

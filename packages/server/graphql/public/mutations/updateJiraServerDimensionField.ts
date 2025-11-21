@@ -1,6 +1,6 @@
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import upsertJiraServerDimensionFieldMap from '../../../postgres/queries/upsertJiraServerDimensionFieldMap'
+import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -91,7 +91,19 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
   if (existingDimensionField) {
     Object.assign(existingDimensionField, newField)
   }
-  await upsertJiraServerDimensionFieldMap(newField)
+  await getKysely()
+    .insertInto('JiraServerDimensionFieldMap')
+    .values(newField)
+    .onConflict((oc) =>
+      oc
+        .columns(['providerId', 'teamId', 'projectId', 'issueType', 'dimensionName'])
+        .doUpdateSet((eb) => ({
+          fieldId: eb.ref('excluded.fieldId'),
+          fieldName: eb.ref('excluded.fieldName'),
+          fieldType: eb.ref('excluded.fieldType')
+        }))
+    )
+    .execute()
 
   publish(SubscriptionChannel.TEAM, teamId, 'UpdateDimensionFieldSuccess', data, subOptions)
   return data
