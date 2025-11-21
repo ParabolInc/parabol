@@ -972,7 +972,7 @@ importers:
         specifier: ^5.6.1
         version: 5.8.2
       js-yaml:
-        specifier: ^4.1.0
+        specifier: ^4.1.1
         version: 4.1.1
       jsonwebtoken:
         specifier: ^9.0.0
