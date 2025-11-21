@@ -66,6 +66,10 @@ module.exports = {
         target: `http://localhost:${SOCKET_PORT}`
       })),
       {
+        context: '/oauth/token',
+        target: `http://localhost:${SOCKET_PORT}`
+      },
+      {
         context: '/components',
         pathRewrite: {'^/components': ''},
         target: `http://localhost:3002`

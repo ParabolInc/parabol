@@ -19,6 +19,7 @@ import {Logger} from './utils/Logger'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
+import {useOAuthScopeValidation} from './utils/useOAuthScopeValidation'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
@@ -182,13 +183,17 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const token = headerToken || cookieToken
         const authToken = getVerifiedAuthToken(token)
         const isSuperUser = authToken?.rol === 'su'
-        return isSuperUser
+        const isOAuthToken = authToken?.iss === 'parabol-oauth2'
+        const hasScope =
+          authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
+        return isSuperUser || (isOAuthToken && !!hasScope)
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
       getPersistedOperation
     }),
     usePrivateSchemaForSuperUser,
+    useOAuthScopeValidation(),
     useDisposeDataloader,
     useReadinessCheck({
       check: async () => {

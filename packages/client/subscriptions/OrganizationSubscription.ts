@@ -45,6 +45,41 @@ const subscription = graphql`
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
       }
+
+      CreateOAuthAPIProviderSuccess {
+        provider {
+          id
+          name
+          clientId
+          clientSecret
+          redirectUris
+          scopes
+          updatedAt
+        }
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
+      UpdateOAuthAPIProviderSuccess {
+        provider {
+          id
+          name
+          clientId
+          clientSecret
+          redirectUris
+          scopes
+          updatedAt
+        }
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
+      DeleteOAuthAPIProviderSuccess {
+        providerId
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
     }
   }
 `

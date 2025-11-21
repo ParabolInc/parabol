@@ -119,6 +119,10 @@ const Organization: OrganizationResolvers = {
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
+  },
+  oauthProviders: async ({id: orgId}) => {
+    const {default: oauthProviders} = await import('./Organization/oauthProviders')
+    return oauthProviders({id: orgId})
   }
 }
 
