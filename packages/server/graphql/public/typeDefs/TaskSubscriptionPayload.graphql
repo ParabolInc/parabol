@@ -1,12 +1,12 @@
 type TaskSubscriptionPayload {
-	fieldName: String!
-	ChangeTaskTeamPayload: ChangeTaskTeamPayload
-	CreateTaskIntegrationPayload: CreateTaskIntegrationPayload
-	CreateTaskPayload: CreateTaskPayload
-	DeleteTaskPayload: DeleteTaskPayload
-	EditTaskPayload: EditTaskPayload
-	RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
-	RemoveTeamMemberPayload: RemoveTeamMemberPayload
-	UpdateTaskPayload: UpdateTaskPayload
-	UpdateTaskDueDatePayload: UpdateTaskDueDatePayload
+  fieldName: String!
+  ChangeTaskTeamPayload: ChangeTaskTeamPayload
+  CreateTaskIntegrationPayload: CreateTaskIntegrationPayload
+  CreateTaskPayload: CreateTaskPayload
+  DeleteTaskPayload: DeleteTaskPayload
+  EditTaskPayload: EditTaskPayload
+  RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
+  RemoveTeamMemberPayload: RemoveTeamMemberPayload
+  UpdateTaskPayload: UpdateTaskPayload
+  UpdateTaskDueDatePayload: UpdateTaskDueDatePayload
 }

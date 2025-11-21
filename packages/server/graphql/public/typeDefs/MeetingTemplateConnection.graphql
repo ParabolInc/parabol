@@ -2,13 +2,13 @@
 A connection to a list of items.
 """
 type MeetingTemplateConnection {
-	"""
-	Information to aid in pagination.
-	"""
-	pageInfo: PageInfo!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
 
-	"""
-	A list of edges.
-	"""
-	edges: [MeetingTemplateEdge!]!
+  """
+  A list of edges.
+  """
+  edges: [MeetingTemplateEdge!]!
 }

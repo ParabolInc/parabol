@@ -2,40 +2,40 @@
 Poker dimensions mapped to their corresponding fields in jira
 """
 type JiraDimensionField {
-	id: ID!
+  id: ID!
 
-	"""
-	The atlassian cloud that the field lives in
-	"""
-	cloudId: ID!
+  """
+  The atlassian cloud that the field lives in
+  """
+  cloudId: ID!
 
-	"""
-	The name of the associated dimension
-	"""
-	dimensionName: String!
+  """
+  The name of the associated dimension
+  """
+  dimensionName: String!
 
-	"""
-	The project under the atlassian cloud the field lives in
-	"""
-	projectKey: ID!
+  """
+  The project under the atlassian cloud the field lives in
+  """
+  projectKey: ID!
 
-	"""
-	Type id of the issue
-	"""
-	issueType: ID!
+  """
+  Type id of the issue
+  """
+  issueType: ID!
 
-	"""
-	The ID referring to the field name
-	"""
-	fieldId: ID!
+  """
+  The ID referring to the field name
+  """
+  fieldId: ID!
 
-	"""
-	The field name in jira that the estimate is pushed to
-	"""
-	fieldName: String!
+  """
+  The field name in jira that the estimate is pushed to
+  """
+  fieldName: String!
 
-	"""
-	the type of field, e.g. number, string, any
-	"""
-	fieldType: String!
+  """
+  the type of field, e.g. number, string, any
+  """
+  fieldType: String!
 }

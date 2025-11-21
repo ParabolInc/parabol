@@ -1,4 +1,4 @@
 type TeamPreview implements Node & TeamPartial {
-	id: ID!
-	name: String!
+  id: ID!
+  name: String!
 }

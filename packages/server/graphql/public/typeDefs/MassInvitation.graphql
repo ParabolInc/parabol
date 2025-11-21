@@ -2,14 +2,14 @@
 An invitation and expiration
 """
 type MassInvitation {
-	"""
-	the invitation token
-	"""
-	id: ID!
+  """
+  the invitation token
+  """
+  id: ID!
 
-	"""
-	the expiration for the token
-	"""
-	expiration: DateTime!
-	meetingId: ID
+  """
+  the expiration for the token
+  """
+  expiration: DateTime!
+  meetingId: ID
 }

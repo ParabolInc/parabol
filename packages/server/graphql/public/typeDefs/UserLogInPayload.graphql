@@ -2,17 +2,17 @@
 Generic payload to send when user signs up
 """
 type UserLogInPayload {
-	error: StandardMutationError
+  error: StandardMutationError
 
-	userId: ID
+  userId: ID
 
-	"""
-	if a new user is created
-	"""
-	isNewUser: Boolean
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
 
-	"""
-	the newly created user, or the existing user
-	"""
-	user: User
+  """
+  the newly created user, or the existing user
+  """
+  user: User
 }

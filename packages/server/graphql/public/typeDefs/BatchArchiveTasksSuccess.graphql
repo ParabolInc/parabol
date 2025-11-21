@@ -1,11 +1,11 @@
 type BatchArchiveTasksSuccess {
-	"""
-	the id of achived tasks
-	"""
-	archivedTaskIds: [ID!]
+  """
+  the id of achived tasks
+  """
+  archivedTaskIds: [ID!]
 
-	"""
-	the archived tasks
-	"""
-	archivedTasks: [Task!]
+  """
+  the archived tasks
+  """
+  archivedTasks: [Task!]
 }

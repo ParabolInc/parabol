@@ -1,6 +1,4 @@
 """
 Return object for MovePokerTemplateScaleValuePayload
 """
-union MovePokerTemplateScaleValuePayload =
-	| ErrorPayload
-	| MovePokerTemplateScaleValueSuccess
+union MovePokerTemplateScaleValuePayload = ErrorPayload | MovePokerTemplateScaleValueSuccess

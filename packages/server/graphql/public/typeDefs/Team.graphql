@@ -1,212 +1,212 @@
 interface Node {
-	id: ID!
+  id: ID!
 }
 
 """
 A team
 """
 type Team implements Node & TeamPartial {
-	"""
-	A shortid for the team
-	"""
-	id: ID!
+  """
+  A shortid for the team
+  """
+  id: ID!
 
-	"""
-	The datetime the team was created
-	"""
-	createdAt: DateTime!
+  """
+  The datetime the team was created
+  """
+  createdAt: DateTime!
 
-	"""
-	The userId that created the team. Non-null at v2.22.0+
-	"""
-	createdBy: ID
+  """
+  The userId that created the team. Non-null at v2.22.0+
+  """
+  createdBy: ID
 
-	"""
-	true if the team was created when the account was created, else false
-	"""
-	isOnboardTeam: Boolean!
+  """
+  true if the team was created when the account was created, else false
+  """
+  isOnboardTeam: Boolean!
 
-	"""
-	The type of the last meeting run
-	"""
-	lastMeetingType: MeetingTypeEnum!
+  """
+  The type of the last meeting run
+  """
+  lastMeetingType: MeetingTypeEnum!
 
-	"""
-	The datetime of the team's most recent meeting (from either active or completed meetings)
-	"""
-	lastMetAt: DateTime
+  """
+  The datetime of the team's most recent meeting (from either active or completed meetings)
+  """
+  lastMetAt: DateTime
 
-	"""
-	The hash and expiration for a token that allows anyone with it to join the team
-	"""
-	massInvitation(
-		"""
-		the meetingId to optionally direct them to
-		"""
-		meetingId: ID
-	): MassInvitation!
+  """
+  The hash and expiration for a token that allows anyone with it to join the team
+  """
+  massInvitation(
+    """
+    the meetingId to optionally direct them to
+    """
+    meetingId: ID
+  ): MassInvitation!
 
-	"""
-	The name of the team
-	"""
-	name: String!
+  """
+  The name of the team
+  """
+  name: String!
 
-	"""
-	The organization to which the team belongs
-	"""
-	orgId: ID!
+  """
+  The organization to which the team belongs
+  """
+  orgId: ID!
 
-	"""
-	Arbitrary tags that the team uses
-	"""
-	tags: [String]
+  """
+  Arbitrary tags that the team uses
+  """
+  tags: [String]
 
-	"""
-	The datetime the team was last updated
-	"""
-	updatedAt: DateTime
+  """
+  The datetime the team was last updated
+  """
+  updatedAt: DateTime
 
-	"""
-	The outstanding invitations to join the team
-	"""
-	teamInvitations: [TeamInvitation!]!
+  """
+  The outstanding invitations to join the team
+  """
+  teamInvitations: [TeamInvitation!]!
 
-	"""
-	true if the viewer is the team lead, else false
-	"""
-	isViewerLead: Boolean!
+  """
+  true if the viewer is the team lead, else false
+  """
+  isViewerLead: Boolean!
 
-	"""
-	The team-specific settings for running all available types of meetings
-	"""
-	meetingSettings(
-		"""
-		the type of meeting for the settings
-		"""
-		meetingType: MeetingTypeEnum!
-	): TeamMeetingSettings!
+  """
+  The team-specific settings for running all available types of meetings
+  """
+  meetingSettings(
+    """
+    the type of meeting for the settings
+    """
+    meetingType: MeetingTypeEnum!
+  ): TeamMeetingSettings!
 
-	"""
-	A query for the scale
-	"""
-	scale(
-		"""
-		The scale ID for the desired scale
-		"""
-		scaleId: ID!
-	): TemplateScale
+  """
+  A query for the scale
+  """
+  scale(
+    """
+    The scale ID for the desired scale
+    """
+    scaleId: ID!
+  ): TemplateScale
 
-	"""
-	The list of scales this team can use
-	"""
-	scales: [TemplateScale!]!
+  """
+  The list of scales this team can use
+  """
+  scales: [TemplateScale!]!
 
-	"""
-	list of meetings that are currently in progress including active meetings of activeMeetingSeries
-	"""
-	activeMeetings: [NewMeeting!]!
+  """
+  list of meetings that are currently in progress including active meetings of activeMeetingSeries
+  """
+  activeMeetings: [NewMeeting!]!
 
-	"""
-	list of all active meeting series, a series can be active without having an active meeting
-	"""
-	activeMeetingSeries: [MeetingSeries!]!
+  """
+  list of all active meeting series, a series can be active without having an active meeting
+  """
+  activeMeetingSeries: [MeetingSeries!]!
 
-	"""
-	Whether the team has a feature flag enabled or not
-	"""
-	featureFlag(featureName: String!): Boolean!
+  """
+  Whether the team has a feature flag enabled or not
+  """
+  featureFlag(featureName: String!): Boolean!
 
-	"""
-	The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections
-	"""
-	qualAIMeetingsCount: Int!
+  """
+  The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections
+  """
+  qualAIMeetingsCount: Int!
 
-	"""
-	The new meeting in progress, if any
-	"""
-	meeting(
-		"""
-		The unique meetingId
-		"""
-		meetingId: ID!
-	): NewMeeting
-	organization: Organization!
+  """
+  The new meeting in progress, if any
+  """
+  meeting(
+    """
+    The unique meetingId
+    """
+    meetingId: ID!
+  ): NewMeeting
+  organization: Organization!
 
-	"""
-	The AI insight for the team. Null if not enough data or feature flag isn't set
-	"""
-	insight: Insight
+  """
+  The AI insight for the team. Null if not enough data or feature flag isn't set
+  """
+  insight: Insight
 
-	"""
-	The agenda items for the upcoming or current meeting
-	"""
-	agendaItems: [AgendaItem!]!
+  """
+  The agenda items for the upcoming or current meeting
+  """
+  agendaItems: [AgendaItem!]!
 
-	"""
-	All of the tasks for this team
-	"""
-	tasks(
-		first: Int
+  """
+  All of the tasks for this team
+  """
+  tasks(
+    first: Int
 
-		"""
-		the datetime cursor
-		"""
-		after: DateTime
-	): TaskConnection!
+    """
+    the datetime cursor
+    """
+    after: DateTime
+  ): TaskConnection!
 
-	"""
-	All the team members actively associated with the team
-	"""
-	teamMembers(
-		"""
-		the field to sort the teamMembers by
-		"""
-		sortBy: String
-	): [TeamMember!]!
+  """
+  All the team members actively associated with the team
+  """
+  teamMembers(
+    """
+    the field to sort the teamMembers by
+    """
+    sortBy: String
+  ): [TeamMember!]!
 
-	"""
-	true if the team has been archived
-	"""
-	isArchived: Boolean
+  """
+  true if the team has been archived
+  """
+  isArchived: Boolean
 
-	"""
-	Whether or not new users with the same domain and a verified email should auto-join the team
-	"""
-	autoJoin: Boolean!
+  """
+  Whether or not new users with the same domain and a verified email should auto-join the team
+  """
+  autoJoin: Boolean!
 
-	"""
-	Whether the viewer belongs to the team
-	"""
-	isViewerOnTeam: Boolean!
+  """
+  Whether the viewer belongs to the team
+  """
+  isViewerOnTeam: Boolean!
 
-	"""
-	true if the viewer is an admin for the team's org, else false
-	"""
-	isOrgAdmin: Boolean!
-	tier: TierEnum!
-	billingTier: TierEnum!
+  """
+  true if the viewer is an admin for the team's org, else false
+  """
+  isOrgAdmin: Boolean!
+  tier: TierEnum!
+  billingTier: TierEnum!
 
-	"""
-	The team member that is the viewer
-	"""
-	viewerTeamMember: TeamMember
+  """
+  The team member that is the viewer
+  """
+  viewerTeamMember: TeamMember
 
-	"""
-	The team member that is the team lead
-	"""
-	teamLead: TeamMember!
+  """
+  The team member that is the team lead
+  """
+  teamLead: TeamMember!
 
-	"""
-	The number of retro meetings the team has had
-	"""
-	retroMeetingsCount: Int!
+  """
+  The number of retro meetings the team has had
+  """
+  retroMeetingsCount: Int!
 
-	"""
-	Whether the team is visible to everyone in the org and anyone can join it without an invitation
-	"""
-	isPublic: Boolean!
-	"""
-	The viewer-specific sort order index. Present in User.teams
-	"""
-	sortOrder: String!
+  """
+  Whether the team is visible to everyone in the org and anyone can join it without an invitation
+  """
+  isPublic: Boolean!
+  """
+  The viewer-specific sort order index. Present in User.teams
+  """
+  sortOrder: String!
 }

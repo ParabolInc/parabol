@@ -2,73 +2,73 @@
 An event for a completed poker meeting
 """
 type TimelineEventPokerComplete implements TimelineEvent {
-	"""
-	shortid
-	"""
-	id: ID!
+  """
+  shortid
+  """
+  id: ID!
 
-	"""
-	* The timestamp the event was created at
-	"""
-	createdAt: DateTime!
+  """
+  * The timestamp the event was created at
+  """
+  createdAt: DateTime!
 
-	"""
-	the number of times the user has interacted with (ie clicked) this event
-	"""
-	interactionCount: Int!
+  """
+  the number of times the user has interacted with (ie clicked) this event
+  """
+  interactionCount: Int!
 
-	"""
-	true if the timeline event is active, false if archived
-	"""
-	isActive: Boolean!
+  """
+  true if the timeline event is active, false if archived
+  """
+  isActive: Boolean!
 
-	"""
-	The orgId this event is associated with
-	"""
-	orgId: ID!
+  """
+  The orgId this event is associated with
+  """
+  orgId: ID!
 
-	"""
-	The organization this event is associated with
-	"""
-	organization: Organization
+  """
+  The organization this event is associated with
+  """
+  organization: Organization
 
-	"""
-	the number of times the user has seen this event
-	"""
-	seenCount: Int!
+  """
+  the number of times the user has seen this event
+  """
+  seenCount: Int!
 
-	"""
-	The teamId this event is associated with
-	"""
-	teamId: ID!
+  """
+  The teamId this event is associated with
+  """
+  teamId: ID!
 
-	"""
-	The team that can see this event
-	"""
-	team: Team!
+  """
+  The team that can see this event
+  """
+  team: Team!
 
-	"""
-	The specific type of event
-	"""
-	type: TimelineEventEnum!
+  """
+  The specific type of event
+  """
+  type: TimelineEventEnum!
 
-	"""
-	* The userId that can see this event
-	"""
-	userId: ID!
+  """
+  * The userId that can see this event
+  """
+  userId: ID!
 
-	"""
-	The user than can see this event
-	"""
-	user: User!
+  """
+  The user than can see this event
+  """
+  user: User!
 
-	"""
-	The meeting that was completed
-	"""
-	meeting: PokerMeeting!
+  """
+  The meeting that was completed
+  """
+  meeting: PokerMeeting!
 
-	"""
-	The meetingId that was completed
-	"""
-	meetingId: ID!
+  """
+  The meetingId that was completed
+  """
+  meetingId: ID!
 }

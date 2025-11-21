@@ -2,7 +2,7 @@
 The source that a change to a record came in through
 """
 enum ChangeSourceEnum {
-	meeting
-	task
-	external
+  meeting
+  task
+  external
 }

@@ -1,5 +1,5 @@
 type SetOrgUserRoleSuccess {
-	organization: Organization!
-	updatedOrgMember: OrganizationUser!
-	notificationsAdded: [Notification!]!
+  organization: Organization!
+  updatedOrgMember: OrganizationUser!
+  notificationsAdded: [Notification!]!
 }
