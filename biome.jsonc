@@ -4,7 +4,7 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**/*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc,css,html,md}",
+      "**/*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc,css,html,md,graphql}",
       // Explicitly exclude undesired dirs by not listing them
       "!**/.nx/**",
       "!**/build/**",
