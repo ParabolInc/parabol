@@ -4,7 +4,6 @@ minimumReleaseAge: 2880
 minimumReleaseAgeExclude:
   - nest-graphql-endpoint
   - '@tiptap/*'
-  - '@biomejs/biome'
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'
