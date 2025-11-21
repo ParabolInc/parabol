@@ -1,7 +1,6 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getKysely from '../postgres/getKysely'
-import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
 import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
@@ -167,7 +166,14 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             if (oauthRes instanceof Error) {
               // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
               if (oauthRes.message === 'invalid_grant') {
-                await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
+                await getKysely()
+                  .updateTable('TeamMemberIntegrationAuth')
+                  .set({isActive: false})
+                  .where('userId', '=', userId)
+                  .where('teamId', '=', teamId)
+                  .where('service', '=', 'azureDevOps')
+                  .where('isActive', '=', true)
+                  .execute()
               }
               return null
             }
