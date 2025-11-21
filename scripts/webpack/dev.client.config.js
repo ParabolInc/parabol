@@ -93,7 +93,7 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
     publicPath: '/',
-    assetModuleFilename: '[name][ext][query]-[hash]'
+    assetModuleFilename: '[name]-[hash][query][ext]'
   },
   resolve: {
     alias: {
