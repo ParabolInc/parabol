@@ -157,7 +157,7 @@ test.skip.each([
   ['animals', ['iguanaCrocodileKomodoDragonPremortemTemplate']],
   ['plants', ['roseThornBudTemplate']]
 ])('Template search - %s', async (search, templateIds) => {
-  const {authToken} = await signUp()
+  const {cookie} = await signUp()
 
   const user = await sendPublic({
     query: `
@@ -172,7 +172,7 @@ test.skip.each([
     variables: {
       search
     },
-    authToken
+    cookie
   })
 
   expect(user).toMatchObject({
@@ -199,7 +199,7 @@ test('Creating and archiving teams updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user1).toMatchObject({
@@ -237,7 +237,7 @@ test('Creating and archiving teams updates User.tms', async () => {
         isPublic: true
       }
     },
-    authToken: user.authToken
+    cookie: user.cookie
   })
   expect(createdTeam).toMatchObject({
     data: {
@@ -259,7 +259,7 @@ test('Creating and archiving teams updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user2).toMatchObject({
@@ -284,7 +284,7 @@ test('Creating and archiving teams updates User.tms', async () => {
     variables: {
       teamId: team1Id
     },
-    authToken: user.authToken
+    cookie: user.cookie
   })
   expect(archivedTeam).toMatchObject({
     data: {
@@ -303,7 +303,7 @@ test('Creating and archiving teams updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user3).toMatchObject({
@@ -328,7 +328,7 @@ test('Leaving a team updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user1).toMatchObject({
@@ -356,7 +356,7 @@ test('Leaving a team updates User.tms', async () => {
     variables: {
       teamMemberId
     },
-    authToken: user.authToken
+    cookie: user.cookie
   })
   expect(leftTeam).toMatchObject({
     data: {
@@ -375,7 +375,7 @@ test('Leaving a team updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user2).toMatchObject({
@@ -399,7 +399,7 @@ test('Leaving a team updates User.tms', async () => {
         }
       }
     `,
-    authToken: user.authToken
+    cookie: user.cookie
   })
 
   expect(user3).toMatchObject({

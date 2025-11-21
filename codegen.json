@@ -19,6 +19,7 @@
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "EndTrialSuccess": "./types/EndTrialSuccess#EndTrialSuccessSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
+          "LoginSAMLPayload": "./types/LoginSAMLPayload#LoginSAMLPayloadSource",
           "LoginsPayload": "./types/LoginsPayload#LoginsPayloadSource",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as IMeetingTemplate",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",

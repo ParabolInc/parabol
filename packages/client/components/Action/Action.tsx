@@ -41,10 +41,10 @@ const Action = memo(() => {
   const bannerText = window.__ACTION__.GLOBAL_BANNER_TEXT
   const bannerBgColor = window.__ACTION__.GLOBAL_BANNER_BG_COLOR
   const bannerColor = window.__ACTION__.GLOBAL_BANNER_COLOR
-  const atmosphere = useAtmosphere()
   // /pages must have the same stable path as the other dashboard routes
   // to preserve the internal state of the left nav (i.e. which team & pages are expanded)
-  const isAuthenticated = atmosphere.authObj
+  const {authObj} = useAtmosphere()
+  const isAuthenticated = !!authObj
 
   return (
     <>

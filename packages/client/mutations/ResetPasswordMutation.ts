@@ -10,7 +10,6 @@ const mutation = graphql`
       error {
         message
       }
-      authToken
       user {
         tms
         ...UserAnalyticsFrag @relay(mask: false)
@@ -32,8 +31,6 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, HistoryLoc
       const {error: uiError} = resetPassword
       onCompleted(res, errors)
       if (!uiError && !errors) {
-        const {authToken} = resetPassword
-        atmosphere.setAuthToken(authToken)
         const nextUrl = getValidRedirectParam() || '/meetings'
         history.push(nextUrl)
       }

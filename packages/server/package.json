@@ -70,6 +70,8 @@
     "@react-email/text": "^0.1.5",
     "@smithy/types": "^4.2.0",
     "@smithy/util-retry": "^4.0.2",
+    "@whatwg-node/cookie-store": "^0.2.3",
+    "@whatwg-node/server-plugin-cookies": "^1.0.5",
     "adaptivecards": "2.10.0",
     "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",

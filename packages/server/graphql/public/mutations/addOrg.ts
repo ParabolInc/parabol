@@ -1,11 +1,9 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import AuthToken from '../../../database/types/AuthToken'
 import generateUID from '../../../generateUID'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import addOrgValidation from '../../mutations/helpers/addOrgValidation'
@@ -73,10 +71,7 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
     await inviteToTeamHelper(invitees, teamId, undefined, context)
   }
 
-  return {
-    ...data,
-    authToken: encodeAuthToken(new AuthToken({tms, sub: viewerId, rol: authToken.rol}))
-  }
+  return data
 }
 
 export default addOrg

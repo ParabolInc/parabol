@@ -1,7 +1,8 @@
+import graphql from 'babel-plugin-relay/macro'
 import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
-import type {Disposable} from 'react-relay'
+import {commitMutation, type Disposable} from 'react-relay'
 import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
@@ -24,16 +25,30 @@ import {
   type Variables
 } from 'relay-runtime'
 import type StrictEventEmitter from 'strict-event-emitter-types'
+import type {AtmosphereSignOutMutation} from './__generated__/AtmosphereSignOutMutation.graphql'
 import type {InviteToTeamMutation_notification$data} from './__generated__/InviteToTeamMutation_notification.graphql'
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
-import type {AuthToken} from './types/AuthToken'
-import {LocalStorageKey} from './types/constEnums'
+import {AuthToken} from './types/AuthToken'
+import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
 import sleep from './utils/sleep'
+
 ;(RelayFeatureFlags as any).ENABLE_RELAY_CONTAINERS_SUSPENSE = false
 ;(RelayFeatureFlags as any).ENABLE_PRECISE_TYPE_REFINEMENT = true
+
+const signOutMutation = graphql`
+  mutation AtmosphereSignOutMutation {
+    signOut
+  }
+`
+
+const refreshSessionMutation = graphql`
+  mutation AtmosphereRefreshSessionMutation {
+    refreshSession
+  }
+`
 
 interface QuerySubscription {
   subKey: string
@@ -90,6 +105,7 @@ export interface AtmosphereEvents {
   ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
+  authChanged: () => void
 }
 
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
@@ -99,8 +115,15 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
   _network: typeof Network
-  authToken: string | null = null
-  authObj: AuthToken | null = null
+  _authObj: AuthToken | null = null
+  get authObj() {
+    return this._authObj
+  }
+  set authObj(value: AuthToken | null) {
+    this._authObj = value
+    this.eventEmitter.emit('authChanged')
+  }
+
   querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
     [queryKey: string]: number
@@ -124,6 +147,7 @@ export default class Atmosphere extends Environment {
       network: Network.create(noop)
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
+    providerManager.setAtmosphere(this)
   }
 
   private async connectWebsocket() {
@@ -135,13 +159,13 @@ export default class Atmosphere extends Environment {
   }
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
-    const useHTTP = !!uploadables || !this.authToken || !this.subscriptionClient
+    const isAuth = request.name.startsWith('Atmosphere')
+    const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
     if (useHTTP) {
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
           accept: 'application/json',
-          Authorization: this.authToken ? `Bearer ${this.authToken}` : '',
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
@@ -247,10 +271,13 @@ export default class Atmosphere extends Environment {
       return e as Error
     }
   }
-  getAuthToken = (global: Window) => {
-    if (!global) return
-    const authToken = global.localStorage.getItem(LocalStorageKey.APP_TOKEN_KEY)
+  registerCookieListener = (global: Window) => {
+    const authToken = getAuthCookie(global)
     this.setAuthToken(authToken)
+
+    return onAuthCookieChange(global, (newToken) => {
+      this.setAuthToken(newToken)
+    })
   }
 
   private validateImpersonation = async (iat: number) => {
@@ -272,30 +299,24 @@ export default class Atmosphere extends Environment {
       })
       return Promise.race([sleep(300), askOtherTabs])
     }
+    // impersonation token must be < 10 seconds old (ie log them out automatically)
     const justOpened = iat > Date.now() / 1000 - 10
 
     const anotherTabIsOpen = await isAnotherParabolTabOpen()
     if (anotherTabIsOpen || justOpened) return
-    this.authToken = null
-    this.authObj = null
-    window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
     // since this is async, useAuthRoute will have already run
     window.location.href = '/'
   }
 
-  setAuthToken = async (authToken: string | null | undefined) => {
-    this.authToken = authToken || null
-    providerManager.setAuthToken(authToken!, this)
+  private setAuthToken = async (authToken: string | null | undefined) => {
     if (!authToken) {
       this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
       return
     }
     try {
       this.authObj = jwtDecode(authToken)
     } catch {
       this.authObj = null
-      this.authToken = null
     }
 
     if (!this.authObj) return
@@ -304,14 +325,10 @@ export default class Atmosphere extends Environment {
       this.viewerId = viewerId
       return this.validateImpersonation(iat)
     }
-    // impersonation token must be < 10 seconds old (ie log them out automatically)
     if (exp < Date.now() / 1000) {
-      this.authToken = null
-      this.authObj = null
-      window.localStorage.removeItem(LocalStorageKey.APP_TOKEN_KEY)
+      this.invalidateSession('Your session has expired. Please log in again.')
     } else {
       this.viewerId = viewerId!
-      window.localStorage.setItem(LocalStorageKey.APP_TOKEN_KEY, authToken)
     }
   }
 
@@ -404,16 +421,28 @@ export default class Atmosphere extends Environment {
     // does not remove other subs because they may still do interesting things like pop toasts
   }
   invalidateSession(reason: string) {
-    this.setAuthToken(null)
-    this.eventEmitter.emit('addSnackbar', {
-      key: 'logOutJWT',
-      message: reason,
-      autoDismiss: 5
+    commitMutation<AtmosphereSignOutMutation>(this, {
+      mutation: signOutMutation,
+      variables: {},
+      onCompleted: (_res, _err) => {
+        this.setAuthToken(null)
+        this.eventEmitter.emit('addSnackbar', {
+          key: 'logOutJWT',
+          message: reason,
+          autoDismiss: 5
+        })
+        this.close()
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 5000)
+      }
     })
-    this.close()
-    setTimeout(() => {
-      window.location.href = '/'
-    }, 5000)
+  }
+  refreshSession() {
+    commitMutation<AtmosphereSignOutMutation>(this, {
+      mutation: refreshSessionMutation,
+      variables: {}
+    })
   }
   close() {
     this.querySubscriptions.forEach((querySub) => {
@@ -422,7 +451,6 @@ export default class Atmosphere extends Environment {
     // remove all records
     ;(this.getStore().getSource() as any).clear()
     this.authObj = null
-    this.authToken = null
     this.querySubscriptions = []
     this.subscriptions = {}
     this.viewerId = null!

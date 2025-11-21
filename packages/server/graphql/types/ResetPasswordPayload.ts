@@ -9,10 +9,6 @@ const ResetPasswordPayload = new GraphQLObjectType<any, GQLContext>({
     error: {
       type: StandardMutationError
     },
-    authToken: {
-      type: GraphQLID,
-      description: 'The new auth token'
-    },
     userId: {
       type: GraphQLID
     },

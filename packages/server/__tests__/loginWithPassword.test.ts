@@ -48,10 +48,10 @@ test('Login after signup', async () => {
     }
   })
   expect(login).toMatchObject({
+    cookie: expect.anything(),
     data: {
       loginWithPassword: {
         error: null,
-        authToken: expect.anything(),
         user: {
           id: expect.anything(),
           email

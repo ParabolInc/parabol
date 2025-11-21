@@ -1,5 +1,5 @@
 import AuthToken from '../../../database/types/AuthToken'
-import encodeAuthToken from '../../../utils/encodeAuthToken'
+import {encodeUnsignedAuthToken} from '../../../utils/encodeAuthToken'
 import type {AuthTokenPayloadResolvers} from '../resolverTypes'
 
 export type AuthTokenPayloadSource = {
@@ -8,7 +8,7 @@ export type AuthTokenPayloadSource = {
 
 const AuthTokenPayload: AuthTokenPayloadResolvers = {
   id: ({tms}, _args, {authToken}) => {
-    return encodeAuthToken(new AuthToken({...authToken, tms}))
+    return encodeUnsignedAuthToken(new AuthToken({...authToken, tms}))
   }
 }
 

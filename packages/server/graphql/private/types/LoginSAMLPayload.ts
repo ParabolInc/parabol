@@ -1,13 +1,13 @@
-import type {UserLogInPayloadResolvers} from '../resolverTypes'
+import type {LoginSamlPayloadResolvers} from '../resolverTypes'
 
-export type UserLogInPayloadSource =
+export type LoginSAMLPayloadSource =
   | {
       userId: string
       isNewUser: boolean
     }
   | {error: {message: string}}
 
-const UserLogInPayload: UserLogInPayloadResolvers = {
+const LoginSAMLPayload: LoginSamlPayloadResolvers = {
   user: (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {userId} = source
@@ -15,4 +15,4 @@ const UserLogInPayload: UserLogInPayloadResolvers = {
   }
 }
 
-export default UserLogInPayload
+export default LoginSAMLPayload

@@ -4,7 +4,7 @@ import {getUserTeams, sendPublic, signUp} from './common'
 const setDisableAnonymity = async (
   settingsId: string,
   disableAnonymity: boolean,
-  authToken: string
+  cookie: string
 ) => {
   const setSettings = await sendPublic({
     query: `
@@ -28,13 +28,13 @@ const setDisableAnonymity = async (
       settingsId,
       disableAnonymity
     },
-    authToken
+    cookie
   })
 
   expect(setSettings.data.setMeetingSettings.settings.disableAnonymity).toEqual(disableAnonymity)
 }
 
-const getMeetingSettings = async (teamId: string, authToken: string) => {
+const getMeetingSettings = async (teamId: string, cookie: string) => {
   const viewerQuery = await sendPublic({
     query: `
       query MeetingSettingsQuery($teamId: ID!) {
@@ -53,13 +53,13 @@ const getMeetingSettings = async (teamId: string, authToken: string) => {
     variables: {
       teamId
     },
-    authToken
+    cookie
   })
   const meetingSettings = viewerQuery.data.viewer.team.meetingSettings
   return meetingSettings
 }
 
-const startRetro = async (teamId: string, authToken: string) => {
+const startRetro = async (teamId: string, cookie: string) => {
   const startRetroQuery = await sendPublic({
     query: `
       mutation StartRetrospectiveMutation($teamId: ID!) {
@@ -87,7 +87,7 @@ const startRetro = async (teamId: string, authToken: string) => {
     variables: {
       teamId
     },
-    authToken
+    cookie
   })
   const meeting = startRetroQuery.data.startRetrospective.meeting as {
     id: string
@@ -98,7 +98,7 @@ const startRetro = async (teamId: string, authToken: string) => {
   return meeting
 }
 
-const addReflection = async (meetingId: string, promptId: string, authToken: string) => {
+const addReflection = async (meetingId: string, promptId: string, cookie: string) => {
   const addReflection = await sendPublic({
     query: `
       mutation CreateReflectionMutation($input: CreateReflectionInput!) {
@@ -123,7 +123,7 @@ const addReflection = async (meetingId: string, promptId: string, authToken: str
         sortOrder: 0
       }
     },
-    authToken
+    cookie
   })
 
   const reflection = addReflection.data.createReflection.reflectionGroup.reflections[0]
@@ -135,15 +135,15 @@ afterAll(async () => {
 })
 
 test('By default all reflections are anonymous', async () => {
-  const {userId, authToken} = await signUp()
+  const {userId, cookie} = await signUp()
   const teamId = (await getUserTeams(userId))[0].id
 
-  const meetingSettings = await getMeetingSettings(teamId, authToken)
+  const meetingSettings = await getMeetingSettings(teamId, cookie)
   expect(meetingSettings.disableAnonymity).toEqual(false)
 
-  const meeting = await startRetro(teamId, authToken)
+  const meeting = await startRetro(teamId, cookie)
   const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
-  const reflection = await addReflection(meeting.id, reflectPrompts[0].id, authToken)
+  const reflection = await addReflection(meeting.id, reflectPrompts[0].id, cookie)
 
   expect(reflection).toEqual({
     creatorId: null,
@@ -152,17 +152,17 @@ test('By default all reflections are anonymous', async () => {
 })
 
 test('Creator is visible when disableAnonymity is set', async () => {
-  const {userId, authToken} = await signUp()
+  const {userId, cookie} = await signUp()
   const teamId = (await getUserTeams(userId))[0].id
 
-  const meetingSettings = await getMeetingSettings(teamId, authToken)
-  await setDisableAnonymity(meetingSettings.id, true, authToken)
-  const updatedMeetingSettings = await getMeetingSettings(teamId, authToken)
+  const meetingSettings = await getMeetingSettings(teamId, cookie)
+  await setDisableAnonymity(meetingSettings.id, true, cookie)
+  const updatedMeetingSettings = await getMeetingSettings(teamId, cookie)
   expect(updatedMeetingSettings.disableAnonymity).toEqual(true)
 
-  const meeting = await startRetro(teamId, authToken)
+  const meeting = await startRetro(teamId, cookie)
   const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
-  const reflection = await addReflection(meeting.id, reflectPrompts[0].id, authToken)
+  const reflection = await addReflection(meeting.id, reflectPrompts[0].id, cookie)
 
   expect(reflection).toEqual({
     creatorId: userId,
@@ -173,16 +173,16 @@ test('Creator is visible when disableAnonymity is set', async () => {
 })
 
 test('Super user can always read creatorId of a reflection', async () => {
-  const {userId, email, authToken, password} = await signUp()
+  const {userId, email, cookie, password} = await signUp()
   const teamId = (await getUserTeams(userId))[0].id
 
-  const meetingSettings = await getMeetingSettings(teamId, authToken)
+  const meetingSettings = await getMeetingSettings(teamId, cookie)
   expect(meetingSettings.disableAnonymity).toEqual(false)
 
-  const meeting = await startRetro(teamId, authToken)
+  const meeting = await startRetro(teamId, cookie)
   const reflectPrompts = meeting.phases.find(({reflectPrompts}) => !!reflectPrompts)!.reflectPrompts
 
-  await addReflection(meeting.id, reflectPrompts[0].id, authToken)
+  await addReflection(meeting.id, reflectPrompts[0].id, cookie)
 
   const pg = getPg()
   await pg.query(`UPDATE "User" SET rol='su' WHERE id='${userId}'`)
@@ -194,7 +194,7 @@ test('Super user can always read creatorId of a reflection', async () => {
         $password: String!
       ) {
         loginWithPassword(email: $email, password: $password) {
-          authToken
+          __typename
         }
       }
     `,
@@ -227,7 +227,7 @@ test('Super user can always read creatorId of a reflection', async () => {
     variables: {
       meetingId: meeting.id
     },
-    authToken: login.data.loginWithPassword.authToken
+    cookie: login.cookie
   })
 
   const reflection = superUsermeetingQuery.data.viewer.meeting.reflectionGroups[0].reflections[0]

@@ -4,7 +4,7 @@ import {SIGNUP_WITH_PASSWORD_MUTATION, sendPublic, signUp} from './common'
 
 test('Invite to team, works for ordinary email domain', async () => {
   const [user1, user2] = await Promise.all([signUp(), signUp()])
-  const {authToken, teamId} = user1
+  const {cookie, teamId} = user1
   const {email: inviteeEmail} = user2
 
   const inviteToTeam = await sendPublic({
@@ -23,7 +23,7 @@ test('Invite to team, works for ordinary email domain', async () => {
       teamId,
       invitees: ['foo@example.com', inviteeEmail]
     },
-    authToken
+    cookie
   })
 
   expect(inviteToTeam).toMatchObject({
@@ -38,7 +38,7 @@ test('Invite to team, works for ordinary email domain', async () => {
 
 test('Invite to team, deny for untrusted domain', async () => {
   const [user1, user2] = await Promise.all([signUp(), signUp()])
-  const {authToken, teamId} = user1
+  const {cookie, teamId} = user1
   const {email: inviteeEmail} = user2
   const inviteToTeam = await sendPublic({
     query: `
@@ -56,7 +56,7 @@ test('Invite to team, deny for untrusted domain', async () => {
       teamId,
       invitees: ['foo@qq.com', inviteeEmail]
     },
-    authToken
+    cookie
   })
 
   expect(inviteToTeam).toMatchObject({
@@ -71,7 +71,7 @@ test('Invite to team, deny for untrusted domain', async () => {
 
 test('Team invite to an email acts as email verification', async () => {
   const user1 = await signUp()
-  const {authToken, teamId} = user1
+  const {cookie, teamId} = user1
 
   const email = faker.internet.email().toLowerCase()
 
@@ -91,7 +91,7 @@ test('Team invite to an email acts as email verification', async () => {
       teamId,
       invitees: [email]
     },
-    authToken
+    cookie
   })
 
   expect(inviteToTeam).toMatchObject({
@@ -124,10 +124,10 @@ test('Team invite to an email acts as email verification', async () => {
   })
 
   expect(signUpWithInvite).toMatchObject({
+    cookie: expect.anything(),
     data: {
       signUpWithPassword: {
         error: null,
-        authToken: expect.anything(),
         user: {
           id: expect.anything(),
           email
@@ -139,7 +139,7 @@ test('Team invite to an email acts as email verification', async () => {
 
 test('Team invite to an email acts as email verification only if the email matches', async () => {
   const user1 = await signUp()
-  const {authToken, teamId} = user1
+  const {cookie, teamId} = user1
 
   const email = faker.internet.email().toLowerCase()
 
@@ -159,7 +159,7 @@ test('Team invite to an email acts as email verification only if the email match
       teamId,
       invitees: [email]
     },
-    authToken
+    cookie
   })
 
   expect(inviteToTeam).toMatchObject({
@@ -199,7 +199,6 @@ test('Team invite to an email acts as email verification only if the email match
         error: {
           message: 'Verification required. Check your inbox.'
         },
-        authToken: null,
         user: null
       }
     }

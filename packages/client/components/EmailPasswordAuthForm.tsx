@@ -18,9 +18,9 @@ import getAnonymousId from '../utils/getAnonymousId'
 import getOAuthPopupFeatures from '../utils/getOAuthPopupFeatures'
 import getSAMLIdP from '../utils/getSAMLIdP'
 import getSSODomainFromEmail from '../utils/getSSODomainFromEmail'
-import getTokenFromSSO from '../utils/getTokenFromSSO'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
+import loginSSO from '../utils/loginSSO'
 import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
 import EmailInputField from './EmailInputField'
@@ -186,13 +186,12 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return false
     }
     submitMutation()
-    const response = await getTokenFromSSO(url, top)
+    const response = await loginSSO(url, top)
     if ('error' in response) {
       onError(new Error(response.error || 'Error logging in'))
       return true
     }
-    const {token, ga4Args} = response
-    atmosphere.setAuthToken(token)
+    const {ga4Args} = response
     commitLocalUpdate(atmosphere, (store) => {
       const root = store.getRoot()
       root.setValue(ga4Args.isNewUser, 'isNewUser')

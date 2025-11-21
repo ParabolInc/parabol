@@ -1,7 +1,6 @@
 """
-Generic payload to send when user signs up
 """
-type UserLogInPayload {
+type LoginSAMLPayload {
 	error: StandardMutationError
 
 	userId: ID
@@ -15,4 +14,6 @@ type UserLogInPayload {
 	the newly created user, or the existing user
 	"""
 	user: User
+
+	authToken: ID
 }

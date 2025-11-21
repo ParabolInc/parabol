@@ -1,4 +1,4 @@
-import {GraphQLID, GraphQLObjectType} from 'graphql'
+import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from '../graphql'
 import StandardMutationError from './StandardMutationError'
 
@@ -7,10 +7,6 @@ const InvalidateSessionsPayload = new GraphQLObjectType<any, GQLContext>({
   fields: () => ({
     error: {
       type: StandardMutationError
-    },
-    authToken: {
-      type: GraphQLID,
-      description: 'The new, only valid auth token'
     }
   })
 })

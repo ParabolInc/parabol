@@ -4,6 +4,7 @@ import type {GraphQLError} from 'graphql'
 import {marked} from 'marked'
 import {getRequest} from 'relay-runtime'
 import Ellipsis from '../../../components/Ellipsis/Ellipsis'
+import {useIsAuthenticated} from '../../../components/IsAuthenticatedProvider'
 import {MeetingDatePicker} from '../../../components/MeetingDatePicker'
 import {MeetingTypePickerCombobox} from '../../../components/MeetingTypePickerCombobox'
 import {SpecificMeetingPickerRoot} from '../../../components/SpecificMeetingPickerRoot'
@@ -57,6 +58,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   const canQueryMeetings = teamIds.length > 0 && meetingTypes.length > 0 && after && before
   const {submitting, submitMutation, onCompleted} = useMutationProps()
   const disabled = submitting || meetingIds.length < 1
+  const isLoggedIn = useIsAuthenticated()
 
   const generateInsights = async () => {
     if (disabled) return
@@ -126,7 +128,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       sink
     )
   }
-  if (!atmosphere.authObj) {
+  if (!isLoggedIn) {
     return (
       <div className='font-semibold text-slate-700 text-sm'>Please login to generate insights</div>
     )

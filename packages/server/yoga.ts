@@ -1,6 +1,7 @@
 import type uws from 'uWebSockets.js'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
+import {useCookies} from '@whatwg-node/server-plugin-cookies'
 import type {GraphQLParams} from 'graphql-yoga'
 import {createYoga, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
@@ -12,6 +13,7 @@ import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
+import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
@@ -170,10 +172,12 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useDeferStream(),
     usePersistedOperations({
-      allowArbitraryOperations(request) {
+      async allowArbitraryOperations(request) {
         const {headers} = request
         const authHeader = headers.get('authorization')
-        const token = authHeader?.slice(7)
+        const headerToken = authHeader?.slice(7)
+        const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
+        const token = headerToken || cookieToken
         const authToken = getVerifiedAuthToken(token)
         const isSuperUser = authToken?.rol === 'su'
         return isSuperUser
@@ -192,7 +196,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         if (!res) return false
         return true
       }
-    })
+    }),
+    useCookies()
   ],
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
   // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
