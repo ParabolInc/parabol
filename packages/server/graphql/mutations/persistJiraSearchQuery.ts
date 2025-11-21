@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
-import updateJiraSearchQueries from '../../postgres/queries/updateJiraSearchQueries'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import type {GQLContext} from '../graphql'
@@ -81,11 +81,12 @@ const persistJiraSearchQuery = {
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateJiraSearchQueries({
-        jiraSearchQueries: jiraSearchQueries as any,
-        teamId,
-        userId: viewerId
-      })
+      await getKysely()
+        .updateTable('AtlassianAuth')
+        .set({jiraSearchQueries: jiraSearchQueries.map((jsq) => JSON.stringify(jsq))})
+        .where('teamId', '=', teamId)
+        .where('userId', '=', viewerId)
+        .execute()
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,

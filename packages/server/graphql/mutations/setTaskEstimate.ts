@@ -5,7 +5,6 @@ import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../appOrigin'
 import JiraServerRestManager from '../../integrations/jiraServer/JiraServerRestManager'
 import getKysely from '../../postgres/getKysely'
-import updateJiraDimensionFieldMap from '../../postgres/queries/updateJiraDimensionFieldMap'
 import upsertJiraDimensionFieldMap from '../../postgres/queries/upsertJiraDimensionFieldMap'
 import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
@@ -146,7 +145,11 @@ const setTaskEstimate = {
           // Legacy unknown field type, replace it with an actual issueType
           if (dimensionField.issueType === '') {
             dimensionField.issueType = issueType
-            await updateJiraDimensionFieldMap(dimensionField)
+            await getKysely()
+              .updateTable('JiraDimensionFieldMap')
+              .set(dimensionField)
+              .where('id', '=', dimensionField.id)
+              .execute()
           }
           // Add the type in addition
           else {
