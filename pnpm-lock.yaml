@@ -192,7 +192,7 @@ importers:
         specifier: 2.3.5
         version: 2.3.5
       '@datadog/datadog-ci':
-        specifier: ^3.17.0
+        specifier: ^3.20.0
         version: 3.22.2(@types/node@22.19.1)
       '@graphql-codegen/add':
         specifier: 5.0.0
@@ -375,7 +375,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.103.0)
       sucrase:
-        specifier: ^3.35.0
+        specifier: ^3.35.1
         version: 3.35.1
       tailwindcss:
         specifier: ^4.0.1
@@ -12840,7 +12840,7 @@ snapshots:
   '@aws-crypto/crc32@3.0.0':
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.930.0
       tslib: 1.14.1
 
   '@aws-crypto/crc32@5.2.0':
@@ -12852,7 +12852,7 @@ snapshots:
   '@aws-crypto/crc32c@3.0.0':
     dependencies:
       '@aws-crypto/util': 3.0.0
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.930.0
       tslib: 1.14.1
 
   '@aws-crypto/ie11-detection@3.0.0':
@@ -12912,7 +12912,7 @@ snapshots:
 
   '@aws-crypto/util@3.0.0':
     dependencies:
-      '@aws-sdk/types': 3.535.0
+      '@aws-sdk/types': 3.930.0
       '@aws-sdk/util-utf8-browser': 3.259.0
       tslib: 1.14.1
 
