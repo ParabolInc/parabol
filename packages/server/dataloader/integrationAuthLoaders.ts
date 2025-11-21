@@ -3,11 +3,13 @@ import {type Selectable, sql} from 'kysely'
 import errorFilter from '../graphql/errorFilter'
 import isValid from '../graphql/isValid'
 import getKysely from '../postgres/getKysely'
-import getIntegrationProvidersByIds, {
-  type TIntegrationProvider
-} from '../postgres/queries/getIntegrationProvidersByIds'
-import {selectSlackNotifications, selectTeamMemberIntegrationAuth} from '../postgres/select'
+import {
+  selectIntegrationProvider,
+  selectSlackNotifications,
+  selectTeamMemberIntegrationAuth
+} from '../postgres/select'
 import type {SlackAuth, SlackNotification, TeamMemberIntegrationAuth} from '../postgres/types'
+import type {TIntegrationProvider} from '../postgres/types/IntegrationProvider'
 import type {Integrationproviderserviceenum, TeamNotificationSettings} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
 import type RootDataLoader from './RootDataLoader'
@@ -36,7 +38,10 @@ const teamMemberIntegrationAuthCacheKeyFn = ({
 export const integrationProviders = (parent: RootDataLoader) => {
   return new NullableDataLoader<number, TIntegrationProvider, string>(
     async (providerIds) => {
-      const integrationProviders = await getIntegrationProvidersByIds(providerIds)
+      const integrationProviders = await selectIntegrationProvider()
+        .where('id', 'in', providerIds)
+        .where('isActive', '=', true)
+        .execute()
       return providerIds.map((providerId) =>
         integrationProviders.find((row) => row.id === providerId)
       )

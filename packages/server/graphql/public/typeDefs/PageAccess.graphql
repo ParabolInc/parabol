@@ -1,12 +1,12 @@
 type PageAccess {
-	viewer: PageRoleEnum
-	public: PageRoleEnum
-	guests: [PageAccessGuest!]!
-	users: [PageAccessUser!]!
-	teams: [PageAccessTeam!]!
-	organizations: [PageAccessOrganization!]!
-	"""
-	Users who have requested access to this page withing the last 30 days but have not yet been granted access.
-	"""
-	pendingRequests: [PageAccessRequest!]!
+  viewer: PageRoleEnum
+  public: PageRoleEnum
+  guests: [PageAccessGuest!]!
+  users: [PageAccessUser!]!
+  teams: [PageAccessTeam!]!
+  organizations: [PageAccessOrganization!]!
+  """
+  Users who have requested access to this page withing the last 30 days but have not yet been granted access.
+  """
+  pendingRequests: [PageAccessRequest!]!
 }

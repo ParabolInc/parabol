@@ -1,8 +1,8 @@
 type UpdateOrgPayload {
-	error: StandardMutationError
+  error: StandardMutationError
 
-	"""
-	The updated org
-	"""
-	organization: Organization
+  """
+  The updated org
+  """
+  organization: Organization
 }

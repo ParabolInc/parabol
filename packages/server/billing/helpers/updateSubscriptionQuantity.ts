@@ -1,5 +1,4 @@
 import getKysely from '../../postgres/getKysely'
-import insertStripeQuantityMismatchLogging from '../../postgres/queries/insertStripeQuantityMismatchLogging'
 import logError from '../../utils/logError'
 import RedisLockQueue from '../../utils/RedisLockQueue'
 import {getStripeManager} from '../../utils/stripe'
@@ -52,14 +51,18 @@ const updateSubscriptionQuantity = async (orgId: string, logMismatch?: boolean) 
     ) {
       await manager.updateSubscriptionItemQuantity(teamSubscription.id, orgUserCount)
       if (logMismatch) {
-        insertStripeQuantityMismatchLogging(
-          orgId,
-          null,
-          new Date(),
-          'invoice.created',
-          teamSubscription.quantity,
-          orgUserCount
-        )
+        await getKysely()
+          .insertInto('StripeQuantityMismatchLogging')
+          .values({
+            orgId,
+            userId: null,
+            eventTime: new Date(),
+            eventType: 'invoice.created',
+            stripePreviousQuantity: teamSubscription.quantity,
+            stripeNextQuantity: orgUserCount
+          })
+          .execute()
+
         logError(new Error('Stripe Quantity Mismatch'), {
           tags: {
             quantity: orgUserCount,

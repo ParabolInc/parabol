@@ -1,0 +1,19 @@
+"""
+"""
+type LoginSAMLPayload {
+  error: StandardMutationError
+
+  userId: ID
+
+  """
+  if a new user is created
+  """
+  isNewUser: Boolean
+
+  """
+  the newly created user, or the existing user
+  """
+  user: User
+
+  authToken: ID
+}

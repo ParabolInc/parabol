@@ -1,6 +1,6 @@
 type PageAccessRequest {
-	user: UserPreview!
-	role: PageRoleEnum!
-	reason: String
-	createdAt: DateTime!
+  user: UserPreview!
+  role: PageRoleEnum!
+  reason: String
+  createdAt: DateTime!
 }

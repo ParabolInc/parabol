@@ -1,5 +1,5 @@
 input JiraServerSearchQueryInput {
-	queryString: String!
-	isJQL: Boolean!
-	projectKeyFilters: [ID!]!
+  queryString: String!
+  isJQL: Boolean!
+  projectKeyFilters: [ID!]!
 }

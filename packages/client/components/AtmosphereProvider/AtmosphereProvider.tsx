@@ -11,6 +11,7 @@ interface Props {
 
 class AtmosphereProvider extends Component<Props> {
   atmosphere?: Atmosphere | TLocalAtmosphere
+  cleanup?: () => void
 
   constructor(props: Props) {
     super(props)
@@ -20,7 +21,13 @@ class AtmosphereProvider extends Component<Props> {
       })
     } else {
       this.atmosphere = new Atmosphere()
-      this.atmosphere.getAuthToken(window)
+      this.cleanup = this.atmosphere.registerCookieListener(window)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.cleanup) {
+      this.cleanup()
     }
   }
 

@@ -1,4 +1,4 @@
 enum JiraIssueMissingEstimationFieldHintEnum {
-	teamManagedStoryPoints
-	companyManagedStoryPoints
+  teamManagedStoryPoints
+  companyManagedStoryPoints
 }

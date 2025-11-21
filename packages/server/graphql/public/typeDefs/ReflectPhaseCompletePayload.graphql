@@ -1,11 +1,11 @@
 type ReflectPhaseCompletePayload {
-	"""
-	a list of empty reflection groups to remove
-	"""
-	emptyReflectionGroupIds: [ID!]!
+  """
+  a list of empty reflection groups to remove
+  """
+  emptyReflectionGroupIds: [ID!]!
 
-	"""
-	The grouped reflections
-	"""
-	reflectionGroups: [RetroReflectionGroup!]!
+  """
+  The grouped reflections
+  """
+  reflectionGroups: [RetroReflectionGroup!]!
 }

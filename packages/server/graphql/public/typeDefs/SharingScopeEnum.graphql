@@ -2,7 +2,7 @@
 The scope of a shareable item
 """
 enum SharingScopeEnum {
-	TEAM
-	ORGANIZATION
-	PUBLIC
+  TEAM
+  ORGANIZATION
+  PUBLIC
 }

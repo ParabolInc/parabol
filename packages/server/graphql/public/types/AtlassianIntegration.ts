@@ -1,6 +1,6 @@
 import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
-import updateJiraSearchQueries from '../../../postgres/queries/updateJiraSearchQueries'
+import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
@@ -134,15 +134,16 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
 
   jiraSearchQueries: async ({teamId, userId, jiraSearchQueries}) => {
     const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh)
+    const thresh = new Date(Date.now() - expirationThresh).toISOString()
     const searchQueries = jiraSearchQueries || []
     const unexpiredQueries = searchQueries.filter((query) => query.lastUsedAt > thresh)
     if (unexpiredQueries.length < searchQueries.length) {
-      await updateJiraSearchQueries({
-        jiraSearchQueries: searchQueries,
-        teamId,
-        userId
-      })
+      await getKysely()
+        .updateTable('AtlassianAuth')
+        .set({jiraSearchQueries: searchQueries.map((jsq) => JSON.stringify(jsq))})
+        .where('teamId', '=', teamId)
+        .where('userId', '=', userId)
+        .execute()
     }
     return unexpiredQueries
   }

@@ -2,75 +2,75 @@
 A meeting template that can be shared across team, orgnization and public
 """
 interface MeetingTemplate {
-	"""
-	shortid
-	"""
-	id: ID!
-	createdAt: DateTime!
+  """
+  shortid
+  """
+  id: ID!
+  createdAt: DateTime!
 
-	"""
-	True if template can be used, else false
-	"""
-	isActive: Boolean!
+  """
+  True if template can be used, else false
+  """
+  isActive: Boolean!
 
-	"""
-	True if template is available to all teams including non-paying teams, else false
-	"""
-	isFree: Boolean!
+  """
+  True if template is available to all teams including non-paying teams, else false
+  """
+  isFree: Boolean!
 
-	"""
-	The time of the meeting the template was last used
-	"""
-	lastUsedAt: DateTime
+  """
+  The time of the meeting the template was last used
+  """
+  lastUsedAt: DateTime
 
-	"""
-	The name of the template
-	"""
-	name: String!
+  """
+  The name of the template
+  """
+  name: String!
 
-	"""
-	*Foreign key. The organization that owns the team that created the template
-	"""
-	orgId: ID!
+  """
+  *Foreign key. The organization that owns the team that created the template
+  """
+  orgId: ID!
 
-	"""
-	Who can see this template
-	"""
-	scope: SharingScopeEnum!
+  """
+  Who can see this template
+  """
+  scope: SharingScopeEnum!
 
-	"""
-	*Foreign key. The team this template belongs to
-	"""
-	teamId: ID!
+  """
+  *Foreign key. The team this template belongs to
+  """
+  teamId: ID!
 
-	"""
-	The team this template belongs to
-	"""
-	team: Team!
+  """
+  The team this template belongs to
+  """
+  team: Team!
 
-	"""
-	The type of the template
-	"""
-	type: MeetingTypeEnum!
-	updatedAt: DateTime!
+  """
+  The type of the template
+  """
+  type: MeetingTypeEnum!
+  updatedAt: DateTime!
 
-	"""
-	The category this template falls under, e.g. retro, feedback, strategy, etc.
-	"""
-	category: String!
+  """
+  The category this template falls under, e.g. retro, feedback, strategy, etc.
+  """
+  category: String!
 
-	"""
-	Whether this template should be in the recommended/quick start sections in the UI.
-	"""
-	isRecommended: Boolean!
+  """
+  Whether this template should be in the recommended/quick start sections in the UI.
+  """
+  isRecommended: Boolean!
 
-	"""
-	The url to the illustration used by the template
-	"""
-	illustrationUrl: String!
+  """
+  The url to the illustration used by the template
+  """
+  illustrationUrl: String!
 
-	"""
-	The lowest scope of the permissions available to the viewer
-	"""
-	viewerLowestScope: SharingScopeEnum!
+  """
+  The lowest scope of the permissions available to the viewer
+  """
+  viewerLowestScope: SharingScopeEnum!
 }

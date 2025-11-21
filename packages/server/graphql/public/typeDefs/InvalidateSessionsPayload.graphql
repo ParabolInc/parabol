@@ -1,8 +1,3 @@
 type InvalidateSessionsPayload {
-	error: StandardMutationError
-
-	"""
-	The new, only valid auth token
-	"""
-	authToken: ID
+  error: StandardMutationError
 }

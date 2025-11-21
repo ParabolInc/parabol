@@ -1,6 +1,6 @@
 type UpdateIntegrationProviderSuccess {
-	"""
-	The provider that was updated
-	"""
-	provider: IntegrationProvider!
+  """
+  The provider that was updated
+  """
+  provider: IntegrationProvider!
 }

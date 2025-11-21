@@ -1,6 +1,5 @@
 import {GraphQLNonNull} from 'graphql'
-import getPg from '../../postgres/getPg'
-import {dismissNewFeatureQuery} from '../../postgres/queries/generated/dismissNewFeatureQuery'
+import getKysely from '../../postgres/getKysely'
 import {getUserId} from '../../utils/authorization'
 import type {GQLContext} from '../graphql'
 import DismissNewFeaturePayload from '../types/DismissNewFeaturePayload'
@@ -12,7 +11,11 @@ export default {
   resolve: async (_source: unknown, _args: unknown, {authToken}: GQLContext) => {
     // AUTH
     const viewerId = getUserId(authToken)
-    await dismissNewFeatureQuery.run({ids: [viewerId]}, getPg())
+    await getKysely()
+      .updateTable('User')
+      .set({newFeatureId: null})
+      .where('id', '=', viewerId)
+      .execute()
     return {}
   }
 }

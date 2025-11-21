@@ -1,13 +1,13 @@
 input UpdatedTeamInput {
-	id: ID!
+  id: ID!
 
-	"""
-	The name of the team
-	"""
-	name: String!
+  """
+  The name of the team
+  """
+  name: String!
 
-	"""
-	A link to the team’s profile image.
-	"""
-	picture: URL
+  """
+  A link to the team’s profile image.
+  """
+  picture: URL
 }

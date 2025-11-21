@@ -1,8 +1,8 @@
 query getProfile {
-	viewer {
-		id
-		name
-		email
-		avatarUrl
-	}
+  viewer {
+    id
+    name
+    email
+    avatarUrl
+  }
 }

@@ -11,13 +11,17 @@ const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redi
 const PROJECT_ROOT = getProjectRoot()
 const CLIENT_ROOT = path.join(PROJECT_ROOT, 'packages', 'client')
 const STATIC_ROOT = path.join(PROJECT_ROOT, 'static')
-const {PORT, SOCKET_PORT} = process.env
+const {PORT, SOCKET_PORT, HOST} = process.env
+
+// When using ngrok, we want localhost to run with http
+const isProxiedDev = HOST !== 'localhost'
 
 const USE_REFRESH = false
 module.exports = {
   stats: 'errors-warnings',
   devServer: {
-    allowedHosts: ['localhost', 'host.docker.internal'],
+    allowedHosts: ['localhost', 'host.docker.internal', HOST],
+    server: isProxiedDev ? 'http' : 'https',
     client: {
       logging: 'warn'
     },
@@ -93,7 +97,7 @@ module.exports = {
     filename: '[name].js',
     chunkFilename: '[name].chunk.js',
     publicPath: '/',
-    assetModuleFilename: '[name][ext][query]-[hash]'
+    assetModuleFilename: '[name]-[hash][query][ext]'
   },
   resolve: {
     alias: {

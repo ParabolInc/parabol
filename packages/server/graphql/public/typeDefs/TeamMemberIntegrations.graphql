@@ -2,57 +2,57 @@
 All the available integrations available for this team member
 """
 type TeamMemberIntegrations {
-	"""
-	composite
-	"""
-	id: ID!
+  """
+  composite
+  """
+  id: ID!
 
-	"""
-	All things associated with an Atlassian integration for a team member
-	"""
-	atlassian: AtlassianIntegration
+  """
+  All things associated with an Atlassian integration for a team member
+  """
+  atlassian: AtlassianIntegration
 
-	"""
-	All things associated with a Jira Data Center integration for a team member
-	"""
-	jiraServer: JiraServerIntegration!
+  """
+  All things associated with a Jira Data Center integration for a team member
+  """
+  jiraServer: JiraServerIntegration!
 
-	"""
-	All things associated with a GitHub integration for a team member
-	"""
-	github: GitHubIntegration
+  """
+  All things associated with a GitHub integration for a team member
+  """
+  github: GitHubIntegration
 
-	"""
-	All things associated with a GitLab integration for a team member
-	"""
-	gitlab: GitLabIntegration!
+  """
+  All things associated with a GitLab integration for a team member
+  """
+  gitlab: GitLabIntegration!
 
-	"""
-	All things associated with a Linear integration for a team member
-	"""
-	linear: LinearIntegration!
-	"""
-	All things associated with a Mattermost integration for a team member
-	"""
-	mattermost: MattermostIntegration!
+  """
+  All things associated with a Linear integration for a team member
+  """
+  linear: LinearIntegration!
+  """
+  All things associated with a Mattermost integration for a team member
+  """
+  mattermost: MattermostIntegration!
 
-	"""
-	All things associated with a slack integration for a team member
-	"""
-	slack: SlackIntegration
+  """
+  All things associated with a slack integration for a team member
+  """
+  slack: SlackIntegration
 
-	"""
-	All things associated with a A integration for a team member
-	"""
-	azureDevOps: AzureDevOpsIntegration!
+  """
+  All things associated with a A integration for a team member
+  """
+  azureDevOps: AzureDevOpsIntegration!
 
-	"""
-	All things associated with a Microsoft Teams integration for a team member
-	"""
-	msTeams: MSTeamsIntegration!
+  """
+  All things associated with a Microsoft Teams integration for a team member
+  """
+  msTeams: MSTeamsIntegration!
 
-	"""
-	All things associated with a Gcal integration for a team member
-	"""
-	gcal: GcalIntegration
+  """
+  All things associated with a Gcal integration for a team member
+  """
+  gcal: GcalIntegration
 }

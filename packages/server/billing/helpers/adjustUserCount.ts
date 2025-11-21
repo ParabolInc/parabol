@@ -5,7 +5,7 @@ import type {DataLoaderWorker} from '../../graphql/graphql'
 import isValid from '../../graphql/isValid'
 import getKysely from '../../postgres/getKysely'
 import {getUserById} from '../../postgres/queries/getUsersByIds'
-import type IUser from '../../postgres/types/IUser'
+import type {User} from '../../postgres/types'
 import type {OrganizationUserAudit} from '../../postgres/types/pg'
 import {analytics} from '../../utils/analytics/analytics'
 import getActiveDomainForOrgId from '../../utils/getActiveDomainForOrgId'
@@ -40,7 +40,7 @@ const maybeUpdateOrganizationActiveDomain = async (
   await pg.updateTable('Organization').set({activeDomain: domain}).where('id', '=', orgId).execute()
 }
 
-const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser) => {
+const changePause = (inactive: boolean) => async (_orgIds: string[], user: User) => {
   const pg = getKysely()
   const {id: userId, email} = user
   inactive ? analytics.accountPaused(user) : analytics.accountUnpaused(user)
@@ -52,7 +52,7 @@ const changePause = (inactive: boolean) => async (_orgIds: string[], user: IUser
   await pg.updateTable('User').set({inactive}).where('id', '=', userId).execute()
 }
 
-const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWorker) => {
+const addUser = async (orgIds: string[], user: User, dataLoader: DataLoaderWorker) => {
   const {id: userId} = user
   const docs = orgIds.map((orgId) => {
     return {
@@ -81,7 +81,7 @@ const addUser = async (orgIds: string[], user: IUser, dataLoader: DataLoaderWork
   )
 }
 
-const deleteUser = async (orgIds: string[], user: IUser) => {
+const deleteUser = async (orgIds: string[], user: User) => {
   orgIds.forEach((orgId) => analytics.userRemovedFromOrg(user, orgId))
   await getKysely()
     .updateTable('OrganizationUser')

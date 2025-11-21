@@ -1,26 +1,26 @@
 type DomainJoinRequest {
-	"""
-	Request id
-	"""
-	id: ID!
+  """
+  Request id
+  """
+  id: ID!
 
-	"""
-	Created by user id
-	"""
-	createdBy: ID!
+  """
+  Created by user id
+  """
+  createdBy: ID!
 
-	"""
-	Created by email
-	"""
-	createdByEmail: String!
+  """
+  Created by email
+  """
+  createdByEmail: String!
 
-	"""
-	Request domain
-	"""
-	domain: String!
+  """
+  Request domain
+  """
+  domain: String!
 
-	"""
-	Matching teams
-	"""
-	teams: [Team!]!
+  """
+  Matching teams
+  """
+  teams: [Team!]!
 }

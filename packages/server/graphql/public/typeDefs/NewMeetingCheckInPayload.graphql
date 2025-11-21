@@ -1,5 +1,5 @@
 type NewMeetingCheckInPayload {
-	error: StandardMutationError
-	meetingMember: MeetingMember
-	meeting: NewMeeting
+  error: StandardMutationError
+  meetingMember: MeetingMember
+  meeting: NewMeeting
 }

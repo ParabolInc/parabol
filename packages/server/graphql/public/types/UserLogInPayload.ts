@@ -3,7 +3,6 @@ import type {UserLogInPayloadResolvers} from '../resolverTypes'
 export type UserLogInPayloadSource =
   | {
       userId: string
-      authToken: string
       isNewUser: boolean
     }
   | {error: {message: string}}
