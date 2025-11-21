@@ -80,7 +80,7 @@ $ pnpm dev
 ```bash
 # There's a pesky bug in pnpm if you don't have an SSH key: https://github.com/pnpm/pnpm/issues/7243
 $ git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
-$ pnpm i && pnpm pg:build && pnpm build && pnpm predeploy && pnpm start
+$ pnpm i && pnpm build && pnpm predeploy && pnpm start
 ```
 
 - [How to Ship](./docs/deployment.md)

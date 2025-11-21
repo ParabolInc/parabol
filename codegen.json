@@ -111,7 +111,7 @@
           "JoinTeamSuccess": "./types/JoinTeamSuccess#JoinTeamSuccessSource",
           "MSTeamsIntegration": "./types/MSTeamsIntegration#MSTeamsIntegrationSource",
           "MattermostIntegration": "./types/MattermostIntegration#MattermostIntegrationSource",
-          "MeetingSeries": "../../postgres/types/MeetingSeries#MeetingSeries as MeetingSeriesDB",
+          "MeetingSeries": "../../postgres/types/index#MeetingSeries as MeetingSeriesDB",
           "MeetingTemplate": "../../database/types/MeetingTemplate#default as MeetingTemplateDB",
           "MoveReflectTemplatePromptPayload": "./types/MoveReflectTemplatePromptPayload#MoveReflectTemplatePromptPayloadSource",
           "NewFeatureBroadcast": "../../postgres/types/index#NewFeature",

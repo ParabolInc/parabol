@@ -32,7 +32,7 @@ export class AmplitudeAnalytics {
 
     return identify(identity, {
       user_id: userId,
-      device_id: anonymousId
+      device_id: anonymousId!
     })
   }
 
