@@ -707,6 +707,10 @@
     margin-top: 0;
   }
 
+  /* Table row and column manipulation specific styling
+   *
+   * Table styling itself is done via tailwind in the extension
+   */
   [data-highlight="header"] :has([data-active=true]) tr:first-child th::after,
   [data-highlight="header"] :has([data-active=true]) tr:first-child td::after {
     background: var(--color-sky-200);
@@ -799,43 +803,17 @@
     z-index: 1;
   }
 
-  /* Table-specific styling */
   table {
-    background-color: var(--color-white);
-    border-collapse: collapse;
-    margin: 0;
     overflow: hidden;
-    table-layout: fixed;
-    width: 100%;
 
     td,
     th {
-      border: 1px solid var(--color-slate-200);
-      box-sizing: border-box;
-      min-width: 1em;
-      padding: 6px 8px;
       position: relative;
-      vertical-align: top;
-
-      > * {
-        margin-bottom: 0;
-      }
     }
 
-    th {
-      background-color: var(--color-slate-200);
-      border: 1px solid var(--color-slate-300);
-      font-weight: bold;
-      text-align: left;
-    }
-
-    .selectedCell:after {
-      background: var(--color-sky-500);
-      content: "";
-      left: 0; right: 0; top: 0; bottom: 0;
-      pointer-events: none;
-      position: absolute;
-      z-index: 2;
+    td[data-active=true],
+    th[data-active=true] {
+      background: var(--color-sky-100);
     }
 
     .column-resize-handle {

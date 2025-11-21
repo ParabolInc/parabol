@@ -1,7 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import type {DataLoaderWorker} from '../../../graphql/graphql'
-import type {IntegrationProviderAzureDevOps} from '../../../postgres/queries/getIntegrationProvidersByIds'
 import type {TeamMemberIntegrationAuth} from '../../../postgres/types'
+import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 
 const createAzureTask = async (

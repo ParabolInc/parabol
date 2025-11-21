@@ -1,7 +1,6 @@
 import GitHubRepoId from '../../../../client/shared/gqlIds/GitHubRepoId'
 import getKysely from '../../../postgres/getKysely'
-import type {IGetLatestTaskEstimatesQueryResult} from '../../../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getSimilarTaskEstimate from '../../../postgres/queries/getSimilarTaskEstimate'
+import {selectTaskEstimate} from '../../../postgres/select'
 import type {GetIssueLabelsQuery, GetIssueLabelsQueryVariables} from '../../../types/githubTypes'
 import {getUserId} from '../../../utils/authorization'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
@@ -87,7 +86,7 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
       if (!labelNodes) return estimates
       const ghIssueLabels = labelNodes.map((node) => node?.name).filter(isValid)
       await Promise.all(
-        estimates.map(async (estimate: IGetLatestTaskEstimatesQueryResult) => {
+        estimates.map(async (estimate) => {
           const {githubLabelName, name: dimensionName} = estimate
           const existingLabel = ghIssueLabels.includes(githubLabelName!)
           if (existingLabel) return
@@ -95,11 +94,12 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
           const taskIds = await dataLoader
             .get('taskIdsByTeamAndGitHubRepo')
             .load({teamId, nameWithOwner})
-          const similarEstimate = await getSimilarTaskEstimate(
-            taskIds,
-            dimensionName,
-            ghIssueLabels
-          )
+          const similarEstimate = await selectTaskEstimate()
+            .where('taskId', 'in', taskIds)
+            .where('name', '=', dimensionName)
+            .where('githubLabelName', 'in', ghIssueLabels)
+            .limit(1)
+            .executeTakeFirst()
           if (!similarEstimate) return
           dataLoader.get('latestTaskEstimates').clear(taskId)
           return getKysely()

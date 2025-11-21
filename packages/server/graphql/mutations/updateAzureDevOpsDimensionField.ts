@@ -1,8 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import upsertAzureDevOpsDimensionFieldMap, {
-  type AzureDevOpsFieldMapProps
-} from '../../postgres/queries/upsertAzureDevOpsDimensionFieldMap'
+import getKysely from '../../postgres/getKysely'
 import {isTeamMember} from '../../utils/authorization'
 import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
@@ -82,17 +80,28 @@ const updateAzureDevOpsDimensionField = {
 
     // RESOLUTION
     try {
-      const props = {
-        teamId,
-        dimensionName,
-        fieldName,
-        fieldId: fieldName,
-        instanceId,
-        fieldType: 'string',
-        projectKey,
-        workItemType
-      } as AzureDevOpsFieldMapProps
-      await upsertAzureDevOpsDimensionFieldMap(props)
+      await getKysely()
+        .insertInto('AzureDevOpsDimensionFieldMap')
+        .values({
+          teamId,
+          dimensionName,
+          fieldName,
+          fieldId: fieldName,
+          instanceId,
+          fieldType: 'string',
+          projectKey,
+          workItemType
+        })
+        .onConflict((oc) =>
+          oc
+            .columns(['teamId', 'dimensionName', 'instanceId', 'projectKey', 'workItemType'])
+            .doUpdateSet((eb) => ({
+              fieldName: eb.ref('excluded.fieldName'),
+              fieldId: eb.ref('excluded.fieldId'),
+              fieldType: eb.ref('excluded.fieldType')
+            }))
+        )
+        .execute()
     } catch (e) {
       Logger.log(e)
     }

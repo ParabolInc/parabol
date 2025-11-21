@@ -1,6 +1,6 @@
 import ms from 'ms'
 import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
-import updateGitHubSearchQueries from '../../../postgres/queries/updateGitHubSearchQueries'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {GitHubIntegrationResolvers} from '../resolverTypes'
 
@@ -16,16 +16,15 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
 
   githubSearchQueries: async ({githubSearchQueries, teamId, userId}) => {
     const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh)
-    const unexpiredQueries = githubSearchQueries.filter(
-      (query) => new Date(query.lastUsedAt) > thresh
-    )
+    const thresh = new Date(Date.now() - expirationThresh).toISOString()
+    const unexpiredQueries = githubSearchQueries.filter((query) => query.lastUsedAt > thresh)
     if (unexpiredQueries.length < githubSearchQueries.length) {
-      await updateGitHubSearchQueries({
-        teamId,
-        userId,
-        githubSearchQueries: unexpiredQueries
-      })
+      await getKysely()
+        .updateTable('GitHubAuth')
+        .set({githubSearchQueries: unexpiredQueries.map((obj) => JSON.stringify(obj))})
+        .where('teamId', '=', teamId)
+        .where('userId', '=', userId)
+        .execute()
     }
     return unexpiredQueries
   }

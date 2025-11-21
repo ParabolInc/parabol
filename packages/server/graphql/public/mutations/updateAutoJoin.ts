@@ -1,4 +1,4 @@
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
@@ -22,7 +22,12 @@ const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
     }
   }
 
-  const updatedTeams = await updateTeamByTeamId({autoJoin}, teamIds)
+  const updatedTeams = await getKysely()
+    .updateTable('Team')
+    .set({autoJoin})
+    .where('id', 'in', teamIds)
+    .returning('id')
+    .execute()
   const updatedTeamIds = updatedTeams.map(({id}) => id)
 
   const data = {updatedTeamIds}

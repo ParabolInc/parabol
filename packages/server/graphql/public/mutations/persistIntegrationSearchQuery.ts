@@ -1,7 +1,8 @@
+import {sql} from 'kysely'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getIntegrationProvidersByIds from '../../../postgres/queries/getIntegrationProvidersByIds'
-import upsertIntegrationSearchQuery from '../../../postgres/queries/upsertIntegrationSearchQuery'
+import getKysely from '../../../postgres/getKysely'
+import {selectIntegrationProvider} from '../../../postgres/select'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {
@@ -39,7 +40,10 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const dbProviderId = providerId ? IntegrationProviderId.split(providerId) : null
 
   if (dbProviderId) {
-    const integrationProvider = (await getIntegrationProvidersByIds([dbProviderId]))[0]
+    const integrationProvider = await selectIntegrationProvider()
+      .where('id', '=', dbProviderId)
+      .where('isActive', '=', true)
+      .executeTakeFirst()
 
     if (
       !integrationProvider ||
@@ -50,13 +54,22 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
     }
   }
 
-  await upsertIntegrationSearchQuery({
-    userId: viewerId,
-    teamId,
-    service,
-    query,
-    providerId: dbProviderId ?? null
-  })
+  await getKysely()
+    .insertInto('IntegrationSearchQuery')
+    .values({
+      userId: viewerId,
+      teamId,
+      service,
+      query,
+      providerId: dbProviderId ?? null
+    })
+    .onConflict((oc) =>
+      oc.columns(['userId', 'teamId', 'query', 'service']).doUpdateSet((eb) => ({
+        query: eb.ref('excluded.query'),
+        lastUsedAt: sql`CURRENT_TIMESTAMP`
+      }))
+    )
+    .executeTakeFirstOrThrow()
 
   const data = {teamId, userId: viewerId}
 

@@ -1,12 +1,21 @@
 import getKysely from '../../../postgres/getKysely'
-import removeGitHubAuth from '../../../postgres/queries/removeGitHubAuth'
 import getDeletedEmail from '../../../utils/getDeletedEmail'
 import type {DataLoaderWorker} from '../../graphql'
 import removeFromOrg from './removeFromOrg'
 import removeSlackAuths from './removeSlackAuths'
 
 const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
-  Promise.all(teamIds.map((teamId) => removeGitHubAuth(userId, teamId)))
+  Promise.all(
+    teamIds.map((teamId) => {
+      return getKysely()
+        .updateTable('GitHubAuth')
+        .set({isActive: false})
+        .where('userId', '=', userId)
+        .where('teamId', '=', teamId)
+        .where('isActive', '=', true)
+        .execute()
+    })
+  )
 
 const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
   if (teamIds.length === 0) return
