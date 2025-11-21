@@ -59,11 +59,15 @@ export const useTipTapPageEditor = (
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
         preferredName
+        organizations {
+          hasDatabases: featureFlag(featureName: "Databases")
+        }
       }
     `,
     viewerRef
   )
   const preferredName = user?.preferredName
+  const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
   const atmosphere = useAtmosphere()
   const placeholderRef = useRef<string | undefined>(undefined)
   const editor = useEditor(
@@ -96,7 +100,9 @@ export const useTipTapPageEditor = (
         TaskItem.configure({
           nested: true
         }),
-        SlashCommand.configure({}),
+        SlashCommand.configure({
+          Database: hasDatabases
+        }),
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,

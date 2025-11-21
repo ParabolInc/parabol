@@ -1,9 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
-import getMeetingSeriesByIds from '../postgres/queries/getMeetingSeriesByIds'
 import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
-import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
@@ -11,6 +9,7 @@ import {
   selectDiscussion,
   selectMassInvitations,
   selectMeetingMembers,
+  selectMeetingSeries,
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
@@ -27,6 +26,7 @@ import {
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
+  selectTemplateRef,
   selectTemplateScale,
   selectTemplateScaleRef,
   selectTimelineEvent
@@ -42,14 +42,19 @@ export const teams = primaryKeyLoaderMaker((ids: readonly string[]) => {
 export const discussions = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectDiscussion().where('id', 'in', ids).execute()
 })
-export const templateRefs = primaryKeyLoaderMaker(getTemplateRefsByIds)
+export const templateRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTemplateRef().where('id', 'in', ids).execute()
+})
+
 export const templateScaleRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTemplateScaleRef().where('id', 'in', ids).execute()
 })
 export const teamPromptResponses = primaryKeyLoaderMaker(async (ids: readonly number[]) => {
   return selectTeamPromptResponses().where('id', 'in', ids).execute()
 })
-export const meetingSeries = primaryKeyLoaderMaker(getMeetingSeriesByIds)
+export const meetingSeries = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectMeetingSeries().where('id', 'in', ids).execute()
+})
 export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
 

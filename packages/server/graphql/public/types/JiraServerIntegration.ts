@@ -1,9 +1,10 @@
+import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import type {IntegrationProviderJiraServer} from '../../../postgres/queries/getIntegrationProvidersByIds'
-import getLatestIntegrationSearchQueries from '../../../postgres/queries/getLatestIntegrationSearchQueries'
+import {selectIntegrationSearchQuery} from '../../../postgres/select'
 import type {TeamMember} from '../../../postgres/types'
+import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {JiraServerIntegrationResolvers} from '../resolverTypes'
@@ -181,12 +182,17 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
       return []
     }
 
-    const searchQueries = await getLatestIntegrationSearchQueries({
-      teamId,
-      userId,
-      service: 'jiraServer',
-      providerId: auth.providerId
-    })
+    const {providerId} = auth
+    const searchQueries = await selectIntegrationSearchQuery()
+      .where('teamId', '=', teamId)
+      .where('userId', '=', userId)
+      .where('service', '=', 'jiraServer')
+      .$if(!providerId, (qb) => qb.where('providerId', 'is', null))
+      .$if(!!providerId, (qb) => qb.where('providerId', '=', providerId))
+      .where('lastUsedAt', '>', sql<Date>`NOW() - INTERVAL '60 days'`)
+      .orderBy('lastUsedAt', 'desc')
+      .limit(5)
+      .execute()
 
     return searchQueries.map((searchQuery) => {
       const query = searchQuery.query as {
@@ -200,7 +206,7 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
         queryString: query.queryString || '',
         isJQL: query.isJQL,
         projectKeyFilters: query.projectKeyFilters || [],
-        lastUsedAt: searchQuery.lastUsedAt
+        lastUsedAt: searchQuery.lastUsedAt.toJSON()
       }
     })
   }

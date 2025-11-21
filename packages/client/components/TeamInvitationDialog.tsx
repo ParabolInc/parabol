@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {type RouteComponentProps, withRouter} from 'react-router'
-import useAtmosphere from '~/hooks/useAtmosphere'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import {LocalStorageKey} from '../types/constEnums'
+import {useIsAuthenticated} from './IsAuthenticatedProvider'
 import TeamInvitationAccept from './TeamInvitationAccept'
 import TeamInvitationEmailCreateAccount from './TeamInvitationEmailCreateAccount'
 import TeamInvitationEmailSignin from './TeamInvitationEmailSignin'
@@ -43,7 +43,7 @@ const TeamInvitationDialog = (props: Props) => {
   const {params} = match
   const {token: invitationToken} = params
 
-  const atmosphere = useAtmosphere()
+  const isLoggedIn = useIsAuthenticated()
   useEffect(() => {
     window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, invitationToken)
   }, [invitationToken])
@@ -61,8 +61,7 @@ const TeamInvitationDialog = (props: Props) => {
     case 'expired':
       return <TeamInvitationErrorExpired verifiedInvitation={verifiedInvitation} />
   }
-  const {authObj} = atmosphere
-  if (authObj) {
+  if (isLoggedIn) {
     return <TeamInvitationAccept invitationToken={invitationToken} />
   }
   if (ssoURL) {

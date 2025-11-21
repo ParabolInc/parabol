@@ -52,7 +52,8 @@ export const useTipTapReflectionEditor = (
           Insights: false,
           Table: false,
           Details: false,
-          'Create page': false
+          'Create page': false,
+          Database: false
         }),
         ClearOnSubmit,
         Focus,

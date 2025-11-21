@@ -1,5 +1,5 @@
-import type {IntegrationProviderServiceEnum} from '../../../postgres/queries/generated/removeTeamMemberIntegrationAuthQuery'
-import removeTeamMemberIntegrationAuthQuery from '../../../postgres/queries/removeTeamMemberIntegrationAuth'
+import getKysely from '../../../postgres/getKysely'
+import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -14,15 +14,18 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
     // AUTH
     if (!isTeamMember(authToken, teamId))
       return standardError(new Error('permission denied; must be team member'))
-
+    const pg = getKysely()
     // RESOLUTION
     const [viewer] = await Promise.all([
       dataLoader.get('users').loadNonNull(viewerId),
-      removeTeamMemberIntegrationAuthQuery(
-        service as IntegrationProviderServiceEnum,
-        teamId,
-        viewerId
-      )
+      pg
+        .updateTable('TeamMemberIntegrationAuth')
+        .set({isActive: false})
+        .where('userId', '=', viewerId)
+        .where('teamId', '=', teamId)
+        .where('service', '=', service as Integrationproviderserviceenum)
+        .where('isActive', '=', true)
+        .execute()
     ])
     updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, false)
     analytics.integrationRemoved(viewer, teamId, service)

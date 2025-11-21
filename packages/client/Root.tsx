@@ -6,20 +6,23 @@ import AtmosphereProvider from './components/AtmosphereProvider/AtmosphereProvid
 import {TipTapProvider} from './components/TipTapProvider'
 import {serverTipTapExtensions} from './shared/tiptap/serverTipTapExtensions'
 import './styles/theme/global.css'
+import {IsAuthenticatedProvider} from './components/IsAuthenticatedProvider'
 export default function Root() {
   return (
     <AtmosphereProvider>
-      <Router>
-        <Tooltip.Provider>
-          <TipTapProvider
-            generateHTML={generateHTML}
-            generateJSON={generateJSON}
-            extensions={serverTipTapExtensions}
-          >
-            <Action />
-          </TipTapProvider>
-        </Tooltip.Provider>
-      </Router>
+      <IsAuthenticatedProvider>
+        <Router>
+          <Tooltip.Provider>
+            <TipTapProvider
+              generateHTML={generateHTML}
+              generateJSON={generateJSON}
+              extensions={serverTipTapExtensions}
+            >
+              <Action />
+            </TipTapProvider>
+          </Tooltip.Provider>
+        </Router>
+      </IsAuthenticatedProvider>
     </AtmosphereProvider>
   )
 }

@@ -2,18 +2,18 @@ import base64url from 'base64url'
 import crypto from 'crypto'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import util from 'util'
-import type AuthIdentity from '../../../database/types/AuthIdentity'
 import getMailManager from '../../../email/getMailManager'
 import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
 import getKysely from '../../../postgres/getKysely'
 import updateUser from '../../../postgres/queries/updateUser'
+import type {UserAuthIdentity} from '../../../postgres/types'
 
 const randomBytes = util.promisify(crypto.randomBytes)
 
 const processEmailPasswordReset = async (
   ip: string,
   email: string,
-  identities: AuthIdentity[],
+  identities: UserAuthIdentity[],
   userId: string,
   sendEmail?: boolean | null
 ) => {

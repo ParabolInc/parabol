@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getAtlassianAuthsByUserId from '../../postgres/queries/getAtlassianAuthsByUserId'
 import upsertAtlassianAuths from '../../postgres/queries/upsertAtlassianAuths'
+import {selectAtlassianAuth} from '../../postgres/select'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -71,13 +71,16 @@ export default {
     // if there are the same Jira integrations existing we need to update them with new credentials as well
     // if there's an existing integration for a given user and team (user used an option to refresh the token), skip it as
     // we'll create a new atlassian auth object for it for the upsert
-    const userAtlassianAuths = await getAtlassianAuthsByUserId(viewerId)
+    const userAtlassianAuths = await selectAtlassianAuth()
+      .where('userId', '=', viewerId)
+      .where('isActive', '=', true)
+      .execute()
     const atlassianAuthsToUpdate = userAtlassianAuths
       .filter((auth) => auth.accountId === self.accountId && auth.teamId !== teamId)
       .map((auth) => ({
         ...auth,
         accessToken,
-        refreshToken
+        refreshToken: refreshToken!
       }))
 
     await upsertAtlassianAuths([
@@ -85,7 +88,7 @@ export default {
         accountId: self.accountId,
         userId: viewerId,
         accessToken,
-        refreshToken,
+        refreshToken: refreshToken!,
         cloudIds,
         teamId,
         scope: AtlassianServerManager.SCOPE.join(' ')

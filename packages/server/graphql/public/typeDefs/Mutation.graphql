@@ -1559,6 +1559,16 @@ type Mutation {
 	Login using an email address and password
 	"""
 	loginWithPassword(email: ID!, password: String!): UserLogInPayload!
+	
+	"""
+	Sign out the current user by unsetting the session cookie
+	"""
+	signOut: Boolean!
+
+	"""
+	Refresh the session token
+	"""
+	refreshSession: Boolean!
 
 	"""
 	Sign out the current user by unsetting the session cookie

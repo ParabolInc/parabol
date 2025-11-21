@@ -5,11 +5,9 @@ All new schema additions should be added in this directory.
 
 ### How to add a new mutation (preferred)
 
-1. `pnpm newMutation <mutationName> -s <subscriptionChannel> -p`
+1. `pnpm newMutation <mutationName> -s <subscriptionChannel>`
    This will create all the boilerplate you need.
    If you don't need to publish to a subscription channel, leave off the -s flag.
-   `-p` will include postgres files.
-   If you use `-p`, writing the SQL and running `pg:build` is up to you
    To learn more, type `pnpm newMutation --help`
 
 ### How to manually add a new mutation

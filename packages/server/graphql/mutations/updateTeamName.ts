@@ -1,7 +1,7 @@
 import {GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import teamNameValidation from 'parabol-client/validation/teamNameValidation'
-import updateTeamByTeamId from '../../postgres/queries/updateTeamByTeamId'
+import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -23,7 +23,6 @@ export default {
     {updatedTeam}: {updatedTeam: UpdatedTeamInputType},
     {authToken, dataLoader, socketId: mutatorId}: GQLContext
   ) {
-    const now = new Date()
     const operationId = dataLoader.share()
     const subOptions = {mutatorId, operationId}
     const viewerId = getUserId(authToken)
@@ -54,11 +53,7 @@ export default {
     // update the dataLoader cache
     const cachedTeam = orgTeams.find((team) => team.id === teamId)!
     cachedTeam.name = name
-    const dbUpdate = {
-      name,
-      updatedAt: now
-    }
-    await updateTeamByTeamId(dbUpdate, teamId)
+    await getKysely().updateTable('Team').set({name}).where('id', '=', teamId).execute()
     dataLoader.clearAll('teams')
     analytics.teamNameChanged(viewer, teamId, oldName, newName, oldName.endsWith('’s Team'))
 

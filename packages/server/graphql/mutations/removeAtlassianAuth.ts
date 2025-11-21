@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../postgres/getKysely'
-import getAtlassianAuthByUserIdTeamId from '../../postgres/queries/getAtlassianAuthByUserIdTeamId'
+import {selectAtlassianAuth} from '../../postgres/select'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
@@ -36,7 +36,11 @@ export default {
 
     // RESOLUTION
     const [existingAuth, viewer] = await Promise.all([
-      getAtlassianAuthByUserIdTeamId(viewerId, teamId),
+      selectAtlassianAuth()
+        .where('userId', '=', viewerId)
+        .where('teamId', '=', teamId)
+        .where('isActive', '=', true)
+        .executeTakeFirst(),
       dataLoader.get('users').loadNonNull(viewerId)
     ])
     if (!existingAuth) {

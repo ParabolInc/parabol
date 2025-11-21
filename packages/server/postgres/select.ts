@@ -3,7 +3,15 @@ import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
-import type {JiraDimensionField, ReactjiDB, TaskTag} from './types'
+import type {
+  GitHubSearchQuery,
+  JiraDimensionField,
+  JiraSearchQuery,
+  ReactjiDB,
+  TaskTag,
+  UserAuthIdentity
+} from './types'
+import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
@@ -34,6 +42,18 @@ export const selectDiscussion = () => {
 
 export const selectTeamMemberIntegrationAuth = () => {
   return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
+}
+
+export const selectTemplateRef = () => {
+  return getKysely()
+    .selectFrom([
+      'TemplateRef',
+      sql<{
+        name: string
+        dimensions: {name: string; scaleRefId: string}[]
+      }>`jsonb_to_record("TemplateRef"."template")`.as<'s'>(sql`s("name" text, "dimensions" json)`)
+    ])
+    .select(['id', 'createdAt', 's.name', 's.dimensions'])
 }
 export const selectTemplateScaleRef = () => {
   return getKysely()
@@ -166,14 +186,6 @@ export const selectTeamPromptResponses = () =>
     ])
     .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
-
-export type JiraSearchQuery = {
-  id: string
-  queryString: string
-  isJQL: boolean
-  projectKeyFilters?: string[]
-  lastUsedAt: Date
-}
 
 export const selectMeetingSettings = () =>
   getKysely()
@@ -322,7 +334,8 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'Page.userId',
     'ancestorIds',
     'deletedAt',
-    'deletedBy'
+    'deletedBy',
+    'isDatabase'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
@@ -345,3 +358,74 @@ export const selectDescendantPages = (
           .select(['p.id', 'p.parentPageId'])
       )
   )
+
+export const selectGitHubAuth = () => {
+  const query = getKysely()
+    .selectFrom('GitHubAuth')
+    .selectAll()
+    .select(({fn}) => [
+      fn<GitHubSearchQuery[]>('to_json', ['githubSearchQueries']).as('githubSearchQueries')
+    ])
+  return query as AssertedQuery<typeof query, {githubSearchQueries: GitHubSearchQuery[]}>
+}
+
+export const selectAtlassianAuth = () => {
+  const query = getKysely()
+    .selectFrom('AtlassianAuth')
+    .selectAll()
+    .select(({fn}) => [
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
+    ])
+  return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
+}
+
+export const selectGitHubDimensionFieldMap = () => {
+  return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()
+}
+
+export const selectGitLabDimensionFieldMap = () => {
+  return getKysely().selectFrom('GitLabDimensionFieldMap').selectAll()
+}
+
+export const selectJiraDimensionFieldMap = () => {
+  return getKysely().selectFrom('JiraDimensionFieldMap').selectAll()
+}
+
+export const selectJiraServerDimensionFieldMap = () => {
+  return getKysely().selectFrom('JiraServerDimensionFieldMap').selectAll()
+}
+
+export const selectIntegrationProvider = () => {
+  return getKysely()
+    .selectFrom('IntegrationProvider')
+    .selectAll()
+    .$narrowType<TIntegrationProvider>()
+}
+
+export const selectIntegrationSearchQuery = () => {
+  return getKysely().selectFrom('IntegrationSearchQuery').selectAll()
+}
+
+export const selectMeetingSeries = () => {
+  return getKysely().selectFrom('MeetingSeries').selectAll()
+}
+
+export const selectTaskEstimate = () => {
+  return getKysely().selectFrom('TaskEstimate').selectAll()
+}
+
+export const selectUser = () => {
+  const query = getKysely()
+    .selectFrom('User')
+    .selectAll()
+    .select(({fn}) => [fn<UserAuthIdentity[]>('to_json', ['identities']).as('identities')])
+  return query as AssertedQuery<typeof query, {identities: UserAuthIdentity[]}>
+}
+
+export const selectPoll = () => {
+  return getKysely().selectFrom('Poll').selectAll()
+}
+
+export const selectPollOption = () => {
+  return getKysely().selectFrom('PollOption').selectAll()
+}

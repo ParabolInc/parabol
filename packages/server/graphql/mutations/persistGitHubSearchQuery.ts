@@ -1,7 +1,7 @@
 import {GraphQLBoolean, GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../generateUID'
-import updateGitHubSearchQueries from '../../postgres/queries/updateGitHubSearchQueries'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import type {GQLContext} from '../graphql'
@@ -61,7 +61,7 @@ const persistGitHubSearchQuery = {
       } else {
         const queryToUpdate = githubSearchQueries[existingIdx]!
         // MUTATIVE
-        queryToUpdate.lastUsedAt = new Date()
+        queryToUpdate.lastUsedAt = new Date().toJSON()
         githubSearchQueries.sort((a, b) => (a.lastUsedAt > b.lastUsedAt ? -1 : 1))
         if (githubSearchQueries[existingIdx] === queryToUpdate) {
           isChange = false
@@ -70,7 +70,7 @@ const persistGitHubSearchQuery = {
     } else {
       if (!isRemove) {
         const newQuery = {
-          lastUsedAt: new Date(),
+          lastUsedAt: new Date().toJSON(),
           queryString: normalizedQueryString,
           id: generateUID()
         }
@@ -83,11 +83,12 @@ const persistGitHubSearchQuery = {
     }
     const data = {teamId, userId: viewerId}
     if (isChange) {
-      await updateGitHubSearchQueries({
-        githubSearchQueries,
-        teamId,
-        userId: viewerId
-      })
+      await getKysely()
+        .updateTable('GitHubAuth')
+        .set({githubSearchQueries: githubSearchQueries.map((obj) => JSON.stringify(obj))})
+        .where('teamId', '=', teamId)
+        .where('userId', '=', viewerId)
+        .execute()
       publish(
         SubscriptionChannel.NOTIFICATION,
         viewerId,
