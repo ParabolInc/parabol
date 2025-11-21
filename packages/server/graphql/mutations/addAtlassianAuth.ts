@@ -80,7 +80,7 @@ export default {
       .map((auth) => ({
         ...auth,
         accessToken,
-        refreshToken
+        refreshToken: refreshToken!
       }))
 
     await upsertAtlassianAuths([
@@ -88,7 +88,7 @@ export default {
         accountId: self.accountId,
         userId: viewerId,
         accessToken,
-        refreshToken,
+        refreshToken: refreshToken!,
         cloudIds,
         teamId,
         scope: AtlassianServerManager.SCOPE.join(' ')

@@ -1,4 +1,4 @@
-import updateTeamByTeamId from '../../../postgres/queries/updateTeamByTeamId'
+import getKysely from '../../../postgres/getKysely'
 import type {DataLoaderWorker} from '../../graphql'
 
 const updateQualAIMeetingsCount = async (
@@ -17,7 +17,7 @@ const updateQualAIMeetingsCount = async (
   const updates = {
     qualAIMeetingsCount: qualAIMeetingsCount + 1
   }
-  await updateTeamByTeamId(updates, teamId)
+  await getKysely().updateTable('Team').set(updates).where('id', '=', teamId).execute()
   team.qualAIMeetingsCount = qualAIMeetingsCount + 1
 }
 
