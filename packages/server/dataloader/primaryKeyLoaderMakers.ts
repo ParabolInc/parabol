@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
 import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
-import getTemplateRefsByIds from '../postgres/queries/getTemplateRefsByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
@@ -27,6 +26,7 @@ import {
   selectTeamPromptResponses,
   selectTeams,
   selectTemplateDimension,
+  selectTemplateRef,
   selectTemplateScale,
   selectTemplateScaleRef,
   selectTimelineEvent
@@ -42,7 +42,10 @@ export const teams = primaryKeyLoaderMaker((ids: readonly string[]) => {
 export const discussions = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectDiscussion().where('id', 'in', ids).execute()
 })
-export const templateRefs = primaryKeyLoaderMaker(getTemplateRefsByIds)
+export const templateRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTemplateRef().where('id', 'in', ids).execute()
+})
+
 export const templateScaleRefs = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTemplateScaleRef().where('id', 'in', ids).execute()
 })

@@ -42,6 +42,18 @@ export const selectDiscussion = () => {
 export const selectTeamMemberIntegrationAuth = () => {
   return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
 }
+
+export const selectTemplateRef = () => {
+  return getKysely()
+    .selectFrom([
+      'TemplateRef',
+      sql<{
+        name: string
+        dimensions: {name: string; scaleRefId: string}[]
+      }>`jsonb_to_record("TemplateRef"."template")`.as<'s'>(sql`s("name" text, "dimensions" json)`)
+    ])
+    .select(['id', 'createdAt', 's.name', 's.dimensions'])
+}
 export const selectTemplateScaleRef = () => {
   return getKysely()
     .selectFrom([
