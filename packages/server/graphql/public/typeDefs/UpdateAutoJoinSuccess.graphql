@@ -1,6 +1,6 @@
 type UpdateAutoJoinSuccess {
-	"""
-	The teams that were updated
-	"""
-	updatedTeams: [Team!]!
+  """
+  The teams that were updated
+  """
+  updatedTeams: [Team!]!
 }

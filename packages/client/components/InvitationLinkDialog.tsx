@@ -3,13 +3,13 @@ import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {type RouteComponentProps, withRouter} from 'react-router'
 import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import useRouter from '../hooks/useRouter'
 import {LocalStorageKey} from '../types/constEnums'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
 import InvitationLinkErrorExpired from './InvitationLinkErrorExpired'
+import {useIsAuthenticated} from './IsAuthenticatedProvider'
 import TeamInvitationAccept from './TeamInvitationAccept'
 import TeamInvitationErrorNotFound from './TeamInvitationErrorNotFound'
 
@@ -18,7 +18,7 @@ interface Props extends RouteComponentProps<{token: string}> {
 }
 
 const InvitationLinkDialog = (props: Props) => {
-  const atmosphere = useAtmosphere()
+  const isLoggedIn = useIsAuthenticated()
   const {match} = useRouter<{token: string}>()
   const {params} = match
   const {token} = params
@@ -58,8 +58,7 @@ const InvitationLinkDialog = (props: Props) => {
     case 'expired':
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
-  const {authObj} = atmosphere
-  if (authObj) {
+  if (isLoggedIn) {
     return <TeamInvitationAccept invitationToken={token} />
   }
   return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token} />

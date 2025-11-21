@@ -1,8 +1,8 @@
 import {GraphQLID, GraphQLInputObjectType, GraphQLNonNull} from 'graphql'
 import type {
-  IntegrationProviderAuthStrategyEnum as TIntegrationProviderAuthStrategyEnum,
-  IntegrationProviderServiceEnum as TIntegrationProviderServiceEnum
-} from '../../postgres/queries/generated/getIntegrationProvidersByIdsQuery'
+  Integrationproviderauthstrategyenum,
+  Integrationproviderserviceenum
+} from '../../postgres/types/pg'
 import IntegrationProviderAuthStrategyEnum from './IntegrationProviderAuthStrategyEnum'
 import IntegrationProviderEditableScopeEnum, {
   type TIntegrationProviderEditableScopeEnum
@@ -24,8 +24,8 @@ import IntegrationProviderServiceEnum from './IntegrationProviderServiceEnum'
 export interface IAddIntegrationProviderInput {
   teamId: string | null
   orgId: string | null
-  service: TIntegrationProviderServiceEnum
-  authStrategy: TIntegrationProviderAuthStrategyEnum
+  service: Integrationproviderserviceenum
+  authStrategy: Integrationproviderauthstrategyenum
   scope: TIntegrationProviderEditableScopeEnum
   webhookProviderMetadataInput: IIntegrationProviderMetadataInputWebhook | null
   oAuth1ProviderMetadataInput: IIntegrationProviderMetadataInputOAuth1 | null

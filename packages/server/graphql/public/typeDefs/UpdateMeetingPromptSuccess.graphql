@@ -1,8 +1,8 @@
 type UpdateMeetingPromptSuccess {
-	meetingId: ID!
+  meetingId: ID!
 
-	"""
-	the updated meeting
-	"""
-	meeting: TeamPromptMeeting!
+  """
+  the updated meeting
+  """
+  meeting: TeamPromptMeeting!
 }

@@ -2,7 +2,7 @@ import {generateText, type JSONContent} from '@tiptap/core'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
-import {upsertTeamPromptResponse as upsertTeamPromptResponseQuery} from '../../../postgres/queries/upsertTeamPromptResponses'
+import getKysely from '../../../postgres/getKysely'
 import type {TeamPromptResponse} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
@@ -81,14 +81,24 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     })
   }
 
-  const teamPromptResponseId = await upsertTeamPromptResponseQuery({
-    meetingId,
-    userId: viewerId,
-    sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
-    content,
-    plaintextContent
-  })
-
+  const teamPromptResponse = await getKysely()
+    .insertInto('TeamPromptResponse')
+    .values({
+      meetingId,
+      userId: viewerId,
+      sortOrder: 0, //TODO: placeholder as currently it's defined as non-null. Might decide to remove the column entirely later.
+      content,
+      plaintextContent
+    })
+    .onConflict((oc) =>
+      oc.columns(['meetingId', 'userId']).doUpdateSet((eb) => ({
+        content: eb.ref('excluded.content'),
+        plaintextContent: eb.ref('excluded.plaintextContent')
+      }))
+    )
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const teamPromptResponseId = teamPromptResponse.id
   dataLoader.get('teamPromptResponses').clear(teamPromptResponseId)
 
   const newTeamPromptResponse = await dataLoader

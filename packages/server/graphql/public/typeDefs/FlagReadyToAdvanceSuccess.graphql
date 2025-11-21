@@ -1,11 +1,11 @@
 type FlagReadyToAdvanceSuccess {
-	"""
-	the meeting with the updated readyUserIds
-	"""
-	meeting: NewMeeting!
+  """
+  the meeting with the updated readyUserIds
+  """
+  meeting: NewMeeting!
 
-	"""
-	the stage with the updated readyUserIds
-	"""
-	stage: NewMeetingStage!
+  """
+  the stage with the updated readyUserIds
+  """
+  stage: NewMeetingStage!
 }

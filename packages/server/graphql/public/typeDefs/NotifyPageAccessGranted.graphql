@@ -1,47 +1,47 @@
 type NotifyPageAccessGranted implements Notification {
-	"""
-	A shortid for the notification
-	"""
-	id: ID!
+  """
+  A shortid for the notification
+  """
+  id: ID!
 
-	"""
-	UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
-	"""
-	status: NotificationStatusEnum!
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
 
-	"""
-	The datetime to activate the notification & send it to the client
-	"""
-	createdAt: DateTime!
-	type: NotificationEnum!
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
 
-	"""
-	Id of the user that got granted access
-	"""
-	userId: ID!
+  """
+  Id of the user that got granted access
+  """
+  userId: ID!
 
-	"""
-	Name of the user who granted access
-	"""
-	ownerName: String!
+  """
+  Name of the user who granted access
+  """
+  ownerName: String!
 
-	"""
-	Picture of the user who granted access
-	"""
-	ownerPicture: URL
+  """
+  Picture of the user who granted access
+  """
+  ownerPicture: URL
 
-	"""
-	The granted role
-	"""
-	role: PageRoleEnum!
+  """
+  The granted role
+  """
+  role: PageRoleEnum!
 
-	"""
-	The pageId that was granted access
-	"""
-	pageId: ID!
+  """
+  The pageId that was granted access
+  """
+  pageId: ID!
 
-	"""
-	The page that was granted access to
-	"""
-	page: PagePreview!
+  """
+  The page that was granted access to
+  """
+  page: PagePreview!
 }

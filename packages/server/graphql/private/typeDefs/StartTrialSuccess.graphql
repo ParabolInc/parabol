@@ -1,6 +1,6 @@
 type StartTrialSuccess {
-	"""
-	The updated organization
-	"""
-	organization: Organization!
+  """
+  The updated organization
+  """
+  organization: Organization!
 }

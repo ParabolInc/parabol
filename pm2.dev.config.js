@@ -76,12 +76,6 @@ module.exports = {
       autorestart: false
     },
     {
-      name: 'PG Typed',
-      script: 'pnpm pg:build',
-      watch: ['packages/server/postgres/queries/src/*.sql'],
-      autorestart: false
-    },
-    {
       name: 'Mattermost Relay Compiler',
       script: 'pnpm --filter parabol-mattermost-plugin exec relay-compiler',
       watch: ['packages/mattermost-plugin/**/*.[ts*,js*,css]'],

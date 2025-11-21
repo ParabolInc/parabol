@@ -1,10 +1,10 @@
 type UpdateGitHubDimensionFieldSuccess {
-	teamId: ID!
-	meetingId: ID!
-	team: Team!
+  teamId: ID!
+  meetingId: ID!
+  team: Team!
 
-	"""
-	The poker meeting the field was updated from
-	"""
-	meeting: PokerMeeting!
+  """
+  The poker meeting the field was updated from
+  """
+  meeting: PokerMeeting!
 }

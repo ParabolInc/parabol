@@ -2,11 +2,11 @@ import type {JSONContent} from '@tiptap/core'
 import type {GraphQLResolveInfo} from 'graphql'
 import type {DataLoaderWorker, GQLContext} from '../graphql/graphql'
 import type {IntegrationProviderServiceEnumType} from '../graphql/types/IntegrationProviderServiceEnum'
+import type {Task} from '../postgres/types'
 import type {
   IntegrationProviderAzureDevOps,
   IntegrationProviderJiraServer
-} from '../postgres/queries/getIntegrationProvidersByIds'
-import type {Task} from '../postgres/types'
+} from '../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager from '../utils/AzureDevOpsServerManager'
 import GitHubServerManager from './github/GitHubServerManager'
 import GitLabServerManager from './gitlab/GitLabServerManager'

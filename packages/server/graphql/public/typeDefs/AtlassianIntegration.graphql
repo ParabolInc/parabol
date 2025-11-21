@@ -2,81 +2,81 @@
 The atlassian auth + integration helpers for a specific team member
 """
 type AtlassianIntegration {
-	"""
-	Composite key in atlassiani:teamId:userId format
-	"""
-	id: ID!
+  """
+  Composite key in atlassiani:teamId:userId format
+  """
+  id: ID!
 
-	"""
-	true if the auth is valid, else false
-	"""
-	isActive: Boolean!
+  """
+  true if the auth is valid, else false
+  """
+  isActive: Boolean!
 
-	"""
-	The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
-	"""
-	accessToken: ID
+  """
+  The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
+  """
+  accessToken: ID
 
-	"""
-	*The atlassian account ID
-	"""
-	accountId: ID!
+  """
+  *The atlassian account ID
+  """
+  accountId: ID!
 
-	"""
-	The atlassian cloud IDs that the user has granted
-	"""
-	cloudIds: [ID!]!
+  """
+  The atlassian cloud IDs that the user has granted
+  """
+  cloudIds: [ID!]!
 
-	"""
-	The timestamp the provider was created
-	"""
-	createdAt: DateTime!
+  """
+  The timestamp the provider was created
+  """
+  createdAt: DateTime!
 
-	"""
-	*The team that the token is linked to
-	"""
-	teamId: ID!
+  """
+  *The team that the token is linked to
+  """
+  teamId: ID!
 
-	"""
-	The timestamp the token was updated at
-	"""
-	updatedAt: DateTime!
+  """
+  The timestamp the token was updated at
+  """
+  updatedAt: DateTime!
 
-	"""
-	The user that the access token is attached to
-	"""
-	userId: ID!
+  """
+  The user that the access token is attached to
+  """
+  userId: ID!
 
-	"""
-	A list of projects accessible by this team member. empty if viewer is not the user
-	"""
-	projects: [JiraRemoteProject!]!
+  """
+  A list of projects accessible by this team member. empty if viewer is not the user
+  """
+  projects: [JiraRemoteProject!]!
 
-	"""
-	the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
-	"""
-	jiraSearchQueries: [JiraSearchQuery!]!
+  """
+  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  """
+  jiraSearchQueries: [JiraSearchQuery!]!
 
-	"""
-	A list of issues coming straight from the jira integration for a specific team member
-	"""
-	issues(
-		first: Int = 100
+  """
+  A list of issues coming straight from the jira integration for a specific team member
+  """
+  issues(
+    first: Int = 100
 
-		"""
-		the index cursor
-		"""
-		after: String
+    """
+    the index cursor
+    """
+    after: String
 
-		"""
-		A string of text to search for, or JQL if isJQL is true
-		"""
-		queryString: String
+    """
+    A string of text to search for, or JQL if isJQL is true
+    """
+    queryString: String
 
-		"""
-		true if the queryString is JQL, else false
-		"""
-		isJQL: Boolean!
-		projectKeyFilters: [ID!]
-	): JiraIssueConnection!
+    """
+    true if the queryString is JQL, else false
+    """
+    isJQL: Boolean!
+    projectKeyFilters: [ID!]
+  ): JiraIssueConnection!
 }

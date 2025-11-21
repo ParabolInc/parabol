@@ -8,8 +8,8 @@ import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerIssueId from '~/shared/gqlIds/JiraServerIssueId'
 import {ExternalLinks} from '~/types/constEnums'
 import composeJQL from '~/utils/composeJQL'
-import type {IntegrationProviderJiraServer} from '../../postgres/queries/getIntegrationProvidersByIds'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
+import type {IntegrationProviderJiraServer} from '../../postgres/types/IntegrationProvider'
 import type {CreateTaskResponse, TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 const MAX_PAGINATION_RESULTS = 5000

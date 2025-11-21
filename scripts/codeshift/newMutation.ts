@@ -242,11 +242,6 @@ OPTIONS
     -s, --subscription <subscriptionChannel>
       If this mutation should be published to a subscription, this will wire it up
 
-    -p, --postgres
-      If this mutation will affect postgres, this will create the SQL and query files
-      Once generated, you'll need to write the SQL and call 'pnpm pg:build'.
-      You may also need to rename the files depending on the mutation (upsert, remove, etc.)
-
 EXAMPLES
     pnpm newMutation startFun -s meeting`)
     return

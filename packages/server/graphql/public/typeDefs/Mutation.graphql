@@ -1,2248 +1,2198 @@
 type Mutation {
-	"""
-	Create a new agenda item
-	"""
-	addAgendaItem(
-		"""
-		The new task including an id, teamMemberId, and content
-		"""
-		newAgendaItem: CreateAgendaItemInput!
-	): AddAgendaItemPayload
-	addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
-
-	"""
-	Add a comment to a discussion
-	"""
-	addComment(
-		"""
-		A partial new comment
-		"""
-		comment: AddCommentInput!
-	): AddCommentPayload!
-
-	"""
-	Add a new dimension for the poker template
-	"""
-	addPokerTemplateDimension(templateId: ID!): AddPokerTemplateDimensionPayload!
-
-	"""
-	Add a new scale for the poker template
-	"""
-	addPokerTemplateScale(
-		parentScaleId: ID
-		teamId: ID!
-	): AddPokerTemplateScalePayload!
-
-	"""
-	Add a new scale value for a scale in a poker template
-	"""
-	addPokerTemplateScaleValue(
-		scaleId: ID!
-		scaleValue: AddTemplateScaleInput!
-	): AddPokerTemplateScaleValuePayload!
-
-	"""
-	Add a new template full of prompts
-	"""
-	addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
-	addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
-	addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
-
-	"""
-	Create a new team and add the first team member
-	"""
-	addOrg(
-		"""
-		The new team object with exactly 1 team member
-		"""
-		newTeam: NewTeamInput!
-
-		"""
-		The name of the new team
-		"""
-		orgName: String!
-		invitees: [Email!]
-	): AddOrgPayload!
-
-	"""
-	Create a new team and add the first team member
-	"""
-	addTeam(
-		"""
-		The new team object
-		"""
-		newTeam: NewTeamInput!
-		invitees: [Email!]
-	): AddTeamPayload!
-	archiveOrganization(
-		"""
-		The orgId to archive
-		"""
-		orgId: ID!
-	): ArchiveOrganizationPayload!
-	archiveTeam(
-		"""
-		The teamId to archive (or delete, if team is unused)
-		"""
-		teamId: ID!
-	): ArchiveTeamPayload!
-
-	"""
-	Archive a timeline event
-	"""
-	archiveTimelineEvent(
-		"""
-		the id for the timeline event
-		"""
-		timelineEventId: ID!
-	): ArchiveTimelineEventPayload!
-
-	"""
-	Change the team a task is associated with. Also copy the viewers integration if necessary.
-	"""
-	changeTaskTeam(
-		"""
-		The task to change
-		"""
-		taskId: ID!
-
-		"""
-		The new team to assign the task to
-		"""
-		teamId: ID!
-	): ChangeTaskTeamPayload
-
-	"""
-	set the interaction status of a notifcation
-	"""
-	setNotificationStatus(
-		"""
-		The id of the notification
-		"""
-		notificationId: ID!
-		status: NotificationStatusEnum!
-	): SetNotificationStatusPayload
-
-	createPage(
-		"""
-		The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
-		"""
-		teamId: ID
-	): CreatePagePayload!
-	createTaskIntegration(
-		"""
-		Which integration to push the task to
-		"""
-		integrationProviderService: IntegrationProviderServiceEnum!
-
-		"""
-		Jira projectId, GitHub nameWithOwner etc.
-		"""
-		integrationRepoId: ID!
-
-		"""
-		The id of the task to convert to an issue
-		"""
-		taskId: ID!
-	): CreateTaskIntegrationPayload
-
-	"""
-	Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
-	"""
-	createOAuth1AuthorizeUrl(
-		"""
-		Id of the integration provider with OAuth1 auth strategy
-		"""
-		providerId: ID!
-
-		"""
-		Id of the team where the integration should be added
-		"""
-		teamId: ID!
-	): CreateOAuth1AuthorizationURLPayload
-
-	"""
-	Create a new reflection
-	"""
-	createReflection(input: CreateReflectionInput!): CreateReflectionPayload
-
-	"""
-	Create a new task, triggering a CreateCard for other viewers
-	"""
-	createTask(
-		"""
-		The new task including an id, status, and type, and teamMemberId
-		"""
-		newTask: CreateTaskInput!
-
-		"""
-		The part of the site where the creation occurred
-		"""
-		area: AreaEnum
-	): CreateTaskPayload!
-
-	"""
-	Delete a comment from a discussion
-	"""
-	deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
-
-	"""
-	Delete (not archive!) a task
-	"""
-	deleteTask(
-		"""
-		The taskId to delete
-		"""
-		taskId: ID!
-	): DeleteTaskPayload
-
-	"""
-	Delete a user, removing them from all teams and orgs
-	"""
-	deleteUser(
-		"""
-		a userId
-		"""
-		userId: ID
-
-		"""
-		the user email
-		"""
-		email: ID
-
-		"""
-		the reason why the user wants to delete their account
-		"""
-		reason: String
-	): DeleteUserPayload!
-
-	"""
-	Deny a user from joining via push invitation
-	"""
-	denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload
-
-	"""
-	Redeem an invitation token for a logged in user
-	"""
-	dismissNewFeature: DismissNewFeaturePayload!
-
-	"""
-	Dismiss a suggested action
-	"""
-	dismissSuggestedAction(
-		"""
-		The id of the suggested action to dismiss
-		"""
-		suggestedActionId: ID!
-	): DismissSuggestedActionPayload!
-
-	"""
-	Downgrade a paid account to the starter plan service
-	"""
-	downgradeToStarter(
-		"""
-		the org requesting the upgrade
-		"""
-		orgId: ID!
-
-		"""
-		the reasons the user is leaving
-		"""
-		reasonsForLeaving: [ReasonToDowngradeEnum]
-
-		"""
-		the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade
-		"""
-		otherTool: String
-	): DowngradeToStarterPayload
-
-	"""
-	Changes the priority of the discussion topics
-	"""
-	dragDiscussionTopic(
-		meetingId: ID!
-		stageId: ID!
-		sortOrder: Float!
-	): DragDiscussionTopicPayload
-
-	"""
-	Changes the ordering of the estimating tasks
-	"""
-	dragEstimatingTask(
-		meetingId: ID!
-		taskId: ID!
-
-		"""
-		The index of the tasks will be moved to, in the list of estimating tasks sidebar section
-		"""
-		newPositionIndex: Int!
-	): DragEstimatingTaskPayload!
-
-	"""
-	Send an email to reset a password
-	"""
-	emailPasswordReset(
-		"""
-		email to send the password reset code to
-		"""
-		email: ID!
-	): EmailPasswordResetPayload!
-
-	"""
-	Track which users are commenting
-	"""
-	editCommenting(
-		"""
-		True if the user is commenting, false if the user has stopped commenting
-		"""
-		isCommenting: Boolean!
-		discussionId: ID!
-	): EditCommentingPayload
-
-	"""
-	Finish a sprint poker meeting
-	"""
-	endSprintPoker(
-		"""
-		The meeting to end
-		"""
-		meetingId: ID!
-	): EndSprintPokerPayload!
-
-	"""
-	Changes the editing state of a user for a phase item
-	"""
-	editReflection(
-		"""
-		Whether a reflectPrompt is being edited or not
-		"""
-		isEditing: Boolean!
-		meetingId: ID!
-		promptId: ID!
-	): EditReflectionPayload
-
-	"""
-	Announce to everyone that you are editing a task
-	"""
-	editTask(
-		"""
-		The task id that is being edited
-		"""
-		taskId: ID!
-
-		"""
-		true if the editing is starting, false if it is stopping
-		"""
-		isEditing: Boolean!
-	): EditTaskPayload
-
-	"""
-	Finish a check-in meeting
-	"""
-	endCheckIn(
-		"""
-		The meeting to end
-		"""
-		meetingId: ID!
-	): EndCheckInPayload!
-
-	"""
-	Broadcast that the viewer stopped dragging a reflection
-	"""
-	endDraggingReflection(
-		reflectionId: ID!
-
-		"""
-		if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
-		"""
-		dropTargetType: DragReflectionDropTargetTypeEnum
-
-		"""
-		if dropTargetType could refer to more than 1 component, this ID defines which one
-		"""
-		dropTargetId: ID
-
-		"""
-		the ID of the drag to connect to the start drag event
-		"""
-		dragId: ID
-	): EndDraggingReflectionPayload
-
-	"""
-	Finish a retrospective meeting
-	"""
-	endRetrospective(
-		"""
-		The meeting to end
-		"""
-		meetingId: ID!
-	): EndRetrospectivePayload!
-
-	"""
-	flag a viewer as ready to advance to the next stage of a meeting
-	"""
-	flagReadyToAdvance(
-		meetingId: ID!
-
-		"""
-		the stage that the viewer marked as ready
-		"""
-		stageId: ID!
-
-		"""
-		true if ready to advance, else false
-		"""
-		isReady: Boolean!
-	): FlagReadyToAdvancePayload!
-
-	"""
-	Invalidate all sessions by blacklisting all JWTs issued before now
-	"""
-	invalidateSessions: InvalidateSessionsPayload!
-
-	"""
-	Send a team invitation to an email address
-	"""
-	inviteToTeam(
-		"""
-		the specific meeting where the invite occurred, if any
-		"""
-		meetingId: ID
-
-		"""
-		The id of the inviting team
-		"""
-		teamId: ID!
-		invitees: [Email!]!
-	): InviteToTeamPayload!
-
-	"""
-	Generate an insight for a team
-	"""
-	generateInsight(
-		teamId: ID!
-		startDate: DateTime!
-		endDate: DateTime!
-		useSummaries: Boolean
-		prompt: String
-	): GenerateInsightPayload!
-
-	"""
-	Generate new meeting summaries for retro meetings for the given teams
-	"""
-	generateRetroSummaries(
-		"""
-		The ids of the teams to generate the meeting summary for
-		"""
-		teamIds: [ID!]!
-
-		"""
-		The optional user prompt that will be used to generate the meeting summary
-		"""
-		prompt: String
-	): GenerateRetroSummariesPayload!
-
-	"""
-	Move a template dimension
-	"""
-	movePokerTemplateDimension(
-		dimensionId: ID!
-		sortOrder: String!
-	): MovePokerTemplateDimensionPayload!
-
-	"""
-	Move a reflect template
-	"""
-	moveReflectTemplatePrompt(
-		promptId: ID!
-		sortOrder: String!
-	): MoveReflectTemplatePromptPayload
-
-	"""
-	Move a team to a different org. Requires billing leader rights on both orgs!
-	"""
-	moveTeamToOrg(
-		"""
-		The teamId that you want to move
-		"""
-		teamIds: [ID!]!
-
-		"""
-		The ID of the organization you want to move the team to
-		"""
-		orgId: ID!
-	): String
-
-	"""
-	update a meeting by marking an item complete and setting the facilitator location
-	"""
-	navigateMeeting(
-		"""
-		The stage that the facilitator would like to mark as complete
-		"""
-		completedStageId: ID
-
-		"""
-		The stage where the facilitator is
-		"""
-		facilitatorStageId: ID
-
-		"""
-		The meeting ID
-		"""
-		meetingId: ID!
-	): NavigateMeetingPayload!
-
-	"""
-	Add or remove a task and its estimate phase from the meeting
-	"""
-	persistJiraSearchQuery(
-		"""
-		the team with the settings we add the query to
-		"""
-		teamId: ID!
-
-		"""
-		the jira search query to persist (or remove, if isRemove is true)
-		"""
-		input: JiraSearchQueryInput!
-	): PersistJiraSearchQueryPayload!
-
-	"""
-	Request to be invited to a team in real time
-	"""
-	pushInvitation(
-		"""
-		the meeting ID the pusher would like to join
-		"""
-		meetingId: ID
-		teamId: ID!
-	): PushInvitationPayload
-
-	"""
-	Change a facilitator while the meeting is in progress
-	"""
-	promoteNewMeetingFacilitator(
-		"""
-		userId of the new facilitator for this meeting
-		"""
-		facilitatorUserId: ID!
-		meetingId: ID!
-	): PromoteNewMeetingFacilitatorPayload
-
-	"""
-	Promote another team member to be the leader
-	"""
-	promoteToTeamLead(
-		"""
-		Team id of the team which is about to get a new team leader
-		"""
-		teamId: ID!
-
-		"""
-		userId who will be set as a new team leader
-		"""
-		userId: ID!
-	): PromoteToTeamLeadPayload
-
-	"""
-	Update the description of a reflection prompt
-	"""
-	reflectTemplatePromptUpdateDescription(
-		promptId: ID!
-		description: String!
-	): ReflectTemplatePromptUpdateDescriptionPayload
-
-	"""
-	Update the description of a poker template dimension
-	"""
-	pokerTemplateDimensionUpdateDescription(
-		dimensionId: ID!
-		description: String!
-	): PokerTemplateDimensionUpdateDescriptionPayload
-	reflectTemplatePromptUpdateGroupColor(
-		promptId: ID!
-		groupColor: String!
-	): ReflectTemplatePromptUpdateGroupColorPayload
-
-	"""
-	Remove an agenda item
-	"""
-	removeAgendaItem(
-		"""
-		The agenda item unique id
-		"""
-		agendaItemId: ID!
-	): RemoveAgendaItemPayload
-
-	"""
-	Disconnect a team member from atlassian
-	"""
-	removeAtlassianAuth(
-		"""
-		the teamId to disconnect from the token
-		"""
-		teamId: ID!
-	): RemoveAtlassianAuthPayload!
-
-	"""
-	Disconnect a team member from GitHub
-	"""
-	removeGitHubAuth(
-		"""
-		the teamId to disconnect from the token
-		"""
-		teamId: ID!
-	): RemoveGitHubAuthPayload!
-
-	"""
-	Remove multiple users from an org
-	"""
-	removeOrgUsers(
-		"""
-		The list of user IDs to remove
-		"""
-		userIds: [ID!]!
-
-		"""
-		The org that does not want them anymore
-		"""
-		orgId: ID!
-	): RemoveOrgUsersPayload!
-
-	"""
-	Remove a poker meeting template
-	"""
-	removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload!
-
-	"""
-	Remove a template full of prompts
-	"""
-	removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload
-
-	"""
-	Remove a prompt from a template
-	"""
-	removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
-
-	"""
-	Remove a dimension from a template
-	"""
-	removePokerTemplateDimension(
-		dimensionId: ID!
-	): RemovePokerTemplateDimensionPayload!
-
-	"""
-	Rename a meeting
-	"""
-	renameMeeting(
-		"""
-		the new meeting name
-		"""
-		name: String!
-
-		"""
-		the meeting with the new name
-		"""
-		meetingId: ID!
-	): RenameMeetingPayload!
-
-	"""
-	Rename a meeting template
-	"""
-	renameMeetingTemplate(
-		templateId: ID!
-		name: String!
-	): RenameMeetingTemplatePayload
-
-	"""
-	Rename a reflect template prompt
-	"""
-	renameReflectTemplatePrompt(
-		promptId: ID!
-		question: String!
-	): RenameReflectTemplatePromptPayload
-
-	"""
-	Rename a poker template dimension
-	"""
-	renamePokerTemplateDimension(
-		dimensionId: ID!
-		name: String!
-	): RenamePokerTemplateDimensionPayload!
-
-	"""
-	Rename a poker template scale
-	"""
-	renamePokerTemplateScale(
-		scaleId: ID!
-		name: String!
-	): RenamePokerTemplateScalePayload!
-
-	"""
-	Remove a scale from a template
-	"""
-	removePokerTemplateScale(scaleId: ID!): RemovePokerTemplateScalePayload!
-
-	"""
-	Remove a scale value from the scale of a template
-	"""
-	removePokerTemplateScaleValue(
-		scaleId: ID!
-		label: String!
-	): RemovePokerTemplateScaleValuePayload!
-
-	"""
-	Remove a reflection
-	"""
-	removeReflection(reflectionId: ID!): RemoveReflectionPayload
-
-	"""
-	Disconnect a team member from Slack
-	"""
-	removeSlackAuth(
-		"""
-		the teamId to disconnect from the token
-		"""
-		teamId: ID!
-	): RemoveSlackAuthPayload!
-
-	"""
-	Remove a team member from the team
-	"""
-	removeTeamMember(
-		"""
-		The teamMemberId of the person who is being removed
-		"""
-		teamMemberId: ID!
-	): RemoveTeamMemberPayload
-
-	"""
-	Reset the password for an account
-	"""
-	resetPassword(
-		"""
-		the password reset token
-		"""
-		token: ID!
-
-		"""
-		The new password for the account
-		"""
-		newPassword: String!
-	): ResetPasswordPayload!
-
-	"""
-	Reset a retro meeting to group stage
-	"""
-	resetRetroMeetingToGroupStage(
-		meetingId: ID!
-	): ResetRetroMeetingToGroupStagePayload!
-
-	"""
-	Set the selected template for the upcoming retro meeting
-	"""
-	selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
-
-	"""
-	Update the default Slack channel where notifications are sent
-	"""
-	setDefaultSlackChannel(
-		slackChannelId: ID!
-		teamId: ID!
-	): SetDefaultSlackChannelPayload!
-
-	"""
-	Focus (or unfocus) a phase item
-	"""
-	setPhaseFocus(
-		meetingId: ID!
-
-		"""
-		The currently focused phase item
-		"""
-		focusedPromptId: ID
-	): SetPhaseFocusPayload
-
-	"""
-	Set or clear a timer for a meeting stage
-	"""
-	setStageTimer(
-		"""
-		the id of the meeting
-		"""
-		meetingId: ID!
-
-		"""
-		The time the timer is scheduled to go off (based on client clock), null if unsetting the timer
-		"""
-		scheduledEndTime: DateTime
-
-		"""
-		scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null
-		"""
-		timeRemaining: Float
-	): SetStageTimerPayload!
-
-	setSlackNotification(
-		slackChannelId: ID
-		slackNotificationEvents: [SlackNotificationEventEnum!]!
-		teamId: ID!
-	): SetSlackNotificationPayload!
-
-	"""
-	Update the notification settings for a provider and team
-	"""
-	setTeamNotificationSetting(
-		"""
-		The unique id for the setting
-		"""
-		id: ID!
-
-		"""
-		Event type to modify
-		"""
-		event: SlackNotificationEventEnum!
-		isEnabled: Boolean!
-	): SetTeamNotificationSettingPayload!
-
-	"""
-	Broadcast that the viewer started dragging a reflection
-	"""
-	startDraggingReflection(
-		reflectionId: ID!
-		dragId: ID!
-		isSpotlight: Boolean
-	): StartDraggingReflectionPayload
-
-	"""
-	Start a new sprint poker meeting
-	"""
-	startSprintPoker(
-		"""
-		The team starting the meeting
-		"""
-		teamId: ID!
-
-		"""
-		The name of the meeting
-		"""
-		name: String
-
-		"""
-		The gcal input if creating a gcal event
-		"""
-		gcalInput: CreateGcalEventInput
-	): StartSprintPokerPayload!
-
-	"""
-	Broadcast that the viewer highlights a task
-	"""
-	setTaskHighlight(
-		taskId: ID!
-		meetingId: ID!
-		isHighlighted: Boolean!
-	): SetTaskHighlightPayload!
-
-	"""
-	Update an agenda item
-	"""
-	updateAgendaItem(
-		"""
-		The updated item including an id, content, status, sortOrder
-		"""
-		updatedAgendaItem: UpdateAgendaItemInput!
-	): UpdateAgendaItemPayload
-
-	"""
-	Update the content of a comment
-	"""
-	updateCommentContent(
-		commentId: ID!
-
-		"""
-		A stringified TipTap JSONContent document containing thoughts
-		"""
-		content: String!
-		meetingId: ID!
-	): UpdateCommentContentPayload
-
-	"""
-	Update the scale used for a dimension in a template
-	"""
-	updatePokerTemplateDimensionScale(
-		dimensionId: ID!
-		scaleId: ID!
-	): UpdatePokerTemplateDimensionScalePayload!
-
-	"""
-	Update the label, numerical value or color of a scale value in a scale
-	"""
-	updatePokerTemplateScaleValue(
-		scaleId: ID!
-		oldScaleValue: TemplateScaleInput!
-		newScaleValue: TemplateScaleInput!
-	): UpdatePokerTemplateScaleValuePayload!
-
-	"""
-	Update a Team's Icebreaker in a new meeting
-	"""
-	updateNewCheckInQuestion(
-		"""
-		ID of the Team which will have its Icebreaker updated
-		"""
-		meetingId: ID!
-
-		"""
-		The Team's new Icebreaker
-		"""
-		checkInQuestion: String!
-	): UpdateNewCheckInQuestionPayload
-
-	"""
-	all the info required to provide an accurate display-specific location of where an item is
-	"""
-	updateDragLocation(input: UpdateDragLocationInput!): Boolean
-
-	"""
-	Add or remove a task and its estimate phase from the meeting
-	"""
-	updatePokerScope(
-		"""
-		the meeting with the estimate phases to modify
-		"""
-		meetingId: ID!
-
-		"""
-		The list of items to add/remove to the estimate phase
-		"""
-		updates: [UpdatePokerScopeItemInput!]!
-	): UpdatePokerScopePayload!
-
-	"""
-	Update the content of a reflection
-	"""
-	updateReflectionContent(
-		reflectionId: ID!
-
-		"""
-		A stringified TipTap JSONContent document containing thoughts
-		"""
-		content: String!
-	): UpdateReflectionContentPayload
-
-	"""
-	Update the title of a reflection group
-	"""
-	updateReflectionGroupTitle(
-		reflectionGroupId: ID!
-
-		"""
-		The new title for the group
-		"""
-		title: String!
-	): UpdateReflectionGroupTitlePayload
-
-	"""
-	Change the max votes for participants
-	"""
-	updateRetroMaxVotes(
-		"""
-		The total number of votes for each participant
-		"""
-		totalVotes: Int!
-
-		"""
-		The total number of votes for each participant to vote on a single topic
-		"""
-		maxVotesPerGroup: Int!
-
-		"""
-		the meeting to update
-		"""
-		meetingId: ID!
-	): UpdateRetroMaxVotesPayload!
-
-	"""
-	Update a task with a change in content, ownership, or status
-	"""
-	updateTask(
-		"""
-		The part of the site where the creation occurred
-		"""
-		area: AreaEnum
-
-		"""
-		the updated task including the id, and at least one other field
-		"""
-		updatedTask: UpdateTaskInput!
-	): UpdateTaskPayload
-
-	"""
-	Set or unset the due date of a task
-	"""
-	updateTaskDueDate(
-		"""
-		The task id
-		"""
-		taskId: ID!
-
-		"""
-		the new due date. if not a valid date, it will unset the due date
-		"""
-		dueDate: DateTime
-	): UpdateTaskDueDatePayload
-	updateTeamName(
-		"""
-		The input object containing the teamId and any modified fields
-		"""
-		updatedTeam: UpdatedTeamInput!
-	): UpdateTeamNamePayload
-
-	"""
-	Change the scope of a template
-	"""
-	updateTemplateScope(
-		"""
-		The id of the template
-		"""
-		templateId: ID!
-
-		"""
-		the new scope
-		"""
-		scope: SharingScopeEnum!
-	): UpdateTemplateScopePayload!
-
-	"""
-	Cast your vote for a reflection group
-	"""
-	voteForReflectionGroup(
-		"""
-		true if the user wants to remove one of their votes
-		"""
-		isUnvote: Boolean
-		reflectionGroupId: ID!
-	): VoteForReflectionGroupPayload
-
-	"""
-	Cast a vote for the estimated points for a given dimension
-	"""
-	voteForPokerStory(
-		meetingId: ID!
-
-		"""
-		The stage that contains the dimension to vote for
-		"""
-		stageId: ID!
-
-		"""
-		The label of the scaleValue to vote for. If null, remove the vote
-		"""
-		score: String
-	): VoteForPokerStoryPayload!
-
-	"""
-	Progresses the stage dimension to the reveal & discuss step
-	"""
-	pokerRevealVotes(meetingId: ID!, stageId: ID!): PokerRevealVotesPayload!
-
-	"""
-	Remove all votes, the final vote, and reset the stage
-	"""
-	pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
-
-	"""
-	"""
-	pokerAnnounceDeckHover(
-		meetingId: ID!
-		stageId: ID!
-
-		"""
-		true if the viewer has started hovering the deck, else false
-		"""
-		isHover: Boolean!
-	): PokerAnnounceDeckHoverPayload!
-
-	"""
-	Move a scale value to an index
-	"""
-	movePokerTemplateScaleValue(
-		scaleId: ID!
-
-		"""
-		The label of the moving scale value
-		"""
-		label: String!
-
-		"""
-		The index position where the scale value is moving to
-		"""
-		index: Int!
-	): MovePokerTemplateScaleValuePayload!
-
-	"""
-	Create a meeting member for a user
-	"""
-	joinMeeting(meetingId: ID!): JoinMeetingPayload!
-
-	"""
-	Join a public Team directly without requiring an invitation
-	"""
-	joinTeam(
-		"""
-		The ID of the team to join
-		"""
-		teamId: ID!
-	): JoinTeamPayload!
-
-	"""
-	Set whether the user is spectating poker meeting
-	"""
-	setPokerSpectate(
-		meetingId: ID!
-
-		"""
-		true if the viewer is spectating poker and does not want to vote. else false
-		"""
-		isSpectating: Boolean!
-	): SetPokerSpectatePayload!
-
-	"""
-	"""
-	persistGitHubSearchQuery(
-		"""
-		the team witht the settings we add the query to
-		"""
-		teamId: ID!
-
-		"""
-		The query string as sent to GitHub
-		"""
-		queryString: String!
-
-		"""
-		true if this query should be deleted
-		"""
-		isRemove: Boolean
-	): PersistGitHubSearchQueryPayload!
-
-	"""
-	Update a task estimate
-	"""
-	setTaskEstimate(taskEstimate: TaskEstimateInput!): SetTaskEstimatePayload!
-
-	"""
-	Show/hide the drawer in the team dashboard
-	"""
-	toggleTeamDrawer(
-		"""
-		the team to show/hide the drawer for
-		"""
-		teamId: ID!
-
-		"""
-		The type of team drawer that the viewer is toggling. Null if closing the drawer.
-		"""
-		teamDrawerType: TeamDrawer
-	): ToggleTeamDrawerPayload!
-
-	"""
-	Toggle a feature flag for a specific owner (organization, team, or user)
-	"""
-	toggleFeatureFlag(
-		"""
-		The name of the feature flag to toggle
-		"""
-		featureName: String!
-		"""
-		The organization ID if toggling for an org
-		"""
-		orgId: ID
-		"""
-		The team ID if toggling for a team
-		"""
-		teamId: ID
-		"""
-		The user ID if toggling for a user
-		"""
-		userId: ID
-	): ToggleFeatureFlagPayload!
-
-	"""
-	Toggle whether the organization has access to ai features
-	"""
-	toggleAIFeatures(
-		"""
-		The id of the org being toggled
-		"""
-		orgId: ID!
-	): ToggleAIFeaturesPayload!
-
-	"""
-	Toggle whether the team privacy settings
-	"""
-	toggleTeamPrivacy(
-		"""
-		The id of the team being toggled
-		"""
-		teamId: ID!
-	): ToggleTeamPrivacyPayload!
-
-	"""
-	Update how a parabol dimension maps to a GitHub label
-	"""
-	updateGitHubDimensionField(
-		dimensionName: String!
-
-		"""
-		The template string to map to a label
-		"""
-		labelTemplate: String!
-
-		"""
-		The repo the issue lives on
-		"""
-		nameWithOwner: ID!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField
-		"""
-		meetingId: ID!
-	): UpdateGitHubDimensionFieldPayload!
-	createPoll(
-		"""
-		The new poll including title and poll options
-		"""
-		newPoll: CreatePollInput!
-	): CreatePollPayload!
-
-	"""
-	Adds a new Integration Provider configuration
-	"""
-	addIntegrationProvider(
-		"""
-		The new Integration Provider
-		"""
-		input: AddIntegrationProviderInput!
-	): AddIntegrationProviderPayload!
-
-	"""
-	Update the Integration Provider settings
-	"""
-	updateIntegrationProvider(
-		"""
-		The new Integration Provider
-		"""
-		provider: UpdateIntegrationProviderInput!
-	): UpdateIntegrationProviderPayload!
-
-	"""
-	Remove an Integration Provider, and any associated tokens
-	"""
-	removeIntegrationProvider(
-		"""
-		Id of the Integration Provider to remove
-		"""
-		providerId: ID!
-	): RemoveIntegrationProviderPayload!
-
-	"""
-	Finish the team prompt meeting
-	"""
-	endTeamPrompt(
-		"""
-		The meeting to end
-		"""
-		meetingId: ID!
-	): EndTeamPromptPayload!
-
-	"""
-	Set the Azure DevOps field that the poker dimension should map to
-	"""
-	updateAzureDevOpsDimensionField(
-		dimensionName: String!
-
-		"""
-		The Azure DevOps field name that we should push estimates to
-		"""
-		fieldName: String!
-
-		"""
-		The Azure DevOps instanceId the field lives on
-		"""
-		instanceId: ID!
-
-		"""
-		The project the field lives on
-		"""
-		projectKey: ID!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField
-		"""
-		meetingId: ID!
-
-		"""
-		The work item type in Azure DevOps
-		"""
-		workItemType: ID!
-	): UpdateAzureDevOpsDimensionFieldPayload!
-
-	"""
-	Adds a new poker template with a default dimension created.
-	"""
-	addPokerTemplate(
-		"""
-		The ID of the parent template, if this is a clone operation.
-		"""
-		parentTemplateId: ID
-
-		"""
-		The ID of the team for which the template is being created.
-		"""
-		teamId: ID!
-	): AddPokerTemplatePayload!
-
-	"""
-	Adds a new reflect template with a default dimension created.
-	"""
-	addReflectTemplate(
-		"""
-		The ID of the parent template, if this is a clone operation.
-		"""
-		parentTemplateId: ID
-
-		"""
-		The ID of the team for which the template is being created.
-		"""
-		teamId: ID!
-	): AddReflectTemplatePayload!
-
-	"""
-	pauses the subscription for a single user
-	"""
-	inactivateUser(
-		"""
-		the user to pause
-		"""
-		userId: ID!
-	): InactivateUserPayload
-
-	"""
-	Adds the request user to multiple selected teams on the domain
-	"""
-	acceptRequestToJoinDomain(
-		"""
-		DomainJoinRequest id
-		"""
-		requestId: ID!
-
-		"""
-		Array of team ids
-		"""
-		teamIds: [ID!]!
-	): AcceptRequestToJoinDomainPayload!
-
-	"""
-	Redeem an invitation token for a logged in user
-	"""
-	acceptTeamInvitation(
-		"""
-		The invitation token or mass invitation code
-		"""
-		invitationToken: ID!
-
-		"""
-		the notification clicked to accept, if any
-		"""
-		notificationId: ID
-	): AcceptTeamInvitationPayload!
-
-	"""
-	Restrict accepting team invites to a list of approved domains
-	"""
-	addApprovedOrganizationDomains(
-		"""
-		The organization ID
-		"""
-		orgId: ID!
-
-		"""
-		A list of domains or email addressed allowed to join the organization
-		"""
-		emailDomains: [String!]!
-	): AddApprovedOrganizationDomainsPayload!
-
-	"""
-	Add or remove a reactji from a reactable
-	"""
-	addReactjiToReactable(
-		"""
-		The id of the reactable
-		"""
-		reactableId: ID!
-
-		"""
-		the type of the
-		"""
-		reactableType: ReactableEnum!
-
-		"""
-		the id of the reactji to add
-		"""
-		reactji: String!
-
-		"""
-		If true, remove the reaction, else add it
-		"""
-		isRemove: Boolean
-
-		"""
-		The id of the meeting
-		"""
-		meetingId: ID!
-	): AddReactjiToReactablePayload!
-
-	"""
-	Add an integration authorization for a specific team member
-	"""
-	addTeamMemberIntegrationAuth(
-		providerId: ID!
-		service: IntegrationProviderServiceEnum # Add optional service enum
-		teamId: ID!
-
-		"""
-		The OAuth2 code or personal access token. Null for webhook auth
-		"""
-		oauthCodeOrPat: ID
-
-		"""
-		OAuth1 token verifier
-		"""
-		oauthVerifier: ID
-
-		"""
-		The URL the OAuth2 token will be sent to. Null for webhook auth
-		"""
-		redirectUri: URL
-	): AddTeamMemberIntegrationAuthPayload!
-
-	"""
-	This mutation is specific to the mattermost global integration provider.
-	It will create a new TeamNotificationSettings object for the team and channel
-	"""
-	linkMattermostChannel(
-		"""
-		The team to link the channel to
-		"""
-		teamId: ID!
-
-		"""
-		The channel to link
-		"""
-		channelId: ID!
-	): LinkMattermostChannelPayload!
-
-	"""
-	Remove a previously linked channel from the team
-	"""
-	unlinkMattermostChannel(
-		"""
-		The team to unlink the channel from
-		"""
-		teamId: ID!
-
-		"""
-		The channel to unlink
-		"""
-		channelId: ID!
-	): UnlinkMattermostChannelPayload!
-
-	"""
-	Add the transcription bot to the Zoom meeting
-	"""
-	addTranscriptionBot(
-		meetingId: ID!
-		videoMeetingURL: String!
-	): AddTranscriptionBotPayload!
-
-	"""
-	Creates suggested reflection groups using OpenAI
-	"""
-	autogroup(meetingId: ID!): AutogroupPayload!
-
-	"""
-	Batch archive tasks
-	"""
-	batchArchiveTasks(
-		"""
-		ids of the tasks to archive
-		"""
-		taskIds: [ID!]!
-	): BatchArchiveTasksPayload!
-
-	"""
-	for troubleshooting by admins, create a JWT for a given userId
-	"""
-	createImposterToken(
-		"""
-		The target userId to impersonate
-		"""
-		userId: ID
-
-		"""
-		The email address of the user to impersonate
-		"""
-		email: Email
-	): CreateImposterTokenPayload!
-
-	"""
-	Create the Stripe subscription for the given org
-	"""
-	createStripeSubscription(
-		orgId: ID!
-		paymentMethodId: ID!
-	): CreateStripeSubscriptionPayload!
-
-	"""
-	Sign up or login using Google
-	"""
-	loginWithGoogle(
-		"""
-		The code provided from the OAuth2 flow
-		"""
-		code: ID!
-
-		"""
-		optional pseudo id created before they were a user
-		"""
-		pseudoId: ID
-
-		"""
-		if present, the user is also joining a team
-		"""
-		invitationToken: ID
-
-		"""
-		query params on the login page, used to maybe add feature flag
-		"""
-		params: String!
-	): UserLogInPayload!
-
-	"""
-	Sign up or login using Microsoft
-	"""
-	loginWithMicrosoft(
-		"""
-		The code provided from the OAuth2 flow
-		"""
-		code: ID!
-
-		"""
-		optional pseudo id created before they were a user
-		"""
-		pseudoId: ID
-
-		"""
-		if present, the user is also joining a team
-		"""
-		invitationToken: ID
-
-		"""
-		query params on the login page, used to maybe add feature flag
-		"""
-		params: String!
-	): UserLogInPayload!
-
-	"""
-	Login using an email address and password
-	"""
-	loginWithPassword(email: ID!, password: String!): UserLogInPayload!
-
-	"""
-	Sign out the current user by unsetting the session cookie
-	"""
-	signOut: Boolean!
-
-	"""
-	Refresh the session token
-	"""
-	refreshSession: Boolean!
-
-	"""
-	Describe the mutation here
-	"""
-	modifyCheckInQuestion(
-		meetingId: ID!
-		checkInQuestion: String!
-		modifyType: ModifyType!
-	): ModifyCheckInQuestionPayload!
-	persistIntegrationSearchQuery(
-		teamId: ID!
-		service: IntegrationProviderServiceEnum!
-		providerId: ID
-		jiraServerSearchQuery: JiraServerSearchQueryInput
-	): PersistIntegrationSearchQueryPayload!
-
-	"""
-	Remove the approved domains for a given organization
-	"""
-	removeApprovedOrganizationDomains(
-		"""
-		The ID for the organization to remove the restriction from
-		"""
-		orgId: ID!
-
-		"""
-		The list of emails and/or domains to unrestrict from the org
-		"""
-		emailDomains: [String!]!
-	): RemoveApprovedOrganizationDomainsPayload!
-
-	"""
-	Describe the mutation here
-	"""
-	removeIntegrationSearchQuery(
-		"""
-		integration search query ID
-		"""
-		id: ID!
-		teamId: ID!
-	): RemoveIntegrationSearchQueryPayload!
-
-	"""
-	Remove the integrated auth for a given team member
-	"""
-	removeTeamMemberIntegrationAuth(
-		"""
-		The Integration Provider service name related to the token
-		"""
-		service: IntegrationProviderServiceEnum!
-
-		"""
-		The team id related to the token
-		"""
-		teamId: ID!
-	): RemoveTeamMemberIntegrationAuthPayload!
-
-	"""
-	Sends the request to the appropriate organizations on the viewer's domain
-	"""
-	requestToJoinDomain: RequestToJoinDomainPayload!
-
-	"""
-	Resets the reflection groups to the state they were in before autogrouping
-	"""
-	resetReflectionGroups(meetingId: ID!): ResetReflectionGroupsPayload!
-	revealTeamHealthVotes(
-		meetingId: ID!
-		stageId: ID!
-	): RevealTeamHealthVotesPayload!
-
-	"""
-	Enabled or disable the icebreaker round
-	"""
-	setMeetingSettings(
-		settingsId: ID!
-
-		"""
-		true to turn icebreaker phase on, false to turn it off
-		"""
-		checkinEnabled: Boolean
-
-		"""
-		true to turn team health phase on, false to turn it off
-		"""
-		teamHealthEnabled: Boolean
-
-		"""
-		disables anonymity of reflections
-		"""
-		disableAnonymity: Boolean
-
-		"""
-		the url of the video meeting, e.g. the Zoom link
-		"""
-		videoMeetingURL: String
-	): SetMeetingSettingsPayload!
-
-	"""
-	Set the music being played in the meeting
-	"""
-	setMeetingMusic(
-		meetingId: ID!
-		trackSrc: String
-		isPlaying: Boolean!
-	): SetMeetingMusicPayload!
-
-	"""
-	Update the role of the org user
-	"""
-	setOrgUserRole(
-		orgId: ID!
-		userId: ID!
-
-		"""
-		The role to set the user to, e.g. billing leader. Null to remove the role
-		"""
-		role: OrgUserRole
-	): SetOrgUserRolePayload!
-	setTeamHealthVote(
-		meetingId: ID!
-		stageId: ID!
-		label: String!
-	): SetTeamHealthVotePayload!
-
-	"""
-	Shares retro discussion to integration
-	"""
-	shareTopic(
-		"""
-		Discussion stage id
-		"""
-		stageId: ID!
-
-		"""
-		meetingId
-		"""
-		meetingId: ID!
-
-		"""
-		Integration channelId
-		"""
-		channelId: ID!
-	): ShareTopicPayload!
-
-	"""
-	Sign up using an email address and password
-	"""
-	signUpWithPassword(
-		email: ID!
-		password: String!
-
-		"""
-		optional pseudo id created before they were a user
-		"""
-		pseudoId: ID
-
-		"""
-		used to determine what suggested actions to create
-		"""
-		invitationToken: ID
-
-		"""
-		query params on the login page, used to maybe add feature flag
-		"""
-		params: String!
-	): UserLogInPayload!
-
-	"""
-	Start a new meeting
-	"""
-	startCheckIn(
-		"""
-		The team starting the meeting
-		"""
-		teamId: ID!
-
-		"""
-		The name of the meeting
-		"""
-		name: String
-
-		"""
-		The gcal input if creating a gcal event
-		"""
-		gcalInput: CreateGcalEventInput
-	): StartCheckInPayload!
-
-	"""
-	Start a new meeting
-	"""
-	startRetrospective(
-		"""
-		The team starting the meeting
-		"""
-		teamId: ID!
-
-		"""
-		Name of the meeting or series
-		"""
-		name: String
-
-		"""
-		The recurrence rule for the meeting series in RRULE format
-		"""
-		rrule: RRule
-
-		"""
-		The gcal input if creating a gcal event
-		"""
-		gcalInput: CreateGcalEventInput
-	): StartRetrospectivePayload!
-
-	"""
-	Starts a new team prompt meeting
-	"""
-	startTeamPrompt(
-		"""
-		Id of the team starting the meeting
-		"""
-		teamId: ID!
-
-		"""
-		Meeting or series name, by default "Standup"
-		"""
-		name: String
-
-		"""
-		The recurrence rule for the meeting series in RRULE format
-		"""
-		rrule: RRule
-
-		"""
-		The gcal input if creating a gcal event. If not provided, no gcal event will be created
-		"""
-		gcalInput: CreateGcalEventInput
-	): StartTeamPromptPayload!
-
-	"""
-	Add or remove the template to the user's favorite templates
-	"""
-	toggleFavoriteTemplate(
-		"""
-		The ID of the template to be toggled as a favorite
-		"""
-		templateId: ID!
-	): ToggleFavoriteTemplatePayload!
-
-	"""
-	Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
-	"""
-	toggleSummaryEmail: ToggleSummaryEmailPayload!
-
-	"""
-	Toggles the sendPageInvitationEmail value on the User object which determines whether page invitation emails are sent to the user
-	"""
-	togglePageInvitationEmail: TogglePageInvitationEmailPayload!
-
-	"""
-	Update the autoJoin value for a set of teams
-	"""
-	updateAutoJoin(
-		"""
-		The team ids to update
-		"""
-		teamIds: [ID!]!
-
-		"""
-		The new autoJoin value for the teams
-		"""
-		autoJoin: Boolean!
-	): UpdateAutoJoinPayload!
-
-	"""
-	Update an org's credit card
-	"""
-	updateCreditCard(
-		"""
-		The id of the org that is updating their credit card
-		"""
-		orgId: ID!
-
-		"""
-		The id of the new payment method from Stripe
-		"""
-		paymentMethodId: ID!
-	): UpdateCreditCardPayload!
-
-	"""
-	Update how a parabol dimension maps to a GitLab label
-	"""
-	updateGitLabDimensionField(
-		"""
-		The Poker dimension that we're updating, e.g. story points
-		"""
-		dimensionName: String!
-
-		"""
-		The template string to map to a label, e.g. __comment
-		"""
-		labelTemplate: String!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField.
-		"""
-		meetingId: ID!
-
-		"""
-		The id of the project the issue belongs to
-		"""
-		projectId: Int!
-	): UpdateGitLabDimensionFieldPayload!
-
-	"""
-	Update how a parabol dimension maps to a Linear label
-	"""
-	updateLinearDimensionField(
-		"""
-		The Poker dimension that we're updating, e.g. story points
-		"""
-		dimensionName: String!
-
-		"""
-		The template string to map to a label, e.g. __comment
-		"""
-		labelTemplate: String!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField.
-		"""
-		meetingId: ID!
-
-		"""
-		The id of the project the issue belongs to
-		"""
-		repoId: String!
-	): UpdateLinearDimensionFieldPayload!
-
-	"""
-	Set the jira field that the poker dimension should map to
-	"""
-	updateJiraDimensionField(
-		"""
-		Id of the parabol task on which the dimension was updated
-		"""
-		taskId: ID!
-
-		"""
-		Dimension name from the template used
-		"""
-		dimensionName: String!
-
-		"""
-		The jira field id that we should push estimates to
-		"""
-		fieldId: ID!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField
-		"""
-		meetingId: ID!
-	): UpdateDimensionFieldPayload!
-
-	"""
-	Set the JiraServer field that the poker dimension should map to`,
-	"""
-	updateJiraServerDimensionField(
-		dimensionName: String!
-
-		"""
-		The Jira Data Center field name that we should push estimates to
-		"""
-		fieldName: ID!
-
-		"""
-		The Jira Data Center issue type for which to set the dimension
-		"""
-		issueType: ID!
-
-		"""
-		Project id for this setting
-		"""
-		projectId: ID!
-
-		"""
-		The meeting the update happend in. Returns a meeting object with updated serviceField
-		"""
-		meetingId: ID!
-	): UpdateDimensionFieldPayload!
-
-	"""
-	Describe the mutation here
-	"""
-	updateMeetingPrompt(
-		"""
-		The meeting to update the prompt
-		"""
-		meetingId: ID!
-
-		"""
-		The updated prompt
-		"""
-		newPrompt: String!
-	): UpdateMeetingPromptPayload!
-
-	"""
-	Update a meeting template
-	"""
-	updateMeetingTemplate(
-		"""
-		The id of the meeting
-		"""
-		meetingId: ID!
-
-		"""
-		The id of the meeting template
-		"""
-		templateId: ID!
-	): UpdateMeetingTemplatePayload!
-
-	"""
-	Update an with a change in name, avatar
-	"""
-	updateOrg(
-		"""
-		the updated org including the id, and at least one other field
-		"""
-		updatedOrg: UpdateOrgInput!
-	): UpdateOrgPayload!
-
-	"""
-	Updates the recurrence settings for a meeting
-	1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
-	2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
-	3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
-	"""
-	updateRecurrenceSettings(
-		"""
-		ID of the meeting to update recurrence settings for
-		"""
-		meetingId: ID!
-
-		"""
-		New meeting series name
-		"""
-		name: String
-
-		"""
-		The recurrence rule for the meeting series in RRULE format
-		"""
-		rrule: RRule
-	): UpdateRecurrenceSettingsPayload!
-
-	"""
-	Updates the mainCategory for the given template
-	"""
-	updateTemplateCategory(
-		"""
-		The ID of the template
-		"""
-		templateId: ID!
-
-		"""
-		The new category for the template
-		"""
-		mainCategory: String!
-	): UpdateTemplateCategoryPayload!
-	updateUserProfile(
-		"""
-		The input object containing the user profile fields that can be changed
-		"""
-		updatedUser: UpdateUserProfileInput!
-	): UpdateUserProfilePayload
-
-	"""
-	Upload the IdP Metadata file for an org for those who cannot self-host the file
-	"""
-	uploadIdPMetadata(
-		"""
-		the XML Metadata file for the IdP
-		"""
-		file: File!
-
-		"""
-		The orgId to upload the IdP Metadata for
-		"""
-		orgId: ID!
-	): UploadIdPMetadataPayload!
-
-	"""
-	Upload an image for an org avatar
-	"""
-	uploadOrgImage(
-		"""
-		the org avatar image file
-		"""
-		file: File!
-
-		"""
-		The org id to upload an avatar for
-		"""
-		orgId: ID!
-	): UpdateOrgPayload!
-
-	"""
-	Take any asset & host it in the file store
-	"""
-	embedUserAsset(
-		"""
-		the asset URL
-		"""
-		url: String!
-		"""
-		the scope of who can access the file, either user or page
-		"""
-		scope: AssetScopeEnum!
-		"""
-		The client ID of the scope, e.g. userId, teamId, orgId, pageKey
-		"""
-		scopeKey: ID!
-	): UploadUserAssetPayload
-
-	"""
-	Upload any asset owned by a user
-	"""
-	uploadUserAsset(
-		"""
-		the asset file
-		"""
-		file: File!
-		"""
-		the scope of who can access the file, either user or page
-		"""
-		scope: AssetScopeEnum!
-		"""
-		The client ID of the scope, e.g. userId, teamId, orgId, pageKey
-		"""
-		scopeKey: ID!
-	): UploadUserAssetPayload
-
-	"""
-	Upload an image for a user avatar
-	"""
-	uploadUserImage(
-		"""
-		the user avatar image file
-		"""
-		file: File!
-	): UpdateUserProfilePayload
-
-	"""
-	upsert the content of a team prompt response
-	"""
-	upsertTeamPromptResponse(
-		"""
-		The id of the team prompt response to upsert
-		"""
-		teamPromptResponseId: ID
-
-		"""
-		The id of the team prompt meeting
-		"""
-		meetingId: ID!
-
-		"""
-		The stringified content of the team prompt response
-		"""
-		content: String!
-	): UpsertTeamPromptResponsePayload!
-
-	"""
-	Verify an email address and sign in if not already a user
-	"""
-	verifyEmail(
-		"""
-		The 48-byte url-safe base64 encoded verification token
-		"""
-		verificationToken: ID!
-	): UserLogInPayload!
-
-	"""
-	Update the role-based access for a page
-	"""
-	updatePageAccess(
-		"""
-		The page to update access for
-		"""
-		pageId: ID!
-		subjectType: PageSubjectEnum!
-		subjectId: ID!
-		role: PageRoleEnum
-		"""
-		True if this mutation can unlink the pageId from its parent
-		"""
-		unlinkApproved: Boolean
-	): UpdatePageAccessPayload
-
-	"""
-	Requests access to a page
-	"""
-	requestPageAccess(
-		"""
-		The id of the page to request access to
-		"""
-		pageId: ID!
-
-		"""
-		Reason for requesting access
-		"""
-		reason: String!
-
-		"""
-		The requested access role
-		"""
-		role: PageRoleEnum!
-	): Boolean
-
-	"""
-	Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
-	"""
-	updatePage(
-		"""
-		The ID of the page to update
-		"""
-		pageId: ID!
-		"""
-		The new sort order, as a fractional index
-		"""
-		sortOrder: String!
-		"""
-		The section the page is being moved from
-		"""
-		sourceSection: PageSectionEnum
-		"""
-		The section the page is being moved to
-		"""
-		targetSection: PageSectionEnum
-		"""
-		The new teamId, if moved to a team
-		"""
-		teamId: ID
-		"""
-		true to revoke access for all but the mutator
-		"""
-		makePrivate: Boolean
-	): UpdatePagePayload!
-	"""
-	link or unlink a page to its parent
-	"""
-	updatePageParentLink(
-		"""
-		The ID of the page to update
-		"""
-		pageId: ID!
-		"""
-		True to re-link, false to unlink
-		"""
-		isParentLinked: Boolean!
-	): UpdatePagePayload
-	updateTeamSortOrder(
-		teamId: ID!
-		"""
-		The new sort order as a fractional index
-		"""
-		sortOrder: String!
-	): UpdateTeamSortOrderPayload
-	"""
-	Move a page to the trash
-	"""
-	archivePage(
-		pageId: ID!
-		"""
-		The action to take on the page
-		"""
-		action: ArchivePageActionEnum!
-	): ArchivePagePayload
+  """
+  Create a new agenda item
+  """
+  addAgendaItem(
+    """
+    The new task including an id, teamMemberId, and content
+    """
+    newAgendaItem: CreateAgendaItemInput!
+  ): AddAgendaItemPayload
+  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
+
+  """
+  Add a comment to a discussion
+  """
+  addComment(
+    """
+    A partial new comment
+    """
+    comment: AddCommentInput!
+  ): AddCommentPayload!
+
+  """
+  Add a new dimension for the poker template
+  """
+  addPokerTemplateDimension(templateId: ID!): AddPokerTemplateDimensionPayload!
+
+  """
+  Add a new scale for the poker template
+  """
+  addPokerTemplateScale(parentScaleId: ID, teamId: ID!): AddPokerTemplateScalePayload!
+
+  """
+  Add a new scale value for a scale in a poker template
+  """
+  addPokerTemplateScaleValue(
+    scaleId: ID!
+    scaleValue: AddTemplateScaleInput!
+  ): AddPokerTemplateScaleValuePayload!
+
+  """
+  Add a new template full of prompts
+  """
+  addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
+  addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
+  addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
+
+  """
+  Create a new team and add the first team member
+  """
+  addOrg(
+    """
+    The new team object with exactly 1 team member
+    """
+    newTeam: NewTeamInput!
+
+    """
+    The name of the new team
+    """
+    orgName: String!
+    invitees: [Email!]
+  ): AddOrgPayload!
+
+  """
+  Create a new team and add the first team member
+  """
+  addTeam(
+    """
+    The new team object
+    """
+    newTeam: NewTeamInput!
+    invitees: [Email!]
+  ): AddTeamPayload!
+  archiveOrganization(
+    """
+    The orgId to archive
+    """
+    orgId: ID!
+  ): ArchiveOrganizationPayload!
+  archiveTeam(
+    """
+    The teamId to archive (or delete, if team is unused)
+    """
+    teamId: ID!
+  ): ArchiveTeamPayload!
+
+  """
+  Archive a timeline event
+  """
+  archiveTimelineEvent(
+    """
+    the id for the timeline event
+    """
+    timelineEventId: ID!
+  ): ArchiveTimelineEventPayload!
+
+  """
+  Change the team a task is associated with. Also copy the viewers integration if necessary.
+  """
+  changeTaskTeam(
+    """
+    The task to change
+    """
+    taskId: ID!
+
+    """
+    The new team to assign the task to
+    """
+    teamId: ID!
+  ): ChangeTaskTeamPayload
+
+  """
+  set the interaction status of a notifcation
+  """
+  setNotificationStatus(
+    """
+    The id of the notification
+    """
+    notificationId: ID!
+    status: NotificationStatusEnum!
+  ): SetNotificationStatusPayload
+
+  createPage(
+    """
+    The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
+    """
+    teamId: ID
+  ): CreatePagePayload!
+  createTaskIntegration(
+    """
+    Which integration to push the task to
+    """
+    integrationProviderService: IntegrationProviderServiceEnum!
+
+    """
+    Jira projectId, GitHub nameWithOwner etc.
+    """
+    integrationRepoId: ID!
+
+    """
+    The id of the task to convert to an issue
+    """
+    taskId: ID!
+  ): CreateTaskIntegrationPayload
+
+  """
+  Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
+  """
+  createOAuth1AuthorizeUrl(
+    """
+    Id of the integration provider with OAuth1 auth strategy
+    """
+    providerId: ID!
+
+    """
+    Id of the team where the integration should be added
+    """
+    teamId: ID!
+  ): CreateOAuth1AuthorizationURLPayload
+
+  """
+  Create a new reflection
+  """
+  createReflection(input: CreateReflectionInput!): CreateReflectionPayload
+
+  """
+  Create a new task, triggering a CreateCard for other viewers
+  """
+  createTask(
+    """
+    The new task including an id, status, and type, and teamMemberId
+    """
+    newTask: CreateTaskInput!
+
+    """
+    The part of the site where the creation occurred
+    """
+    area: AreaEnum
+  ): CreateTaskPayload!
+
+  """
+  Delete a comment from a discussion
+  """
+  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
+
+  """
+  Delete (not archive!) a task
+  """
+  deleteTask(
+    """
+    The taskId to delete
+    """
+    taskId: ID!
+  ): DeleteTaskPayload
+
+  """
+  Delete a user, removing them from all teams and orgs
+  """
+  deleteUser(
+    """
+    a userId
+    """
+    userId: ID
+
+    """
+    the user email
+    """
+    email: ID
+
+    """
+    the reason why the user wants to delete their account
+    """
+    reason: String
+  ): DeleteUserPayload!
+
+  """
+  Deny a user from joining via push invitation
+  """
+  denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload
+
+  """
+  Redeem an invitation token for a logged in user
+  """
+  dismissNewFeature: DismissNewFeaturePayload!
+
+  """
+  Dismiss a suggested action
+  """
+  dismissSuggestedAction(
+    """
+    The id of the suggested action to dismiss
+    """
+    suggestedActionId: ID!
+  ): DismissSuggestedActionPayload!
+
+  """
+  Downgrade a paid account to the starter plan service
+  """
+  downgradeToStarter(
+    """
+    the org requesting the upgrade
+    """
+    orgId: ID!
+
+    """
+    the reasons the user is leaving
+    """
+    reasonsForLeaving: [ReasonToDowngradeEnum]
+
+    """
+    the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade
+    """
+    otherTool: String
+  ): DowngradeToStarterPayload
+
+  """
+  Changes the priority of the discussion topics
+  """
+  dragDiscussionTopic(meetingId: ID!, stageId: ID!, sortOrder: Float!): DragDiscussionTopicPayload
+
+  """
+  Changes the ordering of the estimating tasks
+  """
+  dragEstimatingTask(
+    meetingId: ID!
+    taskId: ID!
+
+    """
+    The index of the tasks will be moved to, in the list of estimating tasks sidebar section
+    """
+    newPositionIndex: Int!
+  ): DragEstimatingTaskPayload!
+
+  """
+  Send an email to reset a password
+  """
+  emailPasswordReset(
+    """
+    email to send the password reset code to
+    """
+    email: ID!
+  ): EmailPasswordResetPayload!
+
+  """
+  Track which users are commenting
+  """
+  editCommenting(
+    """
+    True if the user is commenting, false if the user has stopped commenting
+    """
+    isCommenting: Boolean!
+    discussionId: ID!
+  ): EditCommentingPayload
+
+  """
+  Finish a sprint poker meeting
+  """
+  endSprintPoker(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndSprintPokerPayload!
+
+  """
+  Changes the editing state of a user for a phase item
+  """
+  editReflection(
+    """
+    Whether a reflectPrompt is being edited or not
+    """
+    isEditing: Boolean!
+    meetingId: ID!
+    promptId: ID!
+  ): EditReflectionPayload
+
+  """
+  Announce to everyone that you are editing a task
+  """
+  editTask(
+    """
+    The task id that is being edited
+    """
+    taskId: ID!
+
+    """
+    true if the editing is starting, false if it is stopping
+    """
+    isEditing: Boolean!
+  ): EditTaskPayload
+
+  """
+  Finish a check-in meeting
+  """
+  endCheckIn(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndCheckInPayload!
+
+  """
+  Broadcast that the viewer stopped dragging a reflection
+  """
+  endDraggingReflection(
+    reflectionId: ID!
+
+    """
+    if it was a drop (isDragging = false), the type of item it was dropped on. null if there was no valid drop target
+    """
+    dropTargetType: DragReflectionDropTargetTypeEnum
+
+    """
+    if dropTargetType could refer to more than 1 component, this ID defines which one
+    """
+    dropTargetId: ID
+
+    """
+    the ID of the drag to connect to the start drag event
+    """
+    dragId: ID
+  ): EndDraggingReflectionPayload
+
+  """
+  Finish a retrospective meeting
+  """
+  endRetrospective(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndRetrospectivePayload!
+
+  """
+  flag a viewer as ready to advance to the next stage of a meeting
+  """
+  flagReadyToAdvance(
+    meetingId: ID!
+
+    """
+    the stage that the viewer marked as ready
+    """
+    stageId: ID!
+
+    """
+    true if ready to advance, else false
+    """
+    isReady: Boolean!
+  ): FlagReadyToAdvancePayload!
+
+  """
+  Invalidate all sessions by blacklisting all JWTs issued before now
+  """
+  invalidateSessions: InvalidateSessionsPayload!
+
+  """
+  Send a team invitation to an email address
+  """
+  inviteToTeam(
+    """
+    the specific meeting where the invite occurred, if any
+    """
+    meetingId: ID
+
+    """
+    The id of the inviting team
+    """
+    teamId: ID!
+    invitees: [Email!]!
+  ): InviteToTeamPayload!
+
+  """
+  Generate an insight for a team
+  """
+  generateInsight(
+    teamId: ID!
+    startDate: DateTime!
+    endDate: DateTime!
+    useSummaries: Boolean
+    prompt: String
+  ): GenerateInsightPayload!
+
+  """
+  Generate new meeting summaries for retro meetings for the given teams
+  """
+  generateRetroSummaries(
+    """
+    The ids of the teams to generate the meeting summary for
+    """
+    teamIds: [ID!]!
+
+    """
+    The optional user prompt that will be used to generate the meeting summary
+    """
+    prompt: String
+  ): GenerateRetroSummariesPayload!
+
+  """
+  Move a template dimension
+  """
+  movePokerTemplateDimension(
+    dimensionId: ID!
+    sortOrder: String!
+  ): MovePokerTemplateDimensionPayload!
+
+  """
+  Move a reflect template
+  """
+  moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
+
+  """
+  Move a team to a different org. Requires billing leader rights on both orgs!
+  """
+  moveTeamToOrg(
+    """
+    The teamId that you want to move
+    """
+    teamIds: [ID!]!
+
+    """
+    The ID of the organization you want to move the team to
+    """
+    orgId: ID!
+  ): String
+
+  """
+  update a meeting by marking an item complete and setting the facilitator location
+  """
+  navigateMeeting(
+    """
+    The stage that the facilitator would like to mark as complete
+    """
+    completedStageId: ID
+
+    """
+    The stage where the facilitator is
+    """
+    facilitatorStageId: ID
+
+    """
+    The meeting ID
+    """
+    meetingId: ID!
+  ): NavigateMeetingPayload!
+
+  """
+  Add or remove a task and its estimate phase from the meeting
+  """
+  persistJiraSearchQuery(
+    """
+    the team with the settings we add the query to
+    """
+    teamId: ID!
+
+    """
+    the jira search query to persist (or remove, if isRemove is true)
+    """
+    input: JiraSearchQueryInput!
+  ): PersistJiraSearchQueryPayload!
+
+  """
+  Request to be invited to a team in real time
+  """
+  pushInvitation(
+    """
+    the meeting ID the pusher would like to join
+    """
+    meetingId: ID
+    teamId: ID!
+  ): PushInvitationPayload
+
+  """
+  Change a facilitator while the meeting is in progress
+  """
+  promoteNewMeetingFacilitator(
+    """
+    userId of the new facilitator for this meeting
+    """
+    facilitatorUserId: ID!
+    meetingId: ID!
+  ): PromoteNewMeetingFacilitatorPayload
+
+  """
+  Promote another team member to be the leader
+  """
+  promoteToTeamLead(
+    """
+    Team id of the team which is about to get a new team leader
+    """
+    teamId: ID!
+
+    """
+    userId who will be set as a new team leader
+    """
+    userId: ID!
+  ): PromoteToTeamLeadPayload
+
+  """
+  Update the description of a reflection prompt
+  """
+  reflectTemplatePromptUpdateDescription(
+    promptId: ID!
+    description: String!
+  ): ReflectTemplatePromptUpdateDescriptionPayload
+
+  """
+  Update the description of a poker template dimension
+  """
+  pokerTemplateDimensionUpdateDescription(
+    dimensionId: ID!
+    description: String!
+  ): PokerTemplateDimensionUpdateDescriptionPayload
+  reflectTemplatePromptUpdateGroupColor(
+    promptId: ID!
+    groupColor: String!
+  ): ReflectTemplatePromptUpdateGroupColorPayload
+
+  """
+  Remove an agenda item
+  """
+  removeAgendaItem(
+    """
+    The agenda item unique id
+    """
+    agendaItemId: ID!
+  ): RemoveAgendaItemPayload
+
+  """
+  Disconnect a team member from atlassian
+  """
+  removeAtlassianAuth(
+    """
+    the teamId to disconnect from the token
+    """
+    teamId: ID!
+  ): RemoveAtlassianAuthPayload!
+
+  """
+  Disconnect a team member from GitHub
+  """
+  removeGitHubAuth(
+    """
+    the teamId to disconnect from the token
+    """
+    teamId: ID!
+  ): RemoveGitHubAuthPayload!
+
+  """
+  Remove multiple users from an org
+  """
+  removeOrgUsers(
+    """
+    The list of user IDs to remove
+    """
+    userIds: [ID!]!
+
+    """
+    The org that does not want them anymore
+    """
+    orgId: ID!
+  ): RemoveOrgUsersPayload!
+
+  """
+  Remove a poker meeting template
+  """
+  removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload!
+
+  """
+  Remove a template full of prompts
+  """
+  removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload
+
+  """
+  Remove a prompt from a template
+  """
+  removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
+
+  """
+  Remove a dimension from a template
+  """
+  removePokerTemplateDimension(dimensionId: ID!): RemovePokerTemplateDimensionPayload!
+
+  """
+  Rename a meeting
+  """
+  renameMeeting(
+    """
+    the new meeting name
+    """
+    name: String!
+
+    """
+    the meeting with the new name
+    """
+    meetingId: ID!
+  ): RenameMeetingPayload!
+
+  """
+  Rename a meeting template
+  """
+  renameMeetingTemplate(templateId: ID!, name: String!): RenameMeetingTemplatePayload
+
+  """
+  Rename a reflect template prompt
+  """
+  renameReflectTemplatePrompt(promptId: ID!, question: String!): RenameReflectTemplatePromptPayload
+
+  """
+  Rename a poker template dimension
+  """
+  renamePokerTemplateDimension(
+    dimensionId: ID!
+    name: String!
+  ): RenamePokerTemplateDimensionPayload!
+
+  """
+  Rename a poker template scale
+  """
+  renamePokerTemplateScale(scaleId: ID!, name: String!): RenamePokerTemplateScalePayload!
+
+  """
+  Remove a scale from a template
+  """
+  removePokerTemplateScale(scaleId: ID!): RemovePokerTemplateScalePayload!
+
+  """
+  Remove a scale value from the scale of a template
+  """
+  removePokerTemplateScaleValue(scaleId: ID!, label: String!): RemovePokerTemplateScaleValuePayload!
+
+  """
+  Remove a reflection
+  """
+  removeReflection(reflectionId: ID!): RemoveReflectionPayload
+
+  """
+  Disconnect a team member from Slack
+  """
+  removeSlackAuth(
+    """
+    the teamId to disconnect from the token
+    """
+    teamId: ID!
+  ): RemoveSlackAuthPayload!
+
+  """
+  Remove a team member from the team
+  """
+  removeTeamMember(
+    """
+    The teamMemberId of the person who is being removed
+    """
+    teamMemberId: ID!
+  ): RemoveTeamMemberPayload
+
+  """
+  Reset the password for an account
+  """
+  resetPassword(
+    """
+    the password reset token
+    """
+    token: ID!
+
+    """
+    The new password for the account
+    """
+    newPassword: String!
+  ): ResetPasswordPayload!
+
+  """
+  Reset a retro meeting to group stage
+  """
+  resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
+
+  """
+  Set the selected template for the upcoming retro meeting
+  """
+  selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
+
+  """
+  Update the default Slack channel where notifications are sent
+  """
+  setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
+
+  """
+  Focus (or unfocus) a phase item
+  """
+  setPhaseFocus(
+    meetingId: ID!
+
+    """
+    The currently focused phase item
+    """
+    focusedPromptId: ID
+  ): SetPhaseFocusPayload
+
+  """
+  Set or clear a timer for a meeting stage
+  """
+  setStageTimer(
+    """
+    the id of the meeting
+    """
+    meetingId: ID!
+
+    """
+    The time the timer is scheduled to go off (based on client clock), null if unsetting the timer
+    """
+    scheduledEndTime: DateTime
+
+    """
+    scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null
+    """
+    timeRemaining: Float
+  ): SetStageTimerPayload!
+
+  setSlackNotification(
+    slackChannelId: ID
+    slackNotificationEvents: [SlackNotificationEventEnum!]!
+    teamId: ID!
+  ): SetSlackNotificationPayload!
+
+  """
+  Update the notification settings for a provider and team
+  """
+  setTeamNotificationSetting(
+    """
+    The unique id for the setting
+    """
+    id: ID!
+
+    """
+    Event type to modify
+    """
+    event: SlackNotificationEventEnum!
+    isEnabled: Boolean!
+  ): SetTeamNotificationSettingPayload!
+
+  """
+  Broadcast that the viewer started dragging a reflection
+  """
+  startDraggingReflection(
+    reflectionId: ID!
+    dragId: ID!
+    isSpotlight: Boolean
+  ): StartDraggingReflectionPayload
+
+  """
+  Start a new sprint poker meeting
+  """
+  startSprintPoker(
+    """
+    The team starting the meeting
+    """
+    teamId: ID!
+
+    """
+    The name of the meeting
+    """
+    name: String
+
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
+  ): StartSprintPokerPayload!
+
+  """
+  Broadcast that the viewer highlights a task
+  """
+  setTaskHighlight(taskId: ID!, meetingId: ID!, isHighlighted: Boolean!): SetTaskHighlightPayload!
+
+  """
+  Update an agenda item
+  """
+  updateAgendaItem(
+    """
+    The updated item including an id, content, status, sortOrder
+    """
+    updatedAgendaItem: UpdateAgendaItemInput!
+  ): UpdateAgendaItemPayload
+
+  """
+  Update the content of a comment
+  """
+  updateCommentContent(
+    commentId: ID!
+
+    """
+    A stringified TipTap JSONContent document containing thoughts
+    """
+    content: String!
+    meetingId: ID!
+  ): UpdateCommentContentPayload
+
+  """
+  Update the scale used for a dimension in a template
+  """
+  updatePokerTemplateDimensionScale(
+    dimensionId: ID!
+    scaleId: ID!
+  ): UpdatePokerTemplateDimensionScalePayload!
+
+  """
+  Update the label, numerical value or color of a scale value in a scale
+  """
+  updatePokerTemplateScaleValue(
+    scaleId: ID!
+    oldScaleValue: TemplateScaleInput!
+    newScaleValue: TemplateScaleInput!
+  ): UpdatePokerTemplateScaleValuePayload!
+
+  """
+  Update a Team's Icebreaker in a new meeting
+  """
+  updateNewCheckInQuestion(
+    """
+    ID of the Team which will have its Icebreaker updated
+    """
+    meetingId: ID!
+
+    """
+    The Team's new Icebreaker
+    """
+    checkInQuestion: String!
+  ): UpdateNewCheckInQuestionPayload
+
+  """
+  all the info required to provide an accurate display-specific location of where an item is
+  """
+  updateDragLocation(input: UpdateDragLocationInput!): Boolean
+
+  """
+  Add or remove a task and its estimate phase from the meeting
+  """
+  updatePokerScope(
+    """
+    the meeting with the estimate phases to modify
+    """
+    meetingId: ID!
+
+    """
+    The list of items to add/remove to the estimate phase
+    """
+    updates: [UpdatePokerScopeItemInput!]!
+  ): UpdatePokerScopePayload!
+
+  """
+  Update the content of a reflection
+  """
+  updateReflectionContent(
+    reflectionId: ID!
+
+    """
+    A stringified TipTap JSONContent document containing thoughts
+    """
+    content: String!
+  ): UpdateReflectionContentPayload
+
+  """
+  Update the title of a reflection group
+  """
+  updateReflectionGroupTitle(
+    reflectionGroupId: ID!
+
+    """
+    The new title for the group
+    """
+    title: String!
+  ): UpdateReflectionGroupTitlePayload
+
+  """
+  Change the max votes for participants
+  """
+  updateRetroMaxVotes(
+    """
+    The total number of votes for each participant
+    """
+    totalVotes: Int!
+
+    """
+    The total number of votes for each participant to vote on a single topic
+    """
+    maxVotesPerGroup: Int!
+
+    """
+    the meeting to update
+    """
+    meetingId: ID!
+  ): UpdateRetroMaxVotesPayload!
+
+  """
+  Update a task with a change in content, ownership, or status
+  """
+  updateTask(
+    """
+    The part of the site where the creation occurred
+    """
+    area: AreaEnum
+
+    """
+    the updated task including the id, and at least one other field
+    """
+    updatedTask: UpdateTaskInput!
+  ): UpdateTaskPayload
+
+  """
+  Set or unset the due date of a task
+  """
+  updateTaskDueDate(
+    """
+    The task id
+    """
+    taskId: ID!
+
+    """
+    the new due date. if not a valid date, it will unset the due date
+    """
+    dueDate: DateTime
+  ): UpdateTaskDueDatePayload
+  updateTeamName(
+    """
+    The input object containing the teamId and any modified fields
+    """
+    updatedTeam: UpdatedTeamInput!
+  ): UpdateTeamNamePayload
+
+  """
+  Change the scope of a template
+  """
+  updateTemplateScope(
+    """
+    The id of the template
+    """
+    templateId: ID!
+
+    """
+    the new scope
+    """
+    scope: SharingScopeEnum!
+  ): UpdateTemplateScopePayload!
+
+  """
+  Cast your vote for a reflection group
+  """
+  voteForReflectionGroup(
+    """
+    true if the user wants to remove one of their votes
+    """
+    isUnvote: Boolean
+    reflectionGroupId: ID!
+  ): VoteForReflectionGroupPayload
+
+  """
+  Cast a vote for the estimated points for a given dimension
+  """
+  voteForPokerStory(
+    meetingId: ID!
+
+    """
+    The stage that contains the dimension to vote for
+    """
+    stageId: ID!
+
+    """
+    The label of the scaleValue to vote for. If null, remove the vote
+    """
+    score: String
+  ): VoteForPokerStoryPayload!
+
+  """
+  Progresses the stage dimension to the reveal & discuss step
+  """
+  pokerRevealVotes(meetingId: ID!, stageId: ID!): PokerRevealVotesPayload!
+
+  """
+  Remove all votes, the final vote, and reset the stage
+  """
+  pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
+
+  """
+  """
+  pokerAnnounceDeckHover(
+    meetingId: ID!
+    stageId: ID!
+
+    """
+    true if the viewer has started hovering the deck, else false
+    """
+    isHover: Boolean!
+  ): PokerAnnounceDeckHoverPayload!
+
+  """
+  Move a scale value to an index
+  """
+  movePokerTemplateScaleValue(
+    scaleId: ID!
+
+    """
+    The label of the moving scale value
+    """
+    label: String!
+
+    """
+    The index position where the scale value is moving to
+    """
+    index: Int!
+  ): MovePokerTemplateScaleValuePayload!
+
+  """
+  Create a meeting member for a user
+  """
+  joinMeeting(meetingId: ID!): JoinMeetingPayload!
+
+  """
+  Join a public Team directly without requiring an invitation
+  """
+  joinTeam(
+    """
+    The ID of the team to join
+    """
+    teamId: ID!
+  ): JoinTeamPayload!
+
+  """
+  Set whether the user is spectating poker meeting
+  """
+  setPokerSpectate(
+    meetingId: ID!
+
+    """
+    true if the viewer is spectating poker and does not want to vote. else false
+    """
+    isSpectating: Boolean!
+  ): SetPokerSpectatePayload!
+
+  """
+  """
+  persistGitHubSearchQuery(
+    """
+    the team witht the settings we add the query to
+    """
+    teamId: ID!
+
+    """
+    The query string as sent to GitHub
+    """
+    queryString: String!
+
+    """
+    true if this query should be deleted
+    """
+    isRemove: Boolean
+  ): PersistGitHubSearchQueryPayload!
+
+  """
+  Update a task estimate
+  """
+  setTaskEstimate(taskEstimate: TaskEstimateInput!): SetTaskEstimatePayload!
+
+  """
+  Show/hide the drawer in the team dashboard
+  """
+  toggleTeamDrawer(
+    """
+    the team to show/hide the drawer for
+    """
+    teamId: ID!
+
+    """
+    The type of team drawer that the viewer is toggling. Null if closing the drawer.
+    """
+    teamDrawerType: TeamDrawer
+  ): ToggleTeamDrawerPayload!
+
+  """
+  Toggle a feature flag for a specific owner (organization, team, or user)
+  """
+  toggleFeatureFlag(
+    """
+    The name of the feature flag to toggle
+    """
+    featureName: String!
+    """
+    The organization ID if toggling for an org
+    """
+    orgId: ID
+    """
+    The team ID if toggling for a team
+    """
+    teamId: ID
+    """
+    The user ID if toggling for a user
+    """
+    userId: ID
+  ): ToggleFeatureFlagPayload!
+
+  """
+  Toggle whether the organization has access to ai features
+  """
+  toggleAIFeatures(
+    """
+    The id of the org being toggled
+    """
+    orgId: ID!
+  ): ToggleAIFeaturesPayload!
+
+  """
+  Toggle whether the team privacy settings
+  """
+  toggleTeamPrivacy(
+    """
+    The id of the team being toggled
+    """
+    teamId: ID!
+  ): ToggleTeamPrivacyPayload!
+
+  """
+  Update how a parabol dimension maps to a GitHub label
+  """
+  updateGitHubDimensionField(
+    dimensionName: String!
+
+    """
+    The template string to map to a label
+    """
+    labelTemplate: String!
+
+    """
+    The repo the issue lives on
+    """
+    nameWithOwner: ID!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField
+    """
+    meetingId: ID!
+  ): UpdateGitHubDimensionFieldPayload!
+  createPoll(
+    """
+    The new poll including title and poll options
+    """
+    newPoll: CreatePollInput!
+  ): CreatePollPayload!
+
+  """
+  Adds a new Integration Provider configuration
+  """
+  addIntegrationProvider(
+    """
+    The new Integration Provider
+    """
+    input: AddIntegrationProviderInput!
+  ): AddIntegrationProviderPayload!
+
+  """
+  Update the Integration Provider settings
+  """
+  updateIntegrationProvider(
+    """
+    The new Integration Provider
+    """
+    provider: UpdateIntegrationProviderInput!
+  ): UpdateIntegrationProviderPayload!
+
+  """
+  Remove an Integration Provider, and any associated tokens
+  """
+  removeIntegrationProvider(
+    """
+    Id of the Integration Provider to remove
+    """
+    providerId: ID!
+  ): RemoveIntegrationProviderPayload!
+
+  """
+  Finish the team prompt meeting
+  """
+  endTeamPrompt(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndTeamPromptPayload!
+
+  """
+  Set the Azure DevOps field that the poker dimension should map to
+  """
+  updateAzureDevOpsDimensionField(
+    dimensionName: String!
+
+    """
+    The Azure DevOps field name that we should push estimates to
+    """
+    fieldName: String!
+
+    """
+    The Azure DevOps instanceId the field lives on
+    """
+    instanceId: ID!
+
+    """
+    The project the field lives on
+    """
+    projectKey: ID!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField
+    """
+    meetingId: ID!
+
+    """
+    The work item type in Azure DevOps
+    """
+    workItemType: ID!
+  ): UpdateAzureDevOpsDimensionFieldPayload!
+
+  """
+  Adds a new poker template with a default dimension created.
+  """
+  addPokerTemplate(
+    """
+    The ID of the parent template, if this is a clone operation.
+    """
+    parentTemplateId: ID
+
+    """
+    The ID of the team for which the template is being created.
+    """
+    teamId: ID!
+  ): AddPokerTemplatePayload!
+
+  """
+  Adds a new reflect template with a default dimension created.
+  """
+  addReflectTemplate(
+    """
+    The ID of the parent template, if this is a clone operation.
+    """
+    parentTemplateId: ID
+
+    """
+    The ID of the team for which the template is being created.
+    """
+    teamId: ID!
+  ): AddReflectTemplatePayload!
+
+  """
+  pauses the subscription for a single user
+  """
+  inactivateUser(
+    """
+    the user to pause
+    """
+    userId: ID!
+  ): InactivateUserPayload
+
+  """
+  Adds the request user to multiple selected teams on the domain
+  """
+  acceptRequestToJoinDomain(
+    """
+    DomainJoinRequest id
+    """
+    requestId: ID!
+
+    """
+    Array of team ids
+    """
+    teamIds: [ID!]!
+  ): AcceptRequestToJoinDomainPayload!
+
+  """
+  Redeem an invitation token for a logged in user
+  """
+  acceptTeamInvitation(
+    """
+    The invitation token or mass invitation code
+    """
+    invitationToken: ID!
+
+    """
+    the notification clicked to accept, if any
+    """
+    notificationId: ID
+  ): AcceptTeamInvitationPayload!
+
+  """
+  Restrict accepting team invites to a list of approved domains
+  """
+  addApprovedOrganizationDomains(
+    """
+    The organization ID
+    """
+    orgId: ID!
+
+    """
+    A list of domains or email addressed allowed to join the organization
+    """
+    emailDomains: [String!]!
+  ): AddApprovedOrganizationDomainsPayload!
+
+  """
+  Add or remove a reactji from a reactable
+  """
+  addReactjiToReactable(
+    """
+    The id of the reactable
+    """
+    reactableId: ID!
+
+    """
+    the type of the
+    """
+    reactableType: ReactableEnum!
+
+    """
+    the id of the reactji to add
+    """
+    reactji: String!
+
+    """
+    If true, remove the reaction, else add it
+    """
+    isRemove: Boolean
+
+    """
+    The id of the meeting
+    """
+    meetingId: ID!
+  ): AddReactjiToReactablePayload!
+
+  """
+  Add an integration authorization for a specific team member
+  """
+  addTeamMemberIntegrationAuth(
+    providerId: ID!
+    service: IntegrationProviderServiceEnum # Add optional service enum
+    teamId: ID!
+
+    """
+    The OAuth2 code or personal access token. Null for webhook auth
+    """
+    oauthCodeOrPat: ID
+
+    """
+    OAuth1 token verifier
+    """
+    oauthVerifier: ID
+
+    """
+    The URL the OAuth2 token will be sent to. Null for webhook auth
+    """
+    redirectUri: URL
+  ): AddTeamMemberIntegrationAuthPayload!
+
+  """
+  This mutation is specific to the mattermost global integration provider.
+  It will create a new TeamNotificationSettings object for the team and channel
+  """
+  linkMattermostChannel(
+    """
+    The team to link the channel to
+    """
+    teamId: ID!
+
+    """
+    The channel to link
+    """
+    channelId: ID!
+  ): LinkMattermostChannelPayload!
+
+  """
+  Remove a previously linked channel from the team
+  """
+  unlinkMattermostChannel(
+    """
+    The team to unlink the channel from
+    """
+    teamId: ID!
+
+    """
+    The channel to unlink
+    """
+    channelId: ID!
+  ): UnlinkMattermostChannelPayload!
+
+  """
+  Add the transcription bot to the Zoom meeting
+  """
+  addTranscriptionBot(meetingId: ID!, videoMeetingURL: String!): AddTranscriptionBotPayload!
+
+  """
+  Creates suggested reflection groups using OpenAI
+  """
+  autogroup(meetingId: ID!): AutogroupPayload!
+
+  """
+  Batch archive tasks
+  """
+  batchArchiveTasks(
+    """
+    ids of the tasks to archive
+    """
+    taskIds: [ID!]!
+  ): BatchArchiveTasksPayload!
+
+  """
+  for troubleshooting by admins, create a JWT for a given userId
+  """
+  createImposterToken(
+    """
+    The target userId to impersonate
+    """
+    userId: ID
+
+    """
+    The email address of the user to impersonate
+    """
+    email: Email
+  ): CreateImposterTokenPayload!
+
+  """
+  Create the Stripe subscription for the given org
+  """
+  createStripeSubscription(orgId: ID!, paymentMethodId: ID!): CreateStripeSubscriptionPayload!
+
+  """
+  Sign up or login using Google
+  """
+  loginWithGoogle(
+    """
+    The code provided from the OAuth2 flow
+    """
+    code: ID!
+
+    """
+    optional pseudo id created before they were a user
+    """
+    pseudoId: ID
+
+    """
+    if present, the user is also joining a team
+    """
+    invitationToken: ID
+
+    """
+    query params on the login page, used to maybe add feature flag
+    """
+    params: String!
+  ): UserLogInPayload!
+
+  """
+  Sign up or login using Microsoft
+  """
+  loginWithMicrosoft(
+    """
+    The code provided from the OAuth2 flow
+    """
+    code: ID!
+
+    """
+    optional pseudo id created before they were a user
+    """
+    pseudoId: ID
+
+    """
+    if present, the user is also joining a team
+    """
+    invitationToken: ID
+
+    """
+    query params on the login page, used to maybe add feature flag
+    """
+    params: String!
+  ): UserLogInPayload!
+
+  """
+  Login using an email address and password
+  """
+  loginWithPassword(email: ID!, password: String!): UserLogInPayload!
+
+  """
+  Sign out the current user by unsetting the session cookie
+  """
+  signOut: Boolean!
+
+  """
+  Refresh the session token
+  """
+  refreshSession: Boolean!
+
+  """
+  Describe the mutation here
+  """
+  modifyCheckInQuestion(
+    meetingId: ID!
+    checkInQuestion: String!
+    modifyType: ModifyType!
+  ): ModifyCheckInQuestionPayload!
+  persistIntegrationSearchQuery(
+    teamId: ID!
+    service: IntegrationProviderServiceEnum!
+    providerId: ID
+    jiraServerSearchQuery: JiraServerSearchQueryInput
+  ): PersistIntegrationSearchQueryPayload!
+
+  """
+  Remove the approved domains for a given organization
+  """
+  removeApprovedOrganizationDomains(
+    """
+    The ID for the organization to remove the restriction from
+    """
+    orgId: ID!
+
+    """
+    The list of emails and/or domains to unrestrict from the org
+    """
+    emailDomains: [String!]!
+  ): RemoveApprovedOrganizationDomainsPayload!
+
+  """
+  Describe the mutation here
+  """
+  removeIntegrationSearchQuery(
+    """
+    integration search query ID
+    """
+    id: ID!
+    teamId: ID!
+  ): RemoveIntegrationSearchQueryPayload!
+
+  """
+  Remove the integrated auth for a given team member
+  """
+  removeTeamMemberIntegrationAuth(
+    """
+    The Integration Provider service name related to the token
+    """
+    service: IntegrationProviderServiceEnum!
+
+    """
+    The team id related to the token
+    """
+    teamId: ID!
+  ): RemoveTeamMemberIntegrationAuthPayload!
+
+  """
+  Sends the request to the appropriate organizations on the viewer's domain
+  """
+  requestToJoinDomain: RequestToJoinDomainPayload!
+
+  """
+  Resets the reflection groups to the state they were in before autogrouping
+  """
+  resetReflectionGroups(meetingId: ID!): ResetReflectionGroupsPayload!
+  revealTeamHealthVotes(meetingId: ID!, stageId: ID!): RevealTeamHealthVotesPayload!
+
+  """
+  Enabled or disable the icebreaker round
+  """
+  setMeetingSettings(
+    settingsId: ID!
+
+    """
+    true to turn icebreaker phase on, false to turn it off
+    """
+    checkinEnabled: Boolean
+
+    """
+    true to turn team health phase on, false to turn it off
+    """
+    teamHealthEnabled: Boolean
+
+    """
+    disables anonymity of reflections
+    """
+    disableAnonymity: Boolean
+
+    """
+    the url of the video meeting, e.g. the Zoom link
+    """
+    videoMeetingURL: String
+  ): SetMeetingSettingsPayload!
+
+  """
+  Set the music being played in the meeting
+  """
+  setMeetingMusic(meetingId: ID!, trackSrc: String, isPlaying: Boolean!): SetMeetingMusicPayload!
+
+  """
+  Update the role of the org user
+  """
+  setOrgUserRole(
+    orgId: ID!
+    userId: ID!
+
+    """
+    The role to set the user to, e.g. billing leader. Null to remove the role
+    """
+    role: OrgUserRole
+  ): SetOrgUserRolePayload!
+  setTeamHealthVote(meetingId: ID!, stageId: ID!, label: String!): SetTeamHealthVotePayload!
+
+  """
+  Shares retro discussion to integration
+  """
+  shareTopic(
+    """
+    Discussion stage id
+    """
+    stageId: ID!
+
+    """
+    meetingId
+    """
+    meetingId: ID!
+
+    """
+    Integration channelId
+    """
+    channelId: ID!
+  ): ShareTopicPayload!
+
+  """
+  Sign up using an email address and password
+  """
+  signUpWithPassword(
+    email: ID!
+    password: String!
+
+    """
+    optional pseudo id created before they were a user
+    """
+    pseudoId: ID
+
+    """
+    used to determine what suggested actions to create
+    """
+    invitationToken: ID
+
+    """
+    query params on the login page, used to maybe add feature flag
+    """
+    params: String!
+  ): UserLogInPayload!
+
+  """
+  Start a new meeting
+  """
+  startCheckIn(
+    """
+    The team starting the meeting
+    """
+    teamId: ID!
+
+    """
+    The name of the meeting
+    """
+    name: String
+
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
+  ): StartCheckInPayload!
+
+  """
+  Start a new meeting
+  """
+  startRetrospective(
+    """
+    The team starting the meeting
+    """
+    teamId: ID!
+
+    """
+    Name of the meeting or series
+    """
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format
+    """
+    rrule: RRule
+
+    """
+    The gcal input if creating a gcal event
+    """
+    gcalInput: CreateGcalEventInput
+  ): StartRetrospectivePayload!
+
+  """
+  Starts a new team prompt meeting
+  """
+  startTeamPrompt(
+    """
+    Id of the team starting the meeting
+    """
+    teamId: ID!
+
+    """
+    Meeting or series name, by default "Standup"
+    """
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format
+    """
+    rrule: RRule
+
+    """
+    The gcal input if creating a gcal event. If not provided, no gcal event will be created
+    """
+    gcalInput: CreateGcalEventInput
+  ): StartTeamPromptPayload!
+
+  """
+  Add or remove the template to the user's favorite templates
+  """
+  toggleFavoriteTemplate(
+    """
+    The ID of the template to be toggled as a favorite
+    """
+    templateId: ID!
+  ): ToggleFavoriteTemplatePayload!
+
+  """
+  Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
+  """
+  toggleSummaryEmail: ToggleSummaryEmailPayload!
+
+  """
+  Toggles the sendPageInvitationEmail value on the User object which determines whether page invitation emails are sent to the user
+  """
+  togglePageInvitationEmail: TogglePageInvitationEmailPayload!
+
+  """
+  Update the autoJoin value for a set of teams
+  """
+  updateAutoJoin(
+    """
+    The team ids to update
+    """
+    teamIds: [ID!]!
+
+    """
+    The new autoJoin value for the teams
+    """
+    autoJoin: Boolean!
+  ): UpdateAutoJoinPayload!
+
+  """
+  Update an org's credit card
+  """
+  updateCreditCard(
+    """
+    The id of the org that is updating their credit card
+    """
+    orgId: ID!
+
+    """
+    The id of the new payment method from Stripe
+    """
+    paymentMethodId: ID!
+  ): UpdateCreditCardPayload!
+
+  """
+  Update how a parabol dimension maps to a GitLab label
+  """
+  updateGitLabDimensionField(
+    """
+    The Poker dimension that we're updating, e.g. story points
+    """
+    dimensionName: String!
+
+    """
+    The template string to map to a label, e.g. __comment
+    """
+    labelTemplate: String!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField.
+    """
+    meetingId: ID!
+
+    """
+    The id of the project the issue belongs to
+    """
+    projectId: Int!
+  ): UpdateGitLabDimensionFieldPayload!
+
+  """
+  Update how a parabol dimension maps to a Linear label
+  """
+  updateLinearDimensionField(
+    """
+    The Poker dimension that we're updating, e.g. story points
+    """
+    dimensionName: String!
+
+    """
+    The template string to map to a label, e.g. __comment
+    """
+    labelTemplate: String!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField.
+    """
+    meetingId: ID!
+
+    """
+    The id of the project the issue belongs to
+    """
+    repoId: String!
+  ): UpdateLinearDimensionFieldPayload!
+
+  """
+  Set the jira field that the poker dimension should map to
+  """
+  updateJiraDimensionField(
+    """
+    Id of the parabol task on which the dimension was updated
+    """
+    taskId: ID!
+
+    """
+    Dimension name from the template used
+    """
+    dimensionName: String!
+
+    """
+    The jira field id that we should push estimates to
+    """
+    fieldId: ID!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField
+    """
+    meetingId: ID!
+  ): UpdateDimensionFieldPayload!
+
+  """
+  Set the JiraServer field that the poker dimension should map to`,
+  """
+  updateJiraServerDimensionField(
+    dimensionName: String!
+
+    """
+    The Jira Data Center field name that we should push estimates to
+    """
+    fieldName: ID!
+
+    """
+    The Jira Data Center issue type for which to set the dimension
+    """
+    issueType: ID!
+
+    """
+    Project id for this setting
+    """
+    projectId: ID!
+
+    """
+    The meeting the update happend in. Returns a meeting object with updated serviceField
+    """
+    meetingId: ID!
+  ): UpdateDimensionFieldPayload!
+
+  """
+  Describe the mutation here
+  """
+  updateMeetingPrompt(
+    """
+    The meeting to update the prompt
+    """
+    meetingId: ID!
+
+    """
+    The updated prompt
+    """
+    newPrompt: String!
+  ): UpdateMeetingPromptPayload!
+
+  """
+  Update a meeting template
+  """
+  updateMeetingTemplate(
+    """
+    The id of the meeting
+    """
+    meetingId: ID!
+
+    """
+    The id of the meeting template
+    """
+    templateId: ID!
+  ): UpdateMeetingTemplatePayload!
+
+  """
+  Update an with a change in name, avatar
+  """
+  updateOrg(
+    """
+    the updated org including the id, and at least one other field
+    """
+    updatedOrg: UpdateOrgInput!
+  ): UpdateOrgPayload!
+
+  """
+  Updates the recurrence settings for a meeting
+  1. When the meeting is not recurring, this will start the meeting recurring with the given recurrenceRule
+  2. When the meeting is recurring and the provided recurrenceRule is defined, this will update the recurrence rule with the given recurrenceRule
+  3. When the meeting is recurring and the provided recurrenceRule is null, this will stop the meeting from recurring
+  """
+  updateRecurrenceSettings(
+    """
+    ID of the meeting to update recurrence settings for
+    """
+    meetingId: ID!
+
+    """
+    New meeting series name
+    """
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format
+    """
+    rrule: RRule
+  ): UpdateRecurrenceSettingsPayload!
+
+  """
+  Updates the mainCategory for the given template
+  """
+  updateTemplateCategory(
+    """
+    The ID of the template
+    """
+    templateId: ID!
+
+    """
+    The new category for the template
+    """
+    mainCategory: String!
+  ): UpdateTemplateCategoryPayload!
+  updateUserProfile(
+    """
+    The input object containing the user profile fields that can be changed
+    """
+    updatedUser: UpdateUserProfileInput!
+  ): UpdateUserProfilePayload
+
+  """
+  Upload the IdP Metadata file for an org for those who cannot self-host the file
+  """
+  uploadIdPMetadata(
+    """
+    the XML Metadata file for the IdP
+    """
+    file: File!
+
+    """
+    The orgId to upload the IdP Metadata for
+    """
+    orgId: ID!
+  ): UploadIdPMetadataPayload!
+
+  """
+  Upload an image for an org avatar
+  """
+  uploadOrgImage(
+    """
+    the org avatar image file
+    """
+    file: File!
+
+    """
+    The org id to upload an avatar for
+    """
+    orgId: ID!
+  ): UpdateOrgPayload!
+
+  """
+  Take any asset & host it in the file store
+  """
+  embedUserAsset(
+    """
+    the asset URL
+    """
+    url: String!
+    """
+    the scope of who can access the file, either user or page
+    """
+    scope: AssetScopeEnum!
+    """
+    The client ID of the scope, e.g. userId, teamId, orgId, pageKey
+    """
+    scopeKey: ID!
+  ): UploadUserAssetPayload
+
+  """
+  Upload any asset owned by a user
+  """
+  uploadUserAsset(
+    """
+    the asset file
+    """
+    file: File!
+    """
+    the scope of who can access the file, either user or page
+    """
+    scope: AssetScopeEnum!
+    """
+    The client ID of the scope, e.g. userId, teamId, orgId, pageKey
+    """
+    scopeKey: ID!
+  ): UploadUserAssetPayload
+
+  """
+  Upload an image for a user avatar
+  """
+  uploadUserImage(
+    """
+    the user avatar image file
+    """
+    file: File!
+  ): UpdateUserProfilePayload
+
+  """
+  upsert the content of a team prompt response
+  """
+  upsertTeamPromptResponse(
+    """
+    The id of the team prompt response to upsert
+    """
+    teamPromptResponseId: ID
+
+    """
+    The id of the team prompt meeting
+    """
+    meetingId: ID!
+
+    """
+    The stringified content of the team prompt response
+    """
+    content: String!
+  ): UpsertTeamPromptResponsePayload!
+
+  """
+  Verify an email address and sign in if not already a user
+  """
+  verifyEmail(
+    """
+    The 48-byte url-safe base64 encoded verification token
+    """
+    verificationToken: ID!
+  ): UserLogInPayload!
+
+  """
+  Update the role-based access for a page
+  """
+  updatePageAccess(
+    """
+    The page to update access for
+    """
+    pageId: ID!
+    subjectType: PageSubjectEnum!
+    subjectId: ID!
+    role: PageRoleEnum
+    """
+    True if this mutation can unlink the pageId from its parent
+    """
+    unlinkApproved: Boolean
+  ): UpdatePageAccessPayload
+
+  """
+  Requests access to a page
+  """
+  requestPageAccess(
+    """
+    The id of the page to request access to
+    """
+    pageId: ID!
+
+    """
+    Reason for requesting access
+    """
+    reason: String!
+
+    """
+    The requested access role
+    """
+    role: PageRoleEnum!
+  ): Boolean
+
+  """
+  Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
+  """
+  updatePage(
+    """
+    The ID of the page to update
+    """
+    pageId: ID!
+    """
+    The new sort order, as a fractional index
+    """
+    sortOrder: String!
+    """
+    The section the page is being moved from
+    """
+    sourceSection: PageSectionEnum
+    """
+    The section the page is being moved to
+    """
+    targetSection: PageSectionEnum
+    """
+    The new teamId, if moved to a team
+    """
+    teamId: ID
+    """
+    true to revoke access for all but the mutator
+    """
+    makePrivate: Boolean
+  ): UpdatePagePayload!
+  """
+  link or unlink a page to its parent
+  """
+  updatePageParentLink(
+    """
+    The ID of the page to update
+    """
+    pageId: ID!
+    """
+    True to re-link, false to unlink
+    """
+    isParentLinked: Boolean!
+  ): UpdatePagePayload
+  updateTeamSortOrder(
+    teamId: ID!
+    """
+    The new sort order as a fractional index
+    """
+    sortOrder: String!
+  ): UpdateTeamSortOrderPayload
+  """
+  Move a page to the trash
+  """
+  archivePage(
+    pageId: ID!
+    """
+    The action to take on the page
+    """
+    action: ArchivePageActionEnum!
+  ): ArchivePagePayload
 }

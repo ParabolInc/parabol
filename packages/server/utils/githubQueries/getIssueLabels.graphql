@@ -1,18 +1,13 @@
-query getIssueLabels(
-	$repoName: String!
-	$repoOwner: String!
-	$issueNumber: Int!
-	$first: Int!
-) {
-	repository(name: $repoName, owner: $repoOwner) {
-		issue(number: $issueNumber) {
-			id
-			labels(first: $first) {
-				nodes {
-					id
-					name
-				}
-			}
-		}
-	}
+query getIssueLabels($repoName: String!, $repoOwner: String!, $issueNumber: Int!, $first: Int!) {
+  repository(name: $repoName, owner: $repoOwner) {
+    issue(number: $issueNumber) {
+      id
+      labels(first: $first) {
+        nodes {
+          id
+          name
+        }
+      }
+    }
+  }
 }

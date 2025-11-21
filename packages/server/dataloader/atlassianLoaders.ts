@@ -6,13 +6,9 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import getKysely from '../postgres/getKysely'
-import type {AtlassianAuth} from '../postgres/queries/getAtlassianAuthByUserIdTeamId'
-import getAtlassianAuthsByUserId from '../postgres/queries/getAtlassianAuthsByUserId'
-import getJiraDimensionFieldMap, {
-  type GetJiraDimensionFieldMapParams,
-  type JiraDimensionFieldMap
-} from '../postgres/queries/getJiraDimensionFieldMap'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
+import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
+import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraGetIssueRes,
   type JiraGQLFields,
@@ -53,7 +49,10 @@ export const freshAtlassianAuth = (
       const pg = getKysely()
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const userAtlassianAuths = await getAtlassianAuthsByUserId(userId)
+          const userAtlassianAuths = await selectAtlassianAuth()
+            .where('userId', '=', userId)
+            .where('isActive', '=', true)
+            .execute()
           const atlassianAuthToRefresh = userAtlassianAuths.find(
             (atlassianAuth) => atlassianAuth.teamId === teamId
           )
@@ -388,11 +387,23 @@ export const atlassianCloudName = (
 }
 
 export const jiraDimensionFieldMap = (parent: RootDataLoader) =>
-  new DataLoader<GetJiraDimensionFieldMapParams, JiraDimensionFieldMap[], string>(
+  new DataLoader<
+    {teamId: string; cloudId: string; projectKey: string; dimensionName: string; issueType: string},
+    JiraDimensionFieldMap[],
+    string
+  >(
     async (keys) => {
       return Promise.all(
         keys.map(async (params) => {
-          return getJiraDimensionFieldMap(params)
+          const {cloudId, dimensionName, issueType, projectKey, teamId} = params
+          return selectJiraDimensionFieldMap()
+            .where('teamId', '=', teamId)
+            .where('cloudId', '=', cloudId)
+            .where('projectKey', '=', projectKey)
+            .where('dimensionName', '=', dimensionName)
+            .orderBy(({eb}) => eb.case().when('issueType', '=', issueType).then(0).else(1).end())
+            .orderBy('updatedAt', 'desc')
+            .execute()
         })
       )
     },

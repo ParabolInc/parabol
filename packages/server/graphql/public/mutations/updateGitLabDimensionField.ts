@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import upsertGitLabDimensionFieldMap from '../../../postgres/queries/upsertGitLabDimensionFieldMap'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId} from './../../../utils/authorization'
 import {isTeamMember} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
@@ -41,7 +41,15 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
   // RESOLUTION
   try {
     const {providerId} = gitlabAuth
-    await upsertGitLabDimensionFieldMap(teamId, dimensionName, projectId, providerId, labelTemplate)
+    await getKysely()
+      .insertInto('GitLabDimensionFieldMap')
+      .values({teamId, dimensionName, projectId, providerId, labelTemplate})
+      .onConflict((oc) =>
+        oc.columns(['teamId', 'dimensionName', 'projectId', 'providerId']).doUpdateSet((eb) => ({
+          labelTemplate: eb.ref('excluded.labelTemplate')
+        }))
+      )
+      .execute()
   } catch (e) {
     Logger.log(e)
   }

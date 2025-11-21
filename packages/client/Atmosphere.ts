@@ -105,6 +105,7 @@ export interface AtmosphereEvents {
   ) => void
   newSubscriptionClient: () => void
   removeGitHubRepo: () => void
+  authChanged: () => void
 }
 
 const store = new Store(new RecordSource(), {gcReleaseBufferSize: 10000})
@@ -114,7 +115,15 @@ export default class Atmosphere extends Environment {
     return JSON.stringify({name, variables})
   }
   _network: typeof Network
-  authObj: AuthToken | null = null
+  _authObj: AuthToken | null = null
+  get authObj() {
+    return this._authObj
+  }
+  set authObj(value: AuthToken | null) {
+    this._authObj = value
+    this.eventEmitter.emit('authChanged')
+  }
+
   querySubscriptions: QuerySubscription[] = []
   queryTimeouts: {
     [queryKey: string]: number
@@ -262,11 +271,11 @@ export default class Atmosphere extends Environment {
       return e as Error
     }
   }
-  getAuthToken = async (global: Window) => {
-    const authToken = await getAuthCookie(global)
+  registerCookieListener = (global: Window) => {
+    const authToken = getAuthCookie(global)
     this.setAuthToken(authToken)
 
-    onAuthCookieChange(global, (newToken) => {
+    return onAuthCookieChange(global, (newToken) => {
       this.setAuthToken(newToken)
     })
   }

@@ -1,8 +1,8 @@
 type SetStageTimerPayload {
-	error: StandardMutationError
+  error: StandardMutationError
 
-	"""
-	The updated stage
-	"""
-	stage: NewMeetingStage
+  """
+  The updated stage
+  """
+  stage: NewMeetingStage
 }

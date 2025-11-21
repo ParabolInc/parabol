@@ -1,6 +1,6 @@
 import faker from 'faker'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
-import updateTeamByTeamId from '../postgres/queries/updateTeamByTeamId'
+import getKysely from '../postgres/getKysely'
 import {sendIntranet, sendPublic, signUp, signUpWithEmail} from './common'
 
 test('Get user by id', async () => {
@@ -389,7 +389,7 @@ test('Leaving a team updates User.tms', async () => {
 
   // real bug might be triggered by setting isArchived to false explicitly even if it's already false
   // anyhow, the member is removed, so this shouldn't add the team back to the user
-  await updateTeamByTeamId({isArchived: false}, teamId)
+  await getKysely().updateTable('Team').set({isArchived: false}).where('id', '=', teamId).execute()
   const user3 = await sendPublic({
     query: `
       query Viewer {

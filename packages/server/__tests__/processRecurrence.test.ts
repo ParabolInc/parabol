@@ -7,7 +7,6 @@ import ReflectPhase from '../database/types/ReflectPhase'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
-import {insertMeetingSeries as insertMeetingSeriesQuery} from '../postgres/queries/insertMeetingSeries'
 import {getUserTeams, sendIntranet, signUp} from './common'
 
 const PROCESS_RECURRENCE = `
@@ -215,16 +214,19 @@ test.skip('Should end the current team prompt meeting and start a new meeting', 
   const dateTime = toDateTime(startDate, 'UTC')
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
-
-  const meetingSeriesId = await insertMeetingSeriesQuery({
-    meetingType: 'teamPrompt',
-    title: 'Daily Test Standup',
-    recurrenceRule,
-    duration: 24 * 60, // 24 hours
-    teamId,
-    facilitatorId: userId
-  })
-
+  const meetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'teamPrompt',
+      title: 'Daily Test Standup',
+      recurrenceRule,
+      duration: 24 * 60, // 24 hours
+      teamId,
+      facilitatorId: userId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const meetingSeriesId = meetingSeries.id
   const meetingId = generateUID()
   const phase = new TeamPromptResponsesPhase([teamMemberId])
   await pg
@@ -294,14 +296,19 @@ test.skip('Should end the current retro meeting and start a new meeting', async 
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
-  const meetingSeriesId = await insertMeetingSeriesQuery({
-    meetingType: 'retrospective',
-    title: 'Daily Retro', //they're really committed to improving
-    recurrenceRule,
-    duration: 24 * 60, // 24 hours
-    teamId,
-    facilitatorId: userId
-  })
+  const meetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'retrospective',
+      title: 'Daily Retro', //they're really committed to improving
+      recurrenceRule,
+      duration: 24 * 60, // 24 hours
+      teamId,
+      facilitatorId: userId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const meetingSeriesId = meetingSeries.id
 
   const meetingId = generateUID()
   const phases = [new ReflectPhase(teamId, []), new DiscussPhase(undefined)]
@@ -374,14 +381,19 @@ test.skip('Should only start a new meeting if it would still be active', async (
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
-  const newMeetingSeriesId = await insertMeetingSeriesQuery({
-    meetingType: 'teamPrompt',
-    title: 'Async Standup',
-    recurrenceRule,
-    duration: 24 * 60, // 24 hours
-    teamId,
-    facilitatorId: userId
-  })
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'teamPrompt',
+      title: 'Async Standup',
+      recurrenceRule,
+      duration: 24 * 60, // 24 hours
+      teamId,
+      facilitatorId: userId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const newMeetingSeriesId = newMeetingSeries.id
 
   const meetingId = generateUID()
   const phase = new TeamPromptResponsesPhase([teamMemberId])
@@ -439,14 +451,19 @@ test.skip('Should not start a new meeting if the rrule has not started', async (
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
-  const newMeetingSeriesId = await insertMeetingSeriesQuery({
-    meetingType: 'teamPrompt',
-    title: 'Async Standup',
-    recurrenceRule: recurrenceRule.toString(),
-    duration: 24 * 60, // 24 hours
-    teamId,
-    facilitatorId: userId
-  })
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'teamPrompt',
+      title: 'Async Standup',
+      recurrenceRule: recurrenceRule.toString(),
+      duration: 24 * 60, // 24 hours
+      teamId,
+      facilitatorId: userId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const newMeetingSeriesId = newMeetingSeries.id
 
   const meetingId = generateUID()
   const phase = new TeamPromptResponsesPhase([teamMemberId])
@@ -504,14 +521,19 @@ test.skip('Should not hang if the rrule interval is invalid', async () => {
   const recurrenceRule = `DTSTART:${dateTime}
 RRULE:FREQ=WEEKLY;INTERVAL=NaN;BYDAY=MO,TU,WE,TH,FR,SA,SU`
 
-  const newMeetingSeriesId = await insertMeetingSeriesQuery({
-    meetingType: 'teamPrompt',
-    title: 'Daily Test Standup',
-    recurrenceRule: recurrenceRule.toString(),
-    duration: 24 * 60, // 24 hours
-    teamId,
-    facilitatorId: userId
-  })
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values({
+      meetingType: 'teamPrompt',
+      title: 'Daily Test Standup',
+      recurrenceRule: recurrenceRule.toString(),
+      duration: 24 * 60, // 24 hours
+      teamId,
+      facilitatorId: userId
+    })
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const newMeetingSeriesId = newMeetingSeries.id
 
   const meetingId = generateUID()
   const phase = new TeamPromptResponsesPhase([teamMemberId])

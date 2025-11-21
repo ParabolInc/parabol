@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import upsertGitHubDimensionFieldMap from '../../postgres/queries/upsertGitHubDimensionFieldMap'
+import getKysely from '../../postgres/getKysely'
 import {isTeamMember} from '../../utils/authorization'
 import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
@@ -67,7 +67,15 @@ const updateGitHubDimensionField = {
 
     // RESOLUTION
     try {
-      await upsertGitHubDimensionFieldMap(teamId, dimensionName, nameWithOwner, labelTemplate)
+      await getKysely()
+        .insertInto('GitHubDimensionFieldMap')
+        .values({teamId, dimensionName, nameWithOwner, labelTemplate})
+        .onConflict((oc) =>
+          oc.columns(['teamId', 'dimensionName', 'nameWithOwner']).doUpdateSet((eb) => ({
+            labelTemplate: eb.ref('excluded.labelTemplate')
+          }))
+        )
+        .execute()
     } catch (e) {
       Logger.log(e)
     }

@@ -1,11 +1,9 @@
 import DataLoader from 'dataloader'
 import {decode} from 'jsonwebtoken'
 import getKysely from '../postgres/getKysely'
-import getAzureDevOpsDimensionFieldMaps from '../postgres/queries/getAzureDevOpsDimensionFieldMaps'
-import type {IntegrationProviderAzureDevOps} from '../postgres/queries/getIntegrationProvidersByIds'
-import removeTeamMemberIntegrationAuthQuery from '../postgres/queries/removeTeamMemberIntegrationAuth'
 import upsertTeamMemberIntegrationAuth from '../postgres/queries/upsertTeamMemberIntegrationAuth'
 import type {TeamMemberIntegrationAuth} from '../postgres/types'
+import type {IntegrationProviderAzureDevOps} from '../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager, {
   type ProjectRes,
   type Resource,
@@ -168,7 +166,14 @@ export const freshAzureDevOpsAuth = (parent: RootDataLoader) => {
             if (oauthRes instanceof Error) {
               // Azure refresh token only lasts 24 hrs for SPAs. User must manually re-auth after that: https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/4104
               if (oauthRes.message === 'invalid_grant') {
-                await removeTeamMemberIntegrationAuthQuery('azureDevOps', teamId, userId)
+                await getKysely()
+                  .updateTable('TeamMemberIntegrationAuth')
+                  .set({isActive: false})
+                  .where('userId', '=', userId)
+                  .where('teamId', '=', teamId)
+                  .where('service', '=', 'azureDevOps')
+                  .where('isActive', '=', true)
+                  .execute()
               }
               return null
             }
@@ -410,13 +415,15 @@ export const azureDevOpsDimensionFieldMap = (parent: RootDataLoader) => {
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, dimensionName, instanceId, projectKey, workItemType}) => {
-          const azureDevOpsDimensionFieldMap = await getAzureDevOpsDimensionFieldMaps(
-            teamId,
-            dimensionName,
-            instanceId,
-            projectKey,
-            workItemType
-          )
+          const azureDevOpsDimensionFieldMap = await getKysely()
+            .selectFrom('AzureDevOpsDimensionFieldMap')
+            .selectAll()
+            .where('teamId', '=', teamId)
+            .where('dimensionName', '=', dimensionName)
+            .where('instanceId', '=', instanceId)
+            .where('projectKey', '=', projectKey)
+            .where('workItemType', '=', workItemType)
+            .executeTakeFirst()
           if (!azureDevOpsDimensionFieldMap) {
             return null
           }
