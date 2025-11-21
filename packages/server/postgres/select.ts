@@ -392,3 +392,11 @@ export const selectIntegrationProvider = () => {
 export const selectIntegrationSearchQuery = () => {
   return getKysely().selectFrom('IntegrationSearchQuery').selectAll()
 }
+
+export const selectMeetingSeries = () => {
+  return getKysely().selectFrom('MeetingSeries').selectAll()
+}
+
+export const selectTaskEstimate = () => {
+  return getKysely().selectFrom('TaskEstimate').selectAll()
+}

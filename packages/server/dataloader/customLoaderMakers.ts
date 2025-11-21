@@ -8,15 +8,12 @@ import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import type {IGetLatestTaskEstimatesQueryResult} from '../postgres/queries/generated/getLatestTaskEstimatesQuery'
-import getLatestTaskEstimates from '../postgres/queries/getLatestTaskEstimates'
-import getMeetingTaskEstimates, {
-  type MeetingTaskEstimatesResult
-} from '../postgres/queries/getMeetingTaskEstimates'
 import {
   selectGitLabDimensionFieldMap,
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
+  selectTaskEstimate,
   selectTasks,
   selectTeams
 } from '../postgres/select'
@@ -28,6 +25,7 @@ import type {
   MeetingSettings,
   OrganizationUser,
   Task,
+  TaskEstimate,
   Team
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
@@ -106,7 +104,13 @@ export const commentCountByDiscussionId = (
 export const latestTaskEstimates = (parent: RootDataLoader) => {
   return new DataLoader<string, IGetLatestTaskEstimatesQueryResult[], string>(
     async (taskIds) => {
-      const rows = await getLatestTaskEstimates(taskIds)
+      const rows = await selectTaskEstimate()
+        .distinctOn(['taskId', 'name'])
+        .where('taskId', 'in', taskIds)
+        .orderBy('taskId')
+        .orderBy('name')
+        .orderBy('createdAt', 'desc')
+        .execute()
       return taskIds.map((taskId) => rows.filter((row) => row.taskId === taskId))
     },
     {
@@ -116,12 +120,18 @@ export const latestTaskEstimates = (parent: RootDataLoader) => {
 }
 
 export const meetingTaskEstimates = (parent: RootDataLoader) => {
-  return new DataLoader<{meetingId: string; taskId: string}, MeetingTaskEstimatesResult[], string>(
+  return new DataLoader<{meetingId: string; taskId: string}, TaskEstimate[], string>(
     async (keys) => {
       const meetingIds = keys.map(({meetingId}) => meetingId)
       const taskIds = keys.map(({taskId}) => taskId)
-
-      const rows = await getMeetingTaskEstimates(taskIds, meetingIds)
+      const rows = await selectTaskEstimate()
+        .distinctOn(['taskId', 'name'])
+        .where('meetingId', 'in', meetingIds)
+        .where('taskId', 'in', taskIds)
+        .orderBy('taskId')
+        .orderBy('name')
+        .orderBy('createdAt', 'desc')
+        .execute()
       return keys.map(({meetingId, taskId}) =>
         rows.filter((row) => row.taskId === taskId && row.meetingId === meetingId)
       )
