@@ -22,7 +22,7 @@
     "clean": "git clean -fdx -e .env",
     "codegen": "node scripts/codegenGraphQL.js",
     "pg:build": "pgtyped -c ./packages/server/postgres/pgtypedConfig.js",
-    "pg:generate": "bash -c 'set -a; source .env; set +a; ./node_modules/.bin/kysely-codegen --exclude-pattern \"(StripeQuantityMismatchLogging)\" --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url \"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" && biome check --write ./packages/server/postgres/types/pg.d.ts'",
+    "pg:generate": "bash -c 'set -a; source .env; set +a; ./node_modules/.bin/kysely-codegen --out-file ./packages/server/postgres/types/pg.d.ts --dialect postgres --url \"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" && biome check --write ./packages/server/postgres/types/pg.d.ts'",
     "pg:restore": "node ./scripts/toolbox/pgRestore.js",
     "db:start": "mkdir -p dev && docker compose -f docker/stacks/development/docker-compose.yml up -d",
     "db:stop": "docker compose -f docker/stacks/development/docker-compose.yml down",

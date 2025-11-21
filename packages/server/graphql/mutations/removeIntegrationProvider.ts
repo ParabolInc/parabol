@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import removeIntegrationProviderQuery from '../../postgres/queries/removeIntegrationProvider'
+import getKysely from '../../postgres/getKysely'
 import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../utils/authorization'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
@@ -59,7 +59,19 @@ const removeIntegrationProvider = {
     }
 
     // RESOLUTION
-    await removeIntegrationProviderQuery(providerDbId)
+    await getKysely()
+      .with('removedTokens', (eb) =>
+        eb
+          .updateTable('TeamMemberIntegrationAuth')
+          .set({isActive: false})
+          .where('providerId', '=', providerDbId)
+          .where('isActive', '=', true)
+      )
+      .updateTable('IntegrationProvider')
+      .set({isActive: false})
+      .where('id', '=', providerDbId)
+      .where('isActive', '=', true)
+      .execute()
 
     const data = {
       providerId,

@@ -5,7 +5,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {insertMeetingSeries as insertMeetingSeriesQuery} from '../../../postgres/queries/insertMeetingSeries'
 import restartMeetingSeries from '../../../postgres/queries/restartMeetingSeries'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import type {MeetingSeries} from '../../../postgres/types/MeetingSeries'
@@ -48,9 +47,13 @@ export const startNewMeetingSeries = async (
     teamId,
     facilitatorId
   } as const
-  const newMeetingSeriesId = await insertMeetingSeriesQuery(newMeetingSeriesParams)
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values(newMeetingSeriesParams)
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  const newMeetingSeriesId = newMeetingSeries.id
   const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
-
   await pg
     .updateTable('NewMeeting')
     .set({
