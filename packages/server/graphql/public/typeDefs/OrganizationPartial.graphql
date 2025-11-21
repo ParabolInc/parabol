@@ -1,5 +1,5 @@
 interface OrganizationPartial {
-	id: ID!
-	name: String!
-	picture: URL
+  id: ID!
+  name: String!
+  picture: URL
 }

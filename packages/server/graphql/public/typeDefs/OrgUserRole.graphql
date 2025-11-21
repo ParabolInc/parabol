@@ -2,6 +2,6 @@
 The role of the org user
 """
 enum OrgUserRole {
-	BILLING_LEADER
-	ORG_ADMIN
+  BILLING_LEADER
+  ORG_ADMIN
 }

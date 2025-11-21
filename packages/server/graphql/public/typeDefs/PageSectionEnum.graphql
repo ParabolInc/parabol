@@ -2,8 +2,8 @@
 The section that a page lives in for a viewer
 """
 enum PageSectionEnum {
-	private
-	shared
-	team
-	page
+  private
+  shared
+  team
+  page
 }

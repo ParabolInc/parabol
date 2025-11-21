@@ -1,6 +1,4 @@
 """
 Return value for createStripeSubscription, which could be an error
 """
-union CreateStripeSubscriptionPayload =
-	| ErrorPayload
-	| CreateStripeSubscriptionSuccess
+union CreateStripeSubscriptionPayload = ErrorPayload | CreateStripeSubscriptionSuccess

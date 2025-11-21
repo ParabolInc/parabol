@@ -2,55 +2,55 @@
 A SAML Authentication Strategy
 """
 type SAML {
-	"""
-	The name of the company, used as a slug in signon URLs. Usually the domain without the tld
-	"""
-	id: ID!
+  """
+  The name of the company, used as a slug in signon URLs. Usually the domain without the tld
+  """
+  id: ID!
 
-	"""
-	The domains the company has ownership of. Usually one, but large orgs can have many for contractors, etc.
-	"""
-	domains: [String!]!
+  """
+  The domains the company has ownership of. Usually one, but large orgs can have many for contractors, etc.
+  """
+  domains: [String!]!
 
-	"""
-	The IdP Signon URL typically the HTTP-Post in metadata, including the SAMLRequest param
-	"""
-	url: String
+  """
+  The IdP Signon URL typically the HTTP-Post in metadata, including the SAMLRequest param
+  """
+  url: String
 
-	"""
-	A verified blob of XML from the IdP describing how to handle authentication
-	"""
-	metadata: String
+  """
+  A verified blob of XML from the IdP describing how to handle authentication
+  """
+  metadata: String
 
-	"""
-	An immutable URL used to retrieve the metadata. If metadata is present but URL is unknown it will be `Unknown`
-	"""
-	metadataURL: String
-	createdAt: DateTime!
-	updatedAt: DateTime!
+  """
+  An immutable URL used to retrieve the metadata. If metadata is present but URL is unknown it will be `Unknown`
+  """
+  metadataURL: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 
-	"""
-	The userId that last updated the record. aGhostUser if the original user was deleted
-	"""
-	lastUpdatedBy: ID!
+  """
+  The userId that last updated the record. aGhostUser if the original user was deleted
+  """
+  lastUpdatedBy: ID!
 
-	"""
-	The user that last updated the record. aGhostUser if the original user was deleted
-	"""
-	lastUpdatedByUser: User!
+  """
+  The user that last updated the record. aGhostUser if the original user was deleted
+  """
+  lastUpdatedByUser: User!
 
-	"""
-	The orgId that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
-	"""
-	orgId: ID
+  """
+  The orgId that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
+  """
+  orgId: ID
 
-	"""
-	The organization that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
-	"""
-	organization: Organization
+  """
+  The organization that owns this SAML record and corresponding domain. Null if SAML record is a legacy orphan
+  """
+  organization: Organization
 
-	"""
-	The full attribute name used to provision users to specific orgs, see also Organization.samlId
-	"""
-	samlOrgAttribute: ID
+  """
+  The full attribute name used to provision users to specific orgs, see also Organization.samlId
+  """
+  samlOrgAttribute: ID
 }

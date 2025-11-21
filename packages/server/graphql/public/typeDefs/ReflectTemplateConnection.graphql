@@ -2,13 +2,13 @@
 A connection to a list of items.
 """
 type ReflectTemplateConnection {
-	"""
-	Information to aid in pagination.
-	"""
-	pageInfo: PageInfo!
+  """
+  Information to aid in pagination.
+  """
+  pageInfo: PageInfo!
 
-	"""
-	A list of edges.
-	"""
-	edges: [ReflectTemplateEdge!]!
+  """
+  A list of edges.
+  """
+  edges: [ReflectTemplateEdge!]!
 }

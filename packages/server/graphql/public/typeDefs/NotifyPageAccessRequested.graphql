@@ -1,52 +1,52 @@
 type NotifyPageAccessRequested implements Notification {
-	"""
-	A shortid for the notification
-	"""
-	id: ID!
+  """
+  A shortid for the notification
+  """
+  id: ID!
 
-	"""
-	UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
-	"""
-	status: NotificationStatusEnum!
+  """
+  UNREAD if new, READ if viewer has seen it, CLICKED if viewed clicked it
+  """
+  status: NotificationStatusEnum!
 
-	"""
-	The datetime to activate the notification & send it to the client
-	"""
-	createdAt: DateTime!
-	type: NotificationEnum!
+  """
+  The datetime to activate the notification & send it to the client
+  """
+  createdAt: DateTime!
+  type: NotificationEnum!
 
-	"""
-	Id of the user from whom access is requested
-	"""
-	userId: ID!
+  """
+  Id of the user from whom access is requested
+  """
+  userId: ID!
 
-	"""
-	Email of the requesting user
-	"""
-	email: String!
+  """
+  Email of the requesting user
+  """
+  email: String!
 
-	"""
-	Name of the requesting User
-	"""
-	name: String
+  """
+  Name of the requesting User
+  """
+  name: String
 
-	"""
-	Picture of the requesting user
-	"""
-	picture: URL
+  """
+  Picture of the requesting user
+  """
+  picture: URL
 
-	"""
-	The role requested
-	"""
-	role: PageRoleEnum!
+  """
+  The role requested
+  """
+  role: PageRoleEnum!
 
-	"""
-	The pageId that was requested access for
-	"""
-	pageId: ID!
+  """
+  The pageId that was requested access for
+  """
+  pageId: ID!
 
-	"""
-	The page that was requested access for
-	"""
-	page: PagePreview!
+  """
+  The page that was requested access for
+  """
+  page: PagePreview!
 }

@@ -1,5 +1,5 @@
 type RemoveReflectTemplatePayload {
-	error: StandardMutationError
-	reflectTemplate: ReflectTemplate
-	retroMeetingSettings: RetrospectiveMeetingSettings
+  error: StandardMutationError
+  reflectTemplate: ReflectTemplate
+  retroMeetingSettings: RetrospectiveMeetingSettings
 }

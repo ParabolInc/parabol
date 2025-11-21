@@ -2,9 +2,9 @@
 An edge in a connection.
 """
 type ThreadableEdge {
-	"""
-	The item at the end of the edge
-	"""
-	node: Threadable!
-	cursor: String
+  """
+  The item at the end of the edge
+  """
+  node: Threadable!
+  cursor: String
 }

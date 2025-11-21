@@ -2,22 +2,22 @@
 The response to a teamInvitation query
 """
 type TeamInvitationPayload {
-	"""
-	The team invitation, if any
-	"""
-	teamInvitation: TeamInvitation
+  """
+  The team invitation, if any
+  """
+  teamInvitation: TeamInvitation
 
-	"""
-	the teamId of the team trying to join
-	"""
-	teamId: ID
+  """
+  the teamId of the team trying to join
+  """
+  teamId: ID
 
-	"""
-	one of the active meetings trying to join
-	"""
-	meetingId: ID
-	"""
-	true if the viewer is already on the team
-	"""
-	isOnTeam: Boolean
+  """
+  one of the active meetings trying to join
+  """
+  meetingId: ID
+  """
+  true if the viewer is already on the team
+  """
+  isOnTeam: Boolean
 }

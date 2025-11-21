@@ -4,7 +4,7 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**/*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc,css,html,md}",
+      "**/*.{js,mjs,cjs,ts,tsx,jsx,json,jsonc,css,html,md,graphql}",
       // Explicitly exclude undesired dirs by not listing them
       "!**/.nx/**",
       "!**/build/**",
@@ -18,7 +18,11 @@
       "!**/packages/server/types/**",
       "!**/packages/server/graphql/**/resolverTypes.ts",
       "!**/packages/server/graphql/**/resolverTypes.ts",
-      "!**/packages/server/postgres/queries/generated/**",
+      "!**/packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql",
+      "!**/packages/server/graphql/nestedSchema/Linear/linearSchema.graphql",
+      "!**/packages/server/utils/githubSchema.graphql",
+      "!**/packages/server/graphql/private/schema.graphql",
+      "!**/packages/server/graphql/public/schema.graphql",
       "!**/queryMap.json"
     ]
   },

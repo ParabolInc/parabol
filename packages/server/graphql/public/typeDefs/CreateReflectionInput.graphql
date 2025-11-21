@@ -1,13 +1,13 @@
 input CreateReflectionInput {
-	"""
-	A stringified TipTap JSONContent  document containing thoughts
-	"""
-	content: String
-	meetingId: ID!
+  """
+  A stringified TipTap JSONContent  document containing thoughts
+  """
+  content: String
+  meetingId: ID!
 
-	"""
-	The prompt the reflection belongs to
-	"""
-	promptId: ID!
-	sortOrder: Float!
+  """
+  The prompt the reflection belongs to
+  """
+  promptId: ID!
+  sortOrder: Float!
 }

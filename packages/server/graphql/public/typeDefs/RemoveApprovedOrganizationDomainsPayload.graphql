@@ -2,5 +2,5 @@
 Return value for removeApprovedOrganizationDomains, which could be an error
 """
 union RemoveApprovedOrganizationDomainsPayload =
-	| ErrorPayload
-	| RemoveApprovedOrganizationDomainsSuccess
+  | ErrorPayload
+  | RemoveApprovedOrganizationDomainsSuccess

@@ -2,13 +2,13 @@
 A connection to a list of items.
 """
 type InvoiceConnection {
-	"""
-	Page info with cursors coerced to ISO8601 dates
-	"""
-	pageInfo: PageInfoDateCursor
+  """
+  Page info with cursors coerced to ISO8601 dates
+  """
+  pageInfo: PageInfoDateCursor
 
-	"""
-	A list of edges.
-	"""
-	edges: [InvoiceEdge!]!
+  """
+  A list of edges.
+  """
+  edges: [InvoiceEdge!]!
 }

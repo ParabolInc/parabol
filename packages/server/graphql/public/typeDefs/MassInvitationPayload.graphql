@@ -1,18 +1,18 @@
 type MassInvitationPayload {
-	errorType: TeamInvitationErrorEnum
+  errorType: TeamInvitationErrorEnum
 
-	"""
-	The name of the person that sent the invitation, present if errorType is expired
-	"""
-	inviterName: String
+  """
+  The name of the person that sent the invitation, present if errorType is expired
+  """
+  inviterName: String
 
-	"""
-	The teamId from the token
-	"""
-	teamId: ID
+  """
+  The teamId from the token
+  """
+  teamId: ID
 
-	"""
-	name of the inviting team, present if invitation exists
-	"""
-	teamName: String
+  """
+  name of the inviting team, present if invitation exists
+  """
+  teamName: String
 }

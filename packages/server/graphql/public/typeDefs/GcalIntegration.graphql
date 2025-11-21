@@ -2,18 +2,18 @@
 Integration Auth and shared providers available to the team member
 """
 type GcalIntegration {
-	"""
-	The OAuth2 Authorization for this team member
-	"""
-	auth: TeamMemberIntegrationAuthOAuth2
+  """
+  The OAuth2 Authorization for this team member
+  """
+  auth: TeamMemberIntegrationAuthOAuth2
 
-	"""
-	The cloud provider the team member may choose to integrate with. Nullable based on env vars
-	"""
-	cloudProvider: IntegrationProviderOAuth2
+  """
+  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  """
+  cloudProvider: IntegrationProviderOAuth2
 
-	"""
-	Events for specific time periods
-	"""
-	events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]!
+  """
+  Events for specific time periods
+  """
+  events(startDate: DateTime!, endDate: DateTime!): [GcalIntegrationEvent!]!
 }

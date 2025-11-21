@@ -1,6 +1,6 @@
 type PokerRevealVotesSuccess {
-	"""
-	The stage that holds the updated isVoting step
-	"""
-	stage: EstimateStage!
+  """
+  The stage that holds the updated isVoting step
+  """
+  stage: EstimateStage!
 }

@@ -1,15 +1,15 @@
 input NewTeamInput {
-	"""
-	The name of the team
-	"""
-	name: String!
+  """
+  The name of the team
+  """
+  name: String!
 
-	"""
-	The unique orginization ID that pays for the team
-	"""
-	orgId: ID!
-	"""
-	Whether the team is public (can be found and joined) or private (invite-only)
-	"""
-	isPublic: Boolean!
+  """
+  The unique orginization ID that pays for the team
+  """
+  orgId: ID!
+  """
+  Whether the team is public (can be found and joined) or private (invite-only)
+  """
+  isPublic: Boolean!
 }

@@ -2,11 +2,11 @@
 The list of services for task integrations
 """
 enum TaskServiceEnum {
-	github
-	jira
-	PARABOL
-	jiraServer
-	gitlab
-	azureDevOps
-	linear
+  github
+  jira
+  PARABOL
+  jiraServer
+  gitlab
+  azureDevOps
+  linear
 }

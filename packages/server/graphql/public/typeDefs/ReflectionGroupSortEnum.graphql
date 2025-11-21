@@ -2,6 +2,6 @@
 sorts for the reflection group. default is sortOrder. sorting by voteCount filters out items without votes.
 """
 enum ReflectionGroupSortEnum {
-	voteCount
-	stageOrder
+  voteCount
+  stageOrder
 }
