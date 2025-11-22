@@ -3,9 +3,9 @@ import base64url from 'base64url'
 import {createHash} from 'crypto'
 import mime from 'mime-types'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
-import {getUserId} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
 import type {MutationResolvers} from '../resolverTypes'
+import {validateScope} from './uploadUserAsset'
 
 const fetchImage = async (url: string) => {
   try {
@@ -28,11 +28,15 @@ const fetchImage = async (url: string) => {
   }
 }
 
-const embedUserAsset: MutationResolvers['embedUserAsset'] = async (_, {url}, {authToken}) => {
-  // AUTH
-  const userId = getUserId(authToken)
-
+const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
+  _,
+  {url, scope, scopeKey},
+  {authToken, dataLoader}
+) => {
   // VALIDATION
+  const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
+  if (typeof scopeCode !== 'string') return scopeCode
+
   const asset = await fetchImage(url)
   if (!asset) {
     return {error: {message: 'Unable to fetch asset'}}
@@ -44,14 +48,19 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (_, {url}, {au
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const hashName = base64url.fromBase64(createHash('sha256').update(buffer).digest('base64'))
   const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
   if (compressedBuffer.byteLength > 2 ** 23) {
     return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
   }
+  const hashName = base64url.fromBase64(
+    createHash('sha256').update(compressedBuffer).digest('base64')
+  )
   // RESOLUTION
   const manager = getFileStoreManager()
-  const hostedUrl = await manager.putUserAsset(compressedBuffer, userId, extension, hashName)
+  const hostedUrl = await manager.putUserFile(
+    compressedBuffer,
+    `${scope}/${scopeCode}/assets/${hashName}.${extension}`
+  )
   return {url: hostedUrl}
 }
 

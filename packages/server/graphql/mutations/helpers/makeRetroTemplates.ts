@@ -2,7 +2,6 @@ import {positionAfter} from '../../../../client/shared/sortOrder'
 import ReflectTemplate from '../../../database/types/ReflectTemplate'
 import generateUID from '../../../generateUID'
 import type {ReflectPrompt} from '../../../postgres/types'
-import getTemplateIllustrationUrl from './getTemplateIllustrationUrl'
 
 interface TemplatePrompt {
   description: string
@@ -23,7 +22,7 @@ const makeRetroTemplates = (teamId: string, orgId: string, templateObj: Template
       name: templateName,
       teamId,
       orgId,
-      illustrationUrl: getTemplateIllustrationUrl('gladSadMadTemplate.png'),
+      illustrationUrl: `/assets/Organization/aGhostOrg/template/gladSadMadTemplate.png`,
       mainCategory: 'retrospective'
     })
 

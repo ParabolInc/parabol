@@ -49,11 +49,12 @@ const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
   provider: HocuspocusProvider,
   options: {
+    pageId: string
     viewerRef: useTipTapPageEditor_viewer$key | null
     teamId?: string
   }
 ) => {
-  const {viewerRef, teamId} = options
+  const {pageId, viewerRef, teamId} = options
   const user = readInlineData(
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
@@ -105,7 +106,9 @@ export const useTipTapPageEditor = (
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88
+          editorHeight: 88,
+          scopeKey: pageId,
+          assetScope: 'Page'
         }),
         ImageBlock,
         LoomExtension,
