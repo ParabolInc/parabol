@@ -3,7 +3,7 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
 import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
-import FileStoreManager from './FileStoreManager'
+import FileStoreManager, {type PartialPath} from './FileStoreManager'
 
 export default class LocalFileStoreManager extends FileStoreManager {
   baseUrl = makeAppURL(appOrigin, 'self-hosted')
@@ -15,15 +15,10 @@ export default class LocalFileStoreManager extends FileStoreManager {
     }
   }
 
-  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
-    return this.putFile(file, fullPath)
-  }
   protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const fsAbsLocation = path.join(process.cwd(), fullPath)
     await fs.promises.mkdir(path.dirname(fsAbsLocation), {recursive: true})
     await fs.promises.writeFile(fsAbsLocation, Buffer.from(file) as any)
-    return this.getPublicFileLocation(fullPath)
   }
 
   prependPath(partialPath: string): string {
@@ -32,6 +27,12 @@ export default class LocalFileStoreManager extends FileStoreManager {
 
   getPublicFileLocation(fullPath: string): string {
     return encodeURI(makeAppURL(appOrigin, fullPath))
+  }
+
+  async moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void> {
+    const oldFullPath = this.prependPath(oldKey)
+    const newFullPath = this.prependPath(newKey)
+    await fs.promises.rename(oldFullPath, newFullPath)
   }
 
   async putBuildFile() {

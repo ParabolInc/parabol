@@ -50,7 +50,12 @@ export const Page = (props: Props) => {
           (isDatabase ? (
             <DatabaseEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />
           ) : (
-            <PageEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />
+            <PageEditor
+              viewerRef={viewerRef}
+              isEditable={isEditable}
+              provider={provider}
+              pageId={pageId}
+            />
           ))}
       </div>
     </div>

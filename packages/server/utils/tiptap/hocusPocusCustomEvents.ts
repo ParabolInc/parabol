@@ -1,5 +1,5 @@
 import type {Document} from '@hocuspocus/server'
-import {XmlElement} from 'yjs'
+import {applyUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {hocuspocus} from '../../hocusPocus'
@@ -97,4 +97,11 @@ export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<s
     .map(({userId}) => userId)
     .filter((val) => typeof val === 'string')
   return userIds
+}
+
+export const applyYjsUpdate = async (documentName: string, payload: {update: Uint8Array}) => {
+  const {update} = payload
+  await withDoc(documentName, (doc) => {
+    applyUpdate(doc, update)
+  })
 }

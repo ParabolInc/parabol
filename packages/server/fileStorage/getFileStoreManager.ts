@@ -12,7 +12,7 @@ const managers = {
 
 type ManagersKey = keyof typeof managers
 
-const getFileStoreManager = () => {
+export const getFileStoreManager = () => {
   if (!fileStoreManager) {
     const fileStoreProvider = process.env.FILE_STORE_PROVIDER
     if (!fileStoreProvider) {
