@@ -30,6 +30,7 @@ interface Props {
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
   placeholder?: string
   spellCheck?: boolean
   type?: string
@@ -48,6 +49,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
     onBlur,
     onChange,
     onFocus,
+    onKeyDown,
     placeholder,
     spellCheck,
     type = 'text',
@@ -68,6 +70,7 @@ const BasicInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => {
         onBlur={onBlur}
         onChange={onChange}
         onFocus={onFocus}
+        onKeyDown={onKeyDown}
         spellCheck={spellCheck}
         type={type}
         value={value}

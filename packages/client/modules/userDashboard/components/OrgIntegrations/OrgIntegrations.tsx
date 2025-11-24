@@ -19,6 +19,7 @@ const OrgIntegrations = (props: Props) => {
       fragment OrgIntegrations_organization on Organization {
         id
         ...GitLabProviders_organization
+        ...OAuthIntegration_organization
         createdAt
         tier
         viewerOrganizationUser {
@@ -82,7 +83,7 @@ const OrgIntegrations = (props: Props) => {
               ) : null}
             </div>
           )}
-          <OAuthIntegration />
+          <OAuthIntegration organizationRef={organization} />
           <MCPServerIntegration />
           <GitLabProviders organizationRef={organization} />
         </div>

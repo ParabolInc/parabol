@@ -147,7 +147,11 @@ export const selectOrganizations = () =>
       'lockedAt',
       'useAI',
       'unpaidMessageHTML',
-      'updatedAt'
+      'updatedAt',
+      'oauthClientId',
+      'oauthClientSecret',
+      'oauthRedirectUris',
+      'oauthScopes'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 

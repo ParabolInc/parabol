@@ -1,0 +1,49 @@
+extend type Mutation {
+  """
+  Update OAuth 2.0 settings for an organization
+  """
+  updateOAuthSettings(input: UpdateOAuthSettingsInput!): UpdateOAuthSettingsPayload!
+
+  """
+  Regenerate the OAuth 2.0 client secret for an organization
+  """
+  regenerateOAuthSecret(input: RegenerateOAuthSecretInput!): RegenerateOAuthSecretPayload!
+
+  """
+  Create an OAuth 2.0 authorization code
+  """
+  createOAuthCode(input: CreateOAuthCodeInput!): CreateOAuthCodePayload!
+}
+
+input UpdateOAuthSettingsInput {
+  orgId: ID!
+  redirectUris: [String!]!
+  scopes: [String!]!
+  enabled: Boolean
+}
+
+type UpdateOAuthSettingsPayload {
+  success: Boolean!
+  organization: Organization
+}
+
+input RegenerateOAuthSecretInput {
+  orgId: ID!
+}
+
+type RegenerateOAuthSecretPayload {
+  secret: String!
+}
+
+input CreateOAuthCodeInput {
+  clientId: String!
+  redirectUri: String!
+  scopes: [String!]!
+  state: String
+}
+
+type CreateOAuthCodePayload {
+  code: String!
+  redirectUri: String!
+  state: String
+}

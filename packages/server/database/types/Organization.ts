@@ -14,6 +14,10 @@ interface Input {
   tier?: TierEnum
   updatedAt?: Date
   useAI?: boolean
+  oauthClientId?: string
+  oauthClientSecret?: string
+  oauthRedirectUris?: string[]
+  oauthScopes?: string[]
 }
 
 export default class Organization {
@@ -36,6 +40,10 @@ export default class Organization {
   lockedAt?: Date | null
   useAI: boolean
   updatedAt: Date
+  oauthClientId?: string
+  oauthClientSecret?: string
+  oauthRedirectUris?: string[]
+  oauthScopes?: string[]
   constructor(input: Input) {
     const {
       id,
@@ -47,7 +55,11 @@ export default class Organization {
       name,
       picture,
       tier,
-      useAI
+      useAI,
+      oauthClientId,
+      oauthClientSecret,
+      oauthRedirectUris,
+      oauthScopes
     } = input
     this.id = id || generateUID()
     this.activeDomain = activeDomain
@@ -59,5 +71,9 @@ export default class Organization {
     this.tier = tier ?? defaultTier
     this.picture = picture
     this.useAI = useAI ?? true
+    this.oauthClientId = oauthClientId
+    this.oauthClientSecret = oauthClientSecret
+    this.oauthRedirectUris = oauthRedirectUris
+    this.oauthScopes = oauthScopes
   }
 }

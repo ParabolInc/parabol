@@ -8,6 +8,7 @@ interface Input {
   tms: string[]
   rol?: 'su' | 'impersonate' | null
   bet?: 1
+  scp?: string[]
 }
 
 export default class AuthToken {
@@ -15,6 +16,7 @@ export default class AuthToken {
   tms: string[]
   rol: 'su' | 'impersonate' | null
   bet?: 1
+  scp?: string[]
   iat: number
   iss: string
   exp: number
@@ -29,6 +31,7 @@ export default class AuthToken {
     this.iss = makeAppURL(appOrigin, '/')
     this.exp = toEpochSeconds(now.getTime() + Threshold.JWT_LIFESPAN)
     this.rol = rol ?? null
+    this.scp = input.scp
 
     if (bet) {
       this.bet = bet

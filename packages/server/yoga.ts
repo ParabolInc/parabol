@@ -176,7 +176,10 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const token = authHeader?.slice(7)
         const authToken = getVerifiedAuthToken(token)
         const isSuperUser = authToken?.rol === 'su'
-        return isSuperUser
+        const isOAuthToken = authToken?.iss === 'parabol-oauth2'
+        const hasScope =
+          authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
+        return isSuperUser || (isOAuthToken && !!hasScope)
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
