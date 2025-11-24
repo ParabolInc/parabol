@@ -11,6 +11,7 @@ import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
@@ -150,7 +151,7 @@ const safeEndRetrospective = async ({
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
   const page = await publishSummaryPage(meetingId, context, info)
   // do not await sending the email
-  sendSummaryEmailV2(meetingId, page.id, context, info)
+  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   const data = {
     meetingId,
     teamId,
