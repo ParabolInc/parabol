@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {Page_page$key} from '../../__generated__/Page_page.graphql'
-import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
+import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import {useIsAuthenticated} from '../../components/IsAuthenticatedProvider'
 import {usePageProvider} from '../../hooks/usePageProvider'
 import {DatabaseEditor} from './DatabaseEditor'
@@ -10,13 +10,24 @@ import {PageHeader} from './PageHeader'
 import {PageHeaderPublic} from './PageHeaderPublic'
 
 interface Props {
-  viewerRef: useTipTapPageEditor_viewer$key | null
+  viewerRef: Page_viewer$key | null
   pageRef: Page_page$key
   isPublic?: boolean
 }
 
 export const Page = (props: Props) => {
   const {viewerRef, pageRef, isPublic} = props
+  const viewer =
+    useFragment(
+      graphql`
+      fragment Page_viewer on User {
+        id
+        ...useTipTapPageEditor_viewer
+        ...useTipTapDatabaseEditor_viewer
+      }
+    `,
+      viewerRef
+    ) ?? null
   const page = useFragment(
     graphql`
       fragment Page_page on Page {
@@ -48,9 +59,9 @@ export const Page = (props: Props) => {
       <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
         {synced &&
           (isDatabase ? (
-            <DatabaseEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />
+            <DatabaseEditor viewerRef={viewer} isEditable={isEditable} provider={provider} />
           ) : (
-            <PageEditor viewerRef={viewerRef} isEditable={isEditable} provider={provider} />
+            <PageEditor viewerRef={viewer} isEditable={isEditable} provider={provider} />
           ))}
       </div>
     </div>

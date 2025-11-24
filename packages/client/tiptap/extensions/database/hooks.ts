@@ -2,6 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import * as Y from 'yjs'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
 import {ColumnId, RowData, RowId} from './data'
+import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
   const result = new Map<string, T>()
@@ -52,7 +53,7 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
   return items
 }
 
-export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
+export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId, userId?: string) => {
   const data = doc.getMap<RowData>('data')
   const row = data.get(rowId)
 
@@ -79,14 +80,20 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
 
   const setValue = useCallback(
     (value: string | null) => {
-      if (value === null) {
-        row?.delete(columnId)
-      } else {
-        // TODO validate and set an error here
-        row?.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
-      }
+      if (!row) return
+      doc.transact(() => {
+        if (value === null) {
+          row.delete(columnId)
+        } else {
+          // TODO validate and set an error here
+          row.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
+        }
+        if (userId) {
+          updateChangedAt(row, 'updated', userId)
+        }
+      })
     },
-    [row, columnId]
+    [doc, row, columnId, userId]
   )
 
   return [value, setValue] as const

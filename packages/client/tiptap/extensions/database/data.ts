@@ -130,18 +130,27 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
     columns.delete(index, 1)
 
     const data = doc.getMap<RowData>('data')
-    data.forEach((row) => {
-      row.delete(columnId)
+    data.forEach((row, key) => {
+      if (row.delete) {
+        row.delete(columnId)
+      } else {
+        console.warn('Invalid row data structure, expected Y.Map', key, row)
+      }
     })
   })
 }
 
-export const appendRow = (doc: Y.Doc) => {
+export const appendRow = (doc: Y.Doc, userId?: string) => {
   const id = generateId(doc)
   doc.transact(() => {
     const rows = doc.getArray<RowId>('rows')
     const data = doc.getMap<RowData>('data')
-    data.set(id, new Y.Map<string>())
+    const row = new Y.Map<any>()
+    if (userId) {
+      row.set('_createdBy', userId)
+      row.set('_createdAt', Date.now())
+    }
+    data.set(id, row)
     rows.push([id])
   })
   return id

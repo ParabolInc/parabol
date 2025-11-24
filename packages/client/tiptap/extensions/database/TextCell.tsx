@@ -6,13 +6,15 @@ import {useCell} from './hooks'
 export const TextCell = ({
   doc,
   rowId,
-  columnId
+  columnId,
+  userId
 }: {
   doc: Y.Doc
   rowId: RowId
   columnId: ColumnId
+  userId?: string
 }) => {
-  const [value, setValue] = useCell(doc, rowId, columnId)
+  const [value, setValue] = useCell(doc, rowId, columnId, userId)
   return (
     <Input
       value={value ?? ''}

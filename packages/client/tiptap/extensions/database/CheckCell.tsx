@@ -6,13 +6,15 @@ import {useCell} from './hooks'
 export const CheckCell = ({
   doc,
   rowId,
-  columnId
+  columnId,
+  userId
 }: {
   doc: Y.Doc
   rowId: RowId
   columnId: ColumnId
+  userId?: string
 }) => {
-  const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
+  const [rawValue, setRawValue] = useCell(doc, rowId, columnId, userId)
   const checked = rawValue === 'true'
   return (
     <Input
