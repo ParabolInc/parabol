@@ -1,7 +1,7 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
-import {ColumnId, RowData, RowId} from './data'
+import {ColumnId, ColumnMeta, getColumns, getRows, RowData, RowId} from './data'
 import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
@@ -104,4 +104,30 @@ export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
   return Array.from(data.values())
     .map((row) => row.get(columnId))
     .filter(Boolean) as string[]
+}
+
+export const useDatabase = (doc: Y.Doc) => {
+  const columnIds = useYArray(getColumns(doc))
+  const rows = useYArray(getRows(doc))
+  const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
+
+  const columns = useMemo(
+    () =>
+      columnIds.map((id, index) => {
+        let meta = columnMeta.get(id)
+        if (!meta) {
+          meta = {name: `Column ${index + 1}`, type: 'text'}
+          doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
+        }
+        return {
+          id,
+          ...meta
+        }
+      }),
+    [columnIds, columnMeta]
+  )
+  return {
+    rows,
+    columns
+  }
 }

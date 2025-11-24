@@ -4,38 +4,12 @@ import {useMemo} from 'react'
 import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, ColumnMeta, deleteRow, getColumns, getRows, RowId} from './data'
+import {appendColumn, appendRow, deleteRow, RowId} from './data'
 import {Header} from './Header'
-import {useYArray, useYMap} from './hooks'
+import {useDatabase} from './hooks'
 import {MetaCell} from './MetaCell'
 
 const getRowId = (row: RowId) => row
-
-const useDatabase = (doc: Y.Doc) => {
-  const columnIds = useYArray(getColumns(doc))
-  const rows = useYArray(getRows(doc))
-  const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
-
-  const columns = useMemo(
-    () =>
-      columnIds.map((id, index) => {
-        let meta = columnMeta.get(id)
-        if (!meta) {
-          meta = {name: `Column ${index + 1}`, type: 'text'}
-          doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
-        }
-        return {
-          id,
-          ...meta
-        }
-      }),
-    [columnIds, columnMeta]
-  )
-  return {
-    rows,
-    columns
-  }
-}
 
 type Props = {
   doc: Y.Doc
