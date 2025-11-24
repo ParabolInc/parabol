@@ -14,6 +14,7 @@ export type HocusPocusSocketData = {
 }
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
+  maxPayloadLength: 1024 * 1024 * 2, // 2MB max size (for large paste operations)
   upgrade(res, req, context) {
     const headers: IncomingHttpHeaders = {}
     req.forEach((key, value) => {
@@ -51,6 +52,7 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     ws.getUserData().socket.emit('pong', message)
   },
   async message(ws, message) {
+    console.log('got message')
     const socketData = ws.getUserData()
     const {socket, serializedHTTPRequest} = socketData
     redisHocusPocus.onSocketMessage(socket, serializedHTTPRequest, message)

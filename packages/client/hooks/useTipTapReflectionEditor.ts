@@ -59,7 +59,9 @@ export const useTipTapReflectionEditor = (
         Focus,
         ImageUpload.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88
+          editorHeight: 88,
+          scopeKey: teamId,
+          assetScope: 'Team'
         }),
         ImageBlock,
         LoomExtension,

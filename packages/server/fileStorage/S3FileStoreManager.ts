@@ -1,11 +1,18 @@
-import {GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3'
+import {
+  CopyObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
 import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
 import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
 import path from 'path'
 import {Logger} from '../utils/Logger'
-import FileStoreManager, {type FileAssetDir} from './FileStoreManager'
+import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
 
 class CloudflareRetry extends StandardRetryStrategy {
   public async refreshRetryTokenForRetry(
@@ -81,10 +88,6 @@ export default class S3Manager extends FileStoreManager {
     })
   }
 
-  protected async putUserFile(file: ArrayBufferLike, partialPath: string) {
-    const fullPath = this.prependPath(partialPath)
-    return this.putFile(file, fullPath)
-  }
   protected async putFile(file: ArrayBufferLike, fullPath: string) {
     const s3Params = {
       Body: Buffer.from(file),
@@ -93,7 +96,6 @@ export default class S3Manager extends FileStoreManager {
       ContentType: mime.lookup(fullPath) || 'application/octet-stream'
     }
     await this.s3.send(new PutObjectCommand(s3Params))
-    return this.getPublicFileLocation(fullPath)
   }
 
   prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
@@ -104,9 +106,10 @@ export default class S3Manager extends FileStoreManager {
     return encodeURI(`${this.baseUrl}${fullPath}`)
   }
 
-  putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
+  async putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
     const fullPath = this.prependPath(partialPath, 'build')
-    return this.putFile(file, fullPath)
+    await this.putFile(file, fullPath)
+    return this.getPublicFileLocation(fullPath)
   }
   async checkExists(key: string, assetDir?: FileAssetDir) {
     const Key = this.prependPath(key, assetDir)
@@ -119,9 +122,29 @@ export default class S3Manager extends FileStoreManager {
     return true
   }
 
-  async presignUrl(url: string) {
+  async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
+    const oldFullPath = decodeURI(this.prependPath(oldPartialPath))
+    const newFullPath = decodeURI(this.prependPath(newPartialPath))
+
+    await this.s3.send(
+      new CopyObjectCommand({
+        Bucket: this.bucket,
+        CopySource: oldFullPath,
+        Key: newFullPath
+      })
+    )
+    await this.s3.send(
+      new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: oldFullPath
+      })
+    )
+  }
+
+  async presignUrl(partialPath: PartialPath) {
     // Important to decodeURI so `getSignedUrl` doesn't double encode e.g. local|123/avatars/123.jpg
-    const key = decodeURI(url.slice(this.baseUrl.length))
+    const fullPath = this.prependPath(partialPath)
+    const key = decodeURI(fullPath)
     const command = new GetObjectCommand({Bucket: this.bucket, Key: key})
     const encodedUri = await getSignedUrl(this.s3, command, {
       expiresIn: 604800

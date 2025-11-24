@@ -12,7 +12,7 @@ import makeRetroTemplates from '../../mutations/helpers/makeRetroTemplates'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {MutationResolvers} from '../resolverTypes'
 
-const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
+const addReflectTemplate: MutationResolvers['addReflectTemplate'] = async (
   _source,
   {teamId, parentTemplateId},
   {authToken, dataLoader, socketId: mutatorId}
@@ -145,4 +145,4 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   return data
 }
 
-export default addPokerTemplate
+export default addReflectTemplate
