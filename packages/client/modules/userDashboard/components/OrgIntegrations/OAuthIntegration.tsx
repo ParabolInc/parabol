@@ -7,7 +7,6 @@ import type {OAuthIntegration_organization$key} from '../../../../__generated__/
 import ExternalLink from '../../../../components/ExternalLink'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import Toggle from '../../../../components/Toggle/Toggle'
-import {Button} from '../../../../ui/Button/Button'
 
 interface Props {
   organizationRef: OAuthIntegration_organization$key
@@ -194,9 +193,11 @@ const OAuthIntegration = ({organizationRef}: Props) => {
         <div className='space-y-6'>
           <div className='grid grid-cols-2 gap-6'>
             <div className='space-y-2'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Client ID
-              </label>
+              <div className='flex h-5 items-center'>
+                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  Client ID
+                </label>
+              </div>
               <div className='flex'>
                 <div className='relative flex-grow focus-within:z-10'>
                   <BasicInput
@@ -205,7 +206,7 @@ const OAuthIntegration = ({organizationRef}: Props) => {
                     disabled
                     onChange={() => {}}
                     error={undefined}
-                    className='!border-r-0 w-full rounded-r-none bg-slate-50 font-mono text-sm'
+                    className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
                   />
                 </div>
                 <button
@@ -218,39 +219,45 @@ const OAuthIntegration = ({organizationRef}: Props) => {
               </div>
             </div>
             <div className='space-y-2'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Client Secret
-              </label>
-              <div className='flex gap-2'>
-                <div className='flex flex-grow'>
-                  <div className='relative flex-grow focus-within:z-10'>
-                    <BasicInput
-                      name='clientSecret'
-                      value={clientSecret}
-                      disabled
-                      onChange={() => {}}
-                      error={undefined}
-                      className='!border-r-0 w-full rounded-r-none bg-slate-50 font-mono text-sm'
-                      type='password'
-                    />
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => copyToClipboard(clientSecret)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
-                  >
-                    <ContentCopyIcon fontSize='small' />
-                  </button>
-                </div>
-                <Button variant='outline' size='sm' onClick={handleRegenerateSecret}>
+              <div className='flex h-5 items-center justify-between'>
+                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  Client Secret
+                </label>
+                <button
+                  type='button'
+                  onClick={handleRegenerateSecret}
+                  className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
+                >
                   Regenerate
-                </Button>
+                </button>
+              </div>
+              <div className='flex'>
+                <div className='relative flex-grow focus-within:z-10'>
+                  <BasicInput
+                    name='clientSecret'
+                    value={clientSecret}
+                    disabled
+                    onChange={() => {}}
+                    error={undefined}
+                    className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
+                    type='password'
+                  />
+                </div>
+                <button
+                  type='button'
+                  onClick={() => copyToClipboard(clientSecret)}
+                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
+                >
+                  <ContentCopyIcon fontSize='small' />
+                </button>
               </div>
             </div>
             <div className='col-span-2 space-y-2'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Redirect URIs (Comma separated)
-              </label>
+              <div className='flex h-5 items-center'>
+                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  Redirect URIs (Comma separated)
+                </label>
+              </div>
               <BasicInput
                 name='redirectUris'
                 value={redirectUris}
