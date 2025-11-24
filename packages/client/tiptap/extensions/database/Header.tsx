@@ -20,7 +20,8 @@ import {
   changeColumn,
   deleteColumn,
   duplicateColumn,
-  insertColumnAt
+  insertColumnAfter,
+  insertColumnBefore
 } from './data'
 import {DataType, DataTypeIcons} from './types'
 
@@ -52,18 +53,14 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
       label: 'Insert left',
       icon: <FirstPage />,
       action: () => {
-        const columns = doc.getArray<ColumnId>('columns')
-        const index = columns.toArray().indexOf(columnId)
-        insertColumnAt(doc, index)
+        insertColumnBefore(doc, columnId)
       }
     },
     {
       label: 'Insert right',
       icon: <LastPage />,
       action: () => {
-        const columns = doc.getArray<ColumnId>('columns')
-        const index = columns.toArray().indexOf(columnId)
-        insertColumnAt(doc, index + 1)
+        insertColumnAfter(doc, columnId)
       }
     },
     {

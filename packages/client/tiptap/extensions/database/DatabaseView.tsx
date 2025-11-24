@@ -4,27 +4,58 @@ import {useMemo} from 'react'
 import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, ColumnId, ColumnMeta, deleteRow, RowId} from './data'
+import {
+  appendColumn,
+  appendRow,
+  ColumnId,
+  ColumnMeta,
+  deleteRow,
+  getColumns,
+  getRows,
+  RowId
+} from './data'
 import {Header} from './Header'
 import {useYArray, useYMap} from './hooks'
 
 const getRowId = (row: RowId) => row
 
-export default function DatabaseView(props: {doc: Y.Doc}) {
-  const {doc} = props
-
-  const yColumns = useYArray(doc.getArray<ColumnId>('columns'))
-  const rows = useYArray(doc.getArray<RowId>('rows'))
+const useDatabase = (doc: Y.Doc) => {
+  const columnIds = useYArray(getColumns(doc))
+  const rows = useYArray(getRows(doc))
 
   const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
 
-  const columns = useMemo(() => {
-    const dataColumns: ColumnDef<ColumnId>[] = yColumns.map((id, index) => {
-      let meta = columnMeta.get(id)
-      if (!meta) {
-        meta = {name: `Column ${index + 1}`, type: 'text'}
-        doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
-      }
+  const columns = useMemo(
+    () =>
+      columnIds.map((id, index) => {
+        let meta = columnMeta.get(id)
+        if (!meta) {
+          meta = {name: `Column ${index + 1}`, type: 'text'}
+          doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
+        }
+        return {
+          id,
+          ...meta
+        }
+      }),
+    [columnIds, columnMeta]
+  )
+  return {
+    rows,
+    columns
+  }
+}
+
+export default function DatabaseView(props: {doc: Y.Doc}) {
+  const {doc} = props
+
+  const {rows, columns} = useDatabase(doc)
+
+  const dataColumns = useMemo(() => {
+    const dataColumns: ColumnDef<ColumnId>[] = columns.map((column) => {
+      const {id, ...meta} = column
+      const {type} = meta
+
       return {
         id,
         size: 200,
@@ -32,9 +63,7 @@ export default function DatabaseView(props: {doc: Y.Doc}) {
         maxSize: 500,
         enableResizing: true,
         header: () => <Header key={id} columnMeta={meta} doc={doc} columnId={id} />,
-        cell: ({row}) => (
-          <Cell type={columnMeta.get(id)?.type || 'text'} doc={doc} rowId={row.id} columnId={id} />
-        )
+        cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} />
       }
     })
     return [
@@ -63,12 +92,12 @@ export default function DatabaseView(props: {doc: Y.Doc}) {
         )
       }
     ] as ColumnDef<RowId>[]
-  }, [yColumns, columnMeta, doc])
+  }, [columns])
 
   const table = useReactTable({
     data: rows,
     getRowId,
-    columns,
+    columns: dataColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: 'onChange'
   })

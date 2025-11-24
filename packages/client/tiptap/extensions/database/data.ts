@@ -1,6 +1,18 @@
 import * as Y from 'yjs'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
+/**
+ * yjs data layout:
+ * - rows: Array<RowId>
+ * - columns: Array<ColumnId>
+ * - columnMeta: Map<ColumnId, ColumnMeta>
+ * - data: Map<RowId, Map<ColumnId, string>>
+ *
+ * Future:
+ * - views: Array<ViewId>
+ * - viewMeta: Map<ViewId, View>
+ */
+
 export type ColumnId = string
 export type RowId = string
 export type RowData = Y.Map<string>
@@ -9,6 +21,16 @@ export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
 export type ColumnMeta = {
   name: string
   type: DataType
+}
+
+export type View = {
+  name: string
+  sorting: {id: ColumnId; direction: 'asc' | 'desc'}[]
+  // subset of columns visible in this view
+  columns: {
+    id: ColumnId
+    size?: number
+  }[]
 }
 
 const defaultColumnMeta: ColumnMeta = {
@@ -36,7 +58,7 @@ export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta
   })
 }
 
-export const insertColumnAt = (doc: Y.Doc, index: number, meta: ColumnMeta = defaultColumnMeta) => {
+const insertColumnAt = (doc: Y.Doc, index: number, meta: ColumnMeta = defaultColumnMeta) => {
   const id = generateId(doc)
   doc.transact(() => {
     changeColumn(doc, id, meta)
@@ -44,6 +66,26 @@ export const insertColumnAt = (doc: Y.Doc, index: number, meta: ColumnMeta = def
     columns.insert(index, [id])
   })
   return id
+}
+
+export const insertColumnBefore = (
+  doc: Y.Doc,
+  columnId: ColumnId,
+  meta: ColumnMeta = defaultColumnMeta
+) => {
+  const columns = doc.getArray<ColumnId>('columns')
+  const index = columns.toArray().indexOf(columnId)
+  return insertColumnAt(doc, index, meta)
+}
+
+export const insertColumnAfter = (
+  doc: Y.Doc,
+  columnId: ColumnId,
+  meta: ColumnMeta = defaultColumnMeta
+) => {
+  const columns = doc.getArray<ColumnId>('columns')
+  const index = columns.toArray().indexOf(columnId)
+  return insertColumnAt(doc, index + 1, meta)
 }
 
 export const appendColumn = (doc: Y.Doc, meta: ColumnMeta = defaultColumnMeta) => {
