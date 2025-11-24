@@ -16,6 +16,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
+import {useOAuthScopeValidation} from './utils/useOAuthScopeValidation'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
@@ -186,6 +187,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     usePrivateSchemaForSuperUser,
+    useOAuthScopeValidation(),
     useDisposeDataloader,
     useReadinessCheck({
       check: async () => {
