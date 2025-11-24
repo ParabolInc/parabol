@@ -4,6 +4,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
 import type {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import {
+  AI_SETTINGS_PAGE,
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
@@ -37,6 +38,10 @@ const Authentication = lazy(
     import(
       /* webpackChunkName: 'Authentication' */ '../../containers/OrgAuthentication/OrgAuthenticationRoot'
     )
+)
+
+const AISettings = lazy(
+  () => import(/* webpackChunkName: 'AISettings' */ '../OrgIntegrations/AISettings')
 )
 
 type Props = {
@@ -102,6 +107,7 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
+        <Route exact path={`${match.url}/${AI_SETTINGS_PAGE}`} render={() => <AISettings />} />
         <Route
           exact
           path={`${match.url}/${TEAMS_PAGE}`}

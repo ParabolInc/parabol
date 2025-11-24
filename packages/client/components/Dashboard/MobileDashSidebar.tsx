@@ -10,6 +10,7 @@ import GroupIcon from '@mui/icons-material/Group'
 import GroupsIcon from '@mui/icons-material/Groups'
 import KeyIcon from '@mui/icons-material/Key'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+import SmartToyIcon from '@mui/icons-material/SmartToy'
 import TimelineIcon from '@mui/icons-material/Timeline'
 import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
@@ -19,6 +20,7 @@ import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewe
 import {PALETTE} from '../../styles/paletteV3'
 import {GlobalBanner, NavSidebar} from '../../types/constEnums'
 import {
+  AI_SETTINGS_PAGE,
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
   MEMBERS_PAGE,
@@ -182,6 +184,12 @@ const MobileDashSidebar = (props: Props) => {
                 Icon={AppRegistrationIcon}
                 href={`/me/organizations/${orgId}/${ORG_INTEGRATIONS_PAGE}`}
                 label={'Integration Settings'}
+              />
+              <LeftDashNavItem
+                onClick={handleMenuClick}
+                Icon={SmartToyIcon}
+                href={`/me/organizations/${orgId}/${AI_SETTINGS_PAGE}`}
+                label={'AI Settings'}
               />
               <LeftDashNavItem
                 onClick={handleMenuClick}

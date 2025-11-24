@@ -20,21 +20,21 @@ const INITIAL_GROUPS: CommandGroup[] = [
     name: 'list',
     commands: [
       {
-        id: 'list_users',
-        name: 'list_users',
+        id: 'list_org_users',
+        name: 'list_org_users',
         description: 'Retrieve a list of all users in the organization',
         enabled: true
       },
       {
-        id: 'list_teams',
-        name: 'list_teams',
+        id: 'list_org_teams',
+        name: 'listorg__teams',
         description: 'Retrieve a list of all teams in the organization',
         enabled: true
       },
       {
-        id: 'list_meetings',
-        name: 'list_meetings',
-        description: 'Retrieve a list of all meetings across teams',
+        id: 'list_org_meeting_history',
+        name: 'list_org_meeting_history',
+        description: 'Retrieve a list of all historical meetings across teams',
         enabled: true
       }
     ]
@@ -58,18 +58,6 @@ const INITIAL_GROUPS: CommandGroup[] = [
         id: 'read_meeting',
         name: 'read_meeting',
         description: 'Read detailed information about a specific meeting',
-        enabled: true
-      },
-      {
-        id: 'read_retrospective',
-        name: 'read_retrospective',
-        description: 'Read retrospective data and insights',
-        enabled: true
-      },
-      {
-        id: 'read_tasks',
-        name: 'read_tasks',
-        description: 'Read task information and assignments',
         enabled: true
       }
     ]
