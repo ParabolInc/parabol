@@ -26,9 +26,7 @@ const OAuthIntegration = ({organizationRef}: Props) => {
     organizationRef
   )
 
-  const [enabled, setEnabled] = useState<boolean>(
-    !!data.oauthClientId || (!!data.oauthRedirectUris && data.oauthRedirectUris.length > 0)
-  )
+  const [enabled, setEnabled] = useState<boolean>(!!data.oauthClientId)
   const [clientId, setClientId] = useState(data.oauthClientId || '')
   const [clientSecret, setClientSecret] = useState(data.oauthClientSecret || '')
   const [redirectUris, setRedirectUris] = useState((data.oauthRedirectUris || []).join(', '))
@@ -59,22 +57,17 @@ const OAuthIntegration = ({organizationRef}: Props) => {
 
   // Update local state when data changes (e.g. after mutation or refresh)
   useEffect(() => {
-    if (data.oauthClientId || (data.oauthRedirectUris && data.oauthRedirectUris.length > 0)) {
-      setEnabled(true)
-    } else {
-      setEnabled(false)
+    // Don't update enabled state while saving to preserve optimistic update
+    if (!isSaving) {
+      // OAuth is only enabled if we have a clientId (credentials exist)
+      const isEnabled = !!data.oauthClientId
+      setEnabled(isEnabled)
     }
 
-    if (data.oauthClientId) {
-      setClientId(data.oauthClientId)
-      setClientSecret(data.oauthClientSecret || '')
-    } else {
-      setClientId('')
-      setClientSecret('')
-    }
+    setClientId(data.oauthClientId || '')
+    setClientSecret(data.oauthClientSecret || '')
 
-    // Only update redirectUris/scopes if we aren't currently editing/saving to avoid overwriting user input
-    // But for simplicity, let's trust the server data on mount/update
+    // Only update redirectUris/scopes if we aren't currently editing/saving
     if (!isSaving) {
       setRedirectUris((data.oauthRedirectUris || []).join(', '))
       setScopes([...(data.oauthScopes || [])])
@@ -106,24 +99,31 @@ const OAuthIntegration = ({organizationRef}: Props) => {
         },
         onCompleted: (response: any) => {
           setIsSaving(false)
+
           if (response.updateOAuthSettings.organization) {
             const org = response.updateOAuthSettings.organization
-            if (org.oauthClientId) setClientId(org.oauthClientId)
-            if (org.oauthClientSecret) setClientSecret(org.oauthClientSecret)
-          } else if (newEnabled === false) {
-            setClientId('')
-            setClientSecret('')
+            // Force update all fields from server response
+            setEnabled(!!org.oauthClientId)
+            setClientId(org.oauthClientId || '')
+            setClientSecret(org.oauthClientSecret || '')
+            setRedirectUris((org.oauthRedirectUris || []).join(', '))
+            setScopes([...(org.oauthScopes || [])])
           }
         },
-        onError: () => {
+        onError: (error) => {
+          console.error('OAuth settings update error:', error)
           setIsSaving(false)
+          // Revert optimistic update on error
+          const isEnabled = !!data.oauthClientId
+          setEnabled(isEnabled)
         }
       })
-    }, 1000) // 1 second debounce
+    }, 300) // Reduced debounce for better UX
   }
 
   const handleToggle = () => {
     const newEnabled = !enabled
+    // Optimistic update
     setEnabled(newEnabled)
     saveData(newEnabled, redirectUris, scopes)
   }
@@ -191,88 +191,90 @@ const OAuthIntegration = ({organizationRef}: Props) => {
 
       {enabled && (
         <div className='space-y-6'>
-          <div className='grid grid-cols-2 gap-6'>
-            <div className='space-y-2'>
-              <div className='flex h-5 items-center'>
-                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                  Client ID
-                </label>
-              </div>
-              <div className='flex'>
-                <div className='relative flex-grow focus-within:z-10'>
-                  <BasicInput
-                    name='clientId'
-                    value={clientId}
-                    disabled
-                    onChange={() => {}}
-                    error={undefined}
-                    className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
-                  />
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className='grid grid-cols-2 gap-6'>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Client ID
+                  </label>
                 </div>
-                <button
-                  type='button'
-                  onClick={() => copyToClipboard(clientId)}
-                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
-                >
-                  <ContentCopyIcon fontSize='small' />
-                </button>
-              </div>
-            </div>
-            <div className='space-y-2'>
-              <div className='flex h-5 items-center justify-between'>
-                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                  Client Secret
-                </label>
-                <button
-                  type='button'
-                  onClick={handleRegenerateSecret}
-                  className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
-                >
-                  Regenerate
-                </button>
-              </div>
-              <div className='flex'>
-                <div className='relative flex-grow focus-within:z-10'>
-                  <BasicInput
-                    name='clientSecret'
-                    value={clientSecret}
-                    disabled
-                    onChange={() => {}}
-                    error={undefined}
-                    className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
-                    type='password'
-                  />
+                <div className='flex'>
+                  <div className='relative flex-grow focus-within:z-10'>
+                    <BasicInput
+                      name='clientId'
+                      value={clientId}
+                      disabled
+                      onChange={() => {}}
+                      error={undefined}
+                      className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(clientId)}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
                 </div>
-                <button
-                  type='button'
-                  onClick={() => copyToClipboard(clientSecret)}
-                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
-                >
-                  <ContentCopyIcon fontSize='small' />
-                </button>
+              </div>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Client Secret
+                  </label>
+                  <button
+                    type='button'
+                    onClick={handleRegenerateSecret}
+                    className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
+                  >
+                    Regenerate
+                  </button>
+                </div>
+                <div className='flex'>
+                  <div className='relative flex-grow focus-within:z-10'>
+                    <BasicInput
+                      name='clientSecret'
+                      value={clientSecret}
+                      disabled
+                      onChange={() => {}}
+                      error={undefined}
+                      className='!border-r-0 !border-slate-300 w-full rounded-r-none bg-slate-50 font-mono text-sm'
+                      type='password'
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(clientSecret)}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100 focus:z-10 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
+              </div>
+              <div className='col-span-2 space-y-2'>
+                <div className='flex h-5 items-center'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Redirect URIs (Comma separated)
+                  </label>
+                </div>
+                <BasicInput
+                  name='redirectUris'
+                  value={redirectUris}
+                  onChange={(e) => handleRedirectUriChange(e.target.value)}
+                  onBlur={handleRedirectUriBlur}
+                  onKeyDown={handleRedirectUriKeyDown}
+                  error={undefined}
+                  className='w-full font-mono text-sm'
+                  placeholder='https://example.com/callback, https://app.example.com/callback'
+                />
+                <p className='text-slate-500 text-xs'>
+                  Enter one or more redirect URIs separated by commas.
+                </p>
               </div>
             </div>
-            <div className='col-span-2 space-y-2'>
-              <div className='flex h-5 items-center'>
-                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                  Redirect URIs (Comma separated)
-                </label>
-              </div>
-              <BasicInput
-                name='redirectUris'
-                value={redirectUris}
-                onChange={(e) => handleRedirectUriChange(e.target.value)}
-                onBlur={handleRedirectUriBlur}
-                onKeyDown={handleRedirectUriKeyDown}
-                error={undefined}
-                className='w-full font-mono text-sm'
-                placeholder='https://example.com/callback, https://app.example.com/callback'
-              />
-              <p className='text-slate-500 text-xs'>
-                Enter one or more redirect URIs separated by commas.
-              </p>
-            </div>
-          </div>
+          </form>
 
           <div className='space-y-2'>
             <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
