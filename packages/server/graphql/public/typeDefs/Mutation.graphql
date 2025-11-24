@@ -2031,6 +2031,14 @@ type Mutation {
     the asset URL
     """
     url: String!
+    """
+    the scope of who can access the file, either user or page
+    """
+    scope: AssetScopeEnum!
+    """
+    The client ID of the scope, e.g. userId, teamId, orgId, pageKey
+    """
+    scopeKey: ID!
   ): UploadUserAssetPayload
 
   """
@@ -2041,6 +2049,14 @@ type Mutation {
     the asset file
     """
     file: File!
+    """
+    the scope of who can access the file, either user or page
+    """
+    scope: AssetScopeEnum!
+    """
+    The client ID of the scope, e.g. userId, teamId, orgId, pageKey
+    """
+    scopeKey: ID!
   ): UploadUserAssetPayload
 
   """

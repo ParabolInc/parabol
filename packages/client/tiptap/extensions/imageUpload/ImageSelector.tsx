@@ -33,6 +33,7 @@ const tabs = [
 
 export const ImageSelector = (props: Props) => {
   const {editor} = props
+
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
   const setImageURL = (url: string) => {

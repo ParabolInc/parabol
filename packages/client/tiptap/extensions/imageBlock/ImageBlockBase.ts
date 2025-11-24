@@ -30,8 +30,7 @@ export const ImageBlockBase = Image.extend({
   },
   renderText({node}) {
     const src = node.attrs.src as string
-    const url = new URL(src)
-    const fileName = url.pathname.split('/').pop()
+    const fileName = src.split('/').pop()
     return `\n<<${fileName}>>\n`
   },
   renderHTML({HTMLAttributes}) {
