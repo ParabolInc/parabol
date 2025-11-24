@@ -8,7 +8,7 @@ import useAtmosphere from './useAtmosphere'
 
 export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: boolean) => {
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
+  const {authObj, viewerId} = atmosphere
   const oldUserIdsRef = useRef<Set<string>>(new Set())
   const providerRef = useRef<HocuspocusProvider>()
 
@@ -64,19 +64,19 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
       providerManager.unregister(room, 5000)
     }
   }, [meetingId])
-
+  const addOriginalViewer = addViewer && authObj?.rol !== 'impersonate'
   useEffect(() => {
     if (!meetingId) return
     const awareness = providerRef.current?.awareness
     if (!awareness) return
-    if (addViewer) {
+    if (addOriginalViewer) {
       const localState = awareness.getLocalState()
       if (!localState || !localState.userId) {
         awareness.setLocalStateField('userId', viewerId)
       }
     }
     return () => {
-      if (addViewer) {
+      if (addOriginalViewer) {
         // destroying the awareness (i.e setLocalState == null) as prescribed
         // seems to break reconnects, so we only remove the userId
         awareness.setLocalStateField('userId', null)
@@ -86,5 +86,5 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
         })
       }
     }
-  }, [addViewer, meetingId])
+  }, [addOriginalViewer, meetingId])
 }
