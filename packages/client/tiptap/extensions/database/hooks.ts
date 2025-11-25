@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import * as Y from 'yjs'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
 import {ColumnId, ColumnMeta, getColumns, getRows, RowData, RowId} from './data'
 import {updateChangedAt} from './utils'
@@ -53,7 +54,8 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
   return items
 }
 
-export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId, userId?: string) => {
+export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
+  const {viewerId} = useAtmosphere()
   const data = doc.getMap<RowData>('data')
   const row = data.get(rowId)
 
@@ -88,12 +90,12 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId, userId?: s
           // TODO validate and set an error here
           row.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
         }
-        if (userId) {
-          updateChangedAt(row, 'updated', userId)
+        if (viewerId) {
+          updateChangedAt(row, 'updated', viewerId)
         }
       })
     },
-    [doc, row, columnId, userId]
+    [doc, row, columnId, viewerId]
   )
 
   return [value, setValue] as const

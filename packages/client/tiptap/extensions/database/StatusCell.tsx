@@ -128,15 +128,13 @@ const AutocompleteInput = ({
 export const StatusCell = ({
   doc,
   rowId,
-  columnId,
-  userId
+  columnId
 }: {
   doc: Y.Doc
   rowId: RowId
   columnId: ColumnId
-  userId?: string
 }) => {
-  const [value, setValue] = useCell(doc, rowId, columnId, userId)
+  const [value, setValue] = useCell(doc, rowId, columnId)
   const tags = useStatusType({doc, columnId})
 
   return (

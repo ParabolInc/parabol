@@ -134,15 +134,13 @@ const AutocompleteInput = ({
 export const TagsCell = ({
   doc,
   rowId,
-  columnId,
-  userId
+  columnId
 }: {
   doc: Y.Doc
   rowId: RowId
   columnId: ColumnId
-  userId?: string
 }) => {
-  const [rawValue, setRawValue] = useCell(doc, rowId, columnId, userId)
+  const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
 
   const tags = useTagsType({doc, columnId})
 

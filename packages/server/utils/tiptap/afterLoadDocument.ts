@@ -23,7 +23,9 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   const data = document.getMap<Y.Map<any>>('data')
   data.observeDeep((events, transaction) => {
     const userId = transaction.origin?.context?.userId ?? undefined
-    if (!userId) return
+    if (!userId) {
+      return
+    }
 
     events.forEach((event) => {
       const isRowLevel = event.path.length === 0
@@ -36,7 +38,9 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
             if (!row) {
               return
             }
-            updateChangedAt(row, 'created', userId)
+            document.transact(() => {
+              updateChangedAt(row, 'created', userId)
+            })
           }
         })
       }
@@ -47,7 +51,9 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
           return
         }
         event.changes.keys.forEach((_change, _key) => {
-          updateChangedAt(row, 'updated', userId)
+          document.transact(() => {
+            updateChangedAt(row, 'updated', userId)
+          })
         })
       }
     })

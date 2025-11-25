@@ -9,6 +9,9 @@ import {Header} from './Header'
 import {useDatabase} from './hooks'
 import {MetaCell} from './MetaCell'
 
+// add additional debug columns
+const DEBUG = false
+
 const getRowId = (row: RowId) => row
 
 type Props = {
@@ -20,9 +23,6 @@ export default function DatabaseView(props: Props) {
   const {doc, userId} = props
 
   const {rows, columns} = useDatabase(doc)
-
-  // add additional debug columns
-  const debug = false
 
   const dataColumns = useMemo(() => {
     const dataColumns: ColumnDef<RowId>[] = columns.map((column) => {
@@ -38,13 +38,13 @@ export default function DatabaseView(props: Props) {
         header: () => (
           <>
             <Header key={id} columnMeta={meta} doc={doc} columnId={id} />
-            {debug && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
+            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
           </>
         ),
         cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} userId={userId} />
       }
     })
-    const debugColumns: ColumnDef<RowId>[] = !debug
+    const debugColumns: ColumnDef<RowId>[] = !DEBUG
       ? []
       : [
           {

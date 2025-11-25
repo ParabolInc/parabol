@@ -6,15 +6,13 @@ import {useCell} from './hooks'
 export const NumberCell = ({
   doc,
   rowId,
-  columnId,
-  userId
+  columnId
 }: {
   doc: Y.Doc
   rowId: RowId
   columnId: ColumnId
-  userId?: string
 }) => {
-  const [rawValue, setRawValue] = useCell(doc, rowId, columnId, userId)
+  const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
 
   const convertToNumber = (rawValue: string | null) => {
     if (!rawValue) return ''
