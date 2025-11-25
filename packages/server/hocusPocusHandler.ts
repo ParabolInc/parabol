@@ -52,7 +52,6 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     ws.getUserData().socket.emit('pong', message)
   },
   async message(ws, message) {
-    console.log('got message')
     const socketData = ws.getUserData()
     const {socket, serializedHTTPRequest} = socketData
     redisHocusPocus.onSocketMessage(socket, serializedHTTPRequest, message)
