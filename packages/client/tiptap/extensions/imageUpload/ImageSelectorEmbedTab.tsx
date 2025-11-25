@@ -1,3 +1,4 @@
+import type {Editor} from '@tiptap/core'
 import {useRef} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useEmbedUserAsset} from '../../../mutations/useEmbedUserAsset'
@@ -5,10 +6,11 @@ import {Button} from '../../../ui/Button/Button'
 
 interface Props {
   setImageURL: (url: string) => void
+  editor: Editor
 }
 
 export const ImageSelectorEmbedTab = (props: Props) => {
-  const {setImageURL} = props
+  const {editor, setImageURL} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const [commit] = useEmbedUserAsset()
@@ -16,8 +18,9 @@ export const ImageSelectorEmbedTab = (props: Props) => {
     e.preventDefault()
     const url = ref.current?.value
     if (!url) return
+    const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
     commit({
-      variables: {url},
+      variables: {url, scope: assetScope, scopeKey},
       onCompleted: (res) => {
         const {embedUserAsset} = res
         const {url} = embedUserAsset!

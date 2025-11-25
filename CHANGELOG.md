@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.36.0](https://github.com/ParabolInc/parabol/compare/v10.35.1...v10.36.0) (2025-11-24)
+
+
+### Added
+
+* Asset Proxy Server ([#12335](https://github.com/ParabolInc/parabol/issues/12335)) ([b8dde06](https://github.com/ParabolInc/parabol/commit/b8dde06aaef66c99a08c395b3ef664e05f8c164f))
+
+
+### Fixed
+
+* bump datadog-ci to v4 ([#12350](https://github.com/ParabolInc/parabol/issues/12350)) ([870bb71](https://github.com/ParabolInc/parabol/commit/870bb7163db17705620eb916fb6196338a602f3f))
+* max paste size for pages ([#12351](https://github.com/ParabolInc/parabol/issues/12351)) ([2f1c59e](https://github.com/ParabolInc/parabol/commit/2f1c59e90f4f2f1ee1b0119f9be3adbab84565e5))
+* support insights when teams do not vote ([#12363](https://github.com/ParabolInc/parabol/issues/12363)) ([cdcefcf](https://github.com/ParabolInc/parabol/commit/cdcefcfad221d327c97178e37358de6b8015a471))
+
 ## [10.35.1](https://github.com/ParabolInc/parabol/compare/v10.35.0...v10.35.1) (2025-11-21)
 
 
