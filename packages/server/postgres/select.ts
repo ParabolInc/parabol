@@ -151,7 +151,9 @@ export const selectOrganizations = () =>
       'oauthClientId',
       'oauthClientSecret',
       'oauthRedirectUris',
-      'oauthScopes'
+      'oauthScopes',
+      'mcpEnabled',
+      'mcpResources'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 

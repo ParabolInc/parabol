@@ -228,4 +228,14 @@ type Organization implements OrganizationPartial {
 	OAuth 2.0 Scopes
 	"""
 	oauthScopes: [String!]
+
+	"""
+	Whether MCP server is enabled for this organization
+	"""
+	mcpEnabled: Boolean!
+
+	"""
+	MCP resource access settings (JSON string)
+	"""
+	mcpResources: String
 }

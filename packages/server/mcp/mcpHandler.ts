@@ -38,32 +38,38 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
       console.log('[MCP] Authentication failed: Missing or invalid Authorization header')
       const authHeaderVal = `Bearer resource_metadata="${appOrigin}/.well-known/oauth-protected-resource/mcp", scope="parabol:read parabol:write mcp:read mcp:write"`
       console.log(`[MCP] Sending WWW-Authenticate: ${authHeaderVal}`)
-      res.writeStatus('401 Unauthorized')
-      res.writeHeader('WWW-Authenticate', authHeaderVal)
-      res.end(JSON.stringify({error: 'Unauthorized'}))
+      res.cork(() => {
+        res.writeStatus('401 Unauthorized')
+        res.writeHeader('WWW-Authenticate', authHeaderVal)
+        res.end(JSON.stringify({error: 'Unauthorized'}))
+      })
       return
     }
 
-    const token = authHeader.split(' ')[1]
+    const token = authHeader.split(' ')[1]!
     let decoded: any
     try {
       if (!SERVER_SECRET) throw new Error('SERVER_SECRET is not defined')
       decoded = verify(token, Buffer.from(SERVER_SECRET, 'base64'))
     } catch (_err) {
       console.log('[MCP] Authentication failed: Invalid token')
-      res.writeStatus('401 Unauthorized')
-      res.writeHeader(
-        'WWW-Authenticate',
-        `Bearer resource_metadata="${appOrigin}/.well-known/oauth-protected-resource/mcp", error="invalid_token"`
-      )
-      res.end(JSON.stringify({error: 'Invalid token'}))
+      res.cork(() => {
+        res.writeStatus('401 Unauthorized')
+        res.writeHeader(
+          'WWW-Authenticate',
+          `Bearer resource_metadata="${appOrigin}/.well-known/oauth-protected-resource/mcp", error="invalid_token"`
+        )
+        res.end(JSON.stringify({error: 'Invalid token'}))
+      })
       return
     }
 
     if (decoded.iss !== 'parabol-oauth2') {
       console.log('[MCP] Authentication failed: Invalid issuer', decoded.iss)
-      res.writeStatus('403 Forbidden')
-      res.end(JSON.stringify({error: 'Invalid token issuer'}))
+      res.cork(() => {
+        res.writeStatus('403 Forbidden')
+        res.end(JSON.stringify({error: 'Invalid token issuer'}))
+      })
       return
     }
 
@@ -77,8 +83,10 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
 
     if (!rawBody) {
       console.log('[MCP] Parse error: Empty body')
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'Parse error'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(JSON.stringify({error: 'Parse error'}))
+      })
       return
     }
 
@@ -87,20 +95,48 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
 
     if (body.jsonrpc !== '2.0' || !body.method) {
       console.log('[MCP] Invalid JSON-RPC request')
-      res.writeStatus('400 Bad Request')
-      res.end(
-        JSON.stringify({
-          jsonrpc: '2.0',
-          error: {code: -32600, message: 'Invalid Request'},
-          id: null
-        })
-      )
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            error: {code: -32600, message: 'Invalid Request'},
+            id: null
+          })
+        )
+      })
       return
     }
 
-    // 3. Dispatch Command
+    // 3. Setup database connection and get userId
     const db = getKysely() as unknown as Kysely<DB>
     const userId = decoded.sub
+
+    // 4. Check if MCP is enabled for user's organization
+    const userOrg = await (db as any)
+      .selectFrom('OrganizationUser')
+      .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
+      .select(['Organization.id', 'Organization.mcpEnabled'])
+      .where('OrganizationUser.userId', '=', userId)
+      .executeTakeFirst()
+
+    if (!userOrg || !userOrg.mcpEnabled) {
+      console.log('[MCP] MCP is disabled for this organization')
+      res.cork(() => {
+        res.writeStatus('403 Forbidden')
+        res.writeHeader('Content-Type', 'application/json')
+        res.end(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            error: {code: -32000, message: 'MCP server is disabled for this organization'},
+            id: body.id || null
+          })
+        )
+      })
+      return
+    }
+
+    // 5. Dispatch Command
     let result: any
 
     switch (body.method) {
@@ -109,8 +145,7 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
         result = {
           protocolVersion: '2025-03-26',
           capabilities: {
-            resources: {},
-            tools: {}
+            resources: {}
           },
           serverInfo: {
             name: 'Parabol MCP Server',
@@ -122,516 +157,516 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
       case 'notifications/initialized': {
         // Client notification that initialization is complete
         // No response needed for notifications
-        res.writeStatus('200 OK')
-        res.writeHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify({jsonrpc: '2.0'}))
+        res.cork(() => {
+          res.writeStatus('200 OK')
+          res.writeHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({jsonrpc: '2.0'}))
+        })
         return
       }
-      case 'tools/list': {
-        result = {
-          tools: [
-            {
-              name: 'list_org_users',
-              description: 'List all users in your organization',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  limit: {
-                    type: 'number',
-                    description: 'Maximum number of users to return (default: 50)'
-                  },
-                  cursor: {type: 'string', description: 'Pagination cursor'}
-                }
-              }
-            },
-            {
-              name: 'list_org_teams',
-              description: 'List all teams in your organization',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  limit: {
-                    type: 'number',
-                    description: 'Maximum number of teams to return (default: 50)'
-                  }
-                }
-              }
-            },
-            {
-              name: 'list_org_meeting_history',
-              description: 'List meeting history for your organization',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  teamId: {type: 'string', description: 'Filter by team ID (optional)'},
-                  limit: {
-                    type: 'number',
-                    description: 'Maximum number of meetings to return (default: 50)'
-                  }
-                }
-              }
-            },
-            {
-              name: 'read_user',
-              description: 'Get detailed information about a specific user',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  userId: {type: 'string', description: 'User ID'}
-                },
-                required: ['userId']
-              }
-            },
-            {
-              name: 'read_team',
-              description: 'Get detailed information about a specific team',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  teamId: {type: 'string', description: 'Team ID'}
-                },
-                required: ['teamId']
-              }
-            },
-            {
-              name: 'read_meeting',
-              description: 'Get detailed information about a specific meeting in markdown format',
-              inputSchema: {
-                type: 'object',
-                properties: {
-                  meetingId: {type: 'string', description: 'Meeting ID'}
-                },
-                required: ['meetingId']
-              }
-            }
-          ]
-        }
-        break
-      }
-      case 'tools/call': {
-        const {name: toolName, arguments: toolArgs} = body.params || {}
-        if (!toolName) throw new Error('Tool name is required')
 
-        let toolResult: any
-
-        switch (toolName) {
-          case 'list_org_users': {
-            const {limit = 50, cursor} = toolArgs || {}
-            const userOrg = await (db as any)
-              .selectFrom('OrganizationUser')
-              .select('organizationId')
-              .where('userId', '=', userId)
-              .executeTakeFirst()
-            if (!userOrg) throw new Error('User does not belong to any organization')
-
-            let query = (db as any)
-              .selectFrom('OrganizationUser')
-              .innerJoin('User', 'OrganizationUser.userId', 'User.id')
-              .select(['User.id', 'User.name', 'User.email', 'OrganizationUser.role'])
-              .where('OrganizationUser.organizationId', '=', userOrg.organizationId)
-              .limit(limit)
-
-            if (cursor) query = query.where('User.id', '>', cursor)
-            toolResult = {users: await query.execute()}
-            break
-          }
-          case 'list_org_teams': {
-            const {limit = 50} = toolArgs || {}
-            const userOrg = await (db as any)
-              .selectFrom('OrganizationUser')
-              .select('organizationId')
-              .where('userId', '=', userId)
-              .executeTakeFirst()
-            if (!userOrg) throw new Error('User does not belong to any organization')
-
-            toolResult = {
-              teams: await (db as any)
-                .selectFrom('Team')
-                .select(['id', 'name', 'description', 'createdAt'])
-                .where('orgId', '=', userOrg.organizationId)
-                .limit(limit)
-                .execute()
-            }
-            break
-          }
-          case 'list_org_meeting_history': {
-            const {teamId, limit = 50} = toolArgs || {}
-            const userOrg = await (db as any)
-              .selectFrom('OrganizationUser')
-              .select('organizationId')
-              .where('userId', '=', userId)
-              .executeTakeFirst()
-            if (!userOrg) throw new Error('User does not belong to any organization')
-
-            let query = (db as any)
-              .selectFrom('TimelineEvent')
-              .select(['id', 'type', 'createdAt as date', 'teamId'])
-              .where('organizationId', '=', userOrg.organizationId)
-              .where('type', 'in', ['retroComplete', 'pokerComplete'])
-              .orderBy('createdAt', 'desc')
-              .limit(limit)
-
-            if (teamId) query = query.where('teamId', '=', teamId)
-            toolResult = {meetings: await query.execute()}
-            break
-          }
-          case 'read_user': {
-            const {userId: targetUserId} = toolArgs || {}
-            if (!targetUserId) throw new Error('userId is required')
-            toolResult = {
-              user: await (db as any)
-                .selectFrom('User')
-                .selectAll()
-                .where('id', '=', targetUserId)
-                .executeTakeFirst()
-            }
-            break
-          }
-          case 'read_team': {
-            const {teamId} = toolArgs || {}
-            if (!teamId) throw new Error('teamId is required')
-
-            const team = await (db as any)
-              .selectFrom('Team')
-              .selectAll()
-              .where('id', '=', teamId)
-              .executeTakeFirst()
-
-            if (!team) {
-              toolResult = {team: null}
-              break
-            }
-
-            const members = await (db as any)
-              .selectFrom('TeamMember')
-              .innerJoin('User', 'TeamMember.userId', 'User.id')
-              .select(['User.id', 'User.name', 'User.email', 'TeamMember.roles'])
-              .where('TeamMember.teamId', '=', teamId)
-              .execute()
-
-            toolResult = {team: {...team, members}}
-            break
-          }
-          case 'read_meeting': {
-            const {meetingId} = toolArgs || {}
-            if (!meetingId) throw new Error('meetingId is required')
-
-            const meeting = await (db as any)
-              .selectFrom('NewMeeting')
-              .selectAll()
-              .where('id', '=', meetingId)
-              .executeTakeFirst()
-
-            if (!meeting) throw new Error('Meeting not found')
-
-            const reflections = await (db as any)
-              .selectFrom('RetroReflection')
-              .selectAll()
-              .where('meetingId', '=', meetingId)
-              .execute()
-
-            const discussions = await (db as any)
-              .selectFrom('Discussion')
-              .selectAll()
-              .where('meetingId', '=', meetingId)
-              .execute()
-
-            const tasks = await (db as any)
-              .selectFrom('Task')
-              .selectAll()
-              .where('meetingId', '=', meetingId)
-              .execute()
-
-            let markdown = `# ${meeting.name || 'Untitled Meeting'}\n`
-            markdown += `Date: ${meeting.createdAt}\n\n`
-            markdown += `## Reflections\n`
-            if (reflections.length === 0) {
-              markdown += `No reflections.\n`
-            } else {
-              reflections.forEach((r: any) => {
-                markdown += `- ${r.plaintextContent || r.content}\n`
-              })
-            }
-            markdown += `\n## Discussions\n`
-            if (discussions.length === 0) {
-              markdown += `No discussions.\n`
-            } else {
-              discussions.forEach((d: any) => {
-                markdown += `### ${d.title}\n`
-              })
-            }
-            markdown += `\n## Tasks\n`
-            if (tasks.length === 0) {
-              markdown += `No tasks created.\n`
-            } else {
-              tasks.forEach((t: any) => {
-                markdown += `- [ ] ${t.plaintextContent || t.content} (Assigned to: ${t.userId || 'Unassigned'})\n`
-              })
-            }
-
-            toolResult = {meeting: {id: meetingId, name: meeting.name, markdown}}
-            break
-          }
-          default:
-            throw new Error(`Unknown tool: ${toolName}`)
-        }
-
-        result = {content: [{type: 'text', text: JSON.stringify(toolResult, null, 2)}]}
-        break
-      }
       case 'resources/list': {
-        result = {resources: []}
+        // Return only listed resources based on org settings
+        const orgIds = await (db as any)
+          .selectFrom('OrganizationUser')
+          .select('orgId')
+          .where('userId', '=', userId)
+          .execute()
+
+        if (orgIds.length === 0) {
+          result = {resources: []}
+          break
+        }
+
+        // Get org settings for the first org (for simplicity, could be extended for multiple orgs)
+        const org = await (db as any)
+          .selectFrom('Organization')
+          .select(['id', 'mcpResources' as any])
+          .where('id', '=', orgIds[0].orgId)
+          .executeTakeFirst()
+
+        const mcpResources = org?.mcpResources || {
+          organizations: false,
+          teams: false,
+          pages: false
+        }
+
+        const resources: any[] = []
+
+        if (mcpResources.organizations) {
+          resources.push({
+            uri: 'parabol://me/organizations',
+            name: 'My Organizations',
+            description: 'List of organizations you belong to',
+            mimeType: 'application/json'
+          })
+        }
+
+        if (mcpResources.teams) {
+          resources.push({
+            uri: 'parabol://teams',
+            name: 'My Teams',
+            description: 'List of teams you have access to',
+            mimeType: 'application/json'
+          })
+        }
+
+        if (mcpResources.pages) {
+          resources.push({
+            uri: 'parabol://pages',
+            name: 'My Pages',
+            description: 'Shared and private pages you have access to',
+            mimeType: 'application/json'
+          })
+        }
+
+        result = {resources}
+        break
+      }
+      case 'resources/read': {
+        const {uri} = body.params || {}
+        if (!uri) throw new Error('Resource URI is required')
+
+        // Parse URI: parabol://path
+        const parsedUri = uri.replace('parabol://', '')
+        const segments = parsedUri.split('/')
+
+        console.log(`[MCP] Reading resource: ${uri}`)
+
+        // Route to appropriate handler based on URI
+        if (segments[0] === 'me' && segments[1] === 'organizations' && segments.length === 2) {
+          // /me/organizations - return list of org resources
+          const orgs = await (db as any)
+            .selectFrom('OrganizationUser')
+            .innerJoin('Organization', 'OrganizationUser.orgId', 'Organization.id')
+            .select(['Organization.id', 'Organization.name'])
+            .where('OrganizationUser.userId', '=', userId)
+            .execute()
+
+          const orgResources = await Promise.all(
+            orgs.map(async (org: any) => {
+              const [allUsers, activeUsers] = await Promise.all([
+                (db as any)
+                  .selectFrom('OrganizationUser')
+                  .select(({fn}) => fn.count('userId').as('count'))
+                  .where('orgId', '=', org.id)
+                  .executeTakeFirst(),
+                (db as any)
+                  .selectFrom('OrganizationUser')
+                  .innerJoin('User', 'OrganizationUser.userId', 'User.id')
+                  .select(({fn}) => fn.count('User.id').as('count'))
+                  .where('OrganizationUser.orgId', '=', org.id)
+                  .where('User.inactive', '=', false)
+                  .executeTakeFirst()
+              ])
+
+              return {
+                uri: `parabol://me/organizations/${org.id}`,
+                name: org.name,
+                description: `${org.name} (${allUsers.count} total users, ${activeUsers.count} active)`,
+                mimeType: 'application/json'
+              }
+            })
+          )
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({resources: orgResources}, null, 2)
+              }
+            ]
+          }
+        } else if (
+          segments[0] === 'me' &&
+          segments[1] === 'organizations' &&
+          segments.length === 3
+        ) {
+          // /me/organizations/{id} - return sub-resources
+          const orgId = segments[2]
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify(
+                  {
+                    resources: [
+                      {
+                        uri: `parabol://me/organizations/${orgId}/teams`,
+                        name: 'Organization Teams',
+                        description: 'Teams in this organization',
+                        mimeType: 'application/json'
+                      },
+                      {
+                        uri: `parabol://me/organizations/${orgId}/members`,
+                        name: 'Organization Members',
+                        description: 'Members of this organization',
+                        mimeType: 'application/json'
+                      }
+                    ]
+                  },
+                  null,
+                  2
+                )
+              }
+            ]
+          }
+        } else if (
+          segments[0] === 'me' &&
+          segments[1] === 'organizations' &&
+          segments[2] &&
+          segments[3] === 'teams'
+        ) {
+          // /me/organizations/{id}/teams - return list of team resources
+          const orgId = segments[2]
+          const teams = await (db as any)
+            .selectFrom('Team')
+            .select(['id', 'name', 'createdAt'])
+            .where('orgId', '=', orgId)
+            .where('isArchived', '=', false)
+            .execute()
+
+          const teamResources = await Promise.all(
+            teams.map(async (team: any) => {
+              // Get last meeting date
+              const lastMeeting = await (db as any)
+                .selectFrom('NewMeeting')
+                .select('createdAt')
+                .where('teamId', '=', team.id)
+                .orderBy('createdAt', 'desc')
+                .limit(1)
+                .executeTakeFirst()
+
+              const createdDate = new Date(team.createdAt).toISOString().split('T')[0]
+              const lastMetDate = lastMeeting
+                ? new Date(lastMeeting.createdAt).toISOString().split('T')[0]
+                : 'Never'
+
+              return {
+                uri: `parabol://teams/${team.id}`,
+                name: team.name,
+                description: `Created: ${createdDate}, Last met: ${lastMetDate}`,
+                mimeType: 'application/json'
+              }
+            })
+          )
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({resources: teamResources}, null, 2)
+              }
+            ]
+          }
+        } else if (
+          segments[0] === 'me' &&
+          segments[1] === 'organizations' &&
+          segments[2] &&
+          segments[3] === 'members'
+        ) {
+          // /me/organizations/{id}/members - return member data
+          const orgId = segments[2]
+          const members = await (db as any)
+            .selectFrom('OrganizationUser')
+            .innerJoin('User', 'OrganizationUser.userId', 'User.id')
+            .select([
+              'User.id',
+              'User.name',
+              'User.email',
+              'OrganizationUser.role',
+              'User.lastSeenAt'
+            ])
+            .where('OrganizationUser.orgId', '=', orgId)
+            .execute()
+
+          const membersData = members.map((member: any) => ({
+            id: member.id,
+            name: member.name,
+            email: member.email,
+            role: member.role || null,
+            lastSeenAt: member.lastSeenAt ? new Date(member.lastSeenAt).toISOString() : null
+          }))
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({members: membersData}, null, 2)
+              }
+            ]
+          }
+        } else if (segments[0] === 'teams' && segments.length === 1) {
+          // /teams - return list of team resources accessible to user
+          const teamMembers = await (db as any)
+            .selectFrom('TeamMember')
+            .innerJoin('Team', 'TeamMember.teamId', 'Team.id')
+            .select(['Team.id', 'Team.name'])
+            .where('TeamMember.userId', '=', userId)
+            .where('TeamMember.isNotRemoved', '=', true)
+            .where('Team.isArchived', '=', false)
+            .execute()
+
+          const teamResources = teamMembers.map((team: any) => ({
+            uri: `parabol://teams/${team.id}`,
+            name: team.name,
+            description: `Team: ${team.name}`,
+            mimeType: 'application/json'
+          }))
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({resources: teamResources}, null, 2)
+              }
+            ]
+          }
+        } else if (segments[0] === 'teams' && segments.length === 2) {
+          // /teams/{id} - return sub-resources
+          const teamId = segments[1]
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify(
+                  {
+                    resources: [
+                      {
+                        uri: `parabol://teams/${teamId}/activity`,
+                        name: 'Team Activity',
+                        description: 'Active meetings for this team',
+                        mimeType: 'application/json'
+                      },
+                      {
+                        uri: `parabol://teams/${teamId}/pages`,
+                        name: 'Team Pages',
+                        description: 'Top-level pages for this team',
+                        mimeType: 'application/json'
+                      }
+                    ]
+                  },
+                  null,
+                  2
+                )
+              }
+            ]
+          }
+        } else if (segments[0] === 'teams' && segments[2] === 'activity') {
+          // /teams/{id}/activity - return active meetings
+          const teamId = segments[1]
+          const meetings = await (db as any)
+            .selectFrom('NewMeeting')
+            .select(['id', 'name', 'meetingType', 'createdAt'])
+            .where('teamId', '=', teamId)
+            .where('endedAt', 'is', null)
+            .execute()
+
+          const meetingsData = meetings.map((meeting: any) => ({
+            id: meeting.id,
+            name: meeting.name,
+            type: meeting.meetingType,
+            createdAt: new Date(meeting.createdAt).toISOString()
+          }))
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({meetings: meetingsData}, null, 2)
+              }
+            ]
+          }
+        } else if (segments[0] === 'teams' && segments[2] === 'pages') {
+          // /teams/{id}/pages - return team pages
+          const teamId = segments[1]
+          const pages = await (db as any)
+            .selectFrom('Page')
+            .select(['id', 'title'])
+            .where('teamId', '=', teamId)
+            .where('parentPageId', 'is', null)
+            .where('deletedAt', 'is', null)
+            .execute()
+
+          const pageResources = pages.map((page: any) => ({
+            uri: `parabol://pages/${page.id}`,
+            name: page.title,
+            description: `Page: ${page.title}`,
+            mimeType: 'application/json'
+          }))
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({resources: pageResources}, null, 2)
+              }
+            ]
+          }
+        } else if (segments[0] === 'pages' && segments.length === 1) {
+          // /pages - return shared and private pages
+          const pages = await (db as any)
+            .selectFrom('Page')
+            .innerJoin('PageAccess', 'Page.id', 'PageAccess.pageId')
+            .select(['Page.id', 'Page.title', 'PageAccess.role as access'])
+            .where('PageAccess.userId', '=', userId)
+            .where('Page.parentPageId', 'is', null)
+            .where('Page.deletedAt', 'is', null)
+            .execute()
+
+          const pageResources = pages.map((page: any) => ({
+            uri: `parabol://pages/${page.id}`,
+            name: page.title,
+            description: `${page.title} (${page.access})`,
+            mimeType: 'application/json'
+          }))
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify({resources: pageResources}, null, 2)
+              }
+            ]
+          }
+        } else if (segments[0] === 'pages' && segments.length === 2) {
+          // /pages/{id} - return page content, sharing, and sub-pages
+          const pageId = segments[1]
+          const page = await (db as any)
+            .selectFrom('Page')
+            .select(['id', 'title', 'plaintextContent as content', 'teamId'])
+            .where('id', '=', pageId)
+            .executeTakeFirst()
+
+          if (!page) throw new Error('Page not found')
+
+          // Get sharing settings
+          const [userAccess, teamAccess, orgAccess] = await Promise.all([
+            (db as any)
+              .selectFrom('PageUserAccess')
+              .select(['userId', 'role'])
+              .where('pageId', '=', pageId)
+              .execute(),
+            (db as any)
+              .selectFrom('PageTeamAccess')
+              .select(['teamId', 'role'])
+              .where('pageId', '=', pageId)
+              .execute(),
+            (db as any)
+              .selectFrom('PageOrganizationAccess')
+              .select(['orgId', 'role'])
+              .where('pageId', '=', pageId)
+              .execute()
+          ])
+
+          // Get sub-pages
+          const subPages = await (db as any)
+            .selectFrom('Page')
+            .select(['id', 'title'])
+            .where('parentPageId', '=', pageId)
+            .where('deletedAt', 'is', null)
+            .execute()
+
+          const subPageResources = subPages.map((subPage: any) => ({
+            uri: `parabol://pages/${subPage.id}`,
+            name: subPage.title,
+            description: `Sub-page: ${subPage.title}`,
+            mimeType: 'application/json'
+          }))
+
+          const sharing = [
+            ...userAccess.map((access: any) => ({
+              userId: access.userId,
+              access: access.role
+            })),
+            ...teamAccess.map((access: any) => ({
+              teamId: access.teamId,
+              access: access.role
+            })),
+            ...orgAccess.map((access: any) => ({
+              organizationId: access.orgId,
+              access: access.role
+            }))
+          ]
+
+          const pageData = {
+            id: page.id,
+            title: page.title,
+            content: page.content,
+            teamId: page.teamId,
+            sharing,
+            subPages: subPageResources
+          }
+
+          result = {
+            contents: [
+              {
+                uri,
+                mimeType: 'application/json',
+                text: JSON.stringify(pageData, null, 2)
+              }
+            ]
+          }
+        } else {
+          throw new Error(`Unknown resource URI: ${uri}`)
+        }
         break
       }
       case 'resources/templates/list': {
         result = {resourceTemplates: []}
         break
       }
-      case 'list_org_users': {
-        const {limit = 50, cursor} = body.params || {}
 
-        // Get user's organization
-        const userOrg = await (db as any)
-          .selectFrom('OrganizationUser')
-          .select('organizationId')
-          .where('userId', '=', userId)
-          .executeTakeFirst()
-
-        if (!userOrg) {
-          throw new Error('User does not belong to any organization')
-        }
-
-        let query = (db as any)
-          .selectFrom('OrganizationUser')
-          .innerJoin('User', 'OrganizationUser.userId', 'User.id')
-          .select(['User.id', 'User.name', 'User.email', 'OrganizationUser.role'])
-          .where('OrganizationUser.organizationId', '=', userOrg.organizationId)
-          .limit(limit)
-
-        if (cursor) {
-          query = query.where('User.id', '>', cursor)
-        }
-
-        const users = await query.execute()
-        result = {users}
-        break
-      }
-      case 'list_org_teams': {
-        const {limit = 50} = body.params || {}
-
-        const userOrg = await (db as any)
-          .selectFrom('OrganizationUser')
-          .select('organizationId')
-          .where('userId', '=', userId)
-          .executeTakeFirst()
-
-        if (!userOrg) {
-          throw new Error('User does not belong to any organization')
-        }
-
-        const teams = await (db as any)
-          .selectFrom('Team')
-          .select(['id', 'name', 'description', 'createdAt'])
-          .where('orgId', '=', userOrg.organizationId)
-          .limit(limit)
-          .execute()
-
-        result = {teams}
-        break
-      }
-      case 'list_org_meeting_history': {
-        const {teamId, limit = 50} = body.params || {}
-
-        const userOrg = await (db as any)
-          .selectFrom('OrganizationUser')
-          .select('organizationId')
-          .where('userId', '=', userId)
-          .executeTakeFirst()
-
-        if (!userOrg) {
-          throw new Error('User does not belong to any organization')
-        }
-
-        let query = (db as any)
-          .selectFrom('TimelineEvent')
-          .select(['id', 'type', 'createdAt as date', 'teamId'])
-          .where('organizationId', '=', userOrg.organizationId)
-          .where('type', 'in', ['retroComplete', 'pokerComplete'])
-          .orderBy('createdAt', 'desc')
-          .limit(limit)
-
-        if (teamId) {
-          query = query.where('teamId', '=', teamId)
-        }
-
-        const meetings = await query.execute()
-        result = {meetings}
-        break
-      }
-      case 'read_user': {
-        const {userId: targetUserId} = body.params || {}
-        if (!targetUserId) throw new Error('userId is required')
-
-        const user = await (db as any)
-          .selectFrom('User')
-          .selectAll()
-          .where('id', '=', targetUserId)
-          .executeTakeFirst()
-
-        result = {user}
-        break
-      }
-      case 'read_team': {
-        const {teamId} = body.params || {}
-        if (!teamId) throw new Error('teamId is required')
-
-        const team = await (db as any)
-          .selectFrom('Team')
-          .selectAll()
-          .where('id', '=', teamId)
-          .executeTakeFirst()
-
-        if (!team) {
-          result = {team: null}
-          break
-        }
-
-        // Get members
-        const members = await (db as any)
-          .selectFrom('TeamMember')
-          .innerJoin('User', 'TeamMember.userId', 'User.id')
-          .select(['User.id', 'User.name', 'User.email', 'TeamMember.roles'])
-          .where('TeamMember.teamId', '=', teamId)
-          .execute()
-
-        result = {
-          team: {
-            ...team,
-            members
-          }
-        }
-        break
-      }
-      case 'read_meeting': {
-        const {meetingId} = body.params || {}
-        if (!meetingId) throw new Error('meetingId is required')
-
-        // Try to find the meeting
-        // We check NewMeeting table which stores active and some completed meetings?
-        // Or maybe we need to check specific tables based on type.
-        // For now, let's query NewMeeting as it seems to be the main table.
-        const meeting = await (db as any)
-          .selectFrom('NewMeeting')
-          .selectAll()
-          .where('id', '=', meetingId)
-          .executeTakeFirst()
-
-        if (!meeting) {
-          throw new Error('Meeting not found')
-        }
-
-        // Fetch Reflections
-        const reflections = await (db as any)
-          .selectFrom('RetroReflection')
-          .selectAll()
-          .where('meetingId', '=', meetingId)
-          .execute()
-
-        // Fetch Discussions
-        const discussions = await (db as any)
-          .selectFrom('Discussion')
-          .selectAll()
-          .where('meetingId', '=', meetingId)
-          .execute()
-
-        // Fetch Tasks (associated with meeting or discussions)
-        // Tasks usually have meetingId or discussionId
-        const tasks = await (db as any)
-          .selectFrom('Task')
-          .selectAll()
-          .where('meetingId', '=', meetingId)
-          .execute()
-
-        // Format as Markdown
-        let markdown = `# ${meeting.name || 'Untitled Meeting'}\n`
-        markdown += `Date: ${meeting.createdAt}\n\n`
-
-        markdown += `## Reflections\n`
-        if (reflections.length === 0) {
-          markdown += `No reflections.\n`
-        } else {
-          reflections.forEach((r: any) => {
-            markdown += `- ${r.plaintextContent || r.content}\n`
-          })
-        }
-        markdown += `\n`
-
-        markdown += `## Discussions\n`
-        if (discussions.length === 0) {
-          markdown += `No discussions.\n`
-        } else {
-          discussions.forEach((d: any) => {
-            markdown += `### ${d.title}\n`
-            // Find tasks for this discussion?
-            // Assuming tasks might be linked to discussionId if schema supports it,
-            // but we fetched by meetingId.
-          })
-        }
-        markdown += `\n`
-
-        markdown += `## Tasks\n`
-        if (tasks.length === 0) {
-          markdown += `No tasks created.\n`
-        } else {
-          tasks.forEach((t: any) => {
-            markdown += `- [ ] ${t.plaintextContent || t.content} (Assigned to: ${t.userId || 'Unassigned'})\n`
-          })
-        }
-
-        result = {
-          meeting: {
-            id: meetingId,
-            name: meeting.name,
-            markdown
-          }
-        }
-        break
-      }
       default:
-        res.writeStatus('200 OK')
-        res.writeHeader('Content-Type', 'application/json')
-        res.end(
-          JSON.stringify({
-            jsonrpc: '2.0',
-            error: {code: -32601, message: 'Method not found'},
-            id: body.id
-          })
-        )
+        res.cork(() => {
+          res.writeStatus('200 OK')
+          res.writeHeader('Content-Type', 'application/json')
+          res.end(
+            JSON.stringify({
+              jsonrpc: '2.0',
+              error: {code: -32601, message: 'Method not found'},
+              id: body.id
+            })
+          )
+        })
         return
     }
 
     // 4. Send Response
     console.log(`[MCP] Sending Response:`, JSON.stringify(result, null, 2))
-    res.writeStatus('200 OK')
-    res.writeHeader('Content-Type', 'application/json')
-    res.end(
-      JSON.stringify({
-        jsonrpc: '2.0',
-        result,
-        id: body.id
-      })
-    )
-  } catch (error: any) {
-    Logger.error('MCP Error', error)
-    if (!res.aborted) {
-      res.writeStatus('500 Internal Server Error')
+    res.cork(() => {
+      res.writeStatus('200 OK')
+      res.writeHeader('Content-Type', 'application/json')
       res.end(
         JSON.stringify({
           jsonrpc: '2.0',
-          error: {code: -32603, message: 'Internal error', data: error.message},
-          id: null
+          result,
+          id: body.id
         })
       )
+    })
+  } catch (error: any) {
+    Logger.error('MCP Error', error)
+    if (!res.aborted) {
+      res.cork(() => {
+        res.writeStatus('500 Internal Server Error')
+        res.end(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            error: {code: -32603, message: 'Internal error', data: error.message},
+            id: null
+          })
+        )
+      })
     }
   }
 }

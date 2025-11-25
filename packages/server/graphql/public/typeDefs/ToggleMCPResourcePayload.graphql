@@ -1,0 +1,8 @@
+union ToggleMCPResourcePayload = ErrorPayload | ToggleMCPResourceSuccess
+
+type ToggleMCPResourceSuccess {
+  """
+  The organization with updated MCP resource settings
+  """
+  organization: Organization!
+}

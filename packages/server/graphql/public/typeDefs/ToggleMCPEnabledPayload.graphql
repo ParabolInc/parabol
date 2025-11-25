@@ -1,0 +1,8 @@
+union ToggleMCPEnabledPayload = ErrorPayload | ToggleMCPEnabledSuccess
+
+type ToggleMCPEnabledSuccess {
+  """
+  The organization with updated MCP settings
+  """
+  organization: Organization!
+}

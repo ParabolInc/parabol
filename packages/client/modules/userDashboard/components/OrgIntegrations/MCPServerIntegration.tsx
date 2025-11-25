@@ -1,114 +1,95 @@
-import {Dns as DnsIcon, ExpandLess, ExpandMore, Search as SearchIcon} from '@mui/icons-material'
-import {useState} from 'react'
-import BasicInput from '../../../../components/InputField/BasicInput'
+import {Dns as DnsIcon} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
+import {useMemo} from 'react'
+import {useFragment} from 'react-relay'
+import {MCPServerIntegration_organization$key} from '~/__generated__/MCPServerIntegration_organization.graphql'
 import Toggle from '../../../../components/Toggle/Toggle'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useMutationProps from '../../../../hooks/useMutationProps'
+import ToggleMCPEnabledMutation from '../../../../mutations/ToggleMCPEnabledMutation'
+import ToggleMCPResourceMutation from '../../../../mutations/ToggleMCPResourceMutation'
 
-interface Command {
+interface Resource {
   id: string
   name: string
   description: string
   enabled: boolean
 }
 
-interface CommandGroup {
-  name: string
-  commands: Command[]
-}
-
-const INITIAL_GROUPS: CommandGroup[] = [
+const RESOURCE_DEFINITIONS: Omit<Resource, 'enabled'>[] = [
   {
-    name: 'list',
-    commands: [
-      {
-        id: 'list_org_users',
-        name: 'list_org_users',
-        description: 'Retrieve a list of all users in the specified organization',
-        enabled: true
-      },
-      {
-        id: 'list_org_teams',
-        name: 'list_org_teams',
-        description: 'Retrieve a list of all teams in the specified organization',
-        enabled: true
-      },
-      {
-        id: 'list_org_meeting_history',
-        name: 'list_org_meeting_history',
-        description:
-          'Retrieve a list of all historical meetings across teams in the specified organization',
-        enabled: true
-      }
-    ]
+    id: 'organizations',
+    name: 'Organizations',
+    description: 'Access organization info, teams, and members'
   },
   {
-    name: 'read',
-    commands: [
-      {
-        id: 'read_user',
-        name: 'read_user',
-        description: 'Read detailed information about a specific user',
-        enabled: true
-      },
-      {
-        id: 'read_team',
-        name: 'read_team',
-        description:
-          'Read detailed information about a specific team, including its members, unarchived tasks, current open meetings and recent completed meeting history',
-        enabled: true
-      },
-      {
-        id: 'read_meeting',
-        name: 'read_meeting',
-        description: 'Read detailed information about a specific open or closed meeting',
-        enabled: true
-      }
-    ]
+    id: 'teams',
+    name: 'Teams',
+    description: 'Access team details, meetings, and pages'
+  },
+  {
+    id: 'pages',
+    name: 'Pages',
+    description: 'Access shared and private pages content'
   }
 ]
 
-const MCPServerIntegration = () => {
-  const [enabled, setEnabled] = useState(false)
-  const [groups, setGroups] = useState(INITIAL_GROUPS)
-  const [search, setSearch] = useState('')
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    list: true,
-    read: true
-  })
+interface Props {
+  organizationRef: MCPServerIntegration_organization$key
+}
 
-  const toggleCommand = (groupName: string, commandId: string) => {
-    setGroups(
-      groups.map((group) => {
-        if (group.name !== groupName) return group
-        return {
-          ...group,
-          commands: group.commands.map((cmd) =>
-            cmd.id === commandId ? {...cmd, enabled: !cmd.enabled} : cmd
-          )
-        }
-      })
+const MCPServerIntegration = (props: Props) => {
+  const {organizationRef} = props
+  const organization = useFragment(
+    graphql`
+      fragment MCPServerIntegration_organization on Organization {
+        id
+        mcpEnabled
+        mcpResources
+      }
+    `,
+    organizationRef
+  )
+
+  const atmosphere = useAtmosphere()
+  const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
+
+  const resources: Resource[] = useMemo(() => {
+    const mcpResources = organization.mcpResources
+      ? JSON.parse(organization.mcpResources)
+      : {organizations: false, teams: false, pages: false}
+
+    return RESOURCE_DEFINITIONS.map((def) => ({
+      ...def,
+      enabled: mcpResources[def.id] || false
+    }))
+  }, [organization.mcpResources])
+
+  const toggleEnabled = () => {
+    if (submitting) return
+    submitMutation()
+    ToggleMCPEnabledMutation(
+      atmosphere,
+      {orgId: organization.id, enabled: !organization.mcpEnabled},
+      {onCompleted, onError}
     )
   }
 
-  const toggleGroup = (groupName: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [groupName]: !prev[groupName]
-    }))
+  const toggleResource = (resourceId: string) => {
+    if (submitting) return
+    const resource = resources.find((r) => r.id === resourceId)
+    if (!resource) return
+
+    submitMutation()
+    ToggleMCPResourceMutation(
+      atmosphere,
+      {orgId: organization.id, resource: resourceId, enabled: !resource.enabled},
+      {onCompleted, onError}
+    )
   }
 
-  const filteredGroups = groups
-    .map((group) => ({
-      ...group,
-      commands: group.commands.filter(
-        (cmd) =>
-          cmd.name.toLowerCase().includes(search.toLowerCase()) ||
-          cmd.description.toLowerCase().includes(search.toLowerCase())
-      )
-    }))
-    .filter((group) => group.commands.length > 0)
-
-  const totalEnabled = groups.flatMap((g) => g.commands).filter((c) => c.enabled).length
-  const totalCommands = groups.flatMap((g) => g.commands).length
+  const totalEnabled = resources.filter((r) => r.enabled).length
+  const totalResources = resources.length
 
   return (
     <div className='my-4 flex flex-col rounded-sm bg-white p-6 shadow-card'>
@@ -122,76 +103,30 @@ const MCPServerIntegration = () => {
               Model Context Protocol (MCP) Server
             </h3>
             <p className='text-slate-500 text-sm'>
-              Enable Parabol as an MCP server and configure command permissions
+              Enable Parabol as an MCP server and configure resource permissions
             </p>
           </div>
         </div>
-        <Toggle active={enabled} onClick={() => setEnabled(!enabled)} />
+        <Toggle active={organization.mcpEnabled} onClick={toggleEnabled} />
       </div>
 
-      {enabled && (
+      {organization.mcpEnabled && (
         <div className='space-y-6'>
           <div className='font-medium text-slate-500 text-sm'>
-            {totalEnabled} of {totalCommands} commands enabled
+            {totalEnabled} of {totalResources} resources enabled
           </div>
 
-          <div className='relative'>
-            <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400'>
-              <SearchIcon fontSize='small' />
-            </div>
-            <BasicInput
-              name='search'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder='Search commands...'
-              error={undefined}
-              className='w-full pl-10'
-            />
-          </div>
-
-          <div className='space-y-4'>
-            {filteredGroups.map((group) => (
-              <div key={group.name} className='overflow-hidden rounded-md border border-slate-200'>
-                <div
-                  className='flex cursor-pointer items-center justify-between bg-slate-50 px-4 py-2 transition-colors hover:bg-slate-100'
-                  onClick={() => toggleGroup(group.name)}
-                >
-                  <div className='flex items-center gap-2'>
-                    <span className='inline-flex items-center rounded bg-blue-100 px-2 py-0.5 font-medium text-blue-800 text-xs'>
-                      {group.name}
-                    </span>
-                    <span className='font-medium text-slate-700 text-sm'>
-                      {group.commands.length} commands
-                    </span>
-                  </div>
-                  {expandedGroups[group.name] ? (
-                    <ExpandLess className='text-slate-400' />
-                  ) : (
-                    <ExpandMore className='text-slate-400' />
-                  )}
+          <div className='space-y-3'>
+            {resources.map((resource) => (
+              <div
+                key={resource.id}
+                className='flex items-center justify-between rounded-md border border-slate-200 px-4 py-3 hover:bg-slate-50'
+              >
+                <div>
+                  <div className='font-semibold text-slate-900 text-sm'>{resource.name}</div>
+                  <div className='text-slate-500 text-sm'>{resource.description}</div>
                 </div>
-
-                {expandedGroups[group.name] && (
-                  <div className='divide-y divide-slate-100'>
-                    {group.commands.map((cmd) => (
-                      <div
-                        key={cmd.id}
-                        className='flex items-center justify-between px-4 py-3 hover:bg-slate-50'
-                      >
-                        <div>
-                          <div className='inline-block rounded bg-slate-100 px-1.5 font-medium font-mono text-slate-700 text-sm'>
-                            {cmd.name}
-                          </div>
-                          <div className='mt-1 text-slate-500 text-sm'>{cmd.description}</div>
-                        </div>
-                        <Toggle
-                          active={cmd.enabled}
-                          onClick={() => toggleCommand(group.name, cmd.id)}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <Toggle active={resource.enabled} onClick={() => toggleResource(resource.id)} />
               </div>
             ))}
           </div>
@@ -204,7 +139,7 @@ const MCPServerIntegration = () => {
               </code>
             </div>
             <p className='mt-1 text-slate-500 text-sm'>
-              Connect your MCP client to this endpoint to access enabled commands
+              Connect your MCP client to this endpoint to access enabled resources
             </p>
           </div>
         </div>

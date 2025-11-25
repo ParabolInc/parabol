@@ -58,6 +58,7 @@ const query = graphql`
         ...OrgDetails_organization
         ...OrgTeams_organization
         ...OrgIntegrations_organization
+        ...AISettings_organization
         isBillingLeader
       }
     }
@@ -107,7 +108,11 @@ const Organization = (props: Props) => {
           path={`${match.url}/${AUTHENTICATION_PAGE}`}
           render={(p) => <Authentication {...p} orgId={orgId} />}
         />
-        <Route exact path={`${match.url}/${AI_SETTINGS_PAGE}`} render={() => <AISettings />} />
+        <Route
+          exact
+          path={`${match.url}/${AI_SETTINGS_PAGE}`}
+          render={() => <AISettings organizationRef={organization} />}
+        />
         <Route
           exact
           path={`${match.url}/${TEAMS_PAGE}`}

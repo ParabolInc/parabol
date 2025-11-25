@@ -1,0 +1,6 @@
+extend type Mutation {
+  """
+  Toggle MCP server enabled/disabled for an organization
+  """
+  toggleMCPEnabled(orgId: ID!, enabled: Boolean!): ToggleMCPEnabledPayload!
+}

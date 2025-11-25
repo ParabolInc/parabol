@@ -1,0 +1,6 @@
+extend type Mutation {
+  """
+  Toggle MCP resource access for an organization
+  """
+  toggleMCPResource(orgId: ID!, resource: String!, enabled: Boolean!): ToggleMCPResourcePayload!
+}

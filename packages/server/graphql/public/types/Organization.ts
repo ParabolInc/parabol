@@ -119,7 +119,13 @@ const Organization: OrganizationResolvers = {
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
-  }
+  },
+  oauthClientId: ({oauthClientId}) => oauthClientId || null,
+  oauthClientSecret: ({oauthClientSecret}) => oauthClientSecret || null,
+  oauthRedirectUris: ({oauthRedirectUris}) => oauthRedirectUris || [],
+  oauthScopes: ({oauthScopes}) => oauthScopes || [],
+  mcpEnabled: ({mcpEnabled}) => mcpEnabled || false,
+  mcpResources: ({mcpResources}) => (mcpResources ? JSON.stringify(mcpResources) : null)
 }
 
 export default Organization

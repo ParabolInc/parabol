@@ -12,4 +12,6 @@ type OrganizationSubscriptionPayload {
 	UpdateOrgPayload: UpdateOrgPayload
 	UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
 	UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
+	ToggleMCPEnabledSuccess: ToggleMCPEnabledSuccess
+	ToggleMCPResourceSuccess: ToggleMCPResourceSuccess
 }

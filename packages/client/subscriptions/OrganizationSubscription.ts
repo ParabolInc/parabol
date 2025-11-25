@@ -45,6 +45,12 @@ const subscription = graphql`
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
       }
+      ToggleMCPEnabledSuccess {
+        ...ToggleMCPEnabledMutation_organization @relay(mask: false)
+      }
+      ToggleMCPResourceSuccess {
+        ...ToggleMCPResourceMutation_organization @relay(mask: false)
+      }
     }
   }
 `
