@@ -12,7 +12,12 @@ import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
+import mcpHandler from './mcp/mcpHandler'
 import {metricsHandler} from './metricsHandler'
+import {
+  authorizationServerMetadataHandler,
+  protectedResourceMetadataHandler
+} from './oauth/metadataHandler'
 import tokenHandler from './oauth/tokenHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
@@ -75,6 +80,9 @@ const app = uws
   })
   .post('/saml/:domain', SAMLHandler)
   .post('/oauth/token', tokenHandler)
+  .post('/mcp', mcpHandler)
+  .get('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
+  .get('/.well-known/oauth-authorization-server', authorizationServerMetadataHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 

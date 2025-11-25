@@ -22,19 +22,20 @@ const INITIAL_GROUPS: CommandGroup[] = [
       {
         id: 'list_org_users',
         name: 'list_org_users',
-        description: 'Retrieve a list of all users in the organization',
+        description: 'Retrieve a list of all users in the specified organization',
         enabled: true
       },
       {
         id: 'list_org_teams',
-        name: 'listorg__teams',
-        description: 'Retrieve a list of all teams in the organization',
+        name: 'list_org_teams',
+        description: 'Retrieve a list of all teams in the specified organization',
         enabled: true
       },
       {
         id: 'list_org_meeting_history',
         name: 'list_org_meeting_history',
-        description: 'Retrieve a list of all historical meetings across teams',
+        description:
+          'Retrieve a list of all historical meetings across teams in the specified organization',
         enabled: true
       }
     ]
@@ -51,13 +52,14 @@ const INITIAL_GROUPS: CommandGroup[] = [
       {
         id: 'read_team',
         name: 'read_team',
-        description: 'Read detailed information about a specific team',
+        description:
+          'Read detailed information about a specific team, including its members, unarchived tasks, current open meetings and recent completed meeting history',
         enabled: true
       },
       {
         id: 'read_meeting',
         name: 'read_meeting',
-        description: 'Read detailed information about a specific meeting',
+        description: 'Read detailed information about a specific open or closed meeting',
         enabled: true
       }
     ]

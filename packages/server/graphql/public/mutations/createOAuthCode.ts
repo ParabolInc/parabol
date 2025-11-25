@@ -37,11 +37,15 @@ export default async function createOAuthCode(
     .executeTakeFirst()
 
   if (!org) {
-    throw new Error('Invalid client_id')
+    console.error(`OAuth Error: Client ID "${clientId}" not found in any organization.`)
+    throw new Error(`Invalid client_id: "${clientId}" not found.`)
   }
 
   if (!org.oauthRedirectUris || !org.oauthRedirectUris.includes(redirectUri)) {
-    throw new Error('Invalid redirect_uri')
+    console.error(
+      `OAuth Error: Redirect URI "${redirectUri}" not allowed for client "${clientId}". Allowed: ${JSON.stringify(org.oauthRedirectUris)}`
+    )
+    throw new Error(`Invalid redirect_uri: "${redirectUri}" is not registered for this client.`)
   }
 
   const code = new OAuthCode({
@@ -51,7 +55,12 @@ export default async function createOAuthCode(
     scopes
   })
 
-  await db.insertInto('OAuthCode').values(code).execute()
+  try {
+    await db.insertInto('OAuthCode').values(code).execute()
+  } catch (err) {
+    console.error('Error creating OAuth code:', err)
+    throw new Error('Failed to create authorization code')
+  }
 
   return {
     code: code.id,
