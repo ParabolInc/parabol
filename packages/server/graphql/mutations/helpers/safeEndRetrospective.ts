@@ -17,7 +17,6 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
-import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
@@ -27,15 +26,12 @@ import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   const {id: meetingId, teamId, recallBotId} = meeting
   const pg = getKysely()
 
   const [sentimentScore, transcriptResult] = await Promise.all([
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
-    dumpTranscriptToPage(recallBotId, meetingId, dataLoader),
-    generateRetroSummary(meetingId, dataLoader)
+    dumpTranscriptToPage(recallBotId, meetingId, dataLoader)
   ])
   const transcription = transcriptResult?.transcription
   await pg
@@ -51,8 +47,6 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-  const data = {meetingId}
-  publish(SubscriptionChannel.MEETING, meetingId, 'EndRetrospectiveSuccess', data, subOptions)
 }
 
 const safeEndRetrospective = async ({
@@ -116,10 +110,6 @@ const safeEndRetrospective = async ({
     removeEmptyTasks(meetingId),
     dataLoader.get('meetingTemplates').loadNonNull(templateId)
   ])
-  // wait for removeEmptyTasks before summarizeRetroMeeting
-  // don't await for the OpenAI response or it'll hang for a while when ending the retro
-  summarizeRetroMeeting(completedRetrospective, context)
-  analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventRetroComplete({
@@ -131,7 +121,10 @@ const safeEndRetrospective = async ({
   )
   const pg = getKysely()
   await pg.insertInto('TimelineEvent').values(events).execute()
-
+  // the promise only creates the initial page, the page blocks are generated and sent after resolving
+  const page = await publishSummaryPage(meetingId, context, info)
+  dataLoader.get('newMeetings').clearAll()
+  analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
   if (team.isOnboardTeam) {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
@@ -148,10 +141,6 @@ const safeEndRetrospective = async ({
       )
     }
   }
-  // the promise only creates the initial page, the page blocks are generated and sent after resolving
-  const page = await publishSummaryPage(meetingId, context, info)
-  // do not await sending the email
-  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   const data = {
     meetingId,
     teamId,
@@ -159,6 +148,11 @@ const safeEndRetrospective = async ({
     removedTaskIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
+  // wait for removeEmptyTasks before summarizeRetroMeeting
+  // don't await these, but put them after both "publish" calls so the dataloader has the same data
+  summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
+  // do not await sending the email
+  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   return data
 }
 

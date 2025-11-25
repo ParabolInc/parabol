@@ -1,4 +1,5 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
 import {Logger} from '../../../../utils/Logger'
@@ -8,10 +9,13 @@ import {streamSummaryBlocksToPage} from './streamSummaryBlocksToPage'
 
 export const publishSummaryPage = async (
   meetingId: string,
-  context: InternalContext,
+  contextWithoutDataLoader: Omit<InternalContext, 'dataLoader'>,
   info: GraphQLResolveInfo
 ) => {
-  const {authToken, dataLoader, socketId: mutatorId} = context
+  const {authToken, socketId: mutatorId} = contextWithoutDataLoader
+  const dataLoader = getNewDataLoader('publishSummaryPage')
+  const context = {...contextWithoutDataLoader, dataLoader}
+  dataLoader.share()
   const userId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId} = meeting
@@ -31,5 +35,6 @@ export const publishSummaryPage = async (
   meeting.summaryPageId = pageId
   // don't wait for the stream to finish
   streamSummaryBlocksToPage(pageId, meetingId, context, info).catch(Logger.log)
+  dataLoader.dispose()
   return page
 }
