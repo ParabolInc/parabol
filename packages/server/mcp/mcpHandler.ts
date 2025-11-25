@@ -24,12 +24,22 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
   try {
     // 1. Authentication
     const authHeader = req.getHeader('authorization')
+    const url = req.getUrl()
+    const method = req.getMethod()
+
+    console.log(`[MCP] Request: ${method} ${url}`)
+    console.log(`[MCP] Headers:`, {
+      authorization: authHeader ? 'Bearer [REDACTED]' : 'Missing',
+      'content-type': req.getHeader('content-type'),
+      'user-agent': req.getHeader('user-agent')
+    })
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('[MCP] Authentication failed: Missing or invalid Authorization header')
+      const authHeaderVal = `Bearer resource_metadata="${appOrigin}/.well-known/oauth-protected-resource/mcp", scope="parabol:read parabol:write mcp:read mcp:write"`
+      console.log(`[MCP] Sending WWW-Authenticate: ${authHeaderVal}`)
       res.writeStatus('401 Unauthorized')
-      res.writeHeader(
-        'WWW-Authenticate',
-        `Bearer resource_metadata="${appOrigin}/.well-known/oauth-protected-resource/mcp", scope="parabol:read parabol:write mcp:read mcp:write"`
-      )
+      res.writeHeader('WWW-Authenticate', authHeaderVal)
       res.end(JSON.stringify({error: 'Unauthorized'}))
       return
     }
@@ -40,6 +50,7 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
       if (!SERVER_SECRET) throw new Error('SERVER_SECRET is not defined')
       decoded = verify(token, Buffer.from(SERVER_SECRET, 'base64'))
     } catch (_err) {
+      console.log('[MCP] Authentication failed: Invalid token')
       res.writeStatus('401 Unauthorized')
       res.writeHeader(
         'WWW-Authenticate',
@@ -50,6 +61,7 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
     }
 
     if (decoded.iss !== 'parabol-oauth2') {
+      console.log('[MCP] Authentication failed: Invalid issuer', decoded.iss)
       res.writeStatus('403 Forbidden')
       res.end(JSON.stringify({error: 'Invalid token issuer'}))
       return
@@ -61,15 +73,20 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
       parser: (buffer: Buffer) => buffer.toString()
     })
 
+    console.log(`[MCP] Raw Body:`, rawBody)
+
     if (!rawBody) {
+      console.log('[MCP] Parse error: Empty body')
       res.writeStatus('400 Bad Request')
       res.end(JSON.stringify({error: 'Parse error'}))
       return
     }
 
     const body: MCPRequest = JSON.parse(rawBody)
+    console.log(`[MCP] Parsed Body:`, JSON.stringify(body, null, 2))
 
     if (body.jsonrpc !== '2.0' || !body.method) {
+      console.log('[MCP] Invalid JSON-RPC request')
       res.writeStatus('400 Bad Request')
       res.end(
         JSON.stringify({
@@ -87,6 +104,289 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
     let result: any
 
     switch (body.method) {
+      case 'initialize': {
+        // MCP protocol handshake
+        result = {
+          protocolVersion: '2025-03-26',
+          capabilities: {
+            resources: {},
+            tools: {}
+          },
+          serverInfo: {
+            name: 'Parabol MCP Server',
+            version: '1.0.0'
+          }
+        }
+        break
+      }
+      case 'notifications/initialized': {
+        // Client notification that initialization is complete
+        // No response needed for notifications
+        res.writeStatus('200 OK')
+        res.writeHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({jsonrpc: '2.0'}))
+        return
+      }
+      case 'tools/list': {
+        result = {
+          tools: [
+            {
+              name: 'list_org_users',
+              description: 'List all users in your organization',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  limit: {
+                    type: 'number',
+                    description: 'Maximum number of users to return (default: 50)'
+                  },
+                  cursor: {type: 'string', description: 'Pagination cursor'}
+                }
+              }
+            },
+            {
+              name: 'list_org_teams',
+              description: 'List all teams in your organization',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  limit: {
+                    type: 'number',
+                    description: 'Maximum number of teams to return (default: 50)'
+                  }
+                }
+              }
+            },
+            {
+              name: 'list_org_meeting_history',
+              description: 'List meeting history for your organization',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  teamId: {type: 'string', description: 'Filter by team ID (optional)'},
+                  limit: {
+                    type: 'number',
+                    description: 'Maximum number of meetings to return (default: 50)'
+                  }
+                }
+              }
+            },
+            {
+              name: 'read_user',
+              description: 'Get detailed information about a specific user',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  userId: {type: 'string', description: 'User ID'}
+                },
+                required: ['userId']
+              }
+            },
+            {
+              name: 'read_team',
+              description: 'Get detailed information about a specific team',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  teamId: {type: 'string', description: 'Team ID'}
+                },
+                required: ['teamId']
+              }
+            },
+            {
+              name: 'read_meeting',
+              description: 'Get detailed information about a specific meeting in markdown format',
+              inputSchema: {
+                type: 'object',
+                properties: {
+                  meetingId: {type: 'string', description: 'Meeting ID'}
+                },
+                required: ['meetingId']
+              }
+            }
+          ]
+        }
+        break
+      }
+      case 'tools/call': {
+        const {name: toolName, arguments: toolArgs} = body.params || {}
+        if (!toolName) throw new Error('Tool name is required')
+
+        let toolResult: any
+
+        switch (toolName) {
+          case 'list_org_users': {
+            const {limit = 50, cursor} = toolArgs || {}
+            const userOrg = await (db as any)
+              .selectFrom('OrganizationUser')
+              .select('organizationId')
+              .where('userId', '=', userId)
+              .executeTakeFirst()
+            if (!userOrg) throw new Error('User does not belong to any organization')
+
+            let query = (db as any)
+              .selectFrom('OrganizationUser')
+              .innerJoin('User', 'OrganizationUser.userId', 'User.id')
+              .select(['User.id', 'User.name', 'User.email', 'OrganizationUser.role'])
+              .where('OrganizationUser.organizationId', '=', userOrg.organizationId)
+              .limit(limit)
+
+            if (cursor) query = query.where('User.id', '>', cursor)
+            toolResult = {users: await query.execute()}
+            break
+          }
+          case 'list_org_teams': {
+            const {limit = 50} = toolArgs || {}
+            const userOrg = await (db as any)
+              .selectFrom('OrganizationUser')
+              .select('organizationId')
+              .where('userId', '=', userId)
+              .executeTakeFirst()
+            if (!userOrg) throw new Error('User does not belong to any organization')
+
+            toolResult = {
+              teams: await (db as any)
+                .selectFrom('Team')
+                .select(['id', 'name', 'description', 'createdAt'])
+                .where('orgId', '=', userOrg.organizationId)
+                .limit(limit)
+                .execute()
+            }
+            break
+          }
+          case 'list_org_meeting_history': {
+            const {teamId, limit = 50} = toolArgs || {}
+            const userOrg = await (db as any)
+              .selectFrom('OrganizationUser')
+              .select('organizationId')
+              .where('userId', '=', userId)
+              .executeTakeFirst()
+            if (!userOrg) throw new Error('User does not belong to any organization')
+
+            let query = (db as any)
+              .selectFrom('TimelineEvent')
+              .select(['id', 'type', 'createdAt as date', 'teamId'])
+              .where('organizationId', '=', userOrg.organizationId)
+              .where('type', 'in', ['retroComplete', 'pokerComplete'])
+              .orderBy('createdAt', 'desc')
+              .limit(limit)
+
+            if (teamId) query = query.where('teamId', '=', teamId)
+            toolResult = {meetings: await query.execute()}
+            break
+          }
+          case 'read_user': {
+            const {userId: targetUserId} = toolArgs || {}
+            if (!targetUserId) throw new Error('userId is required')
+            toolResult = {
+              user: await (db as any)
+                .selectFrom('User')
+                .selectAll()
+                .where('id', '=', targetUserId)
+                .executeTakeFirst()
+            }
+            break
+          }
+          case 'read_team': {
+            const {teamId} = toolArgs || {}
+            if (!teamId) throw new Error('teamId is required')
+
+            const team = await (db as any)
+              .selectFrom('Team')
+              .selectAll()
+              .where('id', '=', teamId)
+              .executeTakeFirst()
+
+            if (!team) {
+              toolResult = {team: null}
+              break
+            }
+
+            const members = await (db as any)
+              .selectFrom('TeamMember')
+              .innerJoin('User', 'TeamMember.userId', 'User.id')
+              .select(['User.id', 'User.name', 'User.email', 'TeamMember.roles'])
+              .where('TeamMember.teamId', '=', teamId)
+              .execute()
+
+            toolResult = {team: {...team, members}}
+            break
+          }
+          case 'read_meeting': {
+            const {meetingId} = toolArgs || {}
+            if (!meetingId) throw new Error('meetingId is required')
+
+            const meeting = await (db as any)
+              .selectFrom('NewMeeting')
+              .selectAll()
+              .where('id', '=', meetingId)
+              .executeTakeFirst()
+
+            if (!meeting) throw new Error('Meeting not found')
+
+            const reflections = await (db as any)
+              .selectFrom('RetroReflection')
+              .selectAll()
+              .where('meetingId', '=', meetingId)
+              .execute()
+
+            const discussions = await (db as any)
+              .selectFrom('Discussion')
+              .selectAll()
+              .where('meetingId', '=', meetingId)
+              .execute()
+
+            const tasks = await (db as any)
+              .selectFrom('Task')
+              .selectAll()
+              .where('meetingId', '=', meetingId)
+              .execute()
+
+            let markdown = `# ${meeting.name || 'Untitled Meeting'}\n`
+            markdown += `Date: ${meeting.createdAt}\n\n`
+            markdown += `## Reflections\n`
+            if (reflections.length === 0) {
+              markdown += `No reflections.\n`
+            } else {
+              reflections.forEach((r: any) => {
+                markdown += `- ${r.plaintextContent || r.content}\n`
+              })
+            }
+            markdown += `\n## Discussions\n`
+            if (discussions.length === 0) {
+              markdown += `No discussions.\n`
+            } else {
+              discussions.forEach((d: any) => {
+                markdown += `### ${d.title}\n`
+              })
+            }
+            markdown += `\n## Tasks\n`
+            if (tasks.length === 0) {
+              markdown += `No tasks created.\n`
+            } else {
+              tasks.forEach((t: any) => {
+                markdown += `- [ ] ${t.plaintextContent || t.content} (Assigned to: ${t.userId || 'Unassigned'})\n`
+              })
+            }
+
+            toolResult = {meeting: {id: meetingId, name: meeting.name, markdown}}
+            break
+          }
+          default:
+            throw new Error(`Unknown tool: ${toolName}`)
+        }
+
+        result = {content: [{type: 'text', text: JSON.stringify(toolResult, null, 2)}]}
+        break
+      }
+      case 'resources/list': {
+        result = {resources: []}
+        break
+      }
+      case 'resources/templates/list': {
+        result = {resourceTemplates: []}
+        break
+      }
       case 'list_org_users': {
         const {limit = 50, cursor} = body.params || {}
 
@@ -299,6 +599,7 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
       }
       default:
         res.writeStatus('200 OK')
+        res.writeHeader('Content-Type', 'application/json')
         res.end(
           JSON.stringify({
             jsonrpc: '2.0',
@@ -310,6 +611,7 @@ const mcpHandler = async (res: HttpResponse, req: HttpRequest) => {
     }
 
     // 4. Send Response
+    console.log(`[MCP] Sending Response:`, JSON.stringify(result, null, 2))
     res.writeStatus('200 OK')
     res.writeHeader('Content-Type', 'application/json')
     res.end(

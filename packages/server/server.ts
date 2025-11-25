@@ -25,6 +25,7 @@ import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
 import SAMLHandler from './utils/SAMLHandler'
 import uwsGetIP from './utils/uwsGetIP'
+import {withLogging} from './utils/withLogging'
 import {wsHandler} from './wsHandler'
 import {yoga} from './yoga'
 
@@ -79,10 +80,16 @@ const app = uws
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)
-  .post('/oauth/token', tokenHandler)
-  .post('/mcp', mcpHandler)
-  .get('/.well-known/oauth-protected-resource/mcp', protectedResourceMetadataHandler)
-  .get('/.well-known/oauth-authorization-server', authorizationServerMetadataHandler)
+  .post('/oauth/token', withLogging('OAuth Token', tokenHandler))
+  .post('/mcp', withLogging('MCP', mcpHandler))
+  .get(
+    '/.well-known/oauth-protected-resource/mcp',
+    withLogging('Metadata Resource', protectedResourceMetadataHandler)
+  )
+  .get(
+    '/.well-known/oauth-authorization-server',
+    withLogging('Metadata Auth Server', authorizationServerMetadataHandler)
+  )
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 
