@@ -15,6 +15,7 @@ import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
+import {Logger} from './utils/Logger'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
@@ -75,6 +76,7 @@ export const getPersistedOperation = async (docId: string) => {
 export const yoga = createYoga<ServerContext, UserContext>({
   graphqlEndpoint: '/graphql',
   landingPage: false,
+  logging: Logger,
   plugins: [
     useAuditLogs({
       excludeArgs: {

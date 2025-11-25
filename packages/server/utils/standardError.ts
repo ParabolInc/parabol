@@ -1,8 +1,9 @@
-import logError, {type ErrorOptions} from './logError'
+import {Logger} from './Logger'
+import {type ErrorOptions} from './logError'
 
 const standardError = (error: Error, options: ErrorOptions = {}) => {
   const {message} = error
-  logError(error, options)
+  Logger.info(error || JSON.stringify(error), options)
   return {error: {message}}
 }
 

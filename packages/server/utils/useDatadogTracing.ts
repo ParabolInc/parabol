@@ -1,4 +1,8 @@
-import {type ExecutionArgs, handleStreamOrSingleExecutionResult} from '@envelop/core'
+import {
+  type ExecutionArgs,
+  handleStreamOrSingleExecutionResult,
+  isOriginalGraphQLError
+} from '@envelop/core'
 import {type Resolver, useOnResolve} from '@envelop/on-resolve'
 import tracer, {type opentelemetry, type Span} from 'dd-trace'
 import {defaultFieldResolver, type GraphQLResolveInfo, getNamedType, getOperationAST} from 'graphql'
@@ -202,7 +206,7 @@ function markTopLevelError(span: tracer.Span | opentelemetry.Span, result: Execu
 }
 
 export function markSpanError(span: tracer.Span, error: unknown) {
-  if (error instanceof Error) {
+  if (error instanceof Error && !isOriginalGraphQLError(error)) {
     span.setTag('error.stack', error.stack)
     span.setTag('error.message', error.message)
     span.setTag('error.type', error.name)
