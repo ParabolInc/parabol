@@ -1,48 +1,99 @@
+extend type Organization {
+  oauthProviders: [OAuthAPIProvider!]!
+}
+
 extend type Mutation {
   """
-  Update OAuth 2.0 settings for an organization
+  Create a new OAuth 2.0 Application
   """
-  updateOAuthSettings(input: UpdateOAuthSettingsInput!): UpdateOAuthSettingsPayload!
+  createOAuthAPIProvider(input: CreateOAuthAPIProviderInput!): CreateOAuthAPIProviderPayload!
 
   """
-  Regenerate the OAuth 2.0 client secret for an organization
+  Update an OAuth 2.0 Application
   """
-  regenerateOAuthSecret(input: RegenerateOAuthSecretInput!): RegenerateOAuthSecretPayload!
+  updateOAuthAPIProvider(input: UpdateOAuthAPIProviderInput!): UpdateOAuthAPIProviderPayload!
+
+  """
+  Delete an OAuth 2.0 Application
+  """
+  deleteOAuthAPIProvider(input: DeleteOAuthAPIProviderInput!): DeleteOAuthAPIProviderPayload!
+
+  """
+  Regenerate the OAuth 2.0 client secret for an application
+  """
+  regenerateOAuthAPIProviderSecret(input: RegenerateOAuthAPIProviderSecretInput!): RegenerateOAuthAPIProviderSecretPayload!
 
   """
   Create an OAuth 2.0 authorization code
   """
-  createOAuthCode(input: CreateOAuthCodeInput!): CreateOAuthCodePayload!
+  createOAuthAPICode(input: CreateOAuthAPICodeInput!): CreateOAuthAPICodePayload!
 }
 
-input UpdateOAuthSettingsInput {
-  orgId: ID!
+extend type Query {
+  """
+  Get an OAuth 2.0 Application by ID
+  """
+  oauthAPIProvider(id: ID!): OAuthAPIProvider
+}
+
+type OAuthAPIProvider {
+  id: ID!
+  name: String!
+  clientId: String!
+  clientSecret: String!
   redirectUris: [String!]!
   scopes: [String!]!
-  enabled: Boolean
+  updatedAt: DateTime!
 }
 
-type UpdateOAuthSettingsPayload {
-  success: Boolean!
-  organization: Organization
-}
-
-input RegenerateOAuthSecretInput {
+input CreateOAuthAPIProviderInput {
   orgId: ID!
+  name: String!
+  redirectUris: [String!]!
+  scopes: [String!]!
 }
 
-type RegenerateOAuthSecretPayload {
+type CreateOAuthAPIProviderPayload {
+  provider: OAuthAPIProvider!
+}
+
+input UpdateOAuthAPIProviderInput {
+  providerId: ID!
+  name: String
+  redirectUris: [String!]
+  scopes: [String!]
+}
+
+type UpdateOAuthAPIProviderPayload {
+  provider: OAuthAPIProvider!
+}
+
+input DeleteOAuthAPIProviderInput {
+  providerId: ID!
+}
+
+type DeleteOAuthAPIProviderPayload {
+  success: Boolean!
+  deletedProviderId: ID!
+}
+
+input RegenerateOAuthAPIProviderSecretInput {
+  providerId: ID!
+}
+
+type RegenerateOAuthAPIProviderSecretPayload {
   secret: String!
+  provider: OAuthAPIProvider!
 }
 
-input CreateOAuthCodeInput {
+input CreateOAuthAPICodeInput {
   clientId: String!
   redirectUri: String!
   scopes: [String!]!
   state: String
 }
 
-type CreateOAuthCodePayload {
+type CreateOAuthAPICodePayload {
   code: String!
   redirectUri: String!
   state: String

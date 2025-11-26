@@ -209,25 +209,7 @@ type Organization implements OrganizationPartial {
 	"""
 	orgFeatureFlags: [OwnedFeatureFlag!]!
 
-	"""
-	OAuth 2.0 Client ID
-	"""
-	oauthClientId: String
 
-	"""
-	OAuth 2.0 Client Secret
-	"""
-	oauthClientSecret: String
-
-	"""
-	OAuth 2.0 Redirect URI
-	"""
-	oauthRedirectUris: [String!]
-
-	"""
-	OAuth 2.0 Scopes
-	"""
-	oauthScopes: [String!]
 
 	"""
 	Whether MCP server is enabled for this organization

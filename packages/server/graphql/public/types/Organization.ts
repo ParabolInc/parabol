@@ -120,10 +120,12 @@ const Organization: OrganizationResolvers = {
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
   },
-  oauthClientId: ({oauthClientId}) => oauthClientId || null,
-  oauthClientSecret: ({oauthClientSecret}) => oauthClientSecret || null,
-  oauthRedirectUris: ({oauthRedirectUris}) => oauthRedirectUris || [],
-  oauthScopes: ({oauthScopes}) => oauthScopes || [],
+
+  oauthProviders: async ({id: orgId}) => {
+    const {default: oauthProviders} = await import('./Organization/oauthProviders')
+    return oauthProviders({id: orgId})
+  },
+
   mcpEnabled: ({mcpEnabled}) => mcpEnabled || false,
   mcpResources: ({mcpResources}) => (mcpResources ? JSON.stringify(mcpResources) : null)
 }

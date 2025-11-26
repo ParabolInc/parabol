@@ -11,8 +11,8 @@ const OAuthAuthorizePage = () => {
   const [error, setError] = useState<string | null>(null)
 
   const [commitCreateCode] = useMutation(graphql`
-    mutation OAuthAuthorizePageMutation($input: CreateOAuthCodeInput!) {
-      createOAuthCode(input: $input) {
+    mutation OAuthAuthorizePageMutation($input: CreateOAuthAPICodeInput!) {
+      createOAuthAPICode(input: $input) {
         code
         redirectUri
         state
@@ -45,7 +45,7 @@ const OAuthAuthorizePage = () => {
         }
       },
       onCompleted: (data: any) => {
-        const {code, redirectUri, state} = data.createOAuthCode
+        const {code, redirectUri, state} = data.createOAuthAPICode
         const redirectUrl = new URL(redirectUri)
         redirectUrl.searchParams.set('code', code)
         if (state) {

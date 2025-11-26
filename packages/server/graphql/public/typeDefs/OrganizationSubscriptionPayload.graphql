@@ -14,4 +14,7 @@ type OrganizationSubscriptionPayload {
 	UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
 	ToggleMCPEnabledSuccess: ToggleMCPEnabledSuccess
 	ToggleMCPResourceSuccess: ToggleMCPResourceSuccess
+	CreateOAuthAPIProviderSuccess: CreateOAuthAPIProviderSuccess
+	UpdateOAuthAPIProviderSuccess: UpdateOAuthAPIProviderSuccess
+	DeleteOAuthAPIProviderSuccess: DeleteOAuthAPIProviderSuccess
 }

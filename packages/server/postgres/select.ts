@@ -148,10 +148,7 @@ export const selectOrganizations = () =>
       'useAI',
       'unpaidMessageHTML',
       'updatedAt',
-      'oauthClientId',
-      'oauthClientSecret',
-      'oauthRedirectUris',
-      'oauthScopes',
+
       'mcpEnabled',
       'mcpResources'
     ])

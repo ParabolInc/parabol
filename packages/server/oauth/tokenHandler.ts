@@ -69,13 +69,13 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     // 1. Validate Client Credentials
     const db = getKysely() as unknown as Kysely<DB>
-    const org = await db
-      .selectFrom('Organization')
+    const provider = await db
+      .selectFrom('OAuthAPIProvider')
       .selectAll()
-      .where('oauthClientId', '=', client_id)
+      .where('clientId', '=', client_id)
       .executeTakeFirst()
 
-    if (!org || org.oauthClientSecret !== client_secret) {
+    if (!provider || provider.clientSecret !== client_secret) {
       console.log(`[OAuth Token] Error: Invalid client credentials for client_id "${client_id}"`)
       res.writeStatus('401 Unauthorized')
       res.end(JSON.stringify({error: 'invalid_client'}))
@@ -84,7 +84,7 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     // 2. Validate Code
     const oauthCode = await db
-      .selectFrom('OAuthCode')
+      .selectFrom('OAuthAPICode')
       .selectAll()
       .where('id', '=', code)
       .executeTakeFirst()
@@ -106,9 +106,9 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
     }
 
     // 4. Validate Redirect URI
-    if (!org.oauthRedirectUris || !org.oauthRedirectUris.includes(redirect_uri)) {
+    if (!provider.redirectUris || !provider.redirectUris.includes(redirect_uri)) {
       console.log(
-        `[OAuth Token] Error: Redirect URI mismatch. Expected one of ${JSON.stringify(org.oauthRedirectUris)}, got "${redirect_uri}"`
+        `[OAuth Token] Error: Redirect URI mismatch. Expected one of ${JSON.stringify(provider.redirectUris)}, got "${redirect_uri}"`
       )
       res.writeStatus('400 Bad Request')
       res.end(JSON.stringify({error: 'invalid_grant', error_description: 'Redirect URI mismatch'}))
@@ -129,7 +129,7 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
     const accessToken = sign(tokenPayload, Buffer.from(SERVER_SECRET, 'base64'))
 
     // 6. Delete Used Code
-    await db.deleteFrom('OAuthCode').where('id', '=', code).execute()
+    await db.deleteFrom('OAuthAPICode').where('id', '=', code).execute()
 
     console.log(
       `[OAuth Token] Success: Token issued for user ${userId} with scopes ${JSON.stringify(oauthCode.scopes)}`

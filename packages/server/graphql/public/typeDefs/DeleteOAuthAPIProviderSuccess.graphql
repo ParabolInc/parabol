@@ -1,0 +1,11 @@
+type DeleteOAuthAPIProviderSuccess {
+  """
+  The ID of the OAuth provider that was removed
+  """
+  providerId: ID!
+
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

@@ -1,6 +1,6 @@
 import type {DB as OriginalDB, Organization as OriginalOrganization} from '../postgres/types/pg'
 
-export interface OAuthCodeTable {
+export interface OAuthAPICodeTable {
   id: string
   clientId: string
   redirectUri: string
@@ -10,14 +10,24 @@ export interface OAuthCodeTable {
   createdAt: number
 }
 
+export interface OAuthAPIProviderTable {
+  id: string
+  organizationId: string
+  name: string
+  clientId: string
+  clientSecret: string
+  redirectUris: string[]
+  scopes: string[]
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Organization extends OriginalOrganization {
-  oauthClientId: string | null
-  oauthClientSecret: string | null
-  oauthRedirectUris: string[] | null
-  oauthScopes: string[] | null
+  // Removed OAuth fields
 }
 
 export interface DB extends Omit<OriginalDB, 'Organization'> {
   Organization: Organization
-  OAuthCode: OAuthCodeTable
+  OAuthAPICode: OAuthAPICodeTable
+  OAuthAPIProvider: OAuthAPIProviderTable
 }

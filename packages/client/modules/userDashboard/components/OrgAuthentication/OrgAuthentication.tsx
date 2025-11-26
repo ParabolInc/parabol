@@ -5,7 +5,7 @@ import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenti
 import DialogTitle from '../../../../components/DialogTitle'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
-import OAuthIntegration from '../OrgIntegrations/OAuthIntegration'
+import OAuthProviderList from '../OrgIntegrations/OAuthProviderList'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
@@ -30,7 +30,7 @@ const OrgAuthentication = (props: Props) => {
               ...OrgAuthenticationMetadata_saml
               id
             }
-            ...OAuthIntegration_organization
+            ...OAuthProviderList_organization
           }
         }
       }
@@ -53,13 +53,13 @@ const OrgAuthentication = (props: Props) => {
       </StyledPanel>
 
       <StyledPanel>
-        <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 Provider</DialogTitle>
+        <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 API</DialogTitle>
         <div className='px-6 pb-6'>
           <div className='mb-6 text-base text-slate-700'>
             Configure your organization as an OAuth 2.0 provider to allow external applications to
             authenticate with your Parabol organization.
           </div>
-          {organization && <OAuthIntegration organizationRef={organization} />}
+          {organization && <OAuthProviderList organizationRef={organization} />}
         </div>
       </StyledPanel>
     </div>

@@ -40,6 +40,10 @@ const Authentication = lazy(
     )
 )
 
+const OAuthAppForm = lazy(
+  () => import(/* webpackChunkName: 'OAuthAppForm' */ '../OrgIntegrations/OAuthAppForm')
+)
+
 const AISettings = lazy(
   () => import(/* webpackChunkName: 'AISettings' */ '../OrgIntegrations/AISettings')
 )
@@ -102,6 +106,11 @@ const Organization = (props: Props) => {
           exact
           path={`${match.url}/${ORG_INTEGRATIONS_PAGE}`}
           render={(p) => <OrgIntegrations {...p} organizationRef={organization} />}
+        />
+        <Route
+          exact
+          path={`${match.url}/${AUTHENTICATION_PAGE}/oauth/:appId`}
+          render={(p) => <OAuthAppForm {...p} orgId={orgId} />}
         />
         <Route
           exact

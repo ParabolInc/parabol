@@ -10,7 +10,7 @@ interface Input {
   expiresAt?: number
 }
 
-export default class OAuthCode {
+export default class OAuthAPICode {
   id: string
   clientId: string
   redirectUri: string

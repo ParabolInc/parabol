@@ -2,7 +2,7 @@ import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {Kysely} from 'kysely'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-import OAuthCode from '../database/types/OAuthCode'
+import OAuthCode from '../database/types/OAuthAPICode'
 import getKysely from '../postgres/getKysely'
 import getReqAuth from '../utils/getReqAuth'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
@@ -69,19 +69,19 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
   try {
     // 3. Validate Client (Organization)
     const db = getKysely() as unknown as Kysely<DB>
-    const org = await db
-      .selectFrom('Organization')
+    const provider = await db
+      .selectFrom('OAuthAPIProvider')
       .selectAll()
-      .where('oauthClientId', '=', clientId)
+      .where('clientId', '=', clientId)
       .executeTakeFirst()
 
-    if (!org) {
+    if (!provider) {
       res.writeStatus('400 Bad Request')
       res.end('Invalid client_id')
       return
     }
 
-    if (!org.oauthRedirectUris || !org.oauthRedirectUris.includes(redirectUri)) {
+    if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
       res.writeStatus('400 Bad Request').end('Invalid redirect_uri')
       return
     }
@@ -95,7 +95,7 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
       scopes
     })
 
-    await db.insertInto('OAuthCode').values(code).execute()
+    await db.insertInto('OAuthAPICode').values(code).execute()
 
     // 6. Redirect with Code
     const redirectUrl = new URL(redirectUri)
