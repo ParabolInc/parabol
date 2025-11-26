@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "10.35.0",
+  "version": "10.36.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -74,7 +74,7 @@
     "@babel/preset-react": "^7.27.1",
     "@babel/preset-typescript": "^7.27.1",
     "@biomejs/biome": "2.3.5",
-    "@datadog/datadog-ci": "^3.20.0",
+    "@datadog/datadog-ci": "^4.2.2",
     "@graphql-codegen/add": "5.0.0",
     "@graphql-codegen/cli": "6.0.1",
     "@graphql-codegen/typescript": "4.0.1",

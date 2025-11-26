@@ -58,18 +58,21 @@ export const makeRetroMeetingInsightInput = async (
   meeting: RetrospectiveMeeting,
   dataLoader: DataLoaderInstance,
   minReflectionCount = 3,
-  minReflectionGroupVotes = 2
+  attemptedMinReflectionGroupVotes = 2
 ) => {
   const {id: meetingId, meetingType, reflectionCount, disableAnonymity, phases} = meeting
   if (!reflectionCount || reflectionCount < minReflectionCount) return null
   const reflectionGroups = await dataLoader.get('retroReflectionGroupsByMeetingId').load(meetingId)
   const votedReflectionGroups = reflectionGroups.filter(
-    (group) => group.voterIds.length >= minReflectionGroupVotes
+    (group) => group.voterIds.length >= attemptedMinReflectionGroupVotes
   )
+  // if the vote filter removed all the items, ignore it. This is because some teams do not vote
+  const meaningfulReflectionGroups =
+    votedReflectionGroups.length === 0 ? reflectionGroups : votedReflectionGroups
   const discussPhase = getPhase(phases, 'discuss')
   const {stages} = discussPhase
   const topics = await Promise.all(
-    votedReflectionGroups.map(async (group) => {
+    meaningfulReflectionGroups.map(async (group) => {
       const {id: reflectionGroupId, voterIds, title} = group
       const [rawReflections, discussion] = await Promise.all([
         dataLoader.get('retroReflectionsByGroupId').load(group.id),

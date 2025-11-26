@@ -14,6 +14,7 @@ export type HocusPocusSocketData = {
 }
 
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
+  maxPayloadLength: 1024 * 1024 * 2, // 2MB max size (for large paste operations)
   upgrade(res, req, context) {
     const headers: IncomingHttpHeaders = {}
     req.forEach((key, value) => {

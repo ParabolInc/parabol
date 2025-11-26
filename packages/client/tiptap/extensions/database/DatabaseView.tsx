@@ -4,40 +4,74 @@ import {useMemo} from 'react'
 import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, ColumnId, ColumnMeta, deleteRow, RowId} from './data'
+import {appendColumn, appendRow, deleteRow, RowId} from './data'
 import {Header} from './Header'
-import {useYArray, useYMap} from './hooks'
+import {useDatabase} from './hooks'
+import {MetaCell} from './MetaCell'
+
+// add additional debug columns
+const DEBUG = false
 
 const getRowId = (row: RowId) => row
 
-export default function DatabaseView(props: {doc: Y.Doc}) {
-  const {doc} = props
+type Props = {
+  doc: Y.Doc
+  userId?: string
+}
 
-  const yColumns = useYArray(doc.getArray<ColumnId>('columns'))
-  const rows = useYArray(doc.getArray<RowId>('rows'))
+export default function DatabaseView(props: Props) {
+  const {doc, userId} = props
 
-  const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
+  const {rows, columns} = useDatabase(doc)
 
-  const columns = useMemo(() => {
-    const dataColumns: ColumnDef<ColumnId>[] = yColumns.map((id, index) => {
-      let meta = columnMeta.get(id)
-      if (!meta) {
-        meta = {name: `Column ${index + 1}`, type: 'text'}
-        doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
-      }
+  const dataColumns = useMemo(() => {
+    const dataColumns: ColumnDef<RowId>[] = columns.map((column) => {
+      const {id, ...meta} = column
+      const {type} = meta
+
       return {
         id,
         size: 200,
         minSize: 100,
         maxSize: 500,
         enableResizing: true,
-        header: () => <Header key={id} columnMeta={meta} doc={doc} columnId={id} />,
-        cell: ({row}) => (
-          <Cell type={columnMeta.get(id)?.type || 'text'} doc={doc} rowId={row.id} columnId={id} />
-        )
+        header: () => (
+          <>
+            <Header key={id} columnMeta={meta} doc={doc} columnId={id} />
+            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
+          </>
+        ),
+        cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} userId={userId} />
       }
     })
+    const debugColumns: ColumnDef<RowId>[] = !DEBUG
+      ? []
+      : [
+          {
+            id: 'debug',
+            size: 80,
+            minSize: 80,
+            maxSize: 80,
+            enableResizing: false,
+            header: () => <div className='p-2 text-xs'>Row ID</div>,
+            cell: ({row}) => <div className='p-2 text-slate-600 text-xs'>{row.id}</div>
+          },
+          ...['_createdAt', '_createdBy', '_updatedAt', '_updatedBy'].map(
+            (metaId) =>
+              ({
+                id: metaId,
+                size: 120,
+                minSize: 120,
+                maxSize: 120,
+                enableResizing: false,
+                header: () => <div className='p-2 text-xs'>{metaId}</div>,
+                cell: ({row}) => <MetaCell doc={doc} rowId={row.id} columnId={metaId} />
+              }) as ColumnDef<RowId>
+          )
+        ]
+
     return [
+      ...debugColumns,
       ...dataColumns,
       {
         id: 'append',
@@ -63,12 +97,12 @@ export default function DatabaseView(props: {doc: Y.Doc}) {
         )
       }
     ] as ColumnDef<RowId>[]
-  }, [yColumns, columnMeta, doc])
+  }, [columns])
 
   const table = useReactTable({
     data: rows,
     getRowId,
-    columns,
+    columns: dataColumns,
     getCoreRowModel: getCoreRowModel(),
     columnResizeMode: 'onChange'
   })
@@ -124,7 +158,7 @@ export default function DatabaseView(props: {doc: Y.Doc}) {
           <td
             colSpan={columns.length}
             className='cursor-pointer hover:bg-slate-100'
-            onClick={() => appendRow(doc)}
+            onClick={() => appendRow(doc, userId)}
           >
             <div className='flex w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100'>
               <Add />

@@ -39,19 +39,27 @@ const checkAccess = async (
   assetType: AssetType
 ) => {
   const viewerId = getUserId(authToken)
-  const scopes = ['User', 'Team', 'Organization', 'Page'] as const
-
-  if (!scope || !scopes.includes(scope)) {
-    return false
-  } else if (scope === 'User') {
-    // all user avatars are visible to all users
-    if (assetType !== 'picture' && ![viewerId, 'aGhostUser'].includes(scopeCode)) return false
+  if (scope === 'User') {
+    if (assetType === 'picture') {
+      // User/picture is for avatars. All user avatars are visible to all users
+      return true
+    } else {
+      if ([viewerId, 'aGhostUser'].includes(scopeCode)) return true
+    }
   } else if (scope === 'Team') {
-    // all team avatars (not yet implemented) are visible to all users
-    if (assetType !== 'picture' && !isTeamMember(authToken, scopeCode)) return false
+    if (assetType === 'picture') {
+      // all team avatars (not yet implemented) are visible to all users
+      return true
+    } else {
+      if (isTeamMember(authToken, scopeCode)) return true
+    }
   } else if (scope === 'Organization') {
-    // all org avatars are visible to all users, but no other assets
-    if (assetType !== 'picture' && scopeCode !== 'aGhostOrg') {
+    if (assetType === 'picture') {
+      // all org avatars are visible to all users
+      return true
+    } else {
+      // aGhostOrg contains all parabol-seeded assets, e.g. illustrations
+      if (scopeCode === 'aGhostOrg') return true
       const inOrg = await getKysely()
         .selectFrom('OrganizationUser')
         .select('id')
@@ -60,18 +68,16 @@ const checkAccess = async (
         .where('removedAt', 'is', null)
         .limit(1)
         .executeTakeFirst()
-      if (!inOrg) {
-        return false
-      }
+      if (inOrg) return true
     }
   } else if (scope === 'Page') {
     const dataLoader = getNewDataLoader('imageProxyPage')
     const pageId = CipherId.decrypt(Number(scopeCode))
     const pageAccess = await dataLoader.get('pageAccessByUserId').load({pageId, userId: viewerId})
     dataLoader.dispose()
-    if (!pageAccess) return false
+    if (pageAccess) return true
   }
-  return true
+  return false
 }
 
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {

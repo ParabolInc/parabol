@@ -5,6 +5,38 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.36.1](https://github.com/ParabolInc/parabol/compare/v10.36.0...v10.36.1) (2025-11-25)
+
+
+### Changed
+
+* reduce error logging for expected errors ([#12366](https://github.com/ParabolInc/parabol/issues/12366)) ([c267477](https://github.com/ParabolInc/parabol/commit/c267477d96699a8dc684ab09a0eca83ca759fe27))
+
+## [10.36.0](https://github.com/ParabolInc/parabol/compare/v10.35.1...v10.36.0) (2025-11-24)
+
+
+### Added
+
+* Asset Proxy Server ([#12335](https://github.com/ParabolInc/parabol/issues/12335)) ([b8dde06](https://github.com/ParabolInc/parabol/commit/b8dde06aaef66c99a08c395b3ef664e05f8c164f))
+
+
+### Fixed
+
+* bump datadog-ci to v4 ([#12350](https://github.com/ParabolInc/parabol/issues/12350)) ([870bb71](https://github.com/ParabolInc/parabol/commit/870bb7163db17705620eb916fb6196338a602f3f))
+* max paste size for pages ([#12351](https://github.com/ParabolInc/parabol/issues/12351)) ([2f1c59e](https://github.com/ParabolInc/parabol/commit/2f1c59e90f4f2f1ee1b0119f9be3adbab84565e5))
+* support insights when teams do not vote ([#12363](https://github.com/ParabolInc/parabol/issues/12363)) ([cdcefcf](https://github.com/ParabolInc/parabol/commit/cdcefcfad221d327c97178e37358de6b8015a471))
+
+## [10.35.1](https://github.com/ParabolInc/parabol/compare/v10.35.0...v10.35.1) (2025-11-21)
+
+
+### Fixed
+
+* biome support for graphql ([#12348](https://github.com/ParabolInc/parabol/issues/12348)) ([fc34bc8](https://github.com/ParabolInc/parabol/commit/fc34bc8ce1225f4fed98f52e40e6608a934cb2e9))
+* ensure ext is at the end for assets in dev ([#12345](https://github.com/ParabolInc/parabol/issues/12345)) ([622a8ba](https://github.com/ParabolInc/parabol/commit/622a8ba95308a6ffc6c92c1d46a4d56540ff1d0d))
+* move access token to httpOnly cookie ([#12163](https://github.com/ParabolInc/parabol/issues/12163)) ([85d3512](https://github.com/ParabolInc/parabol/commit/85d3512a68450767b41088319580beed2d3e5733))
+* remove pgtyped ([#12347](https://github.com/ParabolInc/parabol/issues/12347)) ([70c8038](https://github.com/ParabolInc/parabol/commit/70c80388eebb24a243240e04909edee87c1c7faa))
+* update glob package ([#12344](https://github.com/ParabolInc/parabol/issues/12344)) ([af502b3](https://github.com/ParabolInc/parabol/commit/af502b39d62e52833409ec6b2eb6795a41fdebbe))
+
 ## [10.35.0](https://github.com/ParabolInc/parabol/compare/v10.34.2...v10.35.0) (2025-11-20)
 
 

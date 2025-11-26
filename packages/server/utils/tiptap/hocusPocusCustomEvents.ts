@@ -99,6 +99,7 @@ export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<s
   return userIds
 }
 
+// IMMUTABLE This is used in migrations, so you must either create a new function, or flatten the migrations!
 export const applyYjsUpdate = async (documentName: string, payload: {update: Uint8Array}) => {
   const {update} = payload
   await withDoc(documentName, (doc) => {
