@@ -90,7 +90,7 @@ export const useDraggablePage = (
     }
     document.addEventListener('pointermove', onPointerMove)
     document.addEventListener('pointerup', onPointerUp, {once: true})
-    document.addEventListener('pointercancel', () => cleanupDrag(), {
+    document.addEventListener('pointercancel', cleanupDrag, {
       once: true
     })
     window.addEventListener('blur', cleanupDrag, {once: true})
@@ -317,6 +317,7 @@ export const useDraggablePage = (
     drag.waitingForMovement = false
     removeVisualDragImage()
     window.removeEventListener('blur', cleanupDrag)
+    document.removeEventListener('pointercancel', cleanupDrag)
     // in a set timeout for the <Link/> onClick handler to fire while draggingPageId is still set
     setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {

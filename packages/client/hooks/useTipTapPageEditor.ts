@@ -9,7 +9,6 @@ import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
 import {Focus, Placeholder} from '@tiptap/extensions'
-import type {Node} from '@tiptap/pm/model'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
@@ -20,6 +19,7 @@ import {Markdown} from 'tiptap-markdown'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import {dragHandleConfig} from '../modules/pages/dragHandleConfig'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
@@ -39,11 +39,6 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
-
-function isEmptyParagraph(node: Node) {
-  return node.type.name === 'paragraph' && node.textContent.length === 0
-}
-const dragHandleElement = document.createElement('div')
 
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
@@ -112,25 +107,7 @@ export const useTipTapPageEditor = (
         }),
         ImageBlock,
         LoomExtension,
-        DragHandle.configure({
-          // drag-handle-react breaks when clicking pageLinkBlocks because it removes a react child w/o telling react
-          // So we do this outside of react
-          render: () => {
-            dragHandleElement.classList.add('drag-handle', 'hide')
-            return dragHandleElement
-          },
-          onNodeChange: ({node}) => {
-            const isEmpty = node ? isEmptyParagraph(node) : false
-            const isHidden = dragHandleElement.classList.contains('hide')
-            if (isEmpty !== isHidden) {
-              if (isEmpty) {
-                dragHandleElement.classList.add('hide')
-              } else {
-                dragHandleElement.classList.remove('hide')
-              }
-            }
-          }
-        }),
+        DragHandle.configure(dragHandleConfig(atmosphere, pageId)),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,

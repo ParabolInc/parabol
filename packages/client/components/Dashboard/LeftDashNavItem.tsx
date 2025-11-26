@@ -2,6 +2,7 @@ import type {SvgIconTypeMap} from '@mui/material'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import {useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
+import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {cn} from '../../ui/cn'
 import {LeftNavItem} from '../DashNavList/LeftNavItem'
 
@@ -19,10 +20,10 @@ const LeftDashNavItem = (props: Props) => {
   const isActive = !!match && (match?.isExact || !exact)
   return (
     <div className='relative rounded-md'>
-      <div
+      <PageDropTarget
         data-highlighted={isActive ? '' : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden',
           'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900'
         )}
       >
@@ -39,7 +40,7 @@ const LeftDashNavItem = (props: Props) => {
             <span className='pl-1'>{label}</span>
           </LeftNavItem>
         </Link>
-      </div>
+      </PageDropTarget>
     </div>
   )
 }

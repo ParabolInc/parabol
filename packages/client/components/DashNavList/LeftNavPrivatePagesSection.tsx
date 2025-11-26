@@ -4,6 +4,7 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
+import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
 import {LeftNavHeader} from './LeftNavHeader'
@@ -76,11 +77,11 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
   }
   return (
     <div data-pages-connection={'User_privatePages'}>
-      <div
+      <PageDropTarget
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(
-          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 data-[drop-in]:hover:bg-sky-300/70',
+          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5',
           !draggingPageId && 'hover:bg-slate-300'
         )}
       >
@@ -92,7 +93,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
             tooltip={'Add a private page'}
           />
         </LeftNavItemButtons>
-      </div>
+      </PageDropTarget>
       <div className={cn('relative hidden min-h-1 pb-4', showChildren && 'block')}>
         <div
           className={cn(

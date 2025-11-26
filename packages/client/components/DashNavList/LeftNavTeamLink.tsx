@@ -8,6 +8,7 @@ import {useHistory, useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
+import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
 import {cn} from '../../ui/cn'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
@@ -78,11 +79,11 @@ export const LeftNavTeamLink = (props: Props) => {
     draggingPageId && showChildren && !isDraggingFirstChild && isViewerOwnerOrIsReorder
   return (
     <div className='relative rounded-md'>
-      <div
+      <PageDropTarget
         data-highlighted={isActive ? '' : undefined}
         data-drop-in={canDropIn ? teamId : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
@@ -130,7 +131,7 @@ export const LeftNavTeamLink = (props: Props) => {
             <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
           </LeftNavItemButtons>
         </Link>
-      </div>
+      </PageDropTarget>
       {showChildren && (
         <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
           <SubPagesRoot teamId={teamId} pageAncestors={['', teamId]} />
