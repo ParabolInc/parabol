@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.37.0](https://github.com/ParabolInc/parabol/compare/v10.36.1...v10.37.0) (2025-11-27)
+
+
+### Added
+
+* **database:** add createdAt, updatedAt and ...By fields ([#12361](https://github.com/ParabolInc/parabol/issues/12361)) ([565b137](https://github.com/ParabolInc/parabol/commit/565b13760cf965f6de91ebcc0b5d743e19b43d73))
+
+
+### Changed
+
+* **application parameters:** reorganize logging parameters and clarify CDN_BASE_URL ([#12378](https://github.com/ParabolInc/parabol/issues/12378)) ([a453038](https://github.com/ParabolInc/parabol/commit/a453038d462470082dbccffc7cfcfb91fecbdbd5))
+* configurable log level for application ([#12379](https://github.com/ParabolInc/parabol/issues/12379)) ([1098d02](https://github.com/ParabolInc/parabol/commit/1098d02208099328445f68c180f6e2e782fd3450))
+
 ## [10.36.1](https://github.com/ParabolInc/parabol/compare/v10.36.0...v10.36.1) (2025-11-25)
 
 
