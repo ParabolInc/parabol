@@ -91,7 +91,6 @@
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
-          "GenerateRetroSummariesSuccess": "./types/GenerateRetroSummariesSuccess#GenerateRetroSummariesSuccessSource",
           "GifResponse": "./types/GifResponse#GifResponseSource",
           "GitHubIntegration": "../../postgres/types/index#GitHubAuth as GitHubAuthDB",
           "GitLabIntegration": "./types/GitLabIntegration#GitLabIntegrationSource",
