@@ -1,7 +1,9 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import * as Y from 'yjs'
+import useAtmosphere from '../../../hooks/useAtmosphere'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
-import {ColumnId, RowData, RowId} from './data'
+import {ColumnId, ColumnMeta, getColumns, getRows, RowData, RowId} from './data'
+import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
   const result = new Map<string, T>()
@@ -53,6 +55,7 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
 }
 
 export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
+  const {viewerId} = useAtmosphere()
   const data = doc.getMap<RowData>('data')
   const row = data.get(rowId)
 
@@ -79,14 +82,20 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
 
   const setValue = useCallback(
     (value: string | null) => {
-      if (value === null) {
-        row?.delete(columnId)
-      } else {
-        // TODO validate and set an error here
-        row?.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
-      }
+      if (!row) return
+      doc.transact(() => {
+        if (value === null) {
+          row.delete(columnId)
+        } else {
+          // TODO validate and set an error here
+          row.set(columnId, value.substring(0, DATABASE_CELL_MAX_CHARS))
+        }
+        if (viewerId) {
+          updateChangedAt(row, 'updated', viewerId)
+        }
+      })
     },
-    [row, columnId]
+    [doc, row, columnId, viewerId]
   )
 
   return [value, setValue] as const
@@ -97,4 +106,30 @@ export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
   return Array.from(data.values())
     .map((row) => row.get(columnId))
     .filter(Boolean) as string[]
+}
+
+export const useDatabase = (doc: Y.Doc) => {
+  const columnIds = useYArray(getColumns(doc))
+  const rows = useYArray(getRows(doc))
+  const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
+
+  const columns = useMemo(
+    () =>
+      columnIds.map((id, index) => {
+        let meta = columnMeta.get(id)
+        if (!meta) {
+          meta = {name: `Column ${index + 1}`, type: 'text'}
+          doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
+        }
+        return {
+          id,
+          ...meta
+        }
+      }),
+    [columnIds, columnMeta]
+  )
+  return {
+    rows,
+    columns
+  }
 }

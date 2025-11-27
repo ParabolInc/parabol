@@ -1,14 +1,14 @@
 import {Suspense} from 'react'
+import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import type {PageEntryQuery} from '../../__generated__/PageEntryQuery.graphql'
 import pageQuery from '../../__generated__/PageEntryQuery.graphql'
-import type {useTipTapPageEditor_viewer$key} from '../../__generated__/useTipTapPageEditor_viewer.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import useRouter from '../../hooks/useRouter'
 import {GQLID} from '../../utils/GQLID'
 import {PageEntry} from './PageEntry'
 
 interface Props {
-  viewerRef: useTipTapPageEditor_viewer$key | null
+  viewerRef: Page_viewer$key | null
   isPublic?: boolean
 }
 

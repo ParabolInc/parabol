@@ -116,7 +116,7 @@ const Dashboard = (props: Props) => {
           ...MobileDashSidebar_viewer
           ...DashSidebar_viewer
           ...useNewFeatureSnackbar_viewer
-          ...useTipTapPageEditor_viewer
+          ...Page_viewer
           overLimitCopy
           teams {
             activeMeetings {

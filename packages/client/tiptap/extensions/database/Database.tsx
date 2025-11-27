@@ -11,26 +11,27 @@ function Component(props: NodeViewProps) {
 
   return (
     <NodeViewWrapper className='relative overflow-auto'>
-      <DatabaseView doc={extension.options.document} />
+      <DatabaseView doc={extension.options.document} userId={extension.options.userId} />
     </NodeViewWrapper>
   )
 }
 
 export interface DatabaseOptions {
   document: Y.Doc
+  userId?: string
 }
 export const Database = Node.create<DatabaseOptions>({
   name: 'database',
   onCreate() {
     // Add some initial content to make the first use easier
-    const doc = this.options.document
-    if (getRows(doc).length === 0) {
-      if (getColumns(doc).length === 0) {
-        appendColumn(doc, {name: 'Text column', type: 'text'})
-        appendColumn(doc, {name: 'Number column', type: 'number'})
-        appendColumn(doc, {name: 'Check column', type: 'check'})
+    const {document, userId} = this.options
+    if (getRows(document).length === 0) {
+      if (getColumns(document).length === 0) {
+        appendColumn(document, {name: 'Text column', type: 'text'})
+        appendColumn(document, {name: 'Number column', type: 'number'})
+        appendColumn(document, {name: 'Check column', type: 'check'})
       }
-      appendRow(doc)
+      appendRow(document, userId)
     }
   },
   renderHTML() {

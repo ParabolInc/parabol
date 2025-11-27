@@ -7,19 +7,25 @@ import {TagsCell} from './TagsCell'
 import {TextCell} from './TextCell'
 import {DataType} from './types'
 
-export const Cell = (props: {type: DataType; doc: Y.Doc; rowId: RowId; columnId: ColumnId}) => {
-  const {type, doc, rowId, columnId} = props
+export const Cell = (props: {
+  type: DataType
+  doc: Y.Doc
+  rowId: RowId
+  columnId: ColumnId
+  userId?: string
+}) => {
+  const {type, ...rest} = props
 
   switch (type) {
     case 'number':
-      return <NumberCell doc={doc} rowId={rowId} columnId={columnId} />
+      return <NumberCell {...rest} />
     case 'check':
-      return <CheckCell doc={doc} rowId={rowId} columnId={columnId} />
+      return <CheckCell {...rest} />
     case 'status':
-      return <StatusCell doc={doc} rowId={rowId} columnId={columnId} />
+      return <StatusCell {...rest} />
     case 'tags':
-      return <TagsCell doc={doc} rowId={rowId} columnId={columnId} />
+      return <TagsCell {...rest} />
     default:
-      return <TextCell doc={doc} rowId={rowId} columnId={columnId} />
+      return <TextCell {...rest} />
   }
 }
