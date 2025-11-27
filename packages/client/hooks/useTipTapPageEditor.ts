@@ -4,7 +4,6 @@ import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {Document} from '@tiptap/extension-document'
-import DragHandle from '@tiptap/extension-drag-handle'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
@@ -19,11 +18,11 @@ import {Markdown} from 'tiptap-markdown'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
-import {dragHandleConfig} from '../modules/pages/dragHandleConfig'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
+import {PageDragHandle} from '../tiptap/extensions/imageUpload/PageDragHandle'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {ResponseBlock} from '../tiptap/extensions/insightsBlock/ResponseBlock'
 import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
@@ -107,7 +106,7 @@ export const useTipTapPageEditor = (
         }),
         ImageBlock,
         LoomExtension,
-        DragHandle.configure(dragHandleConfig(atmosphere, pageId)),
+        PageDragHandle.configure({pageId, atmosphere}),
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,

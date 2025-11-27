@@ -4,6 +4,7 @@ import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
 import type {PageSectionEnum} from '../__generated__/useUpdatePageMutation.graphql'
+import type Atmosphere from '../Atmosphere'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
@@ -60,50 +61,31 @@ const getSortOrder = (source: RecordSource, connectionId: string, idx: number | 
     : positionAfter(afterEdgeSortOrder)
 }
 
-export const useDraggablePage = (
-  pageId: string,
-  isPageIdPrivate: boolean,
-  sourceParentPageId: string | null,
-  sourceTeamId: string | null | undefined,
-  sourceConnectionKey: PageConnectionKey,
-  isFirstChild: boolean,
-  isLastChild: boolean
-) => {
-  const ref = useRef<HTMLDivElement>(null)
-  const dragRef = useRef(makeDragRef())
-  const atmosphere = useAtmosphere()
-  const [execute] = useUpdatePageMutation()
-  const drag = dragRef.current
-
-  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = useEventCallback((e) => {
-    const el = ref.current
-    if (e.button !== 0) return
-    if (!el) return
-    e.preventDefault()
-    drag.startY = e.clientY
-    if (e.pointerType === 'touch') {
-      drag.startTimer = window.setTimeout(() => {
-        drag.waitingForMovement = true
-      }, 120)
-    } else {
-      drag.waitingForMovement = true
-    }
-    document.addEventListener('pointermove', onPointerMove)
-    document.addEventListener('pointerup', onPointerUp, {once: true})
-    document.addEventListener('pointercancel', cleanupDrag, {
-      once: true
-    })
-    window.addEventListener('blur', cleanupDrag, {once: true})
-  })
-
-  const onPointerUp = useEventCallback((e: PointerEvent) => {
+// This function must support browser native drags that originate from TipTap PageLinkBlocks
+// As well as pseudo drags coming from left nav PageLinks
+// If we build our own global drag handler & do it without native Drag API, we can simplify a bit here
+export const rawOnPointerUp =
+  (params: {
+    atmosphere: Atmosphere
+    sourceParentPageId: string | null
+    pageId: string
+    sourceConnectionKey: PageConnectionKey
+    sourceTeamId?: string | null | undefined
+    executeUpdatePage: ReturnType<typeof useUpdatePageMutation>[0]
+  }) =>
+  (e: PointerEvent | React.DragEvent<HTMLDivElement>) => {
+    const {
+      atmosphere,
+      sourceParentPageId,
+      pageId,
+      sourceConnectionKey,
+      sourceTeamId,
+      executeUpdatePage
+    } = params
     e.preventDefault()
     const dropCurrentTarget = document.elementFromPoint(e.clientX, e.clientY)
     const dropTarget = dropCurrentTarget?.closest('[data-drop-below], [data-drop-in]')
-    if (!dropTarget) {
-      cleanupDrag()
-      return
-    }
+    if (!dropTarget) return
     const isDropBelow = dropTarget.hasAttribute('data-drop-below')
     const section = dropTarget.closest('[data-pages-connection]')
     const targetConnectionKey = section
@@ -156,13 +138,12 @@ export const useDraggablePage = (
         dropTargetParent.insertAfter(dropTarget, nodeToMove)
       }
       providerManager.unregister(targetParentPageId)
-      cleanupDrag()
       return
     }
     if (targetParentPageId) {
       providerManager.withDoc(targetParentPageId, (doc) => {
         const pageCode = GQLID.fromKey(pageId)[0]
-        const title = source.get(pageId)?.title as string
+        const title = (source.get(pageId)?.title as string) ?? 'sub1'
         const children = getPageLinks(doc, true)
         const idx = dropIdx === null ? -1 : dropIdx
         const dropTarget = children.at(idx) as Y.XmlElement
@@ -195,7 +176,7 @@ export const useDraggablePage = (
         User_pages: 'team'
       }
 
-      execute({
+      executeUpdatePage({
         variables: {
           pageId,
           sortOrder,
@@ -229,8 +210,61 @@ export const useDraggablePage = (
         parent.delete(idxToRemove)
       })
     }
-    cleanupDrag()
+  }
+
+export const useDraggablePage = (
+  pageId: string,
+  isPageIdPrivate: boolean,
+  sourceParentPageId: string | null,
+  sourceTeamId: string | null | undefined,
+  sourceConnectionKey: PageConnectionKey,
+  isFirstChild: boolean,
+  isLastChild: boolean
+) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const dragRef = useRef(makeDragRef())
+  const atmosphere = useAtmosphere()
+  const [executeUpdatePage] = useUpdatePageMutation()
+  const drag = dragRef.current
+
+  const onPointerDown: React.PointerEventHandler<HTMLDivElement> = useEventCallback((e) => {
+    const el = ref.current
+    if (e.button !== 0) return
+    if (!el) return
+    e.preventDefault()
+    drag.startY = e.clientY
+    if (e.pointerType === 'touch') {
+      drag.startTimer = window.setTimeout(() => {
+        drag.waitingForMovement = true
+      }, 120)
+    } else {
+      drag.waitingForMovement = true
+    }
+    document.addEventListener('pointermove', onPointerMove)
+    document.addEventListener('pointerup', onPointerUp, {once: true})
+    document.addEventListener('pointercancel', cleanupDrag, {
+      once: true
+    })
+    window.addEventListener('blur', cleanupDrag, {once: true})
   })
+
+  const cleanupWrapper = (fn: (e: PointerEvent) => void) => (e: PointerEvent) => {
+    fn(e)
+    cleanupDrag()
+  }
+
+  const onPointerUp = useEventCallback(
+    cleanupWrapper(
+      rawOnPointerUp({
+        executeUpdatePage,
+        sourceTeamId,
+        sourceConnectionKey,
+        atmosphere,
+        pageId,
+        sourceParentPageId
+      })
+    )
+  )
 
   const onPointerMove = useEventCallback((e: PointerEvent) => {
     const el = ref.current
@@ -318,6 +352,7 @@ export const useDraggablePage = (
     removeVisualDragImage()
     window.removeEventListener('blur', cleanupDrag)
     document.removeEventListener('pointercancel', cleanupDrag)
+    document.removeEventListener('pointerup', onPointerUp)
     // in a set timeout for the <Link/> onClick handler to fire while draggingPageId is still set
     setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {

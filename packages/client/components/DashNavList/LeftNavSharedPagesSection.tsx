@@ -54,6 +54,8 @@ export const LeftNavSharedPagesSection = (props: Props) => {
   return (
     <div className='min-h-9' data-pages-connection={'User_sharedPages'}>
       <PageDropTarget
+        draggingPageId={draggingPageId}
+        draggingPageParentSection={draggingPageParentSection}
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(

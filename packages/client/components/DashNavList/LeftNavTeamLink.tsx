@@ -80,6 +80,8 @@ export const LeftNavTeamLink = (props: Props) => {
   return (
     <div className='relative rounded-md'>
       <PageDropTarget
+        draggingPageId={draggingPageId}
+        draggingPageParentSection={draggingPageParentSection}
         data-highlighted={isActive ? '' : undefined}
         data-drop-in={canDropIn ? teamId : undefined}
         className={cn(
