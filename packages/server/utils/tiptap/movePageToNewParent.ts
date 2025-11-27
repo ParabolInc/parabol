@@ -40,6 +40,10 @@ export const movePageToNewParent = async (
   const parentPageWithRole = await validateParentPage(parentPageId, viewerId, 'editor')
   const {ancestorIds, isPrivate} = parentPageWithRole
   if (ancestorIds.includes(pageId) || parentPageId === pageId) {
+    // FIXME: moving page 1220 from null to 1220
+    // 1. How is that message getting sent?
+    // 2. We need to wrap this in a try/catch & delete the block in the catch
+    console.log('moving page', pageId, 'from', childPage.parentPageId, 'to', parentPageId)
     throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
   }
   if (childPage.parentPageId) {
