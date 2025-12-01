@@ -39,7 +39,15 @@ export const PageDropTarget = (props: Props) => {
           e.currentTarget.removeAttribute('data-hover')
         }
       }}
-      onDrop={onDrop}
+      onDrop={(e) => {
+        e.preventDefault()
+        // since drop-below PageDropTargets are nested inside drop-in targets, we want to stop event propagation
+        e.stopPropagation()
+        onDrop?.(e)
+        if (!e.currentTarget.contains(e.relatedTarget as any)) {
+          e.currentTarget.removeAttribute('data-hover')
+        }
+      }}
       className={cn(
         'data-drop-below:data-hover:bg-sky-500/80 data-drop-in:data-hover:bg-sky-300/70 data-drop-below:hover:bg-sky-500/80 data-drop-in:hover:bg-sky-300/70',
         className

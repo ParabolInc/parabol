@@ -83,7 +83,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
   } else {
     // moving from 1 section to another
     if (targetSection === 'private') {
-      if (!page.isPrivate) {
+      if (sourceSection !== 'private') {
         await privatizePage(viewerId, dbPageId, nextSortOrder)
       } else {
         throw new GraphQLError('Page is already private')
@@ -95,20 +95,20 @@ const updatePage: MutationResolvers['updatePage'] = async (
       } else {
         throw new GraphQLError('Private page cannot be moved to shared')
       }
-    } else {
+    } else if (targetSection === 'team') {
       // moving to a team
       await movePageToNewTeam(viewerId, dbPageId, teamId!, nextSortOrder)
+    } else {
+      throw new GraphQLError('Target must be private, shared, or team.')
     }
   }
 
   if (page.parentPageId) {
     // if it had a parent, ensure the canonical page link was removed from the old parent.
-    // This SHOULD get called from the client, so we delay it to give the client a chance to do the right thing
+    // This may get called from the client for faster UI updates, but we call it here for posterity
     const {parentPageId: oldParentpageId} = page
-    setTimeout(() => {
-      const documentName = CipherId.toClient(oldParentpageId, 'page')
-      redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
-    }, 5000)
+    const documentName = CipherId.toClient(oldParentpageId, 'page')
+    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
   }
   const data = {pageId: dbPageId}
   const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)

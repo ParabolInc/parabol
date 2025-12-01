@@ -3,7 +3,6 @@ import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
-import type {PageSectionEnum} from '../__generated__/useUpdatePageMutation.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
@@ -170,18 +169,24 @@ export const rawOnPointerUp =
         teamId: targetTeamId
       })
       const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
-      const connectionToSection: Record<PageConnectionKey, PageSectionEnum> = {
-        User_privatePages: 'private',
-        User_sharedPages: 'shared',
-        User_pages: 'team'
+
+      const getSection = (connectionKey: PageConnectionKey, teamId: string | null | undefined) => {
+        switch (connectionKey) {
+          case 'User_sharedPages':
+            return 'shared'
+          case 'User_privatePages':
+            return 'private'
+          case 'User_pages':
+            return teamId ? 'team' : 'page'
+        }
       }
 
       executeUpdatePage({
         variables: {
           pageId,
           sortOrder,
-          sourceSection: connectionToSection[sourceConnectionKey],
-          targetSection: connectionToSection[targetConnectionKey],
+          sourceSection: getSection(sourceConnectionKey, sourceTeamId),
+          targetSection: getSection(targetConnectionKey, targetTeamId),
           teamId: targetTeamId
         },
         onError: snackOnError(atmosphere, 'updatePageErr'),

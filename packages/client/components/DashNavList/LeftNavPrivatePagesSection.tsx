@@ -99,7 +99,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
       <div className={cn('relative hidden min-h-1 pb-4', showChildren && 'block')}>
         <div
           className={cn(
-            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-drop-below:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
           data-drop-below={canDropBelow ? '' : undefined}

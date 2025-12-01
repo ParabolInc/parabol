@@ -94,7 +94,7 @@ export const LeftNavTeamLink = (props: Props) => {
       >
         <div
           className={cn(
-            '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-drop-below:flex',
             canDropBelow && 'cursor-pointer'
           )}
           data-drop-below={canDropBelow ? teamId || '' : undefined}
