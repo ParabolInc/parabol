@@ -142,7 +142,7 @@ export const rawOnPointerUp =
     if (targetParentPageId) {
       providerManager.withDoc(targetParentPageId, (doc) => {
         const pageCode = GQLID.fromKey(pageId)[0]
-        const title = (source.get(pageId)?.title as string) ?? 'sub1'
+        const title = source.get(pageId)?.title as string
         const children = getPageLinks(doc, true)
         const idx = dropIdx === null ? -1 : dropIdx
         const dropTarget = children.at(idx) as Y.XmlElement

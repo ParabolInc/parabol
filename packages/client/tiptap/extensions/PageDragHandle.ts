@@ -3,9 +3,9 @@ import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
-import type {PageDragHandleQuery} from '../../../__generated__/PageDragHandleQuery.graphql'
-import type Atmosphere from '../../../Atmosphere'
-import {GQLID} from '../../../utils/GQLID'
+import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
+import type Atmosphere from '../../Atmosphere'
+import {GQLID} from '../../utils/GQLID'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
