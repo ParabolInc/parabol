@@ -74,7 +74,10 @@ export const useTipTapPageEditor = (
         StarterKit.configure({
           document: false,
           undoRedo: false,
-          link: false
+          link: false,
+          trailingNode: {
+            node: 'paragraph'
+          }
         }),
         Details.configure({
           persist: true,
