@@ -19,7 +19,6 @@ const generateGroups = async (reflections: RetroReflection[], teamId: string) =>
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   if (!(await canAccessAI(team, dataLoader))) {
-    dataLoader.dispose()
     return
   }
   const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
@@ -27,14 +26,12 @@ const generateGroups = async (reflections: RetroReflection[], teamId: string) =>
 
   const themes = await manager.generateThemes(groupReflectionsInput)
   if (!themes) {
-    dataLoader.dispose()
     Logger.warn('ChatGPT was unable to generate themes')
     return
   }
   const groupedReflections = await manager.groupReflections(groupReflectionsInput, themes)
 
   if (!groupedReflections) {
-    dataLoader.dispose()
     Logger.warn('ChatGPT was unable to group the reflections')
     return
   }
@@ -70,7 +67,6 @@ const generateGroups = async (reflections: RetroReflection[], teamId: string) =>
   const user = await dataLoader.get('users').loadNonNull(facilitatorUserId!)
   analytics.suggestedGroupsGenerated(user, meetingId, teamId)
   publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
-  dataLoader.dispose()
   return autogroupReflectionGroups
 }
 

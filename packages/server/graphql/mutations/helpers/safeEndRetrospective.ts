@@ -17,6 +17,7 @@ import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
 import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
+import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
 import handleCompletedStage from './handleCompletedStage'
 import {IntegrationNotifier} from './notifications/IntegrationNotifier'
@@ -75,7 +76,8 @@ const safeEndRetrospective = async ({
   const phase = getMeetingPhase(phases)
   const [insights, retroInsights] = await Promise.all([
     gatherInsights(meeting, dataLoader),
-    gatherRetroInsights(meeting, dataLoader)
+    gatherRetroInsights(meeting, dataLoader),
+    generateRetroSummary(meetingId)
   ])
   const {commentCount, taskCount, topicCount, reflectionCount} = retroInsights
   const {engagement, usedReactjis} = insights
