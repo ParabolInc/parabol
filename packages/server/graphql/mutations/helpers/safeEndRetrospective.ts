@@ -32,7 +32,8 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
 
   const [sentimentScore, transcriptResult] = await Promise.all([
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
-    dumpTranscriptToPage(recallBotId, meetingId, dataLoader)
+    dumpTranscriptToPage(recallBotId, meetingId, dataLoader),
+    generateRetroSummary(meetingId)
   ])
   const transcription = transcriptResult?.transcription
   await pg
@@ -76,8 +77,7 @@ const safeEndRetrospective = async ({
   const phase = getMeetingPhase(phases)
   const [insights, retroInsights] = await Promise.all([
     gatherInsights(meeting, dataLoader),
-    gatherRetroInsights(meeting, dataLoader),
-    generateRetroSummary(meetingId)
+    gatherRetroInsights(meeting, dataLoader)
   ])
   const {commentCount, taskCount, topicCount, reflectionCount} = retroInsights
   const {engagement, usedReactjis} = insights
