@@ -97,14 +97,16 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         </LeftNavItemButtons>
       </PageDropTarget>
       <div className={cn('relative hidden min-h-1 pb-4', showChildren && 'block')}>
-        <div
+        <PageDropTarget
+          draggingPageId={draggingPageId}
+          draggingPageParentSection={draggingPageParentSection}
           className={cn(
-            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-drop-below:flex',
+            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full data-drop-below:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
           data-drop-below={canDropBelow ? '' : undefined}
           data-drop-idx={-1}
-        ></div>
+        ></PageDropTarget>
         {edges.map((edge, idx) => {
           const {node} = edge
           const {id} = node

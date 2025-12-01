@@ -247,9 +247,7 @@ export const useDraggablePage = (
     }
     document.addEventListener('pointermove', onPointerMove)
     document.addEventListener('pointerup', onPointerUp, {once: true})
-    document.addEventListener('pointercancel', cleanupDrag, {
-      once: true
-    })
+    document.addEventListener('pointercancel', cleanupDrag)
     window.addEventListener('blur', cleanupDrag, {once: true})
   })
 
@@ -347,7 +345,7 @@ export const useDraggablePage = (
     }
   }
 
-  function cleanupDrag() {
+  const cleanupDrag = useEventCallback(() => {
     if (drag.startTimer !== null) {
       clearTimeout(drag.startTimer)
       drag.startTimer = null
@@ -373,7 +371,7 @@ export const useDraggablePage = (
         parent?.setValue(null, 'isDraggingFirstChild').setValue(null, 'isDraggingLastChild')
       })
     })
-  }
+  })
 
   return {onPointerDown, ref}
 }
