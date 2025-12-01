@@ -1,3 +1,4 @@
+import {Parser} from '@json2csv/plainjs'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
@@ -7,8 +8,6 @@ import {
   NodeViewWrapper,
   ReactNodeViewRenderer
 } from '@tiptap/react'
-import type JSON2CSVParser from 'json2csv/JSON2CSVParser'
-import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import {useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
 import {toSlug} from '../../../shared/toSlug'
@@ -114,7 +113,7 @@ function Component(props: NodeViewProps) {
     const parser = new Parser({
       withBOM: true,
       eol: '\n'
-    }) as JSON2CSVParser<any>
+    })
     const csvString = parser.parse(rows)
     const hash = await quickHash([csvString])
     const blob = new Blob([csvString], {type: 'text/csv;charset=utf-8;'})

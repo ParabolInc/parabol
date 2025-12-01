@@ -7,11 +7,15 @@ import {appendColumn, appendRow, getColumns, getRows} from './data'
 const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
 
 function Component(props: NodeViewProps) {
-  const {extension} = props
+  const {editor, extension} = props
 
   return (
     <NodeViewWrapper className='relative overflow-auto'>
-      <DatabaseView doc={extension.options.document} userId={extension.options.userId} />
+      <DatabaseView
+        doc={extension.options.document}
+        editor={editor}
+        userId={extension.options.userId}
+      />
     </NodeViewWrapper>
   )
 }
