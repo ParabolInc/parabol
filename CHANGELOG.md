@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.37.1](https://github.com/ParabolInc/parabol/compare/v10.37.0...v10.37.1) (2025-12-01)
+
+
+### Fixed
+
+* bump node-forge packages ([#12385](https://github.com/ParabolInc/parabol/issues/12385)) ([f0e4cee](https://github.com/ParabolInc/parabol/commit/f0e4ceeb6f89c354fc74a91d3ca354b8c5c5f6ba))
+* no trailing heading node in pages ([#12383](https://github.com/ParabolInc/parabol/issues/12383)) ([cbdf49b](https://github.com/ParabolInc/parabol/commit/cbdf49b257a6865495608e50ba4222d59b14c7e7))
+
 ## [10.37.0](https://github.com/ParabolInc/parabol/compare/v10.36.1...v10.37.0) (2025-11-27)
 
 
