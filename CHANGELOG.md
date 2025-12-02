@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.37.2](https://github.com/ParabolInc/parabol/compare/v10.37.1...v10.37.2) (2025-12-02)
+
+
+### Fixed
+
+* jira issue search results not returning correct order ([#12390](https://github.com/ParabolInc/parabol/issues/12390)) ([6565cbf](https://github.com/ParabolInc/parabol/commit/6565cbf6d5f4bb622f25758ff5aa4b63961b31bd))
+* missing summaryPageId on EndRetrospectiveSuccess.meeting ([#12365](https://github.com/ParabolInc/parabol/issues/12365)) ([43781a7](https://github.com/ParabolInc/parabol/commit/43781a7ca5f2e5170b46a5a85c190232fa63dfef))
+
+
+### Changed
+
+* **deps:** bump nodemailer from 7.0.10 to 7.0.11 ([#12388](https://github.com/ParabolInc/parabol/issues/12388)) ([4a2d5da](https://github.com/ParabolInc/parabol/commit/4a2d5da9a9f6e43ff3b420eec330a1affb5e965d))
+
 ## [10.37.1](https://github.com/ParabolInc/parabol/compare/v10.37.0...v10.37.1) (2025-12-01)
 
 
