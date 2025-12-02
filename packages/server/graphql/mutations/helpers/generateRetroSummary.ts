@@ -1,7 +1,7 @@
 import yaml from 'js-yaml'
+import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
-import type {DataLoaderWorker} from '../../graphql'
 import canAccessAI from './canAccessAI'
 import {transformRetroToAIFormat} from './transformRetroToAIFormat'
 
@@ -13,9 +13,10 @@ const setSummaryToNull = async (meetingId: string) => {
 
 export const generateRetroSummary = async (
   meetingId: string,
-  dataLoader: DataLoaderWorker,
   prompt?: string
 ): Promise<string | null> => {
+  const dataLoader = getNewDataLoader(`generateRetroSummary`)
+  dataLoader.dispose()
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId} = meeting
 

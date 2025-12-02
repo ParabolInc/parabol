@@ -41,7 +41,7 @@ const generateRetroSummaries: MutationResolvers['generateRetroSummaries'] = asyn
 
   const updatedMeetingIds = await Promise.all(
     rawMeetings.map(async (meeting) => {
-      const newSummary = await generateRetroSummary(meeting.id, dataLoader, prompt as string)
+      const newSummary = await generateRetroSummary(meeting.id, prompt as string)
       if (!newSummary) return null
       return meeting.id
     })
