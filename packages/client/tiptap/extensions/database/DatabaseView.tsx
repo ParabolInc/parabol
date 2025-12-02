@@ -80,7 +80,6 @@ export default function DatabaseView(props: Props) {
         id: 'append',
         size: 48,
         minSize: 48,
-        maxSize: 48,
         enableResizing: false,
         header: () => (
           <div
@@ -114,9 +113,14 @@ export default function DatabaseView(props: Props) {
 
   return (
     <>
-      <ImportExport doc={doc} editor={editor} />
+      <div className='flex w-full flex-row justify-end'>
+        <ImportExport doc={doc} editor={editor} />
+      </div>
       <table
-        className={cn('table-fixed border-collapse bg-white', isResizing && 'select-none')}
+        className={cn(
+          'min-w-full table-fixed border-collapse bg-white',
+          isResizing && 'select-none'
+        )}
         style={{
           width: table.getTotalSize()
         }}
@@ -129,7 +133,7 @@ export default function DatabaseView(props: Props) {
                 <th
                   key={header.id}
                   className='border-slate-400 border-b-1 p-0'
-                  style={{width: header.getSize()}}
+                  style={header.column.getCanResize() ? {width: header.getSize()} : {}}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                   {header.column.getCanResize() && (

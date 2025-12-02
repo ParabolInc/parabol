@@ -1,5 +1,5 @@
 import {Parser} from '@json2csv/plainjs'
-import {FileDownload, FileUpload} from '@mui/icons-material'
+import {FileDownload, FileUpload, MoreVert} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {Editor} from '@tiptap/core'
 import {useState} from 'react'
@@ -65,8 +65,8 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
     <>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <div className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
-            <span className='truncate'>Import/Export</span>
+          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-full p-2 hover:bg-slate-100'>
+            <MoreVert />
           </div>
         </DropdownMenu.Trigger>
         <DropdownMenu.Portal>

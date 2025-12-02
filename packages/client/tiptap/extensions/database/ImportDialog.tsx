@@ -1,22 +1,18 @@
-import {parse} from 'csv-parse/browser/esm'
-import {useRef, useState} from 'react'
+import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {Checkbox} from '../../../ui/Checkbox/Checkbox'
+import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
-import {
-  appendColumn,
-  appendRow,
-  deleteColumn,
-  getColumnMeta,
-  getColumns,
-  getData,
-  getRows
-} from './data'
+import plural from '../../../utils/plural'
+import {appendColumn, appendRow, getColumnMeta, getColumns, getData, getRows} from './data'
+import {useYArray, useYMap} from './hooks'
+import {UploadCSV} from './UploadCSV'
 
 const HEADER_MISMATCH = 'CSV headers do not match current table columns'
 
@@ -34,110 +30,20 @@ const clearAllData = (doc: Y.Doc) => {
   })
 }
 
-const importCSV = (doc: Y.Doc, file: File, viewerId: string) => {
-  return new Promise<Error | null>((resolve) => {
-    const columns = getColumns(doc)
-    const columnMeta = getColumnMeta(doc)
+const importRecords = (doc: Y.Doc, viewerId: string, records: string[][]) => {
+  const first = records[0]
+  if (!first) return
 
-    const isEmpty = dataIsEmpty(doc)
+  const columns = getColumns(doc).toArray()
 
-    if (file.type !== 'text/csv') {
-      resolve(new Error('Please upload a valid CSV file.'))
-      return
-    }
+  if (columns.length < first.length) {
+    throw new Error(HEADER_MISMATCH)
+  }
 
-    const currentHeaders = columns.toArray().map((columnId, index) => {
-      const meta = columnMeta.get(columnId)
-      return {
-        id: columnId,
-        name: meta?.name ?? `Column ${index + 1}`
-      }
-    })
-    if (isEmpty) {
-      columns.forEach((columnId) => {
-        deleteColumn(doc, columnId)
-      })
-      currentHeaders.splice(0, currentHeaders.length)
-    }
-
-    const parser = parse({
-      bom: true,
-      columns: (headers: string[]) => {
-        for (let i = 0; i < currentHeaders.length && i < headers.length; i++) {
-          if (headers[i] !== currentHeaders[i]!.name) {
-            throw new Error(HEADER_MISMATCH)
-          }
-        }
-        if (currentHeaders.length < headers.length) {
-          headers.slice(currentHeaders.length).forEach((header) => {
-            const id = appendColumn(doc, {name: header, type: 'text'})
-            currentHeaders.push({id, name: header})
-          })
-        }
-
-        return currentHeaders.map((h) => h.id)
-      },
-      skip_empty_lines: true
-    })
-
-    parser.on('readable', function () {
-      let record: {}
-      while ((record = parser.read()) !== null) {
-        appendRow(doc, viewerId, record)
-      }
-    })
-    parser.once('error', function (error) {
-      resolve(error)
-    })
-    parser.once('end', function () {
-      resolve(null)
-    })
-
-    const decoder = new TextDecoder('utf-8')
-    file
-      .stream()
-      .pipeTo(
-        new WritableStream({
-          write: (chunk, controller) => {
-            return new Promise((resolve, reject) => {
-              const decoded = decoder.decode(chunk)
-              parser.write(decoded, (error) => {
-                if (error) {
-                  controller.error(error)
-                  reject(error)
-                } else {
-                  resolve()
-                }
-              })
-            })
-          },
-          close: () => {
-            parser.end()
-          }
-        })
-      )
-      .catch(resolve)
+  records.forEach((record) => {
+    const mappedRecord = Object.fromEntries(record.map((value, index) => [columns[index], value]))
+    appendRow(doc, viewerId, mappedRecord)
   })
-}
-
-const rowIsEmpty = (row: Y.Map<string>) => {
-  if (row.size === 0) return true
-  for (const key of row.keys()) {
-    if (!key.startsWith('_')) return false
-  }
-  return true
-}
-const dataIsEmpty = (doc: Y.Doc) => {
-  const rows = getRows(doc)
-  if (rows.length === 0) return true
-
-  const data = getData(doc)
-  for (const row of data.values()) {
-    if (!rowIsEmpty(row)) {
-      return false
-    }
-  }
-  return true
 }
 
 type Props = {
@@ -147,106 +53,166 @@ type Props = {
 }
 
 export const ImportDialog = (props: Props) => {
-  const {viewerId} = useAtmosphere()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const {isOpen, onClose, doc} = props
+  const {viewerId} = useAtmosphere()
 
-  const fileRef = useRef<File | null>(null)
-  const [confirmReplace, setConfirmReplace] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const [records, setRecords] = useState<string[][]>()
 
-  const startImport = async (file: File) => {
-    fileRef.current = file
-    const error = await importCSV(doc, file, viewerId)
-    if (error instanceof Error) {
-      if (error.message === HEADER_MISMATCH) {
-        setConfirmReplace(true)
-      }
-    } else {
-      fileRef.current = null
-      onClose()
+  const [firstRowIsHeader, setFirstRowIsHeader] = useState(true)
+  const [discardExistingData, setDiscardExistingData] = useState(false)
+  const firstRowOffset = firstRowIsHeader ? 1 : 0
+
+  const columns = useYArray(getColumns(doc))
+  const columnMeta = useYMap(getColumnMeta(doc))
+  const rows = useYArray(getRows(doc))
+
+  const headers = useMemo(() => {
+    if (!records || records.length === 0) return []
+
+    const newHeaders = firstRowIsHeader
+      ? records[0]!
+      : records[0]!.map((_, index) => `Column ${index + 1}`)
+    if (discardExistingData) {
+      return newHeaders
     }
+    return newHeaders.map((name, index) => {
+      const id = columns[index]
+      if (!id) return name
+      const meta = columnMeta.get(id)
+      return meta ? meta.name : `Column ${index + 1}`
+    })
+  }, [columns, columnMeta, firstRowIsHeader, discardExistingData, records])
+
+  const resetState = () => {
+    setRecords(undefined)
+    setError(null)
+    setFirstRowIsHeader(true)
+    setDiscardExistingData(false)
   }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {
-    const {files} = e.currentTarget
-    const file = files ? files[0] : null
-    if (!file) return
-    startImport(file)
-  }
-
-  const onReplaceConfirmed = async () => {
-    clearAllData(doc)
-    if (fileRef.current) {
-      await importCSV(doc, fileRef.current, viewerId)
+  const onImport = () => {
+    if (!records) return
+    if (discardExistingData) {
+      clearAllData(doc)
     }
-    setConfirmReplace(false)
+
+    const newHeaders = firstRowIsHeader
+      ? records[0]!
+      : records[0]!.map((_, index) => `Column ${index + 1}`)
+    const columns = getColumns(doc)
+    newHeaders.slice(columns.length).forEach((name) => {
+      appendColumn(doc, {name, type: 'text'})
+    })
+
+    importRecords(doc, viewerId, records.slice(firstRowOffset))
+    resetState()
     onClose()
   }
 
-  const onChooseFile = () => {
-    if (!fileInputRef.current) return
-    // let the user upload the same file again
-    fileInputRef.current.value = ''
-    fileInputRef.current.click()
+  const onBack = () => {
+    resetState()
   }
 
-  const preventDefault = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const onCancel = () => {
+    resetState()
+    onClose()
   }
 
-  const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    preventDefault(e)
-    const file = e.dataTransfer.files[0]
-    if (!file) return
-    startImport(file)
-  }
-
-  const isEmpty = dataIsEmpty(doc)
+  const recordCount = records ? records.length - firstRowOffset : 0
+  const previewLength = records ? Math.min(3, recordCount) : 0
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent
-        className='z-10'
-        onDragEnter={preventDefault}
-        onDragOver={preventDefault}
-        onDrop={onDrop}
-      >
+      <DialogContent className='z-10'>
         <DialogTitle className='mb-4'>Import CSV</DialogTitle>
-        {confirmReplace ? (
-          <div className='mb-3 text-left font-semibold text-sm text-tomato-600'>
-            The CSV headers do not match the current data, do you want to replace everything?
-          </div>
+        {!records ? (
+          <UploadCSV onRecordsParsed={setRecords} onError={setError} />
         ) : (
-          <>
-            <input
-              className='hidden'
-              ref={fileInputRef}
-              type='file'
-              accept='.csv'
-              onChange={onChange}
-            />
-            <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
-              {isEmpty
-                ? 'Upload a CSV into the database.'
-                : 'Upload a CSV to append to the current data.'}
+          <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
+            Import settings
+            <div
+              className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+              onClick={() => setFirstRowIsHeader(!firstRowIsHeader)}
+            >
+              <Checkbox checked={firstRowIsHeader} />
+              First row is header
             </div>
-          </>
+            <div
+              className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+              onClick={() => setDiscardExistingData(!discardExistingData)}
+            >
+              <Checkbox checked={discardExistingData} />
+              Discard existing data
+            </div>
+            <div className={'mt-4 text-sm'}>
+              Preview of {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
+              {recordCount} {plural(recordCount, 'record')}
+            </div>
+            <div
+              className={
+                'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-slate-400 text-slate-500'
+              }
+            >
+              <table className={'min-w-full table-fixed border-collapse bg-white'}>
+                <tr className='text-slate-600'>
+                  {headers.map((name, index) => (
+                    <th key={index} className='truncate border-slate-400 border-b-1 p-2 text-left'>
+                      {name}
+                    </th>
+                  ))}
+                </tr>
+                {rows.length > 0 && (
+                  <tr>
+                    <td
+                      colSpan={headers.length}
+                      className={cn('px-2 py-1', discardExistingData && 'text-tomato-600')}
+                    >
+                      {discardExistingData
+                        ? `...discarding existing ${rows.length} ${plural(rows.length, 'record')}`
+                        : `...existing ${rows.length} ${plural(rows.length, 'record')}`}
+                    </td>
+                  </tr>
+                )}
+                {records
+                  .slice(firstRowOffset, previewLength + firstRowOffset)
+                  .map((record, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {record.map((cell, cellIndex) => (
+                        <td
+                          key={cellIndex}
+                          className='border-slate-400 border-b-1 border-l-1 p-2 first:border-l-0'
+                        >
+                          {cell}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+              </table>
+            </div>
+          </div>
+        )}
+        {error && (
+          <div className='mb-4 rounded-md bg-red-50 p-3 text-sm text-tomato-700'>
+            Error importing: {error.message}
+          </div>
         )}
 
-        <DialogActions>
-          {confirmReplace ? (
+        <DialogActions className='mt-0 flex w-full gap-4'>
+          {records ? (
             <>
-              <FlatPrimaryButton size='medium' onClick={onReplaceConfirmed}>
-                Replace data
+              <SecondaryButton size='medium' onClick={onBack}>
+                Back
+              </SecondaryButton>
+              <FlatPrimaryButton size='medium' onClick={onImport}>
+                {discardExistingData ? 'Replace' : 'Append'}
               </FlatPrimaryButton>
             </>
           ) : (
-            <FlatPrimaryButton size='medium' onClick={onChooseFile}>
-              Upload file
-            </FlatPrimaryButton>
+            <SecondaryButton size='medium' onClick={onCancel}>
+              Cancel
+            </SecondaryButton>
           )}
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
         </DialogActions>
       </DialogContent>
     </Dialog>
