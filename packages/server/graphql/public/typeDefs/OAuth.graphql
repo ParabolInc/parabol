@@ -34,6 +34,15 @@ extend type Query {
   Get an OAuth 2.0 Application by ID
   """
   oauthAPIProvider(id: ID!): OAuthAPIProvider
+  """
+  Generate new OAuth 2.0 credentials (clientId and clientSecret)
+  """
+  generateOAuthCredentials: OAuthCredentialsPayload!
+}
+
+type OAuthCredentialsPayload {
+  clientId: String!
+  clientSecret: String!
 }
 
 type OAuthAPIProvider {
@@ -51,6 +60,8 @@ input CreateOAuthAPIProviderInput {
   name: String!
   redirectUris: [String!]!
   scopes: [String!]!
+  clientId: String
+  clientSecret: String
 }
 
 type CreateOAuthAPIProviderPayload {

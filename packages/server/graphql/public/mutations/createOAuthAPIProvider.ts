@@ -14,6 +14,8 @@ interface CreateOAuthAPIProviderInput {
   name: string
   redirectUris: string[]
   scopes: string[]
+  clientId?: string
+  clientSecret?: string
 }
 
 export default async function createOAuthAPIProvider(
@@ -21,7 +23,7 @@ export default async function createOAuthAPIProvider(
   {input}: {input: CreateOAuthAPIProviderInput},
   context: GQLContext
 ) {
-  const {orgId, name, redirectUris, scopes} = input
+  const {orgId, name, redirectUris, scopes, clientId, clientSecret} = input
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
 
@@ -36,8 +38,8 @@ export default async function createOAuthAPIProvider(
   const provider = new OAuthAPIProvider({
     organizationId: orgId,
     name,
-    clientId: 'prbl-cid-' + generateRandomString(16),
-    clientSecret: 'prbl-s-' + generateRandomString(32),
+    clientId: clientId || 'prbl-cid-' + generateRandomString(16),
+    clientSecret: clientSecret || 'prbl-s-' + generateRandomString(32),
     redirectUris,
     scopes
   })

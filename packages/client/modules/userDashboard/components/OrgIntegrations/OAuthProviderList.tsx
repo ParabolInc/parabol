@@ -1,17 +1,19 @@
 import AddIcon from '@mui/icons-material/Add'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import WebIcon from '@mui/icons-material/Web'
+import Dialog from '@mui/material/Dialog'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
-import {useHistory, useRouteMatch} from 'react-router'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
+import RaisedButton from '../../../../components/RaisedButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useSubscription from '../../../../hooks/useSubscription'
 import organizationSubscription from '../../../../subscriptions/OrganizationSubscription'
+import OAuthAppFormDialog from './OAuthAppFormDialog'
 
 interface Props {
   organizationRef: OAuthProviderList_organization$key
@@ -34,10 +36,12 @@ const OAuthProviderList = ({organizationRef}: Props) => {
 
   useSubscription('OAuthProviderList', organizationSubscription)
 
-  const history = useHistory()
-  const match = useRouteMatch()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [providerToDelete, setProviderToDelete] = useState<{id: string; name: string} | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingProviderId, setEditingProviderId] = useState<string | null>(null)
 
   const [commitDelete] = useMutation(graphql`
     mutation OAuthProviderListDeleteMutation($input: DeleteOAuthAPIProviderInput!) {
@@ -59,40 +63,60 @@ const OAuthProviderList = ({organizationRef}: Props) => {
   }
 
   const handleEdit = () => {
-    if (selectedProviderId) {
-      history.push(`${match.url}/oauth/${selectedProviderId}`)
-    }
+    // Close menu first to prevent aria-hidden violations
+    const providerId = selectedProviderId
     handleMenuClose()
+
+    // Defer dialog open until after menu close animation
+    requestAnimationFrame(() => {
+      setEditingProviderId(providerId)
+      setDialogOpen(true)
+    })
   }
 
-  const handleDelete = () => {
-    if (selectedProviderId && confirm('Are you sure you want to delete this application?')) {
+  const handleDeleteClick = () => {
+    const providerId = selectedProviderId
+    const provider = providers.find((p) => p.id === providerId)
+
+    // Close menu first to prevent aria-hidden violations
+    handleMenuClose()
+
+    if (provider) {
+      // Defer dialog open until after menu close animation
+      requestAnimationFrame(() => {
+        setProviderToDelete({id: provider.id, name: provider.name})
+        setDeleteDialogOpen(true)
+      })
+    }
+  }
+
+  const handleConfirmDelete = () => {
+    if (providerToDelete) {
       commitDelete({
         variables: {
           input: {
-            providerId: selectedProviderId
+            providerId: providerToDelete.id
           }
         },
-        onCompleted: () => {
-          // Relay should automatically update the list if the connection is configured correctly,
-          // or we might need updater config. For now, let's rely on standard Relay behavior.
-        },
         optimisticUpdater: (store) => {
-          if (!selectedProviderId) return
           const orgRecord = store.get(data.id)
           if (!orgRecord) return
           const providers = orgRecord.getLinkedRecords('oauthProviders')
           if (!providers) return
-          const newProviders = providers.filter((p) => p.getDataID() !== selectedProviderId)
+          const newProviders = providers.filter((p) => p.getDataID() !== providerToDelete.id)
           orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
+        },
+        onCompleted: () => {
+          setDeleteDialogOpen(false)
+          setProviderToDelete(null)
         }
       })
     }
-    handleMenuClose()
   }
 
   const handleAdd = () => {
-    history.push(`${match.url}/oauth/new`)
+    setEditingProviderId(null)
+    setDialogOpen(true)
   }
 
   const providers = data.oauthProviders || []
@@ -149,10 +173,41 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
       >
         <MenuItem onClick={handleEdit}>Edit application</MenuItem>
-        <MenuItem onClick={handleDelete} className='text-red-600'>
+        <MenuItem onClick={handleDeleteClick} className='text-red-600'>
           Delete application
         </MenuItem>
       </Menu>
+
+      {dialogOpen && (
+        <OAuthAppFormDialog
+          orgId={data.id}
+          providerId={editingProviderId}
+          isOpen={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+        />
+      )}
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        maxWidth='xs'
+        fullWidth
+      >
+        <div className='p-6'>
+          <h3 className='mb-4 font-semibold text-lg text-slate-900'>Delete Application?</h3>
+          <p className='mb-6 text-slate-600'>
+            Are you sure you want to delete{' '}
+            <span className='font-semibold'>{providerToDelete?.name}</span>? This action cannot be
+            undone.
+          </p>
+          <div className='flex justify-end gap-3'>
+            <SecondaryButton onClick={() => setDeleteDialogOpen(false)}>Cancel</SecondaryButton>
+            <RaisedButton palette='pink' onClick={handleConfirmDelete}>
+              Delete
+            </RaisedButton>
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 }
