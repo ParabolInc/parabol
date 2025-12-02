@@ -45,23 +45,24 @@ class PublishedDataLoaders {
     if (!this.promiseLookup[id]) {
       this.promiseLookup[id] = this.pushToRedis(id, topic, type)
     } else if (!__PRODUCTION__) {
-      const dataLoaderWorker = getInMemoryDataLoader(id)?.dataLoaderWorker
-      if (!dataLoaderWorker) return
-      const buffer = await serializeDataLoader(dataLoaderWorker)
-      const hash = JSON.stringify(unpack(buffer))
-      const existingBufferHash = this.debugBufferHash[id]
-      if (!existingBufferHash) {
-        console.log('In dev, the debugBufferHash does not exist yet. Try a delay')
-        return
+      const checkBufferHash = async () => {
+        const dataLoaderWorker = getInMemoryDataLoader(id)?.dataLoaderWorker
+        if (!dataLoaderWorker) return
+        const buffer = await serializeDataLoader(dataLoaderWorker)
+        const hash = JSON.stringify(unpack(buffer))
+        await this.promiseLookup[id]
+        // guaranteed to exist after awaiting this.promiseLookup[id]
+        const existingBufferHash = this.debugBufferHash[id]!
+        const {hash: oldHash, topic: oldTopic, type: oldType} = existingBufferHash
+        if (oldHash !== hash) {
+          writeFileSync('publishedDataloader1.json', oldHash!)
+          writeFileSync('publishedDataloader2.json', hash!)
+          console.warn(
+            `publish was called with ${oldTopic} ${oldType}, then the dataloader was mutated, then publish was called again for type: ${topic} ${type}. This cannot be. Ensure all "publish" calls happen after changes to data`
+          )
+        }
       }
-      const {hash: oldHash, topic: oldTopic, type: oldType} = existingBufferHash
-      if (oldHash !== hash) {
-        writeFileSync('publishedDataloader1.json', oldHash!)
-        writeFileSync('publishedDataloader2.json', hash!)
-        console.warn(
-          `publish was called with ${oldTopic} ${oldType}, then the dataloader was mutated, then publish was called again for type: ${topic} ${type}. This cannot be. Ensure all "publish" calls happen after changes to data`
-        )
-      }
+      checkBufferHash().catch(() => {})
     }
     return this.promiseLookup[id]
   }
