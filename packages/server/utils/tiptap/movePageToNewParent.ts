@@ -24,19 +24,22 @@ export const movePageToNewParent = async (
   if (childPage.parentPageId === parentPageId) {
     // the child page will already have the correct parent if we created a PageLink on the parent doc
     if (!childPage.deletedAt) return
-    // if the user e.g. cut a page link & pasted it back in the same doc, we need to undelete it
+  }
+
+  const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
+
+  if (viewerAccess !== 'owner') {
+    throw new GraphQLError(`Full Access required to move a Page to a new parent`)
+  }
+  if (childPage.deletedAt) {
+    // if the user e.g. cut a page link & pasted it back, we need to undelete it
     await pg
       .updateTable('Page')
       .set({deletedAt: null, deletedBy: null})
       .where('id', '=', pageId)
       .execute()
-    return
   }
 
-  const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])
-  if (viewerAccess !== 'owner') {
-    throw new GraphQLError(`Full Access required to move a Page to a new parent`)
-  }
   const parentPageWithRole = await validateParentPage(parentPageId, viewerId, 'editor')
   const {ancestorIds, isPrivate} = parentPageWithRole
   if (ancestorIds.includes(pageId) || parentPageId === pageId) {

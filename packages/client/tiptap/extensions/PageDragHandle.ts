@@ -13,6 +13,7 @@ const queryNode = graphql`
     public {
       page(pageId: $pageId) {
         isPrivate
+        title
         access {
           viewer
         }

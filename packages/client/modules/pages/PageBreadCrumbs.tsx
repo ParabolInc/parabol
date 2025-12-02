@@ -1,13 +1,15 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import React, {useEffect, useRef} from 'react'
-import {commitLocalUpdate, useFragment} from 'react-relay'
+import {useEffect, useRef} from 'react'
+import {commitLocalUpdate, useClientQuery, useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
+import type {PageBreadCrumbsQuery} from '../../__generated__/PageBreadCrumbsQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
+import {PageDropTarget} from './PageDropTarget'
 
 interface Props {
   pageRef: PageBreadCrumbs_page$key
@@ -45,6 +47,7 @@ export const PageBreadCrumbs = (props: Props) => {
           name
         }
         ancestors {
+          __typename
           id
           title
           team {
@@ -56,6 +59,19 @@ export const PageBreadCrumbs = (props: Props) => {
     `,
     pageRef
   )
+  const data = useClientQuery<PageBreadCrumbsQuery>(
+    graphql`
+        query PageBreadCrumbsQuery {
+          viewer {
+            draggingPageId
+            draggingPageParentSection
+          }
+        }
+      `,
+    {}
+  )
+  const {viewer} = data
+  const {draggingPageId, draggingPageParentSection} = viewer
   const {ancestors, id, title, team} = page
   const self = {id, title}
   useSetCurrentPageAncestor(id, ancestors)
@@ -85,19 +101,33 @@ export const PageBreadCrumbs = (props: Props) => {
       </>
     )
   }
-  const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => (
-    <React.Fragment key={page.id}>
-      {page.team && renderTeamCrumb(page.team)}
-      <Link
-        draggable={false}
-        to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
-        className='rounded-md px-1 hover:bg-slate-200'
-      >
-        {page.title}
-      </Link>
-      <span className='px-1'>/</span>
-    </React.Fragment>
-  )
+  const nextPageAncestors = ancestors.map(({id}) => id)
+  const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
+    const isSelf = page.id === draggingPageId
+    const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
+    const hasDragDropInAccess = page.__typename === 'Page'
+    const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && hasDragDropInAccess
+    return (
+      <div key={page.id} className=''>
+        <PageDropTarget
+          className='inline rounded-sm'
+          draggingPageParentSection={draggingPageParentSection}
+          draggingPageId={draggingPageId}
+          data-drop-in={canDropIn ? page.id : undefined}
+        >
+          {page.team && renderTeamCrumb(page.team)}
+          <Link
+            draggable={false}
+            to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
+            className='rounded-md px-1 hover:bg-slate-200'
+          >
+            {page.title}
+          </Link>
+        </PageDropTarget>
+        <span className='px-1'>/</span>
+      </div>
+    )
+  }
 
   return (
     <nav className='flex items-center pl-2 text-slate-600 text-sm'>
