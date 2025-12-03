@@ -23,27 +23,18 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
     const columnMeta = getColumnMeta(doc)
     const data = getData(doc)
 
-    const headers = columns.toArray().map((columnId, index) => {
+    const fields = columns.toArray().map((columnId, index) => {
       const meta = columnMeta.get(columnId)
       return {
-        id: columnId,
-        name: meta?.name ?? `Column ${index + 1}`
+        value: columnId,
+        label: meta?.name ?? `Column ${index + 1}`
       }
     })
 
-    const rowRecords = [] as Record<string, string>[]
-    rows.forEach((rowId) => {
-      const row = data.get(rowId)
-      const rowRecord = {} as Record<string, string>
-      headers.forEach(({id, name}) => {
-        const value = row?.get(id) ?? ''
-        // TODO convert to type-specific formats, i.e. if the type would filter this one out, so should we
-        rowRecord[name] = value
-      })
-      rowRecords.push(rowRecord)
-    })
+    const rowRecords = rows.map((rowId) => data.get(rowId)?.toJSON())
 
     const parser = new Parser({
+      fields,
       withBOM: true,
       eol: '\n'
     })
