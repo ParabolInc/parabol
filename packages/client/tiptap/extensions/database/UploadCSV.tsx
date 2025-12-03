@@ -120,7 +120,7 @@ export const UploadCSV = (props: Props) => {
       <input className='hidden' ref={fileInputRef} type='file' accept='.csv' onChange={onChange} />
       <div
         className={
-          'mt-3 flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-slate-400 border-dashed bg-slate-50 text-slate-500 hover:border-slate-600 data-drop:border-slate-600 data-drop:bg-slate-100'
+          'mt-3 flex h-50 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-slate-400 border-dashed bg-slate-50 text-slate-500 hover:border-slate-600 data-drop:border-slate-600 data-drop:bg-slate-100'
         }
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}

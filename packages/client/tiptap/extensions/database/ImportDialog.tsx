@@ -124,7 +124,7 @@ export const ImportDialog = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
-      <DialogContent className='z-10'>
+      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import CSV</DialogTitle>
         {!records ? (
           <UploadCSV onRecordsParsed={setRecords} onError={setError} />
@@ -143,51 +143,63 @@ export const ImportDialog = (props: Props) => {
               onClick={() => setDiscardExistingData(!discardExistingData)}
             >
               <Checkbox checked={discardExistingData} />
-              Discard existing data
+              Discard existing data ({rows.length} {plural(rows.length, 'record')})
             </div>
             <div className={'mt-4 text-sm'}>
-              Preview of {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
-              {recordCount} {plural(recordCount, 'record')}
+              Previewing {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
+              {recordCount} {plural(recordCount, 'record')}...
             </div>
             <div
               className={
                 'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-slate-400 text-slate-500'
               }
             >
-              <table className={'min-w-full table-fixed border-collapse bg-white'}>
-                <tr className='text-slate-600'>
-                  {headers.map((name, index) => (
-                    <th key={index} className='truncate border-slate-400 border-b-1 p-2 text-left'>
-                      {name}
-                    </th>
-                  ))}
-                </tr>
-                {rows.length > 0 && (
-                  <tr>
-                    <td
-                      colSpan={headers.length}
-                      className={cn('px-2 py-1', discardExistingData && 'text-tomato-600')}
-                    >
-                      {discardExistingData
-                        ? `...discarding existing ${rows.length} ${plural(rows.length, 'record')}`
-                        : `...existing ${rows.length} ${plural(rows.length, 'record')}`}
-                    </td>
+              <table className={'min-w-full border-collapse bg-white'}>
+                <thead>
+                  <tr className='text-slate-600'>
+                    {headers.map((name, index) => (
+                      <th
+                        key={index}
+                        className='w-24 min-w-24 truncate border-slate-400 border-b-1 p-2 text-left'
+                      >
+                        {name}
+                      </th>
+                    ))}
                   </tr>
-                )}
-                {records
-                  .slice(firstRowOffset, previewLength + firstRowOffset)
-                  .map((record, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {record.map((cell, cellIndex) => (
-                        <td
-                          key={cellIndex}
-                          className='border-slate-400 border-b-1 border-l-1 p-2 first:border-l-0'
-                        >
-                          {cell}
-                        </td>
-                      ))}
+                </thead>
+                <tbody>
+                  {rows.length > 0 && (
+                    <tr>
+                      <td
+                        colSpan={headers.length}
+                        className={cn(
+                          'h-8 border-slate-400 border-b-1 border-dashed px-2',
+                          discardExistingData && 'text-tomato-600'
+                        )}
+                      >
+                        <div className=''>
+                          {discardExistingData
+                            ? `...discarding existing ${rows.length} ${plural(rows.length, 'record')}`
+                            : `...existing ${rows.length} ${plural(rows.length, 'record')}`}
+                        </div>
+                      </td>
                     </tr>
-                  ))}
+                  )}
+                  {records
+                    .slice(firstRowOffset, previewLength + firstRowOffset)
+                    .map((record, rowIndex) => (
+                      <tr key={rowIndex}>
+                        {record.map((cell, cellIndex) => (
+                          <td
+                            key={cellIndex}
+                            className='border-slate-400 border-b-1 border-l-1 p-2 text-left align-top first:border-l-0'
+                          >
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                </tbody>
               </table>
             </div>
           </div>
