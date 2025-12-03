@@ -2,6 +2,7 @@ import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
+import {UploadCSV} from '../../../components/UploadCSV'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
@@ -12,7 +13,6 @@ import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
 import {appendColumn, appendRow, getColumnMeta, getColumns, getData, getRows} from './data'
 import {useYArray, useYMap} from './hooks'
-import {UploadCSV} from './UploadCSV'
 
 const HEADER_MISMATCH = 'CSV headers do not match current table columns'
 
@@ -93,19 +93,21 @@ export const ImportDialog = (props: Props) => {
 
   const onImport = () => {
     if (!records) return
-    if (discardExistingData) {
-      clearAllData(doc)
-    }
+    doc.transact(() => {
+      if (discardExistingData) {
+        clearAllData(doc)
+      }
 
-    const newHeaders = firstRowIsHeader
-      ? records[0]!
-      : records[0]!.map((_, index) => `Column ${index + 1}`)
-    const columns = getColumns(doc)
-    newHeaders.slice(columns.length).forEach((name) => {
-      appendColumn(doc, {name, type: 'text'})
+      const newHeaders = firstRowIsHeader
+        ? records[0]!
+        : records[0]!.map((_, index) => `Column ${index + 1}`)
+      const columns = getColumns(doc)
+      newHeaders.slice(columns.length).forEach((name) => {
+        appendColumn(doc, {name, type: 'text'})
+      })
+
+      importRecords(doc, viewerId, records.slice(firstRowOffset))
     })
-
-    importRecords(doc, viewerId, records.slice(firstRowOffset))
     resetState()
     onClose()
   }

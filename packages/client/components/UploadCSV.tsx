@@ -1,6 +1,6 @@
 import {parse} from 'csv-parse/browser/esm'
 import {useRef} from 'react'
-import {Button} from '../../../ui/Button/Button'
+import {Button} from '../ui/Button/Button'
 
 const parseCSV = (file: File) => {
   return new Promise<string[][]>((resolve, reject) => {
