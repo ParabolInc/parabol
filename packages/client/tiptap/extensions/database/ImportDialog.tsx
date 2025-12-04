@@ -125,7 +125,7 @@ export const ImportDialog = (props: Props) => {
   const previewLength = records ? Math.min(3, recordCount) : 0
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <Dialog isOpen={isOpen} onClose={onCancel}>
       <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import CSV</DialogTitle>
         {!records ? (
