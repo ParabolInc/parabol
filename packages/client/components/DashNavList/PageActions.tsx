@@ -76,7 +76,7 @@ export const PageActions = (props: Props) => {
     e.preventDefault()
     providerManager.withDoc(pageId, (doc) => {
       const frag = doc.getXmlFragment('default')
-      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>', false)
       const gotoNewPage = (e: Y.YXmlEvent) => {
         for (const [key] of e.keys) {
           if (key === 'pageCode') {
