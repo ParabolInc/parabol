@@ -1,3 +1,4 @@
+import {useRef} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {rawOnPointerUp} from '../../hooks/useDraggablePage'
 import {useUpdatePageMutation} from '../../mutations/useUpdatePageMutation'
@@ -22,12 +23,15 @@ export const PageDropTarget = (props: Props) => {
           sourceParentPageId: draggingPageParentSection.slice('User_pages'.length + 1) ?? null
         })
       : undefined
+  const dragCounterRef = useRef(0)
+
   return (
     <div
       onDragEnter={(e) => {
         // Since we must support the browser native Drag API, we can't use the pseudo :hover since that won't fire while dragging
         e.preventDefault()
         e.currentTarget.setAttribute('data-hover', '')
+        dragCounterRef.current++
       }}
       onDragOver={(e) => {
         // This is required for onDrop to fire
@@ -35,7 +39,8 @@ export const PageDropTarget = (props: Props) => {
       }}
       onDragLeave={(e) => {
         e.preventDefault()
-        if (!e.currentTarget.contains(e.relatedTarget as any)) {
+        // safari sets e.relatedTarget = null, so we use a counter as a workaround
+        if (--dragCounterRef.current === 0) {
           e.currentTarget.removeAttribute('data-hover')
         }
       }}

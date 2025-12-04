@@ -3,6 +3,7 @@ import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
+import type {PageDragHandleQuery$data} from '../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
@@ -113,7 +114,8 @@ export const rawOnPointerUp =
       const nodeToMove = [
         createPageLinkElement(
           fromNode.getAttribute('pageCode') as number,
-          fromNode.getAttribute('title') as string
+          fromNode.getAttribute('title') as string,
+          fromNode.getAttribute('database') as boolean
         ) as Y.XmlElement
       ]
 
@@ -142,19 +144,24 @@ export const rawOnPointerUp =
     if (targetParentPageId) {
       providerManager.withDoc(targetParentPageId, (doc) => {
         const pageCode = GQLID.fromKey(pageId)[0]
-        const title = source.get(pageId)?.title as string
+        const pageGQLRecord = source.get(pageId) as PageDragHandleQuery$data['public']['page']
+        if (!pageGQLRecord) {
+          console.warn('Page not found in Relay')
+          return
+        }
+        const {title, isDatabase} = pageGQLRecord
         const children = getPageLinks(doc, true)
         const idx = dropIdx === null ? -1 : dropIdx
         const dropTarget = children.at(idx) as Y.XmlElement
         if (dropTarget) {
           const dropTargetParent = dropTarget.parent as Y.XmlElement
           dropTargetParent.insertAfter(dropTarget, [
-            createPageLinkElement(pageCode, title) as Y.XmlElement
+            createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement
           ])
         } else {
           // this will be the first page link, put it at the top just below the title
           const frag = doc.getXmlFragment('default')
-          frag.insert(1, [createPageLinkElement(pageCode, title) as Y.XmlElement])
+          frag.insert(1, [createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement])
         }
       })
     } else {
