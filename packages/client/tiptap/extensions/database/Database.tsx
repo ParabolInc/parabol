@@ -10,7 +10,7 @@ function Component(props: NodeViewProps) {
   const {editor, extension} = props
 
   return (
-    <NodeViewWrapper className='relative overflow-auto'>
+    <NodeViewWrapper className='relative'>
       <DatabaseView
         doc={extension.options.document}
         editor={editor}

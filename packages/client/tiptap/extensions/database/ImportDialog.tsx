@@ -156,7 +156,7 @@ export const ImportDialog = (props: Props) => {
                 'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-slate-400 text-slate-500'
               }
             >
-              <table className={'min-w-full border-collapse bg-white'}>
+              <table className={'relative min-w-full border-collapse bg-white'}>
                 <thead>
                   <tr className='text-slate-600'>
                     {headers.map((name, index) => (
@@ -179,7 +179,7 @@ export const ImportDialog = (props: Props) => {
                           discardExistingData && 'text-tomato-600'
                         )}
                       >
-                        <div className=''>
+                        <div className='-translate-x-1/2 sticky left-1/2 w-fit'>
                           {discardExistingData
                             ? `...discarding existing ${rows.length} ${plural(rows.length, 'record')}`
                             : `...existing ${rows.length} ${plural(rows.length, 'record')}`}

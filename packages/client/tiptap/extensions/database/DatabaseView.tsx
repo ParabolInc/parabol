@@ -116,70 +116,76 @@ export default function DatabaseView(props: Props) {
       <div className='flex w-full flex-row justify-end'>
         <ImportExport doc={doc} editor={editor} />
       </div>
-      <table
-        className={cn(
-          'min-w-full table-fixed border-collapse bg-white',
-          isResizing && 'select-none'
-        )}
-        style={{
-          width: table.getTotalSize()
-        }}
-        draggable={false}
-      >
-        <thead>
-          {table.getHeaderGroups().map((hg) => (
-            <tr key={hg.id} className='text-slate-600'>
-              {hg.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className='border-slate-400 border-b-1 p-0'
-                  style={header.column.getCanResize() ? {width: header.getSize()} : {}}
-                >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {header.column.getCanResize() && (
-                    <div
-                      className={cn(
-                        '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-slate-300',
-                        header.column.getIsResizing() && '-right-1 w-2 bg-sky-300 hover:bg-sky-300'
-                      )}
-                      onMouseDown={header.getResizeHandler()}
-                      onTouchStart={header.getResizeHandler()}
-                    />
-                  )}
-                </th>
-              ))}
+      <div className='overflow-x-auto pb-2'>
+        <table
+          className={cn(
+            'relative min-w-full table-fixed border-collapse bg-white',
+            isResizing && 'select-none'
+          )}
+          style={{
+            width: table.getTotalSize()
+          }}
+          draggable={false}
+        >
+          <thead>
+            {table.getHeaderGroups().map((hg) => (
+              <tr key={hg.id} className='text-slate-600'>
+                {hg.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className='border-slate-400 border-b-1 p-0'
+                    style={header.column.getCanResize() ? {width: header.getSize()} : {}}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanResize() && (
+                      <div
+                        className={cn(
+                          '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-slate-300',
+                          header.column.getIsResizing() &&
+                            '-right-1 w-2 bg-sky-300 hover:bg-sky-300'
+                        )}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                      />
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className='border-slate-400 border-b-1 border-l-1 first:border-l-0'
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className='text-slate-600'>
+              <td
+                colSpan={columns.length + 1}
+                className='cursor-pointer hover:bg-slate-100'
+                onClick={() => appendRow(doc, userId)}
+                contentEditable={false}
+              >
+                <div className='w-full cursor-pointer hover:bg-slate-100'>
+                  <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>
+                    <Add />
+                    New entry
+                  </div>
+                </div>
+              </td>
             </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className='border-slate-400 border-b-1 border-l-1 first:border-l-0'
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr className='text-slate-600'>
-            <td
-              colSpan={columns.length}
-              className='cursor-pointer hover:bg-slate-100'
-              onClick={() => appendRow(doc, userId)}
-            >
-              <div className='flex w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100'>
-                <Add />
-                New entry
-              </div>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+          </tfoot>
+        </table>
+      </div>
     </>
   )
 }
