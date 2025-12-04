@@ -5,8 +5,13 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import StorageIcon from '@mui/icons-material/Storage'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
+import {useClientQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
+import pageBreadCrumbQuery, {
+  type PageBreadCrumbsQuery
+} from '../../../__generated__/PageBreadCrumbsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import type {PageLinkBlockAttributes} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {cn} from '../../../ui/cn'
@@ -16,6 +21,7 @@ import {MenuItem} from '../../../ui/Menu/MenuItem'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
+import {GQLID} from '../../../utils/GQLID'
 import {getPageSlug} from '../../getPageSlug'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
@@ -26,6 +32,9 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const Icon = canonical ? (database ? StorageIcon : DescriptionIcon) : FileOpenIcon
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
+  const data = useClientQuery<PageBreadCrumbsQuery>(pageBreadCrumbQuery, {})
+  const {viewer} = data
+  const {draggingPageId, draggingPageParentSection} = viewer
   const isOptimistic = pageCode === -1
   const focusLink = () => {
     const pos = getPos()
@@ -65,52 +74,62 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
       }
     })
   }
+  const pageKey = GQLID.toKey(pageCode, 'page')
+  const isSelf = pageKey === draggingPageId
+  const hasDragDropInAccess = true // should we fetch access for all these blocks?
+  const canDropIn = draggingPageId && !isSelf && hasDragDropInAccess
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper className={'group group-[.ProseMirror-selectednode]:bg-slate-200'}>
-      <Link
-        draggable={false}
-        to={`/pages/${pageSlug}`}
-        className={cn(
-          'no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200',
-          isOptimistic && 'pointer-events-none'
-        )}
+      <PageDropTarget
+        draggingPageId={draggingPageId}
+        draggingPageParentSection={draggingPageParentSection}
+        data-drop-in={canDropIn ? pageKey : undefined}
       >
-        <Icon />
-        <div className='flex-1 pl-1'>{title || '<Untitled>'}</div>
-        <Menu
-          onOpenChange={(open) => {
-            if (open) {
-              focusLink()
-            }
-          }}
-          trigger={
-            <div className='flex items-center pr-1'>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <MoreVertIcon
-                    className='size-5 opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
-                    onMouseDown={focusLink}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
-              </Tooltip>
-            </div>
-          }
+        <Link
+          draggable={false}
+          to={`/pages/${pageSlug}`}
+          className={cn(
+            'no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200',
+            isOptimistic && 'pointer-events-none'
+          )}
         >
-          <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
-            <MenuItem
-              onSelect={archivePage}
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-            >
-              <DeleteIcon className='text-slate-600' />
-              <span className='pl-1'>{'Delete page'}</span>
-            </MenuItem>
-          </MenuContent>
-        </Menu>
-      </Link>
+          <Icon />
+          <div className='flex-1 pl-1'>{title || '<Untitled>'}</div>
+          <Menu
+            onOpenChange={(open) => {
+              if (open) {
+                focusLink()
+              }
+            }}
+            trigger={
+              <div className='flex items-center pr-1'>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <MoreVertIcon
+                      className='size-5 opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
+                      onMouseDown={focusLink}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
+                </Tooltip>
+              </div>
+            }
+          >
+            <MenuContent align='end' side={'bottom'} sideOffset={8} className='max-h-80'>
+              <MenuItem
+                onSelect={archivePage}
+                onClick={(e) => {
+                  e.stopPropagation()
+                }}
+              >
+                <DeleteIcon className='text-slate-600' />
+                <span className='pl-1'>{'Delete page'}</span>
+              </MenuItem>
+            </MenuContent>
+          </Menu>
+        </Link>
+      </PageDropTarget>
     </NodeViewWrapper>
   )
 }

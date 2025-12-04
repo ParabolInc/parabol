@@ -159,7 +159,6 @@ export const PageBreadCrumbs = (props: Props) => {
                 className='cursor-pointer rounded-md bg-white px-1 hover:bg-slate-200'
                 aria-label='Open ancestor menu'
                 onDragEnter={() => {
-                  console.log('enter', draggingPageId)
                   if (draggingPageId) {
                     setIsAncestorsOpen(true)
                   }

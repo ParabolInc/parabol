@@ -54,7 +54,7 @@ export const PageDropTarget = (props: Props) => {
         }
       }}
       className={cn(
-        'data-drop-below:data-hover:bg-sky-500/80 data-drop-in:data-hover:bg-sky-300/70 data-drop-below:hover:bg-sky-500/80 data-drop-in:hover:bg-sky-300/70',
+        'rounded-sm data-drop-below:data-hover:bg-sky-500/80 data-drop-in:data-hover:bg-sky-300/70 data-drop-below:hover:bg-sky-500/80 data-drop-in:hover:bg-sky-300/70',
         className
       )}
       {...rest}

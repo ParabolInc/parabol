@@ -143,6 +143,7 @@ export const rawOnPointerUp =
     }
     if (targetParentPageId) {
       providerManager.withDoc(targetParentPageId, (doc) => {
+        // FIXME: if the doc is readOnly, how come I can still make edits?
         const pageCode = GQLID.fromKey(pageId)[0]
         const pageGQLRecord = source.get(pageId) as PageDragHandleQuery$data['public']['page']
         if (!pageGQLRecord) {

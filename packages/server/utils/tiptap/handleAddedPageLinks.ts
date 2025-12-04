@@ -65,15 +65,18 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         } catch (e) {
           const pageCode = node.getAttribute('pageCode')
           Logger.error(e)
-          Logger.log(
-            'movePageToNewParent failed, removing node',
-            node.getAttribute('pageCode'),
-            CipherId.decrypt(pageCode!)
-          )
+
           const parent = node.parent
           if (parent instanceof Y.XmlElement) {
+            Logger.log(
+              'movePageToNewParent failed, removing node',
+              node.getAttribute('pageCode'),
+              CipherId.decrypt(pageCode!)
+            )
             const idxToRemove = parent.toArray().findIndex((child) => child === node)
             parent.delete(idxToRemove)
+          } else {
+            console.log('got parent but not el', parent)
           }
         }
       }
