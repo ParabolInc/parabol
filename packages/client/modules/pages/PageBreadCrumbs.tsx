@@ -1,6 +1,6 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useClientQuery, useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
@@ -37,12 +37,14 @@ const useSetCurrentPageAncestor = (pageId: string, ancestors: readonly {readonly
 }
 export const PageBreadCrumbs = (props: Props) => {
   const {pageRef} = props
+  const [isAncestorsOpen, setIsAncestorsOpen] = useState(false)
   const page = useFragment(
     graphql`
       fragment PageBreadCrumbs_page on Page {
         id
         title
         team {
+          __typename
           id
           name
         }
@@ -51,6 +53,7 @@ export const PageBreadCrumbs = (props: Props) => {
           id
           title
           team {
+            __typename
             id
             name
           }
@@ -87,28 +90,37 @@ export const PageBreadCrumbs = (props: Props) => {
     ] as const
     hiddenAncestors = ancestors.slice(1, -1) // All middle ancestors
   }
-  const renderTeamCrumb = (team: {id: string; name: string}) => {
+  const renderTeamCrumb = (team: {id: string; name: string; __typename: string}) => {
+    const hasDragDropInAccess = team.__typename === 'Team'
+    const canDropIn = draggingPageId && hasDragDropInAccess
     return (
       <>
-        <Link
-          draggable={false}
-          to={`/team/${team.id}`}
-          className='rounded-md px-1 hover:bg-slate-200'
+        <PageDropTarget
+          className='inline rounded-sm'
+          draggingPageParentSection={draggingPageParentSection}
+          draggingPageId={draggingPageId}
+          data-drop-in={canDropIn ? team.id : undefined}
         >
-          {team.name}
-        </Link>
+          <Link
+            draggable={false}
+            to={`/team/${team.id}`}
+            className='rounded-md px-1 hover:bg-slate-200'
+          >
+            {team.name}
+          </Link>
+        </PageDropTarget>
         <span className='px-1'>/</span>
       </>
     )
   }
   const nextPageAncestors = ancestors.map(({id}) => id)
+  const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
     const isSelf = page.id === draggingPageId
-    const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
     const hasDragDropInAccess = page.__typename === 'Page'
     const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && hasDragDropInAccess
     return (
-      <div key={page.id} className=''>
+      <React.Fragment key={page.id}>
         <PageDropTarget
           className='inline rounded-sm'
           draggingPageParentSection={draggingPageParentSection}
@@ -125,7 +137,7 @@ export const PageBreadCrumbs = (props: Props) => {
           </Link>
         </PageDropTarget>
         <span className='px-1'>/</span>
-      </div>
+      </React.Fragment>
     )
   }
 
@@ -138,26 +150,47 @@ export const PageBreadCrumbs = (props: Props) => {
       {hiddenAncestors.length > 0 && (
         <>
           <Menu
+            open={isAncestorsOpen}
+            onOpenChange={(open) => {
+              setIsAncestorsOpen(open)
+            }}
             trigger={
               <button
                 className='cursor-pointer rounded-md bg-white px-1 hover:bg-slate-200'
                 aria-label='Open ancestor menu'
+                onDragEnter={() => {
+                  console.log('enter', draggingPageId)
+                  if (draggingPageId) {
+                    setIsAncestorsOpen(true)
+                  }
+                }}
               >
                 …
               </button>
             }
           >
             <DropdownMenu.Content className='rounded bg-white p-2 shadow-md' sideOffset={5}>
-              {hiddenAncestors.map((page) => (
-                <MenuItem key={page.id} className='rounded p-1 hover:bg-slate-200'>
-                  <Link
-                    draggable={false}
-                    to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
-                  >
-                    {page.title}
-                  </Link>
-                </MenuItem>
-              ))}
+              {hiddenAncestors.map((page) => {
+                const isSelf = page.id === draggingPageId
+                const canDropIn = draggingPageId && !isSelf && !isSourceDragParent
+                return (
+                  <MenuItem key={page.id} className='p-0'>
+                    <PageDropTarget
+                      className='rounded p-1 hover:bg-slate-200'
+                      draggingPageParentSection={draggingPageParentSection}
+                      draggingPageId={draggingPageId}
+                      data-drop-in={canDropIn ? page.id : undefined}
+                    >
+                      <Link
+                        draggable={false}
+                        to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
+                      >
+                        {page.title}
+                      </Link>
+                    </PageDropTarget>
+                  </MenuItem>
+                )
+              })}
             </DropdownMenu.Content>
           </Menu>
           <span className='px-1'>/</span>

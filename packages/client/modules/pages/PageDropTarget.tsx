@@ -49,7 +49,7 @@ export const PageDropTarget = (props: Props) => {
         // since drop-below PageDropTargets are nested inside drop-in targets, we want to stop event propagation
         e.stopPropagation()
         onDrop?.(e)
-        if (!e.currentTarget.contains(e.relatedTarget as any)) {
+        if (--dragCounterRef.current === 0) {
           e.currentTarget.removeAttribute('data-hover')
         }
       }}
