@@ -110,7 +110,6 @@
     "resize-observer-polyfill": "^1.5.0",
     "rrule": "^2.7.2",
     "sanitize-html": "^2.13.0",
-    "string-score": "^1.0.1",
     "swiper": "8.3.1",
     "tailwind-merge": "^3.3.1",
     "tayden-clusterfck": "^0.7.0",
