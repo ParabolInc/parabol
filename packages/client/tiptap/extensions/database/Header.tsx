@@ -9,11 +9,10 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {FormEvent} from 'react'
 import * as Y from 'yjs'
 import useForm from '../../../hooks/useForm'
-import {Input} from '../../../ui/Input/Input'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
+import {DropdownMenuInputItem} from './DropdownMenuInputItem'
 import {
   ColumnId,
   ColumnMeta,
@@ -42,8 +41,10 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
     }
   })
 
-  const handleChangeTitle = (e: FormEvent) => {
-    e.preventDefault()
+  const handleChangeTitle = () => {
+    if (fields.newTitle.value === name) {
+      return
+    }
     changeTitle(fields.newTitle.value)
     fields.newTitle.resetValue()
   }
@@ -80,12 +81,12 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
   ]
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root onOpenChange={(open) => !open && handleChangeTitle()}>
       <DropdownMenu.Trigger asChild>
-        <div className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
+        <button className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>
-        </div>
+        </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
@@ -95,8 +96,13 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
           collisionPadding={8}
         >
           <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-            <form onSubmit={handleChangeTitle}>
-              <Input
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleChangeTitle()
+              }}
+            >
+              <DropdownMenuInputItem
                 className='mb-2 w-full border-slate-300 border-b pb-1'
                 name='newTitle'
                 defaultValue={name}
