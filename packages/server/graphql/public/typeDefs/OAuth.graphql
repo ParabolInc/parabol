@@ -21,7 +21,9 @@ extend type Mutation {
   """
   Regenerate the OAuth 2.0 client secret for an application
   """
-  regenerateOAuthAPIProviderSecret(input: RegenerateOAuthAPIProviderSecretInput!): RegenerateOAuthAPIProviderSecretPayload!
+  regenerateOAuthAPIProviderSecret(
+    input: RegenerateOAuthAPIProviderSecretInput!
+  ): RegenerateOAuthAPIProviderSecretPayload!
 
   """
   Create an OAuth 2.0 authorization code

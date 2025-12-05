@@ -21,7 +21,7 @@ const Error = styled(StyledError)({
 })
 
 interface Props {
-  autoComplete?: string
+  autoComplete?: 'off' | 'new-password'
   autoFocus?: boolean
   className?: string
   disabled?: boolean
