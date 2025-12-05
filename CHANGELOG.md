@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.0.0](https://github.com/ParabolInc/parabol/compare/v10.38.0...v11.0.0) (2025-12-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* Asset Proxy Server (Part 2 of 2) ([#12340](https://github.com/ParabolInc/parabol/issues/12340))
+
+### Added
+
+* Asset Proxy Server (Part 2 of 2) ([#12340](https://github.com/ParabolInc/parabol/issues/12340)) ([07f4f0d](https://github.com/ParabolInc/parabol/commit/07f4f0de5e8ee0436591f971c9f36669ba29c911))
+
 ## [10.38.0](https://github.com/ParabolInc/parabol/compare/v10.37.2...v10.38.0) (2025-12-05)
 
 
