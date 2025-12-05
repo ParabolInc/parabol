@@ -1,14 +1,3 @@
-/**
- * OAuth 2.0 URI Validation
- *
- * Validates redirect URIs for OAuth 2.0 providers
- */
-
-/**
- * Validates if a redirect URI is properly formatted and secure
- * @param uri - The redirect URI to validate
- * @returns true if valid, false otherwise
- */
 export function validateRedirectUri(uri: string): boolean {
   try {
     const url = new URL(uri)
@@ -32,11 +21,6 @@ export function validateRedirectUri(uri: string): boolean {
   }
 }
 
-/**
- * Validates an array of redirect URIs
- * @param uris - Array of URIs to validate
- * @returns true if all URIs are valid, false otherwise
- */
 export function validateRedirectUris(uris: string[]): boolean {
   if (!uris || uris.length === 0) {
     return false

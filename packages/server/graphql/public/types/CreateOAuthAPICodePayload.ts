@@ -1,4 +1,4 @@
-import {CreateOAuthAPICodePayloadResolvers} from '../resolverTypes'
+import {CreateOAuthApiCodePayloadResolvers} from '../resolverTypes'
 
 export type CreateOAuthAPICodePayloadSource = {
   code: string
@@ -6,10 +6,10 @@ export type CreateOAuthAPICodePayloadSource = {
   state?: string | null
 }
 
-const CreateOAuthAPICodePayload: CreateOAuthAPICodePayloadResolvers = {
-  code: ({code}) => code,
-  redirectUri: ({redirectUri}) => redirectUri,
-  state: ({state}) => state ?? null
+const CreateOAuthAPICodePayload: CreateOAuthApiCodePayloadResolvers = {
+  code: ({code}: CreateOAuthAPICodePayloadSource) => code,
+  redirectUri: ({redirectUri}: CreateOAuthAPICodePayloadSource) => redirectUri,
+  state: ({state}: CreateOAuthAPICodePayloadSource) => state ?? null
 }
 
 export default CreateOAuthAPICodePayload

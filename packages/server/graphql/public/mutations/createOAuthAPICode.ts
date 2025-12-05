@@ -3,7 +3,7 @@ import type {Kysely} from 'kysely'
 import OAuthAPICode from '../../../database/types/OAuthAPICode'
 import getKysely from '../../../postgres/getKysely'
 import type {DB} from '../../../postgres/types/pg'
-import {GQLContext} from '../../graphql'
+import type {GQLContext} from '../../graphql'
 
 interface CreateOAuthAPICodeInput {
   clientId: string
@@ -19,6 +19,7 @@ interface CreateOAuthAPICodePayload {
 }
 
 export default async function createOAuthAPICode(
+  _root: any,
   {input}: {input: CreateOAuthAPICodeInput},
   context: GQLContext
 ): Promise<CreateOAuthAPICodePayload> {
@@ -37,13 +38,13 @@ export default async function createOAuthAPICode(
     .executeTakeFirst()
 
   if (!provider) {
-    console.error(`OAuth Error: Client ID "${clientId}" not found.`)
-    throw new GraphQLError(`Invalid client_id: "${clientId}" not found.`)
+    console.error(`OAuth Error: Client ID '${clientId}' not found.`)
+    throw new GraphQLError(`Invalid client_id: '${clientId}' not found.`)
   }
 
   if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
     throw new GraphQLError(
-      `Invalid redirect_uri: "${redirectUri}" is not registered for this client.`
+      `Invalid redirect_uri: '${redirectUri}' is not registered for this client.`
     )
   }
 
@@ -68,7 +69,7 @@ export default async function createOAuthAPICode(
       })
       .execute()
   } catch (err) {
-    throw new GraphQLError(`Failed to create authorization code: ${err}}`)
+    throw new GraphQLError(`Failed to create authorization code: ${err}`)
   }
 
   return {
