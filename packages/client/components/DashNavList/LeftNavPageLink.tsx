@@ -137,8 +137,6 @@ export const LeftNavPageLink = (props: Props) => {
   return (
     <div className='relative rounded-md' ref={ref}>
       <PageDropTarget
-        draggingPageId={draggingPageId}
-        draggingPageParentSection={draggingPageParentSection}
         onPointerDown={onPointerDown}
         data-highlighted={isActive ? '' : undefined}
         style={{paddingLeft: depth * 8}}
@@ -152,8 +150,6 @@ export const LeftNavPageLink = (props: Props) => {
         )}
       >
         <PageDropTarget
-          draggingPageId={draggingPageId}
-          draggingPageParentSection={draggingPageParentSection}
           className={cn(
             '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full data-drop-below:flex',
             canDropBelow && 'cursor-pointer'

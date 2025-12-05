@@ -1,16 +1,32 @@
+import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
+import {useClientQuery} from 'react-relay'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {rawOnPointerUp} from '../../hooks/useDraggablePage'
 import {useUpdatePageMutation} from '../../mutations/useUpdatePageMutation'
 import {cn} from '../../ui/cn'
 
 interface Props
-  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  draggingPageId: string | null | undefined
-  draggingPageParentSection: string | null | undefined
-}
+  extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {}
+
+graphql`
+  query PageDropTargetQuery {
+    viewer {
+      draggingPageId
+      draggingPageParentSection
+      draggingPageViewerAccess
+    }
+  }
+`
+
 export const PageDropTarget = (props: Props) => {
-  const {children, className, draggingPageId, draggingPageParentSection, ...rest} = props
+  const {children, className, ...rest} = props
+  const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
+  const {viewer} = data
+  const {draggingPageId, draggingPageParentSection} = viewer
   const atmosphere = useAtmosphere()
   const [executeUpdatePage] = useUpdatePageMutation()
   const onDrop =
@@ -24,41 +40,37 @@ export const PageDropTarget = (props: Props) => {
         })
       : undefined
   const dragCounterRef = useRef(0)
-
+  const completeDragAttempt = (e: React.DragEvent) => {
+    e.preventDefault()
+    // safari sets e.relatedTarget = null, so we use a counter as a workaround
+    if (--dragCounterRef.current > 0) return
+    e.currentTarget.removeAttribute('data-hover')
+    if (!draggingPageId) return
+    const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+    dropCursor?.classList.remove('hidden')
+  }
   return (
     <div
       onDragEnter={(e) => {
         // Since we must support the browser native Drag API, we can't use the pseudo :hover since that won't fire while dragging
         e.preventDefault()
+        dragCounterRef.current++
         e.currentTarget.setAttribute('data-hover', '')
+        if (!draggingPageId) return
         const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
         // Never display a dropCursor at the same time as the hover state, they can only drop in, not below
         dropCursor?.classList.add('hidden')
-        dragCounterRef.current++
       }}
       onDragOver={(e) => {
         // This is required for onDrop to fire
         e.preventDefault()
       }}
-      onDragLeave={(e) => {
-        e.preventDefault()
-        // safari sets e.relatedTarget = null, so we use a counter as a workaround
-        if (--dragCounterRef.current === 0) {
-          e.currentTarget.removeAttribute('data-hover')
-          const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
-          dropCursor?.classList.remove('hidden')
-        }
-      }}
+      onDragLeave={completeDragAttempt}
       onDrop={(e) => {
-        e.preventDefault()
         // since drop-below PageDropTargets are nested inside drop-in targets, we want to stop event propagation
         e.stopPropagation()
         onDrop?.(e)
-        if (--dragCounterRef.current === 0) {
-          e.currentTarget.removeAttribute('data-hover')
-          const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
-          dropCursor?.classList.remove('hidden')
-        }
+        completeDragAttempt(e)
       }}
       className={cn(
         'rounded-sm data-drop-below:data-hover:bg-sky-500/80 data-drop-in:data-hover:bg-sky-300/70 data-drop-below:hover:bg-sky-500/80 data-drop-in:hover:bg-sky-300/70',

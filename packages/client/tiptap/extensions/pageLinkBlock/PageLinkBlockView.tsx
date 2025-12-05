@@ -7,9 +7,9 @@ import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useClientQuery} from 'react-relay'
 import {Link} from 'react-router-dom'
-import pageBreadCrumbQuery, {
-  type PageBreadCrumbsQuery
-} from '../../../__generated__/PageBreadCrumbsQuery.graphql'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
@@ -33,9 +33,9 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const Icon = canonical ? (database ? StorageIcon : DescriptionIcon) : FileOpenIcon
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
-  const data = useClientQuery<PageBreadCrumbsQuery>(pageBreadCrumbQuery, {})
+  const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const {draggingPageId, draggingPageViewerAccess} = viewer
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
   const focusLink = () => {
@@ -88,11 +88,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
         'group rounded-sm p-1 transition-colors hover:bg-slate-200 group-[.ProseMirror-selectednode]:bg-slate-200'
       }
     >
-      <PageDropTarget
-        draggingPageId={draggingPageId}
-        draggingPageParentSection={draggingPageParentSection}
-        data-drop-in={canDropIn ? pageKey : undefined}
-      >
+      <PageDropTarget data-drop-in={canDropIn ? pageKey : undefined}>
         <Link
           draggable={false}
           to={`/pages/${pageSlug}`}

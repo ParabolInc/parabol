@@ -54,8 +54,6 @@ export const LeftNavSharedPagesSection = (props: Props) => {
   return (
     <div className='min-h-9' data-pages-connection={'User_sharedPages'}>
       <PageDropTarget
-        draggingPageId={draggingPageId}
-        draggingPageParentSection={draggingPageParentSection}
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(
@@ -67,8 +65,6 @@ export const LeftNavSharedPagesSection = (props: Props) => {
       </PageDropTarget>
       <div className={cn('relative hidden', showChildren && 'block')}>
         <PageDropTarget
-          draggingPageId={draggingPageId}
-          draggingPageParentSection={draggingPageParentSection}
           className={cn(
             '-top-0.5 absolute left-0 z-20 hidden h-1 w-full data-drop-below:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'

@@ -4,7 +4,9 @@ import React, {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useClientQuery, useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
-import type {PageBreadCrumbsQuery} from '../../__generated__/PageBreadCrumbsQuery.graphql'
+import pageDropTargetQuery, {
+  type PageDropTargetQuery
+} from '../../__generated__/PageDropTargetQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {getPageSlug} from '../../tiptap/getPageSlug'
@@ -63,20 +65,9 @@ export const PageBreadCrumbs = (props: Props) => {
     `,
     pageRef
   )
-  const data = useClientQuery<PageBreadCrumbsQuery>(
-    graphql`
-        query PageBreadCrumbsQuery {
-          viewer {
-            draggingPageId
-            draggingPageParentSection
-            draggingPageViewerAccess
-          }
-        }
-      `,
-    {}
-  )
+  const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const {draggingPageId, draggingPageViewerAccess} = viewer
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const {ancestors, id, title, team} = page
   const self = {id, title}
@@ -100,8 +91,6 @@ export const PageBreadCrumbs = (props: Props) => {
       <>
         <PageDropTarget
           className='inline rounded-sm'
-          draggingPageParentSection={draggingPageParentSection}
-          draggingPageId={draggingPageId}
           data-drop-in={canDropIn ? team.id : undefined}
         >
           <Link
@@ -127,8 +116,6 @@ export const PageBreadCrumbs = (props: Props) => {
       <React.Fragment key={page.id}>
         <PageDropTarget
           className='inline rounded-sm'
-          draggingPageParentSection={draggingPageParentSection}
-          draggingPageId={draggingPageId}
           data-drop-in={canDropIn ? page.id : undefined}
         >
           {page.team && renderTeamCrumb(page.team)}
@@ -180,8 +167,6 @@ export const PageBreadCrumbs = (props: Props) => {
                   <MenuItem key={page.id} className='p-0'>
                     <PageDropTarget
                       className='rounded p-1 hover:bg-slate-200'
-                      draggingPageParentSection={draggingPageParentSection}
-                      draggingPageId={draggingPageId}
                       data-drop-in={canDropIn ? page.id : undefined}
                     >
                       <Link
