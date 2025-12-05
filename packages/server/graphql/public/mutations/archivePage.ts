@@ -57,7 +57,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
         const documentName = CipherId.toClient(page.parentPageId, 'page')
         await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
           title: page.title || undefined,
-          pageCode
+          pageCode,
+          isDatabase: page.isDatabase
         })
       }
     }

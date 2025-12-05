@@ -3,7 +3,8 @@ import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
 import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
 import * as Y from 'yjs'
-import type {PageSectionEnum} from '../__generated__/useUpdatePageMutation.graphql'
+import type {PageDragHandleQuery$data} from '../__generated__/PageDragHandleQuery.graphql'
+import type Atmosphere from '../Atmosphere'
 import type {PageConnectionKey} from '../components/DashNavList/LeftNavPageLink'
 import {snackOnError} from '../mutations/handlers/snackOnError'
 import {
@@ -60,6 +61,170 @@ const getSortOrder = (source: RecordSource, connectionId: string, idx: number | 
     : positionAfter(afterEdgeSortOrder)
 }
 
+// This function must support browser native drags that originate from TipTap PageLinkBlocks
+// As well as pseudo drags coming from left nav PageLinks
+// If we build our own global drag handler & do it without native Drag API, we can simplify a bit here
+export const rawOnPointerUp =
+  (params: {
+    atmosphere: Atmosphere
+    sourceParentPageId: string | null
+    pageId: string
+    sourceConnectionKey: PageConnectionKey
+    sourceTeamId?: string | null | undefined
+    executeUpdatePage: ReturnType<typeof useUpdatePageMutation>[0]
+  }) =>
+  async (e: PointerEvent | React.DragEvent<HTMLDivElement>) => {
+    const {
+      atmosphere,
+      sourceParentPageId,
+      pageId,
+      sourceConnectionKey,
+      sourceTeamId,
+      executeUpdatePage
+    } = params
+    e.preventDefault()
+    const dropCurrentTarget = document.elementFromPoint(e.clientX, e.clientY)
+    const dropTarget = dropCurrentTarget?.closest('[data-drop-below], [data-drop-in]')
+    if (!dropTarget) return
+    const isDropBelow = dropTarget.hasAttribute('data-drop-below')
+    const section = dropTarget.closest('[data-pages-connection]')
+    const targetConnectionKey = section
+      ? (section.getAttribute('data-pages-connection') as PageConnectionKey)
+      : 'User_pages'
+    // A parent section is either the teamId or parentPageId that contains the page
+    const targetParentSection = isDropBelow
+      ? dropTarget.getAttribute('data-drop-below') || null
+      : dropTarget.getAttribute('data-drop-in')
+
+    const targetParentPageId = targetParentSection?.startsWith('page:') ? targetParentSection : null
+    // null means a drop-in, -1 means at the beginning, else below whatever number is there
+    const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
+    const source = atmosphere.getStore().getSource()
+    if (sourceParentPageId && sourceParentPageId === targetParentPageId) {
+      // move within the same document
+      await providerManager.withDoc(targetParentPageId, ({document, authorizedScope}) => {
+        if (authorizedScope === 'readonly') {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'useDraggablePage:noDropAccess',
+            message: 'You must be an editor of the target page',
+            autoDismiss: 5
+          })
+          return
+        }
+        const pageCode = GQLID.fromKey(pageId)[0]
+        const children = getPageLinks(document, true)
+        const fromNodeIdx = children.findIndex(
+          (child) => child.getAttribute('pageCode') === pageCode
+        )
+        if (fromNodeIdx === -1) return
+        const fromNode = children.at(fromNodeIdx)!
+
+        // yjs nodes cannot be moved, only created and destroyed, so clone the old, delete the old, add the new
+        const nodeToMove = [
+          createPageLinkElement(
+            fromNode.getAttribute('pageCode') as number,
+            fromNode.getAttribute('title') as string,
+            fromNode.getAttribute('database') as boolean
+          ) as Y.XmlElement
+        ]
+
+        // delete the old node first, but flag it as isMoving so it doesn't trigger side effects
+        fromNode.setAttribute('isMoving', true)
+        const parent = fromNode.parent as Y.XmlElement
+        const fromIdx = parent.toArray().findIndex((child) => child === fromNode)
+        parent.delete(fromIdx)
+
+        if (dropIdx === -1) {
+          // put it at the beginning
+          const dropTarget = children.at(0)!
+          const firstChildParent = dropTarget.parent as Y.XmlElement
+          const firstChildIdx = firstChildParent
+            .toArray()
+            .findIndex((child) => child === dropTarget)
+          firstChildParent.insert(firstChildIdx, nodeToMove)
+        } else {
+          // if null, put after the last one, else, put after the dropIdx
+          const idx = dropIdx === null ? -1 : dropIdx
+          const dropTarget = children.at(idx) as Y.XmlElement
+          const dropTargetParent = dropTarget.parent as Y.XmlElement
+          dropTargetParent.insertAfter(dropTarget, nodeToMove)
+        }
+      })
+      return
+    }
+    if (targetParentPageId) {
+      await providerManager.withDoc(targetParentPageId, ({document, authorizedScope}) => {
+        if (authorizedScope === 'readonly') {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'useDraggablePage:noDropAccess',
+            message: 'You must be an editor of the target page',
+            autoDismiss: 5
+          })
+          return
+        }
+        // FIXME: if the doc is readOnly, how come I can still make edits?
+        const pageCode = GQLID.fromKey(pageId)[0]
+        const pageGQLRecord = source.get(pageId) as PageDragHandleQuery$data['public']['page']
+        if (!pageGQLRecord) {
+          console.warn('Page not found in Relay')
+          return
+        }
+        const {title, isDatabase} = pageGQLRecord
+        const children = getPageLinks(document, true)
+        const idx = dropIdx === null ? -1 : dropIdx
+        const dropTarget = children.at(idx) as Y.XmlElement
+        if (dropTarget) {
+          const dropTargetParent = dropTarget.parent as Y.XmlElement
+          dropTargetParent.insertAfter(dropTarget, [
+            createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement
+          ])
+        } else {
+          // this will be the first page link, put it at the top just below the title
+          const frag = document.getXmlFragment('default')
+          frag.insert(1, [createPageLinkElement(pageCode, title, isDatabase) as Y.XmlElement])
+        }
+      })
+    } else {
+      // the target is top-level, under a team, shared pages, or private pages
+      const targetTeamId =
+        targetParentSection && !targetParentPageId ? targetParentSection : undefined
+      const {viewerId} = atmosphere
+      const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
+      const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
+        isPrivate,
+        parentPageId: targetParentPageId,
+        teamId: targetTeamId
+      })
+      const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
+
+      const getSection = (connectionKey: PageConnectionKey, teamId: string | null | undefined) => {
+        switch (connectionKey) {
+          case 'User_sharedPages':
+            return 'shared'
+          case 'User_privatePages':
+            return 'private'
+          case 'User_pages':
+            return teamId ? 'team' : 'page'
+        }
+      }
+
+      executeUpdatePage({
+        variables: {
+          pageId,
+          sortOrder,
+          sourceSection: getSection(sourceConnectionKey, sourceTeamId),
+          targetSection: getSection(targetConnectionKey, targetTeamId),
+          teamId: targetTeamId
+        },
+        onError: snackOnError(atmosphere, 'updatePageErr'),
+        sourceTeamId,
+        sourceParentPageId,
+        sourceConnectionKey,
+        targetConnectionKey
+      })
+    }
+  }
+
 export const useDraggablePage = (
   pageId: string,
   isPageIdPrivate: boolean,
@@ -72,7 +237,7 @@ export const useDraggablePage = (
   const ref = useRef<HTMLDivElement>(null)
   const dragRef = useRef(makeDragRef())
   const atmosphere = useAtmosphere()
-  const [execute] = useUpdatePageMutation()
+  const [executeUpdatePage] = useUpdatePageMutation()
   const drag = dragRef.current
 
   const onPointerDown: React.PointerEventHandler<HTMLDivElement> = useEventCallback((e) => {
@@ -90,147 +255,27 @@ export const useDraggablePage = (
     }
     document.addEventListener('pointermove', onPointerMove)
     document.addEventListener('pointerup', onPointerUp, {once: true})
-    document.addEventListener('pointercancel', () => cleanupDrag(), {
-      once: true
-    })
+    document.addEventListener('pointercancel', cleanupDrag)
     window.addEventListener('blur', cleanupDrag, {once: true})
   })
 
-  const onPointerUp = useEventCallback((e: PointerEvent) => {
-    e.preventDefault()
-    const dropCurrentTarget = document.elementFromPoint(e.clientX, e.clientY)
-    const dropTarget = dropCurrentTarget?.closest('[data-drop-below], [data-drop-in]')
-    if (!dropTarget) {
-      cleanupDrag()
-      return
-    }
-    const isDropBelow = dropTarget.hasAttribute('data-drop-below')
-    const section = dropTarget.closest('[data-pages-connection]')
-    const targetConnectionKey = section
-      ? (section.getAttribute('data-pages-connection') as PageConnectionKey)
-      : 'User_pages'
-    // A parent section is either the teamId or parentPageId that contains the page
-    const targetParentSection = isDropBelow
-      ? dropTarget.getAttribute('data-drop-below') || null
-      : dropTarget.getAttribute('data-drop-in')
-
-    const targetParentPageId = targetParentSection?.startsWith('page:') ? targetParentSection : null
-    // null means a drop-in, -1 means at the beginning, else below whatever number is there
-    const dropIdx = isDropBelow ? Number(dropTarget.getAttribute('data-drop-idx')) : null
-    const source = atmosphere.getStore().getSource()
-    if (sourceParentPageId && sourceParentPageId === targetParentPageId) {
-      // move within the same document
-      const provider = providerManager.register(targetParentPageId)
-      const {document} = provider
-      const pageCode = GQLID.fromKey(pageId)[0]
-      const children = getPageLinks(document, true)
-      const fromNodeIdx = children.findIndex((child) => child.getAttribute('pageCode') === pageCode)
-      if (fromNodeIdx === -1) return
-      const fromNode = children.at(fromNodeIdx)!
-
-      // yjs nodes cannot be moved, only created and destroyed, so clone the old, delete the old, add the new
-      const nodeToMove = [
-        createPageLinkElement(
-          fromNode.getAttribute('pageCode') as number,
-          fromNode.getAttribute('title') as string
-        ) as Y.XmlElement
-      ]
-
-      // delete the old node first, but flag it as isMoving so it doesn't trigger side effects
-      fromNode.setAttribute('isMoving', true)
-      const parent = fromNode.parent as Y.XmlElement
-      const fromIdx = parent.toArray().findIndex((child) => child === fromNode)
-      parent.delete(fromIdx)
-
-      if (dropIdx === -1) {
-        // put it at the beginning
-        const dropTarget = children.at(0)!
-        const firstChildParent = dropTarget.parent as Y.XmlElement
-        const firstChildIdx = firstChildParent.toArray().findIndex((child) => child === dropTarget)
-        firstChildParent.insert(firstChildIdx, nodeToMove)
-      } else {
-        // if null, put after the last one, else, put after the dropIdx
-        const idx = dropIdx === null ? -1 : dropIdx
-        const dropTarget = children.at(idx) as Y.XmlElement
-        const dropTargetParent = dropTarget.parent as Y.XmlElement
-        dropTargetParent.insertAfter(dropTarget, nodeToMove)
-      }
-      providerManager.unregister(targetParentPageId)
-      cleanupDrag()
-      return
-    }
-    if (targetParentPageId) {
-      providerManager.withDoc(targetParentPageId, (doc) => {
-        const pageCode = GQLID.fromKey(pageId)[0]
-        const title = source.get(pageId)?.title as string
-        const children = getPageLinks(doc, true)
-        const idx = dropIdx === null ? -1 : dropIdx
-        const dropTarget = children.at(idx) as Y.XmlElement
-        if (dropTarget) {
-          const dropTargetParent = dropTarget.parent as Y.XmlElement
-          dropTargetParent.insertAfter(dropTarget, [
-            createPageLinkElement(pageCode, title) as Y.XmlElement
-          ])
-        } else {
-          // this will be the first page link, put it at the top just below the title
-          const frag = doc.getXmlFragment('default')
-          frag.insert(1, [createPageLinkElement(pageCode, title) as Y.XmlElement])
-        }
-      })
-    } else {
-      // the target is top-level, under a team, shared pages, or private pages
-      const targetTeamId =
-        targetParentSection && !targetParentPageId ? targetParentSection : undefined
-      const {viewerId} = atmosphere
-      const isPrivate = isPrivatePageConnectionLookup[targetConnectionKey!]
-      const targetConnectionId = ConnectionHandler.getConnectionID(viewerId, targetConnectionKey!, {
-        isPrivate,
-        parentPageId: targetParentPageId,
-        teamId: targetTeamId
-      })
-      const sortOrder = getSortOrder(source, targetConnectionId, dropIdx)
-      const connectionToSection: Record<PageConnectionKey, PageSectionEnum> = {
-        User_privatePages: 'private',
-        User_sharedPages: 'shared',
-        User_pages: 'team'
-      }
-
-      execute({
-        variables: {
-          pageId,
-          sortOrder,
-          sourceSection: connectionToSection[sourceConnectionKey],
-          targetSection: connectionToSection[targetConnectionKey],
-          teamId: targetTeamId
-        },
-        onError: snackOnError(atmosphere, 'updatePageErr'),
-        sourceTeamId,
-        sourceParentPageId,
-        sourceConnectionKey,
-        targetConnectionKey
-      })
-    }
-    if (sourceParentPageId && sourceConnectionKey === 'User_pages') {
-      // if the source has a parent and it lived under the parent or team, remove the canonical page link. the GQL subscription will propagate the removal
-      providerManager.withDoc(sourceParentPageId, (document) => {
-        const pageCode = GQLID.fromKey(pageId)[0]
-        const canonChildren = getPageLinks(document, true)
-        const childToRemove = canonChildren.find(
-          (child) => child.getAttribute('pageCode') === pageCode
-        )
-        if (!childToRemove) {
-          console.warn('idx for source element not found')
-          return
-        }
-        // first mark it as isMoving so the server doesn't delete the underlying page
-        childToRemove.setAttribute('isMoving', true)
-        const parent = childToRemove.parent as Y.XmlElement
-        const idxToRemove = parent.toArray().findIndex((child) => child === childToRemove)
-        parent.delete(idxToRemove)
-      })
-    }
+  const cleanupWrapper = (fn: (e: PointerEvent) => void) => (e: PointerEvent) => {
+    fn(e)
     cleanupDrag()
-  })
+  }
+
+  const onPointerUp = useEventCallback(
+    cleanupWrapper(
+      rawOnPointerUp({
+        executeUpdatePage,
+        sourceTeamId,
+        sourceConnectionKey,
+        atmosphere,
+        pageId,
+        sourceParentPageId
+      })
+    )
+  )
 
   const onPointerMove = useEventCallback((e: PointerEvent) => {
     const el = ref.current
@@ -308,7 +353,7 @@ export const useDraggablePage = (
     }
   }
 
-  function cleanupDrag() {
+  const cleanupDrag = useEventCallback(() => {
     if (drag.startTimer !== null) {
       clearTimeout(drag.startTimer)
       drag.startTimer = null
@@ -317,6 +362,8 @@ export const useDraggablePage = (
     drag.waitingForMovement = false
     removeVisualDragImage()
     window.removeEventListener('blur', cleanupDrag)
+    document.removeEventListener('pointercancel', cleanupDrag)
+    document.removeEventListener('pointerup', onPointerUp)
     // in a set timeout for the <Link/> onClick handler to fire while draggingPageId is still set
     setTimeout(() => {
       commitLocalUpdate(atmosphere, (store) => {
@@ -332,7 +379,7 @@ export const useDraggablePage = (
         parent?.setValue(null, 'isDraggingFirstChild').setValue(null, 'isDraggingLastChild')
       })
     })
-  }
+  })
 
   return {onPointerDown, ref}
 }

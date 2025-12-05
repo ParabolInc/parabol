@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom'
 import type {LeftNavPageLink_page$key} from '../../__generated__/LeftNavPageLink_page.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import {useDraggablePage} from '../../hooks/useDraggablePage'
+import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
@@ -135,28 +136,28 @@ export const LeftNavPageLink = (props: Props) => {
   const isActive = (currentPageAncestorDepth && !showChildren) || currentPageAncestorDepth === 0
   return (
     <div className='relative rounded-md' ref={ref}>
-      <div
+      <PageDropTarget
         onPointerDown={onPointerDown}
         data-highlighted={isActive ? '' : undefined}
         style={{paddingLeft: depth * 8}}
         data-drop-in={canDropIn ? id : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pr-1 pl-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pr-1 pl-1 text-slate-700 text-sm leading-8 outline-hidden',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
             'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
           draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
         )}
       >
-        <div
+        <PageDropTarget
           className={cn(
-            '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-bottom-0.5 absolute left-0 z-20 hidden h-1 w-full data-drop-below:flex',
             canDropBelow && 'cursor-pointer'
           )}
           data-drop-below={canDropBelow ? (showChildren ? id : parentSection) : undefined}
           data-drop-idx={showChildren ? -1 : dropIdx}
           aria-expanded={showChildren}
-        ></div>
+        ></PageDropTarget>
         <Link
           draggable={false}
           to={`/pages/${slug}`}
@@ -184,7 +185,7 @@ export const LeftNavPageLink = (props: Props) => {
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>
-      </div>
+      </PageDropTarget>
       {showChildren && (
         <div
           className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}

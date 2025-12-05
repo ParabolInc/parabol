@@ -60,9 +60,16 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // a page link either got moved or the viewer is trying to programmatically add one
         // in either case, move the page link from the old parent to new
         // it could also be a cut+paste, where they cut & deleted the page, and pasted in the same or a new page
-        await movePageToNewParent(userId, CipherId.decrypt(childPageCode), parentPageId).catch(
-          Logger.log
-        )
+        try {
+          await movePageToNewParent(userId, CipherId.decrypt(childPageCode), parentPageId)
+        } catch (e) {
+          Logger.error(e)
+          const parent = node.parent
+          if (parent instanceof Y.XmlElement) {
+            const idxToRemove = parent.toArray().findIndex((child) => child === node)
+            parent.delete(idxToRemove)
+          }
+        }
       }
     }
   })
