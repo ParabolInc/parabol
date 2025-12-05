@@ -144,20 +144,12 @@ export const hocuspocus = new Hocuspocus({
       }
     }
     const {role} = pageAccess
-    console.log('authenticating for page', dbId, documentName, role)
     if (role === 'viewer' || role === 'commenter') {
       connectionConfig.readOnly = true
     }
     return {userId}
   },
   afterLoadDocument,
-  async beforeHandleMessage(data) {
-    // FIXME: v3.11 doesn't check readOnly?!
-    const {connection} = data
-    if (connection.readOnly) {
-      throw {reason: 'You only have readonly access'}
-    }
-  },
   extensions: [
     new Database({
       // Return a Promise to retrieve data …
@@ -186,7 +178,6 @@ export const hocuspocus = new Hocuspocus({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        console.log('called store')
         const [dbId, , entity] = CipherId.fromClient(documentName)
         if (entity === 'meeting') return
         // TODO: don't transform the document into content. just traverse the yjs doc for speed

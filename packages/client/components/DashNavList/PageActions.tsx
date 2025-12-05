@@ -8,6 +8,7 @@ import type * as Y from 'yjs'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
+import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {createPageLinkElement} from '../../shared/tiptap/createPageLinkElement'
 import {providerManager} from '../../tiptap/providerManager'
 import {Menu} from '../../ui/Menu/Menu'
@@ -42,6 +43,7 @@ export const PageActions = (props: Props) => {
   const history = useHistory()
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
+  const canEdit = hasMinPageRole('editor', viewerAccess)
   const archivePage = () => {
     executeArchive({
       variables: {pageId, action: 'archive'},
@@ -74,8 +76,16 @@ export const PageActions = (props: Props) => {
 
   const addChildPage = (e: React.MouseEvent) => {
     e.preventDefault()
-    providerManager.withDoc(pageId, (doc) => {
-      const frag = doc.getXmlFragment('default')
+    providerManager.withDoc(pageId, ({document, authorizedScope}) => {
+      if (authorizedScope === 'readonly') {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          autoDismiss: 5,
+          key: `PageActions:readonly`,
+          message: `You must be an editor to add a sub page`
+        })
+        return
+      }
+      const frag = document.getXmlFragment('default')
       const pageLinkBlock = createPageLinkElement(-1, '<Untitled>', false)
       const gotoNewPage = (e: Y.YXmlEvent) => {
         for (const [key] of e.keys) {
@@ -123,7 +133,7 @@ export const PageActions = (props: Props) => {
           </Menu>
         </div>
       )}
-      {!isDatabase && (
+      {!isDatabase && canEdit && (
         <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />
       )}
     </LeftNavItemButtons>
