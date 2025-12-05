@@ -31,6 +31,9 @@ export const PageDropTarget = (props: Props) => {
         // Since we must support the browser native Drag API, we can't use the pseudo :hover since that won't fire while dragging
         e.preventDefault()
         e.currentTarget.setAttribute('data-hover', '')
+        const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+        // Never display a dropCursor at the same time as the hover state, they can only drop in, not below
+        dropCursor?.classList.add('hidden')
         dragCounterRef.current++
       }}
       onDragOver={(e) => {
@@ -42,6 +45,8 @@ export const PageDropTarget = (props: Props) => {
         // safari sets e.relatedTarget = null, so we use a counter as a workaround
         if (--dragCounterRef.current === 0) {
           e.currentTarget.removeAttribute('data-hover')
+          const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+          dropCursor?.classList.remove('hidden')
         }
       }}
       onDrop={(e) => {
@@ -51,6 +56,8 @@ export const PageDropTarget = (props: Props) => {
         onDrop?.(e)
         if (--dragCounterRef.current === 0) {
           e.currentTarget.removeAttribute('data-hover')
+          const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+          dropCursor?.classList.remove('hidden')
         }
       }}
       className={cn(

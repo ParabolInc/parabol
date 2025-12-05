@@ -83,7 +83,11 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const canDropIn = draggingPageId && !isSelf && hasDragAccess
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
-    <NodeViewWrapper className={'group group-[.ProseMirror-selectednode]:bg-slate-200'}>
+    <NodeViewWrapper
+      className={
+        'group rounded-sm p-1 transition-colors hover:bg-slate-200 group-[.ProseMirror-selectednode]:bg-slate-200'
+      }
+    >
       <PageDropTarget
         draggingPageId={draggingPageId}
         draggingPageParentSection={draggingPageParentSection}
@@ -93,7 +97,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
           draggable={false}
           to={`/pages/${pageSlug}`}
           className={cn(
-            'no-underline! flex w-full items-center rounded-sm p-1 transition-colors hover:bg-slate-200',
+            'no-underline! flex w-full items-center',
             isOptimistic && 'pointer-events-none'
           )}
         >
