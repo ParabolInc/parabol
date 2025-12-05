@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
 import type {PageBreadCrumbsQuery} from '../../__generated__/PageBreadCrumbsQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -68,13 +69,15 @@ export const PageBreadCrumbs = (props: Props) => {
           viewer {
             draggingPageId
             draggingPageParentSection
+            draggingPageViewerAccess
           }
         }
       `,
     {}
   )
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection} = viewer
+  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const {ancestors, id, title, team} = page
   const self = {id, title}
   useSetCurrentPageAncestor(id, ancestors)
@@ -91,8 +94,8 @@ export const PageBreadCrumbs = (props: Props) => {
     hiddenAncestors = ancestors.slice(1, -1) // All middle ancestors
   }
   const renderTeamCrumb = (team: {id: string; name: string; __typename: string}) => {
-    const hasDragDropInAccess = team.__typename === 'Team'
-    const canDropIn = draggingPageId && hasDragDropInAccess
+    const hasDropAccess = team.__typename === 'Team'
+    const canDropIn = draggingPageId && hasDragAccess && hasDropAccess
     return (
       <>
         <PageDropTarget
@@ -117,8 +120,9 @@ export const PageBreadCrumbs = (props: Props) => {
   const isSourceDragParent = draggingPageId && nextPageAncestors.includes(draggingPageId)
   const renderBreadcrumbItem = (page: (typeof ancestors)[number]) => {
     const isSelf = page.id === draggingPageId
-    const hasDragDropInAccess = page.__typename === 'Page'
-    const canDropIn = draggingPageId && !isSourceDragParent && !isSelf && hasDragDropInAccess
+    const hasDropAccess = page.__typename === 'Page'
+    const canDropIn =
+      draggingPageId && !isSourceDragParent && !isSelf && hasDropAccess && hasDragAccess
     return (
       <React.Fragment key={page.id}>
         <PageDropTarget
@@ -171,7 +175,7 @@ export const PageBreadCrumbs = (props: Props) => {
             <DropdownMenu.Content className='rounded bg-white p-2 shadow-md' sideOffset={5}>
               {hiddenAncestors.map((page) => {
                 const isSelf = page.id === draggingPageId
-                const canDropIn = draggingPageId && !isSelf && !isSourceDragParent
+                const canDropIn = draggingPageId && !isSelf && !isSourceDragParent && hasDragAccess
                 return (
                   <MenuItem key={page.id} className='p-0'>
                     <PageDropTarget

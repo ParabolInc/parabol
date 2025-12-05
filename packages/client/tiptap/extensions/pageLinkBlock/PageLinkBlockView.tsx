@@ -13,6 +13,7 @@ import pageBreadCrumbQuery, {
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
+import {hasMinPageRole} from '../../../shared/hasMinPageRole'
 import type {PageLinkBlockAttributes} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
@@ -34,7 +35,8 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const atmosphere = useAtmosphere()
   const data = useClientQuery<PageBreadCrumbsQuery>(pageBreadCrumbQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection} = viewer
+  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
   const focusLink = () => {
     const pos = getPos()
@@ -76,8 +78,9 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   }
   const pageKey = GQLID.toKey(pageCode, 'page')
   const isSelf = pageKey === draggingPageId
-  const hasDragDropInAccess = true // should we fetch access for all these blocks?
-  const canDropIn = draggingPageId && !isSelf && hasDragDropInAccess
+  // doesn't fetch access for drop targets, but pops an error snack on drop
+  // tbh, that UI is probably better because then the user knows why they can't drop on it
+  const canDropIn = draggingPageId && !isSelf && hasDragAccess
   return (
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper className={'group group-[.ProseMirror-selectednode]:bg-slate-200'}>
