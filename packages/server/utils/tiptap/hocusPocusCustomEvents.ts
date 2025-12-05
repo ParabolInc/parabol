@@ -1,6 +1,7 @@
 import type {Document} from '@hocuspocus/server'
 import {applyUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
+import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {hocuspocus} from '../../hocusPocus'
 
@@ -15,11 +16,16 @@ export const addCanonicalPageLink = async (
   payload: {
     title?: string
     pageCode: number
+    isDatabase: boolean
   }
 ) => {
-  const {title, pageCode} = payload
+  const {title, pageCode, isDatabase} = payload
   await withDoc(documentName, (doc) => {
-    const pageLinkBlock = createPageLinkElement(pageCode, title || '<Untitled>') as XmlElement
+    const pageLinkBlock = createPageLinkElement(
+      pageCode,
+      title || '<Untitled>',
+      isDatabase
+    ) as XmlElement
     const frag = doc.getXmlFragment('default')
     frag.insert(1, [pageLinkBlock])
   })
@@ -37,6 +43,9 @@ export const removeCanonicalPageLinkFromPage = async (
       return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('canonical') === true
     })
     for (const node of walker) {
+      const pageLink = node as XmlElement<PageLinkBlockAttributes>
+      // handleDeletedPageLinks won't try to permanently delete if isMoving == true
+      pageLink.setAttribute('isMoving', true)
       const parent = node.parent as XmlElement
       const parentIdx = parent.toArray().findIndex((child) => child === node)
       if (parentIdx !== -1) {

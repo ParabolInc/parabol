@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [10.38.0](https://github.com/ParabolInc/parabol/compare/v10.37.2...v10.38.0) (2025-12-05)
+
+
+### Added
+
+* Drop page links onto breadcrumbs and other page links ([#12395](https://github.com/ParabolInc/parabol/issues/12395)) ([dc1b3de](https://github.com/ParabolInc/parabol/commit/dc1b3dea933361d37a34eb1a4878c91cd5ad0bb6))
+
+
+### Fixed
+
+* remove deprecated usage of punycode ([#12399](https://github.com/ParabolInc/parabol/issues/12399)) ([340ac0b](https://github.com/ParabolInc/parabol/commit/340ac0bf2bb78225ddfa0117cde260e892ce3933))
+* security patch for jsonwebtoken ([#12398](https://github.com/ParabolInc/parabol/issues/12398)) ([66c1fbf](https://github.com/ParabolInc/parabol/commit/66c1fbf4f688e605641b8a791ebd663a949015c6))
+
 ## [10.37.2](https://github.com/ParabolInc/parabol/compare/v10.37.1...v10.37.2) (2025-12-02)
 
 

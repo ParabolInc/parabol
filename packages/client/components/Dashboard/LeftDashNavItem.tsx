@@ -22,7 +22,7 @@ const LeftDashNavItem = (props: Props) => {
       <div
         data-highlighted={isActive ? '' : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden data-[drop-in]:hover:bg-sky-300/70',
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden',
           'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900'
         )}
       >

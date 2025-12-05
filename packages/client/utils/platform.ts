@@ -1,5 +1,5 @@
-import UserAgent from 'fbjs/lib/UserAgent'
+import {isMacOS} from '@tiptap/core'
 
-export const isOSX = UserAgent.isPlatform('Mac OS X')
+export const isOSX = isMacOS()
 export const modKey = isOSX ? '⌘' : 'ctrl'
 export const modEnter = isOSX ? '⌘↩' : 'Ctrl+Enter'

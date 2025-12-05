@@ -83,7 +83,7 @@ test('Access propagates to linked children', async () => {
   const childPageCode = await sendTipTap({cookie, pageId: parentPageId}, async (document: Doc) => {
     return new Promise((resolve) => {
       const frag = document.getXmlFragment('default')
-      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>', false)
       pageLinkBlock.observe((e: YXmlEvent) => {
         for (const [key] of e.keys) {
           if (key === 'pageCode') {
@@ -333,7 +333,7 @@ test('Revoking access unlinks children', async () => {
   const childPageCode = await sendTipTap({cookie, pageId: parentPageId}, async (document: Doc) => {
     return new Promise((resolve) => {
       const frag = document.getXmlFragment('default')
-      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>')
+      const pageLinkBlock = createPageLinkElement(-1, '<Untitled>', false)
       pageLinkBlock.observe((e: YXmlEvent) => {
         for (const [key] of e.keys) {
           if (key === 'pageCode') {

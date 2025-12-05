@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {LeftNavSharedPagesSection_viewer$key} from '../../__generated__/LeftNavSharedPagesSection_viewer.graphql'
+import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {cn} from '../../ui/cn'
 import {LeftNavHeader} from './LeftNavHeader'
 import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
@@ -52,25 +53,25 @@ export const LeftNavSharedPagesSection = (props: Props) => {
   }
   return (
     <div className='min-h-9' data-pages-connection={'User_sharedPages'}>
-      <div
+      <PageDropTarget
         onClick={toggleChildren}
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(
-          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 data-[drop-in]:hover:bg-sky-300/70',
+          'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5',
           !draggingPageId && 'hover:bg-slate-300'
         )}
       >
         <LeftNavHeader>{'Shared Pages'}</LeftNavHeader>
-      </div>
+      </PageDropTarget>
       <div className={cn('relative hidden', showChildren && 'block')}>
-        <div
+        <PageDropTarget
           className={cn(
-            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full hover:bg-sky-500/80 data-[drop-below]:flex',
+            '-top-0.5 absolute left-0 z-20 hidden h-1 w-full data-drop-below:flex',
             canDropBelow ? 'cursor-grabbing' : 'cursor-no-drop'
           )}
           data-drop-below={canDropBelow ? '' : undefined}
           data-drop-idx={-1}
-        ></div>
+        ></PageDropTarget>
         {edges.map((edge, idx) => {
           const {node} = edge
           const {id} = node

@@ -4,7 +4,8 @@ minimumReleaseAge: 2880
 minimumReleaseAgeExclude:
   - nest-graphql-endpoint
   - '@tiptap/*'
-  - sucrase
+  - jsonwebtoken
+  - jws
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'

@@ -94,16 +94,18 @@ export const PageLinkBlock = PageLinkBlockBase.extend<{yDoc: Y.Doc}, PageLinkBlo
               frag.forEach((child) => {
                 if (child.type.name === 'pageLinkBlock' && child.attrs.canonical === true) {
                   const alreadyExists = checkIfExists(child)
-                  if (alreadyExists) {
-                    const linkChild = child.type.create(
-                      {...child.attrs, canonical: false},
+                  newChildren.push(
+                    child.type.create(
+                      {
+                        ...child.attrs,
+                        canonical: alreadyExists ? false : child.attrs.canonical,
+                        // copying will turn numbers to text, but not boolean
+                        pageCode: Number(child.attrs.pageCode)
+                      },
                       child.content,
                       child.marks
                     )
-                    newChildren.push(linkChild)
-                  } else {
-                    newChildren.push(child)
-                  }
+                  )
                 } else if (child.content?.size) {
                   // recurse into nested fragments
                   const newContent = decanonPageLinks(child.content)
