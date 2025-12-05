@@ -60,7 +60,8 @@ module.exports = {
         'mattermost',
         'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
-        'saml/'
+        'saml/',
+        'oauth/'
       ].map((name) => ({
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
