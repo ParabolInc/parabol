@@ -7,6 +7,7 @@ import pageDropTargetQuery, {
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {rawOnPointerUp} from '../../hooks/useDraggablePage'
 import {useUpdatePageMutation} from '../../mutations/useUpdatePageMutation'
+import {hasMinPageRole} from '../../shared/hasMinPageRole'
 import {cn} from '../../ui/cn'
 
 interface Props
@@ -26,7 +27,8 @@ export const PageDropTarget = (props: Props) => {
   const {children, className, ...rest} = props
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection} = viewer
+  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const canEdit = hasMinPageRole('editor', draggingPageViewerAccess)
   const atmosphere = useAtmosphere()
   const [executeUpdatePage] = useUpdatePageMutation()
   const onDrop =
@@ -45,7 +47,7 @@ export const PageDropTarget = (props: Props) => {
     // safari sets e.relatedTarget = null, so we use a counter as a workaround
     if (--dragCounterRef.current > 0) return
     e.currentTarget.removeAttribute('data-hover')
-    if (!draggingPageId) return
+    if (!draggingPageId || !canEdit) return
     const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
     dropCursor?.classList.remove('hidden')
   }
@@ -56,7 +58,7 @@ export const PageDropTarget = (props: Props) => {
         e.preventDefault()
         dragCounterRef.current++
         e.currentTarget.setAttribute('data-hover', '')
-        if (!draggingPageId) return
+        if (!draggingPageId || !canEdit) return
         const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
         // Never display a dropCursor at the same time as the hover state, they can only drop in, not below
         dropCursor?.classList.add('hidden')
