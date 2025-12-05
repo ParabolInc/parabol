@@ -169,8 +169,10 @@ export const metricsHandler = async (res: HttpResponse) => {
 
   if (process.env.ENABLE_METRICS !== 'true') {
     if (!aborted) {
-      res.writeStatus('404 Not Found')
-      res.end()
+      res.cork(() => {
+        res.writeStatus('404 Not Found')
+        res.end()
+      })
     }
     return
   }

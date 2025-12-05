@@ -82,14 +82,18 @@ if (ENABLE_STATIC_FILE_HANDLER) {
   app.get('/static/*', createStaticFileHandler('/static/'))
 } else {
   app.get('/static/*', (res) => {
-    res.writeStatus('404 Not Found').end()
+    res.cork(() => {
+      res.writeStatus('404 Not Found').end()
+    })
   })
 }
 if (ENABLE_MATTERMOST_FILE_HANDLER) {
   app.get('/components/*', createStaticFileHandler('/components/'))
 } else {
   app.get('/components/*', (res) => {
-    res.writeStatus('404 Not Found').end()
+    res.cork(() => {
+      res.writeStatus('404 Not Found').end()
+    })
   })
 }
 
@@ -98,9 +102,11 @@ if (ENABLE_METRICS) {
     .App()
     .get('/metrics', metricsHandler)
     .get('/health', (res) => {
-      res.writeStatus('200 OK')
-      res.writeHeader('Content-Type', 'text/plain')
-      res.end('OK')
+      res.cork(() => {
+        res.writeStatus('200 OK')
+        res.writeHeader('Content-Type', 'text/plain')
+        res.end('OK')
+      })
     })
     .listen(METRICS_PORT, (socket) => {
       if (socket) {

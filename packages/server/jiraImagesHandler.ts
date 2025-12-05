@@ -38,7 +38,9 @@ const servePlaceholderImage = async (res: HttpResponse) => {
       Logger.error('Jira Placeholder image could not be fetched', e)
     }
   }
-  res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)
+  res.cork(() => {
+    res.writeStatus('200').writeHeader('Content-Type', 'image/png').end(jiraPlaceholderBuffer)
+  })
 }
 
 const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
@@ -54,10 +56,12 @@ const jiraImagesHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpReq
     return
   }
 
-  res
-    .writeStatus('200')
-    .writeHeader('Content-Type', cachedImage.contentType)
-    .end(cachedImage.imageBuffer)
+  res.cork(() => {
+    res
+      .writeStatus('200')
+      .writeHeader('Content-Type', cachedImage.contentType)
+      .end(cachedImage.imageBuffer)
+  })
 })
 
 export default jiraImagesHandler
