@@ -19,10 +19,12 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     if (!rawBody) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(
-        JSON.stringify({error: 'invalid_request', error_description: 'Request body is missing'})
-      )
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(
+          JSON.stringify({error: 'invalid_request', error_description: 'Request body is missing'})
+        )
+      })
       return
     }
 
@@ -40,15 +42,19 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     if (grant_type !== 'authorization_code') {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'unsupported_grant_type'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(JSON.stringify({error: 'unsupported_grant_type'}))
+      })
       return
     }
 
     if (!code || !redirect_uri || !client_id || !client_secret) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'invalid_request'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(JSON.stringify({error: 'invalid_request'}))
+      })
       return
     }
 
@@ -62,8 +68,10 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     if (!provider || provider.clientSecret !== client_secret) {
       if (res.aborted) return
-      res.writeStatus('401 Unauthorized')
-      res.end(JSON.stringify({error: 'invalid_client'}))
+      res.cork(() => {
+        res.writeStatus('401 Unauthorized')
+        res.end(JSON.stringify({error: 'invalid_client'}))
+      })
       return
     }
 
@@ -76,8 +84,10 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     if (!oauthCode) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'invalid_grant'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(JSON.stringify({error: 'invalid_grant'}))
+      })
       return
     }
 
@@ -86,16 +96,22 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
     const expiresAt = new Date(oauthCode.expiresAt)
     if (expiresAt < now) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'invalid_grant', error_description: 'Code expired'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(JSON.stringify({error: 'invalid_grant', error_description: 'Code expired'}))
+      })
       return
     }
 
     // 4. Validate Redirect URI
     if (!provider.redirectUris || !provider.redirectUris.includes(redirect_uri)) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end(JSON.stringify({error: 'invalid_grant', error_description: 'Redirect URI mismatch'}))
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end(
+          JSON.stringify({error: 'invalid_grant', error_description: 'Redirect URI mismatch'})
+        )
+      })
       return
     }
 
@@ -117,21 +133,25 @@ const tokenHandler = async (res: HttpResponse, _req: HttpRequest) => {
 
     // 7. Respond with Access Token
     if (res.aborted) return
-    res.writeStatus('200 OK')
-    res.writeHeader('Content-Type', 'application/json')
-    res.end(
-      JSON.stringify({
-        access_token: accessToken,
-        token_type: 'Bearer',
-        expires_in: 3600,
-        scope: oauthCode.scopes.join(' ')
-      })
-    )
+    res.cork(() => {
+      res.writeStatus('200 OK')
+      res.writeHeader('Content-Type', 'application/json')
+      res.end(
+        JSON.stringify({
+          access_token: accessToken,
+          token_type: 'Bearer',
+          expires_in: 3600,
+          scope: oauthCode.scopes.join(' ')
+        })
+      )
+    })
   } catch (error) {
     Logger.error('OAuth Token Error', error)
     if (res.aborted) return
-    res.writeStatus('500 Internal Server Error')
-    res.end(JSON.stringify({error: 'server_error'}))
+    res.cork(() => {
+      res.writeStatus('500 Internal Server Error')
+      res.end(JSON.stringify({error: 'server_error'}))
+    })
   }
 }
 

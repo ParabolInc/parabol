@@ -60,7 +60,8 @@ module.exports = {
         'mattermost',
         'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
-        'saml/'
+        'saml/',
+        'oauth/'
       ].map((name) => ({
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
@@ -69,10 +70,6 @@ module.exports = {
         context: '/components',
         pathRewrite: {'^/components': ''},
         target: `http://localhost:3002`
-      },
-      {
-        context: '/oauth/token',
-        target: `http://localhost:${SOCKET_PORT}`
       },
       {
         context: (path) => path === '/' || path === '/yjs',

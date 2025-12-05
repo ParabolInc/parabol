@@ -38,9 +38,11 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
 
   if (!authToken?.sub) {
     const loginUrl = makeAppURL(appOrigin, '/login')
-    res.writeStatus('302 Found')
-    res.writeHeader('Location', loginUrl)
-    res.end()
+    res.cork(() => {
+      res.writeStatus('302 Found')
+      res.writeHeader('Location', loginUrl)
+      res.end()
+    })
     return
   }
 
@@ -55,8 +57,10 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
 
   if (!clientId || !redirectUri || responseType !== 'code') {
     if (res.aborted) return
-    res.writeStatus('400 Bad Request')
-    res.end('Invalid request parameters')
+    res.cork(() => {
+      res.writeStatus('400 Bad Request')
+      res.end('Invalid request parameters')
+    })
     return
   }
 
@@ -71,14 +75,19 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
 
     if (!provider) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request')
-      res.end('Invalid client_id')
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end('Invalid client_id')
+      })
       return
     }
 
     if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
       if (res.aborted) return
-      res.writeStatus('400 Bad Request').end('Invalid redirect_uri')
+      res.cork(() => {
+        res.writeStatus('400 Bad Request')
+        res.end('Invalid redirect_uri')
+      })
       return
     }
 
@@ -111,14 +120,18 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
       redirectUrl.searchParams.set('state', state)
     }
 
-    res.writeStatus('302 Found')
-    res.writeHeader('Location', redirectUrl.toString())
-    res.end()
+    res.cork(() => {
+      res.writeStatus('302 Found')
+      res.writeHeader('Location', redirectUrl.toString())
+      res.end()
+    })
   } catch (error) {
     Logger.error('OAuth Authorization Error', error)
     if (res.aborted) return
-    res.writeStatus('500 Internal Server Error')
-    res.end('Internal Server Error')
+    res.cork(() => {
+      res.writeStatus('500 Internal Server Error')
+      res.end('Internal Server Error')
+    })
   }
 }
 
