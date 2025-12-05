@@ -93,7 +93,7 @@
     "http-message-signatures": "^1.0.4",
     "ioredis": "^5.6.1",
     "js-yaml": "^4.1.1",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.3",
     "lib0": "^0.2.114",
     "mailgun.js": "^9.3.0",
     "md-to-adf": "^0.6.4",
