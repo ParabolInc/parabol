@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.0.1](https://github.com/ParabolInc/parabol/compare/v11.0.0...v11.0.1) (2025-12-06)
+
+
+### Fixed
+
+* tiptap extension mismatches, dependency cleanup ([#12403](https://github.com/ParabolInc/parabol/issues/12403)) ([b14e6fe](https://github.com/ParabolInc/parabol/commit/b14e6fe3f850b8348748bd08fefa3a8370f08316))
+
+
+### Changed
+
+* update dev DLL for faster startups ([#12405](https://github.com/ParabolInc/parabol/issues/12405)) ([bf00fa2](https://github.com/ParabolInc/parabol/commit/bf00fa213901cc52f597600e06c1bf8c60f90ea2))
+
 ## [11.0.0](https://github.com/ParabolInc/parabol/compare/v10.38.0...v11.0.0) (2025-12-05)
 
 
