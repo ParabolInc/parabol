@@ -1,7 +1,7 @@
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import stringSimilarity from 'string-similarity'
+import stringScore from 'string-score'
 import getKysely from '../../postgres/getKysely'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -96,7 +96,7 @@ export default {
 
     if (smartTitle && smartTitle === oldTitle) {
       // let's see how smart those smart titles really are. A high similarity means very helpful. Not calling this mutation means perfect!
-      const similarity = stringSimilarity.compareTwoStrings(smartTitle, normalizedTitle)
+      const similarity = stringScore(smartTitle, normalizedTitle)
       analytics.smartGroupTitleChanged(viewer, similarity, smartTitle, normalizedTitle)
     }
 
