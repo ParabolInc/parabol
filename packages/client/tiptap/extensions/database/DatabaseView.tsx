@@ -1,5 +1,6 @@
 import {Add, DeleteOutline} from '@mui/icons-material'
 import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
+import {Editor} from '@tiptap/core'
 import {useMemo} from 'react'
 import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
@@ -7,6 +8,7 @@ import {Cell} from './Cell'
 import {appendColumn, appendRow, deleteRow, RowId} from './data'
 import {Header} from './Header'
 import {useDatabase} from './hooks'
+import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
 
 // add additional debug columns
@@ -17,10 +19,11 @@ const getRowId = (row: RowId) => row
 type Props = {
   doc: Y.Doc
   userId?: string
+  editor: Editor
 }
 
 export default function DatabaseView(props: Props) {
-  const {doc, userId} = props
+  const {doc, editor, userId} = props
 
   const {rows, columns} = useDatabase(doc)
 
@@ -77,7 +80,6 @@ export default function DatabaseView(props: Props) {
         id: 'append',
         size: 48,
         minSize: 48,
-        maxSize: 48,
         enableResizing: false,
         header: () => (
           <div
@@ -110,63 +112,80 @@ export default function DatabaseView(props: Props) {
   const isResizing = table.getState().columnSizingInfo.isResizingColumn
 
   return (
-    <table
-      className={cn('table-fixed border-collapse bg-white', isResizing && 'select-none')}
-      style={{
-        width: table.getTotalSize()
-      }}
-      draggable={false}
-    >
-      <thead>
-        {table.getHeaderGroups().map((hg) => (
-          <tr key={hg.id} className='text-slate-600'>
-            {hg.headers.map((header) => (
-              <th
-                key={header.id}
-                className='border-slate-400 border-b-1 p-0'
-                style={{width: header.getSize()}}
-              >
-                {flexRender(header.column.columnDef.header, header.getContext())}
-                {header.column.getCanResize() && (
-                  <div
-                    className={cn(
-                      '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-slate-300',
-                      header.column.getIsResizing() && '-right-1 w-2 bg-sky-300 hover:bg-sky-300'
+    <>
+      <div className='flex w-full flex-row justify-end'>
+        <ImportExport doc={doc} editor={editor} />
+      </div>
+      <div className='overflow-x-auto pb-2'>
+        <table
+          className={cn(
+            'relative min-w-full table-fixed border-collapse bg-white',
+            isResizing && 'select-none'
+          )}
+          style={{
+            width: table.getTotalSize()
+          }}
+          draggable={false}
+        >
+          <thead>
+            {table.getHeaderGroups().map((hg) => (
+              <tr key={hg.id} className='text-slate-600'>
+                {hg.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className='border-slate-400 border-b-1 p-0'
+                    style={header.column.getCanResize() ? {width: header.getSize()} : {}}
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanResize() && (
+                      <div
+                        className={cn(
+                          '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-slate-300',
+                          header.column.getIsResizing() &&
+                            '-right-1 w-2 bg-sky-300 hover:bg-sky-300'
+                        )}
+                        onMouseDown={header.getResizeHandler()}
+                        onTouchStart={header.getResizeHandler()}
+                      />
                     )}
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                  />
-                )}
-              </th>
+                  </th>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className='border-slate-400 border-b-1 border-l-1 first:border-l-0'>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className='border-slate-400 border-b-1 border-l-1 first:border-l-0'
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className='text-slate-600'>
+              <td
+                colSpan={columns.length + 1}
+                className='cursor-pointer hover:bg-slate-100'
+                onClick={() => appendRow(doc, userId)}
+                contentEditable={false}
+              >
+                <div className='w-full cursor-pointer hover:bg-slate-100'>
+                  <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>
+                    <Add />
+                    New entry
+                  </div>
+                </div>
               </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr className='text-slate-600'>
-          <td
-            colSpan={columns.length}
-            className='cursor-pointer hover:bg-slate-100'
-            onClick={() => appendRow(doc, userId)}
-          >
-            <div className='flex w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100'>
-              <Add />
-              New entry
-            </div>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </>
   )
 }

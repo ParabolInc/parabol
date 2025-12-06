@@ -1,7 +1,6 @@
+import {Parser} from '@json2csv/plainjs'
 import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
-import type {Parser as JSON2CSVParser} from 'json2csv'
-import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import type {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import withMutationProps, {
@@ -363,7 +362,7 @@ const ExportToCSV = (props: Props) => {
     const parser = new Parser({
       withBOM: true,
       eol: '\n'
-    }) as JSON2CSVParser<any>
+    })
     const csv = parser.parse(rows)
     const date = new Date(endedAt!)
     const numDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`

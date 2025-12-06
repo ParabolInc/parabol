@@ -1,7 +1,6 @@
+import {Parser} from '@json2csv/plainjs'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
-import type {Parser as JSON2CSVParser} from 'json2csv'
-import Parser from 'json2csv/lib/JSON2CSVParser' // only grab the sync parser
 import type * as React from 'react'
 import {useCallback, useMemo, useState} from 'react'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
@@ -190,7 +189,7 @@ const OrgMembers = (props: Props) => {
     const parser = new Parser({
       withBOM: true,
       eol: '\n'
-    }) as JSON2CSVParser<any>
+    })
     const csv = parser.parse(rows)
     const date = new Date()
     // copied from https://stackoverflow.com/questions/18848860/javascript-array-to-csv/18849208#18849208
