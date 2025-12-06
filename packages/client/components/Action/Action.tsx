@@ -32,6 +32,9 @@ const InvitationLink = lazy(
 const PageRoot = lazy(
   () => import(/* webpackChunkName: 'PageRoot' */ '../../modules/pages/PageRoot')
 )
+const OAuthAuthorizePage = lazy(
+  () => import(/* webpackChunkName: 'OAuthAuthorizePage' */ '../OAuthAuthorizePage')
+)
 
 const Action = memo(() => {
   useServiceWorkerUpdater()
@@ -98,6 +101,7 @@ const Action = memo(() => {
                 component={VerifyEmail}
               />
               <Route path='/reset-password/:token' component={SetNewPassword} />
+              <Route exact path='/oauth/authorize' component={OAuthAuthorizePage} />
               <Route path='/team-invitation/:token' component={TeamInvitation} />
               <Route path='/invitation-link/:token' component={InvitationLink} />
               {!isAuthenticated && (
