@@ -24,12 +24,14 @@ const servePlaceholderImage = async (res: HttpResponse) => {
       Logger.error('Placeholder image could not be fetched', e)
     }
   }
-  res
-    .writeStatus('200')
-    .writeHeader('Content-Type', 'image/png')
-    .writeHeader('Vary', 'Authorization, X-Application-Authorization')
-    .writeHeader('Cache-Control', 'no-store, max-age=0')
-    .end(placeholderBuffer)
+  res.cork(() => {
+    res
+      .writeStatus('200')
+      .writeHeader('Content-Type', 'image/png')
+      .writeHeader('Vary', 'Authorization, X-Application-Authorization')
+      .writeHeader('Cache-Control', 'no-store, max-age=0')
+      .end(placeholderBuffer)
+  })
 }
 
 const checkAccess = async (
@@ -83,7 +85,9 @@ const checkAccess = async (
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const partialPath = req.getUrl().slice('/assets'.length + 1)
   if (!partialPath) {
-    res.writeStatus('404').end()
+    res.cork(() => {
+      res.writeStatus('404').end()
+    })
     return
   }
   const authToken = getReqAuth(req)
@@ -105,10 +109,12 @@ export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
     () => manager.presignUrl(partialPath as PartialPath),
     60_000
   )
-  res
-    .writeStatus('307')
-    .writeHeader('Location', url)
-    .writeHeader('Vary', 'Authorization, X-Application-Authorization')
-    .writeHeader('Cache-Control', 'no-store, max-age=0')
-    .end()
+  res.cork(() => {
+    res
+      .writeStatus('307')
+      .writeHeader('Location', url)
+      .writeHeader('Vary', 'Authorization, X-Application-Authorization')
+      .writeHeader('Cache-Control', 'no-store, max-age=0')
+      .end()
+  })
 })

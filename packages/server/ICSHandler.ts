@@ -8,10 +8,12 @@ const ICSHandler = (res: HttpResponse, req: HttpRequest) => {
   const startDate = new Date(Number(createdAt))
   if (typeof meetingUrl !== 'string' || typeof teamName !== 'string') return
   const icsText = createICS(startDate, meetingUrl, teamName)
-  res
-    .writeHeader('content-type', 'text/calendar')
-    .writeHeader('content-disposition', 'attachment; filename=Parabol Check-in Meeting.ics')
-    .end(icsText)
+  res.cork(() => {
+    res
+      .writeHeader('content-type', 'text/calendar')
+      .writeHeader('content-disposition', 'attachment; filename=Parabol Check-in Meeting.ics')
+      .end(icsText)
+  })
 }
 
 export default ICSHandler

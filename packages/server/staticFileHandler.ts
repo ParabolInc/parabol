@@ -16,7 +16,9 @@ export const createStaticFileHandler = (route: string) => {
     const fileName = req.getUrl().slice(route.length)
     const servedStatic = serveStatic(res, fileName, acceptsBrotli(req))
     if (servedStatic) return
-    res.writeStatus('404').end()
+    res.cork(() => {
+      res.writeStatus('404').end()
+    })
     return
   }
 }
