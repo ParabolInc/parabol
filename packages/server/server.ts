@@ -44,6 +44,8 @@ const ENABLE_STATIC_FILE_HANDLER = !__PRODUCTION__ || process.env.FILE_STORE_PRO
 const ENABLE_MATTERMOST_FILE_HANDLER =
   !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
 
+process.setMaxListeners(20)
+
 process.on('SIGTERM', async (signal) => {
   Logger.log(
     `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
