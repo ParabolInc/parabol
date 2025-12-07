@@ -6,6 +6,7 @@ import sleep from '../../../../../client/utils/sleep'
 import {hocuspocus, redisHocusPocus} from '../../../../hocusPocus'
 import {CipherId} from '../../../../utils/CipherId'
 import type {InternalContext} from '../../../graphql'
+import {queuePageEmbedding} from '../queuePageEmbedding'
 import {generateMeetingSummaryPage} from './generateMeetingSummaryPage'
 
 // native clone method only clones attributes that are strings
@@ -26,6 +27,7 @@ const cloneBlock = (elToClone: XmlElement) => {
 export const streamSummaryBlocksToPage = async (
   pageId: number,
   meetingId: string,
+  teamId: string | null,
   context: InternalContext,
   info: GraphQLResolveInfo
 ) => {
@@ -91,4 +93,7 @@ export const streamSummaryBlocksToPage = async (
   })
   await conn.disconnect()
   unlock()
+
+  const userId = (context as any).userId
+  await queuePageEmbedding(pageId, teamId, userId)
 }

@@ -14,6 +14,7 @@ module.exports = {
   moduleNameMapper: {
     'server/(.*)': ['<rootDir>/$1'],
     'parabol-client/(.*)': ['<rootDir>/../client/$1'],
+    'parabol-server/(.*)': ['<rootDir>/../server/$1'],
     '~/(.*)': ['<rootDir>/../client/$1']
   },
   testRegex: '/__tests__/.*.test\\.ts?$',

@@ -1,5 +1,4 @@
 import {sql} from 'kysely'
-import ms from 'ms'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initLogging'
 import getKysely from 'parabol-server/postgres/getKysely'
@@ -19,9 +18,6 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
     this.done = false
   }
   async next(): Promise<IteratorResult<DBJob>> {
-    if (this.done) {
-      return {done: true as const, value: undefined}
-    }
     const pg = getKysely()
     const getJob = (isFailed: boolean) => {
       return pg
@@ -49,20 +45,26 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
         .returningAll()
         .executeTakeFirst()
     }
-    try {
-      const job = (await getJob(false)) || (await getJob(true))
-      if (!job) {
-        // queue is empty, so sleep for a while
-        await sleep(ms('10s'))
-        return this.next()
+
+    while (!this.done) {
+      try {
+        const job = (await getJob(false)) || (await getJob(true))
+        if (!job) {
+          // queue is empty, so sleep for a short while (prioritize latency)
+          await sleep(250)
+          continue
+        }
+        await this.orchestrator.runStep(job)
+        return {done: false, value: job}
+      } catch (err) {
+        console.error('Error processing job', err)
+        await sleep(1000)
+        // continue loop
       }
-      await this.orchestrator.runStep(job)
-      return {done: false, value: job}
-    } catch {
-      await sleep(1000)
-      return this.next()
     }
+    return {done: true as const, value: undefined}
   }
+
   return() {
     this.done = true
     return Promise.resolve({done: true as const, value: undefined})

@@ -1037,6 +1037,9 @@ importers:
       sharp:
         specifier: 0.34.3
         version: 0.34.3
+      string-score:
+        specifier: ^1.0.1
+        version: 1.0.1
       stripe:
         specifier: ^9.13.0
         version: 9.16.0

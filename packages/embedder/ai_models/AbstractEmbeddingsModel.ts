@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
-import type {DB} from 'parabol-server/postgres/types/pg'
-import isValid from '../../server/graphql/isValid'
+import getKysely from '../../server/postgres/getKysely'
+import type {DB} from '../../server/postgres/types/pg'
 import {Logger} from '../../server/utils/Logger'
 import {getEmbedderPriority} from '../getEmbedderPriority'
 import type {ISO6391} from '../iso6393To1'
@@ -42,70 +41,118 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async chunkText(content: string) {
-    const AVG_CHARS_PER_TOKEN = 20
+    const AVG_CHARS_PER_TOKEN = 4
     const maxContentLength = this.maxInputTokens * AVG_CHARS_PER_TOKEN
-    const tokens = content.length < maxContentLength ? await this.getTokens(content) : -1
-    if (tokens instanceof Error) return tokens
-    const isFullTextTooBig = tokens === -1 || tokens.length > this.maxInputTokens
-    if (!isFullTextTooBig) return [content]
-    const normalizedContent = this.normalizeContent(content, true)
-    for (let i = 0; i < 5; i++) {
-      const tokensPerWord = (4 + i) / 3
-      const chunks = this.splitText(normalizedContent, tokensPerWord)
-      const chunkLengths = await Promise.all(
-        chunks.map(async (chunk) => {
-          const chunkTokens = await this.getTokens(chunk)
-          if (chunkTokens instanceof Error) return chunkTokens
-          return chunkTokens.length
-        })
-      )
-      const firstError = chunkLengths.find(
-        (chunkLength): chunkLength is Error => chunkLength instanceof Error
-      )
-      if (firstError) return firstError
 
-      const validChunks = chunkLengths.filter(isValid)
-      if (validChunks.every((chunkLength) => chunkLength <= this.maxInputTokens)) {
-        return chunks
+    // Quick check: if small enough, verify tokens and return
+    if (content.length < maxContentLength) {
+      const tokens = await this.getTokens(content)
+      if (!(tokens instanceof Error) && tokens.length <= this.maxInputTokens) {
+        return [content]
       }
     }
-    return new Error(`Text could not be chunked. The tokenizer cannot support this content.`)
-  }
-  // private because result must still be too long to go into model. Must verify with getTokens
-  private splitText(content: string, tokensPerWord = 4 / 3) {
-    const WORD_LIMIT = Math.floor(this.maxInputTokens / tokensPerWord)
-    // account for junk data with excessively long words
-    const charLimit = WORD_LIMIT * 100
+
+    const normalizedContent = this.normalizeContent(content, true)
+
+    // Split into sentences to avoid breaking words/sentences mid-way where possible
+    const sentences = normalizedContent.match(/[^.!?]+[.!?]+(\s+|$)|[^.!?]+$/g) || [
+      normalizedContent
+    ]
+
     const chunks: string[] = []
-    const delimiters = ['\n\n', '\n', '.', ' '] as const
-    const countWords = (text: string) => text.trim().split(/\s+/).length
-    const splitOnDelimiter = (text: string, delimiter: (typeof delimiters)[number]) => {
-      const sections = text.split(delimiter)
-      for (let i = 0; i < sections.length; i++) {
-        const section = sections[i]!
-        // account for multiple delimiters in a row
-        if (section.length === 0) continue
-        const sectionWordCount = countWords(section)
-        if (sectionWordCount < WORD_LIMIT && section.length < charLimit) {
-          // try to merge this section with the last one
-          const previousSection = chunks.at(-1)
-          if (previousSection) {
-            const combinedChunks = `${previousSection}${delimiter}${section}`
-            const mergedWordCount = countWords(combinedChunks)
-            if (mergedWordCount < WORD_LIMIT && combinedChunks.length < charLimit) {
-              chunks[chunks.length - 1] = combinedChunks
-              continue
-            }
-          }
-          chunks.push(section)
-        } else {
-          const nextDelimiter = delimiters[delimiters.indexOf(delimiter) + 1]!
-          splitOnDelimiter(section, nextDelimiter)
+    let currentChunkSentences: string[] = []
+    let currentChunkLength = 0
+
+    const MAX_CHARS = this.maxInputTokens * (AVG_CHARS_PER_TOKEN * 0.8) // 80% to allow overlap
+    const OVERLAP_CHARS = MAX_CHARS * 0.2 // 20% overlap
+
+    for (let i = 0; i < sentences.length; i++) {
+      const sentence = sentences[i]
+      if (!sentence) continue
+      const sentenceLen = sentence.length
+
+      if (sentenceLen > MAX_CHARS) {
+        if (currentChunkSentences.length > 0) {
+          chunks.push(currentChunkSentences.join(''))
+          currentChunkSentences = []
+          currentChunkLength = 0
         }
+
+        let start = 0
+        while (start < sentenceLen) {
+          const end = Math.min(start + MAX_CHARS, sentenceLen)
+          chunks.push(sentence.slice(start, end))
+          start = end - Math.floor(OVERLAP_CHARS) // Overlap
+        }
+        continue
+      }
+
+      if (currentChunkLength + sentenceLen > MAX_CHARS) {
+        chunks.push(currentChunkSentences.join(''))
+
+        // Create overlap for next chunk
+        let overlapLength = 0
+        const overlapSentences = []
+        for (let j = currentChunkSentences.length - 1; j >= 0; j--) {
+          const s = currentChunkSentences[j]
+          if (!s) continue
+          if (overlapLength + s.length > OVERLAP_CHARS) break
+          overlapSentences.unshift(s)
+          overlapLength += s.length
+        }
+
+        currentChunkSentences = [...overlapSentences]
+        currentChunkLength = overlapLength
+      }
+
+      currentChunkSentences.push(sentence)
+      currentChunkLength += sentenceLen
+    }
+
+    if (currentChunkSentences.length > 0) {
+      chunks.push(currentChunkSentences.join(''))
+    }
+
+    // Validation pass to ensure chunks are within maxInputTokens
+    const validatedChunks: string[] = []
+    for (const chunk of chunks) {
+      const tokens = await this.getTokens(chunk)
+      if (tokens instanceof Error) return tokens
+
+      if (tokens.length <= this.maxInputTokens) {
+        validatedChunks.push(chunk)
+      } else {
+        // Chunk too big: hard split it.
+        const subChunks = await this.forceSplit(chunk)
+        if (subChunks instanceof Error) return subChunks
+        validatedChunks.push(...subChunks)
       }
     }
-    splitOnDelimiter(content, delimiters[0])
-    return chunks
+
+    return validatedChunks
+  }
+
+  private async forceSplit(content: string): Promise<string[] | Error> {
+    const mid = Math.floor(content.length / 2)
+    let splitIdx = content.lastIndexOf(' ', mid) // Try to split on a space
+    if (splitIdx === -1) splitIdx = mid // No space, just split
+
+    const p1 = content.slice(0, splitIdx)
+    const p2 = content.slice(splitIdx) // include space in second or drop it? default keep
+
+    const t1 = await this.getTokens(p1)
+    if (t1 instanceof Error) return t1
+
+    const r1 = t1.length > this.maxInputTokens ? await this.forceSplit(p1) : [p1]
+    if (r1 instanceof Error) return r1
+
+    const t2 = await this.getTokens(p2)
+    if (t2 instanceof Error) return t2
+
+    const r2 = t2.length > this.maxInputTokens ? await this.forceSplit(p2) : [p2]
+    if (r2 instanceof Error) return r2
+
+    return [...r1, ...r2]
   }
 
   async createEmbeddingsForModel() {
@@ -115,9 +162,10 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     await pg
       .insertInto('EmbeddingsJobQueue')
       .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
-      .expression(({selectFrom}) =>
-        selectFrom('EmbeddingsMetadata')
-          .select(({ref}) => [
+      .expression((eb: any) =>
+        eb
+          .selectFrom('EmbeddingsMetadata')
+          .select(({ref}: any) => [
             sql.lit('embed:start').as('jobType'),
             priority.as('priority'),
             ref('id').as('embeddingsMetadataId'),
@@ -125,7 +173,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           ])
           .where('language', 'in', this.languages)
       )
-      .onConflict((oc) => oc.doNothing())
+      .onConflict((oc: any) => oc.doNothing())
       .execute()
   }
   async createTable() {
@@ -145,6 +193,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         CREATE TABLE IF NOT EXISTS ${sql.id(this.tableName)} (
           "id" INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
           "embedText" TEXT,
+          "tsv" tsvector,
           "embedding" vector(${sql.raw(vectorDimensions.toString())}),
           "embeddingsMetadataId" INTEGER NOT NULL,
           "chunkNumber" SMALLINT,
@@ -156,6 +205,9 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.tableName)}_embedding_vector_cosign_ops"
           ON ${sql.id(this.tableName)}
           USING hnsw ("embedding" vector_cosine_ops);
+        CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.tableName)}_tsv"
+          ON ${sql.id(this.tableName)}
+          USING GIN ("tsv");
         END
       $$;
       `.execute(pg)

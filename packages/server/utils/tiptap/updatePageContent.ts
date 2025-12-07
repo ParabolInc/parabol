@@ -1,4 +1,5 @@
 import type {JSONContent} from '@tiptap/core'
+import {queuePageEmbedding} from '../../graphql/mutations/helpers/queuePageEmbedding'
 import getKysely from '../../postgres/getKysely'
 import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 
@@ -9,7 +10,7 @@ export const updatePageContent = async (
 ) => {
   const pg = getKysely()
   const {title, plaintextContent} = getPlaintextFromTipTap(content)
-  const {titleChanged} = await pg
+  const {titleChanged, teamId, userId} = await pg
     .updateTable('Page')
     .set({yDoc: state, title, plaintextContent})
     .where('id', '=', pageId)
@@ -17,8 +18,14 @@ export const updatePageContent = async (
       // if we change the isolation level to "read uncommitted" this will fail, but fine for now
       eb(selectFrom('Page').select('title').where('id', '=', pageId), 'is distinct from', title).as(
         'titleChanged'
-      )
+      ),
+      'teamId',
+      'userId'
     ])
     .executeTakeFirstOrThrow()
+
+  // Queue embedding if content changed
+  await queuePageEmbedding(pageId, teamId, userId)
+
   return {updatedTitle: titleChanged ? title : undefined}
 }
