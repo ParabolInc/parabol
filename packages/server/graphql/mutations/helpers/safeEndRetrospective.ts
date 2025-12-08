@@ -125,8 +125,7 @@ const safeEndRetrospective = async ({
   await pg.insertInto('TimelineEvent').values(events).execute()
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
   const page = await publishSummaryPage(meetingId, context, info)
-  dataLoader.get('newMeetings').clearAll()
-  analytics.retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
+  meeting.summaryPageId = page.id
   if (team.isOnboardTeam) {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
@@ -155,6 +154,10 @@ const safeEndRetrospective = async ({
   summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
   // do not await sending the email
   sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  analytics
+    .retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
+    .catch(Logger.log)
+
   return data
 }
 
