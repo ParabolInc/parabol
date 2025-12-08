@@ -101,6 +101,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       await redis.del(`rsaLock:${documentName}`)
     })
   )
+  redis.disconnect()
   if (fileMoves.length === 0) return
   const fileManager = getFileStoreManager()
   await Promise.all(

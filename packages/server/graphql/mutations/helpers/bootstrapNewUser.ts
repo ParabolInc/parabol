@@ -15,7 +15,10 @@ import createNewOrg from './createNewOrg'
 import createTeamAndLeader from './createTeamAndLeader'
 
 const bootstrapNewUser = async (
-  newUser: Pick<User, 'id' | 'createdAt' | 'preferredName' | 'email' | 'identities' | 'picture'> & {
+  newUser: Pick<
+    User,
+    'id' | 'createdAt' | 'preferredName' | 'email' | 'identities' | 'picture' | 'SAMLUserId'
+  > & {
     pseudoId?: string
   },
   isOrganic: boolean,

@@ -42,6 +42,33 @@ const getRelayState = (body: querystring.ParsedUrlQuery) => {
   return relayState
 }
 
+const getUserByEmailOrSAMLUserId = async (
+  email: string,
+  SAMLUserId: string | undefined,
+  domains: string[]
+) => {
+  const user = await getUserByEmail(email)
+  if (user) return user
+  if (!SAMLUserId) return null
+  const pg = getKysely()
+  const userBySAMLUserId = await pg
+    .selectFrom('User')
+    .selectAll()
+    .where('SAMLUserId', '=', SAMLUserId)
+    .limit(1)
+    .executeTakeFirst()
+  if (!userBySAMLUserId) return null
+  // Do not blindly trust the IdP. Verify that it has control over the email address
+  const ssoDomain = getSSODomainFromEmail(userBySAMLUserId.email)
+  if (!isSingleTenantSSO && (!ssoDomain || !domains.includes(ssoDomain))) {
+    // don't blindly trust the IdP unless there is only 1
+    return new Error(`${userBySAMLUserId.email} does not belong to ${domains.join(', ')}`)
+  }
+  // At this point we can trust that the IdP controls this account and has changed the users email address
+  await pg.updateTable('User').set({email}).where('id', '=', userBySAMLUserId.id).execute()
+  return userBySAMLUserId
+}
+
 const loginSAML: MutationResolvers['loginSAML'] = async (
   _source,
   {samlName, queryString},
@@ -131,7 +158,13 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     })
   )
 
-  const {email: inputEmail, emailaddress, displayname, name} = normalizedAttributes
+  const {
+    email: inputEmail,
+    emailaddress,
+    displayname,
+    name,
+    samluserid: SAMLUserId
+  } = normalizedAttributes
   const preferredName = displayname || name || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
@@ -170,8 +203,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       .execute()
   }
 
-  const user = await getUserByEmail(email)
+  const user = await getUserByEmailOrSAMLUserId(email, SAMLUserId, domains)
+  if (user instanceof Error) return standardError(user)
   if (user) {
+    if (SAMLUserId && !user.SAMLUserId) {
+      await pg.updateTable('User').set({SAMLUserId}).where('id', '=', user.id).execute()
+    }
     return {
       userId: user.id,
       authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
