@@ -38,7 +38,7 @@ export const PageAccessComboboxControl = (props: Props) => {
   return (
     <Menu
       trigger={
-        <MenuLabelTrigger labelClassName={'pr-0 text-md font-medium text-slate-700 w-28'}>
+        <MenuLabelTrigger labelClassName={'pr-0 text-md font-medium text-slate-700'}>
           {roleLabel}
         </MenuLabelTrigger>
       }
