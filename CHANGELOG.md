@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.1.0](https://github.com/ParabolInc/parabol/compare/v11.0.1...v11.1.0) (2025-12-08)
+
+
+### Added
+
+* auto login for single tenant ([#12411](https://github.com/ParabolInc/parabol/issues/12411)) ([953f13a](https://github.com/ParabolInc/parabol/commit/953f13ad89f294ff052b6d552704ff3067991b3d))
+
+
+### Fixed
+
+* share menu styles ([#12410](https://github.com/ParabolInc/parabol/issues/12410)) ([2fe2701](https://github.com/ParabolInc/parabol/commit/2fe2701d397bed24b10b7bf16938890d1bc9584c))
+* standardize adding meetingSummaryId to all meeting objects before publish ([#12408](https://github.com/ParabolInc/parabol/issues/12408)) ([00b9d6c](https://github.com/ParabolInc/parabol/commit/00b9d6c7d35bb05542a40089614d4e3aadbe4152))
+
 ## [11.0.1](https://github.com/ParabolInc/parabol/compare/v11.0.0...v11.0.1) (2025-12-06)
 
 
