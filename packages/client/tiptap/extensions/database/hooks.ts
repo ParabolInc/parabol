@@ -2,7 +2,16 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
-import {ColumnId, ColumnMeta, getColumns, getRows, RowData, RowId} from './data'
+import {
+  ColumnId,
+  ColumnMeta,
+  changeColumn,
+  DataType,
+  getColumns,
+  getRows,
+  RowData,
+  RowId
+} from './data'
 import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
@@ -108,25 +117,87 @@ export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
     .filter(Boolean) as string[]
 }
 
+export const useColumnMeta = (doc: Y.Doc, columnId: ColumnId) => {
+  const columnMetaMap = doc.getMap<ColumnMeta>('columnMeta')
+  const [meta, setMetaState] = useState<ColumnMeta>(() => {
+    const existing = columnMetaMap.get(columnId)
+    return existing ?? {name: `<Unknown>`, type: 'text'}
+  })
+
+  useEffect(() => {
+    const updateMeta = () => {
+      const meta = columnMetaMap.get(columnId)
+      if (meta) {
+        setMetaState(meta)
+      }
+    }
+
+    const observer = (event: Y.YMapEvent<ColumnMeta>) => {
+      if (event.keysChanged.has(columnId)) {
+        updateMeta()
+      }
+    }
+    updateMeta()
+    columnMetaMap.observe(observer)
+
+    return () => {
+      columnMetaMap.unobserve(observer)
+    }
+  }, [columnMetaMap, columnId])
+
+  const setMeta = useCallback(
+    (newMeta: ColumnMeta) => {
+      changeColumn(doc, columnId, newMeta)
+    },
+    [doc, columnId, columnMetaMap]
+  )
+
+  return [meta, setMeta] as const
+}
+
+// hook to get rows and columns with their types
+// don't include the name in the column info, as it causes unnecessary re-renders of all cells on rename
 export const useDatabase = (doc: Y.Doc) => {
   const columnIds = useYArray(getColumns(doc))
   const rows = useYArray(getRows(doc))
-  const columnMeta = useYMap(doc.getMap<ColumnMeta>('columnMeta'))
+
+  const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
+  const [columnTypes, setColumnTypes] = useState<DataType[]>(() =>
+    columnIds.map((id) => {
+      const meta = columnMeta.get(id)
+      return meta ? meta.type : 'text'
+    })
+  )
+
+  useEffect(() => {
+    const updateTypes = () => {
+      const newTypes = columnIds.map((id) => {
+        const meta = columnMeta.get(id)
+        return meta ? meta.type : 'text'
+      })
+      if (JSON.stringify(newTypes) !== JSON.stringify(columnTypes)) {
+        setColumnTypes(newTypes)
+      }
+    }
+
+    columnMeta.observe(updateTypes)
+    updateTypes()
+
+    return () => {
+      columnMeta.unobserve(updateTypes)
+    }
+  }, [columnIds, columnMeta])
 
   const columns = useMemo(
     () =>
       columnIds.map((id, index) => {
-        let meta = columnMeta.get(id)
-        if (!meta) {
-          meta = {name: `Column ${index + 1}`, type: 'text'}
-          doc.getMap<ColumnMeta>('columnMeta').set(id, meta)
-        }
+        const type = columnTypes[index] ?? 'text'
         return {
           id,
-          ...meta
+          type
         }
       }),
-    [columnIds, columnMeta]
+    [columnIds, columnTypes]
   )
   return {
     rows,

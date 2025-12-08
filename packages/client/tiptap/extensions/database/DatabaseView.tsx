@@ -1,7 +1,7 @@
 import {Add, DeleteOutline} from '@mui/icons-material'
 import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
 import {Editor} from '@tiptap/core'
-import {useMemo} from 'react'
+import {Fragment, useMemo} from 'react'
 import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
 import {Cell} from './Cell'
@@ -29,8 +29,7 @@ export default function DatabaseView(props: Props) {
 
   const dataColumns = useMemo(() => {
     const dataColumns: ColumnDef<RowId>[] = columns.map((column) => {
-      const {id, ...meta} = column
-      const {type} = meta
+      const {id, type} = column
 
       return {
         id,
@@ -39,10 +38,10 @@ export default function DatabaseView(props: Props) {
         maxSize: 500,
         enableResizing: true,
         header: () => (
-          <>
-            <Header key={id} columnMeta={meta} doc={doc} columnId={id} />
+          <Fragment key={id}>
+            <Header doc={doc} columnId={id} />
             {DEBUG && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
-          </>
+          </Fragment>
         ),
         cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} userId={userId} />
       }

@@ -9,25 +9,44 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import {useEffect, useState} from 'react'
 import * as Y from 'yjs'
 import useForm from '../../../hooks/useForm'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 import {DropdownMenuInputItem} from './DropdownMenuInputItem'
 import {
   ColumnId,
-  ColumnMeta,
   changeColumn,
   deleteColumn,
   duplicateColumn,
+  getColumnMeta,
   insertColumnAfter,
   insertColumnBefore
 } from './data'
 import {DataType, DataTypeIcons} from './types'
 
-export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: ColumnId}) => {
-  const {doc, columnId, columnMeta} = props
+export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
+  const {doc, columnId} = props
 
-  const {name, type} = columnMeta
+  const columnMetaMap = getColumnMeta(doc)
+  const [name, setName] = useState(columnMetaMap.get(columnId)?.name ?? 'Untitled')
+  const [type, setType] = useState<DataType>(columnMetaMap.get(columnId)?.type ?? 'text')
+
+  useEffect(() => {
+    const updateMeta = () => {
+      const meta = columnMetaMap.get(columnId)
+      setName(meta?.name ?? 'Untitled')
+      setType(meta?.type ?? 'text')
+    }
+
+    columnMetaMap.observe(updateMeta)
+    updateMeta()
+
+    return () => {
+      columnMetaMap.unobserve(updateMeta)
+    }
+  }, [columnMetaMap, columnId])
+
   const changeType = (newType: string) => {
     changeColumn(doc, columnId, {name, type: newType as DataType})
   }
@@ -42,7 +61,7 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
   })
 
   const handleChangeTitle = () => {
-    if (fields.newTitle.value === name) {
+    if (!fields.newTitle.value || fields.newTitle.value === name) {
       return
     }
     changeTitle(fields.newTitle.value)
@@ -80,8 +99,16 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
     }
   ]
 
+  const [menuOpen, setMenuOpen] = useState(false)
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      handleChangeTitle()
+    }
+    setMenuOpen(open)
+  }
+
   return (
-    <DropdownMenu.Root onOpenChange={(open) => !open && handleChangeTitle()}>
+    <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild>
         <button className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
           {DataTypeIcons[type as DataType] || <Notes />}
