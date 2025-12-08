@@ -29,6 +29,17 @@ const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
     .execute()
 }
 
+const removePageAcces = async (userId: string) => {
+  const pg = getKysely()
+  // Do this first because deleting from PageAccess will cause n triggers & we want to do it all at once
+  await pg.deleteFrom('PageUserSortOrder').where('userId', '=', userId).execute()
+  await Promise.all([
+    pg.deleteFrom('PageAccess').where('userId', '=', userId).execute(),
+    pg.deleteFrom('PageUserAccess').where('userId', '=', userId).execute(),
+    pg.deleteFrom('PageAccessRequest').where('userId', '=', userId).execute()
+  ])
+}
+
 const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWorker) => {
   const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userIdToDelete)
   const orgIds = orgUsers.map((orgUser) => orgUser.orgId)
@@ -42,7 +53,8 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
   await Promise.all([
     removeAtlassianAuths(userIdToDelete, teamIds),
     removeGitHubAuths(userIdToDelete, teamIds),
-    removeSlackAuths(userIdToDelete, teamIds, true)
+    removeSlackAuths(userIdToDelete, teamIds, true),
+    removePageAcces(userIdToDelete)
   ])
 
   return getDeletedEmail(userIdToDelete)
