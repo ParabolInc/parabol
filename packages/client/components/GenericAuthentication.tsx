@@ -78,7 +78,6 @@ const GenericAuthentication = (props: Props) => {
   const isMicrosoftAuthEnabled = window.__ACTION__.AUTH_MICROSOFT_ENABLED
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
-
   const isCreate = page === 'create-account'
   const action = isCreate ? CREATE_ACCOUNT_LABEL : SIGNIN_LABEL
   const pageTitle = `${action} | Parabol`

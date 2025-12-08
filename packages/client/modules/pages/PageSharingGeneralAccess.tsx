@@ -69,7 +69,7 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const {icon: AccessIcon, label} = GARole
   return (
     <>
-      <div className='p-2 font-semibold text-slate-600 text-sm'>General access</div>
+      <div className='pt-1 font-semibold text-slate-600 text-sm'>General access</div>
       <div className='flex w-full items-center justify-between'>
         <div className='flex items-center gap-3'>
           <div className='h-10 w-10 rounded-full bg-slate-300 p-2 text-slate-800'>
@@ -80,7 +80,7 @@ export const PageSharingGeneralAccess = (props: Props) => {
               trigger={
                 <MenuLabelTrigger
                   className='px-0'
-                  labelClassName='ml-0 px-0 text-md font-medium text-slate-700 w-30'
+                  labelClassName='ml-0 px-0 text-md font-medium text-slate-700'
                 >
                   {label}
                 </MenuLabelTrigger>
