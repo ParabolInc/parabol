@@ -106,26 +106,28 @@ export async function up(db: Kysely<any>): Promise<void> {
   if (fileMoves.length === 0) return
   const fileManager = getFileStoreManager()
 
-  const cloneFileAtNewLocation = async (from: PartialPath, to: PartialPath, idx: number) => {
+  const cloneFileAtNewLocation = async (from: PartialPath, to: PartialPath) => {
     console.warn('Attempting to clone duplicate image', {from, to})
     // if we just moved it, it'll live at the `to` location matching the first `from`
-    const firstMove = fileMoves.find((fileMove, nIdx) => nIdx < idx && fileMove.from === from)
-    if (!firstMove) {
+    const previousMoves = fileMoves.filter((fileMove) => fileMove.from === from)
+    if (previousMoves.length === 0) {
       console.warn(`Neither source nor destination exist for move from ${from} to ${to}, skipping`)
-    } else {
-      const fullPath = fileManager.prependPath(firstMove.to)
+      return
+    }
+    for (const previousMove of previousMoves) {
+      const fullPath = fileManager.prependPath(previousMove.to)
       const publicPath = fileManager.getPublicFileLocation(fullPath)
       try {
         const fileRes = await fetch(publicPath)
         const fileResBuffer = await fileRes.arrayBuffer()
         await fileManager.putUserFile(fileResBuffer, to)
-      } catch (e) {
-        console.warn('Could not move file at new location', e)
+      } catch {
+        console.warn('Failed moving file at. It may be at another location', previousMove.to)
       }
     }
   }
   await Promise.all(
-    fileMoves.map(async ({from, to}, idx) => {
+    fileMoves.map(async ({from, to}) => {
       const [oldExists, newExists] = await Promise.all([
         fileManager.checkExists(from),
         fileManager.checkExists(to)
@@ -137,7 +139,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         } catch {
           // it may have already been moved since all these get called in parallel
           try {
-            await cloneFileAtNewLocation(from, to, idx)
+            await cloneFileAtNewLocation(from, to)
           } catch (e) {
             console.warn(e)
             // cloneFileAtNewLocation already logs the warning
@@ -150,7 +152,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         )
       }
       if (!oldExists && !newExists) {
-        await cloneFileAtNewLocation(from, to, idx)
+        await cloneFileAtNewLocation(from, to)
       }
     })
   )
