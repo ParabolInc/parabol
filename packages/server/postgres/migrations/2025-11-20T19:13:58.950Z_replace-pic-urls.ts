@@ -50,7 +50,6 @@ export async function up(db: Kysely<any>): Promise<void> {
         const imageBlock = node as XmlElement
         const src = imageBlock.getAttribute('src')
         if (src?.startsWith(prefix)) {
-          changed = true
           const decodedSrc = decodeURI(src)
           const parts = decodedSrc.split('/')
           const oldPartialPath = parts.slice(-4).join('/') as PartialPath
@@ -59,6 +58,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             `Page/${pageCode}/assets`
           ) as PartialPath
           if (oldPartialPath === newPartialPath) continue
+          changed = true
           fileMoves.push({from: oldPartialPath, to: newPartialPath})
           const nextSrc = decodedSrc
             .replace(prefix, '/assets')
@@ -106,7 +106,24 @@ export async function up(db: Kysely<any>): Promise<void> {
   const fileManager = getFileStoreManager()
   await Promise.all(
     fileMoves.map(async ({from, to}) => {
-      return fileManager.moveFile(from, to)
+      const [oldExists, newExists] = await Promise.all([
+        fileManager.checkExists(from),
+        fileManager.checkExists(to)
+      ])
+      if (!oldExists && newExists) return
+      if (oldExists && !newExists) {
+        return fileManager.moveFile(from, to)
+      }
+      if (oldExists && newExists) {
+        console.warn(
+          `Both source and destination exist for move from ${from} to ${to}, skipping move`
+        )
+      }
+      if (!oldExists && !newExists) {
+        console.warn(
+          `Neither source nor destination exist for move from ${from} to ${to}, skipping`
+        )
+      }
     })
   )
 }
