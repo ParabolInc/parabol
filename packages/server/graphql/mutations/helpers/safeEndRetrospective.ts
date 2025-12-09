@@ -125,7 +125,7 @@ const safeEndRetrospective = async ({
   await pg.insertInto('TimelineEvent').values(events).execute()
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
   const page = await publishSummaryPage(meetingId, context, info)
-  meeting.summaryPageId = page.id
+  completedRetrospective.summaryPageId = page.id
   if (team.isOnboardTeam) {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
