@@ -133,7 +133,7 @@ export default {
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     const page = await publishSummaryPage(meetingId, context, info)
-    meeting.summaryPageId = page.id
+    completedMeeting.summaryPageId = page.id
     const data = {
       meetingId,
       teamId,
