@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.1.2](https://github.com/ParabolInc/parabol/compare/v11.1.1...v11.1.2) (2025-12-09)
+
+
+### Fixed
+
+* meeting summary redirect ([#12418](https://github.com/ParabolInc/parabol/issues/12418)) ([b3d0618](https://github.com/ParabolInc/parabol/commit/b3d0618f6647573b03ce00b9581f226ea4293c70))
+
+## [11.1.1](https://github.com/ParabolInc/parabol/compare/v11.1.0...v11.1.1) (2025-12-09)
+
+
+### Fixed
+
+* remove PageAccess when deleting user ([#12414](https://github.com/ParabolInc/parabol/issues/12414)) ([67f3998](https://github.com/ParabolInc/parabol/commit/67f3998d92ab4e551a9d4554b19906d903422ebb))
+* skip already updated assets in migration ([#12416](https://github.com/ParabolInc/parabol/issues/12416)) ([3c897f6](https://github.com/ParabolInc/parabol/commit/3c897f6e4bebca24cef1606e302ae89ef4a3ea82))
+
 ## [11.1.0](https://github.com/ParabolInc/parabol/compare/v11.0.1...v11.1.0) (2025-12-08)
 
 

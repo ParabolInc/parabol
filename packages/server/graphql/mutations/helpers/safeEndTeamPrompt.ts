@@ -92,7 +92,7 @@ const safeEndTeamPrompt = async ({
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const page = await publishSummaryPage(meetingId, context, info)
-  meeting.summaryPageId = page.id
+  completedTeamPrompt.summaryPageId = page.id
   const data = {
     meetingId,
     teamId
