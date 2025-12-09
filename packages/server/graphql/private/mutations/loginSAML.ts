@@ -158,14 +158,9 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     })
   )
 
-  const {
-    email: inputEmail,
-    emailaddress,
-    displayname,
-    name,
-    samluserid: SAMLUserId
-  } = normalizedAttributes
+  const {email: inputEmail, emailaddress, displayname, name, samluserid} = normalizedAttributes
   const preferredName = displayname || name || nameID
+  const SAMLUserId = samluserid || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return standardError(
