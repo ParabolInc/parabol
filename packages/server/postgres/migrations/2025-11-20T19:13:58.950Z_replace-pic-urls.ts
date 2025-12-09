@@ -58,6 +58,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             /User\/(.+)\/assets/,
             `Page/${pageCode}/assets`
           ) as PartialPath
+          if (oldPartialPath === newPartialPath) continue
           fileMoves.push({from: oldPartialPath, to: newPartialPath})
           const nextSrc = decodedSrc
             .replace(prefix, '/assets')
