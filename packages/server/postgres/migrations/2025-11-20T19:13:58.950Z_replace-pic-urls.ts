@@ -102,17 +102,47 @@ export async function up(db: Kysely<any>): Promise<void> {
       await redis.del(`rsaLock:${documentName}`)
     })
   )
+  redis.disconnect()
   if (fileMoves.length === 0) return
   const fileManager = getFileStoreManager()
+
+  const cloneFileAtNewLocation = async (from: PartialPath, to: PartialPath, idx: number) => {
+    console.warn('Attempting to clone duplicate image', {from, to})
+    // if we just moved it, it'll live at the `to` location matching the first `from`
+    const firstMove = fileMoves.find((fileMove, nIdx) => nIdx < idx && fileMove.from === from)
+    if (!firstMove) {
+      console.warn(`Neither source nor destination exist for move from ${from} to ${to}, skipping`)
+    } else {
+      const fullPath = fileManager.prependPath(firstMove.to)
+      const publicPath = fileManager.getPublicFileLocation(fullPath)
+      try {
+        const fileRes = await fetch(publicPath)
+        const fileResBuffer = await fileRes.arrayBuffer()
+        await fileManager.putUserFile(fileResBuffer, to)
+      } catch (e) {
+        console.warn('Could not move file at new location', e)
+      }
+    }
+  }
   await Promise.all(
-    fileMoves.map(async ({from, to}) => {
+    fileMoves.map(async ({from, to}, idx) => {
       const [oldExists, newExists] = await Promise.all([
         fileManager.checkExists(from),
         fileManager.checkExists(to)
       ])
       if (!oldExists && newExists) return
       if (oldExists && !newExists) {
-        return fileManager.moveFile(from, to)
+        try {
+          await fileManager.moveFile(from, to)
+        } catch {
+          // it may have already been moved since all these get called in parallel
+          try {
+            await cloneFileAtNewLocation(from, to, idx)
+          } catch (e) {
+            console.warn(e)
+            // cloneFileAtNewLocation already logs the warning
+          }
+        }
       }
       if (oldExists && newExists) {
         console.warn(
@@ -120,9 +150,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         )
       }
       if (!oldExists && !newExists) {
-        console.warn(
-          `Neither source nor destination exist for move from ${from} to ${to}, skipping`
-        )
+        await cloneFileAtNewLocation(from, to, idx)
       }
     })
   )
