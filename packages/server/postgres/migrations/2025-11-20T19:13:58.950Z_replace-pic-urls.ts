@@ -118,6 +118,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       const fullPath = fileManager.prependPath(previousMove.to)
       const publicPath = fileManager.getPublicFileLocation(fullPath)
       try {
+        // sleep to make sure the file has been pushed & is available
+        await new Promise((res) => setTimeout(res, 200))
         const fileRes = await fetch(publicPath)
         const fileResBuffer = await fileRes.arrayBuffer()
         await fileManager.putUserFile(fileResBuffer, to)
