@@ -81,7 +81,7 @@ const checkAccess = async (
 }
 
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const partialPath = req.getUrl().slice('/assets'.length + 1)
+  const partialPath = decodeURIComponent(req.getUrl().slice('/assets'.length + 1))
   if (!partialPath) {
     res.writeStatus('404').end()
     return
