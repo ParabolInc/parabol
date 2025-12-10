@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.1.4](https://github.com/ParabolInc/parabol/compare/v11.1.3...v11.1.4) (2025-12-10)
+
+
+### Fixed
+
+* do not URI encode proxied assets twice ([#12432](https://github.com/ParabolInc/parabol/issues/12432)) ([0c77c8a](https://github.com/ParabolInc/parabol/commit/0c77c8a34aad3b8d53b9ca15ad7bac71c67279a2))
+
+
+### Changed
+
+* **changelog:** moved v10 changelog to its own file ([#12429](https://github.com/ParabolInc/parabol/issues/12429)) ([ad94db4](https://github.com/ParabolInc/parabol/commit/ad94db4278393bb3f52b196583109e0b43e6fc67))
+
 ## [11.1.3](https://github.com/ParabolInc/parabol/compare/v11.1.2...v11.1.3) (2025-12-10)
 
 
