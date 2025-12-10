@@ -190,6 +190,11 @@
       transform: scale(0);
     }
   }
+
+}
+
+:root {
+  --global-banner-height: 24px;
 }
 
 /*
