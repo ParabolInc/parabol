@@ -52,9 +52,21 @@ export async function up(db: Kysely<any>): Promise<void> {
       `.execute(db)
     }
   }
+
+  await db
+    .insertInto('FeatureFlag')
+    .values({
+      featureName: 'search',
+      description: 'Enable consolidated search functionality for the organization',
+      expiresAt: '2025-12-31T23:59:59.999Z',
+      scope: 'Organization'
+    })
+    .execute()
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+  await db.deleteFrom('FeatureFlag').where('featureName', '=', 'search').execute()
+
   const modelManager = getModelManager()
   const tableNames = [...modelManager.embeddingModels.keys()]
 
