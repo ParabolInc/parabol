@@ -45,6 +45,10 @@ const NewTeam = lazy(
     )
 )
 
+const SearchView = lazy(
+  () => import(/* webpackChunkName: 'SearchView' */ '../modules/search/SearchView')
+)
+
 const PageRoot = lazy(() => import(/* webpackChunkName: 'PageRoot' */ '../modules/pages/PageRoot'))
 const MakePage = lazy(() => import(/* webpackChunkName: 'MakePage' */ '../modules/pages/MakePage'))
 
@@ -163,6 +167,7 @@ const Dashboard = (props: Props) => {
                 <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
               )}
             />
+            <Route path='/search' component={SearchView} />
             <Route path='/me' component={UserDashboard} />
             <Route
               exact

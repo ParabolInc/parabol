@@ -14,6 +14,7 @@ type SearchResult {
   node: SearchResultObject
   updatedAt: DateTime!
   url: String
+  team: Team
 }
 
 input SearchFilter {

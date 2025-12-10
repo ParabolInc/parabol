@@ -238,7 +238,7 @@ const search: QueryResolvers['search'] = async (
   // Fetch Details
   const metadata = await pg
     .selectFrom('EmbeddingsMetadata as m')
-    .select(['m.id', 'm.refId', 'm.objectType', 'm.refUpdatedAt', 'm.userId'])
+    .select(['m.id', 'm.refId', 'm.objectType', 'm.refUpdatedAt', 'm.userId', 'm.teamId'])
     .where('m.id', 'in', topIds)
     .execute()
 
@@ -357,7 +357,8 @@ const search: QueryResolvers['search'] = async (
         snippets: uniqueSnippets,
         node,
         updatedAt: updatedAt || m.refUpdatedAt,
-        url
+        url,
+        teamId: m.teamId
       }
     })
     .filter((r): r is NonNullable<typeof r> => r !== null)

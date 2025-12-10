@@ -8,6 +8,7 @@ import GroupIcon from '@mui/icons-material/Group'
 import GroupsIcon from '@mui/icons-material/Groups'
 import KeyIcon from '@mui/icons-material/Key'
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
+import SearchIcon from '@mui/icons-material/Search'
 import TimelineIcon from '@mui/icons-material/Timeline'
 import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
@@ -141,6 +142,7 @@ const DashSidebar = (props: Props) => {
         <div className='flex h-full w-64 flex-col p-0'>
           <div className='px-3'>
             <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
+            <LeftDashNavItem Icon={SearchIcon} href={'/search'} label={'Search'} />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam/1'} label={'Add a Team'} />

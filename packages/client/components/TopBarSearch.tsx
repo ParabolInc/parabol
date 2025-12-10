@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import type * as React from 'react'
-import {useRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {matchPath, type RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -30,7 +29,8 @@ const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
       path: '/meetings',
       exact: true,
       strict: false
-    })
+    }) ||
+    pathname.startsWith('/pages')
   )
 }
 interface Props {
@@ -89,20 +89,55 @@ const TopBarSearch = (props: Props) => {
     viewerRef
   )
   const dashSearch = viewer?.dashSearch ?? ''
+
+  // Initialize local state with viewer val
+  const [value, setValue] = useState(dashSearch)
+
+  // Sync local state if viewer prop updates explicitly (e.g. navigation)
+  useEffect(() => {
+    setValue(dashSearch)
+  }, [dashSearch])
+
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
-  const {location} = useRouter()
+  const {location, history} = useRouter()
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value)
     setSearch(atmosphere, e.target.value)
   }
-  const Icon = dashSearch ? Close : Search
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (location.pathname.includes('/meetings')) return
+      // Use local value for redirect
+      history.push(`/search?q=${encodeURIComponent(value)}`)
+    }
+  }
+
+  const Icon = value ? Close : Search
   const onClick = () => {
     setSearch(atmosphere, '')
+    setValue('')
     inputRef.current?.focus()
   }
+
+  let placeholder = 'Search'
+  if (location.pathname.includes('/me/tasks')) {
+    placeholder = 'Filter tasks'
+  } else if (location.pathname.includes('/meetings')) {
+    placeholder = 'Filter meetings'
+  }
+
   return (
     <Wrapper location={location}>
-      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <SearchInput
+        ref={inputRef}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={placeholder}
+        value={value}
+      />
       <SearchIcon onClick={onClick}>
         <Icon />
       </SearchIcon>
