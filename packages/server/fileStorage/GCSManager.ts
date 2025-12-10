@@ -172,7 +172,7 @@ export default class GCSManager extends FileStoreManager {
     return path.join(this.envSubDir, assetDir, partialPath)
   }
   getPublicFileLocation(fullPath: string) {
-    return encodeURI(`${this.baseUrl}${fullPath}`)
+    return `${this.baseUrl}${fullPath}`
   }
   async checkExists(partialPath: string, assetDir?: FileAssetDir) {
     const fullPath = encodeURIComponent(this.prependPath(partialPath, assetDir))
