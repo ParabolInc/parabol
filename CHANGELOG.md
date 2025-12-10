@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.1.3](https://github.com/ParabolInc/parabol/compare/v11.1.2...v11.1.3) (2025-12-10)
+
+
+### Fixed
+
+* Asset Migration v2 ([#12423](https://github.com/ParabolInc/parabol/issues/12423)) ([7bbc2e3](https://github.com/ParabolInc/parabol/commit/7bbc2e3a6784c947c1bb2ca21da2f9fd12debb43))
+
 ## [11.1.2](https://github.com/ParabolInc/parabol/compare/v11.1.1...v11.1.2) (2025-12-09)
 
 
