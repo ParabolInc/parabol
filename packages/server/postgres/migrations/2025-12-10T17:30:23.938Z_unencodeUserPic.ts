@@ -8,10 +8,6 @@ export async function up(db: Kysely<any>): Promise<void> {
         picture: sql`REPLACE(REPLACE(REPLACE("picture", '%7C', '|'), '%2F', '/'), '%3A', ':')`
       })
       .where(sql<boolean>`STRPOS(picture, '%') > 0`)
-      .$call((qb) => {
-        console.log(qb.compile().sql, qb.compile().parameters)
-        return qb
-      })
       .execute(),
     db
       .updateTable('Notification')
@@ -25,10 +21,6 @@ export async function up(db: Kysely<any>): Promise<void> {
           sql<boolean>`STRPOS("senderPicture", '%') > 0`
         ])
       )
-      .$call((qb) => {
-        console.log(qb.compile().sql, qb.compile().parameters)
-        return qb
-      })
       .execute()
   ])
 }
