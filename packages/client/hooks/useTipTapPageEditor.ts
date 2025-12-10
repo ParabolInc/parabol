@@ -20,6 +20,7 @@ import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import {IndentHandler} from '../tiptap/extensions/IndentHandler'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
 import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
@@ -108,6 +109,7 @@ export const useTipTapPageEditor = (
           assetScope: 'Page'
         }),
         ImageBlock,
+        IndentHandler,
         LoomExtension,
         PageDragHandle.configure({pageId, atmosphere}),
         Placeholder.configure({
