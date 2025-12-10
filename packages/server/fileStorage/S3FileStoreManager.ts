@@ -103,7 +103,7 @@ export default class S3Manager extends FileStoreManager {
   }
 
   getPublicFileLocation(fullPath: string) {
-    return encodeURI(`${this.baseUrl}${fullPath}`)
+    return `${this.baseUrl}${fullPath}`
   }
 
   async putBuildFile(file: ArrayBufferLike, partialPath: string): Promise<string> {
