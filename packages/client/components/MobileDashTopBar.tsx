@@ -4,7 +4,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
-import {AppBar} from '~/types/constEnums'
 import type {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
@@ -15,13 +14,6 @@ interface Props {
   toggle: () => void
   queryRef: MobileDashTopBar_query$key
 }
-
-const Wrapper = styled('header')({
-  backgroundColor: PALETTE.GRAPE_700,
-  display: 'flex',
-  height: AppBar.HEIGHT,
-  maxWidth: '100%'
-})
 
 const LeftNavToggle = styled(PlainButton)({
   fontSize: ICON_SIZE.MD24,
@@ -70,7 +62,7 @@ const MobileDashTopBar = (props: Props) => {
   const {viewer} = data
   const pageName = viewer?.pageName ?? 'Parabol'
   return (
-    <Wrapper>
+    <div className='maw-w-full flex h-14 bg-grape-700 print:hidden'>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle}>
           <Menu />
@@ -83,7 +75,7 @@ const MobileDashTopBar = (props: Props) => {
         <TopBarHelp />
         <TopBarNotifications queryRef={data || null} />
       </TopBarIcons>
-    </Wrapper>
+    </div>
   )
 }
 

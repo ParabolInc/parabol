@@ -29,7 +29,7 @@ export const PageHeader = (props: Props) => {
 
   const {id: pageId} = page
   return (
-    <div className='sticky top-0 z-10 w-full bg-white'>
+    <div className='sticky top-0 z-10 w-full bg-white print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
         <Popover.Root key={`${page.id}-${sharePageDefaultOpen}`} defaultOpen={sharePageDefaultOpen}>

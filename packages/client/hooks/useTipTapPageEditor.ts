@@ -113,6 +113,7 @@ export const useTipTapPageEditor = (
         Placeholder.configure({
           showOnlyWhenEditable: false,
           includeChildren: true,
+          emptyNodeClass: 'is-empty print:hidden',
           placeholder: ({node, pos}) => {
             if (placeholderRef.current) {
               return placeholderRef.current

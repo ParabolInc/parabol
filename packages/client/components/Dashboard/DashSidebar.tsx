@@ -36,14 +36,6 @@ const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   width: isOpen ? NavSidebar.WIDTH : '70px'
 }))
 
-const Contents = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  padding: 0,
-  width: NavSidebar.WIDTH
-})
-
 const NavMain = styled('div')({
   overflowY: 'auto'
 })
@@ -54,11 +46,6 @@ const NavList = styled(DashNavList)({
 
 const NavItemsWrap = styled('div')({
   paddingRight: 8
-})
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
 })
 
 interface Props {
@@ -92,10 +79,10 @@ const DashSidebar = (props: Props) => {
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
-      <Wrapper>
+      <div className='flex flex-col print:hidden'>
         <SideBarStartMeetingButton isOpen={isOpen} />
         <Nav isOpen={isOpen}>
-          <Contents>
+          <div className='flex h-full w-64 flex-col p-0'>
             <div className='px-3'>
               <NavItemsWrap>
                 <LeftDashNavItem
@@ -141,17 +128,17 @@ const DashSidebar = (props: Props) => {
                 />
               </NavItemsWrap>
             </div>
-          </Contents>
+          </div>
         </Nav>
-      </Wrapper>
+      </div>
     )
   }
 
   return (
-    <Wrapper>
+    <div className='flex flex-col print:hidden'>
       <SideBarStartMeetingButton isOpen={isOpen} />
       <Nav isOpen={isOpen}>
-        <Contents>
+        <div className='flex h-full w-64 flex-col p-0'>
           <div className='px-3'>
             <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
@@ -161,9 +148,9 @@ const DashSidebar = (props: Props) => {
           <NavMain>
             <NavList viewerRef={viewer} />
           </NavMain>
-        </Contents>
+        </div>
       </Nav>
-    </Wrapper>
+    </div>
   )
 }
 
