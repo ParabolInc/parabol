@@ -94,10 +94,11 @@ const SearchResult = ({item, query}: {item: SearchResults_item$key; query?: stri
         id
         title
         snippets
-        objectType
         updatedAt
         url
-        score
+        score {
+          relevance
+        }
         team {
           id
           name
@@ -121,7 +122,7 @@ const SearchResult = ({item, query}: {item: SearchResults_item$key; query?: stri
       )}
       <Meta>
         {data.team?.name && <span>{data.team.name} • </span>}
-        Updated {relativeDate(data.updatedAt)} • Score: {data.score.toFixed(2)}
+        Updated {relativeDate(data.updatedAt)} • Score: {data.score.relevance.toFixed(2)}
       </Meta>
     </ResultItem>
   )
