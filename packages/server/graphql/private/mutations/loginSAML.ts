@@ -42,6 +42,33 @@ const getRelayState = (body: querystring.ParsedUrlQuery) => {
   return relayState
 }
 
+const getUserByEmailOrPersistentUserId = async (
+  email: string,
+  persistentUserId: string | undefined,
+  domains: string[]
+) => {
+  const user = await getUserByEmail(email)
+  if (user) return user
+  if (!persistentUserId) return null
+  const pg = getKysely()
+  const userByPersistentUserId = await pg
+    .selectFrom('User')
+    .selectAll()
+    .where('persistentUserId', '=', persistentUserId)
+    .limit(1)
+    .executeTakeFirst()
+  if (!userByPersistentUserId) return null
+  // Do not blindly trust the IdP. Verify that it has control over the email address
+  const ssoDomain = getSSODomainFromEmail(userByPersistentUserId.email)
+  if (!isSingleTenantSSO && (!ssoDomain || !domains.includes(ssoDomain))) {
+    // don't blindly trust the IdP unless there is only 1
+    return new Error(`${userByPersistentUserId.email} does not belong to ${domains.join(', ')}`)
+  }
+  // At this point we can trust that the IdP controls this account and has changed the users email address
+  await pg.updateTable('User').set({email}).where('id', '=', userByPersistentUserId.id).execute()
+  return userByPersistentUserId
+}
+
 const loginSAML: MutationResolvers['loginSAML'] = async (
   _source,
   {samlName, queryString},
@@ -131,8 +158,15 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     })
   )
 
-  const {email: inputEmail, emailaddress, displayname, name} = normalizedAttributes
+  const {
+    email: inputEmail,
+    emailaddress,
+    displayname,
+    name,
+    persistentuserid
+  } = normalizedAttributes
   const preferredName = displayname || name || nameID
+  const persistentUserId = persistentuserid || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return standardError(
@@ -170,8 +204,12 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       .execute()
   }
 
-  const user = await getUserByEmail(email)
+  const user = await getUserByEmailOrPersistentUserId(email, persistentUserId, domains)
+  if (user instanceof Error) return standardError(user)
   if (user) {
+    if (persistentUserId && !user.persistentUserId) {
+      await pg.updateTable('User').set({persistentUserId}).where('id', '=', user.id).execute()
+    }
     return {
       userId: user.id,
       authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),

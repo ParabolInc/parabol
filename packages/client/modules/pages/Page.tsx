@@ -54,9 +54,9 @@ export const Page = (props: Props) => {
   // The editor is conditionally loaded only after syncing so the forced schema is not injected before
   // The yjs document loads
   return (
-    <div className='relative flex w-full flex-col items-center bg-white'>
+    <div className='relative flex flex-col items-center bg-white'>
       {isPublic ? <PageHeaderPublic /> : <PageHeader pageRef={page} />}
-      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10'>
+      <div className='relative flex min-h-screen w-full max-w-[960px] justify-center bg-white pt-28 pb-10 print:pt-0 print:caret-transparent'>
         {synced &&
           (isDatabase ? (
             <DatabaseEditor viewerRef={viewer} isEditable={isEditable} provider={provider} />

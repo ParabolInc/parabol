@@ -23,17 +23,6 @@ interface Props {
   queryRef: DashTopBar_query$key
 }
 
-const Wrapper = styled('header')({
-  backgroundColor: PALETTE.GRAPE_700,
-  display: 'flex',
-  height: AppBar.HEIGHT,
-  justifyContent: 'space-between',
-  width: '100%',
-  [dashWidestBreakpoint]: {
-    paddingRight: NavSidebar.WIDTH
-  }
-})
-
 const LeftNavToggle = styled(PlainButton)({
   borderRadius: 100,
   fontSize: ICON_SIZE.MD24,
@@ -108,9 +97,8 @@ const DashTopBar = (props: Props) => {
   const gotoHome = () => {
     history.push('/meetings')
   }
-
   return (
-    <Wrapper>
+    <div className='flex h-14 w-full justify-between bg-grape-700 dashboard-widest:pr-64 print:hidden'>
       <LeftNavHeader>
         <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
           <Menu />
@@ -128,7 +116,7 @@ const DashTopBar = (props: Props) => {
           <TopBarAvatar viewer={data.viewer || null} />
         </TopBarIcons>
       </TopBarMain>
-    </Wrapper>
+    </div>
   )
 }
 

@@ -7,20 +7,12 @@ import {DECELERATE} from '../styles/animation'
 import {navDrawerShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {NavSidebar, ZIndex} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import hideBodyScroll from '../utils/hideBodyScroll'
 import PlainButton from './PlainButton/PlainButton'
 
 const PEEK_WIDTH = 20
 
-const SidebarAndScrim = styled('div')<{
-  isRightDrawer: boolean
-  SIDEBAR_WIDTH: number
-}>(({isRightDrawer, SIDEBAR_WIDTH}) => ({
-  position: 'absolute',
-  left: isRightDrawer ? undefined : -SIDEBAR_WIDTH,
-  right: isRightDrawer ? PEEK_WIDTH : undefined,
-  top: 0
-}))
 const Scrim = styled('div')<{x: number; SIDEBAR_WIDTH: number}>(({x, SIDEBAR_WIDTH}) => ({
   background: PALETTE.SLATE_900_32,
   height: '100%',
@@ -230,7 +222,10 @@ const SwipeableDashSidebar = (props: Props) => {
   })
 
   return portal(
-    <SidebarAndScrim isRightDrawer={isRightDrawer} SIDEBAR_WIDTH={SIDEBAR_WIDTH}>
+    <div
+      className={cn('absolute top-0 print:hidden', isRightDrawer ? 'right-5' : '')}
+      style={{left: isRightDrawer ? undefined : -SIDEBAR_WIDTH}}
+    >
       <Scrim x={x} SIDEBAR_WIDTH={SIDEBAR_WIDTH} onClick={onToggle} />
       <SidebarAndHandle
         x={x}
@@ -243,7 +238,7 @@ const SwipeableDashSidebar = (props: Props) => {
         </Sidebar>
         <SwipeHandle />
       </SidebarAndHandle>
-    </SidebarAndScrim>
+    </div>
   )
 }
 

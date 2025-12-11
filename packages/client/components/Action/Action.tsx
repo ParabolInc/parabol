@@ -3,7 +3,8 @@ import 'react-day-picker/dist/style.css'
 import {Route, Switch} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
-import {GlobalBanner, LoaderSize} from '../../types/constEnums'
+import {LoaderSize} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
 import Banner from '../GlobalBanner'
@@ -56,10 +57,10 @@ const Action = memo(() => {
             <Banner bgColor={bannerBgColor} color={bannerColor} text={bannerText} />
           )}
           <div
-            className='flex w-full flex-col'
-            style={{
-              height: isGlobalBannerEnabled ? `calc(100vh - ${GlobalBanner.HEIGHT}px)` : '100vh'
-            }}
+            className={cn(
+              'flex h-screen w-full flex-col print:h-auto',
+              isGlobalBannerEnabled && `h-[calc(100vh-var(--global-banner-height))]`
+            )}
           >
             <Switch>
               <Route exact path='/' render={(p) => <AuthenticationPage {...p} page={'signin'} />} />
