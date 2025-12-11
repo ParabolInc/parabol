@@ -9,6 +9,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
+import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import type {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
@@ -47,7 +48,7 @@ const TeamFilterMenu = (props: Props) => {
   }
   const teams = oldTeamsRef.current
   const atmosphere = useAtmosphere()
-  const {teamIds, userIds} = useQueryParameterParser(atmosphere.viewerId)
+  const {teamIds, userIds, showArchived, eventTypes} = useQueryParameterParser(atmosphere.viewerId)
   const showAllTeams = !!userIds
   const {filteredTeams, defaultActiveIdx} = useMemo(() => {
     const filteredTeams = userIds
@@ -68,21 +69,6 @@ const TeamFilterMenu = (props: Props) => {
     onQueryChange
   } = useSearchFilter(filteredTeams, (team) => team.name)
 
-  const {location} = useRouter() // Get location here to access current search params
-
-  const handleTeamClick = (teamIds: string[] | null) => {
-    const params = new URLSearchParams(location.search)
-    if (teamIds && teamIds.length > 0) {
-      params.set('teamIds', teamIds.join(','))
-    } else {
-      params.delete('teamIds')
-    }
-    history.push({
-      pathname: location.pathname,
-      search: params.toString()
-    })
-  }
-
   return (
     <Menu
       keepParentFocus
@@ -101,7 +87,9 @@ const TeamFilterMenu = (props: Props) => {
         <MenuItem
           key={'teamFilterNULL'}
           label={FilterLabels.ALL_TEAMS}
-          onClick={() => handleTeamClick(null)}
+          onClick={() =>
+            history.push(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
+          }
         />
       )}
       {matchedFilteredTeams.map((team) => (
@@ -109,7 +97,9 @@ const TeamFilterMenu = (props: Props) => {
           key={`teamFilter${team.id}`}
           dataCy={`team-filter-${team.id}`}
           label={team.name}
-          onClick={() => handleTeamClick([team.id])}
+          onClick={() =>
+            history.push(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
+          }
         />
       ))}
     </Menu>
