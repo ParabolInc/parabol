@@ -3,11 +3,10 @@ import {sql} from 'kysely'
 import {toSlug} from '../../../../client/shared/toSlug'
 import getModelManager from '../../../../embedder/ai_models/ModelManager'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
-import {PriorityLock} from '../../../../embedder/PriorityLock'
+
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import RedisInstance from '../../../utils/RedisInstance'
 import {applyBusinessRules} from '../../../utils/reRank'
 import {calculateRRF} from '../../../utils/rrf'
 import type {QueryResolvers} from '../resolverTypes'
@@ -69,17 +68,7 @@ const search: QueryResolvers['search'] = async (
   if (!model) throw new Error('Embedding model not found')
 
   let vector: number[] | Error
-  // Acquire high priority lock for Search
-  const redis = new RedisInstance('search_priority_lock')
-  const priorityLock = new PriorityLock(redis)
-  // 3s TTL to be safe
-  await priorityLock.acquireHighPriority(3000)
-
-  try {
-    vector = await model.getEmbedding(query)
-  } finally {
-    await priorityLock.releaseHighPriority()
-  }
+  vector = await model.getEmbedding(query, {priority: 'high'})
 
   if (vector instanceof Error) throw vector
   const vectorStr = numberVectorToString(vector)

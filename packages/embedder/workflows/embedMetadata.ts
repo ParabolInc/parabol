@@ -1,14 +1,14 @@
 import {sql} from 'kysely'
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
-import RedisInstance from 'parabol-server/utils/RedisInstance'
+
 import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
 import type {JobQueueStepRun, ParentJob} from '../custom'
 import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {JobQueueError} from '../JobQueueError'
-import {PriorityLock} from '../PriorityLock'
+
 import type {getSimilarRetroTopics} from './getSimilarRetroTopics'
 
 export const embedMetadata: JobQueueStepRun<
@@ -23,11 +23,6 @@ export const embedMetadata: JobQueueStepRun<
   const pg = getKysely()
   const {embeddingsMetadataId, model, forceBuildText} = data
   const modelManager = getModelManager()
-  const SERVER_ID = process.env.SERVER_ID || 'embedder'
-  const redis = new RedisInstance(`embedder_queue_${SERVER_ID}`)
-  const priorityLock = new PriorityLock(redis)
-
-  await priorityLock.waitForLowPriority()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
@@ -80,10 +75,8 @@ export const embedMetadata: JobQueueStepRun<
   const errors: (JobQueueError | undefined)[] = []
 
   for (let i = 0; i < chunks.length; i++) {
-    // Pause embedding if a search is active, prioritizing seach over embedding:
-    await priorityLock.waitForLowPriority()
     const chunk = chunks[i]!
-    const embeddingVector = await embeddingModel.getEmbedding(chunk)
+    const embeddingVector = await embeddingModel.getEmbedding(chunk, {priority: 'low'})
     if (embeddingVector instanceof Error) {
       errors.push(
         new JobQueueError(`unable to get embeddings: ${embeddingVector.message}`, ms('1m'), 10, {
@@ -96,7 +89,6 @@ export const embedMetadata: JobQueueStepRun<
       // cast to any because these types won't be available in CI
       .insertInto(embeddingModel.tableName as any)
       .values({
-        // TODO is the extra space of a null embedText really worth it?!
         embedText: chunk,
         tsv: sql`to_tsvector('english', ${chunk})`, // TODO: other languages
         embedding: numberVectorToString(embeddingVector),

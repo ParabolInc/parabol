@@ -74,16 +74,14 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     if (error) return new Error(error.error)
     return data
   }
-  public async getEmbedding(content: string, retries = 5): Promise<number[] | Error> {
+  protected async internalGetEmbedding(content: string, retries = 5): Promise<number[] | Error> {
     const {data, error, response} = await this.client.POST('/embed', {
       body: {inputs: content}
     })
     if (error) {
-      if ((response?.status !== 429 && error.error !== 'Timeout') || retries < 1) {
-        return new Error(error.error)
-      }
+      if (response?.status !== 429 || retries < 1) return new Error(error.error)
       await sleep(2000)
-      return this.getEmbedding(content, retries - 1)
+      return this.internalGetEmbedding(content, retries - 1)
     }
     return data[0]!
   }

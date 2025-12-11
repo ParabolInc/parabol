@@ -1,4 +1,5 @@
 import {sql} from 'kysely'
+import sleep from 'parabol-client/utils/sleep'
 import getKysely from '../../server/postgres/getKysely'
 import type {DB} from '../../server/postgres/types/pg'
 import {Logger} from '../../server/utils/Logger'
@@ -17,6 +18,8 @@ export type EmbeddingsTableName = `Embeddings_${string}`
 export type EmbeddingsTable = Extract<keyof DB, EmbeddingsTableName>
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
+  protected static activeHighPriorityEmbeddings = 0
+
   readonly embeddingDimensions: number
   readonly maxInputTokens: number
   readonly tableName: EmbeddingsTable
@@ -30,7 +33,32 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.tableName = `Embeddings_${modelParams.tableSuffix}` as EmbeddingsTable
   }
   protected abstract constructModelParams(modelId: string): EmbeddingModelParams
-  abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
+  protected abstract internalGetEmbedding(
+    content: string,
+    retries?: number
+  ): Promise<number[] | Error>
+
+  public async getEmbedding(
+    content: string,
+    options?: {priority?: 'high' | 'low'; retries?: number}
+  ): Promise<number[] | Error> {
+    const priority = options?.priority || 'low'
+    const retries = options?.retries
+
+    if (priority === 'high') {
+      AbstractEmbeddingsModel.activeHighPriorityEmbeddings++
+      try {
+        return await this.internalGetEmbedding(content, retries)
+      } finally {
+        AbstractEmbeddingsModel.activeHighPriorityEmbeddings--
+      }
+    } else {
+      while (AbstractEmbeddingsModel.activeHighPriorityEmbeddings > 0) {
+        await sleep(100)
+      }
+      return await this.internalGetEmbedding(content, retries)
+    }
+  }
 
   abstract getTokens(content: string): Promise<number[] | Error>
 
@@ -44,7 +72,6 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const AVG_CHARS_PER_TOKEN = 4
     const maxContentLength = this.maxInputTokens * AVG_CHARS_PER_TOKEN
 
-    // Quick check: if small enough, verify tokens and return
     if (content.length < maxContentLength) {
       const tokens = await this.getTokens(content)
       if (!(tokens instanceof Error) && tokens.length <= this.maxInputTokens) {
