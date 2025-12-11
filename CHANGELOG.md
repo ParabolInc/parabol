@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.2.0](https://github.com/ParabolInc/parabol/compare/v11.1.4...v11.2.0) (2025-12-10)
+
+
+### Added
+
+* change email via SAML ([#12412](https://github.com/ParabolInc/parabol/issues/12412)) ([0e48ddd](https://github.com/ParabolInc/parabol/commit/0e48ddda837220e7768ffee30555cd856a187551))
+* Export Pages to PDF ([#12427](https://github.com/ParabolInc/parabol/issues/12427)) ([06061ee](https://github.com/ParabolInc/parabol/commit/06061eec5425e712be8fdf1832c4d8db6ebd8774))
+* support tab and shift+tab in pages ([#12436](https://github.com/ParabolInc/parabol/issues/12436)) ([538b3e1](https://github.com/ParabolInc/parabol/commit/538b3e1e071f3848765e97a3dcb243b0c4e69f0d))
+
+
+### Fixed
+
+* no double URI encode ([#12434](https://github.com/ParabolInc/parabol/issues/12434)) ([8215c98](https://github.com/ParabolInc/parabol/commit/8215c9841e44ef5434c4f7f447a0ad1579e09dc1))
+
+## [11.1.4](https://github.com/ParabolInc/parabol/compare/v11.1.3...v11.1.4) (2025-12-10)
+
+
+### Fixed
+
+* do not URI encode proxied assets twice ([#12432](https://github.com/ParabolInc/parabol/issues/12432)) ([0c77c8a](https://github.com/ParabolInc/parabol/commit/0c77c8a34aad3b8d53b9ca15ad7bac71c67279a2))
+
+
+### Changed
+
+* **changelog:** moved v10 changelog to its own file ([#12429](https://github.com/ParabolInc/parabol/issues/12429)) ([ad94db4](https://github.com/ParabolInc/parabol/commit/ad94db4278393bb3f52b196583109e0b43e6fc67))
+
 ## [11.1.3](https://github.com/ParabolInc/parabol/compare/v11.1.2...v11.1.3) (2025-12-10)
 
 

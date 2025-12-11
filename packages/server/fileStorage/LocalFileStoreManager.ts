@@ -26,7 +26,7 @@ export default class LocalFileStoreManager extends FileStoreManager {
   }
 
   getPublicFileLocation(fullPath: string): string {
-    return encodeURI(makeAppURL(appOrigin, fullPath))
+    return makeAppURL(appOrigin, fullPath)
   }
 
   async moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void> {

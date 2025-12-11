@@ -21,10 +21,6 @@ interface Props {
   showDismissButton?: boolean
 }
 
-const Space = styled('div')({
-  paddingBottom: 8
-})
-
 const Text = styled('div')({
   color: '#FFFFFF',
   fontSize: 14,
@@ -91,7 +87,7 @@ const SnackbarMessage = (props: Props) => {
   } = props
   useTransitionEnd(300, status, onTransitionEnd)
   return (
-    <Space>
+    <div className='pb-2 print:hidden'>
       <MessageStyles
         status={status}
         onMouseEnter={onMouseEnter}
@@ -107,7 +103,7 @@ const SnackbarMessage = (props: Props) => {
           </DismissButton>
         )}
       </MessageStyles>
-    </Space>
+    </div>
   )
 }
 
