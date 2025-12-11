@@ -111,7 +111,7 @@ const TopBarSearch = (props: Props) => {
     if (e.key === 'Enter') {
       if (location.pathname.includes('/meetings')) return
       // Use local value for redirect
-      history.push(`/search?q=${encodeURIComponent(value)}`)
+      history.push(`/search?q=${encodeURIComponent(e.currentTarget.value)}`)
     }
   }
 
