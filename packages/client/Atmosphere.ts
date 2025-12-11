@@ -434,7 +434,7 @@ export default class Atmosphere extends Environment {
         this.close()
         setTimeout(() => {
           window.location.href = '/'
-        }, 5000)
+        }, 1000)
       }
     })
   }

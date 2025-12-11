@@ -45,7 +45,7 @@ class ProviderManager {
     })
     provider.attach()
     this.providers[documentName] = {count: 1, provider}
-    if (documentName.startsWith('page:')) {
+    if (documentName.startsWith('page:') && provider.authorizedScope !== 'readonly') {
       // this adds support for offline editing
       new IndexeddbPersistence(documentName, doc)
     }
@@ -61,11 +61,13 @@ class ProviderManager {
     }
   }
 
-  async withDoc(documentName: string, callbackFn: (document: Y.Doc) => void | Promise<void>) {
+  async withDoc(
+    documentName: string,
+    callbackFn: (provider: HocuspocusProvider) => void | Promise<void>
+  ) {
     const provider = this.register(documentName)
     const callAndComplete = async () => {
-      const {document} = provider
-      await callbackFn(document)
+      await callbackFn(provider)
       this.unregister(documentName)
     }
     if (provider.synced) {

@@ -73,7 +73,7 @@ export const PageSharingInput = (props: Props) => {
     <div {...getRootProps()} className='flex grow space-x-2'>
       <div
         ref={setAnchorEl}
-        className='flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 align-center text-sm'
+        className='flex w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 align-center text-sm'
       >
         {value.map((option, index: number) => (
           <Chip
@@ -96,11 +96,11 @@ export const PageSharingInput = (props: Props) => {
         <input
           {...getInputProps()}
           placeholder={!value.length ? 'ex. Traci or traci@example.com' : ''}
-          className='m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-white pl-1 text-black outline-hidden'
+          className='m-0 box-border w-0 min-w-[30px] grow border-0 bg-white py-1.5 pl-1 text-black leading-5 outline-hidden'
         />
       </div>
       <div className='flex shrink-0 flex-col self-center'>
-        <Button variant='dialogPrimary' shape='pill' className='h-10 px-6' onClick={onSubmit}>
+        <Button variant='dialogPrimary' shape='pill' className='h-8 px-5' onClick={onSubmit}>
           Share
         </Button>
         {value.length > 0 && (

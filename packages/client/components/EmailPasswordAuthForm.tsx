@@ -91,7 +91,10 @@ const validatePassword = (password: string) => {
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const isInternalAuthEnabled = window.__ACTION__.AUTH_INTERNAL_ENABLED
   const isSSOAuthEnabled = window.__ACTION__.AUTH_SSO_ENABLED
-
+  const isGoogleAuthEnabled = window.__ACTION__.AUTH_GOOGLE_ENABLED
+  const isMicrosoftAuthEnabled = window.__ACTION__.AUTH_MICROSOFT_ENABLED
+  const isSingleTenantSSO =
+    isSSOAuthEnabled && !isGoogleAuthEnabled && !isMicrosoftAuthEnabled && !isInternalAuthEnabled
   const {getOffsetTop, isPrimary, isSignin, invitationToken, email, goToPage} = props
   const {location} = useRouter()
   const params = new URLSearchParams(location.search)
@@ -122,6 +125,17 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   useEffect(() => {
     onCompleted()
   }, [location])
+
+  useEffect(() => {
+    if (!isSingleTenantSSO) return
+    const attemptLogin = async () => {
+      const url = await getSSOUrl(atmosphere, email)
+      if (url) {
+        window.location.href = url
+      }
+    }
+    attemptLogin()
+  }, [isSingleTenantSSO])
 
   const handleBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target

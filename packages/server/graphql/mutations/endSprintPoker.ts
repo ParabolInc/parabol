@@ -10,6 +10,7 @@ import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isSuperUser, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
 import getRedis from '../../utils/getRedis'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import type {GQLContext} from '../graphql'
@@ -119,8 +120,6 @@ export default {
         .get('meetingTemplates')
         .loadNonNull(templateId)
     ])
-    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
-    analytics.sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
     const isKill = !!(phase && phase.phaseType !== 'ESTIMATE')
     const events = teamMembers.map(
       (teamMember) =>
@@ -134,7 +133,7 @@ export default {
     const pg = getKysely()
     await pg.insertInto('TimelineEvent').values(events).execute()
     const page = await publishSummaryPage(meetingId, context, info)
-    sendSummaryEmailV2(meetingId, page.id, context, info)
+    completedMeeting.summaryPageId = page.id
     const data = {
       meetingId,
       teamId,
@@ -142,7 +141,11 @@ export default {
       removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndSprintPokerSuccess', data, subOptions)
-
+    sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
+    analytics
+      .sprintPokerEnd(completedMeeting, meetingMembers, template, dataLoader)
+      .catch(Logger.log)
     return data
   }
 }

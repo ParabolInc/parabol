@@ -6,6 +6,6 @@
       "parabol-client/*": ["client/*"],
       "~/*": ["client/*"]
     },
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom", "dom.iterable"]
   }
 }

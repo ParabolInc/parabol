@@ -8,6 +8,7 @@ import {getTeamPromptResponsesByMeetingId} from '../../../postgres/queries/getTe
 import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
@@ -91,14 +92,14 @@ const safeEndTeamPrompt = async ({
   summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const page = await publishSummaryPage(meetingId, context, info)
-  // do not await sending the email
-  sendSummaryEmailV2(meetingId, page.id, context, info)
-  dataLoader.get('newMeetings').clear(meetingId)
+  completedTeamPrompt.summaryPageId = page.id
   const data = {
     meetingId,
     teamId
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
+  // do not await sending the email
+  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   return data
 }
 

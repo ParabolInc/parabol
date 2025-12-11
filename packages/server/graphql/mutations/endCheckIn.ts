@@ -18,6 +18,7 @@ import removeSuggestedAction from '../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
 import getPhase from '../../utils/getPhase'
+import {Logger} from '../../utils/Logger'
 import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import type {DataLoaderWorker, GQLContext} from '../graphql'
@@ -218,10 +219,7 @@ export default {
 
     // need to wait for removeEmptyTasks before finishing the meeting
     const result = await summarizeCheckInMeeting(completedCheckIn, dataLoader)
-    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId)
     const updatedTaskIds = (result && result.updatedTaskIds) || []
-
-    analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader)
 
     const events = teamMembers.map(
       (teamMember) =>
@@ -255,9 +253,7 @@ export default {
 
     // the promise only creates the initial page, the page blocks are generated and sent after resolving
     const page = await publishSummaryPage(meetingId, context, info)
-    // do not await sending the email
-    sendSummaryEmailV2(meetingId, page.id, context, info)
-
+    meeting.summaryPageId = page.id
     const data = {
       meetingId,
       teamId,
@@ -266,6 +262,10 @@ export default {
       removedTaskIds
     }
     publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
+    // do not await sending the email
+    sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+    IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
+    analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader).catch(Logger.log)
 
     return data
   }
