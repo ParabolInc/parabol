@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import getModelManager from '../../../../embedder/ai_models/ModelManager'
 import {getEmbedderPriority} from '../../../../embedder/getEmbedderPriority'
@@ -25,7 +26,7 @@ const embedderReIndex: MutationResolvers['embedderReIndex'] = async (_source, {o
   const allowedOrgIds = allowedOrgs.map((row) => row.orgId).filter((id): id is string => !!id)
 
   if (allowedOrgIds.length === 0) {
-    return {success: true, queuedCount: 0}
+    throw new GraphQLError('Search is not enabled for this organization')
   }
 
   // 1. Get all Teams in these Orgs

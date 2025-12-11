@@ -34,11 +34,11 @@ const search: QueryResolvers['search'] = async (
       .executeTakeFirst()
 
     if (!hasSearchEnabled) {
-      return {results: [], totalCount: 0}
+      throw new graphql.GraphQLError('Search is not enabled for this organization')
     }
   } else {
     // If no user, they can't belong to an org, so no search
-    return {results: [], totalCount: 0}
+    throw new graphql.GraphQLError('Search is not enabled for this organization')
   }
 
   const safeAlpha = alpha ?? 0.75
