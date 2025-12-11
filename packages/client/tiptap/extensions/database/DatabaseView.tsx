@@ -1,13 +1,13 @@
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {Add, DeleteOutline} from '@mui/icons-material'
 import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
 import {Editor} from '@tiptap/core'
-import {Fragment, useMemo} from 'react'
-import * as Y from 'yjs'
+import {useMemo} from 'react'
 import {cn} from '../../../ui/cn'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, deleteRow, RowId} from './data'
+import {appendColumn, appendRow, deleteRow, getColumns, getRows, RowId} from './data'
 import {Header} from './Header'
-import {useDatabase} from './hooks'
+import {useYArray} from './hooks'
 import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
 
@@ -17,33 +17,133 @@ const DEBUG = false
 const getRowId = (row: RowId) => row
 
 type Props = {
-  doc: Y.Doc
+  provider: HocuspocusProvider
   userId?: string
   editor: Editor
 }
 
 export default function DatabaseView(props: Props) {
-  const {doc, editor, userId} = props
+  const {provider, editor, userId} = props
+  const doc = provider.document
 
-  const {rows, columns} = useDatabase(doc)
+  const columns = useYArray(getColumns(doc))
+  const rows = useYArray(getRows(doc))
+
+  /*
+  const headerRefs = useRef<{[key: string]: HTMLButtonElement | null}>({})
+  const cellRefs = useRef<{[key: string]: HTMLDivElement | null}>({})
+  const [focused, setFocusedState] = useState('')
+
+  const setFocused = useCallback((focused) => {
+    if (focused) {
+      const headerRef = headerRefs.current[focused]
+      const cellRef = cellRefs.current[focused]
+      //requestAnimationFrame(() => {
+        console.log('Focusing', {focused, headerRef, cellRef})
+        if (headerRef) {
+          headerRef.focus()
+        } else if (cellRef) {
+          cellRef.focus()
+        }
+      //})
+    }
+    setFocusedState(focused)
+  }, [focused])
+
+  const focusCallback = useCallback((columnId: string, rowId?: string) => {
+    const columnIndex = columns.findIndex((col) => col.id === columnId)
+    if (!rowId) {
+      // header navigation
+      return (direction: 'focus' | 'left' | 'right' | 'up' | 'down') => {
+        if (direction === 'focus') {
+          setFocused(columnId)
+          return
+        }
+        if (direction === 'left') {
+          if (columnIndex > 0) {
+            const nextColumnId = columns[columnIndex - 1]!.id
+            setFocused(nextColumnId)
+          }
+        }
+        if (direction === 'right') {
+          if (columnIndex < columns.length -1) {
+            const nextColumnId = columns[columnIndex + 1]!.id
+            setFocused(nextColumnId)
+          }
+        }
+        if (direction === 'down') {
+          const firstRowId = rows[0]
+          if (firstRowId) {
+            setFocused(`${columnId}-${firstRowId}`)
+          }
+        }
+      }
+    } else {
+      // cell navigation
+      const rowIndex = rows.findIndex((id) => id === rowId)
+      return (direction: 'focus' | 'left' | 'right' | 'up' | 'down') => {
+        if (direction === 'focus') {
+          setFocused(`${columnId}-${rowId}`)
+          return
+        }
+        if (direction === 'left') {
+          if (columnIndex > 0) {
+            const nextColumnId = columns[columnIndex - 1]!.id
+            setFocused(`${nextColumnId}-${rowId}`)
+          }
+        }
+        if (direction === 'right') {
+          if (columnIndex < columns.length -1) {
+            const nextColumnId = columns[columnIndex + 1]!.id
+            setFocused(`${nextColumnId}-${rowId}`)
+          }
+        }
+        if (direction === 'up') {
+          if (rowIndex > 0) {
+            const nextRowId = rows[rowIndex - 1]!
+            setFocused(`${columnId}-${nextRowId}`)
+          } else {
+            // move to header
+            setFocused(columnId)
+          }
+        }
+        if (direction === 'down') {
+          if (rowIndex > -1 && rowIndex < rows.length - 1) {
+            const nextRowId = rows[rowIndex + 1]!
+            setFocused(`${columnId}-${nextRowId}`)
+          }
+        }
+      }
+    }
+  }, [headerRefs, cellRefs])
+
+  const addFocusRef = useCallback((ref: HTMLDivElement | HTMLButtonElement | null, columnId: string, rowId?: string) => {
+    const key = rowId ? `${columnId}-${rowId}` : columnId
+    if (rowId) {
+      cellRefs.current[key] = ref as HTMLDivElement | null
+    } else {
+      headerRefs.current[key] = ref as HTMLButtonElement | null
+    }
+  }, [cellRefs, focused])
+  */
 
   const dataColumns = useMemo(() => {
-    const dataColumns: ColumnDef<RowId>[] = columns.map((column) => {
-      const {id, type} = column
-
+    const dataColumns: ColumnDef<RowId>[] = columns.map((columnId) => {
       return {
-        id,
+        id: columnId,
         size: 200,
         minSize: 100,
         maxSize: 500,
         enableResizing: true,
         header: () => (
-          <Fragment key={id}>
-            <Header doc={doc} columnId={id} />
-            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
-          </Fragment>
+          <>
+            <Header provider={provider} columnId={columnId} />
+            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{columnId}</div>}
+          </>
         ),
-        cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} userId={userId} />
+        cell: ({row}) => (
+          <Cell provider={provider} rowId={row.id} columnId={columnId} userId={userId} />
+        )
       }
     })
     const debugColumns: ColumnDef<RowId>[] = !DEBUG

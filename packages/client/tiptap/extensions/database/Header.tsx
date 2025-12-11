@@ -1,3 +1,4 @@
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {
   Check,
   ChevronRight,
@@ -9,8 +10,7 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {useEffect, useState} from 'react'
-import * as Y from 'yjs'
+import {useEffect, useRef, useState} from 'react'
 import useForm from '../../../hooks/useForm'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 import {DropdownMenuInputItem} from './DropdownMenuInputItem'
@@ -24,9 +24,18 @@ import {
   insertColumnBefore
 } from './data'
 import {DataType, DataTypeIcons} from './types'
+import {useFocus} from './useFocus'
 
-export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
-  const {doc, columnId} = props
+type Props = {
+  provider: HocuspocusProvider
+  columnId: ColumnId
+}
+export const Header = (props: Props) => {
+  const {provider, columnId} = props
+  const {document: doc} = provider
+
+  const ref = useRef<HTMLButtonElement>(null)
+  useFocus(provider, columnId, ref.current)
 
   const columnMetaMap = getColumnMeta(doc)
   const [name, setName] = useState(columnMetaMap.get(columnId)?.name ?? 'Untitled')
@@ -109,7 +118,7 @@ export const Header = (props: {doc: Y.Doc; columnId: ColumnId}) => {
 
   return (
     <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
-      <DropdownMenu.Trigger asChild>
+      <DropdownMenu.Trigger asChild ref={ref}>
         <button className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>

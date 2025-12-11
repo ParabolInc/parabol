@@ -1,17 +1,8 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import * as Y from 'yjs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
-import {
-  ColumnId,
-  ColumnMeta,
-  changeColumn,
-  DataType,
-  getColumns,
-  getRows,
-  RowData,
-  RowId
-} from './data'
+import {ColumnId, ColumnMeta, changeColumn, RowData, RowId} from './data'
 import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
@@ -155,52 +146,7 @@ export const useColumnMeta = (doc: Y.Doc, columnId: ColumnId) => {
   return [meta, setMeta] as const
 }
 
-// hook to get rows and columns with their types
-// don't include the name in the column info, as it causes unnecessary re-renders of all cells on rename
-export const useDatabase = (doc: Y.Doc) => {
-  const columnIds = useYArray(getColumns(doc))
-  const rows = useYArray(getRows(doc))
-
-  const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
-  const [columnTypes, setColumnTypes] = useState<DataType[]>(() =>
-    columnIds.map((id) => {
-      const meta = columnMeta.get(id)
-      return meta ? meta.type : 'text'
-    })
-  )
-
-  useEffect(() => {
-    const updateTypes = () => {
-      const newTypes = columnIds.map((id) => {
-        const meta = columnMeta.get(id)
-        return meta ? meta.type : 'text'
-      })
-      if (JSON.stringify(newTypes) !== JSON.stringify(columnTypes)) {
-        setColumnTypes(newTypes)
-      }
-    }
-
-    columnMeta.observe(updateTypes)
-    updateTypes()
-
-    return () => {
-      columnMeta.unobserve(updateTypes)
-    }
-  }, [columnIds, columnMeta])
-
-  const columns = useMemo(
-    () =>
-      columnIds.map((id, index) => {
-        const type = columnTypes[index] ?? 'text'
-        return {
-          id,
-          type
-        }
-      }),
-    [columnIds, columnTypes]
-  )
-  return {
-    rows,
-    columns
-  }
+export const useColumnType = (doc: Y.Doc, columnId: ColumnId) => {
+  const [meta] = useColumnMeta(doc, columnId)
+  return meta.type
 }
