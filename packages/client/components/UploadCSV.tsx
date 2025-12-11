@@ -109,6 +109,7 @@ export const UploadCSV = (props: Props) => {
 
   const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
+    e.currentTarget.removeAttribute('data-drop')
     const file = e.dataTransfer.files[0]
     if (!file) return
     startImport(file)

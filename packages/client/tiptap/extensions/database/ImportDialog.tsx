@@ -11,7 +11,16 @@ import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
-import {appendColumn, appendRow, getColumnMeta, getColumns, getData, getRows} from './data'
+import {DEFAULT_COLUMNS} from './Database'
+import {
+  appendColumn,
+  appendRow,
+  changeColumn,
+  getColumnMeta,
+  getColumns,
+  getData,
+  getRows
+} from './data'
 import {useYArray, useYMap} from './hooks'
 
 const HEADER_MISMATCH = 'CSV headers do not match current table columns'
@@ -28,6 +37,43 @@ const clearAllData = (doc: Y.Doc) => {
     columnMeta.clear()
     data.clear()
   })
+}
+
+const rowIsEmpty = (row: Y.Map<string>) => {
+  if (row.size === 0) return true
+  for (const key of row.keys()) {
+    if (!key.startsWith('_')) return false
+  }
+  return true
+}
+const useIsDataEmpty = (doc: Y.Doc) => {
+  const rows = useYArray(getRows(doc))
+  const data = useYMap(getData(doc))
+
+  return useMemo(() => {
+    if (rows.length === 0) return true
+    for (const row of data.values()) {
+      if (!rowIsEmpty(row)) {
+        return false
+      }
+    }
+    return true
+  }, [data, rows])
+}
+
+const columnsAreDefault = (doc: Y.Doc) => {
+  const columns = getColumns(doc)
+  const columnMeta = getColumnMeta(doc)
+  if (columns.length !== DEFAULT_COLUMNS.length) return false
+  for (let i = 0; i < DEFAULT_COLUMNS.length; i++) {
+    const columnId = columns.get(i)!
+    const meta = columnMeta.get(columnId)
+    if (!meta) return false
+    if (meta.name !== DEFAULT_COLUMNS[i]!.name || meta.type !== DEFAULT_COLUMNS[i]!.type) {
+      return false
+    }
+  }
+  return true
 }
 
 const importRecords = (doc: Y.Doc, viewerId: string, records: string[][]) => {
@@ -67,13 +113,15 @@ export const ImportDialog = (props: Props) => {
   const columnMeta = useYMap(getColumnMeta(doc))
   const rows = useYArray(getRows(doc))
 
+  const dataIsEmpty = useIsDataEmpty(doc)
+
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []
 
     const newHeaders = firstRowIsHeader
       ? records[0]!
       : records[0]!.map((_, index) => `Column ${index + 1}`)
-    if (discardExistingData) {
+    if (discardExistingData || columnsAreDefault(doc)) {
       return newHeaders
     }
     return newHeaders.map((name, index) => {
@@ -94,7 +142,7 @@ export const ImportDialog = (props: Props) => {
   const onImport = () => {
     if (!records) return
     doc.transact(() => {
-      if (discardExistingData) {
+      if (discardExistingData || dataIsEmpty) {
         clearAllData(doc)
       }
 
@@ -102,6 +150,11 @@ export const ImportDialog = (props: Props) => {
         ? records[0]!
         : records[0]!.map((_, index) => `Column ${index + 1}`)
       const columns = getColumns(doc)
+      if (columnsAreDefault(doc)) {
+        columns.forEach((columnId, index) => {
+          changeColumn(doc, columnId, {name: newHeaders[index]!, type: 'text'})
+        })
+      }
       newHeaders.slice(columns.length).forEach((name) => {
         appendColumn(doc, {name, type: 'text'})
       })
@@ -124,6 +177,10 @@ export const ImportDialog = (props: Props) => {
   const recordCount = records ? records.length - firstRowOffset : 0
   const previewLength = records ? Math.min(3, recordCount) : 0
 
+  const moreExistingHeaders = headers.length < columns.length && !discardExistingData
+  // if there is some data, then we count all rows, including empty ones
+  const existingRowCount = dataIsEmpty ? 0 : rows.length
+
   return (
     <Dialog isOpen={isOpen} onClose={onCancel}>
       <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
@@ -140,13 +197,15 @@ export const ImportDialog = (props: Props) => {
               <Checkbox checked={firstRowIsHeader} />
               First row is header
             </div>
-            <div
-              className='flex cursor-pointer flex-row gap-2 p-1 align-center'
-              onClick={() => setDiscardExistingData(!discardExistingData)}
-            >
-              <Checkbox checked={discardExistingData} />
-              Discard existing data ({rows.length} {plural(rows.length, 'record')})
-            </div>
+            {!dataIsEmpty && (
+              <div
+                className='flex cursor-pointer flex-row gap-2 p-1 align-center'
+                onClick={() => setDiscardExistingData(!discardExistingData)}
+              >
+                <Checkbox checked={discardExistingData} disabled={dataIsEmpty} />
+                Discard existing data ({rows.length} {plural(rows.length, 'row')})
+              </div>
+            )}
             <div className={'mt-4 text-sm'}>
               Previewing {previewLength < recordCount ? `the first ${previewLength} of` : 'all'}{' '}
               {recordCount} {plural(recordCount, 'record')}...
@@ -167,13 +226,16 @@ export const ImportDialog = (props: Props) => {
                         {name}
                       </th>
                     ))}
+                    {moreExistingHeaders && (
+                      <th className='w-4 max-w-4 border-slate-400 border-b-1 p-2'>...</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.length > 0 && (
+                  {existingRowCount > 0 && (
                     <tr>
                       <td
-                        colSpan={headers.length}
+                        colSpan={headers.length + (moreExistingHeaders ? 1 : 0)}
                         className={cn(
                           'h-8 border-slate-400 border-b-1 border-dashed px-2',
                           discardExistingData && 'text-tomato-600'
@@ -181,8 +243,8 @@ export const ImportDialog = (props: Props) => {
                       >
                         <div className='-translate-x-1/2 sticky left-1/2 w-fit'>
                           {discardExistingData
-                            ? `...discarding existing ${rows.length} ${plural(rows.length, 'record')}`
-                            : `...existing ${rows.length} ${plural(rows.length, 'record')}`}
+                            ? `...discarding existing ${existingRowCount} ${plural(existingRowCount, 'row')}`
+                            : `...existing ${existingRowCount} ${plural(existingRowCount, 'row')}`}
                         </div>
                       </td>
                     </tr>
@@ -199,6 +261,9 @@ export const ImportDialog = (props: Props) => {
                             {cell}
                           </td>
                         ))}
+                        {moreExistingHeaders && (
+                          <td className='border-slate-400 border-b-1 border-l-1'></td>
+                        )}
                       </tr>
                     ))}
                 </tbody>

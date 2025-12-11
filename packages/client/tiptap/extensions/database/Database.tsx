@@ -6,6 +6,12 @@ import {appendColumn, appendRow, getColumns, getRows} from './data'
 
 const DatabaseView = lazy(() => import(/* webpackChunkName: 'DatabaseView' */ './DatabaseView'))
 
+export const DEFAULT_COLUMNS = [
+  {name: 'Text column', type: 'text'},
+  {name: 'Number column', type: 'number'},
+  {name: 'Check column', type: 'check'}
+] as const
+
 function Component(props: NodeViewProps) {
   const {editor, extension} = props
 
@@ -31,9 +37,9 @@ export const Database = Node.create<DatabaseOptions>({
     const {document, userId} = this.options
     if (getRows(document).length === 0) {
       if (getColumns(document).length === 0) {
-        appendColumn(document, {name: 'Text column', type: 'text'})
-        appendColumn(document, {name: 'Number column', type: 'number'})
-        appendColumn(document, {name: 'Check column', type: 'check'})
+        DEFAULT_COLUMNS.forEach((column) =>
+          appendColumn(document, {name: column.name, type: column.type})
+        )
       }
       appendRow(document, userId)
     }
