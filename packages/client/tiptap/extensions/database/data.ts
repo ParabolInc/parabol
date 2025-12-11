@@ -50,6 +50,14 @@ export const getColumns = (doc: Y.Doc) => {
   return doc.getArray<ColumnId>('columns')
 }
 
+export const getColumnMeta = (doc: Y.Doc) => {
+  return doc.getMap<ColumnMeta>('columnMeta')
+}
+
+export const getData = (doc: Y.Doc) => {
+  return doc.getMap<RowData>('data')
+}
+
 export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
   const columnMeta = doc.getMap<ColumnMeta>('columnMeta')
   columnMeta.set(columnId, {
@@ -140,12 +148,19 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
   })
 }
 
-export const appendRow = (doc: Y.Doc, userId?: string) => {
+export const appendRow = (doc: Y.Doc, userId?: string, rowData?: Record<string, string>) => {
   const id = generateId(doc)
   doc.transact(() => {
     const rows = doc.getArray<RowId>('rows')
     const data = doc.getMap<RowData>('data')
     const row = new Y.Map<any>()
+    if (rowData) {
+      Object.entries(rowData).forEach(([columnId, value]: [string, any]) => {
+        if (value !== '' && value !== undefined && value !== null) {
+          row.set(columnId, value)
+        }
+      })
+    }
     if (userId) {
       row.set('_createdBy', userId)
       row.set('_createdAt', Date.now())

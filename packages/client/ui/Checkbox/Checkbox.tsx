@@ -11,14 +11,14 @@ export const Checkbox = forwardRadix<typeof CheckboxPrimitive.Root>(
       <CheckboxPrimitive.Root
         ref={ref}
         className={cn(
-          'flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-slate-600 bg-white outline-none data-[state=unchecked]:border-2',
+          'group flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-slate-600 bg-white outline-none data-[state=unchecked]:border-2',
           className
         )}
         checked={checked}
         {...props}
       >
         <CheckboxPrimitive.Indicator asChild>
-          <MultiIcon className='w-5 fill-sky-500' />
+          <MultiIcon className='w-5 fill-sky-500 group-disabled:fill-slate-400' />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
     )
