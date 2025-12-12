@@ -39,6 +39,18 @@ export const ImageBlock = ImageBlockBase.extend({
         renderHTML: (attributes) => ({
           alt: attributes.alt
         })
+      },
+      isFullWidth: {
+        default: false,
+        parseHTML: (element) => element.getAttribute('data-full-width') === 'true',
+        renderHTML: (attributes) => {
+          if (!attributes.isFullWidth) {
+            return {}
+          }
+          return {
+            'data-full-width': attributes.isFullWidth
+          }
+        }
       }
     }
   },
@@ -68,9 +80,14 @@ export const ImageBlock = ImageBlockBase.extend({
           commands.updateAttributes('imageBlock', {align}),
 
       setImageBlockWidth:
-        (width) =>
-        ({commands}) =>
-          commands.updateAttributes('imageBlock', {width})
+        (width: number) =>
+        ({commands}: {commands: any}) =>
+          commands.updateAttributes('imageBlock', {width, isFullWidth: false}),
+
+      setImageBlockFullWidth:
+        (isFullWidth: boolean) =>
+        ({commands}: {commands: any}) =>
+          commands.updateAttributes('imageBlock', {isFullWidth})
     }
   },
 

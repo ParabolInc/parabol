@@ -25,26 +25,42 @@ export const ImageSelectorUploadTab = (props: Props) => {
         message: 'The image is too large. Please select an image smaller than 8MB',
         autoDismiss: 5
       })
+      return
     }
+
+    // Opportunistic display: create blob URL and set it immediately
+    const blobUrl = URL.createObjectURL(file)
+    setImageURL(blobUrl)
+
     const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
-    commit({
-      variables: {scope: assetScope, scopeKey},
-      uploadables: {file: file},
-      onCompleted: (res) => {
-        const {uploadUserAsset} = res
-        const {url} = uploadUserAsset!
-        const message = uploadUserAsset?.error?.message
-        if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorUploadIdPtMetadata',
-            message,
-            autoDismiss: 5
-          })
-          return
+
+    const uploadPromise = new Promise<string>((resolve, reject) => {
+      commit({
+        variables: {scope: assetScope, scopeKey},
+        uploadables: {file: file},
+        onCompleted: (res) => {
+          const {uploadUserAsset} = res
+          const message = uploadUserAsset?.error?.message
+          if (message) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: 'errorUploadIdPtMetadata',
+              message,
+              autoDismiss: 5
+            })
+            reject(message)
+            return
+          }
+          const {url} = uploadUserAsset!
+          resolve(url!)
+        },
+        onError: (err) => {
+          reject(err)
         }
-        setImageURL(url!)
-      }
+      })
     })
+
+    // Store the promise so the ImageBlock node view can swap it out later
+    editor.storage.imageUpload.pendingUploads.set(blobUrl, uploadPromise)
   }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {
