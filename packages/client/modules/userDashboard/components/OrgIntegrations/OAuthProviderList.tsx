@@ -11,6 +11,7 @@ import {useFragment, useMutation} from 'react-relay'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
 import RaisedButton from '../../../../components/RaisedButton'
 import SecondaryButton from '../../../../components/SecondaryButton'
+import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useSubscription from '../../../../hooks/useSubscription'
 import organizationSubscription from '../../../../subscriptions/OrganizationSubscription'
 import OAuthAppFormDialog from './OAuthAppFormDialog'
@@ -35,6 +36,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
   )
 
   useSubscription('OAuthProviderList', organizationSubscription)
+  const atmosphere = useAtmosphere()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null)
@@ -46,7 +48,6 @@ const OAuthProviderList = ({organizationRef}: Props) => {
   const [commitDelete] = useMutation(graphql`
     mutation OAuthProviderListDeleteMutation($input: DeleteOAuthAPIProviderInput!) {
       deleteOAuthAPIProvider(input: $input) {
-        success
         deletedProviderId
       }
     }
@@ -94,6 +95,18 @@ const OAuthProviderList = ({organizationRef}: Props) => {
             providerId: providerToDelete.id
           }
         },
+        updater: (store) => {
+          const payload = store.getRootField('deleteOAuthAPIProvider')
+          const deletedProviderId = payload?.getValue('deletedProviderId')
+          if (!deletedProviderId) return
+
+          const orgRecord = store.get(data.id)
+          if (!orgRecord) return
+          const providers = orgRecord.getLinkedRecords('oauthProviders')
+          if (!providers) return
+          const newProviders = providers.filter((p) => p.getDataID() !== deletedProviderId)
+          orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
+        },
         optimisticUpdater: (store) => {
           const orgRecord = store.get(data.id)
           if (!orgRecord) return
@@ -105,6 +118,23 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         onCompleted: () => {
           setDeleteDialogOpen(false)
           setProviderToDelete(null)
+        },
+        onError: (error) => {
+          setDeleteDialogOpen(false)
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'deleteOAuthAPIProviderError',
+            message: error.message || 'Something went wrong',
+            autoDismiss: 0,
+            action: {
+              label: 'Dismiss',
+              callback: () => {
+                atmosphere.eventEmitter.emit(
+                  'removeSnackbar',
+                  ({key}) => key === 'deleteOAuthAPIProviderError'
+                )
+              }
+            }
+          })
         }
       })
     }

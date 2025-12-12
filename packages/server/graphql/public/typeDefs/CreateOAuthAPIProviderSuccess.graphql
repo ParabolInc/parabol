@@ -1,4 +1,6 @@
 type CreateOAuthAPIProviderSuccess {
   provider: OAuthAPIProvider!
+  clientId: String!
+  clientSecret: String!
   organization: Organization!
 }

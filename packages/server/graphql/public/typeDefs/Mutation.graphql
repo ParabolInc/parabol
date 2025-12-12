@@ -159,6 +159,38 @@ type Mutation {
   ): CreateOAuth1AuthorizationURLPayload
 
   """
+  Create a new OAuth 2.0 Application
+  """
+  createOAuthAPIProvider(input: CreateOAuthAPIProviderInput!): CreateOAuthAPIProviderPayload!
+
+  """
+  Generate OAuth 2.0 Credentials
+  """
+  generateOAuthCredentials: OAuthCredentials!
+
+  """
+  Update an OAuth 2.0 Application
+  """
+  updateOAuthAPIProvider(input: UpdateOAuthAPIProviderInput!): UpdateOAuthAPIProviderPayload!
+
+  """
+  Delete an OAuth 2.0 Application
+  """
+  deleteOAuthAPIProvider(input: DeleteOAuthAPIProviderInput!): DeleteOAuthAPIProviderPayload!
+
+  """
+  Regenerate the OAuth 2.0 client secret for an application
+  """
+  regenerateOAuthAPIProviderSecret(
+    input: RegenerateOAuthAPIProviderSecretInput!
+  ): RegenerateOAuthAPIProviderSecretPayload!
+
+  """
+  Create an OAuth 2.0 authorization code
+  """
+  createOAuthAPICode(input: CreateOAuthAPICodeInput!): CreateOAuthAPICodePayload!
+
+  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload

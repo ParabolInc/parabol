@@ -1,25 +1,21 @@
-import getKysely from '../../../postgres/getKysely'
+import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
-import {GQLContext} from '../../graphql'
+import type {QueryResolvers} from '../resolverTypes'
 
-export default async function oauthAPIProvider(
-  _root: any,
-  {id}: {id: string},
-  context: GQLContext
-) {
-  const {authToken, dataLoader} = context
+const oauthAPIProvider: QueryResolvers['oauthAPIProvider'] = async (
+  _source,
+  {id},
+  {authToken, dataLoader}
+) => {
   const viewerId = getUserId(authToken)
 
-  const pg = getKysely()
-  const provider = await pg
-    .selectFrom('OAuthAPIProvider')
-    .selectAll()
-    .where('id', '=', id)
-    .executeTakeFirst()
+  const provider = await selectOAuthAPIProvider().where('id', '=', id).executeTakeFirst()
 
-  if (!provider || !(await isUserOrgAdmin(viewerId, provider.organizationId, dataLoader))) {
+  if (!provider || !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
     return null
   }
 
   return provider
 }
+
+export default oauthAPIProvider

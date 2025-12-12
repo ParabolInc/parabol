@@ -3,6 +3,7 @@ import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
+import {deleteOAuthAPIProviderOrganizationUpdater} from '../mutations/DeleteOAuthAPIProviderMutation'
 import {
   removeOrgUsersOrganizationOnNext,
   removeOrgUsersOrganizationUpdater
@@ -51,11 +52,12 @@ const subscription = graphql`
           id
           name
           clientId
-          clientSecret
           redirectUris
           scopes
           updatedAt
         }
+        clientId
+        clientSecret
         organization {
           ...OAuthProviderList_organization
         }
@@ -65,7 +67,6 @@ const subscription = graphql`
           id
           name
           clientId
-          clientSecret
           redirectUris
           scopes
           updatedAt
@@ -94,7 +95,8 @@ const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
+  DeleteOAuthAPIProviderSuccess: deleteOAuthAPIProviderOrganizationUpdater
 } as const
 
 export default createSubscription(subscription, onNextHandlers, updateHandlers)

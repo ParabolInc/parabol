@@ -82,6 +82,7 @@
           "Comment": "../../postgres/types/index#Comment as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
+          "CreateOAuthAPICodePayload": "./types/CreateOAuthAPICodePayload#CreateOAuthAPICodePayloadSource",
           "DomainJoinRequest": "./types/DomainJoinRequest#DomainJoinRequestSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",

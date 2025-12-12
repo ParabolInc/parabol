@@ -12,6 +12,7 @@ import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
+
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -182,11 +183,15 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
         const token = headerToken || cookieToken
         const authToken = getVerifiedAuthToken(token)
+
         const isSuperUser = authToken?.rol === 'su'
         const isOAuthToken = authToken?.iss === 'parabol-oauth2'
         const hasScope =
           authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
-        return isSuperUser || (isOAuthToken && !!hasScope)
+
+        const result = isSuperUser || (isOAuthToken && !!hasScope)
+
+        return result
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,

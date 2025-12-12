@@ -1,58 +1,8 @@
-extend type Organization {
-  oauthProviders: [OAuthAPIProvider!]!
-}
-
-extend type Mutation {
-  """
-  Create a new OAuth 2.0 Application
-  """
-  createOAuthAPIProvider(input: CreateOAuthAPIProviderInput!): CreateOAuthAPIProviderPayload!
-
-  """
-  Update an OAuth 2.0 Application
-  """
-  updateOAuthAPIProvider(input: UpdateOAuthAPIProviderInput!): UpdateOAuthAPIProviderPayload!
-
-  """
-  Delete an OAuth 2.0 Application
-  """
-  deleteOAuthAPIProvider(input: DeleteOAuthAPIProviderInput!): DeleteOAuthAPIProviderPayload!
-
-  """
-  Regenerate the OAuth 2.0 client secret for an application
-  """
-  regenerateOAuthAPIProviderSecret(
-    input: RegenerateOAuthAPIProviderSecretInput!
-  ): RegenerateOAuthAPIProviderSecretPayload!
-
-  """
-  Create an OAuth 2.0 authorization code
-  """
-  createOAuthAPICode(input: CreateOAuthAPICodeInput!): CreateOAuthAPICodePayload!
-}
-
-extend type Query {
-  """
-  Get an OAuth 2.0 Application by ID
-  """
-  oauthAPIProvider(id: ID!): OAuthAPIProvider
-  """
-  Generate new OAuth 2.0 credentials (clientId and clientSecret)
-  """
-  generateOAuthCredentials: OAuthCredentialsPayload!
-}
-
-type OAuthCredentialsPayload {
-  clientId: String!
-  clientSecret: String!
-}
-
 type OAuthAPIProvider {
   id: ID!
   name: String!
   clientId: String!
-  clientSecret: String!
-  redirectUris: [String!]!
+  redirectUris: [RedirectURI!]!
   scopes: [String!]!
   updatedAt: DateTime!
 }
@@ -60,7 +10,7 @@ type OAuthAPIProvider {
 input CreateOAuthAPIProviderInput {
   orgId: ID!
   name: String!
-  redirectUris: [String!]!
+  redirectUris: [RedirectURI!]!
   scopes: [String!]!
   clientId: String
   clientSecret: String
@@ -68,12 +18,14 @@ input CreateOAuthAPIProviderInput {
 
 type CreateOAuthAPIProviderPayload {
   provider: OAuthAPIProvider!
+  clientId: String!
+  clientSecret: String!
 }
 
 input UpdateOAuthAPIProviderInput {
   providerId: ID!
   name: String
-  redirectUris: [String!]
+  redirectUris: [RedirectURI!]
   scopes: [String!]
 }
 
@@ -86,7 +38,6 @@ input DeleteOAuthAPIProviderInput {
 }
 
 type DeleteOAuthAPIProviderPayload {
-  success: Boolean!
   deletedProviderId: ID!
 }
 
@@ -110,4 +61,9 @@ type CreateOAuthAPICodePayload {
   code: String!
   redirectUri: String!
   state: String
+}
+
+type OAuthCredentials {
+  clientId: String!
+  clientSecret: String!
 }
