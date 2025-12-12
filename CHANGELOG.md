@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.3.1](https://github.com/ParabolInc/parabol/compare/v11.3.0...v11.3.1) (2025-12-12)
+
+
+### Fixed
+
+* collab caret hide on print and click ([#12441](https://github.com/ParabolInc/parabol/issues/12441)) ([7514f4b](https://github.com/ParabolInc/parabol/commit/7514f4b89919e2db306f9a5501a2f465fa4ba8d7))
+* revert datadog dd-trace to v5.67.0 ([#12447](https://github.com/ParabolInc/parabol/issues/12447)) ([dcf987a](https://github.com/ParabolInc/parabol/commit/dcf987a58ecd3dda194f95de18c16909cb9f65e9))
+
 ## [11.3.0](https://github.com/ParabolInc/parabol/compare/v11.2.0...v11.3.0) (2025-12-12)
 
 
