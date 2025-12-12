@@ -3,12 +3,17 @@ import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMuta
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
 
-interface ImageUploadStorage {
+interface ImageUploadOptions {
   editorWidth: number
   editorHeight: number
   assetScope: AssetScopeEnum
   scopeKey: string
 }
+
+interface ImageUploadStorage extends ImageUploadOptions {
+  pendingUploads: Map<string, Promise<string>>
+}
+
 declare module '@tiptap/core' {
   interface EditorEvents {
     enter: {editor: Editor}
@@ -18,7 +23,7 @@ declare module '@tiptap/core' {
   }
 }
 
-export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploadStorage>({
+export const ImageUpload = ImageUploadBase.extend<ImageUploadOptions, ImageUploadStorage>({
   addOptions() {
     return {
       editorWidth: 300,
@@ -32,7 +37,8 @@ export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploa
       editorWidth: this.options.editorWidth,
       editorHeight: this.options.editorHeight,
       assetScope: this.options.assetScope,
-      scopeKey: this.options.scopeKey
+      scopeKey: this.options.scopeKey,
+      pendingUploads: new Map()
     }
   },
 
