@@ -156,6 +156,62 @@ export const useTipTapPageEditor = (
           document: provider?.document
         }),
         CollaborationCaret.configure({
+          render(user) {
+            const cursor = document.createElement('span')
+            let downAt: number | undefined = undefined
+            cursor.addEventListener('pointerdown', () => {
+              // sometimes the cursor can get in the way
+              // If the user gets frustrated enough to click it, hide it for 5 seconds
+              // if they tap & hold it out of rage, remove it indefinitely
+              // it'll re-appear when the remote user moves it
+              downAt = Date.now()
+            })
+            cursor.addEventListener('pointerup', () => {
+              cursor.classList.add('hidden')
+              const pressDuration = downAt ? Date.now() - downAt : 0
+              if (pressDuration > 300) return
+              setTimeout(() => {
+                if (cursor.isConnected) {
+                  cursor.classList.remove('hidden')
+                }
+              }, 5000)
+            })
+            cursor.classList.add(
+              'collaboration-carets__caret',
+              '-mx-px',
+              'relative',
+              'break-normal',
+              'border-x-slate-900',
+              'border',
+              'transition-opacity',
+              'hover:cursor-text',
+              'hover:opacity-20',
+              'print:hidden'
+            )
+            cursor.setAttribute('style', `border-color: ${user.color}`)
+
+            const label = document.createElement('div')
+            label.classList.add(
+              'collaboration-carets__label',
+              '-left-px',
+              '-top-5',
+              'absolute',
+              'select-none',
+              'whitespace-nowrap',
+              'rounded-t-sm',
+              'rounded-br-sm',
+              'px-1',
+              'py-0.5',
+              'font-semibold',
+              'text-white',
+              'text-xs'
+            )
+            label.setAttribute('style', `background-color: ${user.color}`)
+            label.insertBefore(document.createTextNode(user.name), null)
+            cursor.insertBefore(label, null)
+
+            return cursor
+          },
           provider,
           user: {
             name: preferredName,
