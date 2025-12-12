@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.3.0](https://github.com/ParabolInc/parabol/compare/v11.2.0...v11.3.0) (2025-12-12)
+
+
+### Added
+
+* CSV import and export for databases ([#12382](https://github.com/ParabolInc/parabol/issues/12382)) ([922a235](https://github.com/ParabolInc/parabol/commit/922a235d3495a3f0b980dd81e7260716a360f0b2))
+
+
+### Fixed
+
+* make idp metadata public ([#12444](https://github.com/ParabolInc/parabol/issues/12444)) ([3b2d298](https://github.com/ParabolInc/parabol/commit/3b2d298a273a04704c961047fef1cdb3dcb3e219))
+
 ## [11.2.0](https://github.com/ParabolInc/parabol/compare/v11.1.4...v11.2.0) (2025-12-10)
 
 

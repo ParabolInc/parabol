@@ -36,7 +36,7 @@ const checkAccess = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
   scopeCode: string,
-  assetType: AssetType
+  assetType: AssetType | 'idpMetadata.xml'
 ) => {
   const viewerId = getUserId(authToken)
   if (scope === 'User') {
@@ -54,8 +54,8 @@ const checkAccess = async (
       if (isTeamMember(authToken, scopeCode)) return true
     }
   } else if (scope === 'Organization') {
-    if (assetType === 'picture') {
-      // all org avatars are visible to all users
+    if (assetType === 'picture' || assetType === 'idpMetadata.xml') {
+      // all org avatars and metadata are visible to all users
       return true
     } else {
       // aGhostOrg contains all parabol-seeded assets, e.g. illustrations
