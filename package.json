@@ -179,6 +179,7 @@
     "@tiptap/suggestion": "3.11.1",
     "@whatwg-node/fetch": "^0.10.10",
     "base64url": "^3.0.1",
+    "dd-trace": "5.67.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "graphql-ws": "^6.0.4",
