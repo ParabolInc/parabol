@@ -34,7 +34,7 @@ export const publishSummaryPage = async (
   // #12270, attempting to update cache vs. clear it to see if that fixes some subscribers having this be null
   meeting.summaryPageId = pageId
   // don't wait for the stream to finish
-  streamSummaryBlocksToPage(pageId, meetingId, context, info).catch(Logger.log)
+  streamSummaryBlocksToPage(pageId, meetingId, teamId, context, info).catch(Logger.log)
   dataLoader.dispose()
   return page
 }

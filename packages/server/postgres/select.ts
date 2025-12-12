@@ -338,6 +338,27 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'isDatabase'
   ])
 
+export const selectPagesWithContent = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKysely()) =>
+  queryCreator
+    .selectFrom('Page')
+    .select([
+      'createdAt',
+      'id',
+      'isParentLinked',
+      'isPrivate',
+      'parentPageId',
+      'plaintextContent',
+      'Page.sortOrder',
+      'Page.teamId',
+      'title',
+      'updatedAt',
+      'Page.userId',
+      'ancestorIds',
+      'deletedAt',
+      'deletedBy',
+      'isDatabase'
+    ])
+
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
 
