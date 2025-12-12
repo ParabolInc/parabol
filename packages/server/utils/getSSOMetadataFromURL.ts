@@ -1,7 +1,13 @@
 import {fetch} from '@whatwg-node/fetch'
+import makeAppURL from '../../client/utils/makeAppURL'
+import appOrigin from '../appOrigin'
 
 export const getSSOMetadataFromURL = async (metadataURL: string) => {
-  const normalizedURL = metadataURL.trim()
+  let normalizedURL = metadataURL.trim()
+  if (normalizedURL.startsWith('/')) {
+    // URLs shouldn't be relative, but we had a migration that made them so
+    normalizedURL = makeAppURL(appOrigin, normalizedURL)
+  }
   if (!normalizedURL.startsWith('https://'))
     return new Error('Metadata URL must start with https://')
   try {
