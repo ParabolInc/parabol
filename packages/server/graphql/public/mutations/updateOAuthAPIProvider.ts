@@ -1,17 +1,19 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {validateOAuthScopes} from '../../../oauth/oauthScopes'
-import {validateRedirectUris} from '../../../oauth/validateRedirectUri'
+import {validateOAuthScopes} from '../../../oauth2/oauthScopes'
+import {validateRedirectUris} from '../../../oauth2/validateRedirectUri'
 import getKysely from '../../../postgres/getKysely'
+import {selectOAuthAPIProvider} from '../../../postgres/select'
+import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 
 interface UpdateOAuthAPIProviderInput {
   providerId: string
-  name?: string
-  redirectUris?: string[]
-  scopes?: string[]
+  name?: string | null
+  redirectUris?: string[] | null
+  scopes?: string[] | null
 }
 
 export default async function updateOAuthAPIProvider(
@@ -20,76 +22,80 @@ export default async function updateOAuthAPIProvider(
   context: GQLContext
 ) {
   const {providerId, name, redirectUris, scopes} = input
-  const {authToken, dataLoader} = context
+  const {authToken, dataLoader, socketId} = context
   const viewerId = getUserId(authToken)
 
   const pg = getKysely()
 
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
-    .selectAll()
+    .select('orgId')
     .where('id', '=', providerId)
     .executeTakeFirst()
 
   if (!provider) {
-    return standardError(new Error('Provider not found'), {
-      userId: viewerId
+    throw new GraphQLError('Provider not found')
+  }
+
+  if (!(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
+    throw new GraphQLError('Not organization lead', {
+      extensions: {
+        code: 'FORBIDDEN',
+        userId: viewerId
+      }
     })
   }
 
-  if (!(await isUserOrgAdmin(viewerId, provider.organizationId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {
-      userId: viewerId
-    })
+  if (redirectUris) {
+    if (!validateRedirectUris(redirectUris)) {
+      throw new GraphQLError(
+        'Invalid redirect URIs. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.',
+        {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            userId: viewerId
+          }
+        }
+      )
+    }
   }
 
-  if (redirectUris !== undefined && !validateRedirectUris(redirectUris)) {
-    return standardError(
-      new Error(
-        'Invalid redirect URIs. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.'
-      ),
-      {
-        userId: viewerId
-      }
-    )
+  if (scopes) {
+    if (!validateOAuthScopes(scopes)) {
+      throw new GraphQLError('Invalid scopes. Only graphql:read and graphql:write are allowed.', {
+        extensions: {
+          code: 'BAD_USER_INPUT',
+          userId: viewerId
+        }
+      })
+    }
   }
 
-  if (scopes !== undefined && !validateOAuthScopes(scopes)) {
-    return standardError(
-      new Error('Invalid scopes. Only graphql:query and graphql:mutation are allowed.'),
-      {
-        userId: viewerId
-      }
-    )
-  }
-
-  const updateData: any = {
-    updatedAt: new Date()
-  }
-  if (name !== undefined) updateData.name = name
-  if (redirectUris !== undefined) updateData.redirectUris = redirectUris
-  if (scopes !== undefined) updateData.scopes = scopes
-
-  const updatedProvider = await pg
+  await pg
     .updateTable('OAuthAPIProvider')
-    .set(updateData)
+    .set({
+      name: name ?? undefined,
+      redirectUris: redirectUris ?? undefined,
+      scopes: scopes ? (scopes as Oauthscopeenum[]) : undefined
+    })
     .where('id', '=', providerId)
-    .returningAll()
-    .executeTakeFirst()
+    .execute()
+
+  const updatedProvider = await selectOAuthAPIProvider()
+    .where('id', '=', providerId)
+    .executeTakeFirstOrThrow()
 
   const data = {
     provider: updatedProvider,
     organization: {
-      id: provider.organizationId
+      id: provider.orgId
     }
   }
-  publish(
-    SubscriptionChannel.ORGANIZATION,
-    provider.organizationId,
-    'UpdateOAuthAPIProviderSuccess',
-    data,
-    {}
-  )
+  publish(SubscriptionChannel.ORGANIZATION, provider.orgId, 'UpdateOAuthAPIProviderSuccess', data, {
+    mutatorId: socketId
+  })
 
-  return {provider: updatedProvider}
+  return {
+    provider: updatedProvider
+  }
 }

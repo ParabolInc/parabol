@@ -1,7 +1,7 @@
-import {generateOAuthClientSecret} from '../../../oauth/credentials'
+import {GraphQLError} from 'graphql'
+import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 
 interface RegenerateOAuthAPIProviderSecretInput {
@@ -21,17 +21,20 @@ export default async function regenerateOAuthAPIProviderSecret(
 
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
-    .select('organizationId')
+    .select('orgId')
     .where('id', '=', providerId)
     .executeTakeFirst()
 
   if (!provider) {
-    throw new Error('Provider not found')
+    throw new GraphQLError('Provider not found')
   }
 
-  if (!(await isUserOrgAdmin(viewerId, provider.organizationId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {
-      userId: viewerId
+  if (!(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
+    throw new GraphQLError('Not organization lead', {
+      extensions: {
+        code: 'FORBIDDEN',
+        userId: viewerId
+      }
     })
   }
 
@@ -40,8 +43,7 @@ export default async function regenerateOAuthAPIProviderSecret(
   const updatedProvider = await pg
     .updateTable('OAuthAPIProvider')
     .set({
-      clientSecret: newSecret,
-      updatedAt: new Date()
+      clientSecret: newSecret
     })
     .where('id', '=', providerId)
     .returningAll()

@@ -13,46 +13,42 @@ import type {ServerContext, UserContext} from '../yoga'
 export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> => {
   return {
     onExecute({args}) {
-      return {
-        onExecuteDone() {
-          const {contextValue, document, operationName} = args
-          const {authToken} = contextValue
+      const {contextValue, document, operationName} = args
+      const {authToken} = contextValue
 
-          // Only validate OAuth tokens (not regular session tokens or super users)
-          if (!authToken || authToken.iss !== 'parabol-oauth2' || authToken.rol === 'su') {
-            return
+      // Only validate OAuth tokens (not regular session tokens or super users)
+      if (!authToken || authToken.iss !== 'parabol-oauth2' || authToken.rol === 'su') {
+        return
+      }
+
+      // Determine the operation type
+      const operation = getOperationAST(document, operationName ?? undefined)
+      if (!operation) {
+        return
+      }
+
+      const operationType = operation.operation
+
+      if (operationType === 'subscription') {
+        throw new GraphQLError('Subscriptions are not supported with OAuth tokens', {
+          extensions: {code: 'FORBIDDEN'}
+        })
+      }
+
+      const scopes = authToken.scp || []
+      const requiredScope = operationType === 'mutation' ? 'graphql:mutation' : 'graphql:query'
+
+      if (!scopes.includes(requiredScope)) {
+        throw new GraphQLError(
+          `Insufficient scope. The '${requiredScope}' scope is required to execute ${operationType} operations.`,
+          {
+            extensions: {
+              code: 'FORBIDDEN',
+              requiredScope,
+              providedScopes: scopes
+            }
           }
-
-          // Determine the operation type
-          const operation = getOperationAST(document, operationName ?? undefined)
-          if (!operation) {
-            return
-          }
-
-          const operationType = operation.operation
-
-          if (operationType === 'subscription') {
-            throw new GraphQLError('Subscriptions are not supported with OAuth tokens', {
-              extensions: {code: 'FORBIDDEN'}
-            })
-          }
-
-          const scopes = authToken.scp || []
-          const requiredScope = operationType === 'mutation' ? 'graphql:mutation' : 'graphql:query'
-
-          if (!scopes.includes(requiredScope)) {
-            throw new GraphQLError(
-              `Insufficient scope. The '${requiredScope}' scope is required to execute ${operationType} operations.`,
-              {
-                extensions: {
-                  code: 'FORBIDDEN',
-                  requiredScope,
-                  providedScopes: scopes
-                }
-              }
-            )
-          }
-        }
+        )
       }
     }
   }

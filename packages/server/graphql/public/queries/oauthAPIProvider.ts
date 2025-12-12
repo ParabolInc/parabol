@@ -1,4 +1,4 @@
-import getKysely from '../../../postgres/getKysely'
+import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {GQLContext} from '../../graphql'
 
@@ -10,14 +10,9 @@ export default async function oauthAPIProvider(
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
 
-  const pg = getKysely()
-  const provider = await pg
-    .selectFrom('OAuthAPIProvider')
-    .selectAll()
-    .where('id', '=', id)
-    .executeTakeFirst()
+  const provider = await selectOAuthAPIProvider().where('id', '=', id).executeTakeFirst()
 
-  if (!provider || !(await isUserOrgAdmin(viewerId, provider.organizationId, dataLoader))) {
+  if (!provider || !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
     return null
   }
 

@@ -1,4 +1,4 @@
-import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth/credentials'
+import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
 
 export default function generateOAuthCredentials() {
   return {

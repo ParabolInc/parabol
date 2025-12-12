@@ -1,7 +1,8 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import ms from 'ms'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
-import OAuthCode from '../database/types/OAuthAPICode'
+import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
 import getReqAuth from '../utils/getReqAuth'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
@@ -93,29 +94,25 @@ const authorizeHandler = async (res: HttpResponse, req: HttpRequest) => {
 
     // 4. Generate Authorization Code
     const scopes = scope ? scope.split(' ') : []
-    const code = new OAuthCode({
+    const codeId = generateUID()
+    const expiresAt = new Date(Date.now() + ms('10m'))
+    const createdAt = new Date()
+
+    const codeData = {
+      id: codeId,
       clientId,
       redirectUri,
       userId: authToken.sub,
-      scopes
-    })
+      scopes: scopes as any,
+      expiresAt: expiresAt.toISOString(),
+      createdAt: createdAt.toISOString()
+    }
 
-    await pg
-      .insertInto('OAuthAPICode')
-      .values({
-        id: code.id,
-        clientId: code.clientId,
-        redirectUri: code.redirectUri,
-        userId: code.userId,
-        scopes: code.scopes,
-        expiresAt: code.expiresAt.toISOString(),
-        createdAt: code.createdAt.toISOString()
-      })
-      .execute()
+    await pg.insertInto('OAuthAPICode').values(codeData).execute()
 
     // 6. Redirect with Code
     const redirectUrl = new URL(redirectUri)
-    redirectUrl.searchParams.set('code', code.id)
+    redirectUrl.searchParams.set('code', codeId)
     if (state) {
       redirectUrl.searchParams.set('state', state)
     }

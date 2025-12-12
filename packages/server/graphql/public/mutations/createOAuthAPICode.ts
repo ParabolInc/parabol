@@ -1,8 +1,9 @@
 import {GraphQLError} from 'graphql'
 import type {Kysely} from 'kysely'
-import OAuthAPICode from '../../../database/types/OAuthAPICode'
+import ms from 'ms'
+import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import type {DB} from '../../../postgres/types/pg'
+import type {DB, Oauthscopeenum} from '../../../postgres/types/pg'
 import type {GQLContext} from '../../graphql'
 
 interface CreateOAuthAPICodeInput {
@@ -48,32 +49,24 @@ export default async function createOAuthAPICode(
     )
   }
 
-  const code = new OAuthAPICode({
-    clientId,
-    redirectUri,
-    userId: authToken.sub,
-    scopes
-  })
+  const expiresAt = new Date(Date.now() + ms('10m'))
+  const codeId = generateUID()
 
-  try {
-    await db
-      .insertInto('OAuthAPICode')
-      .values({
-        id: code.id,
-        clientId: code.clientId,
-        redirectUri: code.redirectUri,
-        userId: code.userId,
-        scopes: code.scopes,
-        expiresAt: code.expiresAt.toISOString(),
-        createdAt: code.createdAt.toISOString()
-      })
-      .execute()
-  } catch (err) {
-    throw new GraphQLError(`Failed to create authorization code: ${err}`)
-  }
+  // No try/catch as per review
+  await db
+    .insertInto('OAuthAPICode')
+    .values({
+      id: codeId,
+      clientId,
+      redirectUri,
+      userId: authToken.sub,
+      scopes: scopes as Oauthscopeenum[],
+      expiresAt: expiresAt.toISOString()
+    })
+    .execute()
 
   return {
-    code: code.id,
+    code: codeId,
     redirectUri,
     state
   }

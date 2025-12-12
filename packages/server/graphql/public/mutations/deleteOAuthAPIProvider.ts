@@ -1,8 +1,8 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 
 interface DeleteOAuthAPIProviderInput {
@@ -15,24 +15,27 @@ export default async function deleteOAuthAPIProvider(
   context: GQLContext
 ) {
   const {providerId} = input
-  const {authToken, dataLoader} = context
+  const {authToken, dataLoader, socketId} = context
   const viewerId = getUserId(authToken)
 
   const pg = getKysely()
 
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
-    .select('organizationId')
+    .select('orgId')
     .where('id', '=', providerId)
     .executeTakeFirst()
 
   if (!provider) {
-    throw new Error('Provider not found')
+    throw new GraphQLError('Provider not found')
   }
 
-  if (!(await isUserOrgAdmin(viewerId, provider.organizationId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {
-      userId: viewerId
+  if (!(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
+    throw new GraphQLError('Not organization lead', {
+      extensions: {
+        code: 'FORBIDDEN',
+        userId: viewerId
+      }
     })
   }
 
@@ -41,16 +44,12 @@ export default async function deleteOAuthAPIProvider(
   const data = {
     providerId,
     organization: {
-      id: provider.organizationId
+      id: provider.orgId
     }
   }
-  publish(
-    SubscriptionChannel.ORGANIZATION,
-    provider.organizationId,
-    'DeleteOAuthAPIProviderSuccess',
-    data,
-    {}
-  )
+  publish(SubscriptionChannel.ORGANIZATION, provider.orgId, 'DeleteOAuthAPIProviderSuccess', data, {
+    mutatorId: socketId
+  })
 
   return {success: true, deletedProviderId: providerId}
 }

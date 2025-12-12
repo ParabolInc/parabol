@@ -3,6 +3,7 @@ import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
+import {deleteOAuthAPIProviderOrganizationUpdater} from '../mutations/DeleteOAuthAPIProviderMutation'
 import {
   removeOrgUsersOrganizationOnNext,
   removeOrgUsersOrganizationUpdater
@@ -94,7 +95,8 @@ const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
+  DeleteOAuthAPIProviderSuccess: deleteOAuthAPIProviderOrganizationUpdater
 } as const
 
 export default createSubscription(subscription, onNextHandlers, updateHandlers)

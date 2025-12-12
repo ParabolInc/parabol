@@ -1,12 +1,13 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import OAuthAPIProvider from '../../../database/types/OAuthAPIProvider'
-import generateRandomString from '../../../generateRandomString'
-import {validateOAuthScopes} from '../../../oauth/oauthScopes'
-import {validateRedirectUris} from '../../../oauth/validateRedirectUri'
+import generateUID from '../../../generateUID'
+import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
+import {validateOAuthScopes} from '../../../oauth2/oauthScopes'
+import {validateRedirectUris} from '../../../oauth2/validateRedirectUri'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {selectOAuthAPIProvider} from '../../../postgres/select'
+import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {GQLContext} from '../../graphql'
 
 interface CreateOAuthAPIProviderInput {
@@ -14,57 +15,52 @@ interface CreateOAuthAPIProviderInput {
   name: string
   redirectUris: string[]
   scopes: string[]
-  clientId?: string
-  clientSecret?: string
 }
 
 export default async function createOAuthAPIProvider(
   _root: any,
   {input}: {input: CreateOAuthAPIProviderInput},
-  context: GQLContext
+  _context: GQLContext
 ) {
-  const {orgId, name, redirectUris, scopes, clientId, clientSecret} = input
-  const {authToken, dataLoader} = context
-  const viewerId = getUserId(authToken)
-
-  if (!(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {
-      userId: viewerId
-    })
-  }
+  const {orgId, name, redirectUris, scopes} = input
 
   if (!validateRedirectUris(redirectUris)) {
-    return standardError(
-      new Error(
-        'Invalid redirect URIs. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.'
-      ),
+    throw new GraphQLError(
+      'Invalid redirect URIs. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.',
       {
-        userId: viewerId
+        extensions: {
+          code: 'BAD_USER_INPUT'
+        }
       }
     )
   }
 
   if (!validateOAuthScopes(scopes)) {
-    return standardError(
-      new Error('Invalid scopes. Only graphql:query and graphql:mutation are allowed.'),
-      {
-        userId: viewerId
+    throw new GraphQLError('Invalid scopes. Only graphql:read and graphql:write are allowed.', {
+      extensions: {
+        code: 'BAD_USER_INPUT'
       }
-    )
+    })
   }
 
   const pg = getKysely()
 
-  const provider = new OAuthAPIProvider({
-    organizationId: orgId,
+  const providerId = generateUID()
+  const dbRow = {
+    id: providerId,
+    orgId,
     name,
-    clientId: clientId || 'prbl-cid-' + generateRandomString(16),
-    clientSecret: clientSecret || 'prbl-s-' + generateRandomString(32),
+    clientId: generateOAuthClientId(),
+    clientSecret: generateOAuthClientSecret(),
     redirectUris,
-    scopes
-  })
+    scopes: scopes as Oauthscopeenum[]
+  }
 
-  await pg.insertInto('OAuthAPIProvider').values(provider).execute()
+  await pg.insertInto('OAuthAPIProvider').values(dbRow).execute()
+
+  const provider = await selectOAuthAPIProvider()
+    .where('id', '=', providerId)
+    .executeTakeFirstOrThrow()
 
   const data = {
     provider,
@@ -72,6 +68,7 @@ export default async function createOAuthAPIProvider(
       id: orgId
     }
   }
+
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'CreateOAuthAPIProviderSuccess', data, {})
 
   return {provider}
