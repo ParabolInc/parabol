@@ -12,8 +12,7 @@ input CreateOAuthAPIProviderInput {
   name: String!
   redirectUris: [RedirectURI!]!
   scopes: [String!]!
-  clientId: String
-  clientSecret: String
+  credentialToken: String!
 }
 
 type CreateOAuthAPIProviderPayload {
@@ -66,4 +65,5 @@ type CreateOAuthAPICodePayload {
 type OAuthCredentials {
   clientId: String!
   clientSecret: String!
+  credentialToken: String!
 }

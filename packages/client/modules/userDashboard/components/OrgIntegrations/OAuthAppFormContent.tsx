@@ -63,6 +63,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
   const [clientId, setClientId] = useState(initialData?.clientId || '')
   const [clientSecret, setClientSecret] = useState(isNew ? '' : '••••••••••••••••••••')
+  const [credentialToken, setCredentialToken] = useState('')
   const [showSecret, setShowSecret] = useState(false)
 
   const handleSave = () => {
@@ -125,8 +126,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             name,
             redirectUris: uriList,
             scopes,
-            clientId,
-            clientSecret
+            credentialToken
           }
         },
         updater: (store) => {
@@ -167,6 +167,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       generateOAuthCredentials {
         clientId
         clientSecret
+        credentialToken
       }
     }
   `)
@@ -178,6 +179,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         onCompleted: (response: any) => {
           setClientId(response.generateOAuthCredentials.clientId)
           setClientSecret(response.generateOAuthCredentials.clientSecret)
+          setCredentialToken(response.generateOAuthCredentials.credentialToken)
           setShowSecret(true)
         }
       })
