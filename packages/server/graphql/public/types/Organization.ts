@@ -1,3 +1,4 @@
+import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {
   getUserId,
   isSuperUser,
@@ -119,6 +120,11 @@ const Organization: OrganizationResolvers = {
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
+  },
+  oauthProviders: async ({id: orgId}, _args, {dataLoader}) => {
+    return dataLoader
+      ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
+      : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
   }
 }
 

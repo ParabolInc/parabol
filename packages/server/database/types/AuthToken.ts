@@ -9,6 +9,7 @@ interface Input {
   rol?: 'su' | 'impersonate' | null
   bet?: 1
   lifespan_ms?: number
+  scp?: string[]
 }
 
 export default class AuthToken {
@@ -16,12 +17,13 @@ export default class AuthToken {
   tms: string[]
   rol: 'su' | 'impersonate' | null
   bet?: 1
+  scp?: string[]
   iat: number
   iss: string
   exp: number
   aud: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms, lifespan_ms} = input
+    const {bet, rol, sub, tms, lifespan_ms, scp} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
@@ -30,6 +32,7 @@ export default class AuthToken {
     this.iss = makeAppURL(appOrigin, '/')
     this.exp = toEpochSeconds(now.getTime() + (lifespan_ms ?? Threshold.JWT_LIFESPAN))
     this.rol = rol ?? null
+    this.scp = scp
 
     if (bet) {
       this.bet = bet

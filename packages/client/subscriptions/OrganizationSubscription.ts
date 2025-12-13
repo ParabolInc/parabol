@@ -3,6 +3,7 @@ import {
   archiveOrganizationOrganizationOnNext,
   archiveOrganizationOrganizationUpdater
 } from '~/mutations/ArchiveOrganizationMutation'
+import {deleteOAuthAPIProviderOrganizationUpdater} from '../mutations/DeleteOAuthAPIProviderMutation'
 import {
   removeOrgUsersOrganizationOnNext,
   removeOrgUsersOrganizationUpdater
@@ -45,6 +46,41 @@ const subscription = graphql`
       UpdateTemplateScopeSuccess {
         ...UpdateReflectTemplateScopeMutation_organization @relay(mask: false)
       }
+
+      CreateOAuthAPIProviderSuccess {
+        provider {
+          id
+          name
+          clientId
+          redirectUris
+          scopes
+          updatedAt
+        }
+        clientId
+        clientSecret
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
+      UpdateOAuthAPIProviderSuccess {
+        provider {
+          id
+          name
+          clientId
+          redirectUris
+          scopes
+          updatedAt
+        }
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
+      DeleteOAuthAPIProviderSuccess {
+        providerId
+        organization {
+          ...OAuthProviderList_organization
+        }
+      }
     }
   }
 `
@@ -59,7 +95,8 @@ const updateHandlers = {
   ArchiveOrganizationPayload: archiveOrganizationOrganizationUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersOrganizationUpdater,
   SetOrgUserRoleSuccess: setOrgUserRoleAddedOrganizationUpdater,
-  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater
+  UpdateTemplateScopeSuccess: updateTemplateScopeOrganizationUpdater,
+  DeleteOAuthAPIProviderSuccess: deleteOAuthAPIProviderOrganizationUpdater
 } as const
 
 export default createSubscription(subscription, onNextHandlers, updateHandlers)

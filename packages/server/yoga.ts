@@ -12,6 +12,7 @@ import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
+
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -19,6 +20,7 @@ import {Logger} from './utils/Logger'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
+import {useOAuthScopeValidation} from './utils/useOAuthScopeValidation'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
@@ -181,14 +183,22 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
         const token = headerToken || cookieToken
         const authToken = getVerifiedAuthToken(token)
+
         const isSuperUser = authToken?.rol === 'su'
-        return isSuperUser
+        const isOAuthToken = authToken?.iss === 'parabol-oauth2'
+        const hasScope =
+          authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
+
+        const result = isSuperUser || (isOAuthToken && !!hasScope)
+
+        return result
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
       getPersistedOperation
     }),
     usePrivateSchemaForSuperUser,
+    useOAuthScopeValidation(),
     useDisposeDataloader,
     useReadinessCheck({
       check: async () => {

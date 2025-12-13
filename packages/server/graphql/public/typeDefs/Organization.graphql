@@ -205,6 +205,11 @@ type Organization implements OrganizationPartial {
   integrationProviders: OrgIntegrationProviders!
 
   """
+  OAuth 2.0 Applications registered for this organization
+  """
+  oauthProviders: [OAuthAPIProvider!]!
+
+  """
   The feature flags the org has enabled
   """
   orgFeatureFlags: [OwnedFeatureFlag!]!
