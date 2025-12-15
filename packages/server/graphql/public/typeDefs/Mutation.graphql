@@ -164,11 +164,6 @@ type Mutation {
   createOAuthAPIProvider(input: CreateOAuthAPIProviderInput!): CreateOAuthAPIProviderPayload!
 
   """
-  Generate OAuth 2.0 Credentials
-  """
-  generateOAuthCredentials: OAuthCredentials!
-
-  """
   Update an OAuth 2.0 Application
   """
   updateOAuthAPIProvider(input: UpdateOAuthAPIProviderInput!): UpdateOAuthAPIProviderPayload!

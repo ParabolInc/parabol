@@ -2,8 +2,9 @@ import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import {useMutation} from 'react-relay'
+import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
@@ -25,7 +26,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const [isSaving, setIsSaving] = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
 
-  const [commitCreate] = useMutation(graphql`
+  const [commitCreate] = useMutation<OAuthAppFormContentCreateMutation>(graphql`
     mutation OAuthAppFormContentCreateMutation($input: CreateOAuthAPIProviderInput!) {
       createOAuthAPIProvider(input: $input) {
         provider {
@@ -62,8 +63,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   `)
 
   const [clientId, setClientId] = useState(initialData?.clientId || '')
+  // Initial state is empty for new providers, or masked for existing
   const [clientSecret, setClientSecret] = useState(isNew ? '' : '••••••••••••••••••••')
-  const [credentialToken, setCredentialToken] = useState('')
   const [showSecret, setShowSecret] = useState(false)
 
   const handleSave = () => {
@@ -125,8 +126,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             orgId,
             name,
             redirectUris: uriList,
-            scopes,
-            credentialToken
+            scopes
           }
         },
         updater: (store) => {
@@ -141,9 +141,15 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           const newProviders = [...providers, newProvider]
           orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
         },
-        onCompleted: () => {
+        onCompleted: (response) => {
           setIsSaving(false)
-          onClose()
+          // Don't close, instead update state to show credentials
+          const payload = response.createOAuthAPIProvider
+          if (payload) {
+            setClientId(payload.clientId)
+            setClientSecret(payload.clientSecret)
+            setShowSecret(true)
+          }
         },
         onError: (err) => {
           console.error(err)
@@ -161,30 +167,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       setScopes([...scopes, scope])
     }
   }
-
-  const [generateCredentials] = useMutation(graphql`
-    mutation OAuthAppFormContentGenerateCredentialsMutation {
-      generateOAuthCredentials {
-        clientId
-        clientSecret
-        credentialToken
-      }
-    }
-  `)
-
-  useEffect(() => {
-    if (isNew && !clientId) {
-      generateCredentials({
-        variables: {},
-        onCompleted: (response: any) => {
-          setClientId(response.generateOAuthCredentials.clientId)
-          setClientSecret(response.generateOAuthCredentials.clientSecret)
-          setCredentialToken(response.generateOAuthCredentials.credentialToken)
-          setShowSecret(true)
-        }
-      })
-    }
-  }, [isNew, clientId, generateCredentials])
 
   const handleRegenerateSecret = () => {
     setRegenerateConfirmOpen(true)
@@ -254,6 +236,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     name='clientId'
                     value={clientId}
                     disabled
+                    placeholder='Save to reveal...'
                     onChange={() => {}}
                     className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
                     autoComplete='off'
@@ -315,6 +298,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     autoComplete='new-password'
                     value={clientSecret}
                     disabled
+                    placeholder='Save to reveal...'
                     onChange={() => {}}
                     className={`w-full bg-slate-50 font-mono text-sm ${
                       clientSecret === '••••••••••••••••••••'
@@ -380,8 +364,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           </div>
 
           <div className='flex justify-end pt-4'>
-            <SecondaryButton type='submit' disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save Changes'}
+            <SecondaryButton type='submit' disabled={isSaving || (isNew && !!clientId)}>
+              {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
             </SecondaryButton>
           </div>
         </form>

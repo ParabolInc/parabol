@@ -12,7 +12,6 @@ input CreateOAuthAPIProviderInput {
   name: String!
   redirectUris: [RedirectURI!]!
   scopes: [String!]!
-  credentialToken: String!
 }
 
 type CreateOAuthAPIProviderPayload {

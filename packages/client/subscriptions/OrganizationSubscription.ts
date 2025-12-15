@@ -51,13 +51,10 @@ const subscription = graphql`
         provider {
           id
           name
-          clientId
           redirectUris
           scopes
           updatedAt
         }
-        clientId
-        clientSecret
         organization {
           ...OAuthProviderList_organization
         }
