@@ -118,6 +118,9 @@ importers:
       base64url:
         specifier: ^3.0.1
         version: 3.0.1
+      dd-trace:
+        specifier: 5.67.0
+        version: 5.67.0
       dotenv:
         specifier: 8.0.0
         version: 8.0.0
@@ -714,9 +717,6 @@ importers:
 
   packages/embedder:
     dependencies:
-      dd-trace:
-        specifier: ^5.63.2
-        version: 5.79.0(@openfeature/core@1.9.1)(@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1))
       franc-min:
         specifier: ^6.2.0
         version: 6.2.0
@@ -929,9 +929,6 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.19
-      dd-trace:
-        specifier: ^5.63.2
-        version: 5.79.0(@openfeature/core@1.9.1)(@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1))
       dotenv:
         specifier: 8.6.0
         version: 8.6.0
@@ -2266,16 +2263,11 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@datadog/flagging-core@0.2.0':
-    resolution: {integrity: sha512-DocYjr8NFJZfsnqzu3MuBUNqgbJquq1doimkKEXI5UImLmz/tR0LO09dd651pBhoz1Pa4SKcnPaxWFLTqxWtsA==}
-    peerDependencies:
-      '@openfeature/core': ^1.8.1
-
   '@datadog/libdatadog@0.7.0':
     resolution: {integrity: sha512-VVZLspzQcfEU47gmGCVoRkngn7RgFRR4CHjw4YaX8eWT+xz4Q4l6PvA45b7CMk9nlt3MNN5MtGdYttYMIpo6Sg==}
 
-  '@datadog/native-appsec@10.3.0':
-    resolution: {integrity: sha512-FjNhxKetbBVGiq+dl8NYoi/95IAYU+W7PjBceNP7Qkvbt8uhy+KTlQVW1A2X67mK0CKHahDTesBMaPwY9zhflw==}
+  '@datadog/native-appsec@10.2.1':
+    resolution: {integrity: sha512-FwRVo+otgNaz6vN74XVrBT8GdLwxPwAqOjH4Y9VQJaC1RiHmzRCMr77AhHFme1xi7zPG2LQqQN/cmOzG+sbrtQ==}
     engines: {node: '>=16'}
 
   '@datadog/native-iast-taint-tracking@4.0.0':
@@ -2285,21 +2277,15 @@ packages:
     resolution: {integrity: sha512-MU1gHrolwryrU4X9g+fylA1KPH3S46oqJPEtVyrO+3Kh29z80fegmtyrU22bNt8LigPUK/EdPCnSbMe88QbnxQ==}
     engines: {node: '>=16'}
 
-  '@datadog/openfeature-node-server@0.2.0':
-    resolution: {integrity: sha512-Jn8lShFyqNji0tiKntLcCRwu3xrhg93fTTJS3gHSPKMfBDBKxjB9uF8Hu5Ayn2k0QuwJexx5atN9GSiWX0h5qg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@openfeature/server-sdk': ~1.18.0
-
-  '@datadog/pprof@5.12.0':
-    resolution: {integrity: sha512-qX32upm9eqObGVGvqHpjQB2bXVPTX0ccXTW3mUqUWXgJrAKyHtTfo9PqfoXhflYs0WD9el9xl9c0bM1RS4vRmQ==}
+  '@datadog/pprof@5.10.0':
+    resolution: {integrity: sha512-tEMhLeOM78FHC/rTltDd7pQN8WPAUZ1b0BPadYsKWqo/v6jWTbF6xeIMojdJa5yIW2vHjDU4LFJpkFFNacHpQw==}
     engines: {node: '>=16'}
 
   '@datadog/sketches-js@2.1.1':
     resolution: {integrity: sha512-d5RjycE+MObE/hU+8OM5Zp4VjTwiPLRa8299fj7muOmR16fb942z8byoMbCErnGh0lBevvgkGrLclQDvINbIyg==}
 
-  '@datadog/wasm-js-rewriter@5.0.1':
-    resolution: {integrity: sha512-EzbV3Lrdt3udQEsbDOVC5gB1y7yxfpBbrSIk4jaEsGjyj0Dbv2HGj7tZjs+qXzIzNonHc8h5El2bYZOGfC2wwg==}
+  '@datadog/wasm-js-rewriter@4.0.1':
+    resolution: {integrity: sha512-JRa05Je6gw+9+3yZnm/BroQZrEfNwRYCxms56WCCHzOBnoPihQLB0fWy5coVJS29kneCUueUvBvxGp6NVXgdqw==}
     engines: {node: '>= 10'}
 
   '@dicebear/converter@8.0.2':
@@ -3298,8 +3284,8 @@ packages:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
 
-  '@isaacs/ttlcache@2.1.2':
-    resolution: {integrity: sha512-lmG2ZHXBo7tgF1I3vGvBMnUJYhaNE25fmx+tUfotvE3vsARzxiiDXmCBI6Ch8qEHeHmfunr+eVPgIaIc8xIkbg==}
+  '@isaacs/ttlcache@1.4.1':
+    resolution: {integrity: sha512-RQgQ4uQ+pLbqXfOmieB91ejmLwvSgv9nLx6sT6sD83s7umBypgg+OIBOBbEUiJXrfpnp9j0mRhYYdzp9uqq3lA==}
     engines: {node: '>=12'}
 
   '@istanbuljs/load-nyc-config@1.1.0':
@@ -3930,17 +3916,8 @@ packages:
   '@octokit/graphql-schema@14.58.0':
     resolution: {integrity: sha512-89QSUV1Dgxzq90wqkv0Nmw7jHfFCAQ4K/fjp5ezvDEHqFFzMCn25TBQlm38WB8ams+hGxInRDbITCP0n7GTGlg==}
 
-  '@openfeature/core@1.9.1':
-    resolution: {integrity: sha512-YySPtH4s/rKKnHRU0xyFGrqMU8XA+OIPNWDrlEFxE6DCVWCIrxE5YpiB94YD2jMFn6SSdA0cwQ8vLkCkl8lm8A==}
-
-  '@openfeature/server-sdk@1.18.0':
-    resolution: {integrity: sha512-uP8nqEGBS58s3iWXx6d8vnJ6ZVt3DACJL4PWADOAuwIS4xXpID91783e9f6zQ0i1ijQpj3yx+3ZuCB2LfQMUMA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@openfeature/core': ^1.7.0
-
-  '@opentelemetry/api-logs@0.208.0':
-    resolution: {integrity: sha512-CjruKY9V6NMssL/T1kAFgzosF1v9o6oeN+aX5JB/C/xPNtmgIJqcXHG7fA82Ou1zCpWGl4lROQUKwUNE1pMCyg==}
+  '@opentelemetry/api@1.8.0':
+    resolution: {integrity: sha512-I/s6F7yKUDdtMsoBWXJe8Qz40Tui5vsuKCWJEWVL+5q9sSWRzzx6v2KeNsOBEwd94j0eWkpWCH4yB6rZg9Mf0w==}
     engines: {node: '>=8.0.0'}
 
   '@opentelemetry/api@1.9.0':
@@ -3949,12 +3926,6 @@ packages:
 
   '@opentelemetry/core@1.30.1':
     resolution: {integrity: sha512-OOCM2C/QIURhJMuKaekP3TRBxBKxG/TWWA0TL2J6nXUtDnuCtccy49LUJF8xPFXMX+0LMcxFpCo8M9cGY1W6rQ==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      '@opentelemetry/api': '>=1.0.0 <1.10.0'
-
-  '@opentelemetry/resources@1.30.1':
-    resolution: {integrity: sha512-5UxZqiAgLYGFjS4s9qm5mBVo433u+dSPUFWVWXmLAD4wB65oMCoXaJP1KJa9DIYYMeHu3z4BZcStG3LC593cWA==}
     engines: {node: '>=14'}
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
@@ -7316,8 +7287,8 @@ packages:
     resolution: {integrity: sha512-9iSbB8XZ7aIrhUtWI5ulEOJ+IyUN+axquodHK+bZO4r7HfY/xwmo6I4fYYf+aiDom+WMcN/wnzCz+pKvHDDCug==}
     engines: {node: '>=12.17'}
 
-  dd-trace@5.79.0:
-    resolution: {integrity: sha512-ugikmKS980aHQ4qT/cYCprYCfRJroj2fLvdfExERH2/l1vMgs0m2454lsImB0YZILKjn6bazCW1Px7oxJ77r4w==}
+  dd-trace@5.67.0:
+    resolution: {integrity: sha512-tMHk8NYWFNn2t2L2Vj7VWWKIIRArZIjnlzcgon9PNfhOzAi0t+Zt+E4OaGLbGoftDf/S+ZK0o4aHQwsSu3UE3w==}
     engines: {node: '>=18'}
 
   debounce-promise@3.1.2:
@@ -7742,10 +7713,6 @@ packages:
   escape-string-regexp@4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
-
-  escape-string-regexp@5.0.0:
-    resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
-    engines: {node: '>=12'}
 
   escodegen@2.1.0:
     resolution: {integrity: sha512-2NlIDTwUWJN0mRPQOdtQBzbUHvdGY2P1VXSyU83Q3xKxM7WHX2Ql8dKq782Q9TgQUNOLEzEYu9bzLNj1q88I5w==}
@@ -9166,6 +9133,10 @@ packages:
   koa@3.0.1:
     resolution: {integrity: sha512-oDxVkRwPOHhGlxKIDiDB2h+/l05QPtefD7nSqRgDfZt8P+QVYFWjfeK8jANf5O2YXjk8egd7KntvXKYx82wOag==}
     engines: {node: '>= 18'}
+
+  koalas@1.0.2:
+    resolution: {integrity: sha512-RYhBbYaTTTHId3l6fnMZc3eGQNW6FVCqMG6AMwA5I1Mafr6AflaXeoi6x3xQuATRotGYRLk6+1ELZH4dstFNOA==}
+    engines: {node: '>=0.10.0'}
 
   kysely-codegen@0.19.0:
     resolution: {integrity: sha512-ZpdQQnpfY0kh45CA6yPA9vdFsBE+b06Fx7QVcbL5rX//yjbA0yYGZGhnH7GTd4P4BY/HIv5uAfuOD83JVZf95w==}
@@ -11224,9 +11195,6 @@ packages:
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     deprecated: Please use @jridgewell/sourcemap-codec instead
-
-  spark-md5@3.0.2:
-    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
 
   spawn-command@0.0.2:
     resolution: {integrity: sha512-zC8zGoGkmc8J9ndvml8Xksr1Amk9qBujgbF0JAIWO7kXr43w0h/0GJNM/Vustixu+YE8N/MTrQ7N31FvHUACxQ==}
@@ -14398,14 +14366,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@datadog/flagging-core@0.2.0(@openfeature/core@1.9.1)':
-    dependencies:
-      '@openfeature/core': 1.9.1
-      spark-md5: 3.0.2
-
   '@datadog/libdatadog@0.7.0': {}
 
-  '@datadog/native-appsec@10.3.0':
+  '@datadog/native-appsec@10.2.1':
     dependencies:
       node-gyp-build: 3.9.0
 
@@ -14418,14 +14381,7 @@ snapshots:
       node-addon-api: 6.1.0
       node-gyp-build: 3.9.0
 
-  '@datadog/openfeature-node-server@0.2.0(@openfeature/core@1.9.1)(@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1))':
-    dependencies:
-      '@datadog/flagging-core': 0.2.0(@openfeature/core@1.9.1)
-      '@openfeature/server-sdk': 1.18.0(@openfeature/core@1.9.1)
-    transitivePeerDependencies:
-      - '@openfeature/core'
-
-  '@datadog/pprof@5.12.0':
+  '@datadog/pprof@5.10.0':
     dependencies:
       delay: 5.0.0
       node-gyp-build: 3.9.0
@@ -14435,7 +14391,7 @@ snapshots:
 
   '@datadog/sketches-js@2.1.1': {}
 
-  '@datadog/wasm-js-rewriter@5.0.1':
+  '@datadog/wasm-js-rewriter@4.0.1':
     dependencies:
       js-yaml: 4.1.1
       lru-cache: 7.18.3
@@ -15627,7 +15583,7 @@ snapshots:
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
-  '@isaacs/ttlcache@2.1.2': {}
+  '@isaacs/ttlcache@1.4.1': {}
 
   '@istanbuljs/load-nyc-config@1.1.0':
     dependencies:
@@ -16404,27 +16360,13 @@ snapshots:
       graphql: 16.12.0
       graphql-tag: 2.12.6(graphql@16.12.0)
 
-  '@openfeature/core@1.9.1': {}
-
-  '@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1)':
-    dependencies:
-      '@openfeature/core': 1.9.1
-
-  '@opentelemetry/api-logs@0.208.0':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
+  '@opentelemetry/api@1.8.0': {}
 
   '@opentelemetry/api@1.9.0': {}
 
-  '@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0)':
+  '@opentelemetry/core@1.30.1(@opentelemetry/api@1.8.0)':
     dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/semantic-conventions': 1.28.0
-
-  '@opentelemetry/resources@1.30.1(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
+      '@opentelemetry/api': 1.8.0
       '@opentelemetry/semantic-conventions': 1.28.0
 
   '@opentelemetry/semantic-conventions@1.28.0': {}
@@ -20002,29 +19944,26 @@ snapshots:
 
   dc-polyfill@0.1.10: {}
 
-  dd-trace@5.79.0(@openfeature/core@1.9.1)(@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1)):
+  dd-trace@5.67.0:
     dependencies:
       '@datadog/libdatadog': 0.7.0
-      '@datadog/native-appsec': 10.3.0
+      '@datadog/native-appsec': 10.2.1
       '@datadog/native-iast-taint-tracking': 4.0.0
       '@datadog/native-metrics': 3.1.1
-      '@datadog/openfeature-node-server': 0.2.0(@openfeature/core@1.9.1)(@openfeature/server-sdk@1.18.0(@openfeature/core@1.9.1))
-      '@datadog/pprof': 5.12.0
+      '@datadog/pprof': 5.10.0
       '@datadog/sketches-js': 2.1.1
-      '@datadog/wasm-js-rewriter': 5.0.1
-      '@isaacs/ttlcache': 2.1.2
-      '@opentelemetry/api': 1.9.0
-      '@opentelemetry/api-logs': 0.208.0
-      '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/resources': 1.30.1(@opentelemetry/api@1.9.0)
+      '@datadog/wasm-js-rewriter': 4.0.1
+      '@isaacs/ttlcache': 1.4.1
+      '@opentelemetry/api': 1.8.0
+      '@opentelemetry/core': 1.30.1(@opentelemetry/api@1.8.0)
       crypto-randomuuid: 1.0.0
       dc-polyfill: 0.1.10
-      escape-string-regexp: 5.0.0
       ignore: 7.0.5
       import-in-the-middle: 1.15.0
       istanbul-lib-coverage: 3.2.2
       jest-docblock: 29.7.0
       jsonpath-plus: 10.3.0
+      koalas: 1.0.2
       limiter: 1.1.5
       lodash.sortby: 4.7.0
       lru-cache: 10.4.3
@@ -20041,9 +19980,6 @@ snapshots:
       source-map: 0.7.6
       tlhunter-sorted-set: 0.1.0
       ttl-set: 1.0.0
-    transitivePeerDependencies:
-      - '@openfeature/core'
-      - '@openfeature/server-sdk'
 
   debounce-promise@3.1.2: {}
 
@@ -20462,8 +20398,6 @@ snapshots:
   escape-string-regexp@2.0.0: {}
 
   escape-string-regexp@4.0.0: {}
-
-  escape-string-regexp@5.0.0: {}
 
   escodegen@2.1.0:
     dependencies:
@@ -22263,6 +22197,8 @@ snapshots:
       statuses: 2.0.2
       type-is: 2.0.1
       vary: 1.1.2
+
+  koalas@1.0.2: {}
 
   kysely-codegen@0.19.0(kysely@0.28.8)(pg@8.16.3)(typescript@5.9.3):
     dependencies:
@@ -24570,8 +24506,6 @@ snapshots:
   source-map@0.7.6: {}
 
   sourcemap-codec@1.4.8: {}
-
-  spark-md5@3.0.2: {}
 
   spawn-command@0.0.2: {}
 
