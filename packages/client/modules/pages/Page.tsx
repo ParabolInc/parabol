@@ -3,6 +3,7 @@ import {useFragment} from 'react-relay'
 import type {Page_page$key} from '../../__generated__/Page_page.graphql'
 import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import {useIsAuthenticated} from '../../components/IsAuthenticatedProvider'
+import useDocumentTitle from '../../hooks/useDocumentTitle'
 import {usePageProvider} from '../../hooks/usePageProvider'
 import {cn} from '../../ui/cn'
 import {DatabaseEditor} from './DatabaseEditor'
@@ -34,6 +35,7 @@ export const Page = (props: Props) => {
       fragment Page_page on Page {
         ...PageHeader_page
         id
+        title
         ancestorIds
         access {
           viewer
@@ -45,7 +47,9 @@ export const Page = (props: Props) => {
     pageRef
   )
 
-  const {id: pageId, access, isDatabase} = page
+  const {id: pageId, access, isDatabase, title} = page
+  const documentTitle = title || 'Untitled'
+  useDocumentTitle(`${documentTitle} | Parabol`, documentTitle)
   const {viewer: viewerAccess, public: publicAccess} = access
   const {provider, synced} = usePageProvider(pageId)
   const isLoggedIn = useIsAuthenticated()
