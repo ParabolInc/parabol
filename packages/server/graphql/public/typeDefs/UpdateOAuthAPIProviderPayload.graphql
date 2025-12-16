@@ -1,0 +1,3 @@
+type UpdateOAuthAPIProviderPayload {
+  provider: OAuthAPIProvider!
+}

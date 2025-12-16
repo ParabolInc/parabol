@@ -50,5 +50,5 @@ export default async function regenerateOAuthAPIProviderSecret(
     .returningAll()
     .executeTakeFirst()
 
-  return {secret: newSecret, provider: updatedProvider}
+  return {clientSecret: newSecret, clientId: updatedProvider!.clientId, provider: updatedProvider}
 }

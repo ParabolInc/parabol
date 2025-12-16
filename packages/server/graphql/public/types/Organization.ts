@@ -121,7 +121,7 @@ const Organization: OrganizationResolvers = {
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
   },
-  oauthProviders: async ({id: orgId}, _args, {dataLoader}) => {
+  oauthApplications: async ({id: orgId}, _args, {dataLoader}) => {
     const providers = dataLoader
       ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
       : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()

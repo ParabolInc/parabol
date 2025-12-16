@@ -1,0 +1,3 @@
+input DeleteOAuthAPIProviderInput {
+  providerId: ID!
+}

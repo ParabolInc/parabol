@@ -3,7 +3,7 @@ import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import getReqAuth from '../utils/getReqAuth'
-import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
+
 import {Logger} from '../utils/Logger'
 import {createOAuthCode} from './createOAuthCode'
 
@@ -11,27 +11,9 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
   let authToken = getReqAuth(req)
 
   if (!authToken?.sub) {
-    const cookieHeader = req.getHeader('cookie')
-    if (cookieHeader) {
-      const cookies = cookieHeader.split(';').reduce(
-        (acc: Record<string, string>, cookie) => {
-          const [key, value] = cookie.split('=').map((c) => c.trim())
-          if (key && value) {
-            acc[key] = value
-          }
-          return acc
-        },
-        {} as Record<string, string>
-      )
-
-      if (cookies.jwt) {
-        authToken = getVerifiedAuthToken(cookies.jwt)
-      }
-    }
-  }
-
-  if (!authToken?.sub) {
-    const loginUrl = makeAppURL(appOrigin, '/login')
+    const query = req.getQuery()
+    const currentPath = `/oauth/authorize?${query}`
+    const loginUrl = makeAppURL(appOrigin, '/login', {searchParams: {redirectTo: currentPath}})
     res.cork(() => {
       res.writeStatus('302 Found')
       res.writeHeader('Location', loginUrl)
@@ -74,7 +56,7 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     res.writeHeader('Location', redirectUrl.toString())
     res.end()
   } catch (error) {
-    Logger.error('OAuth Authorization Error', error)
+    Logger.log('OAuth Authorization Error', error)
     const errorMessage = (error as Error).message
     if (
       errorMessage.includes('Invalid client_id') ||
@@ -83,6 +65,7 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
       res.writeStatus('400 Bad Request')
       res.end(errorMessage)
     } else {
+      Logger.error('authorizeHandler error:', error)
       res.writeStatus('500 Internal Server Error')
       res.end('Internal Server Error')
     }

@@ -1,0 +1,6 @@
+input CreateOAuthAPICodeInput {
+  clientId: String!
+  redirectUri: String!
+  scopes: [String!]!
+  state: String
+}

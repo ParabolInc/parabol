@@ -138,6 +138,7 @@
           "NotifyTeamArchived": "../../postgres/types/Notification.d#TeamArchivedNotification as TeamArchivedNotificationDB",
           "NotifyTeamsLimitExceeded": "../../postgres/types/Notification.d#TeamsLimitExceededNotification as TeamsLimitExceededNotificationDB",
           "NotifyTeamsLimitReminder": "../../postgres/types/Notification.d#TeamsLimitReminderNotification as TeamsLimitReminderNotificationDB",
+          "OAuthAPIProvider": "../../postgres/types/index#OAuthAPIProvider as OAuthAPIProviderDB",
           "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",

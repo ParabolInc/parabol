@@ -57,7 +57,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const [commitRegenerate] = useMutation(graphql`
     mutation OAuthAppFormContentRegenerateMutation($input: RegenerateOAuthAPIProviderSecretInput!) {
       regenerateOAuthAPIProviderSecret(input: $input) {
-        secret
+        clientSecret
       }
     }
   `)
@@ -137,9 +137,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           const orgRecord = store.get(orgId)
           if (!orgRecord) return
 
-          const providers = orgRecord.getLinkedRecords('oauthProviders') || []
+          const providers = orgRecord.getLinkedRecords('oauthApplications') || []
           const newProviders = [...providers, newProvider]
-          orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
+          orgRecord.setLinkedRecords(newProviders, 'oauthApplications')
         },
         onCompleted: (response) => {
           setIsSaving(false)
@@ -180,7 +180,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         }
       },
       onCompleted: (response: any) => {
-        setClientSecret(response.regenerateOAuthAPIProviderSecret.secret)
+        setClientSecret(response.regenerateOAuthAPIProviderSecret.clientSecret)
         setShowSecret(true)
         setRegenerateConfirmOpen(false)
       }

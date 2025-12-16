@@ -35,7 +35,7 @@ export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> =
         })
       }
 
-      const scopes = authToken.scp || []
+      const scopes = authToken.scope || []
       const requiredScope = operationType === 'mutation' ? 'graphql:mutation' : 'graphql:query'
 
       if (!scopes.includes(requiredScope)) {

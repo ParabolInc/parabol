@@ -188,7 +188,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const isOAuthToken = authToken?.aud === 'action-oauth2'
 
         const hasScope =
-          authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
+          authToken?.scope?.includes('graphql:query') ||
+          authToken?.scope?.includes('graphql:mutation')
 
         const result = isSuperUser || (isOAuthToken && !!hasScope)
 

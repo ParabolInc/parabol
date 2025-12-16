@@ -25,7 +25,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
     graphql`
       fragment OAuthProviderList_organization on Organization {
         id
-        oauthProviders {
+        oauthApplications {
           id
           name
           updatedAt
@@ -102,18 +102,18 @@ const OAuthProviderList = ({organizationRef}: Props) => {
 
           const orgRecord = store.get(data.id)
           if (!orgRecord) return
-          const providers = orgRecord.getLinkedRecords('oauthProviders')
+          const providers = orgRecord.getLinkedRecords('oauthApplications')
           if (!providers) return
           const newProviders = providers.filter((p) => p.getDataID() !== deletedProviderId)
-          orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
+          orgRecord.setLinkedRecords(newProviders, 'oauthApplications')
         },
         optimisticUpdater: (store) => {
           const orgRecord = store.get(data.id)
           if (!orgRecord) return
-          const providers = orgRecord.getLinkedRecords('oauthProviders')
+          const providers = orgRecord.getLinkedRecords('oauthApplications')
           if (!providers) return
           const newProviders = providers.filter((p) => p.getDataID() !== providerToDelete.id)
-          orgRecord.setLinkedRecords(newProviders, 'oauthProviders')
+          orgRecord.setLinkedRecords(newProviders, 'oauthApplications')
         },
         onCompleted: () => {
           setDeleteDialogOpen(false)
@@ -145,7 +145,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
     setDialogOpen(true)
   }
 
-  const providers = data.oauthProviders || []
+  const providers = data.oauthApplications || []
 
   return (
     <div className='space-y-4'>

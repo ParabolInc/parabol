@@ -207,7 +207,7 @@ type Organization implements OrganizationPartial {
   """
   OAuth 2.0 Applications registered for this organization
   """
-  oauthProviders: [OAuthAPIProvider!]!
+  oauthApplications: [OAuthAPIProvider!]!
 
   """
   The feature flags the org has enabled
