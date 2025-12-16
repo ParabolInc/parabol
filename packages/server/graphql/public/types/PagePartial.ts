@@ -16,9 +16,10 @@ const PagePartial: ReqResolvers<'PagePartial'> = {
       dataLoader.get('teams').load(teamId)
     ])
     if (!team) return null
+    const isOnTeam = teamMember?.isNotRemoved
     return {
       ...team,
-      __typename: teamMember ? 'Team' : 'TeamPreview'
+      __typename: isOnTeam ? 'Team' : 'TeamPreview'
     }
   }
 }

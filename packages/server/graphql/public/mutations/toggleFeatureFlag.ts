@@ -27,6 +27,9 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   if (teamId) {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+    if (!teamMember?.isNotRemoved) {
+      return standardError(new Error('Not a member of the team anymore'))
+    }
     if (!teamMember) {
       return standardError(new Error('Not a member of the team'))
     }

@@ -36,7 +36,7 @@ export default {
       isUserOrgAdmin(viewerId, team.orgId, dataLoader),
       dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
     ])
-    const isViewerTeamLead = teamMember?.isLead
+    const isViewerTeamLead = teamMember?.isNotRemoved && teamMember?.isLead
     const isSelf = viewerId === userId
     if (!isSelf) {
       if (!isOrgAdmin && !isViewerTeamLead) {

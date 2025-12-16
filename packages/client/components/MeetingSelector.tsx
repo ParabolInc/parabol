@@ -54,9 +54,7 @@ const MeetingSelector = (props: Props) => {
       <Redirect
         to={{
           pathname: `/invitation-required`,
-          search: `?redirectTo=${encodeURIComponent(
-            window.location.pathname
-          )}&meetingId=${meetingId}`
+          search: `?redirectTo=${window.location.pathname}&meetingId=${meetingId}`
         }}
       />
     )

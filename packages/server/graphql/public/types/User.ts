@@ -600,7 +600,7 @@ const User: ReqResolvers<'User'> = {
     const teamMember = teamId
       ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
       : null
-    if (teamMember) return {isOnTeam: true}
+    if (teamMember?.isNotRemoved) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null
