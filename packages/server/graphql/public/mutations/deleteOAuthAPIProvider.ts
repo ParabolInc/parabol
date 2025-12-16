@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
 import {GQLContext} from '../../graphql'
 
@@ -14,7 +15,7 @@ export default async function deleteOAuthAPIProvider(
   {input}: {input: DeleteOAuthAPIProviderInput},
   context: GQLContext
 ) {
-  const {providerId} = input
+  const [providerId] = CipherId.fromClient(input.providerId)
   const {authToken, dataLoader, socketId} = context
   const viewerId = getUserId(authToken)
 
@@ -42,7 +43,7 @@ export default async function deleteOAuthAPIProvider(
   await pg.deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()
 
   const data = {
-    providerId,
+    providerId: input.providerId,
     organization: {
       id: provider.orgId
     }
@@ -51,5 +52,5 @@ export default async function deleteOAuthAPIProvider(
     mutatorId: socketId
   })
 
-  return {success: true, deletedProviderId: providerId}
+  return {success: true, deletedProviderId: input.providerId}
 }

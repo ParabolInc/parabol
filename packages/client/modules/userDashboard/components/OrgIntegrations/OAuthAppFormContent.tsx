@@ -193,177 +193,183 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
   return (
     <>
-      <DialogContent className='space-y-6 pt-3'>
-        <div className='flex items-center justify-between'>
+      <DialogContent className='flex flex-col overflow-hidden p-0!'>
+        <div className='flex shrink-0 items-center justify-between px-6 pt-6 pb-4'>
           <DialogTitle>
             {isNew ? (name ? name : 'New Application') : 'Edit Application'}
           </DialogTitle>
         </div>
 
-        {error && <ErrorAlert message={error} />}
+        {error && (
+          <div className='shrink-0 px-6 pb-4'>
+            <ErrorAlert message={error} />
+          </div>
+        )}
 
         <form
-          className='space-y-6'
+          className='flex flex-1 flex-col overflow-hidden'
           onSubmit={(e) => {
             e.preventDefault()
             handleSave()
           }}
         >
-          <div className='space-y-2'>
-            <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-              Application Name
-            </label>
-            <BasicInput
-              name='name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className='w-full font-medium text-sm'
-              placeholder='My Awesome App'
-              error={undefined}
-            />
-          </div>
-
-          <div className='grid grid-cols-2 gap-6'>
+          <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
             <div className='space-y-2'>
-              <div className='flex h-5 items-center justify-between'>
-                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                  Client ID
-                </label>
-              </div>
-              <div className='flex'>
-                <div className='relative grow'>
-                  <BasicInput
-                    name='clientId'
-                    value={clientId}
-                    disabled
-                    placeholder='Save to reveal...'
-                    onChange={() => {}}
-                    className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
-                    autoComplete='off'
-                    error={undefined}
-                  />
-                </div>
-                <button
-                  type='button'
-                  onClick={() => copyToClipboard(clientId)}
-                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
-                >
-                  <ContentCopyIcon fontSize='small' />
-                </button>
-              </div>
+              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                Application Name
+              </label>
+              <BasicInput
+                name='name'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className='w-full font-medium text-sm'
+                placeholder='My Awesome App'
+                error={undefined}
+              />
             </div>
-            <div className='space-y-2'>
-              <div className='flex h-5 items-center justify-between'>
-                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                  Client Secret
-                </label>
-                {!isNew && (
-                  <div className='flex items-center gap-2'>
-                    {regenerateConfirmOpen ? (
-                      <>
-                        <span className='text-slate-500 text-xs'>Are you sure?</span>
-                        <button
-                          type='button'
-                          onClick={handleConfirmRegenerate}
-                          className='text-slate-500 hover:text-green-600'
-                          title='Confirm Regenerate'
-                        >
-                          <CheckIcon fontSize='small' />
-                        </button>
-                        <button
-                          type='button'
-                          onClick={() => setRegenerateConfirmOpen(false)}
-                          className='text-slate-500 hover:text-red-600'
-                          title='Cancel'
-                        >
-                          <CloseIcon fontSize='small' />
-                        </button>
-                      </>
-                    ) : (
-                      <button
-                        type='button'
-                        onClick={handleRegenerateSecret}
-                        className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
-                      >
-                        Regenerate
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-              <div className='flex'>
-                <div className='relative grow'>
-                  <BasicInput
-                    name='clientSecret'
-                    autoComplete='new-password'
-                    value={clientSecret}
-                    disabled
-                    placeholder='Save to reveal...'
-                    onChange={() => {}}
-                    className={`w-full bg-slate-50 font-mono text-sm ${
-                      clientSecret === '••••••••••••••••••••'
-                        ? ''
-                        : 'rounded-r-none border-slate-300! border-r-0!'
-                    }
-`}
-                    type={showSecret ? 'text' : 'password'}
-                    error={undefined}
-                  />
+
+            <div className='grid grid-cols-2 gap-6'>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Client ID
+                  </label>
                 </div>
-                {clientSecret !== '••••••••••••••••••••' && (
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='clientId'
+                      value={clientId}
+                      disabled
+                      placeholder='Save to reveal...'
+                      onChange={() => {}}
+                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      autoComplete='off'
+                      error={undefined}
+                    />
+                  </div>
                   <button
                     type='button'
-                    onClick={() => copyToClipboard(clientSecret)}
+                    onClick={() => copyToClipboard(clientId)}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
-                )}
+                </div>
+              </div>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Client Secret
+                  </label>
+                  {!isNew && (
+                    <div className='flex items-center gap-2'>
+                      {regenerateConfirmOpen ? (
+                        <>
+                          <span className='text-slate-500 text-xs'>Are you sure?</span>
+                          <button
+                            type='button'
+                            onClick={handleConfirmRegenerate}
+                            className='text-slate-500 hover:text-green-600'
+                            title='Confirm Regenerate'
+                          >
+                            <CheckIcon fontSize='small' />
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() => setRegenerateConfirmOpen(false)}
+                            className='text-slate-500 hover:text-red-600'
+                            title='Cancel'
+                          >
+                            <CloseIcon fontSize='small' />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          type='button'
+                          onClick={handleRegenerateSecret}
+                          className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
+                        >
+                          Regenerate
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='clientSecret'
+                      autoComplete='new-password'
+                      value={clientSecret}
+                      disabled
+                      placeholder='Save to reveal...'
+                      onChange={() => {}}
+                      className={`w-full bg-slate-50 font-mono text-sm ${
+                        clientSecret === '••••••••••••••••••••'
+                          ? ''
+                          : 'rounded-r-none border-slate-300! border-r-0!'
+                      }
+`}
+                      type={showSecret ? 'text' : 'password'}
+                      error={undefined}
+                    />
+                  </div>
+                  {clientSecret !== '••••••••••••••••••••' && (
+                    <button
+                      type='button'
+                      onClick={() => copyToClipboard(clientSecret)}
+                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    >
+                      <ContentCopyIcon fontSize='small' />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                Redirect URIs (Comma separated)
+              </label>
+              <BasicInput
+                name='redirectUris'
+                value={redirectUris}
+                onChange={(e) => setRedirectUris(e.target.value)}
+                className='w-full font-mono text-sm'
+                placeholder='https://example.com/callback'
+                error={undefined}
+              />
+            </div>
+
+            <div className='space-y-2'>
+              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                Scopes
+              </label>
+              <div className='flex gap-4'>
+                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                  <input
+                    type='checkbox'
+                    checked={scopes.includes('graphql:query')}
+                    onChange={() => toggleScope('graphql:query')}
+                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                  />
+                  graphql:query
+                </label>
+                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                  <input
+                    type='checkbox'
+                    checked={scopes.includes('graphql:mutation')}
+                    onChange={() => toggleScope('graphql:mutation')}
+                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                  />
+                  graphql:mutation
+                </label>
               </div>
             </div>
           </div>
 
-          <div className='space-y-2'>
-            <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-              Redirect URIs (Comma separated)
-            </label>
-            <BasicInput
-              name='redirectUris'
-              value={redirectUris}
-              onChange={(e) => setRedirectUris(e.target.value)}
-              className='w-full font-mono text-sm'
-              placeholder='https://example.com/callback'
-              error={undefined}
-            />
-          </div>
-
-          <div className='space-y-2'>
-            <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-              Scopes
-            </label>
-            <div className='flex gap-4'>
-              <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                <input
-                  type='checkbox'
-                  checked={scopes.includes('graphql:query')}
-                  onChange={() => toggleScope('graphql:query')}
-                  className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                />
-                graphql:query
-              </label>
-              <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                <input
-                  type='checkbox'
-                  checked={scopes.includes('graphql:mutation')}
-                  onChange={() => toggleScope('graphql:mutation')}
-                  className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                />
-                graphql:mutation
-              </label>
-            </div>
-          </div>
-
-          <div className='flex justify-end pt-4'>
+          <div className='flex shrink-0 justify-end border-slate-200 border-t bg-slate-50/50 p-6 pt-4'>
             <SecondaryButton type='submit' disabled={isSaving || (isNew && !!clientId)}>
               {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
             </SecondaryButton>

@@ -1,5 +1,6 @@
 import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import type {QueryResolvers} from '../resolverTypes'
 
 const oauthAPIProvider: QueryResolvers['oauthAPIProvider'] = async (
@@ -9,7 +10,8 @@ const oauthAPIProvider: QueryResolvers['oauthAPIProvider'] = async (
 ) => {
   const viewerId = getUserId(authToken)
 
-  const provider = await selectOAuthAPIProvider().where('id', '=', id).executeTakeFirst()
+  const [providerId] = CipherId.fromClient(id)
+  const provider = await selectOAuthAPIProvider().where('id', '=', providerId).executeTakeFirst()
 
   if (!provider || !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
     return null

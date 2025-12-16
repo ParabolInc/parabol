@@ -61,15 +61,12 @@ module.exports = {
         'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/',
+        'oauth/token',
         'oauth/'
       ].map((name) => ({
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
       })),
-      {
-        context: '/oauth/token',
-        target: `http://localhost:${SOCKET_PORT}`
-      },
       {
         context: '/components',
         pathRewrite: {'^/components': ''},

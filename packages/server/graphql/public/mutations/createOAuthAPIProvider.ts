@@ -1,26 +1,35 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import generateUID from '../../../generateUID'
 import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
-import {validateOAuthScopes} from '../../../oauth2/oauthScopes'
+import {OAUTH_SCOPES, validateOAuthScopes} from '../../../oauth2/oauthScopes'
 import getKysely from '../../../postgres/getKysely'
 import {selectOAuthAPIProvider} from '../../../postgres/select'
 import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import publish from '../../../utils/publish'
-import type {MutationResolvers} from '../resolverTypes'
+import {type GQLContext} from '../../graphql'
+import {
+  type CreateOAuthApiProviderPayload,
+  type MutationCreateOAuthApiProviderArgs
+} from '../resolverTypes'
 
-const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = async (
-  _source,
-  {input},
-  _context
-) => {
-  const {orgId, name, redirectUris, scopes} = input
+export const createOAuthAPIProvider = async (
+  _: any,
+  args: MutationCreateOAuthApiProviderArgs,
+  _context: GQLContext
+): Promise<CreateOAuthApiProviderPayload> => {
+  const {input} = args
+  let {scopes = []} = input
+  const {orgId, name, redirectUris} = input
 
   const clientId = generateOAuthClientId()
   const clientSecret = generateOAuthClientSecret()
 
+  if (scopes.length === 0) {
+    scopes = [OAUTH_SCOPES['graphql:query'], OAUTH_SCOPES['graphql:mutation']]
+  }
+
   if (!validateOAuthScopes(scopes)) {
-    throw new GraphQLError('Invalid scopes. Only graphql:read and graphql:write are allowed.', {
+    throw new GraphQLError('Invalid scopes.', {
       extensions: {
         code: 'BAD_USER_INPUT'
       }
@@ -29,9 +38,7 @@ const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = asyn
 
   const pg = getKysely()
 
-  const providerId = generateUID()
   const dbRow = {
-    id: providerId,
     orgId,
     name,
     clientId,
@@ -40,7 +47,11 @@ const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = asyn
     scopes: scopes as Oauthscopeenum[]
   }
 
-  await pg.insertInto('OAuthAPIProvider').values(dbRow).execute()
+  const {id: providerId} = await pg
+    .insertInto('OAuthAPIProvider')
+    .values(dbRow)
+    .returning('id')
+    .executeTakeFirstOrThrow()
 
   const provider = await selectOAuthAPIProvider()
     .where('id', '=', providerId)
@@ -57,7 +68,10 @@ const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = asyn
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'CreateOAuthAPIProviderSuccess', data, {})
 
   return {
-    provider,
+    provider: {
+      ...provider,
+      id: String(provider.id)
+    },
     clientId: provider.clientId,
     clientSecret: provider.clientSecret
   }

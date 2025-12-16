@@ -122,9 +122,10 @@ const Organization: OrganizationResolvers = {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
   },
   oauthProviders: async ({id: orgId}, _args, {dataLoader}) => {
-    return dataLoader
+    const providers = dataLoader
       ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
       : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
+    return providers
   }
 }
 

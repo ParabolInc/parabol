@@ -185,7 +185,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const authToken = getVerifiedAuthToken(token)
 
         const isSuperUser = authToken?.rol === 'su'
-        const isOAuthToken = authToken?.iss === 'parabol-oauth2'
+        const isOAuthToken = authToken?.aud === 'action-oauth2'
+
         const hasScope =
           authToken?.scp?.includes('graphql:query') || authToken?.scp?.includes('graphql:mutation')
 
@@ -198,6 +199,9 @@ export const yoga = createYoga<ServerContext, UserContext>({
       getPersistedOperation
     }),
     usePrivateSchemaForSuperUser,
+    // TODO: more logic will need to be added in order to validate that a
+    //       non-superuser has not only the correct scopes, but also sufficient
+    //       complexity quota remaining in order to execute the operation(s)
     useOAuthScopeValidation(),
     useDisposeDataloader,
     useReadinessCheck({

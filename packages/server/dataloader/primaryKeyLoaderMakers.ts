@@ -190,6 +190,6 @@ export const pages = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectPages().where('id', 'in', ids).execute()
 })
 
-export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly string[]) => {
+export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectOAuthAPIProvider().where('id', 'in', ids).execute()
 })

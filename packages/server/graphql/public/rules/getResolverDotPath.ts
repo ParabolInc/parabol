@@ -29,9 +29,9 @@ type ExtractChild<TOp, TChild extends string> = TChild extends keyof TOp
   ? NonNullable<TOp[TChild]>
   : never
 
-type NestedKeys<T> = T extends object
+type NestedKeys<T> = T extends Record<string, unknown>
   ? {
-      [K in keyof T & (string | number)]: T[K] extends object
+      [K in keyof T & (string | number)]: T[K] extends Record<string, unknown>
         ? `${K}` | `${K}.${keyof T[K] & (string | number)}`
         : `${K}`
     }[keyof T & (string | number)]

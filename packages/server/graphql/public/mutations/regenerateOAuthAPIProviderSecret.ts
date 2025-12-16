@@ -2,6 +2,7 @@ import {GraphQLError} from 'graphql'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import {GQLContext} from '../../graphql'
 
 interface RegenerateOAuthAPIProviderSecretInput {
@@ -13,7 +14,7 @@ export default async function regenerateOAuthAPIProviderSecret(
   {input}: {input: RegenerateOAuthAPIProviderSecretInput},
   context: GQLContext
 ) {
-  const {providerId} = input
+  const [providerId] = CipherId.fromClient(input.providerId)
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
 

@@ -8,7 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable('OAuthAPIProvider')
-    .addColumn('id', 'varchar(100)', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('orgId', 'varchar(100)', (col) =>
       col.notNull().references('Organization.id').onDelete('cascade')
     )
@@ -36,11 +36,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable('OAuthAPICode')
-    .addColumn('id', 'varchar(100)', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('clientId', 'varchar(255)', (col) =>
       col.notNull().references('OAuthAPIProvider.clientId').onDelete('cascade')
     )
-    .addColumn('redirectUri', 'text', (col) => col.notNull())
+    .addColumn('redirectUri', 'varchar(2048)', (col) => col.notNull())
     .addColumn('userId', 'varchar(100)', (col) =>
       col.notNull().references('User.id').onDelete('cascade')
     )
