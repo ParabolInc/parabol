@@ -304,8 +304,7 @@ export default class Atmosphere extends Environment {
 
     const anotherTabIsOpen = await isAnotherParabolTabOpen()
     if (anotherTabIsOpen || justOpened) return
-    // since this is async, useAuthRoute will have already run
-    window.location.href = '/'
+    this.invalidateSession('Removing impersonate token')
   }
 
   private setAuthToken = async (authToken: string | null | undefined) => {
