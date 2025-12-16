@@ -38,7 +38,7 @@ const MeetingSeriesRedirector = (props: Props) => {
     return (
       <Redirect
         to={{
-          pathname: `/invitation-required`,
+          pathname: `/  `,
           search: `?redirectTo=${encodeURIComponent(
             window.location.pathname
           )}&meetingId=${meetingId}`

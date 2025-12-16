@@ -1,15 +1,13 @@
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import nullIfEmpty from 'parabol-client/utils/nullIfEmpty'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import type {NewMeetingPhaseTypeEnum} from '../database/types/GenericMeetingPhase'
 import type GenericMeetingStage from '../database/types/GenericMeetingStage'
 import type Organization from '../database/types/Organization'
 import type {Loaders} from '../dataloader/RootDataLoader'
-import type {Task, Team, TeamMember, User} from '../postgres/types'
+import type {Task, Team, User} from '../postgres/types'
 import type {AnyMeeting} from '../postgres/types/Meeting'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../utils/authorization'
+import {getUserId, isSuperUser} from '../utils/authorization'
 import type {GQLContext} from './graphql'
-import isValid from './isValid'
 
 export const resolveNewMeeting = (
   {
@@ -56,21 +54,6 @@ export const resolveTask = async (
   return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
 }
 
-export const resolveTasks = async (
-  {taskIds}: {taskIds: string[]},
-  _args: unknown,
-  {authToken, dataLoader}: GQLContext
-) => {
-  if (!taskIds || taskIds.length === 0) return null
-  const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
-  const {userId} = tasks[0]!
-  const isViewer = userId === getUserId(authToken)
-  const teamTasks = tasks.filter(({teamId}: {teamId: string}) => authToken.tms.includes(teamId))
-  return isViewer
-    ? teamTasks
-    : nullIfEmpty(teamTasks.filter((p: Task) => !p.tags.includes('private')))
-}
-
 export const resolveTeam = (
   {team, teamId}: {teamId?: string; team?: Team},
   _args: unknown,
@@ -93,24 +76,6 @@ export const resolveTeams = (
   // const {tms} = authToken;
   // const teamDocs = (teamIds && teamIds.length > 0) ? await dataLoader.get('teams').loadMany(teamIds) : teams;
   // return Array.isArray(teamDocs) ? teamDocs.filter((team) => tms.includes(team.id)) : null;
-}
-
-export const resolveTeamMember = (
-  {teamMemberId, teamMember}: {teamMemberId: string; teamMember: TeamMember},
-  _args: unknown,
-  {dataLoader}: GQLContext
-) => {
-  return teamMemberId ? dataLoader.get('teamMembers').load(teamMemberId) : teamMember
-}
-
-export const resolveTeamMembers = (
-  {teamMemberIds, teamMembers}: {teamMemberIds: string; teamMembers: TeamMember[]},
-  _args: unknown,
-  {dataLoader}: GQLContext
-) => {
-  return teamMemberIds && teamMemberIds.length > 0
-    ? dataLoader.get('teamMembers').loadMany(teamMemberIds)
-    : teamMembers
 }
 
 export const resolveGQLStageFromId = (stageId: string | undefined, meeting: AnyMeeting) => {
@@ -182,26 +147,4 @@ export const makeResolve =
     const idValue = source[idName]
     const method = isMany ? 'loadMany' : 'load'
     return idValue ? (dataLoader as any).get(dataLoaderName)[method](idValue) : source[docName]
-  }
-
-export const resolveFilterByTeam =
-  (
-    resolver: (source: any, _args: any, context: GQLContext) => Promise<any>,
-    getTeamId: (obj: any) => string
-  ) =>
-  async (source: any, _args: any, context: GQLContext) => {
-    const {teamIdFilter} = source
-    const resolvedArray = await resolver(source, _args, context)
-    return teamIdFilter
-      ? resolvedArray.filter((obj: any) => getTeamId(obj) === teamIdFilter)
-      : resolvedArray
-  }
-
-export const resolveForBillingLeaders =
-  (fieldName: string) =>
-  async (source: any, _args: any, {authToken, dataLoader}: GQLContext) => {
-    const {id: orgId} = source
-    const viewerId = getUserId(authToken)
-    const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
-    return isBillingLeader || isSuperUser(authToken) ? source[fieldName] : undefined
   }

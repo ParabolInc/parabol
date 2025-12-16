@@ -170,6 +170,9 @@ export default {
 
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+    if (!teamMember.isNotRemoved) {
+      return {error: {message: 'Team member was removed'}}
+    }
     const meetingMember = createMeetingMember(meeting, teamMember)
     await pg
       .with('MeetingMemberInsert', (qb) => qb.insertInto('MeetingMember').values(meetingMember))
