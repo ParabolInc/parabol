@@ -4,17 +4,13 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
-import {GQLContext} from '../../graphql'
+import type {MutationResolvers} from '../resolverTypes'
 
-interface DeleteOAuthAPIProviderInput {
-  providerId: string
-}
-
-export default async function deleteOAuthAPIProvider(
-  _root: any,
-  {input}: {input: DeleteOAuthAPIProviderInput},
-  context: GQLContext
-) {
+const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = async (
+  _root,
+  {input},
+  context
+) => {
   const [providerId] = CipherId.fromClient(input.providerId)
   const {authToken, dataLoader, socketId} = context
   const viewerId = getUserId(authToken)
@@ -54,3 +50,5 @@ export default async function deleteOAuthAPIProvider(
 
   return {success: true, deletedProviderId: input.providerId}
 }
+
+export default deleteOAuthAPIProvider
