@@ -1,7 +1,9 @@
 import {fetch} from '@whatwg-node/fetch'
 import {sign} from 'jsonwebtoken'
 import mime from 'mime-types'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
+import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
 import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
 
@@ -150,6 +152,25 @@ export default class GCSManager extends FileStoreManager {
     return this.getPublicFileLocation(fullPath)
   }
 
+  async copyFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
+    const accessToken = await this.getAccessToken()
+    const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
+    const newFullPath = encodeURIComponent(this.prependPath(newPartialPath))
+    const copyURL = `https://storage.googleapis.com/storage/v1/b/${this.bucket}/o/${oldFullPath}/rewriteTo/b/${this.bucket}/o/${newFullPath}`
+    const moveRes = await fetch(copyURL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: 'application/json',
+        'User-Agent': 'parabol'
+      }
+    })
+    if (!moveRes.ok) {
+      const text = await moveRes.text()
+      throw new Error(`GCS Copy Error: ${moveRes.status} ${text}. ${copyURL}`)
+    }
+    return makeAppURL(appOrigin, `/assets/${newPartialPath}`)
+  }
   async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath): Promise<void> {
     const accessToken = await this.getAccessToken()
     const oldFullPath = encodeURIComponent(this.prependPath(oldPartialPath))
@@ -165,7 +186,7 @@ export default class GCSManager extends FileStoreManager {
     })
     if (!moveRes.ok) {
       const text = await moveRes.text()
-      throw new Error(`GCS Copy Error: ${moveRes.status} ${text}. ${moveURL}`)
+      throw new Error(`GCS Move Error: ${moveRes.status} ${text}. ${moveURL}`)
     }
   }
   prependPath(partialPath: string, assetDir: FileAssetDir = 'store') {
