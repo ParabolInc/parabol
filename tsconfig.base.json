@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./packages/types"],
     // allowJs causes some bugs using ts-loader, if we decide to use that in the future
     // "allowJs": true,
     "checkJs": false,

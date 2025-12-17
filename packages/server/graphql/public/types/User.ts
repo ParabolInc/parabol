@@ -44,8 +44,6 @@ import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
-declare const __PRODUCTION__: string
-
 const MODEL = 'Embeddings_ember_1'
 const EMBED_URL = (() => {
   try {
