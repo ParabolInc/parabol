@@ -1,7 +1,7 @@
+import crypto from 'crypto'
 import ms from 'ms'
 import getKysely from '../postgres/getKysely'
 import type {Oauthscopeenum} from '../postgres/types/pg'
-import {CipherId} from '../utils/CipherId'
 
 interface CreateOAuthCodeParams {
   clientId: string
@@ -35,9 +35,11 @@ export async function createOAuthCode(
   }
 
   const expiresAt = new Date(Date.now() + ms('10m'))
+  const code = crypto.randomBytes(32).toString('hex')
   const {id: codeId} = await pg
     .insertInto('OAuthAPICode')
     .values({
+      id: code,
       clientId,
       redirectUri,
       userId,
@@ -48,6 +50,6 @@ export async function createOAuthCode(
     .executeTakeFirstOrThrow()
 
   return {
-    code: CipherId.toClient(codeId, 'OAuthAPICode')
+    code: codeId
   }
 }

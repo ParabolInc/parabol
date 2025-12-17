@@ -21,7 +21,9 @@ export interface FormContentProps {
 const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentProps) => {
   const [name, setName] = useState(initialData?.name || '')
   const [redirectUris, setRedirectUris] = useState((initialData?.redirectUris || []).join(', '))
-  const [scopes, setScopes] = useState<string[]>(initialData?.scopes || [])
+  const [scopes, setScopes] = useState<string[]>(
+    (initialData?.scopes || []).map((s: string) => s.replace(':', '_'))
+  )
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
@@ -99,6 +101,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
     const providerId = initialData?.id
 
+    // Cast scopes to any to avoid type errors since we don't have OAuthScopeEnum imported
+    const mutationScopes = scopes as any
+
     if (providerId) {
       commitUpdate({
         variables: {
@@ -106,7 +111,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             providerId,
             name,
             redirectUris: uriList,
-            scopes
+            scopes: mutationScopes
           }
         },
         onCompleted: () => {
@@ -126,7 +131,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             orgId,
             name,
             redirectUris: uriList,
-            scopes
+            scopes: mutationScopes
           }
         },
         updater: (store) => {
@@ -350,8 +355,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                 <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
                   <input
                     type='checkbox'
-                    checked={scopes.includes('graphql:query')}
-                    onChange={() => toggleScope('graphql:query')}
+                    checked={scopes.includes('graphql_query')}
+                    onChange={() => toggleScope('graphql_query')}
                     className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
                   />
                   graphql:query
@@ -359,8 +364,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                 <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
                   <input
                     type='checkbox'
-                    checked={scopes.includes('graphql:mutation')}
-                    onChange={() => toggleScope('graphql:mutation')}
+                    checked={scopes.includes('graphql_mutation')}
+                    onChange={() => toggleScope('graphql_mutation')}
                     className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
                   />
                   graphql:mutation

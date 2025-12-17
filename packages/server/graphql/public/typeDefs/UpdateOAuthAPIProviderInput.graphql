@@ -2,5 +2,5 @@ input UpdateOAuthAPIProviderInput {
   providerId: ID!
   name: String
   redirectUris: [RedirectURI!]
-  scopes: [String!]
+  scopes: [OAuthScopeEnum!]
 }

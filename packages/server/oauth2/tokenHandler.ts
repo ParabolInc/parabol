@@ -5,7 +5,6 @@ import AuthToken from '../database/types/AuthToken'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import getKysely from '../postgres/getKysely'
-import {CipherId} from '../utils/CipherId'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
 const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest) => {
@@ -61,10 +60,9 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   }
 
   // 2. Validate Code (atomically delete to prevent replay attacks)
-  const [codeId] = CipherId.fromClient(code)
   const oauthCode = await pg
     .deleteFrom('OAuthAPICode')
-    .where('id', '=', codeId)
+    .where('id', '=', code)
     .returning([
       'id',
       'userId',

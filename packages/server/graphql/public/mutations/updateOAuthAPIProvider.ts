@@ -1,9 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {OAUTH_SCOPES, validateOAuthScopes} from '../../../oauth2/oauthScopes'
 import getKysely from '../../../postgres/getKysely'
 import {selectOAuthAPIProvider} from '../../../postgres/select'
-import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
@@ -43,15 +41,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
 
   if (scopes) {
     if (scopes && scopes.length === 0) {
-      scopes = [OAUTH_SCOPES['graphql:query'], OAUTH_SCOPES['graphql:mutation']]
-    }
-    if (!validateOAuthScopes(scopes)) {
-      throw new GraphQLError('Invalid scopes. Only graphql:read and graphql:write are allowed.', {
-        extensions: {
-          code: 'BAD_USER_INPUT',
-          userId: viewerId
-        }
-      })
+      scopes = ['graphql:query', 'graphql:mutation']
     }
   }
 
@@ -60,7 +50,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     .set({
       name: name ?? undefined,
       redirectUris: redirectUris ?? undefined,
-      scopes: scopes ? (scopes as Oauthscopeenum[]) : undefined
+      scopes: scopes || undefined
     })
     .where('id', '=', providerId)
     .execute()
