@@ -83,6 +83,7 @@
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
           "CreateOAuthAPICodePayload": "./types/CreateOAuthAPICodePayload#CreateOAuthAPICodePayloadSource",
+          "CreateOAuthAPIProviderPayload": "./types/CreateOAuthAPIProviderPayload#CreateOAuthApiProviderPayloadSource",
           "DomainJoinRequest": "./types/DomainJoinRequest#DomainJoinRequestSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",

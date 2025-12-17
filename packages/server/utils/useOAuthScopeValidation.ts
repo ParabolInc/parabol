@@ -17,7 +17,7 @@ export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> =
       const {authToken} = contextValue
 
       // Only validate OAuth tokens (not regular session tokens)
-      if (!authToken || authToken.iss !== 'parabol-oauth2') {
+      if (!authToken || authToken.aud !== 'action-oauth2') {
         return
       }
 

@@ -16,6 +16,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   if (!rawBody) {
     res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(
       JSON.stringify({error: 'invalid_request', error_description: 'Request body is missing'})
     )
@@ -32,13 +33,14 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   if (grant_type !== 'authorization_code') {
     res.writeStatus('400 Bad Request')
-    res.writeHeader('content-type', 'application/json')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'unsupported_grant_type'}))
     return
   }
 
   if (!code || !redirect_uri || !client_id || !client_secret) {
     res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_request'}))
     return
   }
@@ -53,6 +55,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   if (!provider || provider.clientSecret !== client_secret) {
     res.writeStatus('401 Unauthorized')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_client'}))
     return
   }
@@ -73,6 +76,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
   if (!oauthCode) {
     res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_grant'}))
     return
   }
@@ -82,6 +86,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   const expiresAt = new Date(oauthCode.expiresAt)
   if (expiresAt < now) {
     res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_grant', error_description: 'Code expired'}))
     return
   }
@@ -89,6 +94,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
   // 4. Validate Redirect URI
   if (oauthCode.redirectUri !== redirect_uri) {
     res.writeStatus('400 Bad Request')
+    res.writeHeader('Content-Type', 'application/json')
     res.end(
       JSON.stringify({
         error: 'invalid_grant',

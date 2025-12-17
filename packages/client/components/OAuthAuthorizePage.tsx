@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useMutation} from 'react-relay'
 import {useHistory, useLocation} from 'react-router'
+import {OAuthAuthorizePageMutation} from '../__generated__/OAuthAuthorizePageMutation.graphql'
 import {LoaderSize} from '../types/constEnums'
 import LoadingComponent from './LoadingComponent/LoadingComponent'
 
@@ -10,11 +11,10 @@ const OAuthAuthorizePage = () => {
   const location = useLocation()
   const [error, setError] = useState<string | null>(null)
 
-  const [commitCreateCode] = useMutation(graphql`
+  const [commitCreateCode] = useMutation<OAuthAuthorizePageMutation>(graphql`
     mutation OAuthAuthorizePageMutation($input: CreateOAuthAPICodeInput!) {
       createOAuthAPICode(input: $input) {
         code
-        redirectUri
         state
       }
     }
@@ -44,8 +44,8 @@ const OAuthAuthorizePage = () => {
           state: state || undefined
         }
       },
-      onCompleted: (data: any) => {
-        const {code, redirectUri, state} = data.createOAuthAPICode
+      onCompleted: (data) => {
+        const {code, state} = data.createOAuthAPICode
         const redirectUrl = new URL(redirectUri)
         redirectUrl.searchParams.set('code', code)
         if (state) {
@@ -53,15 +53,14 @@ const OAuthAuthorizePage = () => {
         }
         window.location.href = redirectUrl.toString()
       },
-      onError: (err: any) => {
+      onError: (err: Error) => {
         let errorMessage = err.message || 'Authorization failed'
 
-        if (
-          errorMessage.includes('Not signed in') ||
-          errorMessage.includes('Not authenticated') ||
-          errorMessage.includes('401')
-        ) {
-          const currentUrl = window.location.pathname + window.location.search
+        const code =
+          (err as any).extensions?.code || (err as any).source?.errors?.[0]?.extensions?.code
+
+        if (code === 'UNAUTHORIZED') {
+          const currentUrl = location.pathname + location.search
           history.push(`/login?redirectTo=${encodeURIComponent(currentUrl)}`)
           return
         }
@@ -71,7 +70,7 @@ const OAuthAuthorizePage = () => {
         setError(errorMessage)
       }
     })
-  }, [location.search, commitCreateCode, history])
+  }, [location.search, location.pathname, commitCreateCode, history])
 
   if (error) {
     return (

@@ -36,7 +36,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await db.schema
     .createTable('OAuthAPICode')
-    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('id', 'varchar(100)', (col) => col.primaryKey())
     .addColumn('clientId', 'varchar(255)', (col) =>
       col.notNull().references('OAuthAPIProvider.clientId').onDelete('cascade')
     )

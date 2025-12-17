@@ -1,5 +1,4 @@
 type CreateOAuthAPICodePayload {
   code: String!
-  redirectUri: String!
   state: String
 }

@@ -46,7 +46,7 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
       userId: authToken.sub
     })
 
-    const redirectUrl = new URL(result.redirectUri)
+    const redirectUrl = new URL(redirectUri)
     redirectUrl.searchParams.set('code', result.code)
     if (state) {
       redirectUrl.searchParams.set('state', state)

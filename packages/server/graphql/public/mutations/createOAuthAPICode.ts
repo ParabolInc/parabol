@@ -10,7 +10,9 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
   const {clientId, redirectUri, scopes, state} = input
 
   if (!authToken?.sub) {
-    throw new GraphQLError('Not authenticated')
+    throw new GraphQLError('Not authenticated', {
+      extensions: {code: 'UNAUTHORIZED'}
+    })
   }
 
   try {
@@ -23,7 +25,6 @@ const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
 
     return {
       code: result.code,
-      redirectUri: result.redirectUri,
       state
     }
   } catch (error) {

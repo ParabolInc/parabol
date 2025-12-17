@@ -12,7 +12,6 @@ interface CreateOAuthCodeParams {
 
 interface CreateOAuthCodeResult {
   code: string
-  redirectUri: string
 }
 
 export async function createOAuthCode(
@@ -49,7 +48,6 @@ export async function createOAuthCode(
     .executeTakeFirstOrThrow()
 
   return {
-    code: CipherId.toClient(codeId, 'OAuthAPICode'),
-    redirectUri
+    code: CipherId.toClient(codeId, 'OAuthAPICode')
   }
 }

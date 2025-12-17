@@ -6,17 +6,13 @@ import getKysely from '../../../postgres/getKysely'
 import {selectOAuthAPIProvider} from '../../../postgres/select'
 import type {Oauthscopeenum} from '../../../postgres/types/pg'
 import publish from '../../../utils/publish'
-import {type GQLContext} from '../../graphql'
-import {
-  type CreateOAuthApiProviderPayload,
-  type MutationCreateOAuthApiProviderArgs
-} from '../resolverTypes'
+import type {MutationResolvers} from '../resolverTypes'
 
-export const createOAuthAPIProvider = async (
-  _: any,
-  args: MutationCreateOAuthApiProviderArgs,
-  _context: GQLContext
-): Promise<CreateOAuthApiProviderPayload> => {
+export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = async (
+  _,
+  args,
+  _context
+) => {
   const {input} = args
   let {scopes = []} = input
   const {orgId, name, redirectUris} = input
@@ -68,12 +64,9 @@ export const createOAuthAPIProvider = async (
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'CreateOAuthAPIProviderSuccess', data, {})
 
   return {
-    provider: {
-      ...provider,
-      id: String(provider.id)
-    },
-    clientId: provider.clientId,
-    clientSecret: provider.clientSecret
+    providerId: provider.id,
+    clientId,
+    clientSecret
   }
 }
 
