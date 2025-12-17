@@ -1,5 +1,3 @@
-// this is just to get typescript to stop complaining about imports
-// declare module '*'
 declare module '*.jpeg'
 declare module '*.jpg'
 declare module '*.png' {
@@ -9,19 +7,32 @@ declare module '*.png' {
 declare module '*.svg'
 declare module '*.mp3'
 declare module '*.woff2'
-declare module 'json2csv/lib/JSON2CSVParser'
-declare module 'string-score'
+
 declare module 'babel-plugin-relay/macro' {
   export {graphql as default} from 'react-relay'
 }
+
+declare module '*.graphql' {
+  const value: string
+  export = value
+}
+
 declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
-declare module 'tayden-clusterfck'
 declare module 'react/jsx-runtime'
+declare module '@authenio/samlify-node-xmllint'
+declare module 'node-env-flag'
+declare module '*getProjectRoot'
+declare module 'tayden-clusterfck'
+declare module 'jest-extended'
+declare module 'object-hash'
+declare module 'string-score'
+declare module 'md-to-adf'
 
 declare let __webpack_public_path__: string
-declare const __PRODUCTION__: string
+declare const __PRODUCTION__: boolean
 declare const __APP_VERSION__: string
+
 interface Window {
   __ACTION__: {
     atlassian: string
