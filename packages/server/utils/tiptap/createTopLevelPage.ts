@@ -4,6 +4,7 @@ import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import type {DataLoaderWorker} from '../../graphql/graphql'
+import {queuePageEmbedding} from '../../graphql/mutations/helpers/queuePageEmbedding'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
@@ -64,6 +65,9 @@ export const createTopLevelPage = async (
   await viewerAccessPromise
   await updatePageAccessTable(pg, pageId, {skipDeleteOld: true})
   analytics.pageCreated(viewer, pageId)
+
+  queuePageEmbedding(pageId, teamId || null, viewerId) // don't await to avoid blocking mutation
+
   const data = {page}
   await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
   return page

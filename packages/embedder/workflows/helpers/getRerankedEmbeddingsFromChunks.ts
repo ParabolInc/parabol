@@ -45,7 +45,7 @@ export const getRerankedEmbeddingsFromChunks = async (
   const similarityScores = {} as Record<number, number[]>
   const results = await Promise.all(
     chunks.map(async (chunk) => {
-      const embeddingVector = await embeddingModel.getEmbedding(chunk)
+      const embeddingVector = await embeddingModel.getEmbedding(chunk, {priority: 'low'})
       if (embeddingVector instanceof Error) {
         return new JobQueueError(
           `unable to get embeddings: ${embeddingVector.message}`,

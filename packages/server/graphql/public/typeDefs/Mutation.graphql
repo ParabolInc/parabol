@@ -2195,4 +2195,5 @@ type Mutation {
     """
     action: ArchivePageActionEnum!
   ): ArchivePagePayload
+  embedderReIndex(orgIds: [ID!]!): EmbedderReIndexPayload!
 }

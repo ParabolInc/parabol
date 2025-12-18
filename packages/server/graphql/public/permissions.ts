@@ -38,6 +38,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
+    embedderReIndex: isSuperUser,
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})

@@ -1,0 +1,54 @@
+union SearchResultObject = Page | Discussion | ReflectTemplate | PokerTemplate | FixedActivity
+
+type SearchMatchScore {
+  relevance: Float!
+  vector: Float!
+  keyword: Float!
+}
+
+type SearchResult {
+  id: ID!
+  score: SearchMatchScore!
+  title: String!
+  snippets: [String!]!
+  node: SearchResultObject
+  updatedAt: DateTime!
+  url: String
+}
+
+input SearchFilter {
+  teamIDs: [ID!]
+  teamId: ID @deprecated(reason: "Use teamIDs instead")
+  objectType: [SearchObjectType!]
+  startDate: DateTime
+  endDate: DateTime
+  dateField: SearchDateType
+  scoreCutoff: Float
+}
+
+enum SearchObjectType {
+  page
+  meetingTemplate
+  retrospectiveDiscussionTopic
+}
+
+enum SearchDateType {
+  CREATED
+  UPDATED
+}
+
+type SearchPayload {
+  results: [SearchResult!]!
+  totalCount: Int!
+}
+
+extend type Query {
+  search(
+    query: String!
+    limit: Int
+    offset: Int
+    filter: SearchFilter
+    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.75."
+    alpha: Float
+  ): SearchPayload!
+}
