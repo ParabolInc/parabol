@@ -87,7 +87,7 @@ export const pageUserSection = (parent: RootDataLoader) => {
           if (teamId) {
             const teamMemberId = TeamMemberId.join(teamId, userId)
             const teamMember = await parent.get('teamMembers').load(teamMemberId)
-            return teamMember ? 'team' : 'shared'
+            return teamMember?.isNotRemoved ? 'team' : 'shared'
           }
           // if the page has a parent, it will be a subpage unless it doesn't have access to that parent
           if (parentPageId) {

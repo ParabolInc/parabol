@@ -19,7 +19,9 @@ const toggleTeamPrivacy: MutationResolvers['toggleTeamPrivacy'] = async (
   if (!teamMember) {
     return standardError(new Error('Not a member of the team'))
   }
-
+  if (!teamMember.isNotRemoved) {
+    return standardError(new Error('Not a member of the team anymore'))
+  }
   const team = await dataLoader.get('teams').load(teamId)
   if (!team) {
     return standardError(new Error('Team not found'))

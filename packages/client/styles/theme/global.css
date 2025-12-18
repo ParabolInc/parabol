@@ -191,6 +191,15 @@
     }
   }
 
+  --animate-shimmer: shimmer 2.5s infinite;
+  @keyframes shimmer {
+    from {
+      mask-position: right;
+    }
+    to {
+      mask-position: left;
+    }
+  }
 }
 
 :root {

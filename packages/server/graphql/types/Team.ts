@@ -91,7 +91,7 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         const viewerId = getUserId(authToken)
         const teamMemberId = toTeamMemberId(teamId, viewerId)
         const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
-        return !!teamMember.isLead
+        return teamMember.isLead && teamMember.isNotRemoved
       }
     },
     meetingSettings: {

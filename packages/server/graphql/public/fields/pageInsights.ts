@@ -39,7 +39,9 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   const meetings = (await dataLoader.get('newMeetings').loadMany(meetingIds)).filter(isValid)
   const teamIds = [...new Set(meetings.map(({teamId}) => teamId))]
   const teamMemberIds = teamIds.map((teamId) => TeamMemberId.join(teamId, viewerId))
-  const teamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds)).filter(isValid)
+  const teamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds))
+    .filter(isValid)
+    .filter((tm) => tm.isNotRemoved)
   if (teamMembers.length < teamIds.length) {
     throw new GraphQLError('You must be a member of the team for each requested meetingId')
   }

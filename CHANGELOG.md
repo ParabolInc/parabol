@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.5.0](https://github.com/ParabolInc/parabol/compare/v11.4.0...v11.5.0) (2025-12-18)
+
+
+### Added
+
+* clone external pictures when added to a page ([#12467](https://github.com/ParabolInc/parabol/issues/12467)) ([69e4a4b](https://github.com/ParabolInc/parabol/commit/69e4a4b06c54addee4909b3e2f5bc3978161ac55))
+
+
+### Fixed
+
+* check for isNotRemoved after querying the `teamMembers` dataloader ([#12462](https://github.com/ParabolInc/parabol/issues/12462)) ([9b3de31](https://github.com/ParabolInc/parabol/commit/9b3de31e3fafbd8bc5da054b8718b6f4f496a526))
+* self-review the redir-loop PR ([#12463](https://github.com/ParabolInc/parabol/issues/12463)) ([421f28e](https://github.com/ParabolInc/parabol/commit/421f28ef5583c5e92ebed77e2a23cdf8b1646d57))
+* signout when done impersonating ([#12460](https://github.com/ParabolInc/parabol/issues/12460)) ([e6ba0bd](https://github.com/ParabolInc/parabol/commit/e6ba0bdc5a98df3f650a3f710f7d2af9f059a303))
+* typings for GraphQLError on the client ([#12464](https://github.com/ParabolInc/parabol/issues/12464)) ([2d83bfb](https://github.com/ParabolInc/parabol/commit/2d83bfbab1ab7786ac42d33e323d298c722dce21))
+
 ## [11.4.0](https://github.com/ParabolInc/parabol/compare/v11.3.2...v11.4.0) (2025-12-15)
 
 

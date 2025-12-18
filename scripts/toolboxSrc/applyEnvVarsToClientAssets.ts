@@ -6,8 +6,6 @@ import logo192 from '../../static/images/brand/mark-cropped-192.png'
 import logo512 from '../../static/images/brand/mark-cropped-512.png'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 
-declare const __webpack_public_path__: string
-
 const PROJECT_ROOT = getProjectRoot()
 const clientDir = path.join(PROJECT_ROOT, 'build')
 
