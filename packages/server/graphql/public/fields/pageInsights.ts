@@ -5,7 +5,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import {makeMeetingInsightInput} from '../../../utils/makeMeetingInsightInput'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import isValid from '../../isValid'
@@ -24,17 +24,19 @@ export const pageInsights: NonNullable<UserResolvers['pageInsights']> = async (
   if (meetingIds.length === 0) throw new GraphQLError('No meetings selected')
   if (!prompt || prompt.length < 10) throw new GraphQLError('Prompt too short')
   const pg = getKysely()
-  const aiUsage = await pg
-    .selectFrom('AIRequest')
-    .select(pg.fn.coalesce(pg.fn.sum<bigint>('tokenCost'), sql`0`).as('tokenUsage'))
-    .where('userId', '=', viewerId)
-    .where('createdAt', '>=', sql<Date>`NOW() - INTERVAL '30 days'`)
-    .executeTakeFirstOrThrow()
-  const {tokenUsage} = aiUsage
-  if (Number(tokenUsage) >= USER_AI_TOKENS_MONTHLY_LIMIT) {
-    throw new GraphQLError(
-      'You have exceeded your AI request quota. Please contact sales to increase'
-    )
+  if (!isSuperUser(authToken)) {
+    const aiUsage = await pg
+      .selectFrom('AIRequest')
+      .select(pg.fn.coalesce(pg.fn.sum<bigint>('tokenCost'), sql`0`).as('tokenUsage'))
+      .where('userId', '=', viewerId)
+      .where('createdAt', '>=', sql<Date>`NOW() - INTERVAL '30 days'`)
+      .executeTakeFirstOrThrow()
+    const {tokenUsage} = aiUsage
+    if (Number(tokenUsage) >= USER_AI_TOKENS_MONTHLY_LIMIT) {
+      throw new GraphQLError(
+        'You have exceeded your AI request quota. Please contact sales to increase'
+      )
+    }
   }
   const meetings = (await dataLoader.get('newMeetings').loadMany(meetingIds)).filter(isValid)
   const teamIds = [...new Set(meetings.map(({teamId}) => teamId))]
