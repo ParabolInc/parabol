@@ -1,6 +1,0 @@
-input CreateOAuthAPIProviderInput {
-  orgId: ID!
-  name: String!
-  redirectUris: [RedirectURI!]!
-  scopes: [OAuthScopeEnum!]!
-}

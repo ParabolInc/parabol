@@ -1,4 +1,0 @@
-type CreateOAuthAPIProviderSuccess {
-  provider: OAuthAPIProvider!
-  organization: Organization!
-}

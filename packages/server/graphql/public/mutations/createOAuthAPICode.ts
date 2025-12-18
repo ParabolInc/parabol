@@ -4,10 +4,10 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const createOAuthAPICode: MutationResolvers['createOAuthAPICode'] = async (
   _source,
-  {input},
+  args,
   {authToken}
 ) => {
-  const {clientId, redirectUri, scopes, state} = input
+  const {clientId, redirectUri, scopes, state} = args
 
   if (!authToken?.sub) {
     throw new GraphQLError('Not authenticated', {

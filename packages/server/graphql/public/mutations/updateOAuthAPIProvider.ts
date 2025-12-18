@@ -1,7 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import publish from '../../../utils/publish'
@@ -9,12 +8,12 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = async (
   _source,
-  {input},
+  args,
   context
 ) => {
-  const {name, redirectUris} = input
-  let {scopes} = input
-  const [providerId] = CipherId.fromClient(input.providerId)
+  const {name, redirectUris} = args
+  let {scopes} = args
+  const [providerId] = CipherId.fromClient(args.providerId)
   const {authToken, dataLoader, socketId} = context
   const viewerId = getUserId(authToken)
 
@@ -39,10 +38,8 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     })
   }
 
-  if (scopes) {
-    if (scopes && scopes.length === 0) {
-      scopes = ['graphql:query', 'graphql:mutation']
-    }
+  if (scopes && scopes.length === 0) {
+    throw new GraphQLError('Must select at least one scope')
   }
 
   await pg
@@ -55,23 +52,16 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     .where('id', '=', providerId)
     .execute()
 
-  const updatedProvider = await selectOAuthAPIProvider()
-    .where('id', '=', providerId)
-    .executeTakeFirstOrThrow()
-
   const data = {
-    provider: updatedProvider,
-    organization: {
-      id: provider.orgId
-    }
+    organizationId: provider.orgId,
+    providerId
   }
+
   publish(SubscriptionChannel.ORGANIZATION, provider.orgId, 'UpdateOAuthAPIProviderSuccess', data, {
     mutatorId: socketId
   })
 
-  return {
-    provider: updatedProvider
-  }
+  return data
 }
 
 export default updateOAuthAPIProvider

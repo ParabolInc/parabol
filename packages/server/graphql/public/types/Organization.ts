@@ -5,6 +5,7 @@ import {
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
@@ -126,6 +127,22 @@ const Organization: OrganizationResolvers = {
       ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
       : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
     return providers
+  },
+  oauthAPIProvider: async ({id: orgId}, {id}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+
+    const [providerId] = CipherId.fromClient(id)
+    const provider = await dataLoader.get('oAuthProviders').load(providerId)
+
+    if (
+      !provider ||
+      provider.orgId !== orgId ||
+      !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))
+    ) {
+      return null
+    }
+
+    return provider
   }
 }
 

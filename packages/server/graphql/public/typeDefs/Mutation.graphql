@@ -161,29 +161,42 @@ type Mutation {
   """
   Create a new OAuth 2.0 Application
   """
-  createOAuthAPIProvider(input: CreateOAuthAPIProviderInput!): CreateOAuthAPIProviderPayload!
+  createOAuthAPIProvider(
+    orgId: ID!
+    name: String!
+    redirectUris: [RedirectURI!]!
+    scopes: [OAuthScopeEnum!]!
+  ): CreateOAuthAPIProviderPayload!
 
   """
   Update an OAuth 2.0 Application
   """
-  updateOAuthAPIProvider(input: UpdateOAuthAPIProviderInput!): UpdateOAuthAPIProviderPayload!
+  updateOAuthAPIProvider(
+    providerId: ID!
+    name: String
+    redirectUris: [RedirectURI!]
+    scopes: [OAuthScopeEnum!]
+  ): UpdateOAuthAPIProviderPayload!
 
   """
   Delete an OAuth 2.0 Application
   """
-  deleteOAuthAPIProvider(input: DeleteOAuthAPIProviderInput!): DeleteOAuthAPIProviderPayload!
+  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload!
 
   """
   Regenerate the OAuth 2.0 client secret for an application
   """
-  regenerateOAuthAPIProviderSecret(
-    input: RegenerateOAuthAPIProviderSecretInput!
-  ): RegenerateOAuthAPIProviderSecretPayload!
+  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
 
   """
   Create an OAuth 2.0 authorization code
   """
-  createOAuthAPICode(input: CreateOAuthAPICodeInput!): CreateOAuthAPICodePayload!
+  createOAuthAPICode(
+    clientId: String!
+    redirectUri: String!
+    scopes: [String!]!
+    state: String
+  ): CreateOAuthAPICodePayload!
 
   """
   Create a new reflection

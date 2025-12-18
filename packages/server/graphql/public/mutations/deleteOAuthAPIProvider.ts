@@ -1,18 +1,16 @@
 import {GraphQLError} from 'graphql'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
 const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = async (
   _root,
-  {input},
+  args,
   context
 ) => {
-  const [providerId] = CipherId.fromClient(input.providerId)
-  const {authToken, dataLoader, socketId} = context
+  const [providerId] = CipherId.fromClient(args.providerId)
+  const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
 
   const pg = getKysely()
@@ -38,17 +36,7 @@ const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = asyn
 
   await pg.deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()
 
-  const data = {
-    providerId: input.providerId,
-    organization: {
-      id: provider.orgId
-    }
-  }
-  publish(SubscriptionChannel.ORGANIZATION, provider.orgId, 'DeleteOAuthAPIProviderSuccess', data, {
-    mutatorId: socketId
-  })
-
-  return {success: true, deletedProviderId: input.providerId}
+  return {success: true, deletedProviderId: args.providerId}
 }
 
 export default deleteOAuthAPIProvider

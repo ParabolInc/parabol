@@ -6,8 +6,8 @@ import {CipherId} from '../../../utils/CipherId'
 import type {MutationResolvers} from '../resolverTypes'
 
 const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIProviderSecret'] =
-  async (_root, {input}, context) => {
-    const [providerId] = CipherId.fromClient(input.providerId)
+  async (_root, args, context) => {
+    const [providerId] = CipherId.fromClient(args.providerId)
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 
@@ -43,7 +43,7 @@ const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIPro
       .returningAll()
       .executeTakeFirstOrThrow()
 
-    return {clientSecret: newSecret, clientId: updatedProvider.clientId, provider: updatedProvider}
+    return {clientSecret: newSecret, provider: updatedProvider}
   }
 
 export default regenerateOAuthAPIProviderSecret

@@ -1,18 +1,14 @@
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
-import {selectOAuthAPIProvider} from '../../../postgres/select'
-import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
 export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = async (
   _,
   args,
-  _context
+  {dataLoader}
 ) => {
-  const {input} = args
-  let {scopes = []} = input
-  const {orgId, name, redirectUris} = input
+  let {scopes} = args
+  const {orgId, name, redirectUris} = args
 
   const clientId = generateOAuthClientId()
   const clientSecret = generateOAuthClientSecret()
@@ -38,19 +34,8 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
     .returning('id')
     .executeTakeFirstOrThrow()
 
-  const provider = await selectOAuthAPIProvider()
-    .where('id', '=', providerId)
-    .executeTakeFirstOrThrow()
-
-  const data = {
-    provider,
-    clientId: provider.clientId,
-    organization: {
-      id: orgId
-    }
-  }
-
-  publish(SubscriptionChannel.ORGANIZATION, orgId, 'CreateOAuthAPIProviderSuccess', data, {})
+  dataLoader.clearAll('oAuthProviders')
+  const provider = await dataLoader.get('oAuthProviders').loadNonNull(providerId)
 
   return {
     providerId: provider.id,

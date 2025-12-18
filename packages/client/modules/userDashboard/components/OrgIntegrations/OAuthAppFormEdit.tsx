@@ -5,13 +5,17 @@ import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OAuthAppFormContent from './OAuthAppFormContent'
 
 const query = graphql`
-  query OAuthAppFormEditQuery($providerId: ID!) {
-    oauthProvider: oauthAPIProvider(id: $providerId) {
-      id
-      name
-      clientId
-      redirectUris
-      scopes
+  query OAuthAppFormEditQuery($orgId: ID!, $providerId: ID!) {
+    viewer {
+      organization(orgId: $orgId) {
+        oauthProvider: oauthAPIProvider(id: $providerId) {
+          id
+          name
+          clientId
+          redirectUris
+          scopes
+        }
+      }
     }
   }
 `
@@ -25,7 +29,7 @@ const OAuthAppFormEdit = ({
   providerId: string
   onClose: () => void
 }) => {
-  const queryRef = useQueryLoaderNow<OAuthAppFormEditQuery>(query, {providerId})
+  const queryRef = useQueryLoaderNow<OAuthAppFormEditQuery>(query, {orgId, providerId})
 
   if (!queryRef) return null // Loading...
 
@@ -51,7 +55,7 @@ const OAuthAppFormContentWithData = ({
   onClose: () => void
 }) => {
   const data = usePreloadedQuery<OAuthAppFormEditQuery>(query, queryRef)
-  const provider = data.oauthProvider
+  const provider = data.viewer.organization?.oauthProvider
 
   if (!provider && !isNew) {
     return <div className='p-6'>Provider not found</div>

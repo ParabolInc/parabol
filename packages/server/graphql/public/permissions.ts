@@ -39,7 +39,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
-      'args.input.orgId',
+      'args.orgId',
       'ORG_ADMIN'
     ),
     loginWithGoogle: and(

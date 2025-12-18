@@ -12,8 +12,18 @@ const OAuthAuthorizePage = () => {
   const [error, setError] = useState<string | null>(null)
 
   const [commitCreateCode] = useMutation<OAuthAuthorizePageMutation>(graphql`
-    mutation OAuthAuthorizePageMutation($input: CreateOAuthAPICodeInput!) {
-      createOAuthAPICode(input: $input) {
+    mutation OAuthAuthorizePageMutation(
+      $clientId: String!
+      $redirectUri: String!
+      $scopes: [String!]!
+      $state: String
+    ) {
+      createOAuthAPICode(
+        clientId: $clientId
+        redirectUri: $redirectUri
+        scopes: $scopes
+        state: $state
+      ) {
         code
         state
       }
@@ -37,12 +47,10 @@ const OAuthAuthorizePage = () => {
 
     commitCreateCode({
       variables: {
-        input: {
-          clientId,
-          redirectUri,
-          scopes,
-          state: state || undefined
-        }
+        clientId,
+        redirectUri,
+        scopes,
+        state: state || undefined
       },
       onCompleted: (data) => {
         const {code, state} = data.createOAuthAPICode

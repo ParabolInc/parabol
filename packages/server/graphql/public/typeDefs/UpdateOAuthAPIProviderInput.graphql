@@ -1,6 +1,0 @@
-input UpdateOAuthAPIProviderInput {
-  providerId: ID!
-  name: String
-  redirectUris: [RedirectURI!]
-  scopes: [OAuthScopeEnum!]
-}

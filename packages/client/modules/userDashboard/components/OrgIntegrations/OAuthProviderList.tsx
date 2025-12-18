@@ -46,8 +46,8 @@ const OAuthProviderList = ({organizationRef}: Props) => {
   const [editingProviderId, setEditingProviderId] = useState<string | null>(null)
 
   const [commitDelete] = useMutation(graphql`
-    mutation OAuthProviderListDeleteMutation($input: DeleteOAuthAPIProviderInput!) {
-      deleteOAuthAPIProvider(input: $input) {
+    mutation OAuthProviderListDeleteMutation($providerId: ID!) {
+      deleteOAuthAPIProvider(providerId: $providerId) {
         deletedProviderId
       }
     }
@@ -91,9 +91,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
     if (providerToDelete) {
       commitDelete({
         variables: {
-          input: {
-            providerId: providerToDelete.id
-          }
+          providerId: providerToDelete.id
         },
         updater: (store) => {
           const payload = store.getRootField('deleteOAuthAPIProvider')

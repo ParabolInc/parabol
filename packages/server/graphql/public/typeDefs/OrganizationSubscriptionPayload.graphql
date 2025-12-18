@@ -12,7 +12,5 @@ type OrganizationSubscriptionPayload {
   UpdateOrgPayload: UpdateOrgPayload
   UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccess
   UpgradeToTeamTierSuccess: UpgradeToTeamTierSuccess
-  CreateOAuthAPIProviderSuccess: CreateOAuthAPIProviderSuccess
   UpdateOAuthAPIProviderSuccess: UpdateOAuthAPIProviderSuccess
-  DeleteOAuthAPIProviderSuccess: DeleteOAuthAPIProviderSuccess
 }

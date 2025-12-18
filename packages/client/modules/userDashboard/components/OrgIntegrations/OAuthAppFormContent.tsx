@@ -29,13 +29,22 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
 
   const [commitCreate] = useMutation<OAuthAppFormContentCreateMutation>(graphql`
-    mutation OAuthAppFormContentCreateMutation($input: CreateOAuthAPIProviderInput!) {
-      createOAuthAPIProvider(input: $input) {
+    mutation OAuthAppFormContentCreateMutation(
+      $orgId: ID!
+      $name: String!
+      $redirectUris: [RedirectURI!]!
+      $scopes: [OAuthScopeEnum!]!
+    ) {
+      createOAuthAPIProvider(
+        orgId: $orgId
+        name: $name
+        redirectUris: $redirectUris
+        scopes: $scopes
+      ) {
         provider {
           id
           name
-          redirectUris
-          scopes
+          updatedAt
         }
         clientId
         clientSecret
@@ -44,28 +53,39 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   `)
 
   const [commitUpdate] = useMutation(graphql`
-    mutation OAuthAppFormContentUpdateMutation($input: UpdateOAuthAPIProviderInput!) {
-      updateOAuthAPIProvider(input: $input) {
+    mutation OAuthAppFormContentUpdateMutation(
+      $providerId: ID!
+      $name: String
+      $redirectUris: [RedirectURI!]
+      $scopes: [OAuthScopeEnum!]
+    ) {
+      updateOAuthAPIProvider(
+        providerId: $providerId
+        name: $name
+        redirectUris: $redirectUris
+        scopes: $scopes
+      ) {
         provider {
           id
           name
-          redirectUris
-          scopes
+          updatedAt
+        }
+        organization {
+          id
         }
       }
     }
   `)
 
   const [commitRegenerate] = useMutation(graphql`
-    mutation OAuthAppFormContentRegenerateMutation($input: RegenerateOAuthAPIProviderSecretInput!) {
-      regenerateOAuthAPIProviderSecret(input: $input) {
+    mutation OAuthAppFormContentRegenerateMutation($providerId: ID!) {
+      regenerateOAuthAPIProviderSecret(providerId: $providerId) {
         clientSecret
       }
     }
   `)
 
   const [clientId, setClientId] = useState(initialData?.clientId || '')
-  // Initial state is empty for new providers, or masked for existing
   const [clientSecret, setClientSecret] = useState(isNew ? '' : '••••••••••••••••••••')
   const [showSecret, setShowSecret] = useState(false)
 
@@ -101,18 +121,15 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
 
     const providerId = initialData?.id
 
-    // Cast scopes to any to avoid type errors since we don't have OAuthScopeEnum imported
     const mutationScopes = scopes as any
 
     if (providerId) {
       commitUpdate({
         variables: {
-          input: {
-            providerId,
-            name,
-            redirectUris: uriList,
-            scopes: mutationScopes
-          }
+          providerId,
+          name,
+          redirectUris: uriList,
+          scopes: mutationScopes
         },
         onCompleted: () => {
           setIsSaving(false)
@@ -127,12 +144,10 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     } else {
       commitCreate({
         variables: {
-          input: {
-            orgId,
-            name,
-            redirectUris: uriList,
-            scopes: mutationScopes
-          }
+          orgId,
+          name,
+          redirectUris: uriList,
+          scopes: mutationScopes
         },
         updater: (store) => {
           const payload = store.getRootField('createOAuthAPIProvider')
@@ -140,15 +155,13 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           if (!newProvider) return
 
           const orgRecord = store.get(orgId)
-          if (!orgRecord) return
-
-          const providers = orgRecord.getLinkedRecords('oauthApplications') || []
-          const newProviders = [...providers, newProvider]
-          orgRecord.setLinkedRecords(newProviders, 'oauthApplications')
+          if (orgRecord) {
+            const existingProviders = orgRecord.getLinkedRecords('oauthApplications') || []
+            orgRecord.setLinkedRecords([...existingProviders, newProvider], 'oauthApplications')
+          }
         },
         onCompleted: (response) => {
           setIsSaving(false)
-          // Don't close, instead update state to show credentials
           const payload = response.createOAuthAPIProvider
           if (payload) {
             setClientId(payload.clientId)
@@ -180,9 +193,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const handleConfirmRegenerate = () => {
     commitRegenerate({
       variables: {
-        input: {
-          providerId: initialData.id
-        }
+        providerId: initialData.id
       },
       onCompleted: (response: any) => {
         setClientSecret(response.regenerateOAuthAPIProviderSecret.clientSecret)

@@ -1,3 +1,0 @@
-input DeleteOAuthAPIProviderInput {
-  providerId: ID!
-}
