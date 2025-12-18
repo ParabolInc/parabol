@@ -128,17 +128,11 @@ const Organization: OrganizationResolvers = {
       : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
     return providers
   },
-  oauthAPIProvider: async ({id: orgId}, {id}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-
+  oauthAPIProvider: async ({id: orgId}, {id}, {dataLoader}) => {
     const [providerId] = CipherId.fromClient(id)
     const provider = await dataLoader.get('oAuthProviders').load(providerId)
 
-    if (
-      !provider ||
-      provider.orgId !== orgId ||
-      !(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))
-    ) {
+    if (!provider || provider.orgId !== orgId) {
       return null
     }
 

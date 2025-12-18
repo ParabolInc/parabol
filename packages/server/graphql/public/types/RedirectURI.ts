@@ -1,4 +1,4 @@
-import {Kind} from 'graphql'
+import {GraphQLError, Kind} from 'graphql'
 import type {RedirectUriScalarConfig} from '../resolverTypes'
 
 const isRedirectUriValid = (uri: string): boolean => {
@@ -27,11 +27,16 @@ const RedirectURIScalarType: RedirectUriScalarConfig = {
     'A valid OAuth redirect URI (HTTPS required, HTTP allowed for localhost only, no fragments)',
   parseValue(value: unknown) {
     if (typeof value !== 'string') {
-      throw new Error(`RedirectURI must be a string, received: ${typeof value}`)
+      throw new GraphQLError(`RedirectURI must be a string, received: ${typeof value}`, {
+        extensions: {code: 'INVALID_REDIRECT_URI'}
+      })
     }
     if (!isRedirectUriValid(value)) {
-      throw new Error(
-        `Invalid redirect URI: '${value}'. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.`
+      throw new GraphQLError(
+        `Invalid redirect URI: '${value}'. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.`,
+        {
+          extensions: {code: 'INVALID_REDIRECT_URI'}
+        }
       )
     }
     return value
@@ -41,11 +46,16 @@ const RedirectURIScalarType: RedirectUriScalarConfig = {
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
-      throw new Error(`RedirectURI must be a string, received: ${ast.kind}`)
+      throw new GraphQLError(`RedirectURI must be a string, received: ${ast.kind}`, {
+        extensions: {code: 'INVALID_REDIRECT_URI'}
+      })
     }
     if (!isRedirectUriValid(ast.value)) {
-      throw new Error(
-        `Invalid redirect URI: '${ast.value}'. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.`
+      throw new GraphQLError(
+        `Invalid redirect URI: '${ast.value}'. URIs must use HTTPS (or HTTP for localhost) and not contain fragments.`,
+        {
+          extensions: {code: 'INVALID_REDIRECT_URI'}
+        }
       )
     }
     return ast.value

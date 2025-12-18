@@ -4,6 +4,7 @@ import type {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasProviderAccess} from './rules/hasProviderAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
@@ -96,6 +97,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   Organization: {
+    oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.id'),
     saml: and(
       isViewerBillingLeader<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
