@@ -17,7 +17,7 @@
     "build-storybook": "build-sFtorybook",
     "precommit": "lint-staged",
     "test": "jest --verbose",
-    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
+    "typecheck": "pnpm tsgo --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@types/cleave.js": "^1.4.7",
