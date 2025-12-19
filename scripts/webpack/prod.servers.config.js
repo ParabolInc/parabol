@@ -101,30 +101,11 @@ module.exports = (config) => {
         'process.arch': JSON.stringify(process.arch),
         'process.versions.modules': JSON.stringify(process.versions.modules)
       }),
-      // native bindings might be faster, but abandonware & not currently used
       new webpack.IgnorePlugin({
-        resourceRegExp: /^pg-native$/,
-        contextRegExp: /pg\/lib/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^pg-cloudflare$/,
-        contextRegExp: /pg\/lib/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^exiftool-vendored$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /^@resvg\/resvg-js$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-regular.otf$/,
-        contextRegExp: /@dicebear/
-      }),
-      new webpack.IgnorePlugin({
-        resourceRegExp: /inter-bold.otf$/,
-        contextRegExp: /@dicebear/
+        // native bindings might be faster, but abandonware & not currently used
+        resourceRegExp:
+          /^(pg-native|pg-cloudflare|exiftool-vendored|@resvg\/resvg-js|inter-(regular|bold)\.otf)$/,
+        contextRegExp: /(pg\/lib|@dicebear)/
       }),
       new CopyWebpackPlugin({
         patterns: [
@@ -162,7 +143,7 @@ module.exports = (config) => {
           }
         },
         {
-          test: /sharp\.js$/,
+          include: [require.resolve('sharp/lib/sharp.js')],
           loader: 'string-replace-loader',
           options: {
             search: 'sharp = require(path)',
