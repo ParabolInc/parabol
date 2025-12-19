@@ -40,7 +40,7 @@
     "test:server": "pnpm --filter parabol-server test"
   },
   "resolutions": {
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.2",
@@ -140,7 +140,7 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-jest": "^29.3.2",
     "ts-loader": "9.2.6",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^5.99.6",
     "webpack-bundle-analyzer": "^4.10.2",

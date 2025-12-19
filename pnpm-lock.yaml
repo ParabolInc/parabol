@@ -396,7 +396,7 @@ importers:
         specifier: 9.2.6
         version: 9.2.6(typescript@5.9.3)(webpack@5.103.0)
       typescript:
-        specifier: ^5.9.2
+        specifier: ^5.9.3
         version: 5.9.3
       vscode-apollo-relay:
         specifier: ^1.5.0
