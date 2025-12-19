@@ -3,7 +3,7 @@ import TeamPromptResponseStage from './TeamPromptResponseStage'
 
 export default class TeamPromptResponsesPhase extends GenericMeetingPhase {
   stages: [TeamPromptResponseStage, ...TeamPromptResponseStage[]]
-  phaseType!: 'RESPONSES'
+  phaseType = 'RESPONSES' as const
 
   constructor(teamMemberIds: string[]) {
     super('RESPONSES')

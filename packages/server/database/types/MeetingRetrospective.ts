@@ -23,7 +23,7 @@ interface Input {
 }
 
 export default class MeetingRetrospective extends Meeting {
-  meetingType!: 'retrospective'
+  meetingType = 'retrospective' as const
   autoGroupThreshold?: number | null
   nextAutoGroupThreshold?: number | null
   totalVotes: number

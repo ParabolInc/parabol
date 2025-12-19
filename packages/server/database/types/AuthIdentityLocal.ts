@@ -8,7 +8,7 @@ interface Input {
 }
 
 export default class AuthIdentityLocal extends AuthIdentity {
-  type!: 'LOCAL'
+  type = 'LOCAL' as const
   hashedPassword: string
   constructor(input: Input) {
     const {id, hashedPassword, isEmailVerified} = input
