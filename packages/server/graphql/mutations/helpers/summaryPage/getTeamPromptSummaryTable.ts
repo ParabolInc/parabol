@@ -28,6 +28,5 @@ export const getTeamPromptSummaryTable = async (
   dataLoader: DataLoaderInstance
 ) => {
   const rowData = await getRowData(meetingId, dataLoader)
-  console.log('GEORG summary', rowData)
   return getSummaryTable(headers, rowData)
 }

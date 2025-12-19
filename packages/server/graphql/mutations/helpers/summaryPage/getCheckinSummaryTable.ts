@@ -1,4 +1,3 @@
-import {isNotNull} from '../../../../../client/utils/predicates'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import {getSummaryTable} from './getSummaryTable'
 
@@ -22,7 +21,7 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
     agendaItems.map(async (agendaItem) => {
       const {id, content} = agendaItem
       const discussion = discussions.find((d) => d.discussionTopicId === id)
-      if (!discussion) return
+      if (!discussion) return []
       const [tasks, comments] = await Promise.all([
         dataLoader.get('tasksByDiscussionId').load(discussion.id),
         dataLoader.get('commentsByDiscussionId').load(discussion.id)
@@ -33,15 +32,10 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
         ...comments.map((comment) => ({...comment, type: 'Comment'}))
       ]
 
-      // preload authors
-      dataLoader
-        .get('users')
-        .loadMany(allItems.map((item) => item.createdBy).filter(Boolean) as string[])
-
       const findDiscussionThread = (threadParentId: string | null) => {
-        if (!threadParentId) return null
+        if (!threadParentId) return ''
         const foundItem = allItems.find(({id}) => id === threadParentId)
-        return foundItem?.plaintextContent ?? null
+        return foundItem?.plaintextContent ?? ''
       }
 
       const rows = await Promise.all(
@@ -56,7 +50,7 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
             Type: item.type,
             'Created at': item.createdAt.toISOString(),
             Content: item.plaintextContent,
-            'Discussion Thread': findDiscussionThread(item.threadParentId) ?? ''
+            'Discussion Thread': findDiscussionThread(item.threadParentId)
           }
         })
       )
@@ -65,7 +59,7 @@ const getCheckinRowData = async (meetingId: string, dataLoader: DataLoaderInstan
     })
   )
 
-  return agendaItemDiscussions.flat().filter(isNotNull)
+  return agendaItemDiscussions.flat()
 }
 
 export const getCheckinSummaryTable = async (meetingId: string, dataLoader: DataLoaderInstance) => {
