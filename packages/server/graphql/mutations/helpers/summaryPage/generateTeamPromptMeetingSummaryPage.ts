@@ -5,6 +5,7 @@ import {getInsightsBlocks} from './getInsightsBlocks'
 import {getSubtitleBlock} from './getSubtitleBlock'
 import {getTeamPromptBlocks} from './getTeamPromptBlocks'
 import {getTeamPromptMetaBlock} from './getTeamPromptMetaBlock'
+import {getTeamPromptSummaryTable} from './getTeamPromptSummaryTable'
 import {getTitleBlock} from './getTitleBlock'
 
 export const generateTeamPromptMeetingSummaryPage = async function* (
@@ -19,7 +20,8 @@ export const generateTeamPromptMeetingSummaryPage = async function* (
     getSubtitleBlock(meeting, dataLoader),
     getTeamPromptMetaBlock(meeting, dataLoader),
     getInsightsBlocks(meetingId, dataLoader),
-    getTeamPromptBlocks(meetingId, dataLoader)
+    getTeamPromptBlocks(meetingId, dataLoader),
+    getTeamPromptSummaryTable(meetingId, dataLoader)
   ] as Promise<JSONContent[] | null>[]
   for (const promise of promises) {
     const blocks = await promise

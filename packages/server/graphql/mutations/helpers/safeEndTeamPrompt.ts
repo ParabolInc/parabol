@@ -20,20 +20,16 @@ import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeTeamPrompt = async (meeting: TeamPromptMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const operationId = dataLoader.share()
-  const subOptions = {operationId}
   const pg = getKysely()
 
   const summary = await generateStandupMeetingSummary(meeting, dataLoader)
   await pg.updateTable('NewMeeting').set({summary}).where('id', '=', meeting.id).execute()
 
-  dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   updateQualAIMeetingsCount(meeting.id, meeting.teamId, dataLoader)
   // wait for meeting stats to be generated before sending Slack notification
   IntegrationNotifier.endMeeting(dataLoader, meeting.id, meeting.teamId)
-  const data = {meetingId: meeting.id}
-  publish(SubscriptionChannel.MEETING, meeting.id, 'EndTeamPromptSuccess', data, subOptions)
+  return summary
 }
 
 const safeEndTeamPrompt = async ({
@@ -72,7 +68,7 @@ const safeEndTeamPrompt = async ({
   dataLoader.clearAll('newMeetings')
 
   const [completedTeamPrompt, meetingMembers, team, teamMembers, responses] = await Promise.all([
-    dataLoader.get('newMeetings').loadNonNull(meetingId),
+    dataLoader.get('newMeetings').loadNonNull(meetingId) as Promise<TeamPromptMeeting>,
     dataLoader.get('meetingMembersByMeetingId').load(meetingId),
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('teamMembersByTeamId').load(teamId),
@@ -89,14 +85,24 @@ const safeEndTeamPrompt = async ({
       })
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
-  summarizeTeamPrompt(meeting, context)
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
-  const page = await publishSummaryPage(meetingId, context, info)
+  const [page, summary] = await Promise.all([
+    publishSummaryPage(meetingId, context, info),
+    summarizeTeamPrompt(completedTeamPrompt, context)
+  ])
   completedTeamPrompt.summaryPageId = page.id
+  completedTeamPrompt.summary = summary
   const data = {
     meetingId,
     teamId
   }
+  publish(
+    SubscriptionChannel.MEETING,
+    meeting.id,
+    'EndTeamPromptSuccess',
+    {meetingId},
+    {operationId}
+  )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
   // do not await sending the email
   sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
