@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  typescript: ^5.9.2
+  typescript: ^5.9.3
   hoist-non-react-statics: ^3.3.0
   '@types/react': 17.0.2
   '@types/react-dom': 17.0.2
@@ -3487,7 +3487,7 @@ packages:
     resolution: {integrity: sha512-O+PRXXoR/8VXsMuE6ShsWAt/iuvCdyFhXtsJxYCeBrfg99L22lvTaIxE8xZN8lVDIOwJI9jYxFgb8CTGND/l9Q==}
     peerDependencies:
       '@mattermost/types': 10.12.0
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3495,7 +3495,7 @@ packages:
   '@mattermost/types@10.12.0':
     resolution: {integrity: sha512-FGTpj7enl+2M9ElUyivW46K7j0/eGh6vrfPsw/C64W55In3yyal6YhLRv1UTGGSdmGwtLwZuFuv3Ot/kCIY8Jw==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3529,7 +3529,7 @@ packages:
   '@module-federation/dts-plugin@0.18.4':
     resolution: {integrity: sha512-5FlrajLCypQ8+vEsncgEGpDmxUDG+Ub6ogKOE00e2gMxcYlgcCZNUSn5VbEGdCMcHQmIK2xt3WGQT30/7j2KiQ==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       vue-tsc:
@@ -3539,7 +3539,7 @@ packages:
     resolution: {integrity: sha512-KiBw7e+aIBFoO2cmN5hJlKrYv3nUuXsB8yOSVnV9JBAkYNyRZQ9xoSbRCDt8rDRz/ydgEURUIwnGyL2ZU5jZYw==}
     hasBin: true
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
       webpack: ^5.0.0
     peerDependenciesMeta:
@@ -3571,7 +3571,7 @@ packages:
     resolution: {integrity: sha512-gnvXKtk/w0ML15JHueWej5/8Lkoho7EoYUxvO77nBCnGOlXNqVYqLZ3REy2SS/8SQ4vQK156eSiyUkth2OYQqw==}
     peerDependencies:
       '@rspack/core': '>=0.7'
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       typescript:
@@ -7132,7 +7132,7 @@ packages:
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -7141,7 +7141,7 @@ packages:
     resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -9500,7 +9500,7 @@ packages:
   mattermost-redux@10.12.0:
     resolution: {integrity: sha512-Z957Fr1pszrQhGEyGQJVsEGZJlrOA+qX8sr+PDTHM4a7YCcg1Y7CS+9pPoZfMl+VYilEBUEIEixewcfnGqi9Zw==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -11633,7 +11633,7 @@ packages:
       esbuild: '*'
       jest: ^29.0.0 || ^30.0.0
       jest-util: ^29.0.0 || ^30.0.0
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       '@babel/core':
         optional: true
@@ -11652,7 +11652,7 @@ packages:
     resolution: {integrity: sha512-QMTC4UFzHmu9wU2VHZEmWWE9cUajjfcdcws+Gh7FhiO+Dy0RnR1bNz0YCHqhI0yRowCE9arVnNxYHqELOy9Hjw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       webpack: ^5.0.0
 
   ts-log@2.2.7:
@@ -11663,7 +11663,7 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
