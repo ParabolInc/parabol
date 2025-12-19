@@ -12,7 +12,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "test": "jest --verbose",
-    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
+    "typecheck": "pnpm tsgo --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"

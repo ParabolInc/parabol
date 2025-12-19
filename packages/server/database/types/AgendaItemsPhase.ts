@@ -3,7 +3,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 
 export default class AgendaItemsPhase extends GenericMeetingPhase {
   stages: AgendaItemsStage[]
-  phaseType!: 'agendaitems'
+  phaseType = 'agendaitems' as const
 
   constructor(agendaItemIds: string[], durations: number[] | undefined) {
     super('agendaitems')

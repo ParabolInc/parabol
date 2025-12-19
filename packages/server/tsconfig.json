@@ -2,12 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "esModuleInterop": true,
-    "baseUrl": "../",
     "paths": {
-      "server/*": [""],
-      "parabol-client/*": ["client/*"],
-      "parabol-server/*": [""],
-      "~/*": ["client/*"]
+      "server/*": ["./"],
+      "parabol-client/*": ["../client/*"],
+      "parabol-server/*": ["./"],
+      "~/*": ["../client/*"]
     },
     "lib": ["esnext", "dom"]
   },

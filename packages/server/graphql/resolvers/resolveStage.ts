@@ -1,10 +1,10 @@
 import type GenericMeetingPhase from '../../database/types/GenericMeetingPhase'
-import type {NewMeetingPhaseTypeEnum} from '../../database/types/GenericMeetingPhase'
+import type {Newmeetingphasetypeenum} from '../../postgres/types/pg'
 import type {GQLContext} from './../graphql'
 import {augmentDBStage} from '../resolvers'
 
 const resolveStage =
-  (phaseType: NewMeetingPhaseTypeEnum) =>
+  (phaseType: Newmeetingphasetypeenum) =>
   async (
     {meetingId, stageId}: {meetingId: string; stageId: string},
     _args: unknown,

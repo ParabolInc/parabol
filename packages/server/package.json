@@ -17,7 +17,7 @@
     "precommit": "lint-staged",
     "test": "jest --verbose --runInBand",
     "postversion": "git push --follow-tags",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsgo --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@amplitude/analytics-types": "^1.3.2",

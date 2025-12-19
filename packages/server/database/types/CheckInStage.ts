@@ -1,7 +1,7 @@
 import GenericMeetingStage from './GenericMeetingStage'
 
 export default class CheckInStage extends GenericMeetingStage {
-  phaseType!: 'checkin'
+  phaseType = 'checkin' as const
   constructor(
     public teamMemberId: string,
     durations?: number[] | undefined

@@ -1,4 +1,4 @@
-interface GenericMeetingStage {
+export interface GenericMeetingStage {
   id: string
   isAsync?: boolean | null
   isComplete: boolean
@@ -14,26 +14,26 @@ interface GenericMeetingStage {
   phaseType: string
 }
 
-interface AgendaItemStage extends GenericMeetingStage {
+export interface AgendaItemStage extends GenericMeetingStage {
   phaseType: 'agendaitems'
   agendaItemId: string
   discussionId: string
 }
 
-interface CheckInStage extends GenericMeetingStage {
+export interface CheckInStage extends GenericMeetingStage {
   phaseType: 'checkin'
   teamMemberId: string
   durations?: number[]
 }
 
-interface DiscussStage extends GenericMeetingStage {
+export interface DiscussStage extends GenericMeetingStage {
   phaseType: 'discuss'
   reflectionGroupId: string
   discussionId: string
   sortOrder: number
 }
 
-interface EstimateStage extends GenericMeetingStage {
+export interface EstimateStage extends GenericMeetingStage {
   phaseType: 'ESTIMATE'
   creatorUserId: string
   serviceTaskId: string
@@ -48,11 +48,11 @@ interface EstimateStage extends GenericMeetingStage {
   discussionId: string
 }
 
-interface ReflectStage extends GenericMeetingStage {
+export interface ReflectStage extends GenericMeetingStage {
   phaseType: 'reflect'
 }
 
-interface TeamHealthStage extends GenericMeetingStage {
+export interface TeamHealthStage extends GenericMeetingStage {
   phaseType: 'TEAM_HEALTH'
   votes: {
     userId: string
@@ -64,108 +64,108 @@ interface TeamHealthStage extends GenericMeetingStage {
   durations?: number[]
 }
 
-interface TeamPromptResponseStage extends GenericMeetingStage {
+export interface TeamPromptResponseStage extends GenericMeetingStage {
   phaseType: 'RESPONSES'
   teamMemberId: string
   discussionId: string
 }
 
-interface UpdatesStage extends GenericMeetingStage {
+export interface UpdatesStage extends GenericMeetingStage {
   phaseType: 'updates'
   teamMemberId: string
   durations?: number[]
 }
 
-interface FirstCallStage extends GenericMeetingStage {
+export interface FirstCallStage extends GenericMeetingStage {
   phaseType: 'firstcall'
 }
 
-interface LastCallStage extends GenericMeetingStage {
+export interface LastCallStage extends GenericMeetingStage {
   phaseType: 'lastcall'
 }
 
-interface GroupStage extends GenericMeetingStage {
+export interface GroupStage extends GenericMeetingStage {
   phaseType: 'group'
 }
 
-interface VoteStage extends GenericMeetingStage {
+export interface VoteStage extends GenericMeetingStage {
   phaseType: 'vote'
 }
 
-interface ScopeStage extends GenericMeetingStage {
+export interface ScopeStage extends GenericMeetingStage {
   phaseType: 'SCOPE'
 }
 
-interface GenericMeetingPhase {
+export interface GenericMeetingPhase {
   id: string
 }
 
-interface FirstCallPhase extends GenericMeetingPhase {
+export interface FirstCallPhase extends GenericMeetingPhase {
   phaseType: 'firstcall'
   stages: [FirstCallStage]
 }
 
-interface LastCallPhase extends GenericMeetingPhase {
+export interface LastCallPhase extends GenericMeetingPhase {
   phaseType: 'lastcall'
   stages: [LastCallStage]
 }
 
-interface GroupPhase extends GenericMeetingPhase {
+export interface GroupPhase extends GenericMeetingPhase {
   phaseType: 'group'
   stages: [GroupStage]
 }
 
-interface VotePhase extends GenericMeetingPhase {
+export interface VotePhase extends GenericMeetingPhase {
   phaseType: 'vote'
   stages: [VoteStage]
 }
 
-interface ScopePhase extends GenericMeetingPhase {
+export interface ScopePhase extends GenericMeetingPhase {
   phaseType: 'SCOPE'
   stages: [ScopeStage]
 }
 
-interface AgendaItemPhase extends GenericMeetingPhase {
+export interface AgendaItemPhase extends GenericMeetingPhase {
   phaseType: 'agendaitems'
   stages: AgendaItemStage[]
 }
 
-interface CheckInPhase extends GenericMeetingPhase {
+export interface CheckInPhase extends GenericMeetingPhase {
   phaseType: 'checkin'
   stages: [CheckInStage, ...CheckInStage[]]
   checkInGreeting: {content: string; language: string}
   checkInQuestion: string
 }
 
-interface DiscussPhase extends GenericMeetingPhase {
+export interface DiscussPhase extends GenericMeetingPhase {
   phaseType: 'discuss'
   stages: [DiscussStage, ...DiscussStage[]]
 }
 
-interface EstimatePhase extends GenericMeetingPhase {
+export interface EstimatePhase extends GenericMeetingPhase {
   phaseType: 'ESTIMATE'
   stages: EstimateStage[]
 }
 
-interface ReflectPhase extends GenericMeetingPhase {
+export interface ReflectPhase extends GenericMeetingPhase {
   phaseType: 'reflect'
   stages: [ReflectStage]
   teamId: string
   focusedPromptId?: string
 }
 
-interface TeamHealthPhase extends GenericMeetingPhase {
+export interface TeamHealthPhase extends GenericMeetingPhase {
   phaseType: 'TEAM_HEALTH'
   isRevealed: boolean
   stages: [TeamHealthStage]
 }
 
-interface TeamPromptResponsesPhase extends GenericMeetingPhase {
+export interface TeamPromptResponsesPhase extends GenericMeetingPhase {
   phaseType: 'RESPONSES'
   stages: [TeamPromptResponseStage, ...TeamPromptResponseStage[]]
 }
 
-interface UpdatesPhase extends GenericMeetingPhase {
+export interface UpdatesPhase extends GenericMeetingPhase {
   phaseType: 'updates'
 
   stages: [UpdatesStage, ...UpdatesStage[]]
@@ -198,4 +198,4 @@ export type NewMeetingPhase =
   | TeamPromptPhase
 
 type TupleToArray<T> = T extends (infer U)[] ? U : never
-export type NewMeetingStages = TupleToArray<NewMeetingPhase['stages']>
+export type NewMeetingStage = TupleToArray<NewMeetingPhase['stages']>
