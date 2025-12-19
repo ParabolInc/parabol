@@ -429,3 +429,25 @@ export const selectPoll = () => {
 export const selectPollOption = () => {
   return getKysely().selectFrom('PollOption').selectAll()
 }
+export const selectOAuthAPIProvider = () => {
+  return getKysely()
+    .selectFrom('OAuthAPIProvider')
+    .select([
+      'id',
+      'clientId',
+      'clientSecret',
+      'createdAt',
+      'name',
+      'orgId',
+      'redirectUris',
+      'updatedAt'
+    ])
+    .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
+}
+
+export const selectOAuthAPICode = () => {
+  return getKysely()
+    .selectFrom('OAuthAPICode')
+    .select(['id', 'clientId', 'createdAt', 'expiresAt', 'redirectUri', 'userId'])
+    .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
+}

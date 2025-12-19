@@ -1,0 +1,4 @@
+enum OAuthScopeEnum {
+  graphql_query
+  graphql_mutation
+}

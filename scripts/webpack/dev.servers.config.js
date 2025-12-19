@@ -51,7 +51,8 @@ module.exports = {
       ...nodeExternals({
         allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
       }),
-      sharp: 'commonjs sharp'
+      sharp: 'commonjs sharp',
+      'string-score': 'commonjs string-score'
     }
   ],
   plugins: [

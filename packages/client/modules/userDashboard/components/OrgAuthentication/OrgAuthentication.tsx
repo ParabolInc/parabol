@@ -5,6 +5,7 @@ import type {OrgAuthenticationQuery} from '../../../../__generated__/OrgAuthenti
 import DialogTitle from '../../../../components/DialogTitle'
 import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
+import OAuthProviderList from '../OrgIntegrations/OAuthProviderList'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
@@ -29,6 +30,8 @@ const OrgAuthentication = (props: Props) => {
               ...OrgAuthenticationMetadata_saml
               id
             }
+            ...OAuthProviderList_organization
+            featureFlag(featureName: "oauthProvider")
           }
         }
       }
@@ -39,15 +42,32 @@ const OrgAuthentication = (props: Props) => {
   const {organization} = viewer
   const saml = organization?.saml ?? null
   const disabled = !saml
+  const showOAuthProvider = organization?.featureFlag
+
   return (
-    <StyledPanel>
-      <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
-      <OrgAuthenticationSSOFrame samlRef={saml} />
-      <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
-        <OrgAuthenticationSignOnUrl samlRef={saml} />
-        <OrgAuthenticationMetadata samlRef={saml} />
-      </div>
-    </StyledPanel>
+    <div className='space-y-6'>
+      <StyledPanel>
+        <DialogTitle className='px-6 pt-5 pb-6'>SAML Single Sign-On</DialogTitle>
+        <OrgAuthenticationSSOFrame samlRef={saml} />
+        <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
+          <OrgAuthenticationSignOnUrl samlRef={saml} />
+          <OrgAuthenticationMetadata samlRef={saml} />
+        </div>
+      </StyledPanel>
+
+      {showOAuthProvider && (
+        <StyledPanel>
+          <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 API</DialogTitle>
+          <div className='px-6 pb-6'>
+            <div className='mb-6 text-base text-slate-700'>
+              Configure your organization as an OAuth 2.0 provider to allow external applications to
+              authenticate with your Parabol organization.
+            </div>
+            {organization && <OAuthProviderList organizationRef={organization} />}
+          </div>
+        </StyledPanel>
+      )}
+    </div>
   )
 }
 

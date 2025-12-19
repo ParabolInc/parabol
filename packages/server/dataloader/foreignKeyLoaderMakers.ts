@@ -6,6 +6,7 @@ import {
   selectComments,
   selectMeetingMembers,
   selectNewMeetings,
+  selectOAuthAPIProvider,
   selectOrganizations,
   selectReflectPrompts,
   selectRetroReflections,
@@ -329,5 +330,16 @@ export const tasksByIntegrationHash = foreignKeyLoaderMaker(
   async (integrationHashes) => {
     // waraning! contains private tasks
     return selectTasks().where('integrationHash', 'in', integrationHashes).execute()
+  }
+)
+
+export const oauthProvidersByOrgId = foreignKeyLoaderMaker(
+  'oAuthProviders',
+  'orgId',
+  async (orgIds) => {
+    return selectOAuthAPIProvider()
+      .where('orgId', 'in', orgIds)
+      .orderBy('createdAt', 'desc')
+      .execute()
   }
 )
