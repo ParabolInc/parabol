@@ -1,5 +1,6 @@
 import {getEmbedderPriority} from '../../../../embedder/getEmbedderPriority'
 import getKysely from '../../../postgres/getKysely'
+import getRedis from '../../../utils/getRedis'
 
 export interface MessageToEmbedderRelatedDiscussions {
   jobType: 'relatedDiscussions:start'
@@ -11,9 +12,9 @@ export type MessageToEmbedder = {
 } & MessageToEmbedderRelatedDiscussions
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
-export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) => {
+export const publishToEmbedder = async ({jobType, data, priority}: MessageToEmbedder) => {
   if (!IS_EMBEDDER_ENALBED) return
-  return getKysely()
+  await getKysely()
     .insertInto('EmbeddingsJobQueue')
     .values({
       jobType,
@@ -21,4 +22,5 @@ export const publishToEmbedder = ({jobType, data, priority}: MessageToEmbedder) 
       jobData: JSON.stringify(data)
     })
     .execute()
+  await getRedis().publish('embeddingsJobAdded', '')
 }

@@ -14,6 +14,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('model', 'varchar(255)', (col) => col.notNull())
       .addColumn('message', 'varchar(8192)', (col) => col.notNull())
       .addColumn('retryCount', 'smallint', (col) => col.notNull())
+      .addColumn('jobData', 'jsonb', (col) => col.defaultTo('{}').notNull())
+      .addColumn('jobType', 'varchar(255)', (col) => col.notNull())
       .addColumn('lastFailedAt', 'timestamptz', (col) =>
         col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull()
       )

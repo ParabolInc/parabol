@@ -26,4 +26,4 @@ interface JobQueueStep<TData, TResult = StepResult> {
 
 export type JobType = `${string}:${string}`
 export type Workflow = Record<string, JobQueueStep<any>>
-export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
+export type DBJob = Selectable<DB['EmbeddingsJobQueueV2']>

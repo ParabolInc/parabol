@@ -7,10 +7,9 @@ import {WorkflowOrchestrator} from './WorkflowOrchestrator'
 const debugFailedJob = async () => {
   const pg = getKysely()
   const failedJob = await pg
-    .selectFrom('EmbeddingsJobQueue')
+    .selectFrom('EmbeddingsFailures')
     .selectAll()
-    .orderBy('priority')
-    .where('state', '=', 'failed')
+    .orderBy('lastFailedAt')
     .limit(1)
     .executeTakeFirst()
 
