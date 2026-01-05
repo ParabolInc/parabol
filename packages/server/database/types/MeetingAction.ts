@@ -11,7 +11,7 @@ interface Input {
 }
 
 export default class MeetingAction extends Meeting {
-  meetingType!: 'action'
+  meetingType = 'action' as const
   taskCount?: number
   commentCount?: number
   agendaItemCount?: number

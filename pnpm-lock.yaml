@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  typescript: ^5.9.2
+  typescript: ^5.9.3
   hoist-non-react-statics: ^3.3.0
   '@types/react': 17.0.2
   '@types/react-dom': 17.0.2
@@ -275,6 +275,9 @@ importers:
       '@types/relay-runtime':
         specifier: ^18.2.5
         version: 18.2.5
+      '@typescript/native-preview':
+        specifier: 7.0.0-dev.20251217.1
+        version: 7.0.0-dev.20251217.1
       autoprefixer:
         specifier: ^10.4.13
         version: 10.4.22(postcss@8.5.6)
@@ -396,7 +399,7 @@ importers:
         specifier: 9.2.6
         version: 9.2.6(typescript@5.9.3)(webpack@5.103.0)
       typescript:
-        specifier: ^5.9.2
+        specifier: ^5.9.3
         version: 5.9.3
       vscode-apollo-relay:
         specifier: ^1.5.0
@@ -3487,7 +3490,7 @@ packages:
     resolution: {integrity: sha512-O+PRXXoR/8VXsMuE6ShsWAt/iuvCdyFhXtsJxYCeBrfg99L22lvTaIxE8xZN8lVDIOwJI9jYxFgb8CTGND/l9Q==}
     peerDependencies:
       '@mattermost/types': 10.12.0
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3495,7 +3498,7 @@ packages:
   '@mattermost/types@10.12.0':
     resolution: {integrity: sha512-FGTpj7enl+2M9ElUyivW46K7j0/eGh6vrfPsw/C64W55In3yyal6YhLRv1UTGGSdmGwtLwZuFuv3Ot/kCIY8Jw==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -3529,7 +3532,7 @@ packages:
   '@module-federation/dts-plugin@0.18.4':
     resolution: {integrity: sha512-5FlrajLCypQ8+vEsncgEGpDmxUDG+Ub6ogKOE00e2gMxcYlgcCZNUSn5VbEGdCMcHQmIK2xt3WGQT30/7j2KiQ==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       vue-tsc:
@@ -3539,7 +3542,7 @@ packages:
     resolution: {integrity: sha512-KiBw7e+aIBFoO2cmN5hJlKrYv3nUuXsB8yOSVnV9JBAkYNyRZQ9xoSbRCDt8rDRz/ydgEURUIwnGyL2ZU5jZYw==}
     hasBin: true
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
       webpack: ^5.0.0
     peerDependenciesMeta:
@@ -3571,7 +3574,7 @@ packages:
     resolution: {integrity: sha512-gnvXKtk/w0ML15JHueWej5/8Lkoho7EoYUxvO77nBCnGOlXNqVYqLZ3REy2SS/8SQ4vQK156eSiyUkth2OYQqw==}
     peerDependencies:
       '@rspack/core': '>=0.7'
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       vue-tsc: '>=1.0.24'
     peerDependenciesMeta:
       typescript:
@@ -6240,6 +6243,45 @@ packages:
   '@types/yup@0.29.13':
     resolution: {integrity: sha512-qRyuv+P/1t1JK1rA+elmK1MmCL1BapEzKKfbEhDBV/LMMse4lmhZ/XbgETI39JveDJRpLjmToOI6uFtMW/WR2g==}
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-hgekEq4o7O61cyaAbEtGv4t7jXZqRBPanVJmCPGGen8JupcZsmxttnrUdGwsXhAnd5YkG+hZLpZc9dcjiLgoaA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-WsKdNlr5Q03D9FO/3o1QdXvVKcVfKvz/JnXOsVt9S0YQ3YndtgaJ5ampiZV/OwL63Jt2E/6ln3vWZXTV968nxw==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-Oyn2Su45EZpwZ12KKQisPo1RWQlR3HGilTFjVrLxye6k9GL70gInh+qDhU5+8Dh0N/c6bPx7Cnb1vDHv0SMXBg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-WDVFr2AGQSMl1PhJMPmRylilNJWKyJWTXs+lT7jz15E5txtjcvem7mQWR1+1KrusmMkJgoId3lZCey5esGOXUw==}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-AYpOH1AmHoReTTPUJKcDOJOZWZx0l4QMh/J6I5wW/U1T9BVTmpBlOvlu5aqkI/Jn4Rym8ZrnnAvcSEWoP4gSyA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-9f6L+xbS3inW1IWiCdHvC95eXMLbHhjj/6HQL5e3nlM967ifcqikCLRJQN2o+zI74fVTY5WNHjd9DVaw1uTJAQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-+UuJoo94Ch5jb8E7O7slGdUFSW6SEQgL2jyhq3ptCXXooQEldFvgV1qvVvPnMoTijyrWwIPkoYwEBH2a6iY/6g==}
+    cpu: [x64]
+    os: [win32]
+
+  '@typescript/native-preview@7.0.0-dev.20251217.1':
+    resolution: {integrity: sha512-J5hMelK6JeuTOJy4lpH8oBijYAYVoKUW4BWd1++QRINKeyR41W8glA7spQRvox53Z2TB9U3PuVVSTEr8Kz558Q==}
+    hasBin: true
+
   '@webassemblyjs/ast@1.14.1':
     resolution: {integrity: sha512-nuBEDgQfm1ccRp/8bCQrx1frohyufl4JlbMMZ4P1wpeOfDhF6FQkxZJ1b/e+PLwr6X1Nhw6OLme5usuBWYBvuQ==}
 
@@ -7132,7 +7174,7 @@ packages:
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -7141,7 +7183,7 @@ packages:
     resolution: {integrity: sha512-itvL5h8RETACmOTFc4UfIyB2RfEHi71Ax6E/PivVxq9NseKbOWpeyHEOIbmAw1rs8Ak0VursQNww7lf7YtUwzg==}
     engines: {node: '>=14'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -9500,7 +9542,7 @@ packages:
   mattermost-redux@10.12.0:
     resolution: {integrity: sha512-Z957Fr1pszrQhGEyGQJVsEGZJlrOA+qX8sr+PDTHM4a7YCcg1Y7CS+9pPoZfMl+VYilEBUEIEixewcfnGqi9Zw==}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -11633,7 +11675,7 @@ packages:
       esbuild: '*'
       jest: ^29.0.0 || ^30.0.0
       jest-util: ^29.0.0 || ^30.0.0
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       '@babel/core':
         optional: true
@@ -11652,7 +11694,7 @@ packages:
     resolution: {integrity: sha512-QMTC4UFzHmu9wU2VHZEmWWE9cUajjfcdcws+Gh7FhiO+Dy0RnR1bNz0YCHqhI0yRowCE9arVnNxYHqELOy9Hjw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
       webpack: ^5.0.0
 
   ts-log@2.2.7:
@@ -11663,7 +11705,7 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
     peerDependencies:
-      typescript: ^5.9.2
+      typescript: ^5.9.3
     peerDependenciesMeta:
       typescript:
         optional: true
@@ -18800,6 +18842,37 @@ snapshots:
       '@types/yargs-parser': 21.0.3
 
   '@types/yup@0.29.13': {}
+
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251217.1':
+    optional: true
+
+  '@typescript/native-preview@7.0.0-dev.20251217.1':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251217.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251217.1
 
   '@webassemblyjs/ast@1.14.1':
     dependencies:

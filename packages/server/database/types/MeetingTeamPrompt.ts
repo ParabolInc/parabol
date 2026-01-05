@@ -14,7 +14,7 @@ interface Input {
 }
 
 export default class MeetingTeamPrompt extends Meeting {
-  meetingType!: 'teamPrompt'
+  meetingType = 'teamPrompt' as const
   meetingPrompt: string
 
   constructor(input: Input) {

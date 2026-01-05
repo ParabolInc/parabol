@@ -9,7 +9,13 @@ import UpdatesStage from '../../database/types/UpdatesStage'
 import getKysely from '../../postgres/getKysely'
 import type {TeamMember} from '../../postgres/types'
 import type {AnyMeeting} from '../../postgres/types/Meeting'
-import type {NewMeetingPhase, NewMeetingStages} from '../../postgres/types/NewMeetingPhase'
+import type {
+  CheckInStage as CheckInStageDB,
+  NewMeetingPhase,
+  NewMeetingStage,
+  TeamPromptResponseStage as TeamPromptResponseStageDB,
+  UpdatesStage as UpdatesStageDB
+} from '../../postgres/types/NewMeetingPhase'
 import type {MeetingMember} from '../../postgres/types/pg'
 import {analytics} from '../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../utils/authorization'
@@ -78,7 +84,7 @@ const joinMeeting = {
     }
 
     const addStageToPhase = async (
-      stage: CheckInStage | UpdatesStage | TeamPromptResponseStage,
+      stage: CheckInStageDB | UpdatesStageDB | TeamPromptResponseStageDB,
       phaseType: NewMeetingPhase['phaseType']
     ) => {
       await pg.transaction().execute(async (trx) => {
@@ -92,7 +98,7 @@ const joinMeeting = {
         if (!meeting) return
         const {phases} = meeting
         const phase = getPhase(phases, phaseType)
-        const stages = phase.stages as NewMeetingStages[]
+        const stages = phase.stages as NewMeetingStage[]
         stages.push({
           ...stage,
           isNavigable: true,

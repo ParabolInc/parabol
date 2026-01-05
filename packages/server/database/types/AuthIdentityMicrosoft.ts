@@ -9,7 +9,7 @@ interface Input {
 }
 
 export default class AuthIdentityMicrosoft extends AuthIdentity {
-  type!: 'MICROSOFT'
+  type = 'MICROSOFT' as const
   // Tenant id. This is the id of the organization in Microsoft that the user belongs to
   tid: string
   constructor(input: Input) {
