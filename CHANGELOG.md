@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.6.0](https://github.com/ParabolInc/parabol/compare/v11.5.0...v11.6.0) (2026-01-05)
+
+
+### Added
+
+* add check in summary table ([#12440](https://github.com/ParabolInc/parabol/issues/12440)) ([44c565e](https://github.com/ParabolInc/parabol/commit/44c565ed5f96da44e08a4fb4d3b6fbe1f9260a54))
+
+
+### Fixed
+
+* let superusers use as many tokens as they like for page insights ([#12469](https://github.com/ParabolInc/parabol/issues/12469)) ([780c04b](https://github.com/ParabolInc/parabol/commit/780c04b1980763dfef4b311302c8a9f4df1aca95))
+
+
+### Changed
+
+* support tsgo (remove baseUrl) ([#12472](https://github.com/ParabolInc/parabol/issues/12472)) ([1139cad](https://github.com/ParabolInc/parabol/commit/1139cadb0d9d31e31b32dbf7bec5874aa855b777))
+
 ## [11.5.0](https://github.com/ParabolInc/parabol/compare/v11.4.0...v11.5.0) (2025-12-18)
 
 
