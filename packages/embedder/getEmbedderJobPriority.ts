@@ -4,6 +4,7 @@ import type {Tierenum} from '../server/postgres/types/pg'
 import getRedis, {type RedisPipelineResponse} from '../server/utils/getRedis'
 
 const BASE_EPOCH = Math.floor(new Date('2026-01-01').getTime() / 1000)
+export const FAILED_JOB_PENALTY = 50_000
 
 const jobKindWeights = {
   userQuery: 1, // requires instant feedback, e.g. search
@@ -103,7 +104,7 @@ export const getEmbedderJobPriority = async (
   const timestampPenalty = Math.floor(Date.now() / 1000) - BASE_EPOCH
   const jobTypePenalty = 100_000_000 * jobKindWeights[jobKind]
   const userPenalties = await getUserPenalties(userId, jobKind, dataLoader)
-  const failedJobPenalty = 50_000 * retryCount
+  const failedJobPenalty = FAILED_JOB_PENALTY * retryCount
   const score = jobTypePenalty + userPenalties + timestampPenalty + failedJobPenalty
   return Math.max(-2147483648, Math.min(2147483647, Math.floor(score)))
 }

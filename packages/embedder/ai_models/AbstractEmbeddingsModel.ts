@@ -113,7 +113,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const pg = getKysely()
     const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
     await pg
-      .insertInto('EmbeddingsJobQueue')
+      .insertInto('EmbeddingsJobQueueV2')
       .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')

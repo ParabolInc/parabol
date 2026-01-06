@@ -12,7 +12,7 @@ interface StepContext<TData> {
   data: TData
 }
 
-type StepResult = Record<string, unknown> | Record<string, unknown>[]
+type StepResult = Insertable<DB['EmbeddingsJobQueueV2']>
 export type JobQueueStepRun<TData, TResult = StepResult> = (
   context: StepContext<TData>
   // false if the job completed without error, but the flow should not continue

@@ -38,7 +38,7 @@ export const insertDiscussionsIntoMetadataAndQueue = async (discussions: Discuss
           )
           .select(['id', 'model'])
       )
-      .insertInto('EmbeddingsJobQueue')
+      .insertInto('EmbeddingsJobQueueV2')
       .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
       .expression(({selectFrom}) =>
         selectFrom('Metadata').select(({ref}) => [

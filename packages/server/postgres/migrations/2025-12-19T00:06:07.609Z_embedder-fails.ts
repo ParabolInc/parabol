@@ -11,7 +11,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('embeddingsMetadataId', 'integer', (col) =>
         col.references('EmbeddingsMetadata.id').onDelete('cascade').notNull()
       )
-      .addColumn('model', 'varchar(255)', (col) => col.notNull())
+      .addColumn('model', 'varchar(255)')
       .addColumn('message', 'varchar(8192)', (col) => col.notNull())
       .addColumn('retryCount', 'smallint', (col) => col.notNull())
       .addColumn('jobData', 'jsonb', (col) => col.defaultTo('{}').notNull())
