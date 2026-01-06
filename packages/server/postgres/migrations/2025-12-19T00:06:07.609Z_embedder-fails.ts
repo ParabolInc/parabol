@@ -33,9 +33,9 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('priority', 'integer', (col) => col.notNull())
       .addColumn('jobData', 'jsonb', (col) => col.defaultTo('{}').notNull())
       .addColumn('jobType', 'varchar(255)', (col) => col.notNull())
-      .addColumn('model', 'varchar(255)', (col) => col.notNull())
+      .addColumn('model', 'varchar(255)')
       .addColumn('embeddingsMetadataId', 'integer', (col) =>
-        col.references('EmbeddingsMetadata.id').onDelete('cascade').notNull()
+        col.references('EmbeddingsMetadata.id').onDelete('cascade')
       )
       .execute()
   ])

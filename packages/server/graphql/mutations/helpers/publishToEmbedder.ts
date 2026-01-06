@@ -1,24 +1,36 @@
-import {getEmbedderPriority} from '../../../../embedder/getEmbedderPriority'
+import type {JobType} from '../../../../embedder/custom'
+import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
 import getKysely from '../../../postgres/getKysely'
 import getRedis from '../../../utils/getRedis'
+import type {DataLoaderWorker} from '../../graphql'
 
-export interface MessageToEmbedderRelatedDiscussions {
-  jobType: 'relatedDiscussions:start'
-  data: {meetingId: string}
+export interface RelatedDiscussionsJobData {
+  meetingId: string
 }
 
 export type MessageToEmbedder = {
-  priority: number
-} & MessageToEmbedderRelatedDiscussions
+  jobType: JobType
+  jobKind: JobKind
+  data: RelatedDiscussionsJobData | any
+  userId?: string | undefined | null
+  dataLoader: DataLoaderWorker
+}
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
-export const publishToEmbedder = async ({jobType, data, priority}: MessageToEmbedder) => {
+export const publishToEmbedder = async ({
+  jobType,
+  jobKind,
+  data,
+  userId,
+  dataLoader
+}: MessageToEmbedder) => {
   if (!IS_EMBEDDER_ENALBED) return
+  const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
   await getKysely()
-    .insertInto('EmbeddingsJobQueue')
+    .insertInto('EmbeddingsJobQueueV2')
     .values({
       jobType,
-      priority: getEmbedderPriority(priority),
+      priority,
       jobData: JSON.stringify(data)
     })
     .execute()

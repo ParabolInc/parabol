@@ -2,12 +2,9 @@ import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import type {DiscussionMeta} from './addEmbeddingsMetadataForRetrospectiveDiscussionTopic'
 import getModelManager from './ai_models/ModelManager'
-import {getEmbedderPriority} from './getEmbedderPriority'
+import {getEmbedderJobPriority} from './getEmbedderJobPriority'
 
-export const insertDiscussionsIntoMetadataAndQueue = async (
-  discussions: DiscussionMeta[],
-  maxDelayInDays: number
-) => {
+export const insertDiscussionsIntoMetadataAndQueue = async (discussions: DiscussionMeta[]) => {
   const pg = getKysely()
   const metadataRows = discussions.map(({id, teamId, createdAt}) => ({
     refId: id,
@@ -20,7 +17,7 @@ export const insertDiscussionsIntoMetadataAndQueue = async (
 
   const modelManager = getModelManager()
   const tableNames = [...modelManager.embeddingModels.keys()]
-  const priority = getEmbedderPriority(maxDelayInDays)
+  const priority = await getEmbedderJobPriority('historicalUpdate', null, 0)
   // This is ugly but it runs fast, which is what we need for historical data
   return (
     pg
@@ -46,7 +43,7 @@ export const insertDiscussionsIntoMetadataAndQueue = async (
       .expression(({selectFrom}) =>
         selectFrom('Metadata').select(({ref}) => [
           sql.lit('embed:start').as('jobType'),
-          priority.as('priority'),
+          sql.lit(priority).as('priority'),
           ref('Metadata.id').as('embeddingsMetadataId'),
           ref('Metadata.model').as('model')
         ])
