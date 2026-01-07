@@ -21,21 +21,23 @@ const setFacilitatedUserIdOrDelete = async (
     .where('createdBy', '=', userIdToDelete)
     .execute()
 
-  facilitatedMeetings.map(async (meeting) => {
-    const {id: meetingId} = meeting
-    const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
-    const otherMember = meetingMembers.find(({userId}) => userId !== userIdToDelete)
-    if (otherMember) {
-      await pg
-        .updateTable('NewMeeting')
-        .set({facilitatorUserId: otherMember.userId})
-        .where('id', '=', meetingId)
-        .execute()
-    } else {
-      // single-person meeting must be deleted because facilitatorUserId must be non-null
-      await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
-    }
-  })
+  await Promise.all(
+    facilitatedMeetings.map(async (meeting) => {
+      const {id: meetingId} = meeting
+      const meetingMembers = await dataLoader.get('meetingMembersByMeetingId').load(meetingId)
+      const otherMember = meetingMembers.find(({userId}) => userId !== userIdToDelete)
+      if (otherMember) {
+        await pg
+          .updateTable('NewMeeting')
+          .set({facilitatorUserId: otherMember.userId})
+          .where('id', '=', meetingId)
+          .execute()
+      } else {
+        // single-person meeting must be deleted because facilitatorUserId must be non-null
+        await pg.deleteFrom('NewMeeting').where('id', '=', meetingId).execute()
+      }
+    })
+  )
 }
 
 const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
