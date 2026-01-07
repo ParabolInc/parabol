@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.6.2](https://github.com/ParabolInc/parabol/compare/v11.6.1...v11.6.2) (2026-01-07)
+
+
+### Fixed
+
+* deadlock in hardDeleteUser ([#12479](https://github.com/ParabolInc/parabol/issues/12479)) ([d6c4e4a](https://github.com/ParabolInc/parabol/commit/d6c4e4a98c5b7a504818488712829193f7191a8c))
+
 ## [11.6.1](https://github.com/ParabolInc/parabol/compare/v11.6.0...v11.6.1) (2026-01-07)
 
 
