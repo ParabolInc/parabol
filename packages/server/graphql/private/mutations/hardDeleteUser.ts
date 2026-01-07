@@ -13,6 +13,7 @@ const setFacilitatedUserIdOrDelete = async (
   teamIds: string[],
   dataLoader: DataLoaderInstance
 ) => {
+  if (teamIds.length === 0) return
   const pg = getKysely()
   const facilitatedMeetings = await pg
     .selectFrom('NewMeeting')
