@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.6.1](https://github.com/ParabolInc/parabol/compare/v11.6.0...v11.6.1) (2026-01-07)
+
+
+### Fixed
+
+* delete PushInvitation when deleting User ([#12476](https://github.com/ParabolInc/parabol/issues/12476)) ([5d92ebd](https://github.com/ParabolInc/parabol/commit/5d92ebd037dc0a70b77687cd4a5f0ec6bc116ef4))
+
 ## [11.6.0](https://github.com/ParabolInc/parabol/compare/v11.5.0...v11.6.0) (2026-01-05)
 
 
