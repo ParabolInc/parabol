@@ -14,6 +14,8 @@ import {
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
+  selectOAuthAPICode,
+  selectOAuthAPIProvider,
   selectOrganizations,
   type selectPages,
   type selectPoll,
@@ -33,6 +35,12 @@ import {
   selectTemplateScaleRef,
   type selectUser
 } from '../select'
+
+// ... existing imports ...
+
+export type OAuthAPIProvider = ExtractTypeFromQueryBuilderSelect<typeof selectOAuthAPIProvider>
+export type OAuthAPICode = ExtractTypeFromQueryBuilderSelect<typeof selectOAuthAPICode>
+
 import {
   AIPrompt as AIPromptPG,
   FeatureFlag as FeatureFlagPG,

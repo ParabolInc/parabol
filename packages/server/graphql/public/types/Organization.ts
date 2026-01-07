@@ -1,9 +1,11 @@
+import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {
   getUserId,
   isSuperUser,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
@@ -119,6 +121,22 @@ const Organization: OrganizationResolvers = {
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
+  },
+  oauthApplications: async ({id: orgId}, _args, {dataLoader}) => {
+    const providers = dataLoader
+      ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
+      : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
+    return providers
+  },
+  oauthAPIProvider: async ({id: orgId}, {id}, {dataLoader}) => {
+    const [providerId] = CipherId.fromClient(id)
+    const provider = await dataLoader.get('oAuthProviders').load(providerId)
+
+    if (!provider || provider.orgId !== orgId) {
+      return null
+    }
+
+    return provider
   }
 }
 

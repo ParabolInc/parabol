@@ -1,0 +1,4 @@
+"""
+A valid OAuth redirect URI (HTTPS required, HTTP allowed for localhost only, no fragments)
+"""
+scalar RedirectURI
