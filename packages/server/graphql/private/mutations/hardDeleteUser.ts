@@ -13,7 +13,6 @@ const setFacilitatedUserIdOrDelete = async (
   teamIds: string[],
   dataLoader: DataLoaderInstance
 ) => {
-  if (teamIds.length === 0) return
   const pg = getKysely()
   const facilitatedMeetings = await pg
     .selectFrom('NewMeeting')
@@ -69,13 +68,15 @@ const hardDeleteUser: MutationResolvers['hardDeleteUser'] = async (
   await softDeleteUser(userIdToDelete, dataLoader)
 
   // all other writes
-  await setFacilitatedUserIdOrDelete(userIdToDelete, teamIds, dataLoader)
-  await pg
-    .updateTable('NewMeeting')
-    .set({createdBy: null})
-    .where('teamId', 'in', teamIds)
-    .where('createdBy', '=', userIdToDelete)
-    .execute()
+  if (teamIds.length > 0) {
+    await setFacilitatedUserIdOrDelete(userIdToDelete, teamIds, dataLoader)
+    await pg
+      .updateTable('NewMeeting')
+      .set({createdBy: null})
+      .where('teamId', 'in', teamIds)
+      .where('createdBy', '=', userIdToDelete)
+      .execute()
+  }
 
   analytics.accountRemoved(user, reasonText ?? '')
 
