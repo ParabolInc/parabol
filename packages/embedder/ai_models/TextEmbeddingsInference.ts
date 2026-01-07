@@ -2,9 +2,8 @@ import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
-export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
 
-const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
+const modelIdDefinitions = {
   'BAAI/bge-large-en-v1.5': {
     embeddingDimensions: 1024,
     maxInputTokens: 512,
@@ -16,8 +15,105 @@ const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
     maxInputTokens: 512,
     tableSuffix: 'ember_1',
     languages: ['en']
+  },
+  'Qwen/Qwen3-Embedding-0.6B': {
+    embeddingDimensions: 1024,
+    // Actual max is 32768, but we half that because attention = seqlen**2, so RAM will go up 4x
+    // Also, since we're using this for embeddings, we want chunks to have more meaning. No soup.
+    maxInputTokens: 16384,
+    tableSuffix: 'qwen3_600M',
+    languages: [
+      'af',
+      'am',
+      'ar',
+      'as',
+      'az',
+      'be',
+      'bg',
+      'bn',
+      'bo',
+      'bs',
+      'ca',
+      'cs',
+      'cy',
+      'da',
+      'de',
+      'el',
+      'en',
+      'es',
+      'et',
+      'eu',
+      'fa',
+      'fi',
+      'fo',
+      'fr',
+      'ga',
+      'gd',
+      'gl',
+      'gu',
+      'he',
+      'hi',
+      'hr',
+      'ht',
+      'hu',
+      'hy',
+      'id',
+      'is',
+      'it',
+      'ja',
+      'jv',
+      'ka',
+      'kk',
+      'km',
+      'kn',
+      'ko',
+      'lo',
+      'lt',
+      'lv',
+      'mk',
+      'ml',
+      'mn',
+      'mr',
+      'ms',
+      'mt',
+      'my',
+      'nb',
+      'ne',
+      'nl',
+      'nn',
+      'or',
+      'pa',
+      'pl',
+      'ps',
+      'pt',
+      'ro',
+      'ru',
+      'sd',
+      'si',
+      'sk',
+      'sl',
+      'sq',
+      'sr',
+      'su',
+      'sv',
+      'sw',
+      'ta',
+      'te',
+      'tg',
+      'th',
+      'tl',
+      'tr',
+      'tt',
+      'uk',
+      'ur',
+      'uz',
+      'vi',
+      'zh'
+    ]
   }
-}
+} satisfies Record<string, EmbeddingModelParams>
+
+// type ModelId = keyof typeof modelIdDefinitions
 
 const openAPIWithTimeout =
   (client: ClientMethod<any, any, any>, toError: (error: unknown) => any, timeout: number) =>

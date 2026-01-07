@@ -127,6 +127,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
+    Logger.log(`Metadata loaded into JobQueue for new model ${this.tableName}`)
   }
   async createTable() {
     const pg = getKysely()

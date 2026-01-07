@@ -1,10 +1,11 @@
 import type {AbstractEmbeddingsModel, EmbeddingsTableName} from './AbstractEmbeddingsModel'
 import type {AbstractGenerationModel} from './AbstractGenerationModel'
+import OpenAIEmbedding from './OpenAIEmbedding'
 import OpenAIGeneration from './OpenAIGeneration'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
 
-type EmbeddingsModelType = 'text-embeddings-inference'
+type EmbeddingsModelType = 'text-embeddings-inference' | 'vllm'
 type GenerationModelType = 'openai' | 'text-generation-inference'
 
 export interface ModelConfig {
@@ -55,7 +56,17 @@ export class ModelManager {
         switch (modelType) {
           case 'text-embeddings-inference': {
             const embeddingsModel = new TextEmbeddingsInference(modelId, url)
-            return [embeddingsModel.tableName, embeddingsModel]
+            return [embeddingsModel.tableName, embeddingsModel] as [
+              EmbeddingsTableName,
+              AbstractEmbeddingsModel
+            ]
+          }
+          case 'vllm': {
+            const openAIModel = new OpenAIEmbedding(modelId, url)
+            return [openAIModel.tableName, openAIModel] as [
+              EmbeddingsTableName,
+              AbstractEmbeddingsModel
+            ]
           }
           default:
             throw new Error(`unsupported embeddings model '${modelType}'`)
