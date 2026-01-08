@@ -5,6 +5,51 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.6.4](https://github.com/ParabolInc/parabol/compare/v11.6.3...v11.6.4) (2026-01-07)
+
+
+### Fixed
+
+* hardDeleteUser with no teams ([#12485](https://github.com/ParabolInc/parabol/issues/12485)) ([b0178ec](https://github.com/ParabolInc/parabol/commit/b0178ec0c64ee0c97f75d802af63d44128ab59c7))
+
+## [11.6.3](https://github.com/ParabolInc/parabol/compare/v11.6.2...v11.6.3) (2026-01-07)
+
+
+### Fixed
+
+* hardDeleteUser with no teams ([#12482](https://github.com/ParabolInc/parabol/issues/12482)) ([9cfcb49](https://github.com/ParabolInc/parabol/commit/9cfcb490406f778c837680e29fe948fbe2d20fb5))
+
+## [11.6.2](https://github.com/ParabolInc/parabol/compare/v11.6.1...v11.6.2) (2026-01-07)
+
+
+### Fixed
+
+* deadlock in hardDeleteUser ([#12479](https://github.com/ParabolInc/parabol/issues/12479)) ([d6c4e4a](https://github.com/ParabolInc/parabol/commit/d6c4e4a98c5b7a504818488712829193f7191a8c))
+
+## [11.6.1](https://github.com/ParabolInc/parabol/compare/v11.6.0...v11.6.1) (2026-01-07)
+
+
+### Fixed
+
+* delete PushInvitation when deleting User ([#12476](https://github.com/ParabolInc/parabol/issues/12476)) ([5d92ebd](https://github.com/ParabolInc/parabol/commit/5d92ebd037dc0a70b77687cd4a5f0ec6bc116ef4))
+
+## [11.6.0](https://github.com/ParabolInc/parabol/compare/v11.5.0...v11.6.0) (2026-01-05)
+
+
+### Added
+
+* add check in summary table ([#12440](https://github.com/ParabolInc/parabol/issues/12440)) ([44c565e](https://github.com/ParabolInc/parabol/commit/44c565ed5f96da44e08a4fb4d3b6fbe1f9260a54))
+
+
+### Fixed
+
+* let superusers use as many tokens as they like for page insights ([#12469](https://github.com/ParabolInc/parabol/issues/12469)) ([780c04b](https://github.com/ParabolInc/parabol/commit/780c04b1980763dfef4b311302c8a9f4df1aca95))
+
+
+### Changed
+
+* support tsgo (remove baseUrl) ([#12472](https://github.com/ParabolInc/parabol/issues/12472)) ([1139cad](https://github.com/ParabolInc/parabol/commit/1139cadb0d9d31e31b32dbf7bec5874aa855b777))
+
 ## [11.5.0](https://github.com/ParabolInc/parabol/compare/v11.4.0...v11.5.0) (2025-12-18)
 
 

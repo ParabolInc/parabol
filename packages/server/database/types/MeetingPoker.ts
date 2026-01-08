@@ -13,7 +13,7 @@ interface Input {
 }
 
 export default class MeetingPoker extends Meeting {
-  meetingType!: 'poker'
+  meetingType = 'poker' as const
   templateId: string
   templateRefId: string
   storyCount?: number

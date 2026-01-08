@@ -33,33 +33,34 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
       }
     })
   }
+  private cachedClaimQuery = getKysely()
+    .updateTable('EmbeddingsJobQueueV2')
+    .set({
+      state: 'running',
+      // Use raw SQL for the DB-side timestamp so parameters stay empty/static
+      startAt: sql`CURRENT_TIMESTAMP`
+    })
+    .where('id', '=', (eb) =>
+      eb
+        .selectFrom('EmbeddingsJobQueueV2')
+        .select('id')
+        .where('state', '=', 'queued')
+        .orderBy('priority', 'desc')
+        .orderBy('id', 'asc')
+        .limit(1)
+        .forUpdate()
+        .skipLocked()
+    )
+    .returningAll()
+    .compile()
   async next(): Promise<IteratorResult<DBJob>> {
     if (this.done) {
       return {done: true as const, value: undefined}
     }
     const pg = getKysely()
-    const getJobBatch = () => {
-      return pg
-        .with(
-          (cte) => cte('ids').materialized(),
-          (db) =>
-            db
-              .selectFrom('EmbeddingsJobQueueV2')
-              .select('id')
-              .orderBy('priority')
-              .where('state', '=', 'queued')
-              .limit(1)
-              .forUpdate()
-              .skipLocked()
-        )
-        .updateTable('EmbeddingsJobQueueV2')
-        .set({state: 'running', startAt: sql`CURRENT_TIMESTAMP`})
-        .where('id', '=', sql<number>`ANY(SELECT id FROM ids)`)
-        .returningAll()
-        .executeTakeFirst()
-    }
     try {
-      const job = await getJobBatch()
+      const {rows} = await pg.executeQuery(this.cachedClaimQuery)
+      const job = rows[0]
       if (!job) {
         if (this.inDrought) {
           await new Promise<void>((resolve) => {

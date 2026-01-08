@@ -1,24 +1,26 @@
 import {AGENDA_ITEMS, DISCUSS} from '../../client/utils/constants'
-import type AgendaItemsPhase from '../database/types/AgendaItemsPhase'
-import type DiscussPhase from '../database/types/DiscussPhase'
-import type EstimatePhase from '../database/types/EstimatePhase'
-import type EstimateStage from '../database/types/EstimateStage'
-import type GenericMeetingPhase from '../database/types/GenericMeetingPhase'
-import type GenericMeetingStage from '../database/types/GenericMeetingStage'
-import type TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
+import type {
+  AgendaItemPhase,
+  DiscussPhase,
+  EstimatePhase,
+  EstimateStage,
+  NewMeetingPhase,
+  NewMeetingStage,
+  TeamPromptResponsesPhase
+} from '../postgres/types/NewMeetingPhase'
 
-export const isEstimateStage = (stage: GenericMeetingStage): stage is EstimateStage =>
+export const isEstimateStage = (stage: NewMeetingStage): stage is EstimateStage =>
   stage.phaseType === 'ESTIMATE'
 
-export const isAgendaItemsPhase = (phase: GenericMeetingPhase): phase is AgendaItemsPhase =>
+export const isAgendaItemsPhase = (phase: NewMeetingPhase): phase is AgendaItemPhase =>
   phase.phaseType === AGENDA_ITEMS
 
 export const isTeamPromptResponsesPhase = (
-  phase: GenericMeetingPhase
+  phase: NewMeetingPhase
 ): phase is TeamPromptResponsesPhase => phase.phaseType === 'RESPONSES'
 
-export const isDiscussPhase = (phase: GenericMeetingPhase): phase is DiscussPhase =>
+export const isDiscussPhase = (phase: NewMeetingPhase): phase is DiscussPhase =>
   phase.phaseType === DISCUSS
 
-export const isEstimatePhase = (phase: GenericMeetingPhase): phase is EstimatePhase =>
+export const isEstimatePhase = (phase: NewMeetingPhase): phase is EstimatePhase =>
   phase.phaseType === 'ESTIMATE'

@@ -1,7 +1,7 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import type EstimatePhase from '../../../database/types/EstimatePhase'
 import type {AnyMeeting} from '../../../postgres/types/Meeting'
-import type {NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
+import type {NewMeetingStage} from '../../../postgres/types/NewMeetingPhase'
 import getPhase from '../../../utils/getPhase'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
@@ -79,7 +79,7 @@ const calculateEngagement = async (meeting: AnyMeeting, dataLoader: DataLoaderWo
   }
 
   // Discussions can happen in many different stage types: discuss, ESTIMATE, reflect, RESPONSES
-  const stages = phases.flatMap(({stages}) => stages as NewMeetingStages[])
+  const stages = phases.flatMap(({stages}) => stages as NewMeetingStage[])
   const discussionIds = stages
     .map((stage) => 'discussionId' in stage && stage.discussionId)
     .filter(isValid) as string[]
