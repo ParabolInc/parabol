@@ -25,7 +25,7 @@ import UpdatesStage from '../../../database/types/UpdatesStage'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
-import type {NewMeetingPhase, NewMeetingStages} from '../../../postgres/types/NewMeetingPhase'
+import type {NewMeetingPhase, NewMeetingStage} from '../../../postgres/types/NewMeetingPhase'
 import type {DB} from '../../../postgres/types/pg'
 import isPhaseAvailable from '../../../utils/isPhaseAvailable'
 import type {DataLoaderWorker} from '../../graphql'
@@ -49,7 +49,7 @@ const getPastStageDurations = async (teamId: string, dataLoader: DataLoaderInsta
   const completedMeetings = await dataLoader.get('completedMeetingsByTeamId').load(teamId)
   const phases = completedMeetings.flatMap((meeting) => meeting.phases as NewMeetingPhase[])
   const stages = phases
-    .flatMap((phase) => phase.stages as NewMeetingStages[])
+    .flatMap((phase) => phase.stages as NewMeetingStage[])
     .map((stage) => ({
       phaseType: stage.phaseType,
       duration:

@@ -5,11 +5,11 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import type GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
-import type {NewMeetingPhaseTypeEnum} from '../../../database/types/GenericMeetingPhase'
 import type GenericMeetingStage from '../../../database/types/GenericMeetingStage'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types'
+import type {Newmeetingphasetypeenum} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
@@ -138,7 +138,7 @@ const addComment: MutationResolvers['addComment'] = async (
     'agendaitems',
     'ESTIMATE',
     'RESPONSES'
-  ] as NewMeetingPhaseTypeEnum[]
+  ] as Newmeetingphasetypeenum[]
   const containsThreadablePhase = phases.find(({phaseType}: GenericMeetingPhase) =>
     threadablePhases.includes(phaseType)
   )!

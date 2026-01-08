@@ -10,7 +10,7 @@ export default class DiscussStage extends GenericMeetingStage {
   reflectionGroupId: string
   discussionId: string
   sortOrder: number
-  phaseType!: 'discuss'
+  phaseType = 'discuss' as const
   constructor(input: Input) {
     const {sortOrder, discussionId, reflectionGroupId} = input
     super({...input, phaseType: 'discuss'})

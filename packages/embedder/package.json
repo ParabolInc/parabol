@@ -1,6 +1,6 @@
 {
   "name": "parabol-embedder",
-  "version": "11.5.0",
+  "version": "11.6.4",
   "description": "A service that computes embedding vectors from Parabol objects",
   "author": "Jordan Husney <jordan.husney@gmail.com>",
   "homepage": "https://github.com/ParabolInc/parabol/tree/master/packages/embedder#readme",
@@ -12,7 +12,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "test": "jest --verbose",
-    "typecheck": "pnpm tsc --noEmit -p tsconfig.json"
+    "typecheck": "pnpm tsgo --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"

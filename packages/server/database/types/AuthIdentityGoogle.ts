@@ -7,7 +7,7 @@ interface Input {
 }
 
 export default class AuthIdentityGoogle extends AuthIdentity {
-  type!: 'GOOGLE'
+  type = 'GOOGLE' as const
   constructor(input: Input) {
     super({...input, type: AuthIdentityTypeEnum.GOOGLE})
   }

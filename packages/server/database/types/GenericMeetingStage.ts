@@ -1,5 +1,6 @@
 import ms from 'ms'
 import generateUID from '../../generateUID'
+import type {Newmeetingphasetypeenum} from '../../postgres/types/pg'
 
 const MAX_SYNC_STAGE_DURATION = ms('1h')
 
@@ -24,7 +25,7 @@ const getSuggestedDuration = (filteredDurations: number[], allDurations: number[
 
 export interface GenericMeetingStageInput {
   durations?: number[] | undefined
-  phaseType: string
+  phaseType: Newmeetingphasetypeenum
   id?: string
   isNavigable?: boolean
   isNavigableByFacilitator?: boolean
@@ -45,7 +46,7 @@ export default class GenericMeetingStage {
   suggestedTimeLimit?: number | undefined
   viewCount: number
   readyToAdvance?: string[] | undefined = []
-  phaseType: string
+  phaseType: Newmeetingphasetypeenum
   constructor(input: GenericMeetingStageInput) {
     const {durations, phaseType, id, isNavigable, isNavigableByFacilitator, startAt, viewCount} =
       input
