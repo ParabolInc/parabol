@@ -17,6 +17,7 @@ import {
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
 import {activeEmbeddingModel} from '../../../../embedder/activeEmbeddingModel'
+import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
 import {
@@ -827,7 +828,7 @@ const User: ReqResolvers<'User'> = {
             eb(
               val(1),
               '-',
-              parens('Model.embedding' as any, '<=>' as any, JSON.stringify(vector))
+              parens('Model.embedding' as any, '<=>' as any, numberVectorToString(vector))
             ).as('similarity')
           ])
       )
