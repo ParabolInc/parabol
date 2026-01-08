@@ -93,8 +93,10 @@ const handleCompletedRetrospectiveStage = async (
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({
         jobType: 'relatedDiscussions:start',
+        jobKind: 'relatedDiscussion',
         data: {meetingId},
-        priority: 0
+        dataLoader,
+        userId: meeting.facilitatorUserId
       })
     ])
     if (videoMeetingURL) {

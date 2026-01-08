@@ -12,7 +12,7 @@ interface StepContext<TData> {
   data: TData
 }
 
-type StepResult = Record<string, unknown> | Record<string, unknown>[]
+type StepResult = Insertable<DB['EmbeddingsJobQueueV2']>
 export type JobQueueStepRun<TData, TResult = StepResult> = (
   context: StepContext<TData>
   // false if the job completed without error, but the flow should not continue
@@ -24,6 +24,7 @@ interface JobQueueStep<TData, TResult = StepResult> {
   getNextStep?: (result: StepContext<TResult>) => string | Promise<string>
 }
 
-export type JobType = `${string}:${string}`
+export type JobTypeLoose = `${string}:${string}`
+export type JobType = `relatedDiscussions:start` | 'userQuery:start'
 export type Workflow = Record<string, JobQueueStep<any>>
-export type DBJob = Selectable<DB['EmbeddingsJobQueue']>
+export type DBJob = Selectable<DB['EmbeddingsJobQueueV2']>
