@@ -1,7 +1,7 @@
 import ms from 'ms'
-import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
 import type {JobQueueStepRun} from '../custom'
+import type {EmbeddingsTableName} from '../getEmbeddingsTableName'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
 import {JobQueueError} from '../JobQueueError'
 import {

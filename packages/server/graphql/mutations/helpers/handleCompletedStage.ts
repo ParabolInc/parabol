@@ -93,7 +93,6 @@ const handleCompletedRetrospectiveStage = async (
       addAIGeneratedContentToThreads(discussPhaseStages, meetingId, dataLoader),
       publishToEmbedder({
         jobType: 'relatedDiscussions:start',
-        jobKind: 'relatedDiscussion',
         data: {meetingId},
         dataLoader,
         userId: meeting.facilitatorUserId

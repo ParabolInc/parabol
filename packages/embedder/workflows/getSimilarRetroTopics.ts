@@ -1,6 +1,6 @@
 import getKysely from 'parabol-server/postgres/getKysely'
-import type {EmbeddingsTable, EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import type {JobQueueStepRun, ParentJob} from '../custom'
+import type {EmbeddingsTable, EmbeddingsTableName} from '../getEmbeddingsTableName'
 import type {rerankRetroTopics} from './rerankRetroTopics'
 
 export const getSimilarRetroTopics: JobQueueStepRun<

@@ -6,12 +6,18 @@ import {EmbedderJobType} from './EmbedderJobType'
 import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
 import {JobQueueError} from './JobQueueError'
 import {embedMetadata} from './workflows/embedMetadata'
+import {embedQuery} from './workflows/embedQuery'
 import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
 import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
 import {rerankRetroTopics} from './workflows/rerankRetroTopics'
 
 export class WorkflowOrchestrator {
   workflows: Record<string, Workflow> = {
+    userQuery: {
+      start: {
+        run: embedQuery
+      }
+    },
     embed: {
       start: {
         run: embedMetadata
