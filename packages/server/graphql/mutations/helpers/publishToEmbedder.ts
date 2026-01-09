@@ -1,4 +1,4 @@
-import {activeEmbeddingModel} from '../../../../embedder/activeEmbeddingModel'
+import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import type {JobType} from '../../../../embedder/custom'
 import {getEmbedderJobPriority, type JobKind} from '../../../../embedder/getEmbedderJobPriority'
 import getKysely from '../../../postgres/getKysely'
@@ -54,7 +54,6 @@ export async function publishToEmbedder(
       return {
         ...payload.data,
         requestId: ++nextRequestId,
-        model: activeEmbeddingModel,
         channelName: `userQueryEmbedding:${SERVER_ID}`
       }
     }
@@ -66,6 +65,7 @@ export async function publishToEmbedder(
     .values({
       jobType,
       priority,
+      model: activeEmbeddingModelId,
       jobData: JSON.stringify(jobData)
     })
     .execute()

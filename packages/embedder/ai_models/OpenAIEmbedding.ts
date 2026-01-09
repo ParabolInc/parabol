@@ -6,7 +6,7 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
   client: OpenAI
   url: string
   modelId: ModelId
-  constructor(modelId: string, url: string) {
+  constructor(modelId: ModelId, url: string) {
     super(modelId, url)
     this.url = url
     this.modelId = modelId as ModelId
@@ -38,8 +38,8 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
     return data[0]?.embedding ?? []
   }
 
-  protected constructModelParams(modelId: string): EmbeddingModelParams {
-    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+  protected constructModelParams(modelId: ModelId): EmbeddingModelParams {
+    const modelParams = modelIdDefinitions[modelId]
     if (!modelParams) throw new Error(`Unknown modelId ${modelId} for OpenAIEmbedding`)
     return modelParams
   }

@@ -1,13 +1,13 @@
 import {Packr} from 'msgpackr'
 import getRedis from '../../server/utils/getRedis'
 import getModelManager from '../ai_models/ModelManager'
+import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
-import type {EmbeddingsTableName} from '../getEmbeddingsTableName'
 import {JobQueueError} from '../JobQueueError'
 
 export interface EmbedQueryData {
   query: string
-  model: EmbeddingsTableName
+  modelId: ModelId
   requestId: number
   channelName: `userQueryEmbedding:${string}`
 }
@@ -17,12 +17,12 @@ const packr = new Packr({
 })
 export const embedQuery: JobQueueStepRun<EmbedQueryData> = async (context) => {
   const {data} = context
-  const {model, query, requestId, channelName} = data
+  const {modelId, query, requestId, channelName} = data
   const modelManager = getModelManager()
 
-  const embeddingModel = modelManager.getEmbedder(model)
+  const embeddingModel = modelManager.getEmbedder(modelId)
   if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${model} not available`)
+    return new JobQueueError(`embedding model ${modelId} not available`)
   }
   const embeddingVector = await embeddingModel.getEmbedding(query)
   const vector = embeddingVector instanceof Error ? [] : embeddingVector

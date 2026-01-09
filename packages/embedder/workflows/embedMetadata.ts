@@ -1,8 +1,8 @@
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
 import getModelManager from '../ai_models/ModelManager'
+import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
-import type {EmbeddingsTableName} from '../getEmbeddingsTableName'
 import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {JobQueueError} from '../JobQueueError'
@@ -11,14 +11,14 @@ import type {getSimilarRetroTopics} from './getSimilarRetroTopics'
 export const embedMetadata: JobQueueStepRun<
   {
     embeddingsMetadataId: number
-    model: EmbeddingsTableName
+    modelId: ModelId
     forceBuildText?: boolean
   },
   ParentJob<typeof getSimilarRetroTopics>
 > = async (context) => {
   const {data, dataLoader} = context
   const pg = getKysely()
-  const {embeddingsMetadataId, model, forceBuildText} = data
+  const {embeddingsMetadataId, modelId, forceBuildText} = data
   const modelManager = getModelManager()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
@@ -49,9 +49,9 @@ export const embedMetadata: JobQueueStepRun<
   }
   const {fullText, language} = metadata
 
-  const embeddingModel = modelManager.getEmbedder(model)
+  const embeddingModel = modelManager.getEmbedder(modelId)
   if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${model} not available`)
+    return new JobQueueError(`embedding model ${modelId} not available`)
   }
   // Exit successfully, we don't want to fail the job because the language is not supported
   if (!language || !embeddingModel.languages.includes(language)) return false

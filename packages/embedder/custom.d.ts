@@ -2,7 +2,7 @@ import type {DataLoaderWorker} from '../server/graphql/graphql'
 import type {DB} from '../server/postgres/types/pg'
 import {JobQueueError} from './JobQueueError'
 
-export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
+export type EmbeddingMetadataObjectType = DB['EmbeddingsMetadata']['objectType']
 
 type GetInputData<T> = T extends JobQueueStepRun<infer U> ? U : never
 export type ParentJob<T> = GetInputData<T> | GetInputData<T>[]

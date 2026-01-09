@@ -1,6 +1,6 @@
-import type {EmbeddingsTableName} from '../getEmbeddingsTableName'
 import type {AbstractEmbeddingsModel} from './AbstractEmbeddingsModel'
 import type {AbstractGenerationModel} from './AbstractGenerationModel'
+import type {ModelId} from './modelIdDefinitions'
 import OpenAIEmbedding from './OpenAIEmbedding'
 import OpenAIGeneration from './OpenAIGeneration'
 import {
@@ -12,11 +12,11 @@ import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
 
 export class ModelManager {
-  embeddingModels: Map<EmbeddingsTableName, AbstractEmbeddingsModel>
+  embeddingModels: Map<ModelId, AbstractEmbeddingsModel>
   generationModels: Map<string, AbstractGenerationModel>
-  getEmbedder(tableName?: EmbeddingsTableName): AbstractEmbeddingsModel {
-    return tableName
-      ? this.embeddingModels.get(tableName)!
+  getEmbedder(modelId?: ModelId): AbstractEmbeddingsModel {
+    return modelId
+      ? this.embeddingModels.get(modelId)!
       : this.embeddingModels.values().next().value!
   }
 
@@ -26,21 +26,15 @@ export class ModelManager {
     this.embeddingModels = new Map(
       embeddingConfig.map((modelConfig) => {
         const {model, url} = modelConfig
-        const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, string]
+        const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
         switch (modelType) {
           case 'text-embeddings-inference': {
             const embeddingsModel = new TextEmbeddingsInference(modelId, url)
-            return [embeddingsModel.tableName, embeddingsModel] as [
-              EmbeddingsTableName,
-              AbstractEmbeddingsModel
-            ]
+            return [modelId, embeddingsModel] as [ModelId, AbstractEmbeddingsModel]
           }
           case 'vllm': {
             const openAIModel = new OpenAIEmbedding(modelId, url)
-            return [openAIModel.tableName, openAIModel] as [
-              EmbeddingsTableName,
-              AbstractEmbeddingsModel
-            ]
+            return [modelId, openAIModel] as [ModelId, AbstractEmbeddingsModel]
           }
           default:
             throw new Error(`unsupported embeddings model '${modelType}'`)

@@ -16,7 +16,8 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
-import {activeEmbeddingModel} from '../../../../embedder/activeEmbeddingModel'
+import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
 import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
@@ -805,16 +806,17 @@ const User: ReqResolvers<'User'> = {
     if (!vector) return []
 
     const pg = getKysely()
+    const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
     const similarEmbeddings = await pg
       .with('Model', (qc) =>
         qc
-          .selectFrom(activeEmbeddingModel)
+          .selectFrom(tableName)
           .innerJoin(
             'EmbeddingsMetadata',
             'EmbeddingsMetadata.id',
-            `${activeEmbeddingModel}.embeddingsMetadataId`
+            `${tableName}.embeddingsMetadataId`
           )
-          .select([`${activeEmbeddingModel}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
+          .select([`${tableName}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
           .where('objectType', '=', 'meetingTemplate')
           .where('teamId', 'in', allTeamIds)
       )
