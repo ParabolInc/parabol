@@ -67,59 +67,50 @@ export const useFocusedCell = (provider: HocuspocusProvider) => {
   return focusedCell
 }
 
+const findDeletedIndex = (delta: Y.YArrayEvent<string>['delta']) => {
+  let preceeding = 0
+  for (const d of delta) {
+    if (d.delete) {
+      return preceeding
+    } else if (d.insert) {
+      preceeding += (d.insert as any[]).length
+    } else if (d.retain) {
+      preceeding += d.retain
+    }
+  }
+  return -1
+}
+
 export const useFocusFallback = (provider: HocuspocusProvider) => {
   const doc = provider.document
 
   const columns = getColumns(doc)
   const rows = getRows(doc)
 
-  const currentRowIndex = useRef<number | null>(null)
-  const currentColumnIndex = useRef<number | null>(null)
-
   const focusedCell = useFocusedCell(provider)
   const focusedCellRef = useRef(focusedCell)
 
-  const findCurrentIndexes = () => {
-    const currentKey = focusedCellRef.current
-    if (!currentKey) return
-    const [columnId, rowId] = currentKey.split(':')
-    if (rowId) {
-      const allRows = [...rows.toArray(), 'append']
-      const rowIndex = allRows.findIndex((id) => id === rowId)
-      currentRowIndex.current = rowIndex === -1 ? null : rowIndex
-    } else {
-      currentRowIndex.current = null
-    }
-    const allColumns = [...columns.toArray(), 'append']
-    const columnIndex = allColumns.findIndex((id) => id === columnId)
-    currentColumnIndex.current = columnIndex === -1 ? null : columnIndex
-  }
-
   useEffect(() => {
     focusedCellRef.current = focusedCell
-    findCurrentIndexes()
   }, [focusedCell])
 
   useEffect(() => {
     const onRowDelete = (event: Y.YArrayEvent<string>) => {
-      if (event.delta.some((d) => d.delete)) {
-        const currentKey = focusedCellRef.current
-        if (!currentKey) return
-        const [columnId, rowId] = currentKey.split(':')
-        if (!rowId) return
+      const currentKey = focusedCellRef.current
+      if (!currentKey) return
 
-        const currentIndex = rows.toArray().findIndex((id) => id === rowId)
-        if (currentIndex === -1) {
-          if (currentRowIndex.current !== null) {
-            const allRows = [...rows.toArray(), 'append']
-            const nextRowId =
-              allRows[currentRowIndex.current - 1] || allRows[allRows.length - 2] || null
-            const nextKey = nextRowId ? `${columnId}:${nextRowId}` : columnId
-            provider.awareness?.setLocalStateField('focusedCell', nextKey)
-          }
-        } else {
-          currentRowIndex.current = currentIndex
-        }
+      const [columnId, rowId] = currentKey.split(':')
+      if (!rowId) return
+
+      const deletedIndex = findDeletedIndex(event.delta)
+      if (deletedIndex === -1) return
+
+      const allRows = [...rows.toArray(), 'append']
+      const currentIndex = allRows.findIndex((id) => id === rowId)
+      if (currentIndex === -1) {
+        const nextRowId = allRows[deletedIndex] || 'append'
+        const nextKey = `${columnId}:${nextRowId}`
+        provider.awareness?.setLocalStateField('focusedCell', nextKey)
       }
     }
     rows.observe(onRowDelete)
@@ -130,31 +121,20 @@ export const useFocusFallback = (provider: HocuspocusProvider) => {
 
   useEffect(() => {
     const onColumnDelete = (event: Y.YArrayEvent<string>) => {
-      console.log('onColumnDelete', event.delta)
-      if (event.delta.some((d) => d.delete)) {
-        const currentKey = focusedCellRef.current
-        if (!currentKey) return
-        const [columnId, rowId] = currentKey.split(':')
+      const currentKey = focusedCellRef.current
+      if (!currentKey) return
+      const [columnId, rowId] = currentKey.split(':')
 
-        const allColumns = [...columns.toArray(), 'append']
-        const currentIndex = allColumns.findIndex((id) => id === columnId)
-        if (currentIndex === -1) {
-          if (currentColumnIndex.current !== null) {
-            const allColumns = [...columns.toArray(), 'append']
-            const nextColumnId =
-              allColumns[currentColumnIndex.current - 1] ||
-              allColumns[allColumns.length - 2] ||
-              null
-            const nextKey = rowId
-              ? nextColumnId
-                ? `${nextColumnId}:${rowId}`
-                : rowId
-              : nextColumnId
-            provider.awareness?.setLocalStateField('focusedCell', nextKey)
-          }
-        } else {
-          currentColumnIndex.current = currentIndex
-        }
+      const deletedIndex = findDeletedIndex(event.delta)
+      if (deletedIndex === -1) return
+
+      const allColumns = [...columns.toArray(), 'append']
+      const currentIndex = allColumns.findIndex((id) => id === columnId)
+
+      if (currentIndex === -1) {
+        const nextColumnId = allColumns[deletedIndex] || 'append'
+        const nextKey = rowId ? `${nextColumnId}:${rowId}` : nextColumnId
+        provider.awareness?.setLocalStateField('focusedCell', nextKey)
       }
     }
     columns.observe(onColumnDelete)

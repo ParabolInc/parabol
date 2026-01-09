@@ -16,6 +16,7 @@ import {useFocusedCell, useFocusFallback} from './useFocus'
 
 // add additional debug columns
 const DEBUG = false
+const DEBUG_FOCUS = false
 
 const getRowId = (row: RowId) => row
 
@@ -107,7 +108,7 @@ export default function DatabaseView(props: Props) {
   return (
     <>
       <div className='flex w-full flex-row justify-end'>
-        {focusedCell}
+        {DEBUG_FOCUS && focusedCell}
         <ImportExport doc={doc} editor={editor} />
       </div>
       <div className='overflow-x-auto pb-2'>
