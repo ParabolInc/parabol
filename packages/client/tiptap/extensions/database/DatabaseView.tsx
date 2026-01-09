@@ -1,15 +1,18 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {Add, DeleteOutline} from '@mui/icons-material'
 import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
 import {Editor} from '@tiptap/core'
 import {useMemo} from 'react'
 import {cn} from '../../../ui/cn'
+import {AppendCell} from './AppendCell'
+import {AppendHeader} from './AppendHeader'
+import {AppendRow} from './AppendRow'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, deleteRow, getColumns, getRows, RowId} from './data'
+import {getColumns, getRows, RowId} from './data'
 import {Header} from './Header'
 import {useYArray} from './hooks'
 import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
+import {useFocusedCell} from './useFocus'
 
 // add additional debug columns
 const DEBUG = false
@@ -29,103 +32,7 @@ export default function DatabaseView(props: Props) {
   const columns = useYArray(getColumns(doc))
   const rows = useYArray(getRows(doc))
 
-  /*
-  const headerRefs = useRef<{[key: string]: HTMLButtonElement | null}>({})
-  const cellRefs = useRef<{[key: string]: HTMLDivElement | null}>({})
-  const [focused, setFocusedState] = useState('')
-
-  const setFocused = useCallback((focused) => {
-    if (focused) {
-      const headerRef = headerRefs.current[focused]
-      const cellRef = cellRefs.current[focused]
-      //requestAnimationFrame(() => {
-        console.log('Focusing', {focused, headerRef, cellRef})
-        if (headerRef) {
-          headerRef.focus()
-        } else if (cellRef) {
-          cellRef.focus()
-        }
-      //})
-    }
-    setFocusedState(focused)
-  }, [focused])
-
-  const focusCallback = useCallback((columnId: string, rowId?: string) => {
-    const columnIndex = columns.findIndex((col) => col.id === columnId)
-    if (!rowId) {
-      // header navigation
-      return (direction: 'focus' | 'left' | 'right' | 'up' | 'down') => {
-        if (direction === 'focus') {
-          setFocused(columnId)
-          return
-        }
-        if (direction === 'left') {
-          if (columnIndex > 0) {
-            const nextColumnId = columns[columnIndex - 1]!.id
-            setFocused(nextColumnId)
-          }
-        }
-        if (direction === 'right') {
-          if (columnIndex < columns.length -1) {
-            const nextColumnId = columns[columnIndex + 1]!.id
-            setFocused(nextColumnId)
-          }
-        }
-        if (direction === 'down') {
-          const firstRowId = rows[0]
-          if (firstRowId) {
-            setFocused(`${columnId}-${firstRowId}`)
-          }
-        }
-      }
-    } else {
-      // cell navigation
-      const rowIndex = rows.findIndex((id) => id === rowId)
-      return (direction: 'focus' | 'left' | 'right' | 'up' | 'down') => {
-        if (direction === 'focus') {
-          setFocused(`${columnId}-${rowId}`)
-          return
-        }
-        if (direction === 'left') {
-          if (columnIndex > 0) {
-            const nextColumnId = columns[columnIndex - 1]!.id
-            setFocused(`${nextColumnId}-${rowId}`)
-          }
-        }
-        if (direction === 'right') {
-          if (columnIndex < columns.length -1) {
-            const nextColumnId = columns[columnIndex + 1]!.id
-            setFocused(`${nextColumnId}-${rowId}`)
-          }
-        }
-        if (direction === 'up') {
-          if (rowIndex > 0) {
-            const nextRowId = rows[rowIndex - 1]!
-            setFocused(`${columnId}-${nextRowId}`)
-          } else {
-            // move to header
-            setFocused(columnId)
-          }
-        }
-        if (direction === 'down') {
-          if (rowIndex > -1 && rowIndex < rows.length - 1) {
-            const nextRowId = rows[rowIndex + 1]!
-            setFocused(`${columnId}-${nextRowId}`)
-          }
-        }
-      }
-    }
-  }, [headerRefs, cellRefs])
-
-  const addFocusRef = useCallback((ref: HTMLDivElement | HTMLButtonElement | null, columnId: string, rowId?: string) => {
-    const key = rowId ? `${columnId}-${rowId}` : columnId
-    if (rowId) {
-      cellRefs.current[key] = ref as HTMLDivElement | null
-    } else {
-      headerRefs.current[key] = ref as HTMLButtonElement | null
-    }
-  }, [cellRefs, focused])
-  */
+  const focusedCell = useFocusedCell(provider)
 
   const dataColumns = useMemo(() => {
     const dataColumns: ColumnDef<RowId>[] = columns.map((columnId) => {
@@ -180,22 +87,8 @@ export default function DatabaseView(props: Props) {
         size: 48,
         minSize: 48,
         enableResizing: false,
-        header: () => (
-          <div
-            className='flex w-full cursor-pointer items-center p-2 hover:bg-slate-100'
-            onClick={() => appendColumn(doc)}
-          >
-            <Add />
-          </div>
-        ),
-        cell: ({row}) => (
-          <div
-            className='group flex w-full cursor-pointer items-center p-2'
-            onClick={() => deleteRow(doc, row.id)}
-          >
-            <DeleteOutline className='invisible text-slate-600 group-hover:visible' />
-          </div>
-        )
+        header: () => <AppendHeader provider={provider} />,
+        cell: ({row}) => <AppendCell provider={provider} rowId={row.id} />
       }
     ] as ColumnDef<RowId>[]
   }, [columns])
@@ -213,6 +106,7 @@ export default function DatabaseView(props: Props) {
   return (
     <>
       <div className='flex w-full flex-row justify-end'>
+        {focusedCell}
         <ImportExport doc={doc} editor={editor} />
       </div>
       <div className='overflow-x-auto pb-2'>
@@ -232,7 +126,7 @@ export default function DatabaseView(props: Props) {
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className='border-slate-400 border-b-1 p-0'
+                    className='h-12 border-slate-400 border-b-1 pt-1 first:pl-1 last:pr-1'
                     style={header.column.getCanResize() ? {width: header.getSize()} : {}}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -258,7 +152,7 @@ export default function DatabaseView(props: Props) {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className='border-slate-400 border-b-1 border-l-1 first:border-l-0'
+                    className='h-12 border-slate-400 border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -270,16 +164,10 @@ export default function DatabaseView(props: Props) {
             <tr className='text-slate-600'>
               <td
                 colSpan={columns.length + 1}
-                className='cursor-pointer hover:bg-slate-100'
-                onClick={() => appendRow(doc, userId)}
+                className='h-12 cursor-pointer p-1 pt-0 hover:bg-slate-100'
                 contentEditable={false}
               >
-                <div className='w-full cursor-pointer hover:bg-slate-100'>
-                  <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>
-                    <Add />
-                    New entry
-                  </div>
-                </div>
+                <AppendRow provider={provider} userId={userId} />
               </td>
             </tr>
           </tfoot>

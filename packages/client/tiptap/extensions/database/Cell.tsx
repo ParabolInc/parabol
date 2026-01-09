@@ -1,6 +1,10 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
+import {CheckCell} from './CheckCell'
 import {ColumnId, RowId} from './data'
 import {useColumnType} from './hooks'
+import {NumberCell} from './NumberCell'
+import {StatusCell} from './StatusCell'
+import {TagsCell} from './TagsCell'
 import {TextCell} from './TextCell'
 
 export const Cell = (props: {
@@ -14,16 +18,14 @@ export const Cell = (props: {
   const type = useColumnType(doc, columnId)
 
   switch (type) {
-    /*
     case 'number':
-      return <NumberCell {...rest} />
+      return <NumberCell {...props} />
     case 'check':
-      return <CheckCell {...rest} />
+      return <CheckCell {...props} />
     case 'status':
-      return <StatusCell {...rest} />
+      return <StatusCell {...props} />
     case 'tags':
-      return <TagsCell {...rest} />
-     */
+      return <TagsCell {...props} />
     default:
       return <TextCell {...props} />
   }

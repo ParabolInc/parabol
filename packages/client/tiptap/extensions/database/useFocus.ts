@@ -1,5 +1,5 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import * as Y from 'yjs'
 import {getColumns, getRows} from './data'
 
@@ -8,9 +8,9 @@ const findNextFocusable = (
   currentKey: string,
   direction: 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown'
 ): string | null => {
+  const columns = [...getColumns(doc).toArray(), 'append']
+  const rows = [...getRows(doc).toArray(), 'append']
   const [columnId, rowId] = currentKey.split(':')
-  const columns = getColumns(doc).toArray()
-  const rows = getRows(doc).toArray()
 
   if (direction === 'ArrowUp' || direction === 'ArrowDown') {
     const rowIndex = rows.findIndex((id) => id === rowId)
@@ -36,26 +36,19 @@ const findNextFocusable = (
   const columnIndex = columns.findIndex((id) => id === columnId)
   if (direction === 'ArrowLeft') {
     if (columnIndex > 0) {
-      if (rowId) {
-        return `${columns[columnIndex - 1]!}:${rowId}`
-      } else {
-        return columns[columnIndex - 1]!
-      }
+      return rowId ? `${columns[columnIndex - 1]!}:${rowId}` : columns[columnIndex - 1]!
     }
   } else if (direction === 'ArrowRight') {
     if (columnIndex < columns.length - 1) {
-      if (rowId) {
-        return `${columns[columnIndex + 1]!}:${rowId}`
-      } else {
-        return columns[columnIndex + 1]!
-      }
+      return rowId ? `${columns[columnIndex + 1]!}:${rowId}` : columns[columnIndex + 1]!
     }
+    return null
   }
   return null
 }
 
-export const useFocus = (provider: HocuspocusProvider, key: string, ref: HTMLElement | null) => {
-  const {awareness, document} = provider
+export const useFocusedCell = (provider: HocuspocusProvider) => {
+  const {awareness} = provider
 
   const [focusedCell, setFocusedCell] = useState<string | null>(
     awareness?.getLocalState()?.focusedCell ?? null
@@ -71,76 +64,87 @@ export const useFocus = (provider: HocuspocusProvider, key: string, ref: HTMLEle
     }
   }, [awareness])
 
+  return focusedCell
+}
+
+type Props = {
+  provider: HocuspocusProvider
+  key: string
+  onStartEditing?: (replace: boolean) => void
+  onStopEditing?: () => void
+}
+export const useFocus = (props: Props) => {
+  const {provider, key, onStartEditing, onStopEditing} = props
+  const {awareness} = provider
+
+  const focusedCell = useFocusedCell(provider)
+  const ref = useRef<HTMLElement | null>(null)
+
   useEffect(() => {
-    if (!ref) return
     if (focusedCell === key) {
-      if (
-        'selectionStart' in ref &&
-        'selectionEnd' in ref &&
-        'value' in ref &&
-        typeof ref.value === 'string'
-      ) {
-        ref.selectionStart = 0
-        ref.selectionEnd = ref.value.length
-      }
-      ref.focus()
+      requestAnimationFrame(() => {
+        ref.current?.focus()
+      })
     }
   }, [focusedCell, key, ref])
 
-  useEffect(() => {
-    if (!ref) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      console.log('onKeyDown', e.key, key)
-      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return
-
-      if (e.key === 'ArrowLeft') {
-        const isAtStart = e.target && 'selectionStart' in e.target && e.target.selectionStart === 0
-        if (!isAtStart) {
-          return
+  const onKeyDown = useCallback(
+    (e: Pick<KeyboardEvent, 'preventDefault' | 'target' | 'key'>) => {
+      if (e.target !== ref.current) {
+        if (e.key === 'Enter' || e.key === 'Escape') {
+          e.preventDefault()
+          onStopEditing?.()
+          requestAnimationFrame(() => {
+            ref.current?.focus()
+          })
         }
-      }
-      if (e.key === 'ArrowRight') {
-        const isAtEnd =
-          e.target &&
-          'selectionEnd' in e.target &&
-          'value' in e.target &&
-          typeof e.target.value === 'string' &&
-          e.target.selectionEnd === e.target.value?.length
-        if (!isAtEnd) {
-          return
-        }
+        return
       }
 
-      e.preventDefault()
-      const nextKey = findNextFocusable(
-        provider.document,
-        key,
-        e.key as 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown'
-      )
-      awareness?.setLocalStateField('focusedCell', nextKey)
-    }
-    ref.addEventListener('keydown', onKeyDown)
-    return () => {
-      ref.removeEventListener('keydown', onKeyDown)
-    }
-  }, [key, ref, document, awareness])
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        onStartEditing?.(false)
+        return
+      }
 
-  useEffect(() => {
-    if (!ref) return
-    const onFocus = () => {
-      awareness?.setLocalStateField('focusedCell', key)
-    }
-    ref.addEventListener('focus', onFocus)
-    return () => {
-      ref.removeEventListener('focus', onFocus)
-    }
-  }, [key, ref, awareness])
+      if (
+        e.target === ref.current &&
+        ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)
+      ) {
+        e.preventDefault()
+        const nextKey = findNextFocusable(
+          provider.document,
+          key,
+          e.key as 'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown'
+        )
+        awareness?.setLocalStateField('focusedCell', nextKey)
+        return
+      }
+
+      // forward input to child
+      onStartEditing?.(true)
+    },
+    [key, provider.document, awareness, onStartEditing, onStopEditing, ref.current]
+  )
+
+  const onFocus = useCallback(() => {
+    if (focusedCell === key) return
+    awareness?.setLocalStateField('focusedCell', key)
+  }, [awareness, key, focusedCell])
 
   const focusCell = useCallback(() => {
-    awareness?.setLocalStateField('focusedCell', key)
-  }, [awareness, key])
+    //requestAnimationFrame(() => {
+    ref.current?.focus()
+    //})
+  }, [ref.current])
 
   const isFocused = focusedCell === key
 
-  return {isFocused, focusCell}
+  const focusProps = {
+    ref: <T extends HTMLElement>(r: T | null) => (ref.current = r),
+    onKeyDown,
+    onFocus,
+    tabIndex: isFocused ? 0 : -1
+  }
+  return {isFocused, focusCell, focusProps}
 }

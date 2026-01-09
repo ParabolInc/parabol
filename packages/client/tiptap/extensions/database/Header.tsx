@@ -10,7 +10,7 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import useForm from '../../../hooks/useForm'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 import {DropdownMenuInputItem} from './DropdownMenuInputItem'
@@ -34,8 +34,7 @@ export const Header = (props: Props) => {
   const {provider, columnId} = props
   const {document: doc} = provider
 
-  const ref = useRef<HTMLButtonElement>(null)
-  useFocus(provider, columnId, ref.current)
+  const {focusProps} = useFocus({provider, key: columnId})
 
   const columnMetaMap = getColumnMeta(doc)
   const [name, setName] = useState(columnMetaMap.get(columnId)?.name ?? 'Untitled')
@@ -118,8 +117,8 @@ export const Header = (props: Props) => {
 
   return (
     <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
-      <DropdownMenu.Trigger asChild ref={ref}>
-        <button className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
+      <DropdownMenu.Trigger asChild {...focusProps}>
+        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>
         </button>

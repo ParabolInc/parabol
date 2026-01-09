@@ -16,17 +16,32 @@ export const TextCell = ({
 }) => {
   const {document: doc} = provider
   const [value, setValue] = useCell(doc, rowId, columnId)
+
   const ref = useRef<HTMLInputElement>(null)
-  useFocus(provider, `${columnId}:${rowId}`, ref.current)
+  const {focusProps, focusCell} = useFocus({
+    provider,
+    key: `${columnId}:${rowId}`,
+    onStartEditing: () => {
+      ref.current?.focus()
+    },
+    onStopEditing: () => {
+      focusCell()
+    }
+  })
 
   return (
-    <Input
-      value={value ?? ''}
-      className='w-full border-none focus:ring-1 focus:ring-sky-400'
-      onChange={(e) => {
-        setValue(e.target.value || null)
-      }}
-      ref={ref}
-    />
+    <div
+      {...focusProps}
+      className='h-full w-full border-none focus-within:outline-3 focus-within:outline-sky-500 focus:outline-2 focus:outline-sky-400'
+    >
+      <Input
+        ref={ref}
+        value={value ?? ''}
+        className='w-full border-none'
+        onChange={(e) => {
+          setValue(e.target.value || null)
+        }}
+      />
+    </div>
   )
 }
