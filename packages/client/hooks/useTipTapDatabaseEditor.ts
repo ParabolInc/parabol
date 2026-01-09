@@ -43,7 +43,7 @@ export const useTipTapDatabaseEditor = (
           levels: [1]
         }),
         Database.configure({
-          document: provider?.document,
+          provider,
           userId: user?.id
         })
       ],

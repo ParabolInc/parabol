@@ -1,50 +1,58 @@
-import {Add, DeleteOutline} from '@mui/icons-material'
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {ColumnDef, flexRender, getCoreRowModel, useReactTable} from '@tanstack/react-table'
 import {Editor} from '@tiptap/core'
 import {useMemo} from 'react'
-import * as Y from 'yjs'
 import {cn} from '../../../ui/cn'
+import {AppendCell} from './AppendCell'
+import {AppendHeader} from './AppendHeader'
+import {AppendRow} from './AppendRow'
 import {Cell} from './Cell'
-import {appendColumn, appendRow, deleteRow, RowId} from './data'
+import {getColumns, getRows, RowId} from './data'
 import {Header} from './Header'
-import {useDatabase} from './hooks'
+import {useYArray} from './hooks'
 import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
+import {useFocusedCell, useFocusFallback} from './useFocus'
 
 // add additional debug columns
 const DEBUG = false
+const DEBUG_FOCUS = false
 
 const getRowId = (row: RowId) => row
 
 type Props = {
-  doc: Y.Doc
+  provider: HocuspocusProvider
   userId?: string
   editor: Editor
 }
 
 export default function DatabaseView(props: Props) {
-  const {doc, editor, userId} = props
+  const {provider, editor, userId} = props
+  const doc = provider.document
 
-  const {rows, columns} = useDatabase(doc)
+  const columns = useYArray(getColumns(doc))
+  const rows = useYArray(getRows(doc))
+
+  const focusedCell = useFocusedCell(provider)
+  useFocusFallback(provider)
 
   const dataColumns = useMemo(() => {
-    const dataColumns: ColumnDef<RowId>[] = columns.map((column) => {
-      const {id, ...meta} = column
-      const {type} = meta
-
+    const dataColumns: ColumnDef<RowId>[] = columns.map((columnId) => {
       return {
-        id,
+        id: columnId,
         size: 200,
         minSize: 100,
         maxSize: 500,
         enableResizing: true,
         header: () => (
           <>
-            <Header key={id} columnMeta={meta} doc={doc} columnId={id} />
-            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{id}</div>}
+            <Header provider={provider} columnId={columnId} />
+            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{columnId}</div>}
           </>
         ),
-        cell: ({row}) => <Cell type={type} doc={doc} rowId={row.id} columnId={id} userId={userId} />
+        cell: ({row}) => (
+          <Cell provider={provider} rowId={row.id} columnId={columnId} userId={userId} />
+        )
       }
     })
     const debugColumns: ColumnDef<RowId>[] = !DEBUG
@@ -81,22 +89,8 @@ export default function DatabaseView(props: Props) {
         size: 48,
         minSize: 48,
         enableResizing: false,
-        header: () => (
-          <div
-            className='flex w-full cursor-pointer items-center p-2 hover:bg-slate-100'
-            onClick={() => appendColumn(doc)}
-          >
-            <Add />
-          </div>
-        ),
-        cell: ({row}) => (
-          <div
-            className='group flex w-full cursor-pointer items-center p-2'
-            onClick={() => deleteRow(doc, row.id)}
-          >
-            <DeleteOutline className='invisible text-slate-600 group-hover:visible' />
-          </div>
-        )
+        header: () => <AppendHeader provider={provider} />,
+        cell: ({row}) => <AppendCell provider={provider} rowId={row.id} />
       }
     ] as ColumnDef<RowId>[]
   }, [columns])
@@ -114,6 +108,7 @@ export default function DatabaseView(props: Props) {
   return (
     <>
       <div className='flex w-full flex-row justify-end'>
+        {DEBUG_FOCUS && focusedCell}
         <ImportExport doc={doc} editor={editor} />
       </div>
       <div className='overflow-x-auto pb-2'>
@@ -133,7 +128,7 @@ export default function DatabaseView(props: Props) {
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className='border-slate-400 border-b-1 p-0'
+                    className='h-12 border-slate-400 border-b-1 pt-1 first:pl-1 last:pr-1'
                     style={header.column.getCanResize() ? {width: header.getSize()} : {}}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
@@ -159,7 +154,7 @@ export default function DatabaseView(props: Props) {
                 {row.getVisibleCells().map((cell) => (
                   <td
                     key={cell.id}
-                    className='border-slate-400 border-b-1 border-l-1 first:border-l-0'
+                    className='h-12 border-slate-400 border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -171,16 +166,10 @@ export default function DatabaseView(props: Props) {
             <tr className='text-slate-600'>
               <td
                 colSpan={columns.length + 1}
-                className='cursor-pointer hover:bg-slate-100'
-                onClick={() => appendRow(doc, userId)}
+                className='h-12 cursor-pointer p-1 pt-0 hover:bg-slate-100'
                 contentEditable={false}
               >
-                <div className='w-full cursor-pointer hover:bg-slate-100'>
-                  <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>
-                    <Add />
-                    New entry
-                  </div>
-                </div>
+                <AppendRow provider={provider} userId={userId} />
               </td>
             </tr>
           </tfoot>

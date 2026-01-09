@@ -1,3 +1,4 @@
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {Node} from '@tiptap/core'
 import {type NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer} from '@tiptap/react'
 import {lazy} from 'react'
@@ -18,7 +19,7 @@ function Component(props: NodeViewProps) {
   return (
     <NodeViewWrapper className='relative'>
       <DatabaseView
-        doc={extension.options.document}
+        provider={extension.options.provider}
         editor={editor}
         userId={extension.options.userId}
       />
@@ -27,6 +28,7 @@ function Component(props: NodeViewProps) {
 }
 
 export interface DatabaseOptions {
+  provider: HocuspocusProvider
   document: Y.Doc
   userId?: string
 }
@@ -34,7 +36,8 @@ export const Database = Node.create<DatabaseOptions>({
   name: 'database',
   onCreate() {
     // Add some initial content to make the first use easier
-    const {document, userId} = this.options
+    const {provider, userId} = this.options
+    const document = provider.document
     if (getRows(document).length === 0) {
       if (getColumns(document).length === 0) {
         DEFAULT_COLUMNS.forEach((column) =>

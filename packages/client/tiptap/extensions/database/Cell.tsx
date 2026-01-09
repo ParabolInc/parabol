@@ -1,31 +1,32 @@
-import * as Y from 'yjs'
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {CheckCell} from './CheckCell'
 import {ColumnId, RowId} from './data'
+import {useColumnType} from './hooks'
 import {NumberCell} from './NumberCell'
 import {StatusCell} from './StatusCell'
 import {TagsCell} from './TagsCell'
 import {TextCell} from './TextCell'
-import {DataType} from './types'
 
 export const Cell = (props: {
-  type: DataType
-  doc: Y.Doc
+  provider: HocuspocusProvider
   rowId: RowId
   columnId: ColumnId
   userId?: string
 }) => {
-  const {type, ...rest} = props
+  const {provider, columnId} = props
+  const {document: doc} = provider
+  const type = useColumnType(doc, columnId)
 
   switch (type) {
     case 'number':
-      return <NumberCell {...rest} />
+      return <NumberCell {...props} />
     case 'check':
-      return <CheckCell {...rest} />
+      return <CheckCell {...props} />
     case 'status':
-      return <StatusCell {...rest} />
+      return <StatusCell {...props} />
     case 'tags':
-      return <TagsCell {...rest} />
+      return <TagsCell {...props} />
     default:
-      return <TextCell {...rest} />
+      return <TextCell {...props} />
   }
 }
