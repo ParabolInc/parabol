@@ -12,7 +12,7 @@ import {Header} from './Header'
 import {useYArray} from './hooks'
 import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
-import {useFocusedCell} from './useFocus'
+import {useFocusedCell, useFocusFallback} from './useFocus'
 
 // add additional debug columns
 const DEBUG = false
@@ -33,6 +33,7 @@ export default function DatabaseView(props: Props) {
   const rows = useYArray(getRows(doc))
 
   const focusedCell = useFocusedCell(provider)
+  useFocusFallback(provider)
 
   const dataColumns = useMemo(() => {
     const dataColumns: ColumnDef<RowId>[] = columns.map((columnId) => {

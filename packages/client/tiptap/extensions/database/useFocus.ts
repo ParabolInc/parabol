@@ -67,6 +67,103 @@ export const useFocusedCell = (provider: HocuspocusProvider) => {
   return focusedCell
 }
 
+export const useFocusFallback = (provider: HocuspocusProvider) => {
+  const doc = provider.document
+
+  const columns = getColumns(doc)
+  const rows = getRows(doc)
+
+  const currentRowIndex = useRef<number | null>(null)
+  const currentColumnIndex = useRef<number | null>(null)
+
+  const focusedCell = useFocusedCell(provider)
+  const focusedCellRef = useRef(focusedCell)
+
+  const findCurrentIndexes = () => {
+    const currentKey = focusedCellRef.current
+    if (!currentKey) return
+    const [columnId, rowId] = currentKey.split(':')
+    if (rowId) {
+      const allRows = [...rows.toArray(), 'append']
+      const rowIndex = allRows.findIndex((id) => id === rowId)
+      currentRowIndex.current = rowIndex === -1 ? null : rowIndex
+    } else {
+      currentRowIndex.current = null
+    }
+    const allColumns = [...columns.toArray(), 'append']
+    const columnIndex = allColumns.findIndex((id) => id === columnId)
+    currentColumnIndex.current = columnIndex === -1 ? null : columnIndex
+  }
+
+  useEffect(() => {
+    focusedCellRef.current = focusedCell
+    findCurrentIndexes()
+  }, [focusedCell])
+
+  useEffect(() => {
+    const onRowDelete = (event: Y.YArrayEvent<string>) => {
+      if (event.delta.some((d) => d.delete)) {
+        const currentKey = focusedCellRef.current
+        if (!currentKey) return
+        const [columnId, rowId] = currentKey.split(':')
+        if (!rowId) return
+
+        const currentIndex = rows.toArray().findIndex((id) => id === rowId)
+        if (currentIndex === -1) {
+          if (currentRowIndex.current !== null) {
+            const allRows = [...rows.toArray(), 'append']
+            const nextRowId =
+              allRows[currentRowIndex.current - 1] || allRows[allRows.length - 2] || null
+            const nextKey = nextRowId ? `${columnId}:${nextRowId}` : columnId
+            provider.awareness?.setLocalStateField('focusedCell', nextKey)
+          }
+        } else {
+          currentRowIndex.current = currentIndex
+        }
+      }
+    }
+    rows.observe(onRowDelete)
+    return () => {
+      rows.unobserve(onRowDelete)
+    }
+  }, [rows])
+
+  useEffect(() => {
+    const onColumnDelete = (event: Y.YArrayEvent<string>) => {
+      console.log('onColumnDelete', event.delta)
+      if (event.delta.some((d) => d.delete)) {
+        const currentKey = focusedCellRef.current
+        if (!currentKey) return
+        const [columnId, rowId] = currentKey.split(':')
+
+        const allColumns = [...columns.toArray(), 'append']
+        const currentIndex = allColumns.findIndex((id) => id === columnId)
+        if (currentIndex === -1) {
+          if (currentColumnIndex.current !== null) {
+            const allColumns = [...columns.toArray(), 'append']
+            const nextColumnId =
+              allColumns[currentColumnIndex.current - 1] ||
+              allColumns[allColumns.length - 2] ||
+              null
+            const nextKey = rowId
+              ? nextColumnId
+                ? `${nextColumnId}:${rowId}`
+                : rowId
+              : nextColumnId
+            provider.awareness?.setLocalStateField('focusedCell', nextKey)
+          }
+        } else {
+          currentColumnIndex.current = currentIndex
+        }
+      }
+    }
+    columns.observe(onColumnDelete)
+    return () => {
+      columns.unobserve(onColumnDelete)
+    }
+  }, [columns])
+}
+
 type Props = {
   provider: HocuspocusProvider
   key: string
