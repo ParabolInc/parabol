@@ -65,7 +65,7 @@ export async function publishToEmbedder(
     .values({
       jobType,
       priority,
-      model: activeEmbeddingModelId,
+      modelId: activeEmbeddingModelId,
       jobData: JSON.stringify(jobData)
     })
     .execute()

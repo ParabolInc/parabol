@@ -65,11 +65,11 @@ export class WorkflowOrchestrator {
         qc.deleteFrom('EmbeddingsJobQueueV2').where('id', '=', jobId).returningAll()
       )
       .insertInto('EmbeddingsFailures')
-      .columns(['embeddingsMetadataId', 'model', 'message', 'retryCount', 'jobData', 'jobType'])
+      .columns(['embeddingsMetadataId', 'modelId', 'message', 'retryCount', 'jobData', 'jobType'])
       .expression(({selectFrom}) =>
         selectFrom('deletedJob').select(({ref}) => [
           ref('deletedJob.embeddingsMetadataId').as('embeddingsMetadataId'),
-          ref('deletedJob.model').as('model'),
+          ref('deletedJob.modelId').as('modelId'),
           sql.lit(message).as('message'),
           ref('deletedJob.retryCount').as('retryCount'),
           ref('deletedJob.jobData').as('jobData'),

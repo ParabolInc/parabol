@@ -120,25 +120,25 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async createEmbeddingsForModel() {
-    Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
+    Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.modelId}`)
     const pg = getKysely()
     const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
     await pg
       .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')
           .select(({ref}) => [
             sql.lit('embed:start').as('jobType'),
             sql.lit(priority).as('priority'),
             ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.tableName).as('model')
+            sql.lit(this.modelId).as('modelId')
           ])
           .where('language', 'in', this.languages)
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
-    Logger.log(`Metadata loaded into JobQueue for new model ${this.tableName}`)
+    Logger.log(`Metadata loaded into JobQueue for new model ${this.modelId}`)
   }
   async createTable() {
     const pg = getKysely()
