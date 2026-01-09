@@ -12,14 +12,22 @@ export interface RelatedDiscussionsJobData {
 
 interface BaseMessageToEmbedder {
   userId?: string | undefined | null
-  dataLoader: DataLoaderWorker
+  dataLoader?: DataLoaderWorker
 }
 
 interface MessageToEmbedderUserQuery extends BaseMessageToEmbedder {
   jobType: 'userQuery:start'
   data: {
     query: string
+    requestId: number
+    channelName: string
   }
+}
+
+interface MessageToEmbedderEmbedPage extends BaseMessageToEmbedder {
+  jobType: 'embedPage:start'
+  pageId: number
+  data?: {}
 }
 
 interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
@@ -33,45 +41,56 @@ const SERVER_ID = process.env.SERVER_ID
 const jobTypeToKind = {
   'relatedDiscussions:start': 'relatedDiscussion',
   'userQuery:start': 'userQuery',
-  'embed:start': 'corpusUpdate'
+  'embed:start': 'corpusUpdate',
+  'embedPage:start': 'corpusUpdate'
 } satisfies Record<JobType, JobKind>
 
 let nextRequestId = 0
+export const getUserQueryJobData = (query: string) => {
+  return {
+    query,
+    requestId: ++nextRequestId,
+    channelName: `userQueryEmbedding:${SERVER_ID}`
+  }
+}
 
 export async function publishToEmbedder(
   payload: MessageToEmbedderRelatedDiscussions
 ): Promise<undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderUserQuery): Promise<Float32Array>
+export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
 export async function publishToEmbedder(
-  payload: MessageToEmbedderUserQuery | MessageToEmbedderRelatedDiscussions
+  payload:
+    | MessageToEmbedderUserQuery
+    | MessageToEmbedderRelatedDiscussions
+    | MessageToEmbedderEmbedPage
 ) {
   if (!IS_EMBEDDER_ENALBED) return
-  const {jobType, userId, dataLoader} = payload
+  const {jobType, userId, dataLoader, data} = payload
   const jobKind = jobTypeToKind[jobType]
   const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
-  const getJobData = () => {
-    if (payload.jobType === 'userQuery:start') {
-      return {
-        ...payload.data,
-        requestId: ++nextRequestId,
-        channelName: `userQueryEmbedding:${SERVER_ID}`
-      }
-    }
-    return payload.data
-  }
-  const jobData = getJobData()
+  const pageId = (payload as MessageToEmbedderEmbedPage).pageId
   await getKysely()
     .insertInto('EmbeddingsJobQueueV2')
     .values({
       jobType,
       priority,
       modelId: activeEmbeddingModelId,
-      jobData: JSON.stringify(jobData)
+      pageId,
+      jobData: JSON.stringify(data || {})
     })
+    .$if(!!pageId, (qb) =>
+      qb.onConflict((oc) =>
+        oc.columns(['pageId', 'modelId']).doUpdateSet((eb) => ({
+          // wait until they stop updating the document to process the embeddings
+          priority: eb.ref('excluded.priority')
+        }))
+      )
+    )
     .execute()
   await getRedis().publish('embeddingsJobAdded', '')
-  if ('requestId' in jobData) {
-    const {requestId} = jobData
+  if (data && 'requestId' in data) {
+    const {requestId} = data
     const response = await embeddingResponder.waitForResponse(requestId)
     return response
   }

@@ -10,6 +10,7 @@ import ms from 'ms'
 import {pack, unpack} from 'msgpackr'
 import {Doc, encodeStateAsUpdate} from 'yjs'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
+import {publishToEmbedder} from './graphql/mutations/helpers/publishToEmbedder'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
 import {getAuthTokenFromCookie} from './utils/authCookie'
@@ -197,6 +198,9 @@ export const hocuspocus = new Hocuspocus({
             updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
           ])
         }
+        const firstConnection = document.connections.values().next().value
+        const userId = firstConnection?.connection.context.userId as string | undefined
+        publishToEmbedder({jobType: 'embedPage:start', pageId: dbId, userId}).catch(() => {})
       }
     }),
     redisHocusPocus,

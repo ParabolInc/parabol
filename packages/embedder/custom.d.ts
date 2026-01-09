@@ -25,6 +25,10 @@ interface JobQueueStep<TData, TResult = StepResult> {
 }
 
 export type JobTypeLoose = `${string}:${string}`
-export type JobType = `relatedDiscussions:start` | 'userQuery:start' | 'embed:start'
+export type JobType =
+  | `relatedDiscussions:start`
+  | 'userQuery:start'
+  | 'embed:start'
+  | 'embedPage:start'
 export type Workflow = Record<string, JobQueueStep<any>>
 export type DBJob = Selectable<DB['EmbeddingsJobQueueV2']>

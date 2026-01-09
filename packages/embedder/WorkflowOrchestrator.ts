@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
 import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
+import type {ModelId} from './ai_models/modelIdDefinitions'
 import type {DBJob, JobType, StepResult, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
 import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
@@ -65,7 +66,15 @@ export class WorkflowOrchestrator {
         qc.deleteFrom('EmbeddingsJobQueueV2').where('id', '=', jobId).returningAll()
       )
       .insertInto('EmbeddingsFailures')
-      .columns(['embeddingsMetadataId', 'modelId', 'message', 'retryCount', 'jobData', 'jobType'])
+      .columns([
+        'embeddingsMetadataId',
+        'modelId',
+        'message',
+        'retryCount',
+        'jobData',
+        'jobType',
+        'pageId'
+      ])
       .expression(({selectFrom}) =>
         selectFrom('deletedJob').select(({ref}) => [
           ref('deletedJob.embeddingsMetadataId').as('embeddingsMetadataId'),
@@ -73,7 +82,8 @@ export class WorkflowOrchestrator {
           sql.lit(message).as('message'),
           ref('deletedJob.retryCount').as('retryCount'),
           ref('deletedJob.jobData').as('jobData'),
-          ref('deletedJob.jobType').as('jobType')
+          ref('deletedJob.jobType').as('jobType'),
+          ref('deletedJob.pageId').as('pageId')
         ])
       )
       .execute()
@@ -86,14 +96,20 @@ export class WorkflowOrchestrator {
 
   private addNextJob = async (jobType: JobType, priority: number, data: StepResult) => {
     const pg = getKysely()
-    const getValues = (datum: any, idx = 0) => {
-      const {embeddingsMetadataId, model, ...jobData} = datum
+    interface Datum {
+      embeddingsMetadataId?: number
+      jobType: JobType
+      priority: number
+      modelId: ModelId
+    }
+    const getValues = (datum: Datum, idx = 0) => {
+      const {embeddingsMetadataId, modelId, ...jobData} = datum
       return {
         jobType,
         // increment by idx so the first item goes first
         priority: priority + idx,
         embeddingsMetadataId,
-        model,
+        modelId,
         jobData: JSON.stringify(jobData)
       }
     }

@@ -38,7 +38,7 @@ import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
-import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
+import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {aiPrompts} from '../fields/aiPrompts'
@@ -799,7 +799,7 @@ const User: ReqResolvers<'User'> = {
 
     const vector = await publishToEmbedder({
       jobType: 'userQuery:start',
-      data: {query: search},
+      data: getUserQueryJobData(search),
       userId,
       dataLoader
     })
