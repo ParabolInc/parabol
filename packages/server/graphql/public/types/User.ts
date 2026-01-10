@@ -44,6 +44,7 @@ import connectionFromTemplateArray from '../../queries/helpers/connectionFromTem
 import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
+import {search} from '../fields/search'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
@@ -1042,7 +1043,8 @@ const User: ReqResolvers<'User'> = {
         cursor: page.sortOrder
       }))
     }
-  }
+  },
+  search
 }
 
 export default User

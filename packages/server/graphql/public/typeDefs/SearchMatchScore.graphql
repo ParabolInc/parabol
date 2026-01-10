@@ -1,0 +1,5 @@
+type SearchMatchScore {
+  relevance: Float!
+  vector: Float!
+  keyword: Float!
+}

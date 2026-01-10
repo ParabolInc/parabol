@@ -1,0 +1,9 @@
+type SearchResult {
+  id: ID!
+  score: SearchMatchScore!
+  title: String!
+  snippets: [String!]!
+  node: SearchResultItem
+  updatedAt: DateTime!
+  url: String
+}
