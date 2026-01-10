@@ -22,7 +22,7 @@ export const insertMeetingTemplatesIntoMetadataAndQueue = async (
   if (!metadataRows[0]) return
 
   const modelManager = getModelManager()
-  const tableNames = [...modelManager.embeddingModels.keys()]
+  const modelIds = [...modelManager.embeddingModels.keys()]
   const priority = await getEmbedderJobPriority('historicalUpdate', null, 0)
   // This is ugly but it runs fast, which is what we need for historical data
   return pg
@@ -37,19 +37,19 @@ export const insertMeetingTemplatesIntoMetadataAndQueue = async (
       qc
         .selectFrom('Insert')
         .innerJoin(
-          sql<{model: string}>`UNNEST(ARRAY[${sql.join(tableNames)}])`.as('model'),
+          sql<{modelId: string}>`UNNEST(ARRAY[${sql.join(modelIds)}])`.as('model'),
           (join) => join.on('Insert.id', 'is not', null)
         )
-        .select(['id', 'model'])
+        .select(['id', 'modelId'])
     )
     .insertInto('EmbeddingsJobQueueV2')
-    .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
+    .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
     .expression(({selectFrom}) =>
       selectFrom('Metadata').select(({ref}) => [
         sql.lit('embed:start').as('jobType'),
         sql.lit(priority).as('priority'),
         ref('Metadata.id').as('embeddingsMetadataId'),
-        ref('Metadata.model').as('model')
+        ref('Metadata.modelId').as('modelId')
       ])
     )
     .execute()

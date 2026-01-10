@@ -65,7 +65,7 @@ services:
     container_name: text-embeddings-inference
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2.2
     command:
-      - "--model-id=llmrails/ember-v1"
+      - "--model-id=Qwen/Qwen3-Embedding-0.6B --auto-truncate"
     platform: linux/x86_64
     restart: always
     ports:

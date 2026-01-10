@@ -1,6 +1,6 @@
 import ms from 'ms'
-import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
+import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
 import {createEmbeddingTextFrom} from '../indexing/createEmbeddingTextFrom'
 import {JobQueueError} from '../JobQueueError'
@@ -13,9 +13,9 @@ import {publishSimilarRetroTopics} from './helpers/publishSimilarRetroTopics'
 export const rerankRetroTopics: JobQueueStepRun<{
   similarEmbeddings: SimilarEmbedding[]
   embeddingsMetadataId: number
-  model: EmbeddingsTableName
+  modelId: ModelId
 }> = async ({data, dataLoader}) => {
-  const {similarEmbeddings, embeddingsMetadataId, model} = data
+  const {similarEmbeddings, embeddingsMetadataId, modelId} = data
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
   if (!metadata) return new JobQueueError(`Invalid embeddingsMetadataId: ${embeddingsMetadataId}`)
 
@@ -28,9 +28,9 @@ export const rerankRetroTopics: JobQueueStepRun<{
   }
 
   const modelManager = getModelManager()
-  const embeddingModel = modelManager.embeddingModels.get(model)
+  const embeddingModel = modelManager.embeddingModels.get(modelId)
   if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${model} not available`)
+    return new JobQueueError(`embedding model ${modelId} not available`)
   }
 
   const chunks = await embeddingModel.chunkText(rerankText)

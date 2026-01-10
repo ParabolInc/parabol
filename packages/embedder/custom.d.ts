@@ -2,7 +2,7 @@ import type {DataLoaderWorker} from '../server/graphql/graphql'
 import type {DB} from '../server/postgres/types/pg'
 import {JobQueueError} from './JobQueueError'
 
-export type EmbeddingObjectType = DB['EmbeddingsMetadata']['objectType']
+export type EmbeddingMetadataObjectType = DB['EmbeddingsMetadata']['objectType']
 
 type GetInputData<T> = T extends JobQueueStepRun<infer U> ? U : never
 export type ParentJob<T> = GetInputData<T> | GetInputData<T>[]
@@ -25,6 +25,9 @@ interface JobQueueStep<TData, TResult = StepResult> {
 }
 
 export type JobTypeLoose = `${string}:${string}`
-export type JobType = `relatedDiscussions:start` | 'userQuery:start'
+export type JobType =
+  | `relatedDiscussions:start`
+  | 'userQuery:start'
+  | 'embed:start'
+  | 'embedPage:start'
 export type Workflow = Record<string, JobQueueStep<any>>
-export type DBJob = Selectable<DB['EmbeddingsJobQueueV2']>

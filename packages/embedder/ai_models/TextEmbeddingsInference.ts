@@ -2,22 +2,7 @@ import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
-export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
-
-const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
-  'BAAI/bge-large-en-v1.5': {
-    embeddingDimensions: 1024,
-    maxInputTokens: 512,
-    tableSuffix: 'bge_l_en_1p5',
-    languages: ['en']
-  },
-  'llmrails/ember-v1': {
-    embeddingDimensions: 1024,
-    maxInputTokens: 512,
-    tableSuffix: 'ember_1',
-    languages: ['en']
-  }
-}
+import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
 
 const openAPIWithTimeout =
   (client: ClientMethod<any, any, any>, toError: (error: unknown) => any, timeout: number) =>
@@ -48,7 +33,7 @@ const openAPIWithTimeout =
 
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   client: ReturnType<typeof createClient<paths>>
-  constructor(modelId: string, url: string) {
+  constructor(modelId: ModelId, url: string) {
     super(modelId, url)
     const client = createClient<paths>({baseUrl: this.url})
     const toError = (e: unknown) => ({
@@ -86,8 +71,8 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     return data[0]!
   }
 
-  protected constructModelParams(modelId: string): EmbeddingModelParams {
-    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+  protected constructModelParams(modelId: ModelId): EmbeddingModelParams {
+    const modelParams = modelIdDefinitions[modelId]
     if (!modelParams) throw new Error(`Unknown modelId ${modelId} for TextEmbeddingsInference`)
     return modelParams
   }

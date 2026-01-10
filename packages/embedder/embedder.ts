@@ -6,6 +6,7 @@ import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
 import getModelManager from './ai_models/ModelManager'
 import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
+import {primeSupportedLanguages} from './getSupportedLanguages'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
@@ -31,7 +32,10 @@ const run = async () => {
   }
 
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
-  const primaryLock = await establishPrimaryServer(redis, 'embedder')
+  const [primaryLock] = await Promise.all([
+    establishPrimaryServer(redis, 'embedder'),
+    primeSupportedLanguages()
+  ])
   const modelManager = getModelManager()
   if (primaryLock) {
     // only 1 worker needs to perform these on startup

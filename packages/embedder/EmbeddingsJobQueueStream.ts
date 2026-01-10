@@ -2,11 +2,12 @@ import {sql} from 'kysely'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initLogging'
 import getKysely from 'parabol-server/postgres/getKysely'
+import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
-import type {DBJob} from './custom'
+import type {JobType} from './custom'
 import type {WorkflowOrchestrator} from './WorkflowOrchestrator'
 
-export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
+export class EmbeddingsJobQueueStream implements AsyncIterableIterator<EmbeddingsJobQueueV2> {
   [Symbol.asyncIterator]() {
     return this
   }
@@ -21,7 +22,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
   constructor(orchestrator: WorkflowOrchestrator) {
     this.orchestrator = orchestrator
     this.done = false
-    this.redisSub = new RedisInstance('EmbeddingsJobQueueStream')
+    this.redisSub = new RedisInstance('EmbeddingsJobQueueStream_sub')
     this.redisSub.on('message', () => {
       if (this.resolveDrought) {
         const resolve = this.resolveDrought
@@ -52,8 +53,9 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<DBJob> {
         .skipLocked()
     )
     .returningAll()
+    .$narrowType<{jobType: JobType; jobData: Record<string, any>}>()
     .compile()
-  async next(): Promise<IteratorResult<DBJob>> {
+  async next(): Promise<IteratorResult<EmbeddingsJobQueueV2>> {
     if (this.done) {
       return {done: true as const, value: undefined}
     }
