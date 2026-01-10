@@ -1,5 +1,6 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {generateText, type JSONContent} from '@tiptap/core'
+import {sql} from 'kysely'
 import ms from 'ms'
 import {applyUpdate, Doc} from 'yjs'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
@@ -7,6 +8,7 @@ import getKysely from '../../server/postgres/getKysely'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
+import {getTSV} from '../getSupportedLanguages'
 import {numberVectorToString} from '../indexing/numberVectorToString'
 import {inferLanguage} from '../inferLanguage'
 import {JobQueueError} from '../JobQueueError'
@@ -40,8 +42,9 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const content = TiptapTransformer.fromYdoc(yDoc, 'default') as JSONContent
   const fullText = generateText(content, serverTipTapExtensions)
   const language = inferLanguage(fullText, 5)
+  const tsvLanguage = getTSV(language)
   // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!language || !embeddingModel.languages.includes(language)) return false
+  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) return false
 
   const chunks = await embeddingModel.chunkText(fullText)
   if (chunks instanceof Error) {
@@ -60,12 +63,19 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       }
       await pg
         .insertInto(embeddingModel.pagesTableName)
-        .values({
-          embedText: chunk,
-          embedding: numberVectorToString(embeddingVector),
-          pageId,
-          chunkNumber: chunkNumber
-        })
+        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber'])
+        .expression((eb) =>
+          eb
+            // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
+            .selectFrom(sql`(SELECT ${chunk}::text as val)`.as('input'))
+            .select([
+              sql<string>`val`.as('val'),
+              sql<string>`to_tsvector('${sql.raw(tsvLanguage)}', val)`.as('tsv'),
+              sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
+              sql<number>`${pageId}`.as('pageId'),
+              sql<number>`${chunkNumber}`.as('chunkNumber')
+            ])
+        )
         .onConflict((oc) =>
           oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
             embedText: eb.ref('excluded.embedText'),

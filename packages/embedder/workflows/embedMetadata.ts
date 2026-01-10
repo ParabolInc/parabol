@@ -1,8 +1,10 @@
+import {sql} from 'kysely'
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
+import {getTSV} from '../getSupportedLanguages'
 import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {JobQueueError} from '../JobQueueError'
@@ -54,7 +56,8 @@ export const embedMetadata: JobQueueStepRun<
     return new JobQueueError(`embedding model ${modelId} not available`)
   }
   // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!language || !embeddingModel.languages.includes(language)) return false
+  const tsvLanguage = getTSV(language)
+  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) return false
   const chunks = await embeddingModel.chunkText(fullText!)
   if (chunks instanceof Error) {
     return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10, {
@@ -80,6 +83,7 @@ export const embedMetadata: JobQueueStepRun<
         .values({
           // TODO is the extra space of a null embedText really worth it?!
           embedText: chunks.length > 1 ? chunk : null,
+          tsv: sql<string>`to_tsvector('${sql.raw(tsvLanguage)}', ${chunk})`,
           embedding: numberVectorToString(embeddingVector),
           embeddingsMetadataId,
           chunkNumber: chunks.length > 1 ? chunkNumber : null
