@@ -1,12 +1,14 @@
 import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
+import type {EmbeddingsJobQueueV2} from 'parabol-server/postgres/types'
 import {getNewDataLoader} from '../server/dataloader/getNewDataLoader'
 import type {ModelId} from './ai_models/modelIdDefinitions'
-import type {DBJob, JobType, StepResult, Workflow} from './custom'
+import type {JobType, StepResult, Workflow} from './custom'
 import {EmbedderJobType} from './EmbedderJobType'
 import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
 import {JobQueueError} from './JobQueueError'
 import {embedMetadata} from './workflows/embedMetadata'
+import {embedPage} from './workflows/embedPage'
 import {embedQuery} from './workflows/embedQuery'
 import {getSimilarRetroTopics} from './workflows/getSimilarRetroTopics'
 import {relatedDiscussionsStart} from './workflows/relatedDiscussionsStart'
@@ -17,6 +19,11 @@ export class WorkflowOrchestrator {
     userQuery: {
       start: {
         run: embedQuery
+      }
+    },
+    embedPage: {
+      start: {
+        run: embedPage
       }
     },
     embed: {
@@ -52,6 +59,7 @@ export class WorkflowOrchestrator {
       await pg
         .updateTable('EmbeddingsJobQueueV2')
         .set((eb) => ({
+          state: 'queued',
           stateMessage: message,
           priority: eb('priority', '+', FAILED_JOB_PENALTY),
           retryCount: eb('retryCount', '+', 1),
@@ -101,15 +109,17 @@ export class WorkflowOrchestrator {
       jobType: JobType
       priority: number
       modelId: ModelId
+      pageId?: number
     }
     const getValues = (datum: Datum, idx = 0) => {
-      const {embeddingsMetadataId, modelId, ...jobData} = datum
+      const {embeddingsMetadataId, modelId, pageId, ...jobData} = datum
       return {
         jobType,
         // increment by idx so the first item goes first
         priority: priority + idx,
         embeddingsMetadataId,
         modelId,
+        pageId,
         jobData: JSON.stringify(jobData)
       }
     }
@@ -117,8 +127,17 @@ export class WorkflowOrchestrator {
     await pg.insertInto('EmbeddingsJobQueueV2').values(values).execute()
   }
 
-  runStep = async (job: DBJob) => {
-    const {id: jobId, jobData, jobType, priority, retryCount, embeddingsMetadataId, model} = job
+  runStep = async (job: EmbeddingsJobQueueV2) => {
+    const {
+      id: jobId,
+      jobData,
+      jobType,
+      priority,
+      retryCount,
+      embeddingsMetadataId,
+      modelId,
+      pageId
+    } = job
     const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)
@@ -133,7 +152,7 @@ export class WorkflowOrchestrator {
     const {run, getNextStep} = step
     const dataLoader = getNewDataLoader('WorkflowOrchestrator')
     let result: Awaited<ReturnType<typeof run>> = false
-    const data = {...jobData, embeddingsMetadataId, model}
+    const data = {...jobData, embeddingsMetadataId, modelId, pageId}
     try {
       result = await run({dataLoader, data})
     } catch (e) {

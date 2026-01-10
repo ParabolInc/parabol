@@ -52,7 +52,6 @@
     "@hocuspocus/extension-redis": "3.2.3",
     "@hocuspocus/extension-throttle": "3.2.3",
     "@hocuspocus/server": "3.2.3",
-    "@hocuspocus/transformer": "3.2.3",
     "@mattkrick/sanitize-svg": "0.4.1",
     "@octokit/graphql-schema": "^10.36.0",
     "@react-email/body": "^0.1.0",

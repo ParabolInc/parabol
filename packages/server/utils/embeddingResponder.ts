@@ -10,7 +10,7 @@ class EmbeddingResponder {
   private pending = new Map<number, (data: any) => void>()
 
   constructor() {
-    this.sub = new RedisInstance('EmbeddingDispatcher')
+    this.sub = new RedisInstance('EmbeddingDispatcher_sub')
     const channelName = `userQueryEmbedding:${process.env.SERVER_ID}`
     this.sub.subscribe(channelName)
     this.sub.on('messageBuffer', (_channel, message) => {

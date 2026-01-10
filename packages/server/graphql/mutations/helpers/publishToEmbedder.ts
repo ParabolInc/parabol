@@ -81,10 +81,14 @@ export async function publishToEmbedder(
     })
     .$if(!!pageId, (qb) =>
       qb.onConflict((oc) =>
-        oc.columns(['pageId', 'modelId']).doUpdateSet((eb) => ({
-          // wait until they stop updating the document to process the embeddings
-          priority: eb.ref('excluded.priority')
-        }))
+        oc
+          .columns(['pageId', 'modelId'])
+          // necessary to use the unique constraint idx we created
+          .where('pageId', 'is not', null)
+          .doUpdateSet((eb) => ({
+            // wait until they stop updating the document to process the embeddings
+            priority: eb.ref('excluded.priority')
+          }))
       )
     )
     .execute()

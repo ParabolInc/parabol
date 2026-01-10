@@ -1,4 +1,5 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
+import type {JobType} from '../../../embedder/custom'
 import {
   selectAgendaItems,
   type selectAtlassianAuth,
@@ -35,6 +36,7 @@ import {
 } from '../select'
 import {
   AIPrompt as AIPromptPG,
+  type DB,
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
@@ -184,3 +186,8 @@ export type Poll = ExtractTypeFromQueryBuilderSelect<typeof selectPoll>
 
 export type PollOption = ExtractTypeFromQueryBuilderSelect<typeof selectPollOption>
 export type MeetingSeries = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSeries>
+
+export type EmbeddingsJobQueueV2 = Omit<Selectable<DB['EmbeddingsJobQueueV2']>, 'jobData'> & {
+  jobType: JobType
+  jobData: Record<string, any>
+}

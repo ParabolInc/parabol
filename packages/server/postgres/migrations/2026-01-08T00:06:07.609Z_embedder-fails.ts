@@ -9,7 +9,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .createTable('EmbeddingsFailures')
       .addColumn('id', 'serial', (col) => col.primaryKey())
       .addColumn('embeddingsMetadataId', 'integer', (col) =>
-        col.references('EmbeddingsMetadata.id').onDelete('cascade').notNull()
+        col.references('EmbeddingsMetadata.id').onDelete('cascade')
       )
       .addColumn('model', 'varchar(255)')
       .addColumn('message', 'varchar(8192)', (col) => col.notNull())

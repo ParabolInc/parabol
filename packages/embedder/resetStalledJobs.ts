@@ -1,11 +1,12 @@
 import ms from 'ms'
 import getKysely from 'parabol-server/postgres/getKysely'
+import getRedis from 'parabol-server/utils/getRedis'
 import {FAILED_JOB_PENALTY} from './getEmbedderJobPriority'
 
 export const resetStalledJobs = () => {
   setInterval(async () => {
     const pg = getKysely()
-    await pg
+    const ids = await pg
       .updateTable('EmbeddingsJobQueueV2')
       .set((eb) => ({
         state: 'queued',
@@ -16,6 +17,10 @@ export const resetStalledJobs = () => {
       }))
       .where('startAt', '<', new Date(Date.now() - ms('5m')))
       .where('state', '=', 'running')
+      .returning('id')
       .execute()
+    if (ids.length > 0) {
+      await getRedis().publish('embeddingsJobAdded', '')
+    }
   }, ms('5m')).unref()
 }

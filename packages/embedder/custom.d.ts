@@ -31,4 +31,3 @@ export type JobType =
   | 'embed:start'
   | 'embedPage:start'
 export type Workflow = Record<string, JobQueueStep<any>>
-export type DBJob = Selectable<DB['EmbeddingsJobQueueV2']>
