@@ -1,7 +1,8 @@
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {createFilterOptions, useAutocomplete} from '@mui/base/useAutocomplete'
 import CheckIcon from '@mui/icons-material/Check'
 import * as Popover from '@radix-ui/react-popover'
-import {useMemo} from 'react'
+import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import {Chip} from '../../../ui/Chip/Chip'
 import {cn} from '../../../ui/cn'
@@ -9,6 +10,7 @@ import {Input} from '../../../ui/Input/Input'
 import {ColumnId, RowId} from './data'
 import {useCell, useColumnValues} from './hooks'
 import {getColor} from './types'
+import {useFocus} from './useFocus'
 
 const useStatusType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
   const columnValues = useColumnValues(doc, columnId)
@@ -114,7 +116,7 @@ const AutocompleteInput = ({
               <Chip
                 label={option.value}
                 key={option.value}
-                className={cn('rounded-lg', getColor(option.value))}
+                className={cn('rounded-full', getColor(option.value))}
               />
             </span>
             <CheckIcon className='hidden h-5 w-5 group-aria-selected:inline' />
@@ -126,32 +128,58 @@ const AutocompleteInput = ({
 }
 
 export const StatusCell = ({
-  doc,
+  provider,
   rowId,
   columnId
 }: {
-  doc: Y.Doc
+  provider: HocuspocusProvider
   rowId: RowId
   columnId: ColumnId
 }) => {
+  const {document: doc} = provider
   const [value, setValue] = useCell(doc, rowId, columnId)
   const tags = useStatusType({doc, columnId})
 
+  const [isOpen, setIsOpen] = useState(false)
+
+  const {focusProps} = useFocus({
+    provider,
+    key: `${columnId}:${rowId}`,
+    onStartEditing: () => {
+      setIsOpen(true)
+    },
+    onStopEditing: () => {
+      setIsOpen(false)
+    }
+  })
+
+  const onOpenChange = (open: boolean) => {
+    setIsOpen(open)
+  }
+
   return (
-    <Popover.Root>
+    <Popover.Root open={isOpen} onOpenChange={onOpenChange}>
       <Popover.Trigger asChild>
-        <button className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100'>
+        <button
+          {...focusProps}
+          className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'
+          onClick={() => {
+            setIsOpen(true)
+          }}
+        >
           {value && (
             <Chip
               label={value}
               key={value}
-              className={cn('m-0.5 rounded-lg', !value && 'hidden', getColor(value))}
+              className={cn('m-0.5 rounded-full', !value && 'hidden', getColor(value))}
             />
           )}
         </button>
       </Popover.Trigger>
       <Popover.Portal>
-        <AutocompleteInput value={value} setValue={setValue} tags={tags} />
+        <Popover.Content>
+          <AutocompleteInput value={value} setValue={setValue} tags={tags} />
+        </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
   )
