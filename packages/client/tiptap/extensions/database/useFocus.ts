@@ -210,9 +210,7 @@ export const useFocus = (props: Props) => {
   }, [awareness, key, focusedCell])
 
   const focusCell = useCallback(() => {
-    //requestAnimationFrame(() => {
     ref.current?.focus()
-    //})
   }, [ref.current])
 
   const isFocused = focusedCell === key

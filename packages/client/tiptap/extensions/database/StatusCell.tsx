@@ -116,7 +116,7 @@ const AutocompleteInput = ({
               <Chip
                 label={option.value}
                 key={option.value}
-                className={cn('rounded-lg', getColor(option.value))}
+                className={cn('rounded-full', getColor(option.value))}
               />
             </span>
             <CheckIcon className='hidden h-5 w-5 group-aria-selected:inline' />

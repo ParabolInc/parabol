@@ -18,7 +18,6 @@ export const CheckCell = ({
 
   const checked = rawValue === 'true' ? true : rawValue === 'false' ? false : 'indeterminate'
   const toggleValue = () => {
-    console.log('toggleValue', checked)
     if (checked) {
       setRawValue('false')
     } else {
