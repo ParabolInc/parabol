@@ -9,6 +9,8 @@ type ParabolGraphQLErrorCodes =
   | 'UNAPPROVED_UNLINK'
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
+  | 'NOT_IMPLEMENTED'
+  | 'INVALID_REDIRECT_URI'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {
