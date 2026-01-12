@@ -17,6 +17,7 @@ import {
   type NormalizationLinkedField,
   Observable,
   type OperationType,
+  type PayloadError,
   RecordSource,
   RelayFeatureFlags,
   type RequestParameters,
@@ -187,10 +188,10 @@ export default class Atmosphere extends Environment {
     return Observable.create<GraphQLResponse>((sink) => {
       const _next = sink.next
       const _error = sink.error
-      sink.error = (error: Error | Error[] | CloseEvent) => {
+      sink.error = (error: Error | Error[] | CloseEvent | PayloadError) => {
         if (Array.isArray(error)) {
           const invalidSessionError = error.find(
-            (e) => (e as any).extensions?.code === 'SESSION_INVALIDATED'
+            (e) => (e as PayloadError).extensions?.code === 'SESSION_INVALIDATED'
           )
           if (invalidSessionError) {
             this.invalidateSession(invalidSessionError.message)
@@ -304,8 +305,7 @@ export default class Atmosphere extends Environment {
 
     const anotherTabIsOpen = await isAnotherParabolTabOpen()
     if (anotherTabIsOpen || justOpened) return
-    // since this is async, useAuthRoute will have already run
-    window.location.href = '/'
+    this.invalidateSession('Removing impersonate token')
   }
 
   private setAuthToken = async (authToken: string | null | undefined) => {

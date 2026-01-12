@@ -52,7 +52,7 @@ const TeamContainer = (props: Props) => {
     if (!canAccessTeam) {
       history.replace({
         pathname: `/invitation-required`,
-        search: `?redirectTo=${encodeURIComponent(pathname)}&teamId=${teamId}`
+        search: `?redirectTo=${pathname}&teamId=${teamId}`
       })
     }
   }, [canAccessTeam])

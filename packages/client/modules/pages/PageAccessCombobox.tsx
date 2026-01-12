@@ -45,7 +45,7 @@ export const PageAccessCombobox = (props: Props) => {
       onCompleted(_res, errors) {
         const firstError = errors?.[0]
         if (firstError) {
-          if ((firstError as any).extensions?.code === 'UNAPPROVED_UNLINK') {
+          if (firstError.extensions?.code === 'UNAPPROVED_UNLINK') {
             setAttemptedRole(role)
             return
           }

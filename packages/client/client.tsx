@@ -1,7 +1,6 @@
 import {render} from 'react-dom'
 import Root from './Root'
 import './scrollIntoViewIfNeeded'
-import './types/modules.d'
 
 render(<Root />, document.getElementById('root'))
 if (__PRODUCTION__ && 'serviceWorker' in navigator) {

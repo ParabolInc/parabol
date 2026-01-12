@@ -10,7 +10,9 @@ import {getSignedUrl} from '@aws-sdk/s3-request-presigner'
 import type {RetryErrorInfo, StandardRetryToken} from '@smithy/types'
 import {StandardRetryStrategy} from '@smithy/util-retry'
 import mime from 'mime-types'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
 import path from 'path'
+import appOrigin from '../appOrigin'
 import {Logger} from '../utils/Logger'
 import FileStoreManager, {type FileAssetDir, type PartialPath} from './FileStoreManager'
 
@@ -122,7 +124,7 @@ export default class S3Manager extends FileStoreManager {
     return true
   }
 
-  async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
+  async copyFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
     const oldFullPath = decodeURI(this.prependPath(oldPartialPath))
     const newFullPath = decodeURI(this.prependPath(newPartialPath))
 
@@ -133,6 +135,12 @@ export default class S3Manager extends FileStoreManager {
         Key: newFullPath
       })
     )
+    return makeAppURL(appOrigin, `/assets/${newPartialPath}`)
+  }
+
+  async moveFile(oldPartialPath: PartialPath, newPartialPath: PartialPath) {
+    const oldFullPath = decodeURI(this.prependPath(oldPartialPath))
+    await this.copyFile(oldPartialPath, newPartialPath)
     await this.s3.send(
       new DeleteObjectCommand({
         Bucket: this.bucket,

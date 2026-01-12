@@ -5,6 +5,100 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.6.4](https://github.com/ParabolInc/parabol/compare/v11.6.3...v11.6.4) (2026-01-07)
+
+
+### Fixed
+
+* hardDeleteUser with no teams ([#12485](https://github.com/ParabolInc/parabol/issues/12485)) ([b0178ec](https://github.com/ParabolInc/parabol/commit/b0178ec0c64ee0c97f75d802af63d44128ab59c7))
+
+## [11.6.3](https://github.com/ParabolInc/parabol/compare/v11.6.2...v11.6.3) (2026-01-07)
+
+
+### Fixed
+
+* hardDeleteUser with no teams ([#12482](https://github.com/ParabolInc/parabol/issues/12482)) ([9cfcb49](https://github.com/ParabolInc/parabol/commit/9cfcb490406f778c837680e29fe948fbe2d20fb5))
+
+## [11.6.2](https://github.com/ParabolInc/parabol/compare/v11.6.1...v11.6.2) (2026-01-07)
+
+
+### Fixed
+
+* deadlock in hardDeleteUser ([#12479](https://github.com/ParabolInc/parabol/issues/12479)) ([d6c4e4a](https://github.com/ParabolInc/parabol/commit/d6c4e4a98c5b7a504818488712829193f7191a8c))
+
+## [11.6.1](https://github.com/ParabolInc/parabol/compare/v11.6.0...v11.6.1) (2026-01-07)
+
+
+### Fixed
+
+* delete PushInvitation when deleting User ([#12476](https://github.com/ParabolInc/parabol/issues/12476)) ([5d92ebd](https://github.com/ParabolInc/parabol/commit/5d92ebd037dc0a70b77687cd4a5f0ec6bc116ef4))
+
+## [11.6.0](https://github.com/ParabolInc/parabol/compare/v11.5.0...v11.6.0) (2026-01-05)
+
+
+### Added
+
+* add check in summary table ([#12440](https://github.com/ParabolInc/parabol/issues/12440)) ([44c565e](https://github.com/ParabolInc/parabol/commit/44c565ed5f96da44e08a4fb4d3b6fbe1f9260a54))
+
+
+### Fixed
+
+* let superusers use as many tokens as they like for page insights ([#12469](https://github.com/ParabolInc/parabol/issues/12469)) ([780c04b](https://github.com/ParabolInc/parabol/commit/780c04b1980763dfef4b311302c8a9f4df1aca95))
+
+
+### Changed
+
+* support tsgo (remove baseUrl) ([#12472](https://github.com/ParabolInc/parabol/issues/12472)) ([1139cad](https://github.com/ParabolInc/parabol/commit/1139cadb0d9d31e31b32dbf7bec5874aa855b777))
+
+## [11.5.0](https://github.com/ParabolInc/parabol/compare/v11.4.0...v11.5.0) (2025-12-18)
+
+
+### Added
+
+* clone external pictures when added to a page ([#12467](https://github.com/ParabolInc/parabol/issues/12467)) ([69e4a4b](https://github.com/ParabolInc/parabol/commit/69e4a4b06c54addee4909b3e2f5bc3978161ac55))
+
+
+### Fixed
+
+* check for isNotRemoved after querying the `teamMembers` dataloader ([#12462](https://github.com/ParabolInc/parabol/issues/12462)) ([9b3de31](https://github.com/ParabolInc/parabol/commit/9b3de31e3fafbd8bc5da054b8718b6f4f496a526))
+* self-review the redir-loop PR ([#12463](https://github.com/ParabolInc/parabol/issues/12463)) ([421f28e](https://github.com/ParabolInc/parabol/commit/421f28ef5583c5e92ebed77e2a23cdf8b1646d57))
+* signout when done impersonating ([#12460](https://github.com/ParabolInc/parabol/issues/12460)) ([e6ba0bd](https://github.com/ParabolInc/parabol/commit/e6ba0bdc5a98df3f650a3f710f7d2af9f059a303))
+* typings for GraphQLError on the client ([#12464](https://github.com/ParabolInc/parabol/issues/12464)) ([2d83bfb](https://github.com/ParabolInc/parabol/commit/2d83bfbab1ab7786ac42d33e323d298c722dce21))
+
+## [11.4.0](https://github.com/ParabolInc/parabol/compare/v11.3.2...v11.4.0) (2025-12-15)
+
+
+### Added
+
+* bump nodejs to v22.21.1 ([#12455](https://github.com/ParabolInc/parabol/issues/12455)) ([14f7e00](https://github.com/ParabolInc/parabol/commit/14f7e0054de551f29cce31fc84673e5d4a60ea93))
+
+## [11.3.2](https://github.com/ParabolInc/parabol/compare/v11.3.1...v11.3.2) (2025-12-15)
+
+
+### Changed
+
+* show page name in document title ([#12452](https://github.com/ParabolInc/parabol/issues/12452)) ([3279bb9](https://github.com/ParabolInc/parabol/commit/3279bb9e30ba05e82df030fb5ad01c56a325a60e))
+
+## [11.3.1](https://github.com/ParabolInc/parabol/compare/v11.3.0...v11.3.1) (2025-12-12)
+
+
+### Fixed
+
+* collab caret hide on print and click ([#12441](https://github.com/ParabolInc/parabol/issues/12441)) ([7514f4b](https://github.com/ParabolInc/parabol/commit/7514f4b89919e2db306f9a5501a2f465fa4ba8d7))
+* revert datadog dd-trace to v5.67.0 ([#12447](https://github.com/ParabolInc/parabol/issues/12447)) ([dcf987a](https://github.com/ParabolInc/parabol/commit/dcf987a58ecd3dda194f95de18c16909cb9f65e9))
+
+## [11.3.0](https://github.com/ParabolInc/parabol/compare/v11.2.0...v11.3.0) (2025-12-12)
+
+
+### Added
+
+* CSV import and export for databases ([#12382](https://github.com/ParabolInc/parabol/issues/12382)) ([922a235](https://github.com/ParabolInc/parabol/commit/922a235d3495a3f0b980dd81e7260716a360f0b2))
+
+
+### Fixed
+
+* make idp metadata public ([#12444](https://github.com/ParabolInc/parabol/issues/12444)) ([3b2d298](https://github.com/ParabolInc/parabol/commit/3b2d298a273a04704c961047fef1cdb3dcb3e219))
+
 ## [11.2.0](https://github.com/ParabolInc/parabol/compare/v11.1.4...v11.2.0) (2025-12-10)
 
 

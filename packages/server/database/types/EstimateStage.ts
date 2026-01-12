@@ -22,7 +22,7 @@ export default class EstimateStage extends GenericMeetingStage {
   scores: EstimateUserScore[]
   isVoting: boolean
   discussionId: string
-  phaseType!: 'ESTIMATE'
+  phaseType = 'ESTIMATE' as const
   constructor(input: Input) {
     super({phaseType: 'ESTIMATE', durations: input.durations})
     const {creatorUserId, serviceTaskId, sortOrder, scores, dimensionRefIdx, discussionId, taskId} =

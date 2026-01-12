@@ -9,7 +9,7 @@ interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
 export default class AgendaItemsStage extends GenericMeetingStage {
   discussionId: string
   agendaItemId: string
-  phaseType!: 'agendaitems'
+  phaseType = 'agendaitems' as const
   constructor(input: Input) {
     super({...input, phaseType: 'agendaitems'})
     const {agendaItemId, discussionId} = input

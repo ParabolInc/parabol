@@ -12,7 +12,7 @@ export default class CheckInPhase extends GenericMeetingPhase {
   checkInGreeting: {content: string; language: string}
   checkInQuestion: string
   stages: [CheckInStage, ...CheckInStage[]]
-  phaseType!: 'checkin'
+  phaseType = 'checkin' as const
 
   constructor(input: Input) {
     super('checkin')
