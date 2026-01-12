@@ -2,11 +2,10 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
-import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>
-  rule('hasProviderAccess', {cache: 'strict'})(async (source, args, context: GQLContext) => {
+  rule('hasProviderAccess', {cache: 'strict'})(async (source, args, context) => {
     const providerIdArg = getResolverDotPath(dotPath, source, args)
     if (!providerIdArg) {
       return true

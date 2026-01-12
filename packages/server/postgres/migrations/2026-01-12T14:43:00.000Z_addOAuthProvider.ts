@@ -22,14 +22,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await sql`
-    CREATE TRIGGER update_oauth_api_provider_updated_at
+    CREATE TRIGGER update_OAuthAPIProvider_updatedAt
     BEFORE UPDATE ON "OAuthAPIProvider"
     FOR EACH ROW
     EXECUTE FUNCTION "set_updatedAt"();
   `.execute(db)
 
   await db.schema
-    .createIndex('idx_oauth_provider_org_id')
+    .createIndex('idx_OAuthAPIProvider_orgId')
     .on('OAuthAPIProvider')
     .column('orgId')
     .execute()
@@ -50,7 +50,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('idx_oauth_code_client_id')
+    .createIndex('idx_OAuthAPICode_clientId')
     .on('OAuthAPICode')
     .column('clientId')
     .execute()
@@ -59,7 +59,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .insertInto('FeatureFlag')
     .values({
       featureName: 'oauthProvider',
-      description: 'Whether an organization can configure OAuth 2.0 providers',
+      description: 'Create OAuth 2.0 tokens to execute custom GraphQL queries',
       expiresAt: '2026-11-30T23:59:59.999Z',
       scope: 'Organization'
     })

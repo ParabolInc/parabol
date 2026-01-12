@@ -1,6 +1,5 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -10,8 +9,7 @@ const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = asyn
   context
 ) => {
   const [providerId] = CipherId.fromClient(args.providerId)
-  const {authToken, dataLoader} = context
-  const viewerId = getUserId(authToken)
+  const {dataLoader} = context
 
   const pg = getKysely()
 
@@ -25,16 +23,8 @@ const deleteOAuthAPIProvider: MutationResolvers['deleteOAuthAPIProvider'] = asyn
     throw new GraphQLError('Provider not found')
   }
 
-  if (!(await isUserOrgAdmin(viewerId, provider.orgId, dataLoader))) {
-    throw new GraphQLError('Not organization lead', {
-      extensions: {
-        code: 'FORBIDDEN',
-        userId: viewerId
-      }
-    })
-  }
-
   await pg.deleteFrom('OAuthAPIProvider').where('id', '=', providerId).execute()
+  dataLoader.get('oAuthProviders').clear(providerId)
 
   return {success: true, deletedProviderId: args.providerId}
 }

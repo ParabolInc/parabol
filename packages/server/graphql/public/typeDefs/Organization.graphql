@@ -212,7 +212,7 @@ type Organization implements OrganizationPartial {
   """
   Get an OAuth 2.0 Application by ID
   """
-  oauthAPIProvider(id: ID!): OAuthAPIProvider
+  oauthAPIProvider(providerId: ID!): OAuthAPIProvider
 
   """
   The feature flags the org has enabled

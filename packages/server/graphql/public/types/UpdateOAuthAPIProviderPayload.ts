@@ -1,29 +1,16 @@
-import type {GQLContext} from '../../graphql'
-import type {
-  UpdateOAuthApiProviderPayloadResolvers,
-  UpdateOAuthApiProviderSuccessResolvers
-} from '../resolverTypes'
+import type {UpdateOAuthApiProviderPayloadResolvers} from '../resolverTypes'
 
 export type UpdateOAuthAPIProviderPayloadSource = {
   providerId: number
   organizationId: string
 }
 
-const UpdateOAuthAPIProviderPayload: UpdateOAuthApiProviderPayloadResolvers &
-  UpdateOAuthApiProviderSuccessResolvers = {
-  provider: (
-    source: UpdateOAuthAPIProviderPayloadSource,
-    _args: unknown,
-    {dataLoader}: GQLContext
-  ) => {
-    return dataLoader.get('oAuthProviders').loadNonNull(source.providerId)
+const UpdateOAuthAPIProviderPayload: UpdateOAuthApiProviderPayloadResolvers = {
+  provider: ({providerId}, _args, {dataLoader}) => {
+    return dataLoader.get('oAuthProviders').loadNonNull(providerId)
   },
-  organization: (
-    source: UpdateOAuthAPIProviderPayloadSource,
-    _args: unknown,
-    {dataLoader}: GQLContext
-  ) => {
-    return dataLoader.get('organizations').loadNonNull(source.organizationId)
+  organization: ({organizationId}, _args, {dataLoader}) => {
+    return dataLoader.get('organizations').loadNonNull(organizationId)
   }
 }
 

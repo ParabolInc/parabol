@@ -42,6 +42,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         scopes: $scopes
       ) {
         provider {
+          ...OAuthAppFormEdit_oauthProvider
           id
           name
           updatedAt
@@ -66,6 +67,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         scopes: $scopes
       ) {
         provider {
+          ...OAuthAppFormEdit_oauthProvider
           id
           name
           updatedAt

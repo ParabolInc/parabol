@@ -1,4 +1,0 @@
-type UpdateOAuthAPIProviderSuccess {
-  provider: OAuthAPIProvider!
-  organization: Organization!
-}

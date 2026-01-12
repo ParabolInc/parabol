@@ -47,7 +47,7 @@ const subscription = graphql`
       }
 
 
-      UpdateOAuthAPIProviderSuccess {
+      UpdateOAuthAPIProviderPayload{
         provider {
           id
           name

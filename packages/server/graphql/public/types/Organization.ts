@@ -1,4 +1,3 @@
-import {selectOAuthAPIProvider} from '../../../postgres/select'
 import {
   getUserId,
   isSuperUser,
@@ -123,14 +122,11 @@ const Organization: OrganizationResolvers = {
     return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
   },
   oauthApplications: async ({id: orgId}, _args, {dataLoader}) => {
-    const providers = dataLoader
-      ? await dataLoader.get('oauthProvidersByOrgId').load(orgId)
-      : await selectOAuthAPIProvider().where('orgId', '=', orgId).execute()
-    return providers
+    return dataLoader.get('oauthProvidersByOrgId').load(orgId)
   },
-  oauthAPIProvider: async ({id: orgId}, {id}, {dataLoader}) => {
-    const [providerId] = CipherId.fromClient(id)
-    const provider = await dataLoader.get('oAuthProviders').load(providerId)
+  oauthAPIProvider: async ({id: orgId}, {providerId}, {dataLoader}) => {
+    const [dbProviderId] = CipherId.fromClient(providerId)
+    const provider = await dataLoader.get('oAuthProviders').load(dbProviderId)
 
     if (!provider || provider.orgId !== orgId) {
       return null

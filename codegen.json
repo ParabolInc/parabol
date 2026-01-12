@@ -242,7 +242,6 @@
           "UpdatePagePayload": "./types/UpdatePagePayload#UpdatePagePayloadSource",
           "UpdatePageAccessPayload": "./types/UpdatePageAccessPayload#UpdatePageAccessPayloadSource",
           "UpdateOAuthAPIProviderPayload": "./types/UpdateOAuthAPIProviderPayload#UpdateOAuthAPIProviderPayloadSource",
-          "UpdateOAuthAPIProviderSuccess": "./types/UpdateOAuthAPIProviderPayload#UpdateOAuthAPIProviderPayloadSource",
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",

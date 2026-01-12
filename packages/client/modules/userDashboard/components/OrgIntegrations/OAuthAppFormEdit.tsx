@@ -4,16 +4,22 @@ import type {OAuthAppFormEditQuery} from '../../../../__generated__/OAuthAppForm
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OAuthAppFormContent from './OAuthAppFormContent'
 
+graphql`
+  fragment OAuthAppFormEdit_oauthProvider on OAuthAPIProvider {
+    id
+    name
+    clientId
+    redirectUris
+    scopes
+  }
+`
+
 const query = graphql`
   query OAuthAppFormEditQuery($orgId: ID!, $providerId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        oauthProvider: oauthAPIProvider(id: $providerId) {
-          id
-          name
-          clientId
-          redirectUris
-          scopes
+        oauthProvider: oauthAPIProvider(providerId: $providerId) {
+          ...OAuthAppFormEdit_oauthProvider @relay(mask: false)
         }
       }
     }

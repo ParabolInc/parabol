@@ -8,7 +8,6 @@ import type {ServerContext, UserContext} from '../yoga'
  *
  * - Queries require 'graphql:query' scope
  * - Mutations require 'graphql:mutation' scope
- * - Super users bypass this validation
  */
 export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> => {
   return {
@@ -31,7 +30,7 @@ export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> =
 
       if (operationType === 'subscription') {
         throw new GraphQLError('Subscriptions are not supported with OAuth tokens', {
-          extensions: {code: 'FORBIDDEN'}
+          extensions: {code: 'NOT_IMPLEMENTED'}
         })
       }
 

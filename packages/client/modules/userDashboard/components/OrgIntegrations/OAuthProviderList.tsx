@@ -14,6 +14,7 @@ import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useSubscription from '../../../../hooks/useSubscription'
 import organizationSubscription from '../../../../subscriptions/OrganizationSubscription'
+import plural from '../../../../utils/plural'
 import OAuthAppFormDialog from './OAuthAppFormDialog'
 
 interface Props {
@@ -149,7 +150,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
     <div className='space-y-4'>
       <div className='flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4'>
         <div className='font-medium text-slate-700'>
-          {providers.length} OAuth application{providers.length !== 1 ? 's' : ''}
+          {providers.length} OAuth {plural(providers.length, 'application')}
         </div>
         <SecondaryButton size='small' onClick={handleAdd}>
           <AddIcon className='mr-2' />
@@ -177,11 +178,11 @@ const OAuthProviderList = ({organizationRef}: Props) => {
               <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-600'>
                 <WebIcon />
               </div>
-              <div>
-                <h4 className='font-semibold text-slate-900'>{provider.name}</h4>
-                <p className='text-slate-500 text-xs'>
+              <div className='flex flex-col'>
+                <span className='font-semibold text-lg text-slate-900'>{provider.name}</span>
+                <span className='text-slate-500 text-xs'>
                   Last updated {new Date(provider.updatedAt).toLocaleDateString()}
-                </p>
+                </span>
               </div>
             </div>
             <IconButton
