@@ -8,6 +8,7 @@ type ParabolGraphQLErrorCodes =
   | 'TOO_MANY_REQUESTS'
   | 'UNAPPROVED_UNLINK'
   | 'UNAUTHORIZED'
+  | 'FORBIDDEN'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {
