@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.7.0](https://github.com/ParabolInc/parabol/compare/v11.6.4...v11.7.0) (2026-01-12)
+
+
+### Added
+
+* database keyboard navigation ([#12491](https://github.com/ParabolInc/parabol/issues/12491)) ([fc59345](https://github.com/ParabolInc/parabol/commit/fc59345a690051cd6cf9021c1ac4970fa69711ad))
+
+
+### Fixed
+
+* bump qs version to safe ([#12495](https://github.com/ParabolInc/parabol/issues/12495)) ([4c9619f](https://github.com/ParabolInc/parabol/commit/4c9619fe961fc6b16ace9fb1310c653f335cf2c5))
+* presign URL for local fs assets ([#12496](https://github.com/ParabolInc/parabol/issues/12496)) ([2a2739e](https://github.com/ParabolInc/parabol/commit/2a2739e563f71573ab05a40d54a0a238ee28aa0b))
+
+
+### Changed
+
+* mark organization feature flags as public explicitly ([#12493](https://github.com/ParabolInc/parabol/issues/12493)) ([f5092a1](https://github.com/ParabolInc/parabol/commit/f5092a1a9022675792fd9b856dd1b29fc09bf4cb))
+
 ## [11.6.4](https://github.com/ParabolInc/parabol/compare/v11.6.3...v11.6.4) (2026-01-07)
 
 

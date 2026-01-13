@@ -118,7 +118,10 @@ const Organization: OrganizationResolvers = {
   },
   integrationProviders: ({id: orgId}) => ({orgId}),
   orgFeatureFlags: async ({id: orgId}, _args, {dataLoader}) => {
-    return dataLoader.get('allFeatureFlagsByOwner').load({ownerId: orgId, scope: 'Organization'})
+    const orgFeatureFlags = await dataLoader
+      .get('allFeatureFlagsByOwner')
+      .load({ownerId: orgId, scope: 'Organization'})
+    return orgFeatureFlags.filter((flag) => flag.isPublic)
   }
 }
 
