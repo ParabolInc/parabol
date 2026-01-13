@@ -4,6 +4,7 @@ import {
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
@@ -122,6 +123,19 @@ const Organization: OrganizationResolvers = {
       .get('allFeatureFlagsByOwner')
       .load({ownerId: orgId, scope: 'Organization'})
     return orgFeatureFlags.filter((flag) => flag.isPublic)
+  },
+  oauthApplications: async ({id: orgId}, _args, {dataLoader}) => {
+    return dataLoader.get('oauthProvidersByOrgId').load(orgId)
+  },
+  oauthAPIProvider: async ({id: orgId}, {providerId}, {dataLoader}) => {
+    const [dbProviderId] = CipherId.fromClient(providerId)
+    const provider = await dataLoader.get('oAuthProviders').load(dbProviderId)
+
+    if (!provider || provider.orgId !== orgId) {
+      return null
+    }
+
+    return provider
   }
 }
 

@@ -29,8 +29,19 @@ type ExtractChild<TOp, TChild extends string> = TChild extends keyof TOp
   ? NonNullable<TOp[TChild]>
   : never
 
+type NestedKeys<T> = T extends Record<string, unknown>
+  ? {
+      [K in keyof T & (string | number)]: T[K] extends Record<string, unknown>
+        ? `${K}` | `${K}.${keyof T[K] & (string | number)}`
+        : `${K}`
+    }[keyof T & (string | number)]
+  : never
+
 type Arg<T> = ParseParent<T> extends keyof Resolvers
-  ? keyof SecondParam<ExtractChild<NonNullable<Resolvers[ParseParent<T>]>, ParseChild<T>>> & string
+  ?
+      | (keyof SecondParam<ExtractChild<NonNullable<Resolvers[ParseParent<T>]>, ParseChild<T>>> &
+          string)
+      | NestedKeys<SecondParam<ExtractChild<NonNullable<Resolvers[ParseParent<T>]>, ParseChild<T>>>>
   : never
 
 export type ResolverDotPath<T> = `source.${Source<T>}` | `args.${Arg<T>}`
