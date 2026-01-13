@@ -34,6 +34,13 @@ export async function createOAuthCode(
     throw new Error(`Invalid redirect_uri: '${redirectUri}' is not registered for this client.`)
   }
 
+  const allowedScopes = (provider.scopes as string[]) || []
+  for (const scope of scopes) {
+    if (!allowedScopes.includes(scope)) {
+      throw new Error(`Invalid scope: '${scope}' is not allowed for this client.`)
+    }
+  }
+
   const expiresAt = new Date(Date.now() + ms('10m'))
   const code = crypto.randomBytes(32).toString('hex')
   const {id: codeId} = await pg

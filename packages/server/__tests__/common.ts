@@ -8,8 +8,8 @@ import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
-const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
-const PROTOCOL = process.env.PROTO || 'http'
+export const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
+export const PROTOCOL = process.env.PROTO || 'http'
 const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {

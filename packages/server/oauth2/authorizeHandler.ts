@@ -62,7 +62,7 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     if (
       errorMessage.includes('Invalid client_id') ||
       errorMessage.includes('Invalid redirect_uri') ||
-      errorMessage.includes('OAuthScopeEnum')
+      errorMessage.includes('Invalid scope')
     ) {
       res.writeStatus('400 Bad Request')
       res.end(errorMessage)
