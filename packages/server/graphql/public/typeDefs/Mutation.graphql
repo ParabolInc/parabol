@@ -189,16 +189,6 @@ type Mutation {
   regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
 
   """
-  Create an OAuth 2.0 authorization code
-  """
-  createOAuthAPICode(
-    clientId: String!
-    redirectUri: String!
-    scopes: [String!]!
-    state: String
-  ): CreateOAuthAPICodePayload!
-
-  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload

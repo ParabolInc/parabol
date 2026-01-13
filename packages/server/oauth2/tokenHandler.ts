@@ -44,14 +44,12 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  // 1. Validate Client Credentials
   const pg = getKysely()
   const provider = await pg
     .selectFrom('OAuthAPIProvider')
     .selectAll()
     .where('clientId', '=', client_id)
     .executeTakeFirst()
-
   if (!provider || provider.clientSecret !== client_secret) {
     res.writeStatus('401 Unauthorized')
     res.writeHeader('Content-Type', 'application/json')
@@ -59,7 +57,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  // 2. Validate Code (atomically delete to prevent replay attacks)
   const oauthCode = await pg
     .deleteFrom('OAuthAPICode')
     .where('id', '=', code)
@@ -71,7 +68,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
       sql<string[]>`to_json(scopes)`.as('scopes')
     ])
     .executeTakeFirst()
-
   if (!oauthCode) {
     res.writeStatus('400 Bad Request')
     res.writeHeader('Content-Type', 'application/json')
@@ -79,7 +75,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  // 3. Validate Code Expiration
   const now = new Date()
   const expiresAt = new Date(oauthCode.expiresAt)
   if (expiresAt < now) {
@@ -89,7 +84,6 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  // 4. Validate Redirect URI
   if (oauthCode.redirectUri !== redirect_uri) {
     res.writeStatus('400 Bad Request')
     res.writeHeader('Content-Type', 'application/json')
@@ -102,10 +96,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  // 5. Ensure scopes is an array (should always be true with to_json)
   const {scopes, userId} = oauthCode
-
-  // Generate Access Token
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
@@ -113,10 +104,8 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
-
   const accessToken = encodeAuthToken(authToken)
 
-  // 7. Respond with Access Token
   res.writeStatus('200 OK')
   res.writeHeader('Content-Type', 'application/json')
   res.end(

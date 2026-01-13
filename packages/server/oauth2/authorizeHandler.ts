@@ -1,4 +1,5 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {SIGNIN_SLUG} from '../../client/utils/constants'
 import makeAppURL from '../../client/utils/makeAppURL'
 import appOrigin from '../appOrigin'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
@@ -13,12 +14,12 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
   if (!authToken?.sub) {
     const query = req.getQuery()
     const currentPath = `/oauth/authorize?${query}`
-    const loginUrl = makeAppURL(appOrigin, '/login', {searchParams: {redirectTo: currentPath}})
-    res.cork(() => {
-      res.writeStatus('302 Found')
-      res.writeHeader('Location', loginUrl)
-      res.end()
+    const loginUrl = makeAppURL(appOrigin, `/${SIGNIN_SLUG}`, {
+      searchParams: {redirectTo: currentPath}
     })
+    res.writeStatus('302 Found')
+    res.writeHeader('Location', loginUrl)
+    res.end()
     return
   }
 
@@ -60,7 +61,8 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     const errorMessage = (error as Error).message
     if (
       errorMessage.includes('Invalid client_id') ||
-      errorMessage.includes('Invalid redirect_uri')
+      errorMessage.includes('Invalid redirect_uri') ||
+      errorMessage.includes('OAuthScopeEnum')
     ) {
       res.writeStatus('400 Bad Request')
       res.end(errorMessage)

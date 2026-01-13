@@ -10,6 +10,7 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
+import makeAppURL from '../../../../utils/makeAppURL'
 
 export interface FormContentProps {
   orgId: string
@@ -209,6 +210,11 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     navigator.clipboard.writeText(text)
   }
 
+  const appOrigin = window.location.origin
+  const authorizeEndpoint = makeAppURL(appOrigin, '/oauth/authorize')
+  const tokenEndpoint = makeAppURL(appOrigin, '/oauth/token')
+  const graphqlEndpoint = makeAppURL(appOrigin, '/graphql')
+
   return (
     <>
       <DialogContent className='flex flex-col overflow-hidden p-0!'>
@@ -244,6 +250,53 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                 placeholder='My Awesome App'
                 error={undefined}
               />
+            </div>
+
+            <div className='space-y-2'>
+              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                Redirect URIs (Comma separated)
+              </label>
+              <BasicInput
+                name='redirectUris'
+                value={redirectUris}
+                onChange={(e) => setRedirectUris(e.target.value)}
+                className='w-full font-mono text-sm'
+                placeholder='https://example.com/callback'
+                error={undefined}
+              />
+            </div>
+
+            <div className='space-y-2'>
+              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                Scopes
+              </label>
+              <div className='flex gap-4'>
+                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                  <input
+                    type='checkbox'
+                    checked={scopes.includes('graphql_query')}
+                    onChange={() => toggleScope('graphql_query')}
+                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                  />
+                  graphql:query
+                </label>
+                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                  <input
+                    type='checkbox'
+                    checked={scopes.includes('graphql_mutation')}
+                    onChange={() => toggleScope('graphql_mutation')}
+                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                  />
+                  graphql:mutation
+                </label>
+                <button
+                  type='button'
+                  onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
+                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                >
+                  <ContentCopyIcon fontSize='small' />
+                </button>
+              </div>
             </div>
 
             <div className='grid grid-cols-2 gap-6'>
@@ -345,44 +398,84 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                 </div>
               </div>
             </div>
-
-            <div className='space-y-2'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Redirect URIs (Comma separated)
-              </label>
-              <BasicInput
-                name='redirectUris'
-                value={redirectUris}
-                onChange={(e) => setRedirectUris(e.target.value)}
-                className='w-full font-mono text-sm'
-                placeholder='https://example.com/callback'
-                error={undefined}
-              />
-            </div>
-
-            <div className='space-y-2'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Scopes
-              </label>
-              <div className='flex gap-4'>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_query')}
-                    onChange={() => toggleScope('graphql_query')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                  />
-                  graphql:query
-                </label>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_mutation')}
-                    onChange={() => toggleScope('graphql_mutation')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                  />
-                  graphql:mutation
-                </label>
+            <div>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Authorize endpoint
+                  </label>
+                </div>
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='authorizeEndpoint'
+                      value={authorizeEndpoint}
+                      disabled
+                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      autoComplete='off'
+                      error={undefined}
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(authorizeEndpoint)}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
+              </div>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    Token endpoint
+                  </label>
+                </div>
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='tokenEndpoint'
+                      value={tokenEndpoint}
+                      disabled
+                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      autoComplete='off'
+                      error={undefined}
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(tokenEndpoint)}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
+              </div>
+              <div className='space-y-2'>
+                <div className='flex h-5 items-center justify-between'>
+                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                    GraphQL endpoint
+                  </label>
+                </div>
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='graphqlEndpoint'
+                      value={graphqlEndpoint}
+                      disabled
+                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      autoComplete='off'
+                      error={undefined}
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(graphqlEndpoint)}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
