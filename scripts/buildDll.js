@@ -2,6 +2,7 @@
 const fs = require('fs')
 const webpack = require('webpack')
 const config = require('./webpack/dev.clientdll.config')
+const configFilePath = require.resolve('./webpack/dev.clientdll.config')
 const crypto = require('crypto')
 const path = require('path')
 const getProjectRoot = require('./webpack/utils/getProjectRoot')
@@ -19,13 +20,13 @@ const buildDll = async () => {
       cacheHash = ''
     }
     const lockfile = fs.readFileSync(path.join(PROJECT_ROOT, 'pnpm-lock.yaml'), 'utf8')
+    const configfile = fs.readFileSync(configFilePath, 'utf8')
 
-    const hash = crypto.createHash('md5').update(lockfile).digest('hex')
+    const hash = crypto.createHash('md5').update(lockfile).update(configfile).digest('hex')
     if (hash !== cacheHash) {
       if (!fs.existsSync(DLL_ROOT)) {
         fs.mkdirSync(DLL_ROOT, {recursive: true})
       }
-      fs.writeFileSync(CACHE_HASH, hash)
       webpack(config, (error) => {
         if (error) {
           console.error(`📘 DLL failed\n`, error.message)
@@ -33,6 +34,7 @@ const buildDll = async () => {
           return
         }
         console.log(`📘 DLL created`)
+        fs.writeFileSync(CACHE_HASH, hash)
         resolve()
       })
     } else {
