@@ -554,4 +554,17 @@ type User implements UserPartial {
     """
     textFilter: String
   ): PageConnection!
+  search(
+    "The string to search for"
+    query: String!
+    first: Int
+    after: Int
+    types: [SearchTypeEnum!]!
+    teamIds: [ID!]
+    startAt: DateTime
+    endAt: DateTime
+    dateField: SearchDateTypeEnum
+    "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.75."
+    alpha: Float
+  ): SearchResultConnection!
 }

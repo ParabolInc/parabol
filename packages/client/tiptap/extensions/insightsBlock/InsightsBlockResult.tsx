@@ -1,12 +1,12 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import EditIcon from '@mui/icons-material/Edit'
 import {Fragment} from '@tiptap/pm/model'
-import {getHTMLFromFragment, NodeViewContent, type NodeViewProps} from '@tiptap/react'
+import {Editor, getHTMLFromFragment, NodeViewContent, type NodeViewProps} from '@tiptap/react'
+import {serverTipTapExtensions} from '~/shared/tiptap/serverTipTapExtensions'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import type {InsightsBlockAttrs} from './InsightsBlock'
-
 export const InsightsBlockResult = (props: NodeViewProps) => {
   const {editor, node, updateAttributes} = props
   const attrs = node.attrs as InsightsBlockAttrs
@@ -25,7 +25,13 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
                 // Important: get HTML from schema so we get attributes
                 const fragment = Fragment.from(nodePos.node)
                 const htmlText = getHTMLFromFragment(fragment, editor.schema)
-                const markdownText = editor.storage.markdown.serializer.serialize(nodePos.node)
+                // TODO: Verify that this works as well as generating a new insight
+                const tmpEditor = new Editor({
+                  contentType: 'html',
+                  content: htmlText,
+                  extensions: serverTipTapExtensions
+                })
+                const markdownText = tmpEditor.getMarkdown()
                 await navigator.clipboard.write([
                   new ClipboardItem({
                     'text/plain': new Blob([markdownText], {

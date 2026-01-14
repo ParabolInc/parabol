@@ -1,3 +1,4 @@
+import {createBlockMarkdownSpec} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
 import ms from 'ms'
 
@@ -113,5 +114,9 @@ export const InsightsBlockBase = Node.create({
 
   renderHTML({HTMLAttributes}) {
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name}), 0]
-  }
+  },
+
+  ...createBlockMarkdownSpec({
+    nodeName: 'insightsBlock'
+  })
 })

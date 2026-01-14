@@ -3,19 +3,19 @@ import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
+import {Markdown} from '@tiptap/markdown' // TODO: get rid of non-native Markdown extension in other places
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
 import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
-import {tiptapTagConfig} from '../../utils/tiptapTagConfig'
+import {MentionTaskTag} from '../../utils/MentionTaskTag'
 import {ImageUploadBase} from './extensions/ImageUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
-
 export const mentionConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
   renderText({node}) {
     return node.attrs.label
@@ -61,12 +61,13 @@ export const serverTipTapExtensions: Extensions = [
   ImageBlockBase,
   LoomExtension,
   Mention.configure(mentionConfig),
-  Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
+  MentionTaskTag,
   InsightsBlockBase,
   UniqueID,
   PageLinkBlockBase,
   Database,
   TaskBlockBase,
   ThinkingBlockBase,
-  ResponseBlockBase
+  ResponseBlockBase,
+  Markdown
 ]

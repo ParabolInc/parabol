@@ -8,13 +8,13 @@ import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
 import {Focus, Placeholder} from '@tiptap/extensions'
+import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {readInlineData} from 'relay-runtime'
 import AutoJoiner from 'tiptap-extension-auto-joiner'
-import {Markdown} from 'tiptap-markdown'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
@@ -151,7 +151,7 @@ export const useTipTapPageEditor = (
         TiptapLinkExtension.configure({
           openOnClick: false
         }),
-        SearchAndReplace.configure(),
+        SearchAndReplace,
         Collaboration.configure({
           document: provider?.document
         }),
@@ -220,11 +220,7 @@ export const useTipTapPageEditor = (
         }),
         InsightsBlock,
         AutoJoiner,
-        Markdown.configure({
-          html: true,
-          transformPastedText: true,
-          transformCopiedText: true
-        }),
+        Markdown,
         PageLinkPicker.configure({
           atmosphere
         }),
