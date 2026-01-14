@@ -451,8 +451,6 @@ test('OAuth token cannot run private queries and mutations', async () => {
     bearerToken
   })
 
-  console.log(JSON.stringify(queryResponse, null, 2))
-
   expect(queryResponse).toMatchObject({
     errors: [
       {
@@ -472,8 +470,6 @@ test('OAuth token cannot run private queries and mutations', async () => {
     `,
     bearerToken
   })
-
-  console.log(JSON.stringify(mutationResponse, null, 2))
 
   expect(mutationResponse).toMatchObject({
     errors: [
