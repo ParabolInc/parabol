@@ -34,6 +34,8 @@ export const iso6391ToPG = {
   tr: 'turkish',
   yi: 'yiddish'
 } as const
+
+export type TSVLanguage = NonNullable<ReturnType<typeof getTSV>>
 export const getTSV = (language: ISO6391 | undefined | null) => {
   const val = iso6391ToPG[language as keyof typeof iso6391ToPG]
   return supportedLanguages.has(val) ? val : null

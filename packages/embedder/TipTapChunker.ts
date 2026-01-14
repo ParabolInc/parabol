@@ -18,6 +18,7 @@ interface HeadingSection extends ParagraphFragment {
 
 interface SemanticChunk extends HeadingSection {
   globalTitle: string
+  embeddingText: string
 }
 
 interface Options {
@@ -39,19 +40,19 @@ interface Options {
 export class TipTapChunker {
   // The max tokens supported by the model. maxTokens is to ensure semantic similarity in the chunk
   // But if that is guaranteed (i.e. the node in question is a large table) then we use the modelMaxTokens instead
-  modelMaxTokens: number
+  private modelMaxTokens: number
 
   // the maximum number of tokens a chunk can have
-  maxTokens: number
+  private maxTokens: number
   // If a chunk has more than minTokens, don't add another block to it if that risks decreasing the semantic similarity
-  minTokens: number
+  private minTokens: number
   // Attempted size of the overlap for the sliding window
-  minTokenOverlap: number
+  private minTokenOverlap: number
   // This probably shouldn't exceed 50% of the maxTokens, otherwise we risk chunks repeating a lot of the same data
-  maxTokenOverlap: number
-  language: ISO6391
-  globalTitle = ''
-  editor = new Editor({
+  private maxTokenOverlap: number
+  private language: ISO6391
+  private globalTitle = ''
+  private editor = new Editor({
     element: undefined,
     content: {type: 'doc', content: []},
     extensions: serverTipTapExtensions
@@ -259,7 +260,8 @@ export class TipTapChunker {
     return {
       globalTitle: this.globalTitle,
       headingPath,
-      text: `Title: ${this.globalTitle}\nSections: ${sectionStr}\n\n${text}`,
+      text,
+      embeddingText: `Title: ${this.globalTitle}\nSections: ${sectionStr}\n\n${text}`,
       tokenCount: sections.reduce((s, b) => s + b.tokenCount, 0)
     }
   }
