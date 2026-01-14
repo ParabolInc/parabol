@@ -88,8 +88,10 @@ export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   cookie?: string
+  bearerToken?: string
 }) {
   const cookie = req.cookie ?? ''
+  const authorization = req.bearerToken ? `Bearer ${req.bearerToken}` : ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
 
@@ -99,6 +101,7 @@ export async function sendPublic(req: {
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
+      authorization,
       cookie
     },
     body: JSON.stringify({

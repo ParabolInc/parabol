@@ -1,4 +1,7 @@
 import faker from 'faker'
+import ms from 'ms'
+import AuthToken from '../database/types/AuthToken'
+import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 
@@ -250,5 +253,236 @@ test('Request less scope than allowed succeeds', async () => {
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
     scope: ['graphql:mutation']
+  })
+})
+
+test('Query and mutation token can run both', async () => {
+  const {userId} = await signUp()
+
+  const authToken = new AuthToken({
+    sub: userId,
+    tms: [],
+    scope: ['graphql:query', 'graphql:mutation'],
+    lifespan_ms: ms('30d'),
+    aud: 'action-oauth2'
+  })
+  const bearerToken = encodeAuthToken(authToken)
+
+  const queryResponse = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+        }
+      }
+    `,
+    bearerToken
+  })
+
+  expect(queryResponse).toMatchObject({
+    data: {
+      viewer: {
+        id: userId
+      }
+    }
+  })
+
+  const mutationResponse = await sendPublic({
+    query: `
+      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
+        updateUserProfile(updatedUser: $updatedUser) {
+          __typename
+        }
+      }
+    `,
+    variables: {
+      updatedUser: {
+        preferredName: 'New Name'
+      }
+    },
+    bearerToken
+  })
+
+  expect(mutationResponse).toMatchObject({
+    data: {
+      updateUserProfile: {
+        __typename: 'UpdateUserProfilePayload'
+      }
+    }
+  })
+})
+
+test('Query token cannot run mutations', async () => {
+  const {userId} = await signUp()
+
+  const authToken = new AuthToken({
+    sub: userId,
+    tms: [],
+    scope: ['graphql:query'],
+    lifespan_ms: ms('30d'),
+    aud: 'action-oauth2'
+  })
+  const bearerToken = encodeAuthToken(authToken)
+
+  const queryResponse = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+        }
+      }
+    `,
+    bearerToken
+  })
+
+  expect(queryResponse).toMatchObject({
+    data: {
+      viewer: {
+        id: userId
+      }
+    }
+  })
+
+  const mutationResponse = await sendPublic({
+    query: `
+      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
+        updateUserProfile(updatedUser: $updatedUser) {
+          __typename
+        }
+      }
+    `,
+    variables: {
+      updatedUser: {
+        preferredName: 'New Name'
+      }
+    },
+    bearerToken
+  })
+
+  expect(mutationResponse).toMatchObject({
+    errors: [
+      {
+        message: expect.any(String),
+        extensions: {
+          code: 'FORBIDDEN'
+        }
+      }
+    ]
+  })
+})
+
+test('Mutation token cannot run queries', async () => {
+  const {userId} = await signUp()
+
+  const authToken = new AuthToken({
+    sub: userId,
+    tms: [],
+    scope: ['graphql:mutation'],
+    lifespan_ms: ms('30d'),
+    aud: 'action-oauth2'
+  })
+  const bearerToken = encodeAuthToken(authToken)
+
+  const mutationResponse = await sendPublic({
+    query: `
+      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
+        updateUserProfile(updatedUser: $updatedUser) {
+          __typename
+        }
+      }
+    `,
+    variables: {
+      updatedUser: {
+        preferredName: 'New Name'
+      }
+    },
+    bearerToken
+  })
+
+  expect(mutationResponse).toMatchObject({
+    data: {
+      updateUserProfile: {
+        __typename: 'UpdateUserProfilePayload'
+      }
+    }
+  })
+
+  const queryResponse = await sendPublic({
+    query: `
+      query Viewer {
+        viewer {
+          id
+        }
+      }
+    `,
+    bearerToken
+  })
+
+  expect(queryResponse).toMatchObject({
+    errors: [
+      {
+        message: expect.any(String),
+        extensions: {
+          code: 'FORBIDDEN'
+        }
+      }
+    ]
+  })
+})
+
+test('OAuth token cannot run private queries and mutations', async () => {
+  const {userId} = await signUp()
+
+  const authToken = new AuthToken({
+    sub: userId,
+    tms: [],
+    scope: ['graphql:query', 'graphql:mutation'],
+    lifespan_ms: ms('30d'),
+    aud: 'action-oauth2'
+  })
+  const bearerToken = encodeAuthToken(authToken)
+
+  const queryResponse = await sendPublic({
+    query: `
+      query PingActionTick {
+        pingActionTick
+      }
+    `,
+    bearerToken
+  })
+
+  console.log(JSON.stringify(queryResponse, null, 2))
+
+  expect(queryResponse).toMatchObject({
+    errors: [
+      {
+        message: 'Not Parabol Admin'
+      }
+    ],
+    data: {
+      pingActionTick: null
+    }
+  })
+
+  const mutationResponse = await sendPublic({
+    query: `
+      mutation AutopauseUsers {
+        autopauseUsers
+      }
+    `,
+    bearerToken
+  })
+
+  console.log(JSON.stringify(mutationResponse, null, 2))
+
+  expect(mutationResponse).toMatchObject({
+    errors: [
+      {
+        message: 'Not Parabol Admin'
+      }
+    ],
+    data: {
+      autopauseUsers: null
+    }
   })
 })
