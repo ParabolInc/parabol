@@ -1,4 +1,4 @@
-import {mergeAttributes, Node} from '@tiptap/core'
+import {createBlockMarkdownSpec, mergeAttributes, Node} from '@tiptap/core'
 
 export type PageLinkBlockAttributes = {
   pageCode: number
@@ -79,5 +79,8 @@ export const PageLinkBlockBase = Node.create({
     const pageCode = attrs.pageCode
     const title = attrs.title || '<Untitled>'
     return `[${title}](/pages/${pageCode})`
-  }
+  },
+  ...createBlockMarkdownSpec({
+    nodeName: 'pageLinkBlock'
+  })
 })

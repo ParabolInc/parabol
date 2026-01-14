@@ -1,6 +1,6 @@
 export interface TipTapSerializedContent {
   type: 'doc'
-  content: [TiptapHeadingNode<1>, ...TiptapContentNode[]]
+  content: [TiptapHeadingNode<1>, ...TipTapContentNode[]]
 }
 export interface TipTapTextNode {
   type: 'text'
@@ -116,31 +116,31 @@ interface TipTapDetailsSummaryNode {
 
 interface TipTapDetailsContentNode {
   type: 'detailsContent'
-  content: TiptapContentNode[]
+  content: TipTapContentNode[]
 }
 
 interface TipTapBlockquoteNode {
   type: 'blockquote'
-  content: TiptapContentNode[]
+  content: TipTapContentNode[]
 }
 
-interface TipTapTableNode {
+export interface TipTapTableNode {
   type: 'table'
-  content: TipTapTableRowNode[]
+  content: [TipTapTableRowNode<TipTapTableHeaderNode>, ...TipTapTableRowNode[]]
 }
 
-interface TipTapTableRowNode {
+export interface TipTapTableRowNode<TRowType extends TipTapTableCellNode = TipTapTableCellNode> {
   type: 'tableRow'
-  content: (TipTapTableCellNode | TipTapTableHeaderNode)[]
+  content: TRowType[]
 }
 
 interface TipTapTableCellNode {
   type: 'tableCell'
-  content: TiptapContentNode[]
+  content: TipTapContentNode[]
 }
-interface TipTapTableHeaderNode extends TipTapTableCellNode {
+
+export interface TipTapTableHeaderNode extends TipTapTableCellNode {
   type: 'tableHeader'
-  content: (TipTapTableCellNode | TipTapTableHeaderNode)[]
 }
 
 interface TipTapImageBlockNode {
@@ -171,7 +171,7 @@ interface TipTapPageLinkBlockNode {
   }
 }
 
-export type TiptapContentNode =
+export type TipTapContentNode =
   | TiptapHeadingNode
   | TiptapInsightsBlock
   | TipTapParagraphNode
@@ -188,4 +188,4 @@ export type TiptapContentNode =
   | TipTapPageLinkBlockNode
   | TipTapImageUploadNode
 
-type TipTapNode = TiptapDoc | TiptapContentNode
+type TipTapNode = TiptapDoc | TipTapContentNode

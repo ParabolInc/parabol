@@ -1,4 +1,4 @@
-import {mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
+import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
 
 declare module '@tiptap/core' {
@@ -41,6 +41,10 @@ export const ImageBlockBase = Image.extend({
       {style: `width: 100%; display: flex; justify-content: ${justify};`},
       ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
     ]
-  }
+  },
+  ...createBlockMarkdownSpec({
+    nodeName: 'imageBlock',
+    serializeAttributes: ({alt, src}) => `[${alt || ''}](${src})`
+  })
   // TipTap v3 got some types wrong, this cast shouldn't be necessary
 } as NodeConfig)

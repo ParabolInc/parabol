@@ -117,6 +117,7 @@ export const InsightsBlockBase = Node.create({
   },
 
   ...createBlockMarkdownSpec({
-    nodeName: 'insightsBlock'
+    nodeName: 'insightsBlock',
+    allowedAttributes: ['teamIds', 'meetingTypes', 'after', 'before', 'meetingIds', 'title']
   })
 })

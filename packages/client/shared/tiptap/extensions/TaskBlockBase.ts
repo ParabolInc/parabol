@@ -1,4 +1,4 @@
-import {generateText} from '@tiptap/core'
+import {createBlockMarkdownSpec, generateText} from '@tiptap/core'
 import {mergeAttributes, Node} from '@tiptap/react'
 import {serverTipTapExtensions} from '../serverTipTapExtensions'
 
@@ -76,5 +76,8 @@ export const TaskBlockBase = Node.create({
     const {content} = attrs
     const plaintextContent = generateText(JSON.parse(content), serverTipTapExtensions)
     return `Task: ${plaintextContent}`
-  }
+  },
+  ...createBlockMarkdownSpec({
+    nodeName: 'taskBlock'
+  })
 })

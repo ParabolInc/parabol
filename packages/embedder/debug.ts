@@ -1,11 +1,11 @@
 // call with pnpm sucrase-node billing/debug.ts
 import '../../scripts/webpack/utils/dotenv'
 import json from '../../../tipTapJson.json'
-import {TiptapRAGParser} from './TiptapRAGParser'
+import {TipTapChunker} from './TipTapChunker'
 
 const debugFailedJob = async () => {
-  const parser = new TiptapRAGParser()
-  const output = parser.generateChunks(json)
+  const chunker = new TipTapChunker()
+  const output = chunker.chunk(json)
   console.log(output)
   // const pg = getKysely()
   // const failedJob = await pg
