@@ -28,7 +28,6 @@ module.exports = {
       '@tiptap/extensions',
       '@tiptap/html',
       '@tiptap/pm',
-      '@tiptap/react',
       '@tiptap/starter-kit',
       '@tiptap/suggestion',
       'y-indexeddb',
