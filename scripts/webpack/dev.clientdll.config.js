@@ -43,7 +43,6 @@ module.exports = {
       '@emotion/core',
       '@emotion/react',
       '@emotion/styled',
-      '@floating-ui/dom',
       '@graphiql/toolkit',
       '@mattkrick/sanitize-svg',
       '@mui/base',

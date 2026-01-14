@@ -11,7 +11,7 @@ const DLL_ROOT = path.join(PROJECT_ROOT, 'dev', 'dll')
 const CACHE_HASH = path.join(DLL_ROOT, 'pnpm-lock.yaml.md5')
 
 const buildDll = async () => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let cacheHash
     try {
       cacheHash = fs.readFileSync(CACHE_HASH, 'utf8')
@@ -26,7 +26,12 @@ const buildDll = async () => {
         fs.mkdirSync(DLL_ROOT, {recursive: true})
       }
       fs.writeFileSync(CACHE_HASH, hash)
-      webpack(config, () => {
+      webpack(config, (error) => {
+        if (error) {
+          console.error(`📘 DLL failed\n`, error.message)
+          reject(new Error(error))
+          return
+        }
         console.log(`📘 DLL created`)
         resolve()
       })
