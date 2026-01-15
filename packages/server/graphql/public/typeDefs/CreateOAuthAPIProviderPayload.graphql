@@ -1,0 +1,5 @@
+type CreateOAuthAPIProviderPayload {
+  provider: OAuthAPIProvider!
+  clientId: String!
+  clientSecret: String!
+}

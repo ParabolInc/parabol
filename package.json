@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "11.6.4",
+  "version": "11.8.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -66,7 +66,8 @@
     "@babel/runtime": "^7.27.1",
     "brace-expansion@1.1.11": "1.1.12",
     "brace-expansion@2.0.1": "2.0.2",
-    "source-map": "0.7.6"
+    "source-map": "0.7.6",
+    "qs": "^6.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -204,5 +205,5 @@
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.27"
   },
-  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
 }
