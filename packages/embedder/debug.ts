@@ -5,7 +5,7 @@ import {TipTapChunker} from './TipTapChunker'
 
 const debugFailedJob = async () => {
   const chunker = new TipTapChunker()
-  const output = chunker.chunk(json)
+  const output = chunker.chunk(json as any)
   console.log(output)
   // const pg = getKysely()
   // const failedJob = await pg

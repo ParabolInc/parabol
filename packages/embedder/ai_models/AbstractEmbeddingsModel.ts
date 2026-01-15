@@ -39,7 +39,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     this.languages = modelParams.languages
     this.maxInputTokens = modelParams.maxInputTokens
     this.tableName = getEmbeddingsTableName(modelId)
-    this.pagesTableName = getEmbeddingsPagesTableName(modelId)
+    this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
   }
   protected abstract constructModelParams(modelId: ModelId): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>

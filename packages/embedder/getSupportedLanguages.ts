@@ -1,5 +1,5 @@
 import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
+import getKysely from '../server/postgres/getKysely'
 import {type ISO6391} from './iso6393To1'
 
 let supportedLanguages = new Set<string>()
