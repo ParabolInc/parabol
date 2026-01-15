@@ -50,7 +50,7 @@ interface Props {
 const OrgFeatureFlags = (props: Props) => {
   const {organizationRef} = props
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted} = useMutationProps()
+  const {onError, onCompleted, error} = useMutationProps()
   const organization = useFragment(
     graphql`
       fragment OrgFeatureFlags_organization on Organization {
@@ -96,6 +96,9 @@ const OrgFeatureFlags = (props: Props) => {
             <Toggle active={!!feature.enabled} onClick={() => handleToggle(feature.featureName)} />
           </FeatureRow>
         ))}
+        {error && (
+          <div className='mt-2 pr-4 font-semibold text-tomato-500 text-xs'>{error.message}</div>
+        )}
       </PanelRow>
     </StyledPanel>
   )

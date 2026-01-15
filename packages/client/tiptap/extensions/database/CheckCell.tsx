@@ -1,27 +1,45 @@
-import * as Y from 'yjs'
-import {Input} from '../../../ui/Input/Input'
+import {HocuspocusProvider} from '@hocuspocus/provider'
+import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {ColumnId, RowId} from './data'
 import {useCell} from './hooks'
+import {useFocus} from './useFocus'
 
 export const CheckCell = ({
-  doc,
+  provider,
   rowId,
   columnId
 }: {
-  doc: Y.Doc
+  provider: HocuspocusProvider
   rowId: RowId
   columnId: ColumnId
 }) => {
+  const {document: doc} = provider
   const [rawValue, setRawValue] = useCell(doc, rowId, columnId)
-  const checked = rawValue === 'true'
+
+  const checked = rawValue === 'true' ? true : rawValue === 'false' ? false : 'indeterminate'
+  const toggleValue = () => {
+    if (checked) {
+      setRawValue('false')
+    } else {
+      setRawValue('true')
+    }
+  }
+
+  const {focusProps} = useFocus({
+    provider,
+    key: `${columnId}:${rowId}`,
+    onStartEditing: () => {
+      toggleValue()
+    }
+  })
+
   return (
-    <Input
-      type='checkbox'
-      checked={checked}
-      className='mx-2.5 h-4.5 w-4.5 border-none'
-      onChange={(e) => {
-        setRawValue(e.target.checked ? 'true' : 'false')
-      }}
-    />
+    <div
+      {...focusProps}
+      className='flex h-full w-full cursor-pointer items-center justify-center focus:outline-2 focus:outline-sky-400'
+      onClick={toggleValue}
+    >
+      <Checkbox checked={checked} />
+    </div>
   )
 }

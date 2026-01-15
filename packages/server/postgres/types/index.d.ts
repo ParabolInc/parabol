@@ -14,6 +14,8 @@ import {
   selectMeetingSettings,
   selectNewFeatures,
   selectNewMeetings,
+  selectOAuthAPICode,
+  selectOAuthAPIProvider,
   selectOrganizations,
   type selectPages,
   type selectPoll,
@@ -33,6 +35,7 @@ import {
   selectTemplateScaleRef,
   type selectUser
 } from '../select'
+
 import {
   AIPrompt as AIPromptPG,
   FeatureFlag as FeatureFlagPG,
@@ -48,6 +51,9 @@ import {
 } from './pg'
 
 export type {TaskTag} from 'parabol-client/shared/types'
+
+export type OAuthAPIProvider = ExtractTypeFromQueryBuilderSelect<typeof selectOAuthAPIProvider>
+export type OAuthAPICode = ExtractTypeFromQueryBuilderSelect<typeof selectOAuthAPICode>
 
 type ExtractTypeFromQueryBuilderSelect<T extends (...args: any[]) => any> =
   ReturnType<T> extends SelectQueryBuilder<_, _, infer X> ? X : never

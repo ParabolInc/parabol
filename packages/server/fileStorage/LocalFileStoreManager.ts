@@ -58,7 +58,8 @@ export default class LocalFileStoreManager extends FileStoreManager {
       return false
     }
   }
-  async presignUrl(url: string) {
-    return url
+  async presignUrl(partialPath: PartialPath) {
+    const fullPath = this.prependPath(partialPath)
+    return this.getPublicFileLocation(fullPath)
   }
 }
