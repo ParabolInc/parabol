@@ -52,6 +52,9 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   if (!featureFlag) {
     return standardError(new Error('Feature flag not found or expired'))
   }
+  if (!featureFlag.isPublic) {
+    return standardError(new Error('Contact love@parabol.co to enable this feature flag'))
+  }
 
   const scope = orgId ? 'Organization' : teamId ? 'Team' : 'User'
   if (featureFlag.scope !== scope) {

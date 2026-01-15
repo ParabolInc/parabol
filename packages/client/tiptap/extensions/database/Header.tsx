@@ -1,3 +1,4 @@
+import {HocuspocusProvider} from '@hocuspocus/provider'
 import {
   Check,
   ChevronRight,
@@ -9,26 +10,51 @@ import {
   SwapHoriz
 } from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {FormEvent} from 'react'
-import * as Y from 'yjs'
+import {useEffect, useState} from 'react'
 import useForm from '../../../hooks/useForm'
-import {Input} from '../../../ui/Input/Input'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
+import {DropdownMenuInputItem} from './DropdownMenuInputItem'
 import {
   ColumnId,
-  ColumnMeta,
   changeColumn,
   deleteColumn,
   duplicateColumn,
+  getColumnMeta,
   insertColumnAfter,
   insertColumnBefore
 } from './data'
 import {DataType, DataTypeIcons} from './types'
+import {useFocus} from './useFocus'
 
-export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: ColumnId}) => {
-  const {doc, columnId, columnMeta} = props
+type Props = {
+  provider: HocuspocusProvider
+  columnId: ColumnId
+}
+export const Header = (props: Props) => {
+  const {provider, columnId} = props
+  const {document: doc} = provider
 
-  const {name, type} = columnMeta
+  const {focusProps} = useFocus({provider, key: columnId})
+
+  const columnMetaMap = getColumnMeta(doc)
+  const [name, setName] = useState(columnMetaMap.get(columnId)?.name ?? 'Untitled')
+  const [type, setType] = useState<DataType>(columnMetaMap.get(columnId)?.type ?? 'text')
+
+  useEffect(() => {
+    const updateMeta = () => {
+      const meta = columnMetaMap.get(columnId)
+      setName(meta?.name ?? 'Untitled')
+      setType(meta?.type ?? 'text')
+    }
+
+    columnMetaMap.observe(updateMeta)
+    updateMeta()
+
+    return () => {
+      columnMetaMap.unobserve(updateMeta)
+    }
+  }, [columnMetaMap, columnId])
+
   const changeType = (newType: string) => {
     changeColumn(doc, columnId, {name, type: newType as DataType})
   }
@@ -42,8 +68,10 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
     }
   })
 
-  const handleChangeTitle = (e: FormEvent) => {
-    e.preventDefault()
+  const handleChangeTitle = () => {
+    if (!fields.newTitle.value || fields.newTitle.value === name) {
+      return
+    }
     changeTitle(fields.newTitle.value)
     fields.newTitle.resetValue()
   }
@@ -79,13 +107,21 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
     }
   ]
 
+  const [menuOpen, setMenuOpen] = useState(false)
+  const onOpenChange = (open: boolean) => {
+    if (!open) {
+      handleChangeTitle()
+    }
+    setMenuOpen(open)
+  }
+
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <div className='items-cursor-pointer flex w-full items-center gap-2 p-2 hover:bg-slate-100'>
+    <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
+      <DropdownMenu.Trigger asChild {...focusProps}>
+        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>
-        </div>
+        </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
@@ -95,8 +131,13 @@ export const Header = (props: {columnMeta: ColumnMeta; doc: Y.Doc; columnId: Col
           collisionPadding={8}
         >
           <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
-            <form onSubmit={handleChangeTitle}>
-              <Input
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleChangeTitle()
+              }}
+            >
+              <DropdownMenuInputItem
                 className='mb-2 w-full border-slate-300 border-b pb-1'
                 name='newTitle'
                 defaultValue={name}
