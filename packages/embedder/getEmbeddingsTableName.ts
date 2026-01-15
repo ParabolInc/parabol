@@ -14,7 +14,8 @@ export const getEmbeddingsTableName = (modelId?: ModelId | null) => {
 }
 
 export const getEmbeddingsPagesTableName = (modelId?: ModelId | null) => {
-  const safeModelId = modelId ?? activeEmbeddingModelId
-  const definition = modelIdDefinitions[safeModelId!]
-  return (definition ? `EmbeddingsPages_${definition.tableSuffix}` : '') as EmbeddingsPagesTable
+  if (!modelId) return null
+  const definition = modelIdDefinitions[modelId]
+  if (!definition) return null
+  return `EmbeddingsPages_${definition.tableSuffix}` as EmbeddingsPagesTable
 }

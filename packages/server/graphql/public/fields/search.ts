@@ -1,31 +1,53 @@
 import {GraphQLError} from 'graphql'
-import {type ExpressionBuilder, sql} from 'kysely'
+import {type ExpressionBuilder, type StringReference, sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
+import {getTSV, type TSVLanguage} from '../../../../embedder/getSupportedLanguages'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
+import {inferLanguage} from '../../../../embedder/inferLanguage'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {UserResolvers} from '../resolverTypes'
 
+function RRF<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  kRankCol: StringReference<DB, TB>,
+  vRankCol: StringReference<DB, TB>,
+  alpha: number,
+  k: number
+) {
+  return sql<number>`
+      (${1 - alpha} * coalesce(1.0 / (${k} + ${eb.ref(vRankCol)}), 0.0)) + (${alpha} * coalesce(1.0 / (${k} + ${eb.ref(kRankCol)}), 0.0))`
+}
+
 function cosineSimilarity<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
-  column: keyof DB[TB] & string,
+  column: StringReference<DB, TB>,
   vector: Float32Array | number[]
 ) {
   return sql<number>`1 - ${eb.ref(column)} <=> ${numberVectorToString(vector)}`
 }
 
+function tsvSimilarity<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  column: StringReference<DB, TB>,
+  language: TSVLanguage,
+  query: string
+) {
+  return sql<number>`ts_rank_cd(${eb.ref(column)}, websearch_to_tsquery(${language}, ${query}), 2)`
+}
+
 function rank<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
-  column: keyof DB[TB] & string
+  column: StringReference<DB, TB>
 ) {
   return sql<number>`row_number() over(order by ${eb.ref(column)})`
 }
 
 export function cosineDistance<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
-  column: keyof DB[TB] & string,
+  column: StringReference<DB, TB>,
   vector: Float32Array | number[]
 ) {
   return sql<number>`${eb.ref(column)} <=> ${numberVectorToString(vector)}`
@@ -38,6 +60,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
 ) => {
   const viewerId = getUserId(authToken)
   const safeAlpha = alpha ?? 0.75
+  const k = 60 // RRF constant
+
   if (safeAlpha < 0 || safeAlpha > 1) throw new GraphQLError('Alpha must be between 0 and 1')
   if (query.length === 0) throw new GraphQLError('Query must not be empty')
   if (query.length > 5000) throw new GraphQLError('Query is too long')
@@ -50,14 +74,19 @@ export const search: NonNullable<UserResolvers['search']> = async (
     userId: viewerId,
     data: getUserQueryJobData(query)
   })
+  const language = inferLanguage(query) || 'en'
+  const tsvLanguage = getTSV(language) || 'english'
   const pg = getKysely()
   const embeddingsPagesTableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
+  if (!embeddingsPagesTableName) {
+    throw new GraphQLError('No embeddings pages table found')
+  }
   const useDateFilter = !!(startAt || endAt)
   const safeDateField = dateField || 'createdAt'
   const safeStartAt = startAt || new Date(0)
   const safeEndAt = endAt || new Date(4000)
   if (types.includes('page')) {
-    await pg
+    const pageResults = await pg
       .with('Model', (qb) =>
         qb
           .selectFrom('PageAccess')
@@ -73,66 +102,51 @@ export const search: NonNullable<UserResolvers['search']> = async (
           )
           .selectAll(embeddingsPagesTableName)
       )
-      .with('CosineSimilarity', (pg) =>
+      .with('VectorSimilarity', (pg) =>
         pg
           .selectFrom('Model')
           .selectAll('Model')
-          .select(({eb}) => cosineSimilarity(eb, 'embedding', vector).as('similarity'))
-          .orderBy('similarity', 'desc')
+          .select(({eb}) => cosineSimilarity(eb, 'embedding', vector).as('v_similarity'))
+          .orderBy('v_similarity', 'desc')
           .limit(10)
       )
-      .with('CosineRank', (pg) =>
-        pg
-          .selectFrom('CosineSimilarity')
-          .selectAll('CosineSimilarity')
-          .select(({eb}) => rank(eb, 'similarity').as('rank'))
+      .with('VectorRank', (qb) =>
+        qb
+          .selectFrom('VectorSimilarity')
+          .selectAll('VectorSimilarity')
+          .select(({eb}) => rank(eb, 'v_similarity').as('v_rank'))
       )
-      .selectFrom('CosineRank')
-      .selectAll()
-      // .with('KeywordRank', (db) =>
-      //   db
-      //     .selectFrom('Model')
-      //     .selectAll('Model')
+      .with('KeywordSimilarity', (qb) =>
+        qb
+          .selectFrom('Model')
+          .selectAll('Model')
+          // TODO: is bigger more similar?
+          .select(({eb}) => tsvSimilarity(eb, 'tsv', tsvLanguage, query).as('k_similarity'))
+          .orderBy('k_similarity', 'desc')
+          .limit(10)
+      )
+      .with('KeywordRank', (qb) =>
+        qb
+          .selectFrom('KeywordSimilarity')
+          .selectAll('KeywordSimilarity')
+          .select(({eb}) => rank(eb, 'k_similarity').as('k_rank'))
+      )
 
-      //     .select([
-      //       'id',
-      //       'title',
-      //       'content',
-      //       'category',
-      //       'word_count',
-      //       sql<number>`row_number() over(order by full_text <@> to_bm25query(${keyword}, 'idx_documents_bm25'))`.as(
-      //         'k_rank'
-      //       ),
-      //       sql<number>`-(full_text <@> to_bm25query(${keyword}, 'idx_documents_bm25'))`.as(
-      //         'k_score'
-      //       )
-      //     ])
-      //     .where(sql`full_text <@> to_bm25query(${keyword}, 'idx_documents_bm25')`, '<', 0)
-      //     .orderBy(sql`full_text <@> to_bm25query(${keyword}, 'idx_documents_bm25')`)
-      //     .limit(10)
-      // )
-      //   .selectFrom('CosineRank')
-      //   .fullJoin('KeywordRank', 'CosineRank.id', 'KeywordRank.id')
-      //   .select(({eb, fn, ref}) => [
-      //     fn
-      //       .coalesce('CosineRank.id', 'KeywordRank.id')
-      //       .as('id'),
-      //     ref('CosineRank.')
-      //     // sql`left(coalesce(CosineRank.content, KeywordRank.content), 200)`.as('content'),
-      //     // fn.coalesce('CosineRank.category', 'KeywordRank.category').as('category'),
-      //     // fn.coalesce('CosineRank.word_count', 'KeywordRank.word_count').as('word_count'),
-      //     'CosineRank.v_rank',
-      //     'CosineRank.v_distance',
-      //     'KeywordRank.k_rank',
-      //     'KeywordRank.k_score',
-      //     // The RRF Score Calculation
-      //     sql<number>`
-      //   (${alpha} * coalesce(1.0 / (${k} + CosineRank.v_rank), 0.0)) +
-      //   (${1 - alpha} * coalesce(1.0 / (${k} + k.k_rank), 0.0))
-      // `.as('score')
-      //   ])
-      // .orderBy('score', 'desc')
+      .selectFrom('VectorRank')
+      .fullJoin('KeywordRank', 'VectorRank.id', 'KeywordRank.id')
+      .select(({eb, fn}) => [
+        fn.coalesce('VectorRank.id', 'KeywordRank.id').as('id'),
+        'pageId',
+        'chunkNumber',
+        'k_rank',
+        'v_rank',
+        'k_similarity',
+        'v_similarity',
+        RRF(eb, 'v_rank', 'k_rank', safeAlpha, k).as('score')
+      ])
+      .orderBy('score', 'desc')
       .execute()
+    console.log('pageResults', pageResults)
   }
   return null as any
 }
