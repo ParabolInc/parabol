@@ -8,8 +8,8 @@ import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
-const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
-const PROTOCOL = process.env.PROTO || 'http'
+export const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
+export const PROTOCOL = process.env.PROTO || 'http'
 const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
@@ -88,8 +88,10 @@ export async function sendPublic(req: {
   query: string
   variables?: Record<string, any>
   cookie?: string
+  bearerToken?: string
 }) {
   const cookie = req.cookie ?? ''
+  const authorization = req.bearerToken ? `Bearer ${req.bearerToken}` : ''
   const {query, variables} = req
   // the production build doesn't allow ad-hoc queries, so persist it
 
@@ -99,6 +101,7 @@ export async function sendPublic(req: {
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
+      authorization,
       cookie
     },
     body: JSON.stringify({
