@@ -44,6 +44,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   await Promise.all([
     db.schema
+      .createIndex('uidx_page_model_where_page_not_null')
+      .on('EmbeddingsJobQueueV2')
+      .columns(['pageId', 'modelId'])
+      .where('pageId', 'is not', null)
+      .unique()
+      .execute(),
+    db.schema
       .createIndex('idx_EmbeddingsJobQueueV2_priority_id')
       .on('EmbeddingsJobQueueV2')
       .column('priority')
