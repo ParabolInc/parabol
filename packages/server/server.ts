@@ -14,6 +14,8 @@ import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhoo
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
+import authorizeHandler from './oauth2/authorizeHandler'
+import tokenHandler from './oauth2/tokenHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
@@ -75,6 +77,8 @@ const app = uws
     return yoga(res, req, {authToken, ip})
   })
   .post('/saml/:domain', SAMLHandler)
+  .get('/oauth/authorize', authorizeHandler)
+  .post('/oauth/token', tokenHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
 

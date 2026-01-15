@@ -49,6 +49,12 @@
     "packages/server/graphql/public/resolverTypes.ts": {
       "config": {
         "contextType": "../graphql#GQLContext",
+        "enumValues": {
+          "OAuthScopeEnum": {
+            "graphql_query": "graphql:query",
+            "graphql_mutation": "graphql:mutation"
+          }
+        },
         "mappers": {
           "AddTeamPayload": "./types/AddTeamPayload#AddTeamPayloadSource",
           "AddOrgPayload": "./types/AddOrgPayload#AddOrgPayloadSource",
@@ -82,6 +88,8 @@
           "Comment": "../../postgres/types/index#Comment as CommentDB",
           "Company": "./types/Company#CompanySource",
           "CreateGcalEventInput": "./types/CreateGcalEventInput#default",
+          "CreateOAuthAPICodePayload": "./types/CreateOAuthAPICodePayload#CreateOAuthAPICodePayloadSource",
+          "CreateOAuthAPIProviderPayload": "./types/CreateOAuthAPIProviderPayload#CreateOAuthApiProviderPayloadSource",
           "DomainJoinRequest": "./types/DomainJoinRequest#DomainJoinRequestSource",
           "CreateImposterTokenPayload": "./types/CreateImposterTokenPayload#CreateImposterTokenPayloadSource",
           "CreateTaskPayload": "./types/CreateTaskPayload#CreateTaskPayloadSource",
@@ -137,6 +145,7 @@
           "NotifyTeamArchived": "../../postgres/types/Notification.d#TeamArchivedNotification as TeamArchivedNotificationDB",
           "NotifyTeamsLimitExceeded": "../../postgres/types/Notification.d#TeamsLimitExceededNotification as TeamsLimitExceededNotificationDB",
           "NotifyTeamsLimitReminder": "../../postgres/types/Notification.d#TeamsLimitReminderNotification as TeamsLimitReminderNotificationDB",
+          "OAuthAPIProvider": "../../postgres/types/index#OAuthAPIProvider as OAuthAPIProviderDB",
           "OrgIntegrationProviders": "./types/OrgIntegrationProviders#OrgIntegrationProvidersSource",
           "Organization": "../../postgres/types/index#Organization as OrganizationDB",
           "OrganizationUser": "../../postgres/types/index#OrganizationUser as OrganizationUserDB",
@@ -232,6 +241,7 @@
           "ArchivePagePayload": "./types/ArchivePagePayload#ArchivePagePayloadSource",
           "UpdatePagePayload": "./types/UpdatePagePayload#UpdatePagePayloadSource",
           "UpdatePageAccessPayload": "./types/UpdatePageAccessPayload#UpdatePageAccessPayloadSource",
+          "UpdateOAuthAPIProviderPayload": "./types/UpdateOAuthAPIProviderPayload#UpdateOAuthAPIProviderPayloadSource",
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",
           "UpdateRecurrenceSettingsSuccess": "./types/UpdateRecurrenceSettingsSuccess#UpdateRecurrenceSettingsSuccessSource",
           "UpdateTaskPayload": "./types/UpdateTaskPayload#UpdateTaskPayloadSource",
@@ -242,7 +252,8 @@
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/index#User as UserDB",
           "UserLogInPayload": "./types/UserLogInPayload#UserLogInPayloadSource",
-          "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject"
+          "_xGitLabProject": "./types/_xGitLabProject#_xGitLabProjectSource as _xGitLabProject",
+          "OAuthScopeEnum": "../../postgres/types/pg#Oauthscopeenum"
         },
         "showUnusedMappers": false
       },
