@@ -11,7 +11,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('embeddingsMetadataId', 'integer', (col) =>
         col.references('EmbeddingsMetadata.id').onDelete('cascade')
       )
-      .addColumn('model', 'varchar(255)')
+      .addColumn('modelId', 'varchar(255)')
+      .addColumn('pageId', 'integer')
       .addColumn('message', 'varchar(8192)', (col) => col.notNull())
       .addColumn('retryCount', 'smallint', (col) => col.notNull())
       .addColumn('jobData', 'jsonb', (col) => col.defaultTo('{}').notNull())
@@ -33,7 +34,8 @@ export async function up(db: Kysely<any>): Promise<void> {
       .addColumn('priority', 'integer', (col) => col.notNull())
       .addColumn('jobData', 'jsonb', (col) => col.defaultTo('{}').notNull())
       .addColumn('jobType', 'varchar(255)', (col) => col.notNull())
-      .addColumn('model', 'varchar(255)')
+      .addColumn('modelId', 'varchar(255)')
+      .addColumn('pageId', 'integer')
       .addColumn('embeddingsMetadataId', 'integer', (col) =>
         col.references('EmbeddingsMetadata.id').onDelete('cascade')
       )
