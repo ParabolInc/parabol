@@ -557,9 +557,9 @@ type User implements UserPartial {
   search(
     "The string to search for"
     query: String!
-    first: Int
-    after: Int
-    types: [SearchTypeEnum!]!
+    first: Int!
+    after: String
+    type: SearchTypeEnum!
     teamIds: [ID!]
     startAt: DateTime
     endAt: DateTime
