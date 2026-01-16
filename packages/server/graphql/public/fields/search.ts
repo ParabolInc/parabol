@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {type ExpressionBuilder, type StringReference, sql} from 'kysely'
 import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../../embedder/getEmbeddingsTableName'
-import {getTSV, type TSVLanguage} from '../../../../embedder/getSupportedLanguages'
+import {getTSV} from '../../../../embedder/getSupportedLanguages'
 import numberVectorToString from '../../../../embedder/indexing/numberVectorToString'
 import {inferLanguage} from '../../../../embedder/inferLanguage'
 import getKysely from '../../../postgres/getKysely'
@@ -32,10 +32,9 @@ function cosineSimilarity<DB, TB extends keyof DB>(
 function tsvSimilarity<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   column: StringReference<DB, TB>,
-  language: TSVLanguage,
-  query: string
+  webQuery: StringReference<DB, TB>
 ) {
-  return sql<number>`ts_rank_cd(${eb.ref(column)}, websearch_to_tsquery(${language}, ${query}), 8)`
+  return sql<number>`ts_rank_cd(${eb.ref(column)}, ${eb.ref(webQuery)}, 8)`
 }
 
 function rank<DB, TB extends keyof DB>(
@@ -101,6 +100,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
               .where((eb) => eb.between(safeDateField, safeStartAt, safeEndAt))
           )
           .selectAll(embeddingsPagesTableName)
+          .select(sql<string>`websearch_to_tsquery(${tsvLanguage}, ${query})`.as('webQuery'))
       )
       .with('VectorSimilarity', (pg) =>
         pg
@@ -120,8 +120,14 @@ export const search: NonNullable<UserResolvers['search']> = async (
         qb
           .selectFrom('Model')
           .selectAll('Model')
-          .select((eb) => tsvSimilarity(eb, 'tsv', tsvLanguage, query).as('k_similarity'))
-          .where('tsv', '@@', sql<string>`websearch_to_tsquery(${tsvLanguage}, ${query})`)
+          .select((eb) => [
+            tsvSimilarity(eb, 'tsv', 'Model.webQuery').as('k_similarity'),
+            sql<string>`ts_headline(${tsvLanguage}, "embedText", "Model"."webQuery", 'StartSel=<b>, StopSel=</b>, MaxWords=35, MaxFragments=5, FragmentDelimiter=$!$')`.as(
+              'snippet'
+            )
+          ])
+          // Always do a where match, since that can be completed in the GIN index
+          .whereRef('tsv', '@@', 'Model.webQuery')
           .orderBy('k_similarity', 'desc')
           .limit(10)
       )
@@ -143,6 +149,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
             'v_rank',
             'k_similarity',
             'v_similarity',
+            'snippet',
             RRF(eb, 'v_rank', 'k_rank', safeAlpha, k).as('score')
           ])
       )
@@ -172,7 +179,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
         startCursor: null
       },
       edges: pageResults.map((pr) => ({
-        id: pr.id,
+        nodeTypeName: 'Page',
+        nodeId: pr.pageId,
         score: {
           keyword: pr.k_similarity,
           vector: pr.v_similarity,
@@ -180,9 +188,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
           keywordRank: pr.k_rank,
           combined: pr.score
         },
-        title: '',
-        snippets: ['']
-        // node:
+        snippets: pr.snippet?.split('$!$') ?? []
       }))
     }
   }

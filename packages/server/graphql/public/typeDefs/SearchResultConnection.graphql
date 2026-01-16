@@ -10,5 +10,5 @@ type SearchResultConnection {
   """
   A list of edges.
   """
-  edges: [SearchResult!]!
+  edges: [SearchResultEdge!]!
 }
