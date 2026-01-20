@@ -39,13 +39,13 @@ export const insertDiscussionsIntoMetadataAndQueue = async (discussions: Discuss
           .select(['id', 'model'])
       )
       .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('Metadata').select(({ref}) => [
           sql.lit('embed:start').as('jobType'),
           sql.lit(priority).as('priority'),
           ref('Metadata.id').as('embeddingsMetadataId'),
-          ref('Metadata.model').as('model')
+          ref('Metadata.model').as('modelId')
         ])
       )
       .execute()

@@ -114,14 +114,14 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
     const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
     await pg
       .insertInto('EmbeddingsJobQueueV2')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')
           .select(({ref}) => [
             sql.lit('embed:start').as('jobType'),
             sql.lit(priority).as('priority'),
             ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.tableName).as('model')
+            sql.lit(this.tableName).as('modelId')
           ])
           .where('language', 'in', this.languages)
       )
