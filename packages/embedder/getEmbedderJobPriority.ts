@@ -29,45 +29,30 @@ const getThrottlePenalty = async (userId: string | undefined | null) => {
 
   const bucketSize = 60 // 1-minute buckets
   const windowSize = 3600 // 1-hour window
-  const cleanupThreshold = 10
 
-  const currentBucket = Math.floor(now / bucketSize) * bucketSize
-  const windowStart = now - windowSize
+  const currentBucket = (Math.floor(now / bucketSize) * bucketSize).toString()
   const redis = getRedis()
 
   // 1. Atomic Write & Read
   const results = (await redis
     .multi()
-    .hincrby(key, currentBucket.toString(), 1)
+    .hincrby(key, currentBucket, 1)
+    .hexpire(key, windowSize, 'FIELDS', 1, currentBucket)
     .hgetall(key)
     .expire(key, windowSize + bucketSize)
     .exec()) as [
     RedisPipelineResponse<number>,
+    RedisPipelineResponse<number[]>,
     RedisPipelineResponse<Record<string, string>>,
     RedisPipelineResponse<number>
   ]
 
-  // Handle multi response (index 1 is the HGETALL result)
-  const allBuckets = results?.[1]?.[1] || {}
-
+  const allBuckets = results?.[2]?.[1] || {}
   let totalCount = 0
-  const expiredFields: string[] = []
-
-  for (const [bucketStr, countStr] of Object.entries(allBuckets)) {
-    const bucketTs = parseInt(bucketStr, 10)
-    const count = parseInt(countStr, 10)
-
-    if (bucketTs >= windowStart) {
-      totalCount += count
-    } else {
-      expiredFields.push(bucketStr)
-    }
+  for (const countStr of Object.values(allBuckets)) {
+    totalCount += parseInt(countStr, 10)
   }
 
-  // cleanup
-  if (expiredFields.length > cleanupThreshold) {
-    redis.hdel(key, ...expiredFields).catch(() => {})
-  }
   // no penalty for < 10 queries in the last hour. Exponential penalty after that
   const PENALTY = 500
   const QUERY_SOFT_LIMIT = 10
