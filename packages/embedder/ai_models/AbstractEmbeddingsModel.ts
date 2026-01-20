@@ -120,7 +120,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async createEmbeddingsForModel() {
-    Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.modelId}`)
+    Logger.log(`Queueing EmbeddingsMetadata, Pages into EmbeddingsJobQueueV2 for ${this.modelId}`)
     const pg = getKysely()
     const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
     await pg
@@ -135,6 +135,19 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
             sql.lit(this.modelId).as('modelId')
           ])
           .where('language', 'in', this.languages)
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+    await pg
+      .insertInto('EmbeddingsJobQueueV2')
+      .columns(['jobType', 'priority', 'pageId', 'modelId'])
+      .expression(({selectFrom}) =>
+        selectFrom('Page').select(({ref}) => [
+          sql.lit('embedPage:start').as('jobType'),
+          sql.lit(priority).as('priority'),
+          ref('id').as('pageId'),
+          sql.lit(this.modelId).as('modelId')
+        ])
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
@@ -184,6 +197,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           "tsv" tsvector NOT NULL,
           "embedding" ${sql.raw(columnType)},
           "pageId" INTEGER NOT NULL,
+          "pageUpdatedAt" timestamp with time zone NOT NULL,
           "chunkNumber" SMALLINT,
           UNIQUE NULLS NOT DISTINCT("pageId", "chunkNumber"),
           FOREIGN KEY ("pageId")

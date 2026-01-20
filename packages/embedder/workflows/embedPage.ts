@@ -30,7 +30,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const pg = getKysely()
   const page = await pg
     .selectFrom('Page')
-    .select('yDoc')
+    .select(['yDoc', 'updatedAt'])
     .where('id', '=', pageId)
     .executeTakeFirst()
   if (!page || !page.yDoc) {
@@ -63,7 +63,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       }
       await pg
         .insertInto(embeddingModel.pagesTableName)
-        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber'])
+        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
         .expression((eb) =>
           eb
             // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
@@ -73,13 +73,18 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
               sql<string>`to_tsvector('${sql.raw(tsvLanguage)}', val)`.as('tsv'),
               sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
               sql<number>`${pageId}`.as('pageId'),
-              sql<number>`${chunkNumber}`.as('chunkNumber')
+              sql<number>`${chunkNumber}`.as('chunkNumber'),
+              // This acts as a version # so we can make sure the embedding is for the most recent page
+              // In the future, if we want to do historical imports where we don't update the model, we can use this, too
+              // For now, updating the model will re-embed all pages, which suffices
+              sql<number>`${page.updatedAt}`.as('pageUpdatedAt')
             ])
         )
         .onConflict((oc) =>
           oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
             embedText: eb.ref('excluded.embedText'),
-            embedding: eb.ref('excluded.embedding')
+            embedding: eb.ref('excluded.embedding'),
+            pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
           }))
         )
         .execute()
