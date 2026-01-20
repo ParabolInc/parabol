@@ -1,7 +1,17 @@
+import AuthToken from '../database/types/AuthToken'
 import generateRandomString from '../generateRandomString'
+import encodeAuthToken from '../utils/encodeAuthToken'
 
-export function generateBearerToken() {
-  return 'prbl-scim-' + generateRandomString(32)
+export function generateBearerToken(scimId: string) {
+  const scopes = ['scim']
+  const authToken = new AuthToken({
+    sub: scimId,
+    tms: [],
+    scope: scopes,
+    aud: 'action-scim'
+  })
+  const accessToken = encodeAuthToken(authToken)
+  return accessToken
 }
 
 export function censorBearerToken(token: string | null) {
