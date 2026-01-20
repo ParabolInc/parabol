@@ -8,6 +8,7 @@ import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
+import {cn} from '../../../../ui/cn'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
@@ -238,7 +239,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           }}
         >
           <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
-            <div className='space-y-2'>
+            <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                 Application Name
               </label>
@@ -252,7 +253,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               />
             </div>
 
-            <div className='space-y-2'>
+            <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                 Redirect URIs (Comma separated)
               </label>
@@ -266,7 +267,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               />
             </div>
 
-            <div className='space-y-2'>
+            <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                 Scopes
               </label>
@@ -289,18 +290,20 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   />
                   graphql:mutation
                 </label>
-                <button
-                  type='button'
-                  onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
-                  className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
-                >
-                  <ContentCopyIcon fontSize='small' />
-                </button>
+                <div className='flex h-8 grow justify-end'>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
               </div>
             </div>
 
             <div className='grid grid-cols-2 gap-6'>
-              <div className='space-y-2'>
+              <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
                   <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                     Client ID
@@ -328,7 +331,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   </button>
                 </div>
               </div>
-              <div className='space-y-2'>
+              <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
                   <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                     Client Secret
@@ -376,12 +379,11 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       disabled
                       placeholder='Save to reveal...'
                       onChange={() => {}}
-                      className={`w-full bg-slate-50 font-mono text-sm ${
-                        clientSecret === '••••••••••••••••••••'
-                          ? ''
-                          : 'rounded-r-none border-slate-300! border-r-0!'
-                      }
-`}
+                      className={cn(
+                        'w-full bg-slate-50 font-mono text-sm',
+                        clientSecret !== '••••••••••••••••••••' &&
+                          'rounded-r-none border-slate-300! border-r-0!'
+                      )}
                       type={showSecret ? 'text' : 'password'}
                       error={undefined}
                     />
@@ -398,8 +400,8 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                 </div>
               </div>
             </div>
-            <div>
-              <div className='space-y-2'>
+            <div className='flex flex-col gap-4'>
+              <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
                   <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                     Authorize endpoint
@@ -425,7 +427,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   </button>
                 </div>
               </div>
-              <div className='space-y-2'>
+              <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
                   <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                     Token endpoint
@@ -451,7 +453,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   </button>
                 </div>
               </div>
-              <div className='space-y-2'>
+              <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
                   <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                     GraphQL endpoint

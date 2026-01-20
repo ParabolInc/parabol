@@ -43,6 +43,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.orgId',
       'ORG_ADMIN'
     ),
+    updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
