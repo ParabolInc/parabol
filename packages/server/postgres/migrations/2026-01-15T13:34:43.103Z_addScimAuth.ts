@@ -10,7 +10,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .alterTable('SAML')
     .addColumn('scimAuthenticationType', sql`"SCIMAuthenticationTypeEnum"`)
-    .addColumn('scimBearerToken', 'varchar(255)')
+    .addColumn('scimBearerToken', 'varchar(1023)')
     .addColumn('scimOAuthClientId', 'varchar(255)')
     .addColumn('scimOAuthClientSecret', 'varchar(255)')
     .execute()
