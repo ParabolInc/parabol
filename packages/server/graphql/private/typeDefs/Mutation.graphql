@@ -515,7 +515,8 @@ type Mutation {
   ): ToggleAllowInsightsPayload!
 
   """
-  Describe the mutation here
+  Verify domains for an organization. The organization controls these domains.
+  An enterprise organization can manage SAML and SCIM for the domains it controls.
   """
   verifyDomain(
     """

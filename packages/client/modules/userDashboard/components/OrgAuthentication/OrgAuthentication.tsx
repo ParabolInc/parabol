@@ -7,6 +7,7 @@ import Panel from '../../../../components/Panel/Panel'
 import {ElementWidth} from '../../../../types/constEnums'
 import OAuthProviderList from '../OrgIntegrations/OAuthProviderList'
 import OrgAuthenticationMetadata from './OrgAuthenticationMetadata'
+import OrgAuthenticationSCIM from './OrgAuthenticationSCIM'
 import OrgAuthenticationSignOnUrl from './OrgAuthenticationSignOnUrl'
 import OrgAuthenticationSSOFrame from './OrgAuthenticationSSOFrame'
 
@@ -27,11 +28,13 @@ const OrgAuthentication = (props: Props) => {
             saml {
               ...OrgAuthenticationSSOFrame_saml
               ...OrgAuthenticationSignOnUrl_saml
+              ...OrgAuthenticationSCIM_saml
               ...OrgAuthenticationMetadata_saml
               id
             }
             ...OAuthProviderList_organization
-            featureFlag(featureName: "oauthProvider")
+            showOAuthProvider: featureFlag(featureName: "oauthProvider")
+            showSCIM: featureFlag(featureName: "SCIM")
           }
         }
       }
@@ -40,9 +43,11 @@ const OrgAuthentication = (props: Props) => {
   )
   const {viewer} = data
   const {organization} = viewer
-  const saml = organization?.saml ?? null
+  if (!organization) {
+    return null
+  }
+  const {saml = null, showOAuthProvider, showSCIM} = organization
   const disabled = !saml
-  const showOAuthProvider = organization?.featureFlag
 
   return (
     <div className='space-y-6'>
@@ -55,6 +60,13 @@ const OrgAuthentication = (props: Props) => {
         </div>
       </StyledPanel>
 
+      {showSCIM && (
+        <StyledPanel>
+          <DialogTitle className='px-6 pt-5 pb-6'>SCIM Provisioning</DialogTitle>
+          <OrgAuthenticationSCIM samlRef={saml} />
+        </StyledPanel>
+      )}
+
       {showOAuthProvider && (
         <StyledPanel>
           <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 API</DialogTitle>
@@ -63,7 +75,7 @@ const OrgAuthentication = (props: Props) => {
               Configure your organization as an OAuth 2.0 provider to allow external applications to
               authenticate with your Parabol organization.
             </div>
-            {organization && <OAuthProviderList organizationRef={organization} />}
+            <OAuthProviderList organizationRef={organization} />
           </div>
         </StyledPanel>
       )}

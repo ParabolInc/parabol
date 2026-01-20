@@ -10,8 +10,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
   args,
   context
 ) => {
-  const {name, redirectUris} = args
-  let {scopes} = args
+  const {name, redirectUris, scopes} = args
   const [providerId] = CipherId.fromClient(args.providerId)
   const {dataLoader, socketId} = context
 

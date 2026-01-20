@@ -1,5 +1,6 @@
 import type {Selectable} from 'kysely'
 import type {SAML as TSAML} from '../../../postgres/types/pg'
+import {censorBearerToken, censorOAuthClientSecret} from '../../../scim/credentials'
 import type {SamlResolvers} from '../resolverTypes'
 
 export interface SAMLSource extends Selectable<TSAML> {
@@ -18,6 +19,12 @@ const SAML: SamlResolvers = {
   organization: async ({orgId}, _args, {dataLoader}) => {
     if (!orgId) return null
     return dataLoader.get('organizations').loadNonNull(orgId)
+  },
+  scimCensoredOAuthClientSecret: ({scimOAuthClientSecret}) => {
+    return censorOAuthClientSecret(scimOAuthClientSecret)
+  },
+  scimCensoredBearerToken: ({scimBearerToken}) => {
+    return censorBearerToken(scimBearerToken)
   }
 }
 
