@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {CipherId} from '../CipherId'
@@ -31,9 +31,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // this only needs to get called on freshly minted PageLinks because after the pageCode is set
         for (const [key] of e.keys) {
           if (key === 'pageCode') {
-            const newValue = (e.target as Y.XmlElement<PageLinkBlockAttributes>).getAttribute(
-              'pageCode'
-            )
+            const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute('pageCode')
             const addToPageId =
               newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? CipherId.decrypt(newValue) : null
             if (addToPageId) {
