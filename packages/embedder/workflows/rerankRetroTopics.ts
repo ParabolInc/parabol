@@ -1,4 +1,3 @@
-import ms from 'ms'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun} from '../custom'
@@ -35,7 +34,7 @@ export const rerankRetroTopics: JobQueueStepRun<{
 
   const chunks = await embeddingModel.chunkText(rerankText)
   if (chunks instanceof Error) {
-    return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10)
+    return new JobQueueError(`unable to get tokens: ${chunks.message}`, true)
   }
 
   const results = await getRerankedEmbeddingsFromChunks(

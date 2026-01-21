@@ -1,7 +1,6 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import {generateText} from '@tiptap/core'
 import {sql} from 'kysely'
-import ms from 'ms'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {applyUpdate, Doc} from 'yjs'
 import {serverTipTapExtensions} from '../../client/shared/tiptap/serverTipTapExtensions'
@@ -41,13 +40,19 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
     pg.selectFrom('Page').select(['yDoc', 'updatedAt']).where('id', '=', pageId).executeTakeFirst(),
     pg
       .selectFrom(embeddingModel.pagesTableName)
-      .select(['chunkNumber', 'embedText'])
+      .select(['chunkNumber', 'embedText', 'pageUpdatedAt'])
       .where('pageId', '=', pageId)
       .orderBy('chunkNumber', 'asc')
       .execute()
   ])
+
   if (!page || !page.yDoc) {
     return new JobQueueError(`pageId ${pageId} was deleted`)
+  }
+
+  const firstExistingChunk = existingChunks[0]
+  if (firstExistingChunk && firstExistingChunk.pageUpdatedAt === page.updatedAt) {
+    return new JobQueueError(`pageId ${pageId} embedding is already current`)
   }
 
   const yDoc = new Doc()
@@ -56,8 +61,10 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
   const fullText = generateText(content, serverTipTapExtensions)
   const language = inferLanguage(fullText, 5)
   const tsvLanguage = getTSV(language)
-  // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) return false
+
+  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
+    return new JobQueueError(`pageId ${pageId} is written in unsupported language: ${language}`)
+  }
   const chunker = new TipTapChunker({language})
   const chunks = chunker.chunk(content)
   const updatedChunks = chunks.filter((chunk, idx) => {
@@ -71,9 +78,7 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       const embeddingVector = await embeddingModel.getEmbedding(embeddingText)
       if (embeddingVector instanceof Error) {
         return new JobQueueError(
-          `unable to get embeddings: ${embeddingVector.message}`,
-          ms('1m'),
-          10
+          `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
         )
       }
       await pg

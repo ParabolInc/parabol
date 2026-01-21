@@ -50,12 +50,15 @@ export class WorkflowOrchestrator {
     }
   }
 
-  private failJob = async (jobId: number, retryCount: number, error: JobQueueError) => {
+  private failJob = async (
+    jobId: number,
+    error: JobQueueError,
+    previousErrorMessage?: string | undefined | null
+  ) => {
     const pg = getKysely()
-    const {jobData} = error
+    const {jobData, retry} = error
     const message = error.message.slice(0, 8192)
-    const maxRetries = error.maxRetries ?? 10
-    if (retryCount < maxRetries) {
+    if (!retry || previousErrorMessage === message) {
       await pg
         .updateTable('EmbeddingsJobQueueV2')
         .set((eb) => ({
@@ -133,22 +136,17 @@ export class WorkflowOrchestrator {
       jobData,
       jobType,
       priority,
-      retryCount,
       embeddingsMetadataId,
       modelId,
-      pageId
+      pageId,
+      stateMessage
     } = job
     const {workflowName, stepName} = EmbedderJobType.split(jobType)
     const workflow = this.workflows[workflowName]
     if (!workflow)
-      return this.failJob(
-        jobId,
-        retryCount,
-        new JobQueueError(`Workflow ${workflowName} not found`)
-      )
+      return this.failJob(jobId, new JobQueueError(`Workflow ${workflowName} not found`))
     const step = workflow[stepName]
-    if (!step)
-      return this.failJob(jobId, retryCount, new JobQueueError(`Step ${stepName} not found`))
+    if (!step) return this.failJob(jobId, new JobQueueError(`Step ${stepName} not found`))
     const {run, getNextStep} = step
     const dataLoader = getNewDataLoader('WorkflowOrchestrator')
     let result: Awaited<ReturnType<typeof run>> = false
@@ -158,11 +156,10 @@ export class WorkflowOrchestrator {
     } catch (e) {
       if (e instanceof Error) {
         result = new JobQueueError(`Uncaught error: ${e.message}`)
-        result.stack = e.stack
       }
     }
     dataLoader.dispose()
-    if (result instanceof JobQueueError) return this.failJob(jobId, retryCount, result)
+    if (result instanceof JobQueueError) return this.failJob(jobId, result, stateMessage)
     await this.finishJob(jobId)
     if (result === false) return
     const nextStepName = await getNextStep?.({

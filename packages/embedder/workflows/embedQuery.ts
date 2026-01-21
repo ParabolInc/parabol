@@ -39,5 +39,7 @@ export const embedQuery: JobQueueStepRun<EmbedQueryData> = async (context) => {
       .publish(channelName, msg)
       .catch(() => {})
   }
-  return embeddingVector instanceof Error ? new JobQueueError(embeddingVector.message) : data
+  return embeddingVector instanceof Error
+    ? new JobQueueError(`Error turning query into vector: \`${query}\`. ${embeddingVector.message}`)
+    : data
 }
