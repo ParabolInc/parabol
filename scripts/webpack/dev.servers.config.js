@@ -26,8 +26,8 @@ module.exports = {
     __dirname: false
   },
   entry: {
-    web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
-    embedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'embedder.ts')]
+    web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'bootstrap.ts')],
+    embedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'bootstrap.ts')]
     // debugEmbedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'debug.ts')]
   },
   output: {

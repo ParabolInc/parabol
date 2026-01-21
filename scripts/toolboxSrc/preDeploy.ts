@@ -33,11 +33,13 @@ const storePersistedQueries = async () => {
 }
 
 const preDeploy = async () => {
+  const SERVER_ID = process.env.SERVER_ID
+  if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
   // .env is typically only used in testing prod deploys
   const envPath = path.join(PROJECT_ROOT, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
-  Logger.log(`🚀 Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
+  Logger.log(`🚀 Server ID: ${SERVER_ID}. Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
   // first we migrate DBs & add env vars to client assets
   await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
