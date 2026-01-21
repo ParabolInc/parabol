@@ -1,5 +1,5 @@
-import {identityManager} from '../../packages/server/utils/ServerIdentityManager'
 import {Logger} from '../../packages/server/utils/Logger'
+import {identityManager} from '../../packages/server/utils/ServerIdentityManager'
 
 ;(async () => {
   try {

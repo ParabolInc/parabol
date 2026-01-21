@@ -39,7 +39,9 @@ const preDeploy = async () => {
   const envPath = path.join(PROJECT_ROOT, '.env')
   const myEnv = dotenv.config({path: envPath})
   dotenvExpand(myEnv)
-  Logger.log(`🚀 Server ID: ${SERVER_ID}. Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`)
+  Logger.log(
+    `🚀 Server ID: ${SERVER_ID}. Predeploy Started v${__APP_VERSION__} sha:${__COMMIT_HASH__}`
+  )
   // first we migrate DBs & add env vars to client assets
   await Promise.all([standaloneMigrations(), applyEnvVarsToClientAssets()])
 
