@@ -32,7 +32,7 @@ export class ServerIdentityManager {
         if (result === 'OK') {
           this.id = i
           process.env.SERVER_ID = i.toString()
-          Logger.log(`Successfully claimed Server ID: ${this.id}`)
+          Logger.log(`Successfully claimed Server ID: ${this.id} (Instance: ${this.instanceId})`)
           this.startHeartbeat()
           this.setupShutdownHandlers()
           return this.id
