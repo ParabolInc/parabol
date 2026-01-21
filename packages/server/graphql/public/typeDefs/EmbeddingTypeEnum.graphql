@@ -1,4 +1,4 @@
-enum SearchTypeEnum {
+enum EmbeddingTypeEnum {
   page
   meetingTemplate
   retrospectiveDiscussionTopic

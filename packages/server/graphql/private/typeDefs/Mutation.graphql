@@ -1,3 +1,4 @@
+directive @oneOf on INPUT_OBJECT | FIELD_DEFINITION
 type Mutation {
   """
   Add a new feature flag
@@ -563,4 +564,10 @@ type Mutation {
   ): AssignSAMLIdToOrgPayload!
 
   pruneFailedEmbeddingJobs(before: DateTime!): Int
+  buildEmbeddings(
+    # To try new tests on a subset of the data
+    input: BuildEmbeddingsInput
+    # If something went wrong with the embedder, manually restart failed jobs
+    lastFailedAt: DateRangeInput
+  ): Int @oneOf
 }
