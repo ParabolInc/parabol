@@ -2,6 +2,7 @@ import {ReactNodeViewRenderer, type Editor as TipTapEditor} from '@tiptap/react'
 import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
 import {ImageUploadView} from './ImageUploadView'
+import '@tiptap/core'
 
 interface ImageUploadStorage {
   editorWidth: number
@@ -13,7 +14,7 @@ declare module '@tiptap/core' {
   interface EditorEvents {
     enter: {editor: TipTapEditor}
   }
-  interface Storage {
+  export interface Storage {
     imageUpload: ImageUploadStorage
   }
 }

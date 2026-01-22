@@ -65,7 +65,10 @@ services:
     container_name: text-embeddings-inference
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
     command:
-      - "--model-id=Qwen/Qwen3-Embedding-0.6B --auto-truncate"
+      - "--auto-truncate"
+      - "--max-batch-tokens=8192"
+      - "--max-batch-requests=4"
+      - "--model-id=Qwen/Qwen3-Embedding-0.6B"
     platform: linux/x86_64
     restart: always
     ports:
