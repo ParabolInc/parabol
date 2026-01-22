@@ -1,11 +1,11 @@
 import * as Y from 'yjs'
-import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 
 // XML attributes are stored as a yMap, which gets deleted when the element is deleted
 // This uses the undocumented internal yjs _map structure to access those attributes
 // It SHOULD be stable until GC, as long as it's called synchronously in the observer callback
 export const getUnsafeDeletedAttribute = (
-  node: Y.XmlElement<PageLinkBlockAttributes>,
+  node: Y.XmlElement<PageLinkBlockAttrs>,
   attr: string,
   isOptional?: boolean
 ) => {

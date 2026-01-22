@@ -1,6 +1,6 @@
 // This returns a Content array of blocks, not a whole JSONContent.
 // If you need the whole doc, wrap it like {type: 'doc', content: <RETURN VALUE>}
-
+// We should try to move this to @tiptap/markdown instead
 import {Editor, type JSONContent} from '@tiptap/core'
 import {MarkdownParser} from '@tiptap/pm/markdown'
 import markdownit from 'markdown-it'

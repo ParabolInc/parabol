@@ -6,6 +6,8 @@ import type {ValueOf} from '../client/types/generics'
  * @type {Record<string, string>}
  */
 export const iso6393To1 = {
+  // if franc returns und, then default to english
+  und: 'en',
   aar: 'aa',
   abk: 'ab',
   afr: 'af',

@@ -1,13 +1,13 @@
 import isValid from 'parabol-server/graphql/isValid'
 import getKysely from 'parabol-server/postgres/getKysely'
 import getPhase from 'parabol-server/utils/getPhase'
-import type {MessageToEmbedderRelatedDiscussions} from '../../server/graphql/mutations/helpers/publishToEmbedder'
-import getModelManager from '../ai_models/ModelManager'
+import type {RelatedDiscussionsJobData} from '../../server/graphql/mutations/helpers/publishToEmbedder'
+import {activeEmbeddingModelId} from '../activeEmbeddingModel'
 import type {JobQueueStepRun, ParentJob} from '../custom'
 import type {embedMetadata} from './embedMetadata'
 
 export const relatedDiscussionsStart: JobQueueStepRun<
-  MessageToEmbedderRelatedDiscussions['data'],
+  RelatedDiscussionsJobData,
   ParentJob<typeof embedMetadata>
 > = async (context) => {
   const pg = getKysely()
@@ -46,12 +46,8 @@ export const relatedDiscussionsStart: JobQueueStepRun<
     .returning('id')
     .execute()
 
-  const modelManager = getModelManager()
-  // Only get 1 embedder since we only want to publish 1 message to the user
-  const {tableName} = modelManager.getEmbedder()
-
   return inserts.map(({id}) => ({
     embeddingsMetadataId: id,
-    model: tableName
+    modelId: activeEmbeddingModelId!
   }))
 }
