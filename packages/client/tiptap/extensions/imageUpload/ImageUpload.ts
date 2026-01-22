@@ -1,23 +1,7 @@
-import {ReactNodeViewRenderer, type Editor as TipTapEditor} from '@tiptap/react'
-import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
+import {ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
+import {ImageUploadStorage} from '../imageBlock/ImageBlockBase'
 import {ImageUploadView} from './ImageUploadView'
-import '@tiptap/core'
-
-interface ImageUploadStorage {
-  editorWidth: number
-  editorHeight: number
-  assetScope: AssetScopeEnum
-  scopeKey: string
-}
-declare module '@tiptap/core' {
-  interface EditorEvents {
-    enter: {editor: TipTapEditor}
-  }
-  export interface Storage {
-    imageUpload: ImageUploadStorage
-  }
-}
 
 export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploadStorage>({
   addOptions() {
