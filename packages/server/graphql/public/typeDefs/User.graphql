@@ -559,7 +559,7 @@ type User implements UserPartial {
     query: String!
     first: Int!
     after: String
-    type: EmbeddingTypeEnum!
+    type: SearchTypeEnum!
     teamIds: [ID!]
     startAt: DateTime
     endAt: DateTime

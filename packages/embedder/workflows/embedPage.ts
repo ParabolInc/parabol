@@ -81,34 +81,38 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
           `unable to get embeddings from ${modelId}: ${embeddingVector.message}`
         )
       }
-      await pg
-        .insertInto(embeddingModel.pagesTableName)
-        .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
-        .expression((eb) =>
-          eb
-            // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
-            .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
-            .select([
-              sql<string>`val`.as('val'),
-              weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
-              sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
-              sql<number>`${pageId}`.as('pageId'),
-              sql<number>`${chunkNumber}`.as('chunkNumber'),
-              // This acts as a version # so we can make sure the embedding is for the most recent page
-              // In the future, if we want to do historical imports where we don't update the model, we can use this, too
-              // For now, updating the model will re-embed all pages, which suffices
-              sql<number>`${page.updatedAt}`.as('pageUpdatedAt')
-            ])
-        )
-        .onConflict((oc) =>
-          oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
-            embedText: eb.ref('excluded.embedText'),
-            tsv: eb.ref('excluded.tsv'),
-            embedding: eb.ref('excluded.embedding'),
-            pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
-          }))
-        )
-        .execute()
+      try {
+        await pg
+          .insertInto(embeddingModel.pagesTableName)
+          .columns(['embedText', 'tsv', 'embedding', 'pageId', 'chunkNumber', 'pageUpdatedAt'])
+          .expression((eb) =>
+            eb
+              // to avoid passing in chunk twice, we pass it in here, and reference it as val twice below
+              .selectFrom(sql`(SELECT ${text}::text as val)`.as('input'))
+              .select([
+                sql<string>`val`.as('val'),
+                weightedTsvector(tsvLanguage, globalTitle, headingPath.join(' '), text).as('tsv'),
+                sql<string>`${numberVectorToString(embeddingVector)}`.as('embedding'),
+                sql<number>`${pageId}`.as('pageId'),
+                sql<number>`${chunkNumber}`.as('chunkNumber'),
+                // This acts as a version # so we can make sure the embedding is for the most recent page
+                // In the future, if we want to do historical imports where we don't update the model, we can use this, too
+                // For now, updating the model will re-embed all pages, which suffices
+                sql<number>`${page.updatedAt}`.as('pageUpdatedAt')
+              ])
+          )
+          .onConflict((oc) =>
+            oc.columns(['pageId', 'chunkNumber']).doUpdateSet((eb) => ({
+              embedText: eb.ref('excluded.embedText'),
+              tsv: eb.ref('excluded.tsv'),
+              embedding: eb.ref('excluded.embedding'),
+              pageUpdatedAt: eb.ref('excluded.pageUpdatedAt')
+            }))
+          )
+          .execute()
+      } catch (e) {
+        return new JobQueueError(e as Error)
+      }
       return undefined
     })
   )

@@ -19,16 +19,19 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
             <button
               className='cursor-pointer text-slate-600 hover:text-slate-700'
               onClick={async () => {
-                const nodePos = editor.$node('insightsBlock', {id})!
                 // Leaving the comment here in case we want to switch back to plain text
                 // const plainText = editor.state.doc.textBetween(nodePos.from, nodePos.to, '\n')
                 // Important: get HTML from schema so we get attributes
-                const fragment = Fragment.from(nodePos.node)
-                const htmlText = getHTMLFromFragment(fragment, editor.schema)
-                // TODO: Verify that this works as well as generating a new insight
+                const nodePos = editor.$node('insightsBlock', {id})!
+                // const fragment = Fragment.from(nodePos.node)
+                const htmlFragment = Fragment.from(nodePos.node)
+                const htmlText = getHTMLFromFragment(htmlFragment, editor.schema)
+
+                const innerFragment = nodePos.node.content
+                const innerText = getHTMLFromFragment(innerFragment, editor.schema)
                 const tmpEditor = new Editor({
                   contentType: 'html',
-                  content: htmlText,
+                  content: innerText,
                   extensions: serverTipTapExtensions
                 })
                 const markdownText = tmpEditor.getMarkdown()

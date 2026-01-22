@@ -4,9 +4,9 @@ import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
-import type {EmbeddingTypeEnum, UserResolvers} from '../resolverTypes'
+import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 
-const decodeCursor = (after: string | null | undefined, type: EmbeddingTypeEnum) => {
+const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) => {
   if (!after) return null
   const decodedAfter = JSON.parse(atob(after))
   if (!decodedAfter) return null

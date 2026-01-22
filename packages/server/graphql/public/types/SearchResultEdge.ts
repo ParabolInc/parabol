@@ -1,9 +1,9 @@
 import {GraphQLError} from 'graphql'
-import type {EmbeddingTypeEnum, SearchMatchScore} from '../resolverTypes'
+import type {SearchMatchScore, SearchTypeEnum} from '../resolverTypes'
 import type {ReqResolvers} from './ReqResolvers'
 
 export type SearchResultEdgeSource = {
-  nodeTypeName: EmbeddingTypeEnum
+  nodeTypeName: SearchTypeEnum
   nodeId: string | number
   score: SearchMatchScore
   snippets: string[]

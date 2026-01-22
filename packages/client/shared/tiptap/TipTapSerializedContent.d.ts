@@ -1,3 +1,9 @@
+import type {ImageBlockAttrs} from '~/tiptap/extensions/imageBlock/ImageBlock'
+import type {InsightsBlockAttrs} from '~/tiptap/extensions/insightsBlock/InsightsBlock'
+import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
+import type {ResponseBlockAttrs} from './extensions/ResponseBlockBase'
+import type {TaskBlockAttrs} from './extensions/TaskBlockBase'
+
 export interface TipTapSerializedContent {
   type: 'doc'
   content: [TiptapHeadingNode<1>, ...TipTapContentNode[]]
@@ -26,19 +32,7 @@ interface TiptapHeadingNode<TLevel extends HeadingLevel = HeadingLevel> {
 
 export interface TiptapInsightsBlock {
   type: 'insightsBlock'
-  attrs: {
-    id: string
-    editing: boolean
-    teamIds: string[]
-    meetingTypes: string[]
-    after: string
-    before: string
-    meetingIds: string[]
-    title: string
-    hash: string
-    prompt: string
-    error: string | null
-  }
+  attrs: InsightsBlockAttrs
   content: TipTapNode[]
 }
 
@@ -83,14 +77,12 @@ interface TipTapTaskItemNode {
 }
 interface TipTapTaskBlockNode {
   type: 'taskBlock'
-  attrs: {
-    id: string
-    status: string
-    preferredName: string
-    avatar: string
-    service: string
-    content: string
-  }
+  attrs: TaskBlockAttrs
+}
+
+interface TipTapResponseBlockNode {
+  type: 'responseBlock'
+  attrs: ResponseBlockAttrs
 }
 
 interface TipTapCodeBlockNode {
@@ -145,12 +137,7 @@ export interface TipTapTableHeaderNode extends TipTapTableCellNode {
 
 interface TipTapImageBlockNode {
   type: 'imageBlock'
-  attrs: {
-    src: str
-    height: number
-    width: number
-    align: 'center' | 'left' | 'right'
-  }
+  attrs: ImageBlockAttrs
 }
 
 interface TipTapHorizontalRuleNode {
@@ -163,12 +150,7 @@ interface TipTapImageUploadNode {
 
 interface TipTapPageLinkBlockNode {
   type: 'pageLinkBlock'
-  attrs: {
-    pageCode: number
-    title: string
-    canonical: null | boolean
-    database: null | boolean
-  }
+  attrs: PageLinkBlockAttrs
 }
 
 export type TipTapContentNode =
@@ -187,5 +169,6 @@ export type TipTapContentNode =
   | TipTapHorizontalRuleNode
   | TipTapPageLinkBlockNode
   | TipTapImageUploadNode
+  | TipTapResponseBlockNode
 
 type TipTapNode = TiptapDoc | TipTapContentNode

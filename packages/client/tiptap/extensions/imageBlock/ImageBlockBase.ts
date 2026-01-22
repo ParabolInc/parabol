@@ -1,7 +1,26 @@
-import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
+import {
+  createBlockMarkdownSpec,
+  mergeAttributes,
+  type NodeConfig,
+  type Range,
+  type Editor as TipTapEditor
+} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
+import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 
+export interface ImageUploadStorage {
+  editorWidth: number
+  editorHeight: number
+  assetScope: AssetScopeEnum
+  scopeKey: string
+}
 declare module '@tiptap/core' {
+  interface EditorEvents {
+    enter: {editor: TipTapEditor}
+  }
+  interface Storage {
+    imageUpload: ImageUploadStorage
+  }
   interface Commands<ReturnType> {
     imageBlock: {
       setImageBlock: (attributes: {src: string}) => ReturnType

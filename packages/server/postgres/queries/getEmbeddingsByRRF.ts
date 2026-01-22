@@ -5,7 +5,7 @@ import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsTableName} from '../../../embedder/getEmbeddingsTableName'
 import {getTSV} from '../../../embedder/getSupportedLanguages'
 import {inferLanguage} from '../../../embedder/inferLanguage'
-import type {EmbeddingTypeEnum} from '../../graphql/public/resolverTypes'
+import type {SearchTypeEnum} from '../../graphql/public/resolverTypes'
 import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
 import getKysely from '../getKysely'
 
@@ -25,7 +25,7 @@ interface Params {
     dateField: 'createdAt' | 'updatedAt'
   } | null
   teamIds: string[]
-  type: Exclude<EmbeddingTypeEnum, 'page'>
+  type: Exclude<SearchTypeEnum, 'page'>
 }
 
 export const getEmbeddingsByRRF = async (params: Params) => {
@@ -170,6 +170,3 @@ export const getEmbeddingsByRRF = async (params: Params) => {
     }))
   }
 }
-
-// type
-// lastFailedAtRange

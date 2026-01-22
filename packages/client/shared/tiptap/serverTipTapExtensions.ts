@@ -3,7 +3,7 @@ import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
-import {Markdown} from '@tiptap/markdown' // TODO: get rid of non-native Markdown extension in other places
+import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
 import {LoomExtension} from '../../components/promptResponse/loomExtension'
 import {Database} from '../../tiptap/extensions/database/Database'

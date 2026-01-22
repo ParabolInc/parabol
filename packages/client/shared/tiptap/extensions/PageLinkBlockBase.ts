@@ -1,6 +1,6 @@
 import {createBlockMarkdownSpec, mergeAttributes, Node} from '@tiptap/core'
 
-export type PageLinkBlockAttributes = {
+export type PageLinkBlockAttrs = {
   pageCode: number
   title: string
   canonical?: boolean
@@ -10,7 +10,7 @@ export type PageLinkBlockAttributes = {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     pageLinkBlock: {
-      setPageLinkBlock: (attributes: PageLinkBlockAttributes) => ReturnType
+      setPageLinkBlock: (attributes: PageLinkBlockAttrs) => ReturnType
     }
   }
 }
@@ -75,7 +75,7 @@ export const PageLinkBlockBase = Node.create({
     return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   },
   renderText({node}) {
-    const attrs = node.attrs as PageLinkBlockAttributes
+    const attrs = node.attrs as PageLinkBlockAttrs
     const pageCode = attrs.pageCode
     const title = attrs.title || '<Untitled>'
     return `[${title}](/pages/${pageCode})`

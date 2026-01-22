@@ -58,7 +58,7 @@ export class WorkflowOrchestrator {
     const pg = getKysely()
     const {jobData, retry} = error
     const message = error.message.slice(0, 8192)
-    if (!retry || previousErrorMessage === message) {
+    if (retry && previousErrorMessage !== message) {
       await pg
         .updateTable('EmbeddingsJobQueueV2')
         .set((eb) => ({
