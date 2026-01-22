@@ -1,6 +1,17 @@
 import {identityManager} from './utils/ServerIdentityManager'
 
-const MID = BigInt(identityManager.getId())
+let MID: bigint | undefined
+
+const getMid = () => {
+  if (MID === undefined) {
+    MID = BigInt(identityManager.getId())
+    if (MID < 0 || MID > 2 ** MACHINE_ID_BIT_LEN - 1) {
+      throw new Error('SERVER_ID must be between 0 and 1023')
+    }
+  }
+  return MID
+}
+
 const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const len = BigInt(ALPHABET.length)
 const EPOCH = Date.UTC(2021, 0, 1)
@@ -11,11 +22,6 @@ const TS_OFFSET = BigInt(MACHINE_ID_BIT_LEN + SEQ_BIT_LEN)
 const MID_OFFSET = BigInt(SEQ_BIT_LEN)
 const BIG_ZERO = BigInt(0)
 export const MAX_SEQ = 2 ** SEQ_BIT_LEN - 1
-
-// if MID overflows, we will generate duplicate ids, throw instead
-if (MID < 0 || MID > 2 ** MACHINE_ID_BIT_LEN - 1) {
-  throw new Error('SERVER_ID must be between 0 and 1023')
-}
 
 let seq = 0
 let lastTime = Date.now()
@@ -35,7 +41,7 @@ const generateUID = () => {
   }
   lastTime = now
   const ts = BigInt(now - EPOCH)
-  const decimalId = (ts << TS_OFFSET) | (MID << MID_OFFSET) | BigInt(seq)
+  const decimalId = (ts << TS_OFFSET) | (getMid() << MID_OFFSET) | BigInt(seq)
 
   let id = ''
   let residual = decimalId
