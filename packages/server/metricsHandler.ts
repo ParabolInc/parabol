@@ -2,6 +2,7 @@ import type {HttpResponse} from 'uWebSockets.js'
 import {usePrometheus} from '@graphql-yoga/plugin-prometheus'
 import {collectDefaultMetrics, Gauge, Histogram, Registry} from 'prom-client'
 import {activeClients} from './activeClients'
+import {identityManager} from './utils/ServerIdentityManager'
 
 const register = new Registry()
 
@@ -13,7 +14,7 @@ collectDefaultMetrics({
   gcDurationBuckets: [0.001, 0.01, 0.1, 0.5, 1, 2, 5],
   eventLoopMonitoringPrecision: 1000,
   labels: {
-    server_id: process.env.SERVER_ID || 'unknown',
+    server_id: identityManager.getId().toString(),
     port: PORT.toString()
   }
 })

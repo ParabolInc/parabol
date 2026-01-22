@@ -1,4 +1,6 @@
-const MID = BigInt(process.env.SERVER_ID!)
+import {identityManager} from './utils/ServerIdentityManager'
+
+const MID = BigInt(identityManager.getId())
 const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const len = BigInt(ALPHABET.length)
 const EPOCH = Date.UTC(2021, 0, 1)

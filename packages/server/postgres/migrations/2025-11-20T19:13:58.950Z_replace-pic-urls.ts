@@ -6,6 +6,7 @@ import type {PartialPath} from '../../fileStorage/FileStoreManager'
 import {getFileStoreManager} from '../../fileStorage/getFileStoreManager'
 import {CipherId} from '../../utils/CipherId'
 import {getRedisOptions} from '../../utils/getRedisOptions'
+import {identityManager} from '../../utils/ServerIdentityManager'
 
 const getBaseUrl = () => {
   const cdnType = process.env.FILE_STORE_PROVIDER
@@ -30,7 +31,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     ...getRedisOptions(),
     connectionName: '2025-11-17T19:13:58.950Z_replace-pic-urls'
   })
-  const SERVER_ID = process.env.SERVER_ID!
+  const SERVER_ID = identityManager.getId().toString()
   const prefix = getBaseUrl()
   const fileMoves = [] as {from: PartialPath; to: PartialPath}[]
   await Promise.all(

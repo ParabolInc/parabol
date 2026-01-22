@@ -31,7 +31,6 @@ export class ServerIdentityManager {
 
         if (result === 'OK') {
           this.id = i
-          process.env.SERVER_ID = i.toString()
           Logger.log(`Successfully claimed Server ID: ${this.id} (Instance: ${this.instanceId})`)
           this.startHeartbeat()
           this.setupShutdownHandlers()
@@ -47,6 +46,13 @@ export class ServerIdentityManager {
     }
 
     throw new Error('Failed to claim a free Server ID after checking all slots.')
+  }
+
+  public getId(): number {
+    if (this.id === null) {
+      throw new Error('Server ID has not been claimed yet')
+    }
+    return this.id
   }
 
   private startHeartbeat() {

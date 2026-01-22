@@ -3,6 +3,7 @@ import dotenvExpand from 'dotenv-expand'
 import path from 'path'
 import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
+import {identityManager} from '../../packages/server/utils/ServerIdentityManager'
 import queryMap from '../../queryMap.json'
 import getProjectRoot from '../webpack/utils/getProjectRoot'
 import {applyEnvVarsToClientAssets} from './applyEnvVarsToClientAssets'
@@ -33,8 +34,7 @@ const storePersistedQueries = async () => {
 }
 
 const preDeploy = async () => {
-  const SERVER_ID = process.env.SERVER_ID
-  if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
+  const SERVER_ID = identityManager.getId()
   // .env is typically only used in testing prod deploys
   const envPath = path.join(PROJECT_ROOT, '.env')
   const myEnv = dotenv.config({path: envPath})
