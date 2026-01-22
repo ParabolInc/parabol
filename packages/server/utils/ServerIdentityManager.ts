@@ -79,7 +79,18 @@ export class ServerIdentityManager {
           // If we read mismatch, it means Redis IS reachable but we lost the lock.
           if (!currentOwner) {
             // It expired. Reclaim it.
-            await redis.set(key, this.instanceId, 'EX', TTL_SECONDS, 'NX')
+            const res = await redis.set(key, this.instanceId, 'EX', TTL_SECONDS, 'NX')
+            if (res === 'OK') {
+              Logger.log(
+                `Successfully reclaimed Server ID: ${this.id} (Instance: ${this.instanceId})`
+              )
+            }
+          } else {
+            // Someone else took it. We cannot share IDs.
+            Logger.error(
+              `FATAL: Server ID ${this.id} was taken by another instance (${currentOwner}). initiating graceful shutdown.`
+            )
+            process.emit('SIGTERM')
           }
         }
       } catch (err) {
