@@ -15,6 +15,10 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
       baseURL: url
     })
   }
+
+  async ready() {
+    return true
+  }
   async getTokens(content: string) {
     if (!content) return []
     const res = await fetch(this.url, {

@@ -37,6 +37,8 @@ const run = async () => {
     primeSupportedLanguages()
   ])
   const modelManager = getModelManager()
+  // TEI has a long warmup time. Better to wait now than to fail later
+  await modelManager.getEmbedder().ready()
   if (primaryLock) {
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
