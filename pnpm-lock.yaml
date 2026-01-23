@@ -873,6 +873,9 @@ importers:
       '@octokit/graphql-schema':
         specifier: ^10.36.0
         version: 10.74.2
+      '@pgtyped/runtime':
+        specifier: ^2.4.2
+        version: 2.4.2
       '@react-email/body':
         specifier: ^0.1.0
         version: 0.1.0(react@17.0.2)
@@ -4096,6 +4099,14 @@ packages:
     resolution: {integrity: sha512-dfUnCxiN9H4ap84DvD2ubjw+3vUNpstxa0TneY/Paat8a3R4uQZDLSvWjmznAY/DoahqTHl9V46HF/Zs3F29pg==}
     engines: {node: '>= 10.0.0'}
 
+  '@pgtyped/parser@2.4.2':
+    resolution: {integrity: sha512-LbK90cz+CAjG+jsiKS5FNVkb97Ys5xZa1xmSIq7N2zYz1vX04hr6xNhDUSjbC8C/YnFm1S+d2D6BbHMgzsBilw==}
+    engines: {node: '>=14.16'}
+
+  '@pgtyped/runtime@2.4.2':
+    resolution: {integrity: sha512-W1fK475KjmkhleK4Be7swblT5Kqykxc/APe57r8cgmxLzbT/x9Q3BjOLBJhBPxp1gKFZGgQyxtELPOaNl/66jg==}
+    engines: {node: '>=14.16'}
+
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
@@ -6590,6 +6601,9 @@ packages:
   ansis@4.0.0-node10:
     resolution: {integrity: sha512-BRrU0Bo1X9dFGw6KgGz6hWrqQuOlVEDOzkb0QSLZY9sXHqA7pNj7yHPVJRz7y/rj4EOJ3d/D5uxH+ee9leYgsg==}
     engines: {node: '>=10'}
+
+  antlr4ts@0.5.0-alpha.4:
+    resolution: {integrity: sha512-WPQDt1B74OfPv/IMS2ekXAKkTZIHl88uMetg6q3OTqgFxZ/dxDXI0EWLyZid/1Pe6hTftyg5N7gel5wNAGxXyQ==}
 
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
@@ -16693,6 +16707,22 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.1
       '@parcel/watcher-win32-x64': 2.5.1
 
+  '@pgtyped/parser@2.4.2':
+    dependencies:
+      antlr4ts: 0.5.0-alpha.4
+      chalk: 4.1.2
+      debug: 4.4.3(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@pgtyped/runtime@2.4.2':
+    dependencies:
+      '@pgtyped/parser': 2.4.2
+      chalk: 4.1.2
+      debug: 4.4.3(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
@@ -19332,6 +19362,8 @@ snapshots:
   ansi-styles@6.2.3: {}
 
   ansis@4.0.0-node10: {}
+
+  antlr4ts@0.5.0-alpha.4: {}
 
   any-promise@1.3.0: {}
 

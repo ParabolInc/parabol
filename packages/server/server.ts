@@ -7,6 +7,7 @@ import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
+import {identityManager} from './utils/ServerIdentityManager'
 import './hocusPocus'
 import {assetProxyHandler} from './assetProxyHandler'
 import {hocusPocusHandler} from './hocusPocusHandler'
@@ -48,12 +49,12 @@ const ENABLE_MATTERMOST_FILE_HANDLER =
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
-    `Server ID: ${process.env.SERVER_ID}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
+    `Server ID: ${identityManager.getId()}. Kill signal received: ${signal}, starting graceful shutdown of ${RECONNECT_WINDOW}ms.`
   )
   setIsShuttingDown()
   stopChronos()
   await disconnectAllSockets()
-  Logger.log(`Server ID: ${process.env.SERVER_ID}. Graceful shutdown complete, exiting.`)
+  Logger.log(`Server ID: ${identityManager.getId()}. Graceful shutdown complete, exiting.`)
   process.exit()
 })
 

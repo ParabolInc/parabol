@@ -20,6 +20,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
+import {identityManager} from './utils/ServerIdentityManager'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
 import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
@@ -27,7 +28,7 @@ import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
 import {RedisServerAffinity} from './utils/tiptap/RedisServerAffinity'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 
-const SERVER_ID = process.env.SERVER_ID!
+const SERVER_ID = identityManager.getId().toString()
 
 const pushGQLTitleUpdates = async (pageId: number) => {
   // This is necessary for titles of top-level items (shared, team, private) to propagate in real time

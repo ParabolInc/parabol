@@ -1,4 +1,5 @@
 import tracer from 'dd-trace'
+import {identityManager} from './utils/ServerIdentityManager'
 
 tracer.init({
   service: `web`,
@@ -6,7 +7,7 @@ tracer.init({
   plugins: false,
   version: __APP_VERSION__,
   tags: {
-    serverId: process.env.SERVER_ID
+    serverId: identityManager.getId()
   }
 })
 tracer

@@ -16,10 +16,7 @@ module.exports = {
       ],
       // increase this to test scaling
       instances: 1,
-      increment_var: 'SERVER_ID',
-      env: {
-        SERVER_ID: 0
-      },
+      env: {},
       watch: ['dev/web.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
       autorestart: false
@@ -29,10 +26,7 @@ module.exports = {
       script: 'scripts/runEmbedder.js',
       // increase this to test scaling
       instances: 1,
-      increment_var: 'SERVER_ID',
-      env: {
-        SERVER_ID: 6
-      },
+      env: {},
       watch: ['dev/embedder.js'],
       // if the watched file doeesn't exist, wait for it instead of restarting
       autorestart: false

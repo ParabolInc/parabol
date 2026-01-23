@@ -33,17 +33,16 @@ module.exports = (config) => {
       web: [
         DOTENV,
         INIT_PUBLIC_PATH,
-        INIT_LOGGING,
         MONKEYPATCHES,
         // each instance of web needs to generate its own index.html to use on startup
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
-        path.join(SERVER_ROOT, 'server.ts')
+        path.join(SERVER_ROOT, 'bootstrap.ts')
       ],
-      embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
+      embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'bootstrap.ts')],
       preDeploy: [
         DOTENV,
         INIT_PUBLIC_PATH,
-        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/preDeploy.ts')
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/bootstrapPreDeploy.ts')
       ],
       pushToCDN: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pushToCDN.ts')],
       migrate: [DOTENV, path.join(PROJECT_ROOT, 'scripts/toolboxSrc/standaloneMigrations.ts')],

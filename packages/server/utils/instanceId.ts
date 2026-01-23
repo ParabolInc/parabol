@@ -1,1 +1,3 @@
-export const INSTANCE_ID = `${process.env.SERVER_ID}:${process.pid}`
+import {identityManager} from './ServerIdentityManager'
+
+export const INSTANCE_ID = `${identityManager.getId()}:${process.pid}`

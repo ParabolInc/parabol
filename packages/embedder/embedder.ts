@@ -2,6 +2,7 @@ import tracer from 'dd-trace'
 import 'parabol-server/initLogging'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
+import {identityManager} from 'parabol-server/utils/ServerIdentityManager'
 import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
 import getModelManager from './ai_models/ModelManager'
@@ -23,8 +24,7 @@ tracer.init({
 // tracer.use('pg')
 
 const run = async () => {
-  const SERVER_ID = process.env.SERVER_ID
-  if (!SERVER_ID) throw new Error('env.SERVER_ID is required')
+  const SERVER_ID = identityManager.getId()
   const NUM_WORKERS = parseInt(process.env.AI_EMBEDDER_WORKERS!)
   if (!(NUM_WORKERS > 0)) {
     Logger.log('env.AI_EMBEDDER_WORKERS is < 0. Embedder will not run.')

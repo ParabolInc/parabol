@@ -26,8 +26,8 @@ interface PossibleJob {
   cronTime: string | undefined
 }
 
-const {SERVER_ID} = process.env
-if (!SERVER_ID) throw new Error('Missing Env Var: SERVER_ID')
+import {identityManager} from './utils/ServerIdentityManager'
+
 const CHRONOS_DEBUG = process.env.CHRONOS_DEBUG === 'true'
 
 const runningJobs: CronJob[] = []
@@ -162,6 +162,7 @@ const chronos = (leaderRunner: LeaderRunner) => {
 const startChronos = () => {
   if (!__PRODUCTION__) return () => {}
 
+  const SERVER_ID = identityManager.getId()
   const redis = new RedisInstance(`chronosLock_${SERVER_ID}`)
   const leaderRunner = new LeaderRunner(redis, 'chronos', 20_000)
   chronos(leaderRunner)
