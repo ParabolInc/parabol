@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.0](https://github.com/ParabolInc/parabol/compare/v11.9.0...v11.10.0) (2026-01-23)
+
+
+### Added
+
+* Support adhoc embeds ([#12508](https://github.com/ParabolInc/parabol/issues/12508)) ([c48cc06](https://github.com/ParabolInc/parabol/commit/c48cc061461394088783c44887dc6410ac612fa7))
+
+
+### Fixed
+
+* ensure pgvector version, run in dev as well ([#12514](https://github.com/ParabolInc/parabol/issues/12514)) ([a8d61e8](https://github.com/ParabolInc/parabol/commit/a8d61e8a6021bd85c223e0d3c7b65cb7d07273f6))
+
 ## [11.9.0](https://github.com/ParabolInc/parabol/compare/v11.8.0...v11.9.0) (2026-01-22)
 
 
