@@ -4,9 +4,11 @@ import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 type DataLoaderContext = {dataLoader: ReturnType<typeof getNewDataLoader>}
 export const useDisposeDataloader: Plugin<DataLoaderContext, DataLoaderContext> = {
   onContextBuilding: ({context, extendContext}) => {
-    // This shouldn't even happen, but as the code evolves, it's a good check to prevent memory leaks
+    // onContextBuilding additionally gets called in wsHandler when calling `contextFactory`
+    // At that point, context.dataLoader will already be created, so just ignore creating it again
+    // We can't access that from here since we don't have the `id` to get it from `extra`
     if (context.dataLoader) {
-      throw new Error('Dataloader already exists. This is a mem leak')
+      return
     }
     const dataLoader = getNewDataLoader('useDisposeDataloader')
     extendContext({dataLoader})
