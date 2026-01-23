@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
 
-const pgEnsureExtensions = async () => {
+export const pgEnsureExtensions = async () => {
   Logger.log('🔩 Postgres Extension Checks Started')
   if (process.env.POSTGRES_USE_PGVECTOR === 'true') {
     Logger.log('   pgvector')
