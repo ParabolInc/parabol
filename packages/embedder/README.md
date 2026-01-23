@@ -12,13 +12,6 @@ use cases. It does so by:
 6. If embedding fails, the application increments the `retryCount` and increases the `retryAfter` if a retry is desired
 7. If a job gets stalled, a process that runs every 5 minutes will look for jobs older than 5 minutes and reset them to `queued`
 
-## Prerequisites
-
-The Embedder service depends on pgvector being available in Postgres.
-
-The predeploy script checks for an environment variable
-`POSTGRES_USE_PGVECTOR=true` to enable this extension in production.
-
 ## Configuration
 
 The Embedder service takes no arguments and is controlled by the following

@@ -1,9 +1,11 @@
 import tracer from 'dd-trace'
 import 'parabol-server/initLogging'
+import {sql} from 'kysely'
 import {Logger} from 'parabol-server/utils/Logger'
 import RedisInstance from 'parabol-server/utils/RedisInstance'
 import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
+import getKysely from '../server/postgres/getKysely'
 import getModelManager from './ai_models/ModelManager'
 import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
 import {primeSupportedLanguages} from './getSupportedLanguages'
@@ -38,6 +40,11 @@ const run = async () => {
   ])
   const modelManager = getModelManager()
   if (primaryLock) {
+    const pg = getKysely()
+    await sql`
+    CREATE EXTENSION IF NOT EXISTS "vector";
+    ALTER EXTENSION vector UPDATE TO '0.8.0';
+    `.execute(pg)
     // only 1 worker needs to perform these on startup
     await modelManager.maybeCreateTables()
     await importHistoricalMetadata()
