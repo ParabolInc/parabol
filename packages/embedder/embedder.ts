@@ -43,6 +43,8 @@ const run = async () => {
     await importHistoricalMetadata()
     resetStalledJobs()
   }
+  // TEI has a long warmup time. Better to wait now than to fail later
+  await modelManager.getEmbedder().ready()
 
   const orchestrator = new WorkflowOrchestrator()
   // Assume 3 workers for type safety, but it doesn't really matter at runtime

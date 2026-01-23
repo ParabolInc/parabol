@@ -1,5 +1,6 @@
 import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
+import {Logger} from '../../server/utils/Logger'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
 import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
@@ -42,6 +43,32 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     client.GET = openAPIWithTimeout(client.GET, toError, 10000)
     client.POST = openAPIWithTimeout(client.POST, toError, 10000)
     this.client = client
+  }
+
+  private readyPromise: Promise<boolean> | null = null
+  async ready() {
+    if (this.isReady) return true
+    const start = Date.now()
+    if (!this.readyPromise) {
+      this.readyPromise = (async () => {
+        while (!this.isReady) {
+          const res = await this.getTokens('ready')
+          const duration = Math.floor((Date.now() - start) / 1000)
+          if (res instanceof Error) {
+            console.log(res.message)
+            Logger.log(`TEI warming up for ${duration} seconds`)
+            await sleep(5_000)
+            continue
+          }
+          Logger.log(`TEI warmed up in ${duration} seconds`)
+          this.isReady = true
+          this.readyPromise = null
+          break
+        }
+        return true
+      })()
+    }
+    return this.readyPromise
   }
   async getTokens(content: string) {
     if (!content) return []

@@ -30,6 +30,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly pagesTableName: EmbeddingsPagesTable
   readonly languages: ISO6391[]
   readonly modelId: ModelId
+  protected isReady = false
   constructor(modelId: ModelId, url: string) {
     super(url)
     this.modelId = modelId
@@ -43,6 +44,7 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
   protected abstract constructModelParams(modelId: ModelId): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
+  abstract ready(): Promise<boolean>
 
   abstract getTokens(content: string): Promise<number[] | Error>
 
@@ -135,6 +137,14 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
             sql.lit(this.modelId).as('modelId')
           ])
           .where('language', 'in', this.languages)
+          .where(({eb, or}) =>
+            or([
+              // for new models, we only grab a year's worth of data
+              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`),
+              // meetingTemplates are small & parabol-provided ones are older than a year
+              eb('objectType', '=', 'meetingTemplate')
+            ])
+          )
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
