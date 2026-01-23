@@ -52,6 +52,15 @@ const chronos = (leaderRunner: LeaderRunner) => {
       },
       cronTime: CHRONOS_AUTOPAUSE
     },
+    prunePG: {
+      onTick: () => {
+        const query =
+          'mutation PrunePG($before: DateTime!) { pruneFailedEmbeddingJobs(before: $before) }'
+        const aQuarterAgo = new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toJSON()
+        return callGQL(query, {before: aQuarterAgo})
+      },
+      cronTime: CHRONOS_AUTOPAUSE
+    },
     dailyPulse: {
       onTick: () => {
         const query = `query DailyPulse($after: DateTime!, $email: String!, $channelId: ID!) { dailyPulse(after: $after, email: $email, channelId: $channelId)}`

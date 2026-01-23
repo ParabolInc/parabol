@@ -6,6 +6,7 @@ import type {Tuple} from '../client/types/generics'
 import {establishPrimaryServer} from '../server/establishPrimaryServer'
 import getModelManager from './ai_models/ModelManager'
 import {EmbeddingsJobQueueStream} from './EmbeddingsJobQueueStream'
+import {primeSupportedLanguages} from './getSupportedLanguages'
 import {importHistoricalMetadata} from './importHistoricalMetadata'
 import {logPerformance} from './logPerformance'
 import {mergeAsyncIterators} from './mergeAsyncIterators'
@@ -31,7 +32,10 @@ const run = async () => {
   }
 
   const redis = new RedisInstance(`embedder_${SERVER_ID}`)
-  const primaryLock = await establishPrimaryServer(redis, 'embedder')
+  const [primaryLock] = await Promise.all([
+    establishPrimaryServer(redis, 'embedder'),
+    primeSupportedLanguages()
+  ])
   const modelManager = getModelManager()
   if (primaryLock) {
     // only 1 worker needs to perform these on startup
@@ -39,6 +43,8 @@ const run = async () => {
     await importHistoricalMetadata()
     resetStalledJobs()
   }
+  // TEI has a long warmup time. Better to wait now than to fail later
+  await modelManager.getEmbedder().ready()
 
   const orchestrator = new WorkflowOrchestrator()
   // Assume 3 workers for type safety, but it doesn't really matter at runtime

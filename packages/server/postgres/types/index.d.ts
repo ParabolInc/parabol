@@ -1,8 +1,9 @@
 import {Selectable, SelectQueryBuilder} from 'kysely'
+import type {JobType} from '../../../embedder/custom'
 import {
-  selectAgendaItems,
+  type selectAgendaItems,
   type selectAtlassianAuth,
-  selectComments,
+  type selectComments,
   type selectDiscussion,
   type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
@@ -11,33 +12,35 @@ import {
   type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
   type selectMeetingSeries,
-  selectMeetingSettings,
-  selectNewFeatures,
-  selectNewMeetings,
-  selectOAuthAPICode,
-  selectOAuthAPIProvider,
-  selectOrganizations,
+  type selectMeetingSettings,
+  type selectMeetingTemplates,
+  type selectNewFeatures,
+  type selectNewMeetings,
+  type selectOAuthAPICode,
+  type selectOAuthAPIProvider,
+  type selectOrganizations,
   type selectPages,
   type selectPoll,
   type selectPollOption,
-  selectReflectPrompts,
-  selectRetroReflections,
-  selectSlackAuths,
-  selectSlackNotifications,
-  selectSuggestedAction,
-  selectTasks,
-  selectTeamInvitations,
-  selectTeamMemberIntegrationAuth,
-  selectTeamPromptResponses,
-  selectTeams,
+  type selectReflectPrompts,
+  type selectRetroReflections,
+  type selectSlackAuths,
+  type selectSlackNotifications,
+  type selectSuggestedAction,
+  type selectTasks,
+  type selectTeamInvitations,
+  type selectTeamMemberIntegrationAuth,
+  type selectTeamPromptResponses,
+  type selectTeams,
   type selectTemplateDimension,
-  selectTemplateScale,
-  selectTemplateScaleRef,
+  type selectTemplateScale,
+  type selectTemplateScaleRef,
   type selectUser
 } from '../select'
 
 import {
   AIPrompt as AIPromptPG,
+  type DB,
   FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
@@ -190,3 +193,9 @@ export type Poll = ExtractTypeFromQueryBuilderSelect<typeof selectPoll>
 
 export type PollOption = ExtractTypeFromQueryBuilderSelect<typeof selectPollOption>
 export type MeetingSeries = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingSeries>
+export type MeetingTemplate = ExtractTypeFromQueryBuilderSelect<typeof selectMeetingTemplates>
+
+export type EmbeddingsJobQueueV2 = Omit<Selectable<DB['EmbeddingsJobQueueV2']>, 'jobData'> & {
+  jobType: JobType
+  jobData: Record<string, any>
+}

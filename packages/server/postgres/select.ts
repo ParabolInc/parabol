@@ -410,6 +410,10 @@ export const selectMeetingSeries = () => {
   return getKysely().selectFrom('MeetingSeries').selectAll()
 }
 
+export const selectMeetingTemplates = () => {
+  return getKysely().selectFrom('MeetingTemplate').selectAll()
+}
+
 export const selectTaskEstimate = () => {
   return getKysely().selectFrom('TaskEstimate').selectAll()
 }

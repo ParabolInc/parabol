@@ -5,7 +5,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
-import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
 
 const queryNode = graphql`
@@ -45,7 +45,7 @@ export const PageDragHandle = Extension.create<Options>({
         onElementDragStart: async (e) => {
           if (!dragHandleNode) return
           if (dragHandleNode.type.name !== 'pageLinkBlock') return
-          const {pageCode, canonical} = dragHandleNode.attrs as PageLinkBlockAttributes
+          const {pageCode, canonical} = dragHandleNode.attrs as PageLinkBlockAttrs
           if (!canonical) return
           const pageKey = GQLID.toKey(pageCode, 'page')
           e.dataTransfer!.setData('text/plain', '__dummy__')

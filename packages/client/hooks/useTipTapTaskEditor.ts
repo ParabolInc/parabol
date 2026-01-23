@@ -6,6 +6,7 @@ import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
+import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import {tiptapTagConfig} from '../utils/tiptapTagConfig'
@@ -35,7 +36,7 @@ export const useTipTapTaskEditor = (
           showOnlyWhenEditable: false,
           placeholder: 'Describe what “Done” looks like'
         }),
-        Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
+        MentionTaskTag.configure(tiptapTagConfig),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
         ),

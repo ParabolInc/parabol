@@ -15,10 +15,6 @@ const tags = [
 ]
 
 export const tiptapTagConfig: Partial<MentionOptions<any, MentionNodeAttrs>> = {
-  // renderText does not fire, bug in TipTap? Fallback to using more verbose renderHTML
-  renderHTML({options, node}) {
-    return ['span', options.HTMLAttributes, `#${node.attrs.id}`]
-  },
   deleteTriggerWithBackspace: true,
   suggestion: {
     pluginKey: new PluginKey('tag'),

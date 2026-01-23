@@ -1,4 +1,5 @@
 import type uws from 'uWebSockets.js'
+import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-validation'
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import {useCookies} from '@whatwg-node/server-plugin-cookies'
@@ -12,7 +13,6 @@ import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import rootSchema from './graphql/public/rootSchema'
-
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
@@ -205,6 +205,9 @@ export const yoga = createYoga<ServerContext, UserContext>({
     //       complexity quota remaining in order to execute the operation(s)
     useOAuthScopeValidation(),
     useDisposeDataloader,
+    useExtendedValidation({
+      rules: [OneOfInputObjectsRule]
+    }),
     useReadinessCheck({
       check: async () => {
         const isUnavailable = getIsShuttingDown() || getIsBusy()

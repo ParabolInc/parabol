@@ -1,7 +1,7 @@
 import type {Document} from '@hocuspocus/server'
 import {applyUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
-import type {PageLinkBlockAttributes} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {hocuspocus} from '../../hocusPocus'
 
@@ -43,7 +43,7 @@ export const removeCanonicalPageLinkFromPage = async (
       return yxml.getAttribute('pageCode') === pageCode && yxml.getAttribute('canonical') === true
     })
     for (const node of walker) {
-      const pageLink = node as XmlElement<PageLinkBlockAttributes>
+      const pageLink = node as XmlElement<PageLinkBlockAttrs>
       // handleDeletedPageLinks won't try to permanently delete if isMoving == true
       pageLink.setAttribute('isMoving', true)
       const parent = node.parent as XmlElement

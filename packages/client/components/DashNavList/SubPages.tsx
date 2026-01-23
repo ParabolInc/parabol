@@ -3,7 +3,7 @@ import {useMemo} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import query, {type SubPagesQuery} from '../../__generated__/SubPagesQuery.graphql'
-import type {PageLinkBlockAttributes} from '../../shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {LeftNavPageLink, type PageParentSection} from './LeftNavPageLink'
 
 graphql`
@@ -28,7 +28,7 @@ graphql`
 interface Props {
   queryRef: PreloadedQuery<SubPagesQuery>
   pageAncestors: string[]
-  pageLinks: PageLinkBlockAttributes[] | null | undefined
+  pageLinks: PageLinkBlockAttrs[] | null | undefined
   parentPageViewerAccess?: PageRoleEnum
 }
 

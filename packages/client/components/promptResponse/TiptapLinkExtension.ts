@@ -1,12 +1,15 @@
-import {type Editor, getMarkRange, getMarkType, type RawCommands} from '@tiptap/core'
+import {
+  getMarkRange,
+  getMarkType,
+  type RawCommands,
+  type Editor as TipTapEditor
+} from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import {type EditorState, Plugin} from '@tiptap/pm/state'
 
-export type LinkMenuState = 'preview' | 'edit' | null
-
 declare module '@tiptap/core' {
   interface EditorEvents {
-    linkStateChange: {editor: Editor; linkState: LinkMenuState}
+    linkStateChange: {editor: TipTapEditor; linkState: LinkMenuState}
   }
 
   interface Commands<ReturnType> {
@@ -18,6 +21,8 @@ declare module '@tiptap/core' {
     }
   }
 }
+
+export type LinkMenuState = 'preview' | 'edit' | null
 
 export const getRangeForType = (state: EditorState, typeOrName: string) => {
   const {selection, schema} = state

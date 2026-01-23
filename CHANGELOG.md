@@ -5,6 +5,39 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
+
+
+### Fixed
+
+* oneOf validator for buildEmbeddings ([#12519](https://github.com/ParabolInc/parabol/issues/12519)) ([999db60](https://github.com/ParabolInc/parabol/commit/999db608914fd51ec9800eea3784fd92265786d7))
+
+## [11.10.1](https://github.com/ParabolInc/parabol/compare/v11.10.0...v11.10.1) (2026-01-23)
+
+
+### Fixed
+
+* add ready() for TEI, only import recent items ([#12516](https://github.com/ParabolInc/parabol/issues/12516)) ([3711fc0](https://github.com/ParabolInc/parabol/commit/3711fc019707587a31b045e283469ceef13a241c))
+
+## [11.10.0](https://github.com/ParabolInc/parabol/compare/v11.9.0...v11.10.0) (2026-01-23)
+
+
+### Added
+
+* Support adhoc embeds ([#12508](https://github.com/ParabolInc/parabol/issues/12508)) ([c48cc06](https://github.com/ParabolInc/parabol/commit/c48cc061461394088783c44887dc6410ac612fa7))
+
+
+### Fixed
+
+* ensure pgvector version, run in dev as well ([#12514](https://github.com/ParabolInc/parabol/issues/12514)) ([a8d61e8](https://github.com/ParabolInc/parabol/commit/a8d61e8a6021bd85c223e0d3c7b65cb7d07273f6))
+
+## [11.9.0](https://github.com/ParabolInc/parabol/compare/v11.8.0...v11.9.0) (2026-01-22)
+
+
+### Added
+
+* User search for Pages ([#12499](https://github.com/ParabolInc/parabol/issues/12499)) ([2e5695b](https://github.com/ParabolInc/parabol/commit/2e5695be70e17ea7879d42f359c875edbb6cdbb9))
+
 ## [11.8.0](https://github.com/ParabolInc/parabol/compare/v11.7.0...v11.8.0) (2026-01-15)
 
 

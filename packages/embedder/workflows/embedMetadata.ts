@@ -1,8 +1,9 @@
-import ms from 'ms'
+import {sql} from 'kysely'
 import getKysely from 'parabol-server/postgres/getKysely'
-import type {EmbeddingsTableName} from '../ai_models/AbstractEmbeddingsModel'
 import getModelManager from '../ai_models/ModelManager'
+import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
+import {getTSV} from '../getSupportedLanguages'
 import {createEmbeddingTextFrom, isEmbeddingOutdated} from '../indexing/createEmbeddingTextFrom'
 import numberVectorToString from '../indexing/numberVectorToString'
 import {JobQueueError} from '../JobQueueError'
@@ -11,14 +12,14 @@ import type {getSimilarRetroTopics} from './getSimilarRetroTopics'
 export const embedMetadata: JobQueueStepRun<
   {
     embeddingsMetadataId: number
-    model: EmbeddingsTableName
+    modelId: ModelId
     forceBuildText?: boolean
   },
   ParentJob<typeof getSimilarRetroTopics>
 > = async (context) => {
   const {data, dataLoader} = context
   const pg = getKysely()
-  const {embeddingsMetadataId, model, forceBuildText} = data
+  const {embeddingsMetadataId, modelId, forceBuildText} = data
   const modelManager = getModelManager()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
@@ -42,22 +43,27 @@ export const embedMetadata: JobQueueStepRun<
         .where('id', '=', embeddingsMetadataId)
         .execute()
     } catch (e) {
-      return new JobQueueError(e as Error, undefined, 0, {
+      return new JobQueueError(e as Error, true, {
         forceBuildText: true
       })
     }
   }
   const {fullText, language} = metadata
 
-  const embeddingModel = modelManager.getEmbedder(model)
+  const embeddingModel = modelManager.getEmbedder(modelId)
   if (!embeddingModel) {
-    return new JobQueueError(`embedding model ${model} not available`)
+    return new JobQueueError(`embedding model ${modelId} not available`)
   }
   // Exit successfully, we don't want to fail the job because the language is not supported
-  if (!language || !embeddingModel.languages.includes(language)) return false
+  const tsvLanguage = getTSV(language)
+  if (!language || !tsvLanguage || !embeddingModel.languages.includes(language)) {
+    return new JobQueueError(
+      `Embedding object: ${embeddingsMetadataId} is written in unsupported language: ${language}`
+    )
+  }
   const chunks = await embeddingModel.chunkText(fullText!)
   if (chunks instanceof Error) {
-    return new JobQueueError(`unable to get tokens: ${chunks.message}`, ms('1m'), 10, {
+    return new JobQueueError(`unable to get tokens: ${chunks.message}`, true, {
       forceBuildText: true
     })
   }
@@ -67,12 +73,9 @@ export const embedMetadata: JobQueueStepRun<
     chunks.map(async (chunk, chunkNumber) => {
       const embeddingVector = await embeddingModel.getEmbedding(chunk)
       if (embeddingVector instanceof Error) {
-        return new JobQueueError(
-          `unable to get embeddings: ${embeddingVector.message}`,
-          ms('1m'),
-          10,
-          {forceBuildText: true}
-        )
+        return new JobQueueError(`unable to get embeddings: ${embeddingVector.message}`, true, {
+          forceBuildText: true
+        })
       }
       await pg
         // cast to any because these types won't be available in CI
@@ -80,6 +83,7 @@ export const embedMetadata: JobQueueStepRun<
         .values({
           // TODO is the extra space of a null embedText really worth it?!
           embedText: chunks.length > 1 ? chunk : null,
+          tsv: sql<string>`to_tsvector('${sql.raw(tsvLanguage)}', ${chunk})`,
           embedding: numberVectorToString(embeddingVector),
           embeddingsMetadataId,
           chunkNumber: chunks.length > 1 ? chunkNumber : null

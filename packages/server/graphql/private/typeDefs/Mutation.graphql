@@ -561,4 +561,7 @@ type Mutation {
     """
     samlId: ID
   ): AssignSAMLIdToOrgPayload!
+
+  pruneFailedEmbeddingJobs(before: DateTime!): Int
+  buildEmbeddings(input: BuildEmbeddingsInput!): Int
 }

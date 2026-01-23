@@ -1,0 +1,5 @@
+type SearchResultEdge {
+  score: SearchMatchScore!
+  snippets: [String!]!
+  node: SearchResultItem
+}

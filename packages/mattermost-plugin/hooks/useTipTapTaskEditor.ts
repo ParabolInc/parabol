@@ -4,6 +4,7 @@ import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {TiptapLinkExtension} from 'parabol-client/components/promptResponse/TiptapLinkExtension'
 import {useTipTapEditorContent} from 'parabol-client/hooks/useTipTapEditorContent'
+import {MentionTaskTag} from 'parabol-client/utils/MentionTaskTag'
 import {tiptapEmojiConfig} from 'parabol-client/utils/tiptapEmojiConfig'
 import {tiptapTagConfig} from 'parabol-client/utils/tiptapTagConfig'
 
@@ -17,7 +18,7 @@ export const useTipTapTaskEditor = (content: string) => {
         showOnlyWhenEditable: false,
         placeholder: 'Describe what “Done” looks like'
       }),
-      Mention.extend({name: 'taskTag'}).configure(tiptapTagConfig),
+      MentionTaskTag.configure(tiptapTagConfig),
       Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
       TiptapLinkExtension.configure({
         openOnClick: false

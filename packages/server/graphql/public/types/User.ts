@@ -1,4 +1,3 @@
-import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {GraphQLError} from 'graphql'
 import {type NotNull, sql} from 'kysely'
@@ -17,6 +16,9 @@ import {
   MAX_RESULT_GROUP_SIZE
 } from '../../../../client/utils/constants'
 import groupReflections from '../../../../client/utils/smartGroup/groupReflections'
+import {activeEmbeddingModelId} from '../../../../embedder/activeEmbeddingModel'
+import {getEmbeddingsTableName} from '../../../../embedder/getEmbeddingsTableName'
+import {numberVectorToString} from '../../../../embedder/indexing/numberVectorToString'
 import type MeetingTemplate from '../../../database/types/MeetingTemplate'
 import getKysely from '../../../postgres/getKysely'
 import {
@@ -36,26 +38,16 @@ import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
+import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import connectionFromTemplateArray from '../../queries/helpers/connectionFromTemplateArray'
 import {aiPrompts} from '../fields/aiPrompts'
 import {invoices} from '../fields/invoices'
 import {pageInsights} from '../fields/pageInsights'
+import {search} from '../fields/search'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
-const MODEL = 'Embeddings_ember_1'
-const EMBED_URL = (() => {
-  try {
-    const availableModels =
-      process.env.AI_EMBEDDING_MODELS && JSON.parse(process.env.AI_EMBEDDING_MODELS)
-    return availableModels.find(
-      ({model}: {model?: string}) => model?.split(':')[1] === 'llmrails/ember-v1'
-    )?.url
-  } catch {
-    return undefined
-  }
-})()
 const SIMILARITY_THRESHOLD = 0.5
 
 const getValidUserIds = async (
@@ -789,7 +781,7 @@ const User: ReqResolvers<'User'> = {
     return connectionFromTemplateArray(allActivities, first, after)
   },
   templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
-    if (!search || !EMBED_URL) return []
+    if (!search) return []
     const viewerId = getUserId(authToken)
     const user = await dataLoader.get('users').loadNonNull(userId)
     const teamIds =
@@ -806,21 +798,26 @@ const User: ReqResolvers<'User'> = {
     // all team ids which could have accessible templates
     const allTeamIds = ['aGhostTeam', ...allOrgTeams.map(({id}) => id)]
 
-    const response = await fetch(EMBED_URL, {
-      method: 'POST',
-      body: JSON.stringify({inputs: search}),
-      headers: {'Content-Type': 'application/json', 'User-Agent': 'parabol'}
+    const vector = await publishToEmbedder({
+      jobType: 'userQuery:start',
+      data: getUserQueryJobData(search),
+      userId,
+      dataLoader
     })
-    const data = await response.json()
+    if (!vector) return []
 
     const pg = getKysely()
+    const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
     const similarEmbeddings = await pg
       .with('Model', (qc) =>
         qc
-          .selectFrom(MODEL as any)
-          // @ts-ignore
-          .innerJoin('EmbeddingsMetadata', 'EmbeddingsMetadata.id', `${MODEL}.embeddingsMetadataId`)
-          .select([`${MODEL}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
+          .selectFrom(tableName)
+          .innerJoin(
+            'EmbeddingsMetadata',
+            'EmbeddingsMetadata.id',
+            `${tableName}.embeddingsMetadataId`
+          )
+          .select([`${tableName}.id`, 'embeddingsMetadataId', 'embedding', 'refId'])
           .where('objectType', '=', 'meetingTemplate')
           .where('teamId', 'in', allTeamIds)
       )
@@ -834,7 +831,7 @@ const User: ReqResolvers<'User'> = {
             eb(
               val(1),
               '-',
-              parens('Model.embedding' as any, '<=>' as any, JSON.stringify(data[0]))
+              parens('Model.embedding' as any, '<=>' as any, numberVectorToString(vector))
             ).as('similarity')
           ])
       )
@@ -1046,7 +1043,8 @@ const User: ReqResolvers<'User'> = {
         cursor: page.sortOrder
       }))
     }
-  }
+  },
+  search
 }
 
 export default User

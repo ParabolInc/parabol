@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 import {getDomainJoinRequestsByIds} from '../postgres/queries/getDomainJoinRequestsByIds'
-import getMeetingTemplatesByIds from '../postgres/queries/getMeetingTemplatesByIds'
 import {getUsersByIds} from '../postgres/queries/getUsersByIds'
 import {
   selectAgendaItems,
@@ -11,6 +10,7 @@ import {
   selectMeetingMembers,
   selectMeetingSeries,
   selectMeetingSettings,
+  selectMeetingTemplates,
   selectNewFeatures,
   selectNewMeetings,
   selectNotifications,
@@ -56,7 +56,10 @@ export const teamPromptResponses = primaryKeyLoaderMaker(async (ids: readonly nu
 export const meetingSeries = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectMeetingSeries().where('id', 'in', ids).execute()
 })
-export const meetingTemplates = primaryKeyLoaderMaker(getMeetingTemplatesByIds)
+
+export const meetingTemplates = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectMeetingTemplates().where('id', 'in', ids).execute()
+})
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
 
 export const embeddingsMetadata = primaryKeyLoaderMaker((ids: readonly number[]) => {

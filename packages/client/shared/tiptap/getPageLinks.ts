@@ -1,5 +1,5 @@
 import {type Doc, XmlElement} from 'yjs'
-import type {PageLinkBlockAttributes} from './extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
 import {isPageLink} from './isPageLink'
 
 export const getPageLinks = (doc: Doc, canonical?: boolean) => {
@@ -9,5 +9,5 @@ export const getPageLinks = (doc: Doc, canonical?: boolean) => {
     if (canonical === undefined) return true
     return yxml.getAttribute('canonical') === canonical
   })
-  return Array.from(walker) as XmlElement<PageLinkBlockAttributes>[]
+  return Array.from(walker) as XmlElement<PageLinkBlockAttrs>[]
 }

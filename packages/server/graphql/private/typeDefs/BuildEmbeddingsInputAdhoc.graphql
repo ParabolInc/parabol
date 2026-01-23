@@ -1,0 +1,6 @@
+input BuildEmbeddingsInputAdhoc {
+  type: EmbeddingTypeEnum!
+  startAt: DateTime!
+  endAt: DateTime!
+  orgIds: [ID!]
+}

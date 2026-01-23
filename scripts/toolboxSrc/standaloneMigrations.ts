@@ -7,7 +7,7 @@ import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
 import '../webpack/utils/dotenv'
-import pgEnsureExtensions from './pgEnsureExtensions'
+import {pgEnsureExtensions} from './pgEnsureExtensions'
 
 const migratePG = async () => {
   Logger.log('🐘 Postgres Migration Started')

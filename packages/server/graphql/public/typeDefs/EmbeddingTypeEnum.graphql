@@ -1,0 +1,5 @@
+enum EmbeddingTypeEnum {
+  page
+  meetingTemplate
+  retrospectiveDiscussionTopic
+}

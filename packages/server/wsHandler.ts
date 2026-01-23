@@ -164,7 +164,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
   onSubscribe: async (ctx, id, params) => {
     const {extra} = ctx
     const {ip, authToken, socketId, resubscribe} = extra
-    const {schema, execute, subscribe, parse} = yoga.getEnveloped(ctx)
+    const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
     const query = await getPersistedOperation(docId!)
     const document = parse(query)
@@ -193,6 +193,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
       }
       extra.dataLoaders[id] = getNewDataLoader('wsHandler.onSubscribe')
     }
+    const envelopeContext = await contextFactory()
     const args: EnvelopedExecutionArgs = {
       schema: authToken.rol === 'su' ? privateSchema : schema,
       operationName: params.operationName,
@@ -200,6 +201,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
       variableValues: params.variables,
       // dataLoader will be null for subscriptions
       contextValue: {
+        ...envelopeContext,
         dataLoader: extra.dataLoaders[id] || null,
         rateLimiter,
         ip,
