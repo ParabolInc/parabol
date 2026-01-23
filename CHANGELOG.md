@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.1](https://github.com/ParabolInc/parabol/compare/v11.10.0...v11.10.1) (2026-01-23)
+
+
+### Fixed
+
+* add ready() for TEI, only import recent items ([#12516](https://github.com/ParabolInc/parabol/issues/12516)) ([3711fc0](https://github.com/ParabolInc/parabol/commit/3711fc019707587a31b045e283469ceef13a241c))
+
 ## [11.10.0](https://github.com/ParabolInc/parabol/compare/v11.9.0...v11.10.0) (2026-01-23)
 
 
