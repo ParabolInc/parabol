@@ -27,8 +27,13 @@ module.exports = {
   },
   entry: {
     web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
-    embedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'embedder.ts')]
-    // debugEmbedder: [DOTENV, INIT_PUBLIC_PATH, path.join(EMBEDDER_ROOT, 'debug.ts')]
+    embedder: [
+      DOTENV,
+      INIT_PUBLIC_PATH,
+      // make sure all the extensions (pgvector) exist & are updated
+      path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pgEnsureExtensions.ts'),
+      path.join(EMBEDDER_ROOT, 'embedder.ts')
+    ]
   },
   output: {
     filename: '[name].js',

@@ -2,14 +2,21 @@ import {sql} from 'kysely'
 import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
 
-export default async () => {
+const pgEnsureExtensions = async () => {
   Logger.log('🔩 Postgres Extension Checks Started')
   if (process.env.POSTGRES_USE_PGVECTOR === 'true') {
     Logger.log('   pgvector')
     const pg = getKysely()
-    await sql`CREATE EXTENSION IF NOT EXISTS "vector";`.execute(pg)
+    await sql`
+    CREATE EXTENSION IF NOT EXISTS "vector";
+    ALTER EXTENSION vector UPDATE TO '0.8.0';
+    `.execute(pg)
   } else {
     Logger.log('   pgvector: skipping check (POSTGRES_USE_PGVECTOR !== true)')
   }
   Logger.log('🔩 Postgres Extension Checks Completed')
+}
+
+if (require.main === module) {
+  pgEnsureExtensions()
 }
