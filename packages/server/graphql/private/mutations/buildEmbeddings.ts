@@ -6,10 +6,11 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
   _source,
-  {input, lastFailedAt},
+  {input},
   {dataLoader}
 ) => {
   const pg = getKysely()
+  const {adhoc, lastFailedAt} = input
   if (lastFailedAt) {
     const {startAt, endAt} = lastFailedAt
     // This is the inverse of WorkflowOrchestrator.failJob
@@ -36,8 +37,8 @@ const buildEmbeddings: MutationResolvers['buildEmbeddings'] = async (
       .executeTakeFirst()
     return Number(res.numInsertedOrUpdatedRows)
   }
-  if (input) {
-    const {startAt, endAt, type, orgIds} = input
+  if (adhoc) {
+    const {startAt, endAt, type, orgIds} = adhoc
     if (type === 'page') {
       const userIds = await (async () => {
         if (!orgIds) return null

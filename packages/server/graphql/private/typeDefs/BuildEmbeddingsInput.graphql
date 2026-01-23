@@ -1,6 +1,4 @@
-input BuildEmbeddingsInput {
-  type: EmbeddingTypeEnum!
-  startAt: DateTime!
-  endAt: DateTime!
-  orgIds: [ID!]
+input BuildEmbeddingsInput @oneOf {
+  adhoc: BuildEmbeddingsInputAdhoc
+  lastFailedAt: DateRangeInput
 }
