@@ -563,4 +563,5 @@ type Mutation {
   ): AssignSAMLIdToOrgPayload!
 
   pruneFailedEmbeddingJobs(before: DateTime!): Int
+  buildEmbeddings(input: BuildEmbeddingsInput!): Int
 }
