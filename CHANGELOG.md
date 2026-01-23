@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
+
+
+### Fixed
+
+* oneOf validator for buildEmbeddings ([#12519](https://github.com/ParabolInc/parabol/issues/12519)) ([999db60](https://github.com/ParabolInc/parabol/commit/999db608914fd51ec9800eea3784fd92265786d7))
+
 ## [11.10.1](https://github.com/ParabolInc/parabol/compare/v11.10.0...v11.10.1) (2026-01-23)
 
 
