@@ -148,13 +148,16 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
+
+    // process pages first
+    const pagePriority = priority - 1_000
     await pg
       .insertInto('EmbeddingsJobQueueV2')
       .columns(['jobType', 'priority', 'pageId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('Page').select(({ref}) => [
           sql.lit('embedPage:start').as('jobType'),
-          sql.lit(priority).as('priority'),
+          sql.lit(pagePriority).as('priority'),
           ref('id').as('pageId'),
           sql.lit(this.modelId).as('modelId')
         ])
