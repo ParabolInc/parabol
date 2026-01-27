@@ -25,10 +25,11 @@ interface Params {
     dateField: 'createdAt' | 'updatedAt'
   } | null
   teamIds: string[] | null | undefined
+  viewerId: string
 }
 
 export const getPagesByRRF = async (params: Params) => {
-  const {query, queryVector, first, after, dateRange, teamIds, alpha, k} = params
+  const {query, queryVector, first, after, dateRange, teamIds, alpha, k, viewerId} = params
   const pg = getKysely()
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
@@ -42,6 +43,7 @@ export const getPagesByRRF = async (params: Params) => {
       qb
         .selectFrom('PageAccess')
         .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
+        .where('PageAccess.userId', '=', viewerId)
         .$if(!!dateRange, (qb) =>
           qb
             .innerJoin('Page', 'Page.id', 'PageAccess.pageId')

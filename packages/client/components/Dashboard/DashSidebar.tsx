@@ -26,6 +26,7 @@ import {
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
+import {SearchDialog} from './SearchDialog'
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 70px is total height of 'Add meeting' block
@@ -141,6 +142,7 @@ const DashSidebar = (props: Props) => {
         <div className='flex h-full w-64 flex-col p-0'>
           <div className='px-3'>
             <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
+            <SearchDialog />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam/1'} label={'Add a Team'} />
