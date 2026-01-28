@@ -39,26 +39,27 @@ export const SearchDialog = (_props: Props) => {
 
         {/* Search Header */}
         <div className='flex items-center px-2 py-2'>
-          <SearchIcon className='mr-3 text-gray-100' sx={{fontSize: 22}} />
+          <SearchIcon className='mr-3 text-slate-500' sx={{fontSize: 22}} />
           <input
             autoFocus
             name='search'
             onChange={onChange}
-            className='flex-1 bg-transparent font-light text-lg outline-none placeholder:text-gray-100'
+            className='flex-1 bg-transparent font-light text-lg outline-none placeholder:text-slate-500'
             placeholder='Search pages…'
             type='text'
+            autoComplete='off'
           />
         </div>
 
         {/* Results Area */}
         <div className='max-h-[400px] overflow-y-auto px-2'>
-          <section className='relative mb-4'>
+          <section className='relative'>
             <SearchDialogResultsRoot searchQuery={debouncedSearch} />
           </section>
         </div>
 
         {/* Footer */}
-        <div className='flex items-center justify-between border-gray-100 border-t bg-gray-50/50 px-4 py-2.5 text-[11px] text-gray-400'>
+        <div className='flex items-center justify-between border-slate-100 border-t px-4 py-2.5 text-[11px] text-slate-500'>
           <div className='flex items-center gap-4'>
             <span className='flex items-center gap-1'>
               <KeyboardCommandKeyIcon sx={{fontSize: 12}} /> + Enter to open
