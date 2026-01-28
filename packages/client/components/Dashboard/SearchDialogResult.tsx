@@ -12,8 +12,9 @@ interface Props {
   edgeRef: SearchDialogResult_edge$key
   closeSearch: () => void
   isActive?: boolean
+  setSelectedIndex: () => void
 }
-export const SearchDialogResult = ({edgeRef, closeSearch, isActive}: Props) => {
+export const SearchDialogResult = ({edgeRef, closeSearch, isActive, setSelectedIndex}: Props) => {
   const data = useFragment(
     graphql`
   fragment SearchDialogResult_edge on SearchResultEdge {
@@ -59,13 +60,17 @@ export const SearchDialogResult = ({edgeRef, closeSearch, isActive}: Props) => {
   return (
     <div
       ref={itemRef}
+      onFocus={() => {
+        setSelectedIndex()
+      }}
       data-highlighted={isActive ? '' : undefined}
-      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
+      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 outline-none transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
     >
       <div className='text-slate-600 transition-colors group-hover:text-slate-700 group-data-highlighted:text-slate-700'>
         {icon}
       </div>
       <Link
+        tabIndex={-1}
         draggable={false}
         to={`/pages/${slug}`}
         className={'ml-1 flex w-full items-center'}

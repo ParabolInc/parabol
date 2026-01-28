@@ -30,7 +30,11 @@ export const SearchDialogResultsList = (props: Props) => {
       `,
     edgesRef
   )
-  const {selectedIndex} = useSearchListNavigation(resultsListRef, edges, closeSearch)
+  const {selectedIndex, setSelectedIndex} = useSearchListNavigation(
+    resultsListRef,
+    edges,
+    closeSearch
+  )
   return (
     <>
       <SearchResultSectionHeader title={title} />
@@ -43,6 +47,9 @@ export const SearchDialogResultsList = (props: Props) => {
             key={id}
             closeSearch={closeSearch}
             isActive={index === selectedIndex}
+            setSelectedIndex={() => {
+              setSelectedIndex(index)
+            }}
           />
         )
       })}

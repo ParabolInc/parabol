@@ -14,10 +14,11 @@ export const useSearchListNavigation = (
   }[],
   closeSearch: () => void
 ) => {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
   const history = useHistory()
 
   useEffect(() => {
+    if (selectedIndex === -1) return
     setSelectedIndex(0)
   }, [edges])
 
@@ -55,5 +56,5 @@ export const useSearchListNavigation = (
     }
   }))
 
-  return {selectedIndex}
+  return {selectedIndex, setSelectedIndex}
 }

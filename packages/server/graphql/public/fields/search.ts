@@ -29,7 +29,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
   if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
   if (teamIds) {
-    const hasAccessToTeams = teamIds.every((teamId) => authToken.sub.includes(teamId))
+    const hasAccessToTeams = teamIds.every((teamId) => authToken.tms.includes(teamId))
     if (!hasAccessToTeams) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
@@ -43,7 +43,10 @@ export const search: NonNullable<UserResolvers['search']> = async (
           dateField: dateField || 'createdAt'
         }
       : null
-  const safeTeamIds = teamIds || ['aGhostTeam', ...authToken.tms]
+  const teamIdsOrDefault = teamIds || ['aGhostTeam', ...authToken.tms]
+  const safeTeamIds =
+    teamIdsOrDefault.length > 0 ? (teamIdsOrDefault as [string, ...string[]]) : undefined
+
   if (query.length === 0) {
     const noQueryEdge = {
       score: {
@@ -64,10 +67,10 @@ export const search: NonNullable<UserResolvers['search']> = async (
         .$if(!!dateRange, (qb) =>
           qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
-        .$if(!!teamIds, (qb) =>
+        .$if(!!safeTeamIds, (qb) =>
           qb
             .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', `Page.id`)
-            .where('PageTeamAccess.teamId', 'in', teamIds!)
+            .where('PageTeamAccess.teamId', 'in', safeTeamIds!)
         )
         .orderBy('Page.updatedAt', 'desc')
         .limit(first + 1)
@@ -94,7 +97,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
     const results = await pg
       .selectFrom('EmbeddingsMetadata')
-      .$if(safeTeamIds.length > 0, (qb) => qb.where('teamId', 'in', safeTeamIds))
+      .$if(!!safeTeamIds, (qb) => qb.where('teamId', 'in', safeTeamIds!))
       .where('EmbeddingsMetadata.objectType', '=', type)
       .$if(!!dateRange, (qb) =>
         qb
@@ -138,7 +141,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds,
+      teamIds: safeTeamIds,
       viewerId
     })
   } else {

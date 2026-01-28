@@ -77,7 +77,11 @@ export const SearchDialogResultsRecent = (props: Props) => {
     return sections.flatMap((s) => s.items)
   }, [sections])
 
-  const {selectedIndex} = useSearchListNavigation(resultsListRef, flatItems, closeSearch)
+  const {selectedIndex, setSelectedIndex} = useSearchListNavigation(
+    resultsListRef,
+    flatItems,
+    closeSearch
+  )
 
   let flatIdx = 0
   return (
@@ -97,6 +101,7 @@ export const SearchDialogResultsRecent = (props: Props) => {
                   key={id}
                   closeSearch={closeSearch}
                   isActive={currentIndex === selectedIndex}
+                  setSelectedIndex={() => setSelectedIndex(currentIndex)}
                 />
               )
             })}

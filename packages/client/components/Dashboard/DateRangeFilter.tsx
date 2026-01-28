@@ -1,5 +1,6 @@
 import DateRangeIcon from '@mui/icons-material/DateRange'
 import dayjs from 'dayjs'
+import {useState} from 'react'
 import {DayPicker} from 'react-day-picker'
 import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {Button} from '../../ui/Button/Button'
@@ -10,6 +11,7 @@ import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectItem} from '../../ui/Select/SelectItem'
 import {SelectTrigger} from '../../ui/Select/SelectTrigger'
 import {SelectValue} from '../../ui/Select/SelectValue'
+import {ClearFilterIcon} from './ClearFilterIcon'
 
 export interface DateRange {
   startAt?: string
@@ -53,16 +55,30 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
     ? `${dayjs(dateRange.startAt).format('MMM, DD')} - ${dayjs(dateRange.endAt).format('MMM, DD')}`
     : 'Date Range'
 
+  const [open, setOpen] = useState(false)
+  const onOpenChange = (willOpen: boolean) => {
+    setOpen(willOpen)
+  }
+
   return (
     <Menu
+      open={open}
+      onOpenChange={onOpenChange}
       trigger={
         <Button
           variant='flat'
           data-dirty={dateRange ? '' : undefined}
-          className='items-center justify-center rounded-xl p-1 px-2 text-slate-600 text-sm hover:bg-slate-200 data-dirty:text-slate-700'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-slate-600 text-sm hover:bg-slate-200 data-dirty:text-slate-700'
         >
           <DateRangeIcon className='pr-1' />
           <span>{dateRangeText}</span>
+          {dateRange && !open && (
+            <ClearFilterIcon
+              onClick={() => {
+                clearDateRange()
+              }}
+            />
+          )}
         </Button>
       }
     >

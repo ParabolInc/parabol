@@ -24,7 +24,7 @@ interface Params {
     endAt: Date
     dateField: 'createdAt' | 'updatedAt'
   } | null
-  teamIds: string[] | null | undefined
+  teamIds: [string, ...string[]] | undefined
   viewerId: string
 }
 

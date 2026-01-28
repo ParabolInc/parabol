@@ -12,6 +12,7 @@ import {ModIcon} from '../../utils/platform'
 import {SearchDialogResultsRoot} from '../DashNavList/SearchDialogResultsRoot'
 import {DateRange, DateRangeFilter} from './DateRangeFilter'
 import LeftDashNavItem from './LeftDashNavItem'
+import {TeamFilter} from './TeamFilter'
 
 interface Props {}
 
@@ -33,6 +34,7 @@ export const SearchDialog = (_props: Props) => {
 
   const [dateField, setDateField] = useState<SearchDateTypeEnum>('updatedAt')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const [teamIds, setTeamIds] = useState<string[]>([])
 
   const resultsListRef = useRef<ResultsListRefHandler>(null)
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -71,17 +73,18 @@ export const SearchDialog = (_props: Props) => {
           />
         </div>
 
-        <div className='px-2 pb-2'>
+        <div className='space-x-1 px-2 pb-2'>
           <DateRangeFilter
             dateField={dateField}
             setDateField={setDateField}
             dateRange={dateRange}
             setDateRange={setDateRange}
           />
+          <TeamFilter teamIds={teamIds} setTeamIds={setTeamIds} />
         </div>
 
         {/* Results Area */}
-        <div className='max-h-[400px] overflow-y-auto px-2 pb-1'>
+        <div className='max-h-[400px] overflow-y-auto px-2 pb-1' tabIndex={-1}>
           <section className='relative'>
             <SearchDialogResultsRoot
               resultsListRef={resultsListRef}
@@ -89,6 +92,7 @@ export const SearchDialog = (_props: Props) => {
               closeSearch={closeSearch}
               dateField={dateField}
               dateRange={dateRange}
+              teamIds={teamIds}
             />
           </section>
         </div>
@@ -97,7 +101,7 @@ export const SearchDialog = (_props: Props) => {
         <div className='flex items-center justify-between border-slate-100 border-t px-4 py-2.5 text-[11px] text-slate-500'>
           <div className='flex items-center gap-4'>
             <span className='flex items-center gap-1'>
-              <ModIcon sx={{fontSize: 12}} /> + Enter to open
+              <ModIcon sx={{fontSize: 12}} /> + Enter to open in new tab
             </span>
             <span className='flex items-center gap-1'>
               <span className='rounded border bg-white px-1'>↑↓</span> to navigate

@@ -24,7 +24,7 @@ interface Params {
     endAt: Date
     dateField: 'createdAt' | 'updatedAt'
   } | null
-  teamIds: string[]
+  teamIds: [string, ...string[]] | undefined
   type: Exclude<SearchTypeEnum, 'page'>
 }
 
@@ -43,7 +43,7 @@ export const getEmbeddingsByRRF = async (params: Params) => {
       qb
         .selectFrom('EmbeddingsMetadata')
         .innerJoin(tableName, 'EmbeddingsMetadata.id', `${tableName}.embeddingsMetadataId`)
-        .$if(teamIds.length > 0, (qb) => qb.where('teamId', 'in', teamIds))
+        .$if(!!teamIds, (qb) => qb.where('teamId', 'in', teamIds!))
         .where('EmbeddingsMetadata.objectType', '=', type)
         .$if(!!dateRange, (qb) =>
           qb

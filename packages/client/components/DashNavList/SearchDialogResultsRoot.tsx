@@ -17,15 +17,17 @@ interface Props {
   resultsListRef: Ref<ResultsListRefHandler>
   dateField: SearchDateTypeEnum
   dateRange: DateRange | undefined
+  teamIds: string[]
 }
 
 export const SearchDialogResultsRoot = (props: Props) => {
-  const {searchQuery, closeSearch, resultsListRef, dateField, dateRange} = props
+  const {searchQuery, closeSearch, resultsListRef, dateField, dateRange, teamIds} = props
   const queryRef = useQueryLoaderNow<SearchDialogResultsQuery>(query, {
     query: searchQuery,
     dateField: dateRange ? dateField : undefined,
     startAt: dateRange?.startAt ? dateRange.startAt : undefined,
-    endAt: dateRange?.endAt ? dateRange.endAt : undefined
+    endAt: dateRange?.endAt ? dateRange.endAt : undefined,
+    teamIds
   })
   const searchType = searchQuery === '' ? 'recent' : 'hybrid'
 
