@@ -1,8 +1,8 @@
 import {KeyboardArrowDown} from '@mui/icons-material'
 import * as RadixSelect from '@radix-ui/react-select'
 import * as React from 'react'
-import {twMerge} from 'tailwind-merge'
 import {Loader} from '../../utils/relay/renderLoader'
+import {cn} from '../cn'
 
 interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Trigger> {
   isLoading?: boolean
@@ -12,7 +12,7 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
   ({className, children, isLoading, ...props}, ref) => (
     <RadixSelect.Trigger
       ref={ref}
-      className={twMerge(
+      className={cn(
         'flex h-11 w-full cursor-pointer items-center justify-between rounded-sm border border-slate-500 bg-transparent px-2 py-1 text-sm focus:outline-hidden focus-visible:border-sky-500 disabled:cursor-not-allowed disabled:opacity-50 data-[state=open]:border-sky-500 data-placeholder:text-slate-600',
         className
       )}

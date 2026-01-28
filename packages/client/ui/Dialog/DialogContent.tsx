@@ -13,11 +13,11 @@ export const DialogContent = React.forwardRef<
   >
 >(({className, children, noClose, ...props}, ref) => (
   <RadixDialog.Portal>
-    <DialogOverlay />
+    <DialogOverlay className='z-10' />
     <RadixDialog.Content
       ref={ref}
       className={cn(
-        'fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl',
+        'fixed top-[50%] left-[50%] z-20 max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl',
         className
       )}
       aria-describedby={undefined}

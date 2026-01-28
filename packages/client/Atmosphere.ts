@@ -207,6 +207,10 @@ export default class Atmosphere extends Environment {
       }
       sink.next = (value: any) => {
         const {data} = value
+        if (!data) {
+          _next({...value, data: {}})
+          return
+        }
         const subscriptionName = data ? Object.keys(data)[0] : undefined
         const nullObj = this.subscriptionInterfaces[subscriptionName!]
         const nextObj =

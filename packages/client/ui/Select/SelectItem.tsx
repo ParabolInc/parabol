@@ -2,13 +2,15 @@ import {Check} from '@mui/icons-material'
 import * as RadixSelect from '@radix-ui/react-select'
 import * as React from 'react'
 import {twMerge} from 'tailwind-merge'
+import {cn} from '../cn'
 
 interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Item> {
   endAdornment?: React.ReactNode
+  checkClassName?: string
 }
 
 export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  ({className, children, endAdornment, ...props}, ref) => (
+  ({className, children, endAdornment, checkClassName, ...props}, ref) => (
     <RadixSelect.Item
       ref={ref}
       className={twMerge(
@@ -23,7 +25,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
 
       <div className='flex items-center space-x-2 pr-2'>
         <RadixSelect.ItemIndicator className='pt-1'>
-          <Check className='h-5 w-5' />
+          <Check className={cn('h-5 w-5', checkClassName)} />
         </RadixSelect.ItemIndicator>
         {endAdornment && endAdornment}
       </div>

@@ -57,7 +57,9 @@ export const getUserQueryJobData = (query: string) => {
 export async function publishToEmbedder(
   payload: MessageToEmbedderRelatedDiscussions
 ): Promise<undefined>
-export async function publishToEmbedder(payload: MessageToEmbedderUserQuery): Promise<Float32Array>
+export async function publishToEmbedder(
+  payload: MessageToEmbedderUserQuery
+): Promise<Float32Array | Error>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
 export async function publishToEmbedder(
   payload:
@@ -95,8 +97,11 @@ export async function publishToEmbedder(
   await getRedis().publish('embeddingsJobAdded', '')
   if (data && 'requestId' in data) {
     const {requestId} = data
-    const response = await embeddingResponder.waitForResponse(requestId)
-    return response
+    try {
+      return await embeddingResponder.waitForResponse(requestId)
+    } catch (e) {
+      return e
+    }
   }
   return
 }
