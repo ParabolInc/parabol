@@ -1,17 +1,19 @@
-import KeyboardCommandKeyIcon from '@mui/icons-material/KeyboardCommandKey'
 import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
+import {ModIcon} from '../../utils/platform'
 import {SearchDialogResultsRoot} from '../DashNavList/SearchDialogResultsRoot'
 import LeftDashNavItem from './LeftDashNavItem'
 
 interface Props {}
+
+export type ResultsListRefHandler = {onKeyDown: (e: React.KeyboardEvent) => boolean}
 
 export const SearchDialog = (_props: Props) => {
   const [inputQuery, setInputQuery] = useState('')
@@ -26,6 +28,12 @@ export const SearchDialog = (_props: Props) => {
   const onOpenChange = (willOpen: boolean) => {
     setOpen(willOpen)
   }
+
+  const resultsListRef = useRef<ResultsListRefHandler>(null)
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    resultsListRef.current?.onKeyDown(e)
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -50,6 +58,7 @@ export const SearchDialog = (_props: Props) => {
             autoFocus
             name='search'
             onChange={onChange}
+            onKeyDown={handleKeyDown}
             className='flex-1 bg-transparent font-light text-lg outline-none placeholder:text-slate-500'
             placeholder='Search pages…'
             type='text'
@@ -58,9 +67,13 @@ export const SearchDialog = (_props: Props) => {
         </div>
 
         {/* Results Area */}
-        <div className='max-h-[400px] overflow-y-auto px-2'>
+        <div className='max-h-[400px] overflow-y-auto px-2 py-1'>
           <section className='relative'>
-            <SearchDialogResultsRoot searchQuery={debouncedSearch} closeSearch={closeSearch} />
+            <SearchDialogResultsRoot
+              resultsListRef={resultsListRef}
+              searchQuery={debouncedSearch}
+              closeSearch={closeSearch}
+            />
           </section>
         </div>
 
@@ -68,7 +81,7 @@ export const SearchDialog = (_props: Props) => {
         <div className='flex items-center justify-between border-slate-100 border-t px-4 py-2.5 text-[11px] text-slate-500'>
           <div className='flex items-center gap-4'>
             <span className='flex items-center gap-1'>
-              <KeyboardCommandKeyIcon sx={{fontSize: 12}} /> + Enter to open
+              <ModIcon sx={{fontSize: 12}} /> + Enter to open
             </span>
             <span className='flex items-center gap-1'>
               <span className='rounded border bg-white px-1'>↑↓</span> to navigate

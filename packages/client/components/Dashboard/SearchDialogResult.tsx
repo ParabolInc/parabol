@@ -1,7 +1,7 @@
 import DescriptionIcon from '@mui/icons-material/Description'
 import graphql from 'babel-plugin-relay/macro'
 import DOMPurify from 'dompurify'
-import type {ReactNode} from 'react'
+import {type ReactNode, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router-dom'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
@@ -11,8 +11,9 @@ import {GQLID} from '../../utils/GQLID'
 interface Props {
   edgeRef: SearchDialogResult_edge$key
   closeSearch: () => void
+  isActive?: boolean
 }
-export const SearchDialogResult = ({edgeRef, closeSearch}: Props) => {
+export const SearchDialogResult = ({edgeRef, closeSearch, isActive}: Props) => {
   const data = useFragment(
     graphql`
   fragment SearchDialogResult_edge on SearchResultEdge {
@@ -40,6 +41,15 @@ export const SearchDialogResult = ({edgeRef, closeSearch}: Props) => {
   const icon = iconLookup[__typename as keyof typeof iconLookup]
   const safeSnippets = snippets.map((snippet) => DOMPurify.sanitize(snippet))
   const [firstSnippet] = safeSnippets
+
+  const itemRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isActive) {
+      itemRef.current?.scrollIntoView({block: 'nearest'})
+    }
+  }, [isActive])
+
   if (!icon) {
     console.error('No icon provided for', __typename)
     return null
@@ -47,8 +57,12 @@ export const SearchDialogResult = ({edgeRef, closeSearch}: Props) => {
   const [pageCode] = GQLID.fromKey(id!)
   const slug = getPageSlug(Number(pageCode), title)
   return (
-    <div className='group flex cursor-pointer items-center gap-3 rounded-md px-3 py-1 transition-colors hover:bg-slate-200'>
-      <div className='text-slate-600 transition-colors group-hover:text-blue-500'>{icon}</div>
+    <div
+      ref={itemRef}
+      data-highlighted={isActive ? '' : undefined}
+      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
+    >
+      <div className='text-slate-600 transition-colors group-hover:text-slate-700'>{icon}</div>
       <Link
         draggable={false}
         to={`/pages/${slug}`}
