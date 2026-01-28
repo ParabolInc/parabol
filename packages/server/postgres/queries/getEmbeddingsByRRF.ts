@@ -139,6 +139,7 @@ export const getEmbeddingsByRRF = async (params: Params) => {
     )
     .$narrowType<{embeddingsMetadataId: NotNull; refId: NotNull}>()
     .orderBy('score', 'desc')
+    .where('score', '>', 0)
     .limit(first)
     .execute()
   return {

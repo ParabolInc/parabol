@@ -133,6 +133,7 @@ export const getPagesByRRF = async (params: Params) => {
       }).as('snippet')
     )
     .orderBy('score', 'desc')
+    .where('score', '>', 0)
     .limit(first)
     .execute()
   return {

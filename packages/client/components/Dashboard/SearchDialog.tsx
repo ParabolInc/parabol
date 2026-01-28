@@ -1,6 +1,7 @@
 import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {useRef, useState} from 'react'
+import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
@@ -9,7 +10,7 @@ import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import {ModIcon} from '../../utils/platform'
 import {SearchDialogResultsRoot} from '../DashNavList/SearchDialogResultsRoot'
-import {DateRange, DateRangeFilter, DateType} from './DateRangeFilter'
+import {DateRange, DateRangeFilter} from './DateRangeFilter'
 import LeftDashNavItem from './LeftDashNavItem'
 
 interface Props {}
@@ -30,7 +31,7 @@ export const SearchDialog = (_props: Props) => {
     setOpen(willOpen)
   }
 
-  const [dateType, setDateType] = useState<DateType>('updatedAt')
+  const [dateField, setDateField] = useState<SearchDateTypeEnum>('updatedAt')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
 
   const resultsListRef = useRef<ResultsListRefHandler>(null)
@@ -72,8 +73,8 @@ export const SearchDialog = (_props: Props) => {
 
         <div className='px-2 pb-2'>
           <DateRangeFilter
-            dateType={dateType}
-            setDateType={setDateType}
+            dateField={dateField}
+            setDateField={setDateField}
             dateRange={dateRange}
             setDateRange={setDateRange}
           />
@@ -86,6 +87,8 @@ export const SearchDialog = (_props: Props) => {
               resultsListRef={resultsListRef}
               searchQuery={debouncedSearch}
               closeSearch={closeSearch}
+              dateField={dateField}
+              dateRange={dateRange}
             />
           </section>
         </div>

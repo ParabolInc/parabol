@@ -7,9 +7,9 @@ import {SearchDialogResultsList} from './SearchDialogResultsList'
 import {SearchDialogResultsRecent} from './SearchDialogResultsRecent'
 
 graphql`
-  query SearchDialogResultsQuery($query: String!) {
+  query SearchDialogResultsQuery($query: String!, $dateField: SearchDateTypeEnum, $startAt: DateTime, $endAt: DateTime) {
     viewer {
-      search(query: $query, first: 20 , type: page) {
+      search(query: $query, first: 20, dateField: $dateField, startAt: $startAt, endAt: $endAt, type: page) {
         edges {
           ...SearchDialogResultsRecent_edges
           ...SearchDialogResultsList_edges

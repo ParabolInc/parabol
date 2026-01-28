@@ -72,7 +72,7 @@ export const SearchDialogResult = ({edgeRef, closeSearch, isActive}: Props) => {
         onClick={closeSearch}
       >
         <div className='flex flex-col'>
-          <span className='font-normal text-[14px] text-slate-800'>{title}</span>
+          <span className='font-normal text-[14px] text-slate-800'>{title || '<Untitled>'}</span>
           {firstSnippet && (
             <span
               className='text-slate-700 text-xs'

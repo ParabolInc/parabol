@@ -1,6 +1,7 @@
 import DateRangeIcon from '@mui/icons-material/DateRange'
 import dayjs from 'dayjs'
 import {DayPicker} from 'react-day-picker'
+import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {Button} from '../../ui/Button/Button'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -15,16 +16,14 @@ export interface DateRange {
   endAt?: string
 }
 
-export type DateType = 'createdAt' | 'updatedAt'
-
 interface Props {
-  dateType: DateType
-  setDateType: (type: DateType) => void
+  dateField: SearchDateTypeEnum
+  setDateField: (type: SearchDateTypeEnum) => void
   dateRange: DateRange | undefined
   setDateRange: (range: DateRange | undefined) => void
 }
 
-export const DateRangeFilter = ({dateType, setDateType, dateRange, setDateRange}: Props) => {
+export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRange}: Props) => {
   const handleQuickSelect = (days: number) => {
     if (days === 0) {
       // Today
@@ -42,7 +41,7 @@ export const DateRangeFilter = ({dateType, setDateType, dateRange, setDateRange}
 
   const clearDateRange = () => {
     setDateRange(undefined)
-    setDateType('updatedAt')
+    setDateField('updatedAt')
   }
 
   const selectedDates = {
@@ -59,9 +58,10 @@ export const DateRangeFilter = ({dateType, setDateType, dateRange, setDateRange}
       trigger={
         <Button
           variant='flat'
-          className='items-center justify-center rounded-xl p-1 px-2 text-slate-700 text-sm hover:bg-slate-200'
+          data-dirty={dateRange ? '' : undefined}
+          className='items-center justify-center rounded-xl p-1 px-2 text-slate-600 text-sm hover:bg-slate-200 data-dirty:text-slate-700'
         >
-          <DateRangeIcon className='pr-1 text-slate-700' />
+          <DateRangeIcon className='pr-1' />
           <span>{dateRangeText}</span>
         </Button>
       }
@@ -73,7 +73,10 @@ export const DateRangeFilter = ({dateType, setDateType, dateRange, setDateRange}
       >
         <div className='flex flex-col'>
           <div className='flex justify-between'>
-            <Select value={dateType} onValueChange={(val) => setDateType(val as DateType)}>
+            <Select
+              value={dateField}
+              onValueChange={(val) => setDateField(val as SearchDateTypeEnum)}
+            >
               <SelectTrigger className='h-fit w-fit justify-start border-none p-0 px-1 text-xs hover:bg-slate-200'>
                 <SelectValue />
               </SelectTrigger>
