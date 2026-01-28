@@ -9,6 +9,7 @@ import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import {ModIcon} from '../../utils/platform'
 import {SearchDialogResultsRoot} from '../DashNavList/SearchDialogResultsRoot'
+import {DateRange, DateRangeFilter, DateType} from './DateRangeFilter'
 import LeftDashNavItem from './LeftDashNavItem'
 
 interface Props {}
@@ -28,6 +29,9 @@ export const SearchDialog = (_props: Props) => {
   const onOpenChange = (willOpen: boolean) => {
     setOpen(willOpen)
   }
+
+  const [dateType, setDateType] = useState<DateType>('updatedAt')
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
 
   const resultsListRef = useRef<ResultsListRefHandler>(null)
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -63,6 +67,15 @@ export const SearchDialog = (_props: Props) => {
             placeholder='Search pages…'
             type='text'
             autoComplete='off'
+          />
+        </div>
+
+        <div className='px-2 pb-2'>
+          <DateRangeFilter
+            dateType={dateType}
+            setDateType={setDateType}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
           />
         </div>
 
