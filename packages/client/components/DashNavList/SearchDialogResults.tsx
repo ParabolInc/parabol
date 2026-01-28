@@ -26,17 +26,18 @@ graphql`
 interface Props {
   queryRef: PreloadedQuery<SearchDialogResultsQuery>
   searchType: 'recent' | 'simple' | 'hybrid'
+  closeSearch: () => void
 }
 
 export const SearchDialogResults = (props: Props) => {
-  const {queryRef, searchType} = props
+  const {queryRef, searchType, closeSearch} = props
   const data = usePreloadedQuery<SearchDialogResultsQuery>(query, queryRef)
   const {viewer} = data
   const {search} = viewer
   const {edges} = search
 
   if (searchType === 'recent') {
-    return <SearchDialogResultsRecent edges={edges} />
+    return <SearchDialogResultsRecent edgesRef={edges} closeSearch={closeSearch} />
   }
   const title = searchType === 'simple' ? 'Quick matches' : 'Best matches'
   return (
@@ -45,7 +46,7 @@ export const SearchDialogResults = (props: Props) => {
       {edges.map((edge) => {
         const {node} = edge
         const id = (node as any)?.id ?? 'new'
-        return <SearchDialogResult edgeRef={edge} key={id} />
+        return <SearchDialogResult edgeRef={edge} key={id} closeSearch={closeSearch} />
       })}
     </div>
   )

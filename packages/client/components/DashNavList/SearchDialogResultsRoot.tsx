@@ -8,10 +8,11 @@ import {SearchDialogResults} from './SearchDialogResults'
 
 interface Props {
   searchQuery: string
+  closeSearch: () => void
 }
 
 export const SearchDialogResultsRoot = (props: Props) => {
-  const {searchQuery} = props
+  const {searchQuery, closeSearch} = props
   const queryRef = useQueryLoaderNow<SearchDialogResultsQuery>(query, {
     query: searchQuery
   })
@@ -20,7 +21,13 @@ export const SearchDialogResultsRoot = (props: Props) => {
   return (
     <ErrorBoundary fallback={() => <div>Error calling search</div>}>
       <Suspense fallback={<Loader />}>
-        {queryRef && <SearchDialogResults queryRef={queryRef} searchType={searchType} />}
+        {queryRef && (
+          <SearchDialogResults
+            queryRef={queryRef}
+            searchType={searchType}
+            closeSearch={closeSearch}
+          />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

@@ -6,10 +6,12 @@ import {SearchDialogResult} from '../Dashboard/SearchDialogResult'
 import {SearchResultSectionHeader} from './SearchResultSectionHeader'
 
 interface Props {
-  edges: SearchDialogResultsRecent_edges$key
+  edgesRef: SearchDialogResultsRecent_edges$key
+  closeSearch: () => void
 }
 
 export const SearchDialogResultsRecent = (props: Props) => {
+  const {closeSearch, edgesRef} = props
   const edges = useFragment(
     graphql`
       fragment SearchDialogResultsRecent_edges on SearchResultEdge @relay(plural: true) {
@@ -22,7 +24,7 @@ export const SearchDialogResultsRecent = (props: Props) => {
         }
       }
     `,
-    props.edges
+    edgesRef
   )
 
   const today: any[] = []
@@ -74,7 +76,7 @@ export const SearchDialogResultsRecent = (props: Props) => {
             {items.map((edge) => {
               const {node} = edge
               const id = node?.id ?? 'new'
-              return <SearchDialogResult edgeRef={edge} key={id} />
+              return <SearchDialogResult edgeRef={edge} key={id} closeSearch={closeSearch} />
             })}
           </div>
         )

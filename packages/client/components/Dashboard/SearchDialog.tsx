@@ -20,10 +20,16 @@ export const SearchDialog = (_props: Props) => {
     setInputQuery(value)
   }
   const {debouncedSearch} = useDebouncedSearch(inputQuery)
+  const [open, setOpen] = useState(false)
+  const closeSearch = () => setOpen(false)
+  const openSearch = () => setOpen(true)
+  const onOpenChange = (willOpen: boolean) => {
+    setOpen(willOpen)
+  }
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <LeftDashNavItem Icon={SearchIcon} href={''} label={'Search'} exact />
+        <LeftDashNavItem Icon={SearchIcon} href={''} label={'Search'} exact onClick={openSearch} />
       </DialogTrigger>
       <DialogContent
         className={
@@ -54,7 +60,7 @@ export const SearchDialog = (_props: Props) => {
         {/* Results Area */}
         <div className='max-h-[400px] overflow-y-auto px-2'>
           <section className='relative'>
-            <SearchDialogResultsRoot searchQuery={debouncedSearch} />
+            <SearchDialogResultsRoot searchQuery={debouncedSearch} closeSearch={closeSearch} />
           </section>
         </div>
 
