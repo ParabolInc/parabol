@@ -67,7 +67,7 @@ export const SearchDialog = (_props: Props) => {
         </div>
 
         {/* Results Area */}
-        <div className='max-h-[400px] overflow-y-auto px-2 py-1'>
+        <div className='max-h-[400px] overflow-y-auto px-2 pb-1'>
           <section className='relative'>
             <SearchDialogResultsRoot
               resultsListRef={resultsListRef}

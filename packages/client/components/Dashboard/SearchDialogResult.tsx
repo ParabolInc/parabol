@@ -62,7 +62,9 @@ export const SearchDialogResult = ({edgeRef, closeSearch, isActive}: Props) => {
       data-highlighted={isActive ? '' : undefined}
       className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
     >
-      <div className='text-slate-600 transition-colors group-hover:text-slate-700'>{icon}</div>
+      <div className='text-slate-600 transition-colors group-hover:text-slate-700 group-data-highlighted:text-slate-700'>
+        {icon}
+      </div>
       <Link
         draggable={false}
         to={`/pages/${slug}`}
