@@ -2,9 +2,9 @@ import graphql from 'babel-plugin-relay/macro'
 import type {Ref} from 'react'
 import {useFragment} from 'react-relay'
 import type {SearchDialogResultsList_edges$key} from '../../__generated__/SearchDialogResultsList_edges.graphql'
-import type {ResultsListRefHandler} from '../Dashboard/SearchDialog'
-import {SearchDialogResult} from '../Dashboard/SearchDialogResult'
-import {SearchResultSectionHeader} from './SearchResultSectionHeader'
+import {SearchResultSectionHeader} from '../../components/DashNavList/SearchResultSectionHeader'
+import type {ResultsListRefHandler} from './SearchDialogContent'
+import {SearchDialogResult} from './SearchDialogResult'
 import {useSearchListNavigation} from './useSearchListNavigation'
 
 interface Props {

@@ -14,6 +14,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import {SearchDialog} from '../../modules/search/SearchDialog'
 import {NavSidebar} from '../../types/constEnums'
 import {
   AUTHENTICATION_PAGE,
@@ -26,7 +27,6 @@ import {
 import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
-import {SearchDialog} from './SearchDialog'
 
 const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
   // 70px is total height of 'Add meeting' block

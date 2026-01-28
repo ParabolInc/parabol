@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SearchDialogResultsQuery} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import query from '../../__generated__/SearchDialogResultsQuery.graphql'
-import type {ResultsListRefHandler} from '../Dashboard/SearchDialog'
+import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResultsList} from './SearchDialogResultsList'
 import {SearchDialogResultsRecent} from './SearchDialogResultsRecent'
 

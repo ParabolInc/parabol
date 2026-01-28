@@ -4,12 +4,12 @@ import {Suspense, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {TeamFilterQuery} from '../../__generated__/TeamFilterQuery.graphql'
 import query from '../../__generated__/TeamFilterQuery.graphql'
+import {ClearFilterIcon} from '../../components/Dashboard/ClearFilterIcon'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {Button} from '../../ui/Button/Button'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../../ui/Menu/MenuItemCheckbox'
-import {ClearFilterIcon} from './ClearFilterIcon'
 
 const teamFilterQuery = graphql`
   query TeamFilterQuery {

@@ -2,7 +2,7 @@ import {type Ref, useEffect, useImperativeHandle, useState} from 'react'
 import {useHistory} from 'react-router'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
-import {ResultsListRefHandler} from '../Dashboard/SearchDialog'
+import {ResultsListRefHandler} from './SearchDialogContent'
 
 export const useSearchListNavigation = (
   resultsListRef: Ref<ResultsListRefHandler>,

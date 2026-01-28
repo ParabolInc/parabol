@@ -4,11 +4,11 @@ import type {
   SearchDialogResultsQuery
 } from '../../__generated__/SearchDialogResultsQuery.graphql'
 import query from '../../__generated__/SearchDialogResultsQuery.graphql'
+import ErrorBoundary from '../../components/ErrorBoundary'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
 import {Loader} from '../../utils/relay/renderLoader'
-import type {DateRange} from '../Dashboard/DateRangeFilter'
-import type {ResultsListRefHandler} from '../Dashboard/SearchDialog'
-import ErrorBoundary from '../ErrorBoundary'
+import type {DateRange} from './DateRangeFilter'
+import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResults} from './SearchDialogResults'
 
 interface Props {

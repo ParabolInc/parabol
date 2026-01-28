@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import {useState} from 'react'
 import {DayPicker} from 'react-day-picker'
 import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
+import {ClearFilterIcon} from '../../components/Dashboard/ClearFilterIcon'
 import {Button} from '../../ui/Button/Button'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
@@ -11,7 +12,6 @@ import {SelectContent} from '../../ui/Select/SelectContent'
 import {SelectItem} from '../../ui/Select/SelectItem'
 import {SelectTrigger} from '../../ui/Select/SelectTrigger'
 import {SelectValue} from '../../ui/Select/SelectValue'
-import {ClearFilterIcon} from './ClearFilterIcon'
 
 export interface DateRange {
   startAt?: string
