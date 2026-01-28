@@ -3,9 +3,9 @@ import {isSameWeek, isToday, isYesterday, parseISO, subWeeks} from 'date-fns'
 import {type Ref, useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {SearchDialogResultsRecent_edges$key} from '../../__generated__/SearchDialogResultsRecent_edges.graphql'
-import {SearchResultSectionHeader} from '../../components/DashNavList/SearchResultSectionHeader'
 import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResult} from './SearchDialogResult'
+import {SearchResultSectionHeader} from './SearchResultSectionHeader'
 import {useSearchListNavigation} from './useSearchListNavigation'
 
 interface Props {
