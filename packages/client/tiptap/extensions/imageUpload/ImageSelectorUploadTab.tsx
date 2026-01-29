@@ -6,7 +6,7 @@ import {Button} from '../../../ui/Button/Button'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 interface Props {
-  setImageURL: (url: string) => void
+  setImageURL: (url?: string, previewUrl?: string) => string | undefined
   editor: Editor
 }
 
@@ -29,38 +29,29 @@ export const ImageSelectorUploadTab = (props: Props) => {
     }
 
     // Opportunistic display: create blob URL and set it immediately
-    const blobUrl = URL.createObjectURL(file)
-    setImageURL(blobUrl)
+    const previewUrl = URL.createObjectURL(file)
+    const previewId = setImageURL(undefined, previewUrl)
 
     const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
 
-    const uploadPromise = new Promise<string>((resolve, reject) => {
-      commit({
-        variables: {scope: assetScope, scopeKey},
-        uploadables: {file: file},
-        onCompleted: (res) => {
-          const {uploadUserAsset} = res
-          const message = uploadUserAsset?.error?.message
-          if (message) {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              key: 'errorUploadIdPtMetadata',
-              message,
-              autoDismiss: 5
-            })
-            reject(message)
-            return
-          }
-          const {url} = uploadUserAsset!
-          resolve(url!)
-        },
-        onError: (err) => {
-          reject(err)
+    commit({
+      variables: {scope: assetScope, scopeKey},
+      uploadables: {file: file},
+      onCompleted: (res) => {
+        const {uploadUserAsset} = res
+        const message = uploadUserAsset?.error?.message
+        if (message) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'errorUploadImage',
+            message,
+            autoDismiss: 5
+          })
+          return
         }
-      })
+        const {url} = uploadUserAsset!
+        editor.emit('imageUploadCompleted', {previewId: previewId!, url: url!})
+      }
     })
-
-    // Store the promise so the ImageBlock node view can swap it out later
-    editor.storage.imageUpload.pendingUploads.set(blobUrl, uploadPromise)
   }
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {

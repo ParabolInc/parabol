@@ -15,19 +15,21 @@ export interface ImageUploadOptions {
   scopeKey: string
 }
 export interface ImageUploadStorage extends ImageUploadOptions {
-  pendingUploads: Map<string, Promise<string>>
+  // previewId -> blobSrc
+  pendingUploads: Map<string, string>
 }
 
 declare module '@tiptap/core' {
   interface EditorEvents {
     enter: {editor: TipTapEditor}
+    imageUploadCompleted: {previewId: string; url: string}
   }
   interface Storage {
     imageUpload: ImageUploadStorage
   }
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlock: (attributes: {src: string}) => ReturnType
+      setImageBlock: (attributes: {src?: string; previewId?: string}) => ReturnType
       setImageBlockAt: (attributes: {src: string; pos: number | Range}) => ReturnType
       setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType
       setImageBlockWidth: (width: number) => ReturnType

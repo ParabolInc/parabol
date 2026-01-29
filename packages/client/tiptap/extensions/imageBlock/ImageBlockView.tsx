@@ -29,20 +29,39 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes, selected} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const {attrs} = node
-  const {src, align, height, width, isFullWidth} = attrs as ImageBlockAttrs
+  const {src, align, height, width, isFullWidth, previewId} = attrs as ImageBlockAttrs
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
 
   // Handle opportunistic uploads
   useEffect(() => {
-    const pendingUpload = editor.storage.imageUpload.pendingUploads.get(src)
-    if (pendingUpload) {
-      pendingUpload.then((url) => {
-        updateAttributes({src: url})
-        editor.storage.imageUpload.pendingUploads.delete(src)
-      })
+    const previewSrc = previewId && editor.storage.imageUpload.pendingUploads.get(previewId)
+    if (previewSrc) {
+      setPreviewSrc(previewSrc ?? null)
+
+      const uploadCompletedHandler = ({
+        previewId: completedPreviewId,
+        url
+      }: {
+        previewId: string
+        url: string
+      }) => {
+        if (completedPreviewId === previewId) {
+          updateAttributes({src: url, previewId: null})
+          setPreviewSrc(null)
+          editor.off('imageUploadCompleted', uploadCompletedHandler)
+        }
+      }
+      editor.on('imageUploadCompleted', uploadCompletedHandler)
+      return () => {
+        editor.off('imageUploadCompleted', uploadCompletedHandler)
+      }
+    } else {
+      setPreviewSrc(null)
     }
-  }, [src, editor.storage.imageUpload.pendingUploads, updateAttributes])
+    return undefined
+  }, [previewId])
 
   const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
   const isHosted = getIsHosted(src, scopeKey, assetScope)
@@ -84,6 +103,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const [commit] = useEmbedUserAsset()
   useEffect(() => {
     if (isHosted) return
+    if (!src) return
     commit({
       variables: {url: src, scope: assetScope, scopeKey},
       onCompleted: (res, error) => {
@@ -107,6 +127,8 @@ export const ImageBlockView = (props: NodeViewProps) => {
       }
     })
   }, [isHosted])
+
+  const isLoading = !isHosted || previewSrc
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>
@@ -117,9 +139,9 @@ export const ImageBlockView = (props: NodeViewProps) => {
         >
           <img
             draggable={false}
-            data-uploading={isHosted ? undefined : ''}
+            data-uploading={isLoading ? '' : undefined}
             className='block data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
-            src={src}
+            src={previewSrc ?? src}
             alt=''
             onClick={onClick}
             style={{maxHeight: isFullWidth ? undefined : maxHeight}}

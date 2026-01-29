@@ -23,7 +23,11 @@ interface Props {
 }
 
 const Divider = () => <div className='mx-1 h-4 w-px bg-slate-300' />
-
+const alignButtons = [
+  {name: 'left', Icon: FormatAlignLeftIcon},
+  {name: 'center', Icon: FormatAlignCenterIcon},
+  {name: 'right', Icon: FormatAlignRightIcon}
+]
 export const ImageBlockBubbleMenu = (props: Props) => {
   const {align, width, updateAttributes, isFullWidth, editor, isOpen} = props
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -44,35 +48,31 @@ export const ImageBlockBubbleMenu = (props: Props) => {
       return
     }
 
-    const blobUrl = URL.createObjectURL(file)
-    updateAttributes({src: blobUrl})
+    const previewUrl = URL.createObjectURL(file)
+    const previewId = crypto.randomUUID()
+    editor.storage.imageUpload.pendingUploads.set(previewId, previewUrl)
+    updateAttributes({previewId})
 
     const {scopeKey, assetScope} = editor.storage.imageUpload
 
-    const uploadPromise = new Promise<string>((resolve, reject) => {
-      commit({
-        variables: {scope: assetScope, scopeKey},
-        uploadables: {file: file},
-        onCompleted: (res) => {
-          const {uploadUserAsset} = res
-          const message = uploadUserAsset?.error?.message
-          if (message) {
-            atmosphere.eventEmitter.emit('addSnackbar', {
-              key: 'errorUploadIdPtMetadata',
-              message,
-              autoDismiss: 5
-            })
-            reject(message)
-            return
-          }
-          const {url} = uploadUserAsset!
-          resolve(url!)
-        },
-        onError: reject
-      })
+    commit({
+      variables: {scope: assetScope, scopeKey},
+      uploadables: {file: file},
+      onCompleted: (res) => {
+        const {uploadUserAsset} = res
+        const message = uploadUserAsset?.error?.message
+        if (message) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'errorUploadImage',
+            message,
+            autoDismiss: 5
+          })
+          return
+        }
+        const {url} = uploadUserAsset!
+        updateAttributes({src: url!, previewId: undefined})
+      }
     })
-
-    editor.storage.imageUpload.pendingUploads.set(blobUrl, uploadPromise)
   }
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -95,33 +95,18 @@ export const ImageBlockBubbleMenu = (props: Props) => {
         >
           {/* Align Controls */}
           <div className='flex rounded-sm bg-slate-100'>
-            <button
-              onClick={() => updateAttributes({align: 'left'})}
-              className={cn(
-                'rounded-sm p-1 hover:bg-slate-300',
-                align === 'left' && 'bg-slate-300'
-              )}
-            >
-              <FormatAlignLeftIcon fontSize='small' className='text-slate-700' />
-            </button>
-            <button
-              onClick={() => updateAttributes({align: 'center'})}
-              className={cn(
-                'rounded-sm p-1 hover:bg-slate-300',
-                align === 'center' && 'bg-slate-300'
-              )}
-            >
-              <FormatAlignCenterIcon fontSize='small' className='text-slate-700' />
-            </button>
-            <button
-              onClick={() => updateAttributes({align: 'right'})}
-              className={cn(
-                'rounded-sm p-1 hover:bg-slate-300',
-                align === 'right' && 'bg-slate-300'
-              )}
-            >
-              <FormatAlignRightIcon fontSize='small' className='text-slate-700' />
-            </button>
+            {alignButtons.map(({name, Icon}) => (
+              <button
+                key={name}
+                onClick={() => updateAttributes({align: name})}
+                className={cn(
+                  'rounded-sm p-1 hover:bg-slate-300',
+                  align === name && 'bg-slate-300'
+                )}
+              >
+                <Icon fontSize='small' className='text-slate-700' />
+              </button>
+            ))}
           </div>
 
           <Divider />
