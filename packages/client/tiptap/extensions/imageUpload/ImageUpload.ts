@@ -3,15 +3,6 @@ import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase
 import {ImageUploadOptions, ImageUploadStorage} from '../imageBlock/ImageBlockBase'
 import {ImageUploadView} from './ImageUploadView'
 
-declare module '@tiptap/core' {
-  interface EditorEvents {
-    enter: {editor: Editor}
-  }
-  interface Storage {
-    imageUpload: ImageUploadStorage
-  }
-}
-
 export const ImageUpload = ImageUploadBase.extend<ImageUploadOptions, ImageUploadStorage>({
   addOptions() {
     return {
