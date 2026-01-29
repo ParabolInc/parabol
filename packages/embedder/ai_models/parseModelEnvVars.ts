@@ -4,6 +4,7 @@ export type GenerationModelType = 'openai' | 'text-generation-inference'
 export interface ModelConfig {
   model: `${EmbeddingsModelType | GenerationModelType}:${string}`
   url: string
+  maxTokens: number
 }
 
 export const parseModelEnvVars = (
@@ -21,9 +22,12 @@ export const parseModelEnvVars = (
   if (!Array.isArray(models)) {
     throw new Error(`Invalid Env Var: ${envVar}. Must be an array`)
   }
-  const properties = ['model', 'url']
+  const strProperties = ['model', 'url']
   models.forEach((model, idx) => {
-    properties.forEach((prop) => {
+    if (typeof model.maxTokens !== 'number') {
+      throw new Error(`Invalid Env Var: ${envVar}. Invalid "maxTokens" at index ${idx}`)
+    }
+    strProperties.forEach((prop) => {
       if (typeof model[prop] !== 'string') {
         throw new Error(`Invalid Env Var: ${envVar}. Invalid "${prop}" at index ${idx}`)
       }

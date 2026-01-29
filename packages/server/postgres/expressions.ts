@@ -4,8 +4,8 @@ import numberVectorToString from '../../embedder/indexing/numberVectorToString'
 
 export function RRF<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
-  kRankCol: StringReference<DB, TB>,
   vRankCol: StringReference<DB, TB>,
+  kRankCol: StringReference<DB, TB>,
   alpha: number,
   k: number
 ) {

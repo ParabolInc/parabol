@@ -34,8 +34,8 @@ const openAPIWithTimeout =
 
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   client: ReturnType<typeof createClient<paths>>
-  constructor(modelId: ModelId, url: string) {
-    super(modelId, url)
+  constructor(modelId: ModelId, url: string, maxTokens: number) {
+    super(modelId, url, maxTokens)
     const client = createClient<paths>({baseUrl: this.url})
     const toError = (e: unknown) => ({
       error: e instanceof Error ? e.message : e
