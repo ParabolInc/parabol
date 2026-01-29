@@ -5,6 +5,59 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
+
+
+### Fixed
+
+* oneOf validator for buildEmbeddings ([#12519](https://github.com/ParabolInc/parabol/issues/12519)) ([999db60](https://github.com/ParabolInc/parabol/commit/999db608914fd51ec9800eea3784fd92265786d7))
+
+## [11.10.1](https://github.com/ParabolInc/parabol/compare/v11.10.0...v11.10.1) (2026-01-23)
+
+
+### Fixed
+
+* add ready() for TEI, only import recent items ([#12516](https://github.com/ParabolInc/parabol/issues/12516)) ([3711fc0](https://github.com/ParabolInc/parabol/commit/3711fc019707587a31b045e283469ceef13a241c))
+
+## [11.10.0](https://github.com/ParabolInc/parabol/compare/v11.9.0...v11.10.0) (2026-01-23)
+
+
+### Added
+
+* Support adhoc embeds ([#12508](https://github.com/ParabolInc/parabol/issues/12508)) ([c48cc06](https://github.com/ParabolInc/parabol/commit/c48cc061461394088783c44887dc6410ac612fa7))
+
+
+### Fixed
+
+* ensure pgvector version, run in dev as well ([#12514](https://github.com/ParabolInc/parabol/issues/12514)) ([a8d61e8](https://github.com/ParabolInc/parabol/commit/a8d61e8a6021bd85c223e0d3c7b65cb7d07273f6))
+
+## [11.9.0](https://github.com/ParabolInc/parabol/compare/v11.8.0...v11.9.0) (2026-01-22)
+
+
+### Added
+
+* User search for Pages ([#12499](https://github.com/ParabolInc/parabol/issues/12499)) ([2e5695b](https://github.com/ParabolInc/parabol/commit/2e5695be70e17ea7879d42f359c875edbb6cdbb9))
+
+## [11.8.0](https://github.com/ParabolInc/parabol/compare/v11.7.0...v11.8.0) (2026-01-15)
+
+
+### Added
+
+* OAuth 2.0 Provider (behind feature flag) ([#12391](https://github.com/ParabolInc/parabol/issues/12391)) ([39f80b3](https://github.com/ParabolInc/parabol/commit/39f80b376bc3533d868f86c9b7bfa5474ed39814))
+
+
+### Fixed
+
+* fail when generating vendorsDll fails ([#12501](https://github.com/ParabolInc/parabol/issues/12501)) ([b56977c](https://github.com/ParabolInc/parabol/commit/b56977cbae3f832e382736dc23d9242fcddc99d7))
+* remove @tiptap/react from vendors ([#12502](https://github.com/ParabolInc/parabol/issues/12502)) ([59336d5](https://github.com/ParabolInc/parabol/commit/59336d52955f53c2845967a4a88b1b364fcb2207))
+* remove DLL for dev ([#12505](https://github.com/ParabolInc/parabol/issues/12505)) ([d935bd5](https://github.com/ParabolInc/parabol/commit/d935bd563d4b6d1bb57f6f842a0084e121c0b88e))
+
+
+### Changed
+
+* rerun buildDll on config change ([#12503](https://github.com/ParabolInc/parabol/issues/12503)) ([ac4de92](https://github.com/ParabolInc/parabol/commit/ac4de9227c5cd00d10d4c362b93623ea7a73b233))
+* test OAuth app token access ([#12500](https://github.com/ParabolInc/parabol/issues/12500)) ([c9e1bc7](https://github.com/ParabolInc/parabol/commit/c9e1bc7ca10024c0b4cf36f57d02057ee81cad73))
+
 ## [11.7.0](https://github.com/ParabolInc/parabol/compare/v11.6.4...v11.7.0) (2026-01-12)
 
 

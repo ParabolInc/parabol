@@ -1,0 +1,5 @@
+enum SearchTypeEnum {
+  page
+  meetingTemplate
+  retrospectiveDiscussionTopic
+}

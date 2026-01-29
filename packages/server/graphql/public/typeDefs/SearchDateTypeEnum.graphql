@@ -1,0 +1,4 @@
+enum SearchDateTypeEnum {
+  createdAt
+  updatedAt
+}

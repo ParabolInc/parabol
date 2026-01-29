@@ -7,6 +7,7 @@ import {GQLID} from '~/utils/GQLID'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'
 import {BlockResizer} from './BlockResizer'
+import type {ImageBlockAttrs} from './ImageBlock'
 import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
 
 const getRelativeSrc = (src: string) => {
@@ -28,7 +29,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes, selected} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const {attrs} = node
-  const {src, align, height, width, isFullWidth} = attrs
+  const {src, align, height, width, isFullWidth} = attrs as ImageBlockAttrs
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
 

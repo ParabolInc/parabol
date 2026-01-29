@@ -1,6 +1,6 @@
-import {type Editor, ReactNodeViewRenderer} from '@tiptap/react'
-import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
+import {ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
+import {ImageUploadStorage} from '../imageBlock/ImageBlockBase'
 import {ImageUploadView} from './ImageUploadView'
 
 interface ImageUploadOptions {

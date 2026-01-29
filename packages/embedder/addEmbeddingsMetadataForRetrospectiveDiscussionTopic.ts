@@ -72,7 +72,7 @@ export const addEmbeddingsMetadataForRetrospectiveDiscussionTopic = async ({
     curEndId = curEndAt === createdAtEpoch ? id : ''
     curEndAt = createdAtEpoch
     const validDiscussions = await validateDiscussions(discussions)
-    await insertDiscussionsIntoMetadataAndQueue(validDiscussions, 5)
+    await insertDiscussionsIntoMetadataAndQueue(validDiscussions)
     const jsTime = new Date(createdAtEpoch * 1000)
     Logger.log(
       `Inserted ${validDiscussions.length}/${discussions.length} discussions in metadata ending at ${jsTime}`

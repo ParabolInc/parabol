@@ -37,7 +37,7 @@ environment variables, here given with example configuration:
 
   Example:
 
-`AI_EMBEDDING_MODELS='[{"model": "text-embeddings-inference:llmrails/ember-v1", "url": "http://localhost:3040/"}]'`
+`AI_EMBEDDING_MODELS='[{"model": "text-embeddings-inference:Qwen/Qwen3-Embedding-0.6B", "url": "http://localhost:3040/"}]'`
 
 - `AI_GENERATION_MODELS`: JSON configuration for which AI generation
   models (i.e. GPTS are enabled). These models are used for summarization

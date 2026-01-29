@@ -1,11 +1,11 @@
 import * as Y from 'yjs'
-import type {PageLinkBlockAttributes} from './extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
 export const createPageLinkElement = (
   pageCode: number,
   title: string | null | undefined,
   isDatabase: boolean
 ) => {
-  const el = new Y.XmlElement<PageLinkBlockAttributes>()
+  const el = new Y.XmlElement<PageLinkBlockAttrs>()
   el.nodeName = 'pageLinkBlock'
   el.setAttribute('pageCode', pageCode)
   el.setAttribute('title', title ?? '<Untitled>')
