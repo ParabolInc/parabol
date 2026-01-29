@@ -40,7 +40,7 @@ export default {
       dataLoader.get('users').loadNonNull(viewerId),
       dataLoader.get('teams').loadNonNull(teamId)
     ])
-    const isTeamLead = teamMember?.isLead
+    const isTeamLead = teamMember?.isNotRemoved && teamMember?.isLead
     const isOrgAdmin = await isUserOrgAdmin(viewerId, teamToArchive.orgId, dataLoader)
     if (!isTeamLead && !isSuperUser(authToken) && !isOrgAdmin) {
       return standardError(new Error('Not team lead or org admin'), {

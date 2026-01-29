@@ -1,4 +1,4 @@
-import franc from 'franc-min'
+import {franc} from 'franc-min'
 import {type ISO6391, iso6393To1} from './iso6393To1'
 import {URLRegex} from './regex'
 

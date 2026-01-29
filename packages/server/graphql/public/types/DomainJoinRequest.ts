@@ -30,6 +30,7 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
     const teamMemberIds = teamIds.map((teamId) => TeamMemberId.join(teamId, viewerId))
     const leadTeamMembers = (await dataLoader.get('teamMembers').loadMany(teamMemberIds))
       .filter(isValid)
+      .filter(({isNotRemoved}) => isNotRemoved)
       .filter(({isLead}) => isLead)
 
     const leadTeamIds = leadTeamMembers.map((teamMember) => teamMember.teamId)

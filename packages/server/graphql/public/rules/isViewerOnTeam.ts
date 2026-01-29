@@ -15,6 +15,7 @@ const isViewerOnTeam = (getTeamId: GetTeamId) =>
       const teamMemberId = TeamMemberId.join(teamId, viewerId)
       const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
       if (!teamMember) return new Error('Viewer is not on team')
+      if (!teamMember.isNotRemoved) return new Error('Viewer is not on team anymore')
       return true
     }
   )

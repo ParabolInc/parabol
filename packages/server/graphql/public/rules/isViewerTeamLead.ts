@@ -12,6 +12,7 @@ export const isViewerTeamLead = <T>(teamIdDotPath: ResolverDotPath<T>) =>
       const teamMemberId = TeamMemberId.join(teamId, viewerId)
       const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
       if (!teamMember?.isLead) return new Error('User is not team lead')
+      if (!teamMember?.isNotRemoved) return new Error('User is not team lead anymore')
       return true
     }
   )

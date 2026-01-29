@@ -1,10 +1,15 @@
 import {fetch} from '@whatwg-node/fetch'
 import base64url from 'base64url'
 import {createHash} from 'crypto'
+import {GraphQLError} from 'graphql'
 import mime from 'mime-types'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../../appOrigin'
+import type {AssetType, PartialPath} from '../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {compressImage} from '../../../utils/compressImage'
-import type {MutationResolvers} from '../resolverTypes'
+import {Logger} from '../../../utils/Logger'
+import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 import {validateScope} from './uploadUserAsset'
 
 const fetchImage = async (url: string) => {
@@ -37,6 +42,27 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
   if (typeof scopeCode !== 'string') return scopeCode
 
+  const hostedPrefix = makeAppURL(appOrigin, '/assets')
+  const isParabolHostedAsset = url.startsWith(hostedPrefix)
+  if (isParabolHostedAsset) {
+    // if we host it, just make a copy of it in the new directory
+    const manager = getFileStoreManager()
+    const sourcePartialPath = url.slice(hostedPrefix.length + 1) as PartialPath
+    const [scope, _sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
+      AssetScopeEnum,
+      string,
+      AssetType,
+      string
+    ]
+    const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
+    try {
+      const url = await manager.copyFile(sourcePartialPath, targetPartialPath)
+      return {url}
+    } catch (e) {
+      Logger.warn(e)
+      throw new GraphQLError('Could not copy parabol asset')
+    }
+  }
   const asset = await fetchImage(url)
   if (!asset) {
     return {error: {message: 'Unable to fetch asset'}}

@@ -44,8 +44,6 @@ import {pageInsights} from '../fields/pageInsights'
 import getSignOnURL from '../mutations/helpers/SAMLHelpers/getSignOnURL'
 import type {ReqResolvers} from './ReqResolvers'
 
-declare const __PRODUCTION__: string
-
 const MODEL = 'Embeddings_ember_1'
 const EMBED_URL = (() => {
   try {
@@ -600,7 +598,7 @@ const User: ReqResolvers<'User'> = {
     const teamMember = teamId
       ? await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
       : null
-    if (teamMember) return {isOnTeam: true}
+    if (teamMember?.isNotRemoved) return {isOnTeam: true}
     const teamInvitations = teamId
       ? await dataLoader.get('teamInvitationsByTeamId').load(teamId)
       : null

@@ -1,6 +1,6 @@
 import {GraphQLID, GraphQLList, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import toTeamMemberId from '../../../client/utils/relay/toTeamMemberId'
-import type EstimateStageDB from '../../database/types/EstimateStage'
+import type {EstimateStage as EstimateStageDB} from '../../postgres/types/NewMeetingPhase'
 import type {GQLContext} from '../graphql'
 import {augmentDBStage} from '../resolvers'
 import EstimateStage from './EstimateStage'

@@ -29,6 +29,13 @@ export default class LocalFileStoreManager extends FileStoreManager {
     return makeAppURL(appOrigin, fullPath)
   }
 
+  async copyFile(oldKey: PartialPath, newKey: PartialPath) {
+    const oldFullPath = this.prependPath(oldKey)
+    const newFullPath = this.prependPath(newKey)
+    await fs.promises.copyFile(oldFullPath, newFullPath)
+    return makeAppURL(appOrigin, newFullPath)
+  }
+
   async moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void> {
     const oldFullPath = this.prependPath(oldKey)
     const newFullPath = this.prependPath(newKey)
@@ -51,7 +58,8 @@ export default class LocalFileStoreManager extends FileStoreManager {
       return false
     }
   }
-  async presignUrl(url: string) {
-    return url
+  async presignUrl(partialPath: PartialPath) {
+    const fullPath = this.prependPath(partialPath)
+    return this.getPublicFileLocation(fullPath)
   }
 }

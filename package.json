@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "11.2.0",
+  "version": "11.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^22.20.0"
+    "node": "^22.21.1"
   },
   "private": true,
   "scripts": {
@@ -40,7 +40,7 @@
     "test:server": "pnpm --filter parabol-server test"
   },
   "resolutions": {
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "17.0.2",
     "@types/react-dom": "17.0.2",
@@ -66,7 +66,8 @@
     "@babel/runtime": "^7.27.1",
     "brace-expansion@1.1.11": "1.1.12",
     "brace-expansion@2.0.1": "2.0.2",
-    "source-map": "0.7.6"
+    "source-map": "0.7.6",
+    "qs": "^6.14.1"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -100,6 +101,7 @@
     "@types/react-dom": "17.0.2",
     "@types/react-relay": "16.0.6",
     "@types/relay-runtime": "^18.2.5",
+    "@typescript/native-preview": "7.0.0-dev.20251217.1",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
     "babel-plugin-inline-import": "^3.0.0",
@@ -140,7 +142,7 @@
     "terser-webpack-plugin": "^5.3.9",
     "ts-jest": "^29.3.2",
     "ts-loader": "9.2.6",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^5.99.6",
     "webpack-bundle-analyzer": "^4.10.2",
@@ -179,6 +181,7 @@
     "@tiptap/suggestion": "3.11.1",
     "@whatwg-node/fetch": "^0.10.10",
     "base64url": "^3.0.1",
+    "dd-trace": "5.67.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
     "graphql-ws": "^6.0.4",
@@ -200,5 +203,5 @@
     "y-protocols": "^1.0.6",
     "yjs": "^13.6.27"
   },
-  "packageManager": "pnpm@10.20.0+sha512.cf9998222162dd85864d0a8102e7892e7ba4ceadebbf5a31f9c2fce48dfce317a9c53b9f6464d1ef9042cba2e02ae02a9f7c143a2b438cd93c91840f0192b9dd"
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
 }

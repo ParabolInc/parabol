@@ -3,7 +3,6 @@ const path = require('path')
 const webpack = require('webpack')
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const vendors = require('../../dev/dll/vendors')
 const clientTransformRules = require('./utils/clientTransformRules')
 const getProjectRoot = require('./utils/getProjectRoot')
 const {makeOAuth2Redirect} = require('../../packages/server/utils/makeOAuth2Redirect')
@@ -33,12 +32,6 @@ module.exports = {
       {
         directory: path.join(PROJECT_ROOT, 'build'),
         publicPath: '/static/'
-      },
-      {
-        // ignore proxied servers in /dev
-        // They can restart independently
-        directory: path.join(PROJECT_ROOT, 'dev', 'dll'),
-        publicPath: '/static/'
       }
     ],
     devMiddleware: {
@@ -60,7 +53,8 @@ module.exports = {
         'mattermost',
         'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
-        'saml/'
+        'saml/',
+        'oauth'
       ].map((name) => ({
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
@@ -116,9 +110,6 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.DllReferencePlugin({
-      manifest: vendors
-    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(PROJECT_ROOT, 'devTemplate.html'),

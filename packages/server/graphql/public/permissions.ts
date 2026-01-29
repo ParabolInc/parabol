@@ -4,6 +4,7 @@ import type {Resolvers} from './resolverTypes'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
+import {hasProviderAccess} from './rules/hasProviderAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isOrgTier} from './rules/isOrgTier'
@@ -38,6 +39,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
+    createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
+      'args.orgId',
+      'ORG_ADMIN'
+    ),
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
@@ -77,7 +82,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
-    generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId'))
+    generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
+    updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
+    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId')
   },
   Query: {
     '*': isAuthenticated,
@@ -92,6 +99,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   Organization: {
+    oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
     saml: and(
       isViewerBillingLeader<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')

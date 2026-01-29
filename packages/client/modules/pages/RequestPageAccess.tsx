@@ -40,7 +40,7 @@ export const RequestPageAccess = (props: Props) => {
       onCompleted: (_result, errors) => {
         const firstError = errors?.[0]
         if (firstError) {
-          const code = (firstError as any).extensions?.code
+          const code = firstError.extensions?.code
           if (code === 'NOT_FOUND') {
             atmosphere.eventEmitter.emit('addSnackbar', {
               message: 'Page not found',

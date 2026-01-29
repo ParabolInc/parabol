@@ -1,8 +1,5 @@
 import appOrigin from './appOrigin'
 
-declare let __webpack_public_path__: string
-declare const __PRODUCTION__: boolean
-
 const {CDN_BASE_URL, SOCKET_PORT} = process.env
 
 if (CDN_BASE_URL) {
