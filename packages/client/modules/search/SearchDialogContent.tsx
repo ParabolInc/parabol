@@ -32,7 +32,11 @@ export const SearchDialogContent = (props: Props) => {
   return (
     <>
       <div className='flex items-center px-2 py-2'>
-        <SearchIcon className='mr-3 text-slate-500' sx={{fontSize: 22}} />{' '}
+        <SearchIcon
+          data-dirty={inputQuery ? '' : undefined}
+          className='mr-3 text-slate-500 data-dirty:text-slate-700'
+          sx={{fontSize: 22}}
+        />{' '}
         <input
           autoFocus
           name='search'
