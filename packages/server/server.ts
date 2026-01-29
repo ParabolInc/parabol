@@ -16,6 +16,7 @@ import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
 import tokenHandler from './oauth2/tokenHandler'
+import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
@@ -81,6 +82,7 @@ const app = uws
   .post('/oauth/token', tokenHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
+registerSCIMHandlers(app, '/scim')
 
 if (ENABLE_STATIC_FILE_HANDLER) {
   app.get('/static/*', createStaticFileHandler('/static/'))
