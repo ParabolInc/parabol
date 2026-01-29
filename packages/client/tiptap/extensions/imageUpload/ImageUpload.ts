@@ -1,18 +1,7 @@
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
-import {ImageUploadStorage} from '../imageBlock/ImageBlockBase'
+import {ImageUploadOptions, ImageUploadStorage} from '../imageBlock/ImageBlockBase'
 import {ImageUploadView} from './ImageUploadView'
-
-interface ImageUploadOptions {
-  editorWidth: number
-  editorHeight: number
-  assetScope: AssetScopeEnum
-  scopeKey: string
-}
-
-interface ImageUploadStorage extends ImageUploadOptions {
-  pendingUploads: Map<string, Promise<string>>
-}
 
 declare module '@tiptap/core' {
   interface EditorEvents {

@@ -7,6 +7,7 @@ export interface ImageBlockAttrs {
   height: number
   width: number
   align: 'left' | 'right' | 'center'
+  isFullWidth: boolean
 }
 export const ImageBlock = ImageBlockBase.extend({
   addAttributes() {
