@@ -26,12 +26,24 @@ const getIsHosted = (src: string, scopeKey: string, assetScope: AssetScopeEnum) 
   return relativeSrc.startsWith(hostedPath)
 }
 export const ImageBlockView = (props: NodeViewProps) => {
-  const {editor, getPos, node, updateAttributes} = props
+  const {editor, getPos, node, updateAttributes, selected} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const {attrs} = node
-  const {src, align, height, width} = attrs as ImageBlockAttrs
+  const {src, align, height, width, isFullWidth} = attrs as ImageBlockAttrs
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
+
+  // Handle opportunistic uploads
+  useEffect(() => {
+    const pendingUpload = editor.storage.imageUpload.pendingUploads.get(src)
+    if (pendingUpload) {
+      pendingUpload.then((url) => {
+        updateAttributes({src: url})
+        editor.storage.imageUpload.pendingUploads.delete(src)
+      })
+    }
+  }, [src, editor.storage.imageUpload.pendingUploads, updateAttributes])
+
   const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
   const isHosted = getIsHosted(src, scopeKey, assetScope)
   const onClick = useCallback(() => {
@@ -48,12 +60,26 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const aspectRatioRef = useRef(1)
   const {onMouseDown} = useBlockResizer(
     width,
-    updateAttributes,
+    (attrs) => updateAttributes({...attrs, isFullWidth: false}),
     aspectRatioRef,
-    editor.storage.imageUpload.editorWidth
+    editor.view.dom.getBoundingClientRect().width || editor.storage.imageUpload.editorWidth
   )
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')
+
+  const [currentWidth, setCurrentWidth] = useState(width)
+
+  useEffect(() => {
+    if (!imageWrapperRef.current) return
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setCurrentWidth(entry.contentRect.width)
+      }
+    })
+    observer.observe(imageWrapperRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   const atmosphere = useAtmosphere()
   const [commit] = useEmbedUserAsset()
   useEffect(() => {
@@ -84,7 +110,11 @@ export const ImageBlockView = (props: NodeViewProps) => {
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>
-        <div contentEditable={false} ref={imageWrapperRef} className='group relative w-fit'>
+        <div
+          contentEditable={false}
+          ref={imageWrapperRef}
+          className={cn('group relative', isFullWidth ? 'w-full' : 'w-fit')}
+        >
           <img
             draggable={false}
             data-uploading={isHosted ? undefined : ''}
@@ -92,13 +122,13 @@ export const ImageBlockView = (props: NodeViewProps) => {
             src={src}
             alt=''
             onClick={onClick}
-            style={{maxHeight}}
-            width={width}
-            height={height}
+            style={{maxHeight: isFullWidth ? undefined : maxHeight}}
+            width={isFullWidth ? '100%' : width}
+            height={isFullWidth ? undefined : height}
             onLoad={(e) => {
               const img = e.target as HTMLImageElement
               aspectRatioRef.current = img.width / img.height
-              if (img.width !== width) {
+              if (img.width !== width && !isFullWidth) {
                 // on initial load, once we grab the h/w/ar, remove the maxH constraint
                 setMaxHeight(undefined)
                 updateAttributes({width: img.width, height: img.height})
@@ -107,12 +137,19 @@ export const ImageBlockView = (props: NodeViewProps) => {
           />
           {editor.isEditable && (
             <>
-              <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
-              <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+              {!isFullWidth && (
+                <>
+                  <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
+                  <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+                </>
+              )}
               <ImageBlockBubbleMenu
+                editor={editor}
                 align={align}
                 updateAttributes={updateAttributes}
-                width={width}
+                width={currentWidth || width}
+                isFullWidth={isFullWidth}
+                isOpen={selected}
               />
             </>
           )}
