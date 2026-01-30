@@ -6,7 +6,7 @@ import {Button} from '../../../ui/Button/Button'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 interface Props {
-  setImageURL: (url?: string, previewUrl?: string) => string | undefined
+  setImageURL: (url?: string, previewUrl?: string) => void
   editor: Editor
 }
 
@@ -28,11 +28,13 @@ export const ImageSelectorUploadTab = (props: Props) => {
       return
     }
 
+    const {scopeKey, assetScope, pendingUploads} = editor.extensionStorage.imageUpload
+
     // Opportunistic display: create blob URL and set it immediately
     const previewUrl = URL.createObjectURL(file)
-    const previewId = setImageURL(undefined, previewUrl)
-
-    const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
+    const previewId = crypto.randomUUID()
+    pendingUploads.set(previewId, previewUrl)
+    setImageURL(undefined, previewId)
 
     commit({
       variables: {scope: assetScope, scopeKey},
@@ -50,6 +52,8 @@ export const ImageSelectorUploadTab = (props: Props) => {
         }
         const {url} = uploadUserAsset!
         editor.emit('imageUploadCompleted', {previewId: previewId!, url: url!})
+        pendingUploads.delete(previewId)
+        URL.revokeObjectURL(previewUrl)
       }
     })
   }

@@ -48,9 +48,10 @@ export const ImageBlockBubbleMenu = (props: Props) => {
       return
     }
 
+    const {pendingUploads} = editor.storage.imageUpload
     const previewUrl = URL.createObjectURL(file)
     const previewId = crypto.randomUUID()
-    editor.storage.imageUpload.pendingUploads.set(previewId, previewUrl)
+    pendingUploads.set(previewId, previewUrl)
     updateAttributes({previewId})
 
     const {scopeKey, assetScope} = editor.storage.imageUpload
@@ -71,6 +72,8 @@ export const ImageBlockBubbleMenu = (props: Props) => {
         }
         const {url} = uploadUserAsset!
         updateAttributes({src: url!, previewId: undefined})
+        pendingUploads.delete(previewId)
+        URL.revokeObjectURL(previewUrl)
       }
     })
   }

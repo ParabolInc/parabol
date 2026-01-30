@@ -36,21 +36,15 @@ export const ImageSelector = (props: Props) => {
 
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
-  const setImageURL = (url?: string, previewUrl?: string) => {
+  const setImageURL = (url?: string, previewId?: string) => {
     const {to} = editor.state.selection
     const size = editor.state.doc.content.size
-    let previewId: string | undefined = undefined
-    if (previewUrl) {
-      previewId = crypto.randomUUID()
-      editor.storage.imageUpload.pendingUploads.set(previewId, previewUrl)
-    }
     let command = editor.chain().focus().setImageBlock({src: url, previewId})
     if (size - to <= 1) {
       // if we're at the end of the doc, add an extra paragraph to make it easier to click below
       command = command.insertContent('<p></p>').setTextSelection(editor.state.selection.to + 1)
     }
     command.scrollIntoView().run()
-    return previewId
   }
   return (
     <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md bg-slate-100 p-2'>
