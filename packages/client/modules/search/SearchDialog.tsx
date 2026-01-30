@@ -2,6 +2,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
 import {useState} from 'react'
 import LeftDashNavItem from '../../components/Dashboard/LeftDashNavItem'
+import useHotkey from '../../hooks/useHotkey'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
@@ -18,6 +19,7 @@ export const SearchDialog = (_props: Props) => {
   const onOpenChange = (willOpen: boolean) => {
     setOpen(willOpen)
   }
+  useHotkey('mod+k', openSearch)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
