@@ -17,9 +17,8 @@ import type {ModelId} from './modelIdDefinitions'
 export interface EmbeddingModelParams {
   embeddingDimensions: number
   precision: 32 | 16
-  maxInputTokens: number
   tableSuffix: string
-  languages: ISO6391[]
+  languages: readonly ISO6391[]
 }
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
@@ -28,17 +27,17 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly maxInputTokens: number
   readonly tableName: EmbeddingsTable
   readonly pagesTableName: EmbeddingsPagesTable
-  readonly languages: ISO6391[]
+  readonly languages: readonly ISO6391[]
   readonly modelId: ModelId
   protected isReady = false
-  constructor(modelId: ModelId, url: string) {
+  constructor(modelId: ModelId, url: string, maxTokens: number) {
     super(url)
     this.modelId = modelId
     const modelParams = this.constructModelParams(modelId)
     this.embeddingDimensions = modelParams.embeddingDimensions
     this.embeddingPrecision = modelParams.precision
     this.languages = modelParams.languages
-    this.maxInputTokens = modelParams.maxInputTokens
+    this.maxInputTokens = maxTokens
     this.tableName = getEmbeddingsTableName(modelId)
     this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
   }
@@ -148,13 +147,16 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
+
+    // process pages first
+    const pagePriority = priority - 1_000
     await pg
       .insertInto('EmbeddingsJobQueueV2')
       .columns(['jobType', 'priority', 'pageId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('Page').select(({ref}) => [
           sql.lit('embedPage:start').as('jobType'),
-          sql.lit(priority).as('priority'),
+          sql.lit(pagePriority).as('priority'),
           ref('id').as('pageId'),
           sql.lit(this.modelId).as('modelId')
         ])

@@ -46,7 +46,7 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
         .selectFrom('EmbeddingsJobQueueV2')
         .select('id')
         .where('state', '=', 'queued')
-        .orderBy('priority', 'desc')
+        .orderBy('priority', 'asc')
         .orderBy('id', 'asc')
         .limit(1)
         .forUpdate()

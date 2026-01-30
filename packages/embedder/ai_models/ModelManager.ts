@@ -25,15 +25,15 @@ export class ModelManager {
     const embeddingConfig = parseModelEnvVars('AI_EMBEDDING_MODELS')
     this.embeddingModels = new Map(
       embeddingConfig.map((modelConfig) => {
-        const {model, url} = modelConfig
+        const {model, url, maxTokens} = modelConfig
         const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
         switch (modelType) {
           case 'text-embeddings-inference': {
-            const embeddingsModel = new TextEmbeddingsInference(modelId, url)
+            const embeddingsModel = new TextEmbeddingsInference(modelId, url, maxTokens)
             return [modelId, embeddingsModel] as [ModelId, AbstractEmbeddingsModel]
           }
           case 'vllm': {
-            const openAIModel = new OpenAIEmbedding(modelId, url)
+            const openAIModel = new OpenAIEmbedding(modelId, url, maxTokens)
             return [modelId, openAIModel] as [ModelId, AbstractEmbeddingsModel]
           }
           default:

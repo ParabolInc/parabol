@@ -4,6 +4,5 @@ type SearchMatchScore {
   vectorRank: Int
   keywordRank: Int
   vector: Float!
-  # Keyword may be null because we first do a match using a GIN index
-  keyword: Float
+  keyword: Float!
 }
