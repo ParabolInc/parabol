@@ -6,8 +6,8 @@ export class OpenAIEmbedding extends AbstractEmbeddingsModel {
   client: OpenAI
   url: string
   modelId: ModelId
-  constructor(modelId: ModelId, url: string) {
-    super(modelId, url)
+  constructor(modelId: ModelId, url: string, maxTokens: number) {
+    super(modelId, url, maxTokens)
     this.url = url
     this.modelId = modelId as ModelId
     this.client = new OpenAI({

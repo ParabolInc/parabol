@@ -35,9 +35,7 @@ environment variables, here given with example configuration:
   to store calculated vectors. See `ai_models/ModelManager` for
   which configurations are supported.
 
-  Example:
-
-`AI_EMBEDDING_MODELS='[{"model": "text-embeddings-inference:Qwen/Qwen3-Embedding-0.6B", "url": "http://localhost:3040/"}]'`
+  See .env.example
 
 - `AI_GENERATION_MODELS`: JSON configuration for which AI generation
   models (i.e. GPTS are enabled). These models are used for summarization
@@ -46,9 +44,7 @@ environment variables, here given with example configuration:
   the array will be instantiated by `ai_models/ModelManager`.
   See `ai_models/ModelManager` for which configurations are supported.
 
-  Example:
-
-`AI_GENERATION_MODELS='[{"model": "text-generation-inference:TheBloke/zephyr-7b-beta", "url": "http://localhost:3050/"}]'`
+  See .env.example
 
 ## Usage
 

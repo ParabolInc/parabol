@@ -58,11 +58,12 @@ services:
       parabol-network:
   text-embeddings-inference:
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
-    command:
-      - "--auto-truncate"
-      - "--max-batch-tokens=8192"
-      - "--max-batch-requests=4"
-      - "--model-id=Qwen/Qwen3-Embedding-0.6B"
+    environment:
+      - MODEL_ID=Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8
+      - POOLING=mean
+      - MAX_CLIENT_BATCH_SIZE=8
+      - MAX_BATCH_TOKENS=4096
+      - AUTO_TRUNCATE=true
     platform: linux/x86_64
     hostname: text-embeddings-inference
     restart: unless-stopped
