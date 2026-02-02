@@ -1,7 +1,7 @@
-import AuthToken from '../database/types/AuthToken'
+import {JwtPayload} from 'jsonwebtoken'
 import {DataLoaderWorker} from '../graphql/graphql'
 
 export type SCIMContext = {
-  authToken: AuthToken
+  authToken: JwtPayload
   dataLoader: DataLoaderWorker
 }

@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
-import {User} from '../postgres/types'
+import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 
 const SortByColumnMap = {
@@ -19,33 +19,6 @@ const ValueConversions = {
   email: (value: string) => value.toLowerCase().trim(),
   userName: (value: string) => value.toLowerCase().trim()
 } as const
-
-export const mapToSCIM = (
-  user?: Pick<
-    User,
-    | 'id'
-    | 'scimExternalId'
-    | 'scimUserNameFallback'
-    | 'persistentUserId'
-    | 'email'
-    | 'preferredName'
-  >
-) => {
-  if (!user) throw new Error('User not found')
-  return {
-    id: user.id,
-    externalId: user.scimExternalId ?? undefined,
-    userName: user.scimUserNameFallback!,
-    displayName: user.preferredName,
-    emails: [
-      {
-        value: user.email,
-        type: 'work',
-        primary: true
-      }
-    ]
-  }
-}
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCIMContext) => {
   const {authToken, dataLoader} = ctx

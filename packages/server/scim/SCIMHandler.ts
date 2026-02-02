@@ -10,6 +10,7 @@ import {SCIMContext} from './SCIMContext'
 import './UserEgress'
 import './UserIngress'
 import './UserDegress'
+import {decode} from 'jsonwebtoken'
 
 // With both shorthand and full syntax
 SCIMMY.Config.set({
@@ -49,17 +50,19 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
   ) => Promise<void>
   const wrapHandler = (handler: Handler) =>
     uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-      const authHeader =
-        req.getHeader('x-application-authorization') || req.getHeader('authorization')
-      const token = authHeader.slice(7)
-      const authToken = getVerifiedAuthToken(token)
-      if (authToken?.aud !== 'action-scim') {
-        res.writeStatus('401 Unauthorized').end(JSON.stringify({error: 'Unauthorized'}))
-        return
-      }
       const dataLoader = getNewDataLoader('SCIMHandler')
-
       try {
+        const authHeader =
+          req.getHeader('x-application-authorization') || req.getHeader('authorization')
+        const token = authHeader?.slice(7)
+
+        // We're only peaking into the token here to check that it's for SCIM and so we can fetch the SAML config to verify it
+        const unverifiedToken = token ? decode(token, {json: true}) : null
+        if (unverifiedToken?.aud !== 'action-scim' || !unverifiedToken.sub) {
+          throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
+        }
+
+        // We haven't verified the token yet, but we need to read the request before we can await on the DB request
         const query: Record<string, string | number> = {}
         new URLSearchParams(req.getQuery()).forEach((v, k) => {
           // workaround for https://github.com/scimmyjs/scimmy/issues/89
@@ -74,39 +77,36 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
         })
         const parameter = req.getParameter(0)
         const id = parameter !== undefined ? querystring.unescape(parameter) : undefined
-        const body = await parseBody({res})
-
-        const saml = await dataLoader.get('saml').load(authToken.sub!)
+        const [body, saml] = await Promise.all([
+          parseBody({res}),
+          dataLoader.get('saml').load(unverifiedToken.sub)
+        ])
         if (!saml?.scimAuthenticationType) {
-          res
-            .writeStatus('401 Unauthorized')
-            .end(JSON.stringify({error: 'SCIM not enabled for this SSO Domain'}))
-          return
+          throw new SCIMMY.Types.Error(401, '', 'SCIM not enabled for this SSO Domain')
         }
+
+        console.log('GEORG SCIM Handler saml', saml)
+
+        // Verify the token
         // token was refreshed, so previous token is invalid
         if (saml.scimAuthenticationType === 'bearerToken' && saml.scimBearerToken !== token) {
-          res.writeStatus('401 Unauthorized').end(JSON.stringify({error: 'Unauthorized'}))
-          return
+          throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
         }
-        // token does not expire, so it's a bearer token, invalid for oauth
-        if (saml.scimAuthenticationType === 'oauthClientCredentials' && !authToken.exp) {
-          res.writeStatus('401 Unauthorized').end(JSON.stringify({error: 'Unauthorized'}))
-          return
+        // Verify the signature if it's not a bearer token
+        if (saml.scimAuthenticationType === 'oauthClientCredentials') {
+          const authToken = getVerifiedAuthToken(token)
+          if (!authToken.sub) {
+            throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
+          }
         }
 
-        await handler(res, {query, id, body}, {authToken, dataLoader})
+        await handler(res, {query, id, body}, {authToken: unverifiedToken, dataLoader})
       } catch (err) {
-        console.log('SCIM Handler error', err)
-        if (err instanceof Error && err?.name === 'SCIMError') {
-          const response = new SCIMMY.Messages.Error(err as any)
-          res
-            .writeStatus(`${response.status}`)
-            .writeHeader('Content-Type', 'application/scim+json')
-            .end(JSON.stringify(response))
-          return
-        }
-
-        res.writeStatus('400 Bad Request').end(JSON.stringify({error: String(err)}))
+        const response = new SCIMMY.Messages.Error(err as any)
+        res
+          .writeStatus(`${response.status}`)
+          .writeHeader('Content-Type', 'application/scim+json')
+          .end(JSON.stringify(response))
       } finally {
         dataLoader.dispose()
       }

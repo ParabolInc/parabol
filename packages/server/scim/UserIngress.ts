@@ -1,3 +1,4 @@
+import {parseOneAddress} from 'email-addresses'
 import SCIMMY from 'scimmy'
 import {InvoiceItemType} from '../../client/types/constEnums'
 import adjustUserCount from '../billing/helpers/adjustUserCount'
@@ -8,8 +9,8 @@ import {generateIdenticon} from '../graphql/private/mutations/helpers/generateId
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
+import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
-import {mapToSCIM} from './UserEgress'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
   async (resource, instance, ctx: SCIMContext) => {
@@ -18,7 +19,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     const {id} = resource
 
-    const {userName: denormUserName, displayName, emails, externalId} = instance
+    const {userName: denormUserName, displayName, emails, externalId, name} = instance
+    const {givenName, familyName} = name ?? {}
     const preferredName = displayName
     const userName = denormUserName?.toLowerCase().trim()
     const denormEmail = (emails?.find((email) => email.primary) ?? emails?.[0])?.value
@@ -26,6 +28,9 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     if (email && email.length > USER_PREFERRED_NAME_LIMIT) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is too long')
+    }
+    if (email && !parseOneAddress(email)) {
+      throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is not valid')
     }
 
     const pg = getKysely()
@@ -43,7 +48,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         throw new SCIMMY.Types.Error(404, '', 'User not found')
       }
 
-      const attributeChanged = email || preferredName || externalId || userName
+      const attributeChanged =
+        email || preferredName || externalId || userName || givenName || familyName
       const isManagedUser = user.scimId === scimId || saml.domains.includes(user.domain!)
 
       if (attributeChanged && !isManagedUser) {
@@ -84,7 +90,9 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             ...(email ? {email} : {}),
             ...(preferredName ? {preferredName} : {}),
             ...(externalId ? {scimExternalId: externalId} : {}),
-            ...(userName ? {scimUserName: userName} : {})
+            ...(userName ? {scimUserName: userName} : {}),
+            ...(givenName ? {scimGivenName: givenName} : {}),
+            ...(familyName ? {scimFamilyName: familyName} : {})
           })
           .where('id', '=', id)
           .returningAll()
@@ -105,9 +113,13 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       if (!email) {
         throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is required')
       }
+      if (!userName) {
+        throw new SCIMMY.Types.Error(400, 'invalidValue', 'userName is required')
+      }
 
       const userId = `sso|${generateUID()}`
-      const preferredName = displayName ?? userName
+      const preferredName =
+        displayName || `${givenName}${givenName && familyName ? ' ' : ''}${familyName}` || userName
       const newUser = new User({
         id: userId,
         preferredName,
@@ -127,7 +139,9 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             .set({
               scimId,
               scimExternalId: externalId ?? null,
-              scimUserName: userName
+              scimUserName: userName,
+              scimGivenName: givenName ?? null,
+              scimFamilyName: familyName ?? null
             })
             .where('id', '=', userId)
             .returningAll()
