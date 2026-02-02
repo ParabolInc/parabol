@@ -352,3 +352,522 @@ describe('Okta SCIM 2.0 Runscope test spec', () => {
     }
   )
 })
+
+describe('Microsoft Entra SCIM 2.0 test spec', () => {
+  // see https://learn.microsoft.com/en-us/entra/identity/app-provisioning/use-scim-to-provision-users-and-groups#user-operations
+
+  let bearerToken: string
+
+  const domain = faker.internet.domainName()
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+  })
+
+  describe('Create New User', () => {
+    const userName = faker.internet.userName().toLowerCase()
+    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const externalId = faker.datatype.uuid()
+    const givenName = faker.name.firstName()
+    const familyName = faker.name.lastName()
+
+    let id: string
+    test('POST /Users', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: [
+            'urn:ietf:params:scim:schemas:core:2.0:User',
+            'urn:ietf:params:scim:schemas:extension:enterprise:2.0:User'
+          ],
+          externalId,
+          userName,
+          active: true,
+          emails: [
+            {
+              primary: true,
+              type: 'work',
+              value: testEmail
+            }
+          ],
+          meta: {
+            resourceType: 'User'
+          },
+          name: {
+            formatted: `${givenName} ${familyName}`,
+            familyName: familyName,
+            givenName: givenName
+          },
+          roles: []
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: expect.anything(),
+        externalId,
+        userName,
+        active: true,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        name: {
+          familyName: familyName,
+          givenName: givenName
+        }
+      })
+      id = data.id
+    })
+
+    test('GET /Users?filter={joiningProperty} eq "value"', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${userName}"`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+        totalResults: 1,
+        Resources: [
+          {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            id,
+            externalId,
+            userName,
+            active: true,
+            emails: [
+              {
+                primary: true,
+                type: 'work',
+                value: testEmail
+              }
+            ],
+            name: {
+              familyName: familyName,
+              givenName: givenName
+            }
+          }
+        ]
+      })
+    })
+    test('GET /Users/{id}', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        externalId,
+        userName,
+        active: true,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        name: {
+          familyName: familyName,
+          givenName: givenName
+        }
+      })
+    })
+
+    test('DELETE /Users/{id}', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(204)
+    })
+
+    test('GET Deleted User by ID', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(404)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+        status: '404',
+        detail: expect.anything()
+      })
+    })
+  })
+
+  test('Create Duplicate User', async () => {
+    const userName = faker.internet.userName().toLowerCase()
+    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+
+    const post1 = await fetch(`${SCIM_URL}/Users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        userName,
+        active: true,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: testEmail
+          }
+        ]
+      })
+    })
+    expect(post1.status).toBe(201)
+
+    const otherEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const post2 = await fetch(`${SCIM_URL}/Users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        userName,
+        active: true,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: otherEmail
+          }
+        ]
+      })
+    })
+    expect(post2.status).toBe(409)
+    const post2Data = await post2.json()
+    expect(post2Data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      status: '409',
+      detail: 'User exists.'
+    })
+  })
+
+  test('Get User by query - Zero results', async () => {
+    const getByQuery = await fetch(
+      `${SCIM_URL}/Users?filter=userName eq "non-existent-user-12345"`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      }
+    )
+    expect(getByQuery.status).toBe(200)
+    const getByQueryData = await getByQuery.json()
+    expect(getByQueryData).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      totalResults: 0,
+      Resources: []
+    })
+  })
+
+  describe('Update User', () => {
+    const userName = faker.internet.userName().toLowerCase()
+    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const givenName = faker.name.firstName()
+    const familyName = faker.name.lastName()
+
+    let id: string
+    test('Create User for Update', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName,
+          active: true,
+          emails: [
+            {
+              primary: true,
+              type: 'work',
+              value: testEmail
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        id: expect.anything(),
+        userName
+      })
+      id = data.id
+    })
+
+    test('PATCH /Users/{id} insert additional non-required attributes', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'Add',
+              value: {
+                name: {
+                  givenName: givenName,
+                  familyName: familyName
+                }
+              }
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        name: {
+          givenName,
+          familyName
+        }
+      })
+    })
+
+    test('GET Updated User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${userName}"`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+        totalResults: 1,
+        Resources: [
+          {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            id,
+            userName,
+            emails: [
+              {
+                primary: true,
+                type: 'work',
+                value: testEmail
+              }
+            ],
+            name: {
+              givenName,
+              familyName
+            }
+          }
+        ]
+      })
+    })
+
+    const newEmail = faker.internet.email().toLowerCase()
+    const newFamilyName = faker.name.lastName()
+    test('PATCH /Users/{id} Replace multi-valued properties', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'Replace',
+              path: 'emails[type eq "work"].value',
+              value: newEmail
+            },
+            {
+              op: 'Replace',
+              path: 'name.familyName',
+              value: newFamilyName
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: newEmail
+          }
+        ],
+        name: {
+          givenName,
+          familyName: newFamilyName
+        }
+      })
+    })
+    test('GET Updated User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${userName}"`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+        totalResults: 1,
+        Resources: [
+          {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            id,
+            userName,
+            emails: [
+              {
+                primary: true,
+                type: 'work',
+                value: newEmail
+              }
+            ],
+            name: {
+              givenName,
+              familyName: newFamilyName
+            }
+          }
+        ]
+      })
+    })
+
+    const newUserName = faker.internet.userName().toLowerCase()
+    test('PATCH /Users/{id} Update joining attribute', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'replace',
+              path: 'userName',
+              value: newUserName
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        userName: newUserName,
+        emails: [
+          {
+            primary: true,
+            type: 'work',
+            value: expect.anything()
+          }
+        ],
+        name: {
+          givenName,
+          familyName: expect.anything()
+        }
+      })
+    })
+    test('GET Updated User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${newUserName}"`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+        totalResults: 1,
+        Resources: [
+          {
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            id,
+            userName: newUserName,
+            emails: [
+              {
+                primary: true,
+                type: 'work',
+                value: expect.anything()
+              }
+            ],
+            name: {
+              givenName,
+              familyName: expect.anything()
+            }
+          }
+        ]
+      })
+    })
+  })
+})
+
+test('Invalid endpoint returns 404', async () => {
+  const res = await fetch(`${SCIM_URL}/InvalidEndpoint`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/scim+json',
+      Authorization: `Bearer invalid-token`
+    }
+  })
+  expect(res.status).toBe(404)
+})

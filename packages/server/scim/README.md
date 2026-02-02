@@ -28,7 +28,7 @@ SCIM provisioning **cannot**:
 The following attributes are supported for SCIM provisioning:
 - `userName`: unused by Parabol, can be used to query users. Defaults to the user's email if not provisioned via SCIM.
 - `displayName`: the user's full name, can be changed locally in Parabol
-- `emails` (required): Parabol will use the primary email provided, falling back to the first one
+- `emails` (required): Parabol will use the primary email provided, falling back to the first one. Parabol lowercases all email addresses.
 - `externalId`: only stored and echoed back
 - `name.givenName`: only stored and echoed back, guessed when unknown[^1]
 - `name.familyName`: only stored and echoed back, guessed when unknown[^1]

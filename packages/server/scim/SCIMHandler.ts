@@ -85,8 +85,6 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
           throw new SCIMMY.Types.Error(401, '', 'SCIM not enabled for this SSO Domain')
         }
 
-        console.log('GEORG SCIM Handler saml', saml)
-
         // Verify the token
         // token was refreshed, so previous token is invalid
         if (saml.scimAuthenticationType === 'bearerToken' && saml.scimBearerToken !== token) {
@@ -102,6 +100,7 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
 
         await handler(res, {query, id, body}, {authToken: unverifiedToken, dataLoader})
       } catch (err) {
+        console.error('SCIM Handler Error:', err)
         const response = new SCIMMY.Messages.Error(err as any)
         res
           .writeStatus(`${response.status}`)
@@ -183,5 +182,9 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
   addHandler('/Users/:id', 'del', async (res, {id, query}, ctx) => {
     await new SCIMMY.Resources.User(id, query).dispose(ctx)
     res.writeStatus('204 No Content').end()
+  })
+
+  app.any(`${pathPrefix}/*`, (res) => {
+    res.writeStatus('404 Not Found').end()
   })
 }
