@@ -1,6 +1,6 @@
 import AuthToken from '../database/types/AuthToken'
 import generateRandomString from '../generateRandomString'
-import encodeAuthToken from '../utils/encodeAuthToken'
+import {encodeUnsignedAuthToken} from '../utils/encodeAuthToken'
 
 export function generateBearerToken(scimId: string) {
   const scopes = ['scim']
@@ -10,7 +10,7 @@ export function generateBearerToken(scimId: string) {
     scope: scopes,
     aud: 'action-scim'
   })
-  const accessToken = encodeAuthToken(authToken)
+  const accessToken = encodeUnsignedAuthToken(authToken)
   return accessToken
 }
 

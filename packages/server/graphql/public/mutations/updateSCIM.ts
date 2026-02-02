@@ -29,7 +29,6 @@ const updateSCIM: MutationResolvers['updateSCIM'] = async (
   const scimOAuthClientSecret =
     authenticationType === 'oauthClientCredentials' ? generateOAuthClientSecret() : null
 
-  console.log('GEORG bearer length', scimBearerToken?.length)
   await pg
     .updateTable('SAML')
     .set({

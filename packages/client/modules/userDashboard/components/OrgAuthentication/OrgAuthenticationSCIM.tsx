@@ -106,7 +106,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
   const [nextScimAuthenticationType, setNextScimAuthenticationType] =
     useState<SCIMAuthenticationTypeEnum | null>(saml?.scimAuthenticationType ?? null)
 
-  if (!saml || !saml.orgId) {
+  if (!saml) {
+    return <div className='px-6 pb-3 text-sm'>You must enable SSO before you can use SCIM.</div>
+  }
+  if (!saml.orgId) {
     return (
       <div className='px-6 pb-3 text-sm text-tomato-500'>
         Your SAML configuration is corrupted, please{' '}
