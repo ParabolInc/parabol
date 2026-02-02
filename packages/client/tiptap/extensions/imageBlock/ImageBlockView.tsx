@@ -1,30 +1,14 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import type {AssetScopeEnum} from '~/__generated__/useEmbedUserAssetMutation.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useEmbedUserAsset} from '~/mutations/useEmbedUserAsset'
-import {GQLID} from '~/utils/GQLID'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'
+import {useEmbedNewUserAsset} from '../fileBlock/useEmbedNewUserAsset'
 import {BlockResizer} from './BlockResizer'
 import type {ImageBlockAttrs} from './ImageBlock'
 import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
 
-const getRelativeSrc = (src: string) => {
-  if (src.startsWith('/')) return src
-  try {
-    const url = new URL(src)
-    return url.pathname
-  } catch {
-    return ''
-  }
-}
-const getIsHosted = (src: string, scopeKey: string, assetScope: AssetScopeEnum) => {
-  const relativeSrc = getRelativeSrc(src)
-  const scopeCode = assetScope === 'Page' ? GQLID.fromKey(scopeKey)[0] : scopeKey
-  const hostedPath = `/assets/${assetScope}/${scopeCode}`
-  return relativeSrc.startsWith(hostedPath)
-}
 export const ImageBlockView = (props: NodeViewProps) => {
   const {editor, getPos, node, updateAttributes} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
@@ -33,7 +17,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
   const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const isHosted = getIsHosted(src, scopeKey, assetScope)
+  const {isHosted} = useEmbedNewUserAsset(src, scopeKey, assetScope, updateAttributes)
   const onClick = useCallback(() => {
     const pos = getPos()
     if (!pos) return
