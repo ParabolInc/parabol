@@ -32,7 +32,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const {src, align, height, width} = attrs as ImageBlockAttrs
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
-  const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
+  const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
   const isHosted = getIsHosted(src, scopeKey, assetScope)
   const onClick = useCallback(() => {
     const pos = getPos()
@@ -42,7 +42,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
 
   const [maxHeight, setMaxHeight] = useState(
     // if no height is provided (first load), make sure the image is no taller than the editor
-    height ? undefined : editor.storage.imageUpload.editorHeight
+    height ? undefined : editor.storage.imageBlock.editorHeight
   )
 
   const aspectRatioRef = useRef(1)
@@ -50,7 +50,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
     width,
     updateAttributes,
     aspectRatioRef,
-    editor.storage.imageUpload.editorWidth
+    editor.storage.imageBlock.editorWidth
   )
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')

@@ -2,15 +2,16 @@ import type {Editor} from '@tiptap/core'
 import {useRef} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {useEmbedUserAsset} from '../../../mutations/useEmbedUserAsset'
+import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
 import {Button} from '../../../ui/Button/Button'
 
 interface Props {
-  setImageURL: (url: string) => void
   editor: Editor
+  targetType: FileUploadTargetType
 }
 
-export const ImageSelectorEmbedTab = (props: Props) => {
-  const {editor, setImageURL} = props
+export const FileSelectorEmbedTab = (props: Props) => {
+  const {editor, targetType} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const [commit] = useEmbedUserAsset()
@@ -18,7 +19,7 @@ export const ImageSelectorEmbedTab = (props: Props) => {
     e.preventDefault()
     const url = ref.current?.value
     if (!url) return
-    const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
+    const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
     commit({
       variables: {url, scope: assetScope, scopeKey},
       onCompleted: (res) => {
@@ -33,7 +34,15 @@ export const ImageSelectorEmbedTab = (props: Props) => {
           })
           return
         }
-        setImageURL(url!)
+        const blockType = targetType === 'image' ? 'imageBlock' : 'fileBlock'
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: blockType,
+            attrs: {src: url}
+          })
+          .run()
       }
     })
   }
@@ -45,13 +54,13 @@ export const ImageSelectorEmbedTab = (props: Props) => {
       <input
         autoComplete='off'
         autoFocus
-        placeholder='Paste the image link…'
+        placeholder={`Paste the ${targetType} link…`}
         type='url'
         className='w-full outline-hidden focus:ring-2'
         ref={ref}
       />
       <Button variant='outline' shape='pill' className='w-full' type='submit'>
-        Embed image
+        Embed {targetType}
       </Button>
     </form>
   )

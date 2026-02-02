@@ -1,5 +1,6 @@
 import type {ImageBlockAttrs} from '~/tiptap/extensions/imageBlock/ImageBlock'
 import type {InsightsBlockAttrs} from '~/tiptap/extensions/insightsBlock/InsightsBlock'
+import type {FileUploadAttrs} from './extensions/FileUploadBase'
 import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
 import type {ResponseBlockAttrs} from './extensions/ResponseBlockBase'
 import type {TaskBlockAttrs} from './extensions/TaskBlockBase'
@@ -144,8 +145,9 @@ interface TipTapHorizontalRuleNode {
   type: 'horizontalRule'
 }
 
-interface TipTapImageUploadNode {
-  type: 'imageUpload'
+interface TipTapFileUploadNode {
+  type: 'fileUpload'
+  attrs: FileUploadAttrs
 }
 
 interface TipTapPageLinkBlockNode {
@@ -168,7 +170,7 @@ export type TipTapContentNode =
   | TipTapImageBlockNode
   | TipTapHorizontalRuleNode
   | TipTapPageLinkBlockNode
-  | TipTapImageUploadNode
+  | TipTapFileUploadNode
   | TipTapResponseBlockNode
 
 type TipTapNode = TiptapDoc | TipTapContentNode
