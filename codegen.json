@@ -73,6 +73,8 @@
           "AddReflectTemplateSuccess": "./types/AddReflectTemplateSuccess#AddReflectTemplateSuccessSource",
           "AddAtlassianAuthPayload": "./types/AddAtlassianAuthPayload#AddAtlassianAuthPayloadSource",
           "AddPokerTemplateDimensionPayload": "./types/AddPokerTemplateDimensionPayload#AddPokerTemplateDimensionPayloadSource",
+          "AddPokerTemplateScalePayload": "./types/AddPokerTemplateScalePayload#AddPokerTemplateScalePayloadSource",
+          "AddPokerTemplateScaleValuePayload": "./types/AddPokerTemplateScaleValuePayload#AddPokerTemplateScaleValuePayloadSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
           "AddTeamMemberIntegrationAuthSuccess": "./types/AddTeamMemberIntegrationAuthSuccess#AddTeamMemberIntegrationAuthSuccessSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
