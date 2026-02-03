@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.3](https://github.com/ParabolInc/parabol/compare/v11.10.2...v11.10.3) (2026-01-30)
+
+
+### Fixed
+
+* process pages first when adding new model ([#12522](https://github.com/ParabolInc/parabol/issues/12522)) ([c09ae42](https://github.com/ParabolInc/parabol/commit/c09ae42c8f1fddac4f480d630396a274153097ba))
+* Qwen3 Quantized ([#12528](https://github.com/ParabolInc/parabol/issues/12528)) ([aae14db](https://github.com/ParabolInc/parabol/commit/aae14db999814e19f77a7204b07151f92c1eda3b))
+
 ## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
 
 
