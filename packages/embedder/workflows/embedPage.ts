@@ -46,8 +46,11 @@ export const embedPage: JobQueueStepRun<EmbedPageData> = async (context) => {
       .execute()
   ])
 
-  if (!page || !page.yDoc) {
+  if (!page) {
     return new JobQueueError(`pageId ${pageId} was deleted`)
+  }
+  if (!page.yDoc) {
+    return new JobQueueError(`pageId ${pageId} has no yDoc`)
   }
 
   const firstExistingChunk = existingChunks[0]
