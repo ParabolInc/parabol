@@ -29,7 +29,6 @@ export const useEmbedNewUserAsset = (
   const atmosphere = useAtmosphere()
   const [commit] = useEmbedUserAsset()
   const isHosted = getIsHosted(src, scopeKey, assetScope)
-
   useEffect(() => {
     if (isHosted) return
     commit({

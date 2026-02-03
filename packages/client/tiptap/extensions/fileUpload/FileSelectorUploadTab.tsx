@@ -26,7 +26,7 @@ export const FileSelectorUploadTab = (props: Props) => {
   const onClick = () => {
     ref.current?.click()
   }
-  const accept = targetType === 'image' ? '.jpg,.jpeg,.png,.webp,.gif' : '*'
+  const accept = targetType === 'image' ? 'image/*' : '*'
   return (
     <div className='flex min-w-44 items-center justify-center rounded-md bg-slate-100 p-2'>
       <Button variant='outline' shape='pill' className='w-full' onClick={onClick} autoFocus>

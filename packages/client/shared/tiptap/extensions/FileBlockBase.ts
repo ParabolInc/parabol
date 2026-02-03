@@ -1,8 +1,10 @@
+import {mergeAttributes} from '@tiptap/core'
 import {Node} from '@tiptap/react'
 export type FileBlockAttrs = {
   src: string
   name: string
   size: number
+  fileType: string
 }
 
 export const FileBlockBase = Node.create({
@@ -26,6 +28,13 @@ export const FileBlockBase = Node.create({
         parseHTML: (element) => element.getAttribute('src'),
         renderHTML: (attributes) => ({
           src: attributes.src
+        })
+      },
+      fileType: {
+        default: '',
+        parseHTML: (element) => element.getAttribute('data-file-type'),
+        renderHTML: (attributes) => ({
+          'data-file-type': attributes.fileType
         })
       },
       name: {
@@ -53,7 +62,7 @@ export const FileBlockBase = Node.create({
     ]
   },
 
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
+  renderHTML({HTMLAttributes}) {
+    return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   }
 })

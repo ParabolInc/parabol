@@ -1,5 +1,7 @@
 import base64url from 'base64url'
 import {createHash} from 'crypto'
+import {GraphQLError} from 'graphql'
+import filetypeinfo from 'magic-bytes.js'
 import mime from 'mime-types'
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
@@ -43,29 +45,47 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   {authToken, dataLoader}
 ) => {
   // VALIDATION
+  const viewerId = getUserId(authToken)
+  const highestTier = await dataLoader.get('highestTierForUserId').load(viewerId)
   const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
   if (typeof scopeCode !== 'string') return scopeCode
 
   const contentType = file.type
-  const buffer = Buffer.from(await file.arrayBuffer())
+  const buffer = Buffer.from<ArrayBufferLike>(await file.arrayBuffer())
   const ext = mime.extension(contentType)
   if (!ext) {
     return {
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
-  if (compressedBuffer.byteLength > 2 ** 23) {
-    return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
+  const info = filetypeinfo(new Uint8Array(buffer))
+  const contentIsCorrectType = info.some((i) => i.mime === file.type)
+  if (info.length > 0 && !contentIsCorrectType) {
+    const assumedType = info[0]!.typename
+    throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)
   }
-  const hashName = base64url.fromBase64(
-    createHash('sha256').update(compressedBuffer).digest('base64')
-  )
+  const isImage = file.type.startsWith('image')
+  let fileBuffer = buffer
+  let fileExtension = ext
+  if (isImage) {
+    const res = await compressImage(buffer, ext)
+    fileBuffer = res.buffer
+    fileExtension = res.extension
+    if (fileBuffer.byteLength > 8_000_000) {
+      return {error: {message: `Max asset size is 8MB`}}
+    }
+  } else {
+    const maxSize = highestTier === 'starter' ? 8_000_000 : 64_000_000
+    if (buffer.byteLength > maxSize) {
+      return {error: {message: `Max asset size is ${maxSize} bytes`}}
+    }
+  }
+  const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
   const manager = getFileStoreManager()
   const url = await manager.putUserFile(
-    compressedBuffer,
-    `${scope}/${scopeCode}/assets/${hashName}.${extension}`
+    fileBuffer,
+    `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`
   )
   return {url}
 }

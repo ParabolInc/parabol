@@ -1,5 +1,5 @@
 import type {Editor} from '@tiptap/core'
-import {filetypeextension} from 'magic-bytes.js'
+import {filetypeinfo} from 'magic-bytes.js'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
@@ -26,9 +26,23 @@ export const onUploadTipTapFile =
         autoDismiss: 5
       })
     }
-    const bytes = new Uint8Array(await file.arrayBuffer())
-    const foo = filetypeextension(bytes)
-    console.log('DEBUG:', foo)
+    const bytes = await file.bytes()
+    const info = filetypeinfo(bytes)
+    if (file.type !== '') {
+      if (info.length > 0) {
+        const contentIsCorrectType = info.some((i) => i.mime === file.type)
+        if (!contentIsCorrectType) {
+          const assumedType = info[0]?.typename ?? 'Unknown'
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'fileNotImage',
+            message: `Expected ${file.type} but received ${assumedType}. Is the file extension correct?`,
+            autoDismiss: 5
+          })
+          return
+        }
+      }
+    }
+    const fileType = file.type ?? info[0]?.mime ?? ''
     const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
     commit({
       variables: {scope: assetScope, scopeKey},
@@ -48,7 +62,7 @@ export const onUploadTipTapFile =
         const src = url!
         const {commands} = editor
         if (targetType === 'file') {
-          commands.setFileBlock({src, name: file.name, size: file.size})
+          commands.setFileBlock({src, name: file.name, size: file.size, fileType})
         } else if (targetType === 'image') {
           commands.setImageBlock({src})
         } else {
