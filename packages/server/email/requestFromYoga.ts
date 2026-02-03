@@ -8,13 +8,16 @@ export const requestFromYoga = async (
 ) => {
   // using require until this file is not required by any file that is used to create the schema (ie we move away from object-first GraphQL)
   const {getPersistedOperation, yoga} = require('../yoga')
-  const {schema, execute, parse} = yoga.getEnveloped()
-  const query = await getPersistedOperation(docId)
+  const {schema, execute, parse, contextFactory} = yoga.getEnveloped()
+  const [query, envelopedContext] = await Promise.all([
+    getPersistedOperation(docId),
+    contextFactory()
+  ])
   const res = await execute({
     document: parse(query),
     variableValues: variables,
     schema,
-    contextValue: context
+    contextValue: {...envelopedContext, ...context}
   })
   // yoga creates objects using a null prototype. Relay incorrectly uses `{}.hasOwnProperty`
   // As a quick hack, we recate the objects using an Object prototype here
