@@ -12,7 +12,6 @@ import './UserIngress'
 import './UserDegress'
 import {decode} from 'jsonwebtoken'
 
-// With both shorthand and full syntax
 SCIMMY.Config.set({
   //documentationUri: "https://example.com/docs/scim.html",
   patch: true,

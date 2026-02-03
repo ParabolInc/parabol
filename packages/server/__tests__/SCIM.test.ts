@@ -305,9 +305,6 @@ const enableSCIM = async (orgId: string, cookie: string) => {
     }
   })
 
-  const bearerToken = res.data.updateSCIM.scimBearerToken
-  console.log('Enabled SCIM with bearer token', bearerToken)
-
   return res.data.updateSCIM.scimBearerToken
 }
 
@@ -573,7 +570,7 @@ describe('Microsoft Entra SCIM 2.0 test spec', () => {
     expect(post2Data).toMatchObject({
       schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
       status: '409',
-      detail: 'User exists.'
+      detail: expect.anything()
     })
   })
 

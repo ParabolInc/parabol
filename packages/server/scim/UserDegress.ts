@@ -9,7 +9,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
   const {authToken, dataLoader} = ctx
   const {id} = resource
   if (!id) {
-    throw new Error('User ID is required for degress')
+    throw new SCIMMY.Types.Error(400, 'invalidValue', 'User ID is required for degress')
   }
   console.log('GEORG User degress', resource)
 
@@ -31,8 +31,6 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
   if (user.scimId === scimId || domains.includes(user.domain!)) {
     const deletedUserEmail = await softDeleteUser(id, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
-    // TODO: Microsoft Entra wants to soft delete users but then be able to re-provision them again later
-    // Do we need to keep the email intact for that?
     await pg
       .updateTable('User')
       .set({

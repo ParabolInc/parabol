@@ -53,7 +53,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       const isManagedUser = user.scimId === scimId || saml.domains.includes(user.domain!)
 
       if (attributeChanged && !isManagedUser) {
-        console.log('GEORG User ingress attempt to modify unmanaged user', {
+        Logger.warn('User ingress attempt to modify unmanaged user', {
           userId: id,
           scimId,
           userScimId: user.scimId,
