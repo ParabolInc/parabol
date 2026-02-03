@@ -1,6 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import addAtlassianAuth from './mutations/addAtlassianAuth'
 import addGitHubAuth from './mutations/addGitHubAuth'
 import addPokerTemplateDimension from './mutations/addPokerTemplateDimension'
 import addPokerTemplateScale from './mutations/addPokerTemplateScale'
@@ -93,7 +92,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({
-      addAtlassianAuth,
       addPokerTemplateDimension,
       addPokerTemplateScale,
       addPokerTemplateScaleValue,

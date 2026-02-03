@@ -71,6 +71,7 @@
           "AddReactjiToReactableSuccess": "./types/AddReactjiToReactableSuccess#AddReactjiToReactableSuccessSource",
           "AddReflectTemplatePromptPayload": "./types/AddReflectTemplatePromptPayload#AddReflectTemplatePromptPayloadSource",
           "AddReflectTemplateSuccess": "./types/AddReflectTemplateSuccess#AddReflectTemplateSuccessSource",
+          "AddAtlassianAuthPayload": "./types/AddAtlassianAuthPayload#AddAtlassianAuthPayloadSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
           "AddTeamMemberIntegrationAuthSuccess": "./types/AddTeamMemberIntegrationAuthSuccess#AddTeamMemberIntegrationAuthSuccessSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",
