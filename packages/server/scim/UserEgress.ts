@@ -26,9 +26,6 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   const {id, constraints, filter} = resource
 
   const {startIndex, count = 20, sortBy, sortOrder} = constraints ?? {}
-  console.log('GEORG User egress list filter', resource.filter?.[0])
-
-  const pg = getKysely()
 
   const scimId = authToken.sub!
   const saml = await dataLoader.get('saml').loadNonNull(scimId)
@@ -37,6 +34,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   const orgMembers = await dataLoader.get('organizationUsersByOrgId').load(orgId!)
   const orgUsers = orgMembers.map(({userId}) => userId)
 
+  const pg = getKysely()
   // if we have startIndex or count we need the total for pagination
   let totalQuery = pg
     .selectFrom('User')

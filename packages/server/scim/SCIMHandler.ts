@@ -11,6 +11,8 @@ import './UserEgress'
 import './UserIngress'
 import './UserDegress'
 import {decode} from 'jsonwebtoken'
+import {Logger} from '../utils/Logger'
+import uwsGetIP from '../utils/uwsGetIP'
 
 SCIMMY.Config.set({
   //documentationUri: "https://example.com/docs/scim.html",
@@ -33,6 +35,77 @@ SCIMMY.Config.set({
   ]
 })
 
+type Handler = (
+  res: HttpResponse,
+  req: {query: Record<string, string | number>; id?: string; body: Json},
+  ctx: SCIMContext
+) => Promise<void>
+const scimHandler = (handler: Handler) =>
+  uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+    const dataLoader = getNewDataLoader('SCIMHandler')
+    try {
+      const ip = uwsGetIP(res, req)
+      const authHeader =
+        req.getHeader('x-application-authorization') || req.getHeader('authorization')
+      const token = authHeader?.slice(7)
+
+      // We're only peaking into the token here to check that it's for SCIM and so we can fetch the SAML config to verify it
+      const unverifiedToken = token ? decode(token, {json: true}) : null
+      if (unverifiedToken?.aud !== 'action-scim' || !unverifiedToken.sub) {
+        throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
+      }
+
+      // We haven't verified the token yet, but we need to read the request before we can await on the DB request
+      const query: Record<string, string | number> = {}
+      new URLSearchParams(req.getQuery()).forEach((v, k) => {
+        // workaround for https://github.com/scimmyjs/scimmy/issues/89
+        if (['startIndex', 'count'].includes(k)) {
+          const int = parseInt(v)
+          if (!isNaN(int)) {
+            query[k] = int
+            return
+          }
+        }
+        query[k] = v
+      })
+      const parameter = req.getParameter(0)
+      const id = parameter !== undefined ? querystring.unescape(parameter) : undefined
+      const [body, saml] = await Promise.all([
+        parseBody({res}),
+        dataLoader.get('saml').load(unverifiedToken.sub)
+      ])
+      if (!saml?.scimAuthenticationType) {
+        throw new SCIMMY.Types.Error(401, '', 'SCIM not enabled for this SSO Domain')
+      }
+
+      // Verify the token
+      // token was refreshed, so previous token is invalid
+      if (saml.scimAuthenticationType === 'bearerToken' && saml.scimBearerToken !== token) {
+        throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
+      }
+      // Verify the signature if it's not a bearer token
+      if (saml.scimAuthenticationType === 'oauthClientCredentials') {
+        const authToken = getVerifiedAuthToken(token)
+        if (!authToken.sub) {
+          throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
+        }
+      }
+
+      await handler(res, {query, id, body}, {ip, authToken: unverifiedToken, dataLoader})
+    } catch (err) {
+      const response = new SCIMMY.Messages.Error(err as any)
+      if (response.status >= 500) {
+        Logger.error(err)
+      }
+      res
+        .writeStatus(`${response.status}`)
+        .writeHeader('Content-Type', 'application/scim+json')
+        .end(JSON.stringify(response))
+    } finally {
+      dataLoader.dispose()
+    }
+  })
+
 export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/scim') => {
   const route = `${appOrigin}${pathPrefix}`
   SCIMMY.Resources.Schema.basepath(route)
@@ -42,80 +115,12 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
     Resource.basepath(route)
   }
 
-  type Handler = (
-    res: HttpResponse,
-    req: {query: Record<string, string | number>; id?: string; body: Json},
-    ctx: SCIMContext
-  ) => Promise<void>
-  const wrapHandler = (handler: Handler) =>
-    uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-      const dataLoader = getNewDataLoader('SCIMHandler')
-      try {
-        const authHeader =
-          req.getHeader('x-application-authorization') || req.getHeader('authorization')
-        const token = authHeader?.slice(7)
-
-        // We're only peaking into the token here to check that it's for SCIM and so we can fetch the SAML config to verify it
-        const unverifiedToken = token ? decode(token, {json: true}) : null
-        if (unverifiedToken?.aud !== 'action-scim' || !unverifiedToken.sub) {
-          throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
-        }
-
-        // We haven't verified the token yet, but we need to read the request before we can await on the DB request
-        const query: Record<string, string | number> = {}
-        new URLSearchParams(req.getQuery()).forEach((v, k) => {
-          // workaround for https://github.com/scimmyjs/scimmy/issues/89
-          if (['startIndex', 'count'].includes(k)) {
-            const int = parseInt(v)
-            if (!isNaN(int)) {
-              query[k] = int
-              return
-            }
-          }
-          query[k] = v
-        })
-        const parameter = req.getParameter(0)
-        const id = parameter !== undefined ? querystring.unescape(parameter) : undefined
-        const [body, saml] = await Promise.all([
-          parseBody({res}),
-          dataLoader.get('saml').load(unverifiedToken.sub)
-        ])
-        if (!saml?.scimAuthenticationType) {
-          throw new SCIMMY.Types.Error(401, '', 'SCIM not enabled for this SSO Domain')
-        }
-
-        // Verify the token
-        // token was refreshed, so previous token is invalid
-        if (saml.scimAuthenticationType === 'bearerToken' && saml.scimBearerToken !== token) {
-          throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
-        }
-        // Verify the signature if it's not a bearer token
-        if (saml.scimAuthenticationType === 'oauthClientCredentials') {
-          const authToken = getVerifiedAuthToken(token)
-          if (!authToken.sub) {
-            throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
-          }
-        }
-
-        await handler(res, {query, id, body}, {authToken: unverifiedToken, dataLoader})
-      } catch (err) {
-        console.error('SCIM Handler Error:', err)
-        const response = new SCIMMY.Messages.Error(err as any)
-        res
-          .writeStatus(`${response.status}`)
-          .writeHeader('Content-Type', 'application/scim+json')
-          .end(JSON.stringify(response))
-      } finally {
-        dataLoader.dispose()
-      }
-    })
-
   const addHandler = (
     path: string,
     method: 'get' | 'post' | 'put' | 'patch' | 'del',
     handler: Handler
   ) => {
-    app[method](`${pathPrefix}${path}`, wrapHandler(handler))
+    app[method](`${pathPrefix}${path}`, scimHandler(handler))
   }
 
   addHandler('/ServiceProviderConfig', 'get', async (res, _, ctx) => {

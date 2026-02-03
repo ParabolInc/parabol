@@ -3,18 +3,19 @@ import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import softDeleteUser from '../graphql/mutations/helpers/softDeleteUser'
 import getKysely from '../postgres/getKysely'
 import {analytics} from '../utils/analytics/analytics'
+import {logSCIMRequest} from './logSCIMRequest'
 import {SCIMContext} from './SCIMContext'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SCIMContext) => {
-  const {authToken, dataLoader} = ctx
+  const {ip, authToken, dataLoader} = ctx
+  const scimId = authToken.sub!
   const {id} = resource
+
+  logSCIMRequest(scimId, ip, {operation: `User degress`, id})
+
   if (!id) {
     throw new SCIMMY.Types.Error(400, 'invalidValue', 'User ID is required for degress')
   }
-  console.log('GEORG User degress', resource)
-
-  const scimId = authToken.sub!
-  const pg = getKysely()
 
   const [user, saml] = await Promise.all([
     dataLoader.get('users').load(id),
@@ -31,6 +32,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
   if (user.scimId === scimId || domains.includes(user.domain!)) {
     const deletedUserEmail = await softDeleteUser(id, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
+    const pg = getKysely()
     await pg
       .updateTable('User')
       .set({

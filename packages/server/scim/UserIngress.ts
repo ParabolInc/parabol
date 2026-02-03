@@ -9,15 +9,18 @@ import {generateIdenticon} from '../graphql/private/mutations/helpers/generateId
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
+import {logSCIMRequest} from './logSCIMRequest'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
-  async (resource, instance, ctx: SCIMContext) => {
-    const {authToken, dataLoader} = ctx
+  async (resource, instance, context: SCIMContext) => {
+    const {ip, authToken, dataLoader} = context
     const scimId = authToken.sub!
 
     const {id} = resource
+
+    logSCIMRequest(scimId, ip, {operation: `User ingress`, id, instance})
 
     const {userName: denormUserName, displayName, emails, externalId, name} = instance
     const {givenName, familyName} = name ?? {}
@@ -34,8 +37,6 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
     }
 
     const pg = getKysely()
-    console.log('GEORG User ingress', id, resource, userName, denormEmail, externalId)
-
     if (id) {
       // updating existing user
 
