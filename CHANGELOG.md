@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.4](https://github.com/ParabolInc/parabol/compare/v11.10.3...v11.10.4) (2026-02-03)
+
+
+### Fixed
+
+* use contextFactory for all contexts ([#12539](https://github.com/ParabolInc/parabol/issues/12539)) ([75db54b](https://github.com/ParabolInc/parabol/commit/75db54b58a223de8e9283b066fb05f2a5c1b083c))
+
 ## [11.10.3](https://github.com/ParabolInc/parabol/compare/v11.10.2...v11.10.3) (2026-01-30)
 
 
