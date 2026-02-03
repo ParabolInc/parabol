@@ -1,10 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
-import createPoll from './mutations/createPoll'
-import createReflection from './mutations/createReflection'
-import createTask from './mutations/createTask'
-import createTaskIntegration from './mutations/createTaskIntegration'
 import deleteTask from './mutations/deleteTask'
 import deleteUser from './mutations/deleteUser'
 import denyPushInvitation from './mutations/denyPushInvitation'
@@ -85,10 +80,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      createTaskIntegration,
-      createOAuth1AuthorizeUrl,
-      createReflection,
-      createTask,
       deleteTask,
       deleteUser,
       denyPushInvitation,
@@ -160,7 +151,6 @@ export default new GraphQLObjectType<any, GQLContext>({
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,
-      createPoll,
       removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any
