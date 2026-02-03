@@ -31,6 +31,7 @@ export const FileBlockBase = Node.create({
         })
       },
       fileType: {
+        // mime type that comes from either the uploaded extension or based on the leading magic bytes
         default: '',
         parseHTML: (element) => element.getAttribute('data-file-type'),
         renderHTML: (attributes) => ({

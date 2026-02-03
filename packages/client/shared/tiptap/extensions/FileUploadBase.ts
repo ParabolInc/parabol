@@ -1,4 +1,4 @@
-import {Editor as TipTapEditor} from '@tiptap/core'
+import {mergeAttributes, Editor as TipTapEditor} from '@tiptap/core'
 import {Node} from '@tiptap/react'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
@@ -74,7 +74,7 @@ export const FileUploadBase = Node.create({
     ]
   },
 
-  renderHTML() {
-    return ['div', {'data-type': this.name}]
+  renderHTML({HTMLAttributes}) {
+    return ['div', mergeAttributes(HTMLAttributes, {'data-type': this.name})]
   }
 })

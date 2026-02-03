@@ -1,3 +1,4 @@
+// This file makes sure that when content gets pasted, the assets get uploaded to the server
 import {useEffect} from 'react'
 import type {AssetScopeEnum} from '../../../__generated__/useEmbedUserAssetMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
