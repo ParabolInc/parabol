@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.5](https://github.com/ParabolInc/parabol/compare/v11.10.4...v11.10.5) (2026-02-03)
+
+
+### Fixed
+
+* bump fast-xml-parser ([#12536](https://github.com/ParabolInc/parabol/issues/12536)) ([41da489](https://github.com/ParabolInc/parabol/commit/41da489241a0725ff3f4213b5645618b7aafcef8))
+* extends timeouts, better logging for uncaught errors for embedder ([#12542](https://github.com/ParabolInc/parabol/issues/12542)) ([f404e77](https://github.com/ParabolInc/parabol/commit/f404e77c9a1516faff57e7e1b10cde0c73774f63))
+* rename persistentUserId to persistentNameId ([#12532](https://github.com/ParabolInc/parabol/issues/12532)) ([2a734ac](https://github.com/ParabolInc/parabol/commit/2a734acd530502d179867187a98139c6fde631ef))
+
 ## [11.10.4](https://github.com/ParabolInc/parabol/compare/v11.10.3...v11.10.4) (2026-02-03)
 
 
