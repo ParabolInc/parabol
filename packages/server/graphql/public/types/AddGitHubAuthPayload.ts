@@ -1,18 +1,18 @@
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
-import type {AddAtlassianAuthPayloadResolvers} from '../resolverTypes'
+import type {AddGitHubAuthPayloadResolvers} from '../resolverTypes'
 
-export type AddAtlassianAuthPayloadSource =
+export type AddGitHubAuthPayloadSource =
   | {
       teamId: string
       userId: string
     }
   | {error: {message: string}}
 
-const AddAtlassianAuthPayload: AddAtlassianAuthPayloadResolvers = {
-  atlassianIntegration: async (source, _args, {dataLoader}) => {
+const AddGitHubAuthPayload: AddGitHubAuthPayloadResolvers = {
+  githubIntegration: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null
     const {teamId, userId} = source
-    return (await dataLoader.get('freshAtlassianAuth').load({teamId, userId})) ?? null
+    return (await dataLoader.get('githubAuth').load({teamId, userId})) ?? null
   },
   teamMember: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null
@@ -27,4 +27,4 @@ const AddAtlassianAuthPayload: AddAtlassianAuthPayloadResolvers = {
   }
 }
 
-export default AddAtlassianAuthPayload
+export default AddGitHubAuthPayload

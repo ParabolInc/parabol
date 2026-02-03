@@ -1,10 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import addGitHubAuth from './mutations/addGitHubAuth'
-import archiveOrganization from './mutations/archiveOrganization'
-import archiveTeam from './mutations/archiveTeam'
-import archiveTimelineEvent from './mutations/archiveTimelineEvent'
-import changeTaskTeam from './mutations/changeTaskTeam'
 import createOAuth1AuthorizeUrl from './mutations/createOAuth1AuthorizeUrl'
 import createPoll from './mutations/createPoll'
 import createReflection from './mutations/createReflection'
@@ -89,11 +84,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   name: 'Mutation',
   fields: () =>
     ({
-      addGitHubAuth,
-      archiveOrganization,
-      archiveTeam,
-      archiveTimelineEvent,
-      changeTaskTeam,
       setNotificationStatus,
       createTaskIntegration,
       createOAuth1AuthorizeUrl,
