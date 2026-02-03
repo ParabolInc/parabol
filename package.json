@@ -58,6 +58,7 @@
     "git-url-parse": "12.0.0",
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
+    "fast-xml-parser": "^5.3.4",
     "recursive-readdir": "^2.2.3",
     "axios": "^1.7.8",
     "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
