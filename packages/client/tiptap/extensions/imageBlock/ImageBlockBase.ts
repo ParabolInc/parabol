@@ -5,6 +5,7 @@ export interface ImageBlockStorage {
   editorWidth: number
   editorHeight: number
 }
+
 declare module '@tiptap/core' {
   interface Storage {
     imageBlock: ImageBlockStorage

@@ -8,10 +8,10 @@ import type {ImageBlockAttrs} from './ImageBlock'
 import {ImageBlockBubbleMenu} from './ImageBlockBubbleMenu'
 
 export const ImageBlockView = (props: NodeViewProps) => {
-  const {editor, getPos, node, updateAttributes} = props
+  const {editor, getPos, node, updateAttributes, selected} = props
   const imageWrapperRef = useRef<HTMLDivElement>(null)
   const {attrs} = node
-  const {src, align, height, width} = attrs as ImageBlockAttrs
+  const {src, align, height, width, isFullWidth} = attrs as ImageBlockAttrs
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
   const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
@@ -30,31 +30,36 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const aspectRatioRef = useRef(1)
   const {onMouseDown} = useBlockResizer(
     width,
-    updateAttributes,
+    (attrs) => updateAttributes({...attrs, isFullWidth: false}),
     aspectRatioRef,
-    editor.storage.imageBlock.editorWidth
+    editor.view.dom.getBoundingClientRect().width || editor.storage.imageBlock.editorWidth
   )
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')
 
+  const isLoading = !isHosted
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>
-        <div contentEditable={false} ref={imageWrapperRef} className='group relative w-fit'>
+        <div
+          contentEditable={false}
+          ref={imageWrapperRef}
+          className={cn('group relative', isFullWidth ? 'w-full' : 'w-fit')}
+        >
           <img
             draggable={false}
-            data-uploading={isHosted ? undefined : ''}
+            data-uploading={isLoading ? '' : undefined}
             className='block data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
             src={src}
             alt=''
             onClick={onClick}
-            style={{maxHeight}}
-            width={width}
-            height={height}
+            style={{maxHeight: isFullWidth ? undefined : maxHeight}}
+            width={isFullWidth ? '100%' : width}
+            height={isFullWidth ? undefined : height}
             onLoad={(e) => {
               const img = e.target as HTMLImageElement
               aspectRatioRef.current = img.width / img.height
-              if (img.width !== width) {
+              if (img.width !== width && !isFullWidth) {
                 // on initial load, once we grab the h/w/ar, remove the maxH constraint
                 setMaxHeight(undefined)
                 updateAttributes({width: img.width, height: img.height})
@@ -63,12 +68,19 @@ export const ImageBlockView = (props: NodeViewProps) => {
           />
           {editor.isEditable && (
             <>
-              <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
-              <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+              {!isFullWidth && (
+                <>
+                  <BlockResizer className='left-0' onMouseDown={onMouseDownLeft} />
+                  <BlockResizer className='right-0' onMouseDown={onMouseDownRight} />
+                </>
+              )}
               <ImageBlockBubbleMenu
+                editor={editor}
                 align={align}
                 updateAttributes={updateAttributes}
                 width={width}
+                isFullWidth={isFullWidth}
+                isOpen={selected}
               />
             </>
           )}

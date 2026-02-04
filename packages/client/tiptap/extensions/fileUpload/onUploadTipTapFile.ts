@@ -4,6 +4,7 @@ import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.g
 import type Atmosphere from '../../../Atmosphere'
 import type {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
 import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
+import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 export const onUploadTipTapFile =
   (
@@ -26,6 +27,9 @@ export const onUploadTipTapFile =
         autoDismiss: 5
       })
       return
+    }
+    if (file.type === 'image/jpeg') {
+      file = (await jpgWithoutEXIF(file)) as File
     }
     const bytes = await file.bytes()
     const info = filetypeinfo(bytes)
