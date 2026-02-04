@@ -11,6 +11,7 @@ import './UserEgress'
 import './UserIngress'
 import './UserDegress'
 import {decode} from 'jsonwebtoken'
+import makeAppURL from '../../client/utils/makeAppURL'
 import {Logger} from '../utils/Logger'
 import uwsGetIP from '../utils/uwsGetIP'
 
@@ -49,7 +50,8 @@ const scimHandler = (handler: Handler) =>
         req.getHeader('x-application-authorization') || req.getHeader('authorization')
       const token = authHeader?.slice(7)
 
-      // We're only peaking into the token here to check that it's for SCIM and so we can fetch the SAML config to verify it
+      // For scimAuthenticationType === bearerToken the token is unsigned as we compare it to the stored token.
+      // But we want to get the scimId from it so that we know what to compare it to. For OAuth we check the signature later.
       const unverifiedToken = token ? decode(token, {json: true}) : null
       if (unverifiedToken?.aud !== 'action-scim' || !unverifiedToken.sub) {
         throw new SCIMMY.Types.Error(401, '', 'Unauthorized')
@@ -107,7 +109,7 @@ const scimHandler = (handler: Handler) =>
   })
 
 export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/scim') => {
-  const route = `${appOrigin}${pathPrefix}`
+  const route = makeAppURL(appOrigin, pathPrefix)
   SCIMMY.Resources.Schema.basepath(route)
   SCIMMY.Resources.ResourceType.basepath(route)
   SCIMMY.Resources.ServiceProviderConfig.basepath(route)

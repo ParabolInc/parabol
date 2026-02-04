@@ -9,16 +9,16 @@ import {SCIMContext} from './SCIMContext'
 SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SCIMContext) => {
   const {ip, authToken, dataLoader} = ctx
   const scimId = authToken.sub!
-  const {id} = resource
+  const {id: userId} = resource
 
-  logSCIMRequest(scimId, ip, {operation: `User degress`, id})
+  logSCIMRequest(scimId, ip, {operation: `User degress`, userId})
 
-  if (!id) {
+  if (!userId) {
     throw new SCIMMY.Types.Error(400, 'invalidValue', 'User ID is required for degress')
   }
 
   const [user, saml] = await Promise.all([
-    dataLoader.get('users').load(id),
+    dataLoader.get('users').load(userId),
     dataLoader.get('saml').loadNonNull(scimId)
   ])
 
@@ -30,7 +30,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
 
   // only users managed by this SCIM provider can be deleted
   if (user.scimId === scimId || domains.includes(user.domain!)) {
-    const deletedUserEmail = await softDeleteUser(id, dataLoader)
+    const deletedUserEmail = await softDeleteUser(userId, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
     const pg = getKysely()
     await pg
@@ -41,7 +41,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
         updatedAt: new Date(),
         email: deletedUserEmail
       })
-      .where('id', '=', id)
+      .where('id', '=', userId)
       .execute()
 
     analytics.accountRemoved(user, reasonRemoved)
@@ -51,7 +51,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
 
   // all users can be removed from the managed org
   if (orgId) {
-    await removeFromOrg(id, orgId, undefined, dataLoader)
+    await removeFromOrg(userId, orgId, undefined, dataLoader)
   }
   return
 })

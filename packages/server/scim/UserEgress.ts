@@ -1,29 +1,40 @@
-import {sql} from 'kysely'
+import {ExpressionBuilder, ExpressionWrapper, SqlBool, sql} from 'kysely'
 import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
+import {DB} from '../postgres/types/pg'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 
 const SortByColumnMap = {
-  userName: 'scimUserNameFallback',
+  userName: 'scimUserName',
   createdAt: 'createdAt'
 } as const
 
-const FilterColumnMap = {
-  userName: 'scimUserNameFallback',
-  email: 'email',
-  externalId: 'scimExternalId'
-} as const
-
-const ValueConversions = {
-  email: (value: string) => value.toLowerCase().trim(),
-  userName: (value: string) => value.toLowerCase().trim()
-} as const
+type WhereExpressionBuilder = (
+  eb: ExpressionBuilder<DB, 'User'>,
+  value: string
+) => ExpressionWrapper<DB, 'User', SqlBool>
+const FilterColumnMap: Record<string, WhereExpressionBuilder> = {
+  email: (eb, value) => eb('email', '=', value.toLowerCase().trim()),
+  externalId: (eb, value) => eb('scimExternalId', '=', value),
+  userName: (eb, value) => {
+    const normalized = value.toLowerCase().trim()
+    return eb.or([
+      eb('scimUserName', '=', value.toLowerCase().trim()),
+      eb.and([eb('scimUserName', 'is', null), eb('persistentNameId', '=', normalized)]),
+      eb.and([
+        eb('scimUserName', 'is', null),
+        eb('persistentNameId', 'is', null),
+        eb('email', '=', normalized)
+      ])
+    ])
+  }
+}
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCIMContext) => {
   const {authToken, dataLoader} = ctx
 
-  const {id, constraints, filter} = resource
+  const {id: userId, constraints, filter} = resource
 
   const {startIndex, count = 20, sortBy, sortOrder} = constraints ?? {}
 
@@ -35,27 +46,37 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   const orgUsers = orgMembers.map(({userId}) => userId)
 
   const pg = getKysely()
-  // if we have startIndex or count we need the total for pagination
-  let totalQuery = pg
-    .selectFrom('User')
-    .select(sql`COUNT(*)`.as('total'))
-    .where('isRemoved', '=', false)
-    .where((eb) =>
-      eb.or([eb('scimId', '=', scimId), eb('domain', 'in', domains), eb('id', 'in', orgUsers)])
-    )
 
   let userQuery = pg
     .selectFrom('User')
     .selectAll()
-    .where('isRemoved', '=', false)
+    .$if(!!userId, (qb) => qb.where('id', '=', userId!))
     .where((eb) =>
-      eb.or([eb('scimId', '=', scimId), eb('domain', 'in', domains), eb('id', 'in', orgUsers)])
+      eb.or([
+        eb('scimId', '=', scimId),
+        eb('domain', '=', eb.fn.any(eb.val(domains))),
+        eb('id', '=', eb.fn.any(eb.val(orgUsers)))
+      ])
     )
+    .where('isRemoved', '=', false)
 
-  if (id) {
-    const user = await userQuery.where('id', '=', id).executeTakeFirst()
+  if (userId) {
+    const user = await userQuery.executeTakeFirst()
     return mapToSCIM(user)
   }
+
+  // if we have startIndex or count we need the total for pagination
+  let totalQuery = pg
+    .selectFrom('User')
+    .select(sql`COUNT(*)`.as('total'))
+    .where((eb) =>
+      eb.or([
+        eb('scimId', '=', scimId),
+        eb('domain', '=', eb.fn.any(eb.val(domains))),
+        eb('id', '=', eb.fn.any(eb.val(orgUsers)))
+      ])
+    )
+    .where('isRemoved', '=', false)
 
   if (startIndex) {
     // 1-based index
@@ -65,13 +86,13 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
     userQuery = userQuery.limit(count)
   }
 
-  const orderBy = SortByColumnMap[sortBy as keyof typeof SortByColumnMap]
-  const direction = sortOrder?.toLowerCase() === 'desc' ? 'desc' : 'asc'
-  if (orderBy) {
-    userQuery = userQuery.orderBy(orderBy, direction)
-  } else {
-    userQuery = userQuery.orderBy('createdAt', direction)
+  if (sortBy && !(sortBy in SortByColumnMap)) {
+    throw new SCIMMY.Types.Error(400, 'invalidSort', `Sorting by ${sortBy} is not supported`)
   }
+
+  const orderBy = SortByColumnMap[sortBy as keyof typeof SortByColumnMap] ?? 'createdAt'
+  const direction = sortOrder?.toLowerCase() === 'desc' ? 'desc' : 'asc'
+  userQuery = userQuery.orderBy(orderBy, direction)
 
   if (filter) {
     if (filter.length > 1) {
@@ -88,7 +109,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
         )
       }
       for (const key of keys) {
-        const filterColumn = FilterColumnMap[key as keyof typeof FilterColumnMap]
+        const filterColumn = FilterColumnMap[key]
         if (!filterColumn) {
           throw new SCIMMY.Types.Error(400, 'invalidFilter', `Filtering by ${key} is not supported`)
         }
@@ -100,10 +121,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
             `Only 'eq' operator is supported for filtering`
           )
         }
-        const convert = ValueConversions[key as keyof typeof ValueConversions]
-        const convertedValue = convert ? convert(value as string) : value
-        userQuery = userQuery.where(filterColumn, '=', convertedValue)
-        totalQuery = totalQuery.where(filterColumn, '=', convertedValue)
+        userQuery = userQuery.where((eb) => filterColumn(eb, value))
+        totalQuery = totalQuery.where((eb) => filterColumn(eb, value))
       }
     }
   }
@@ -111,6 +130,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   const [users, total] = await Promise.all([userQuery.execute(), totalQuery.executeTakeFirst()])
 
   const scimUsers = users.map(mapToSCIM)
+  // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
+  // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
   scimUsers.length = total ? Number(total.total) : users.length
   return scimUsers
 })

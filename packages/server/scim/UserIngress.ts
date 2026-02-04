@@ -18,9 +18,9 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
     const {ip, authToken, dataLoader} = context
     const scimId = authToken.sub!
 
-    const {id} = resource
+    const {id: userId} = resource
 
-    logSCIMRequest(scimId, ip, {operation: `User ingress`, id, instance})
+    logSCIMRequest(scimId, ip, {operation: `User ingress`, userId, instance})
 
     const {userName: denormUserName, displayName, emails, externalId, name} = instance
     const {givenName, familyName} = name ?? {}
@@ -37,12 +37,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
     }
 
     const pg = getKysely()
-    if (id) {
+    if (userId) {
       // updating existing user
 
       // check they're in the org, add them if not
       const [user, saml] = await Promise.all([
-        dataLoader.get('users').load(id),
+        dataLoader.get('users').load(userId),
         dataLoader.get('saml').loadNonNull(scimId)
       ])
       if (!user) {
@@ -55,7 +55,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
       if (attributeChanged && !isManagedUser) {
         Logger.warn('User ingress attempt to modify unmanaged user', {
-          userId: id,
+          userId,
           scimId,
           userScimId: user.scimId,
           userDomain: user.domain,
@@ -69,13 +69,14 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       if (orgId) {
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
-          .load({userId: id, orgId})
+          .load({userId, orgId})
         // ingress means adding the user to the org if not already present
         if (!organizationUser) {
-          adjustUserCount(id, orgId, InvoiceItemType.ADD_USER, dataLoader)
+          adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
         }
       }
 
+      // The user existed prior to provisioning, assign it now
       const updateScimId = !user.scimId && saml.domains.includes(user.domain!)
 
       // no update is success
@@ -95,7 +96,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             ...(givenName ? {scimGivenName: givenName} : {}),
             ...(familyName ? {scimFamilyName: familyName} : {})
           })
-          .where('id', '=', id)
+          .where('id', '=', userId)
           .returningAll()
           .executeTakeFirst()
         if (!updatedUser) {
@@ -131,7 +132,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       try {
         const [, saml] = await Promise.all([
           bootstrapNewUser(newUser, false, dataLoader),
-          dataLoader.get('saml').load(authToken.sub!)
+          dataLoader.get('saml').load(scimId)
         ])
         const {orgId} = saml ?? {}
         const [user] = await Promise.all([

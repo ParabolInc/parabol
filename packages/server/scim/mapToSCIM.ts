@@ -50,8 +50,8 @@ export const mapToSCIM = (
     User,
     | 'id'
     | 'scimExternalId'
-    | 'scimUserNameFallback'
-    | 'persistentUserId'
+    | 'scimUserName'
+    | 'persistentNameId'
     | 'email'
     | 'preferredName'
     | 'scimGivenName'
@@ -66,7 +66,7 @@ export const mapToSCIM = (
   return {
     id: user.id,
     externalId: user.scimExternalId ?? undefined,
-    userName: user.scimUserNameFallback!,
+    userName: user.scimUserName ?? user.persistentNameId ?? user.email,
     displayName: user.preferredName,
     active: !user.isRemoved,
     name: guessName(user),
