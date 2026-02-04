@@ -56,15 +56,21 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
     .$narrowType<{jobType: JobType; jobData: Record<string, any>}>()
     .compile()
   async next(): Promise<IteratorResult<EmbeddingsJobQueueV2>> {
-    if (this.done) {
-      return {done: true as const, value: undefined}
-    }
     const pg = getKysely()
-    try {
-      const {rows} = await pg.executeQuery(this.cachedClaimQuery)
-      const job = rows[0]
-      if (!job) {
-        if (this.inDrought) {
+    while (!this.done) {
+      try {
+        const {rows} = await pg.executeQuery(this.cachedClaimQuery)
+        const job = rows[0]
+
+        if (!job) {
+          if (!this.inDrought) {
+            this.inDrought = true
+            await this.redisSub.subscribe('embeddingsJobAdded')
+            // Re-run the query immediately to catch any jobs that have come after the query was completed
+            continue
+          }
+
+          // Wait for a signal without recursing
           await new Promise<void>((resolve) => {
             if (this.droughtSignal) {
               this.droughtSignal = false
@@ -74,25 +80,22 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
               this.resolveDrought = resolve
             }
           })
-          return this.next()
+          continue
         }
-        // the first time there's no job, start listening to jobs getting added
-        // edge case: a job comes in at this point, which is why this.next() must get called after subscribe
-        this.inDrought = true
-        await this.redisSub.subscribe('embeddingsJobAdded')
-        return this.next()
+        if (this.inDrought) {
+          this.inDrought = false
+          this.droughtSignal = false
+          await this.redisSub.unsubscribe('embeddingsJobAdded')
+        }
+
+        await this.orchestrator.runStep(job)
+        return {done: false, value: job}
+      } catch (err) {
+        console.error('Job Stream error, retrying...', err)
+        await sleep(1000)
       }
-      if (this.inDrought) {
-        this.inDrought = false
-        this.droughtSignal = false
-        await this.redisSub.unsubscribe('embeddingsJobAdded')
-      }
-      await this.orchestrator.runStep(job)
-      return {done: false, value: job}
-    } catch {
-      await sleep(1000)
-      return this.next()
     }
+    return {done: true, value: undefined}
   }
   return() {
     this.done = true
