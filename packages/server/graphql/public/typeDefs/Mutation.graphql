@@ -189,6 +189,21 @@ type Mutation {
   regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
 
   """
+  Update SCIM settings for the organization
+  """
+  updateSCIM(
+    """
+    The organization's ID to update SCIM for
+    """
+    orgId: ID!
+
+    """
+    The authentication type. SCIM will be disabled if set to null
+    """
+    authenticationType: SCIMAuthenticationTypeEnum
+  ): UpdateSCIMPayload!
+
+  """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload
