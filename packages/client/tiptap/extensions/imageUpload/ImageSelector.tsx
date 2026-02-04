@@ -36,10 +36,10 @@ export const ImageSelector = (props: Props) => {
 
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
-  const setImageURL = (url: string) => {
+  const setImageURL = (url?: string, previewId?: string) => {
     const {to} = editor.state.selection
     const size = editor.state.doc.content.size
-    let command = editor.chain().focus().setImageBlock({src: url})
+    let command = editor.chain().focus().setImageBlock({src: url, previewId})
     if (size - to <= 1) {
       // if we're at the end of the doc, add an extra paragraph to make it easier to click below
       command = command.insertContent('<p></p>').setTextSelection(editor.state.selection.to + 1)

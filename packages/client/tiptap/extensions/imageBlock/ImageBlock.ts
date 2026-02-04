@@ -7,6 +7,9 @@ export interface ImageBlockAttrs {
   height: number
   width: number
   align: 'left' | 'right' | 'center'
+  isFullWidth: boolean
+  // previewId is used to identify images that are in the process of being uploaded locally
+  previewId?: string
 }
 export const ImageBlock = ImageBlockBase.extend({
   addAttributes() {
@@ -45,6 +48,30 @@ export const ImageBlock = ImageBlockBase.extend({
         renderHTML: (attributes) => ({
           alt: attributes.alt
         })
+      },
+      isFullWidth: {
+        default: false,
+        parseHTML: (element) => element.getAttribute('data-full-width') === 'true',
+        renderHTML: (attributes) => {
+          if (!attributes.isFullWidth) {
+            return {}
+          }
+          return {
+            'data-full-width': attributes.isFullWidth
+          }
+        }
+      },
+      previewId: {
+        default: undefined,
+        parseHTML: (element) => element.getAttribute('data-preview-id'),
+        renderHTML: (attributes) => {
+          if (!attributes.previewId) {
+            return {}
+          }
+          return {
+            'data-preview-id': attributes.previewId
+          }
+        }
       }
     }
   },
@@ -55,7 +82,7 @@ export const ImageBlock = ImageBlockBase.extend({
         ({commands}) => {
           return commands.insertContent({
             type: 'imageBlock',
-            attrs: {src: attrs.src}
+            attrs: {src: attrs.src, previewId: attrs.previewId}
           })
         },
 
@@ -74,9 +101,14 @@ export const ImageBlock = ImageBlockBase.extend({
           commands.updateAttributes('imageBlock', {align}),
 
       setImageBlockWidth:
-        (width) =>
-        ({commands}) =>
-          commands.updateAttributes('imageBlock', {width})
+        (width: number) =>
+        ({commands}: {commands: any}) =>
+          commands.updateAttributes('imageBlock', {width, isFullWidth: false}),
+
+      setImageBlockFullWidth:
+        (isFullWidth: boolean) =>
+        ({commands}: {commands: any}) =>
+          commands.updateAttributes('imageBlock', {isFullWidth})
     }
   },
 

@@ -1,0 +1,26 @@
+type UpdateSCIMPayload {
+  """
+  The updated SAML configuration containing the SCIM settings
+  """
+  saml: SAML!
+
+  """
+  The updated authentication type.
+  """
+  scimAuthenticationType: SCIMAuthenticationTypeEnum
+
+  """
+  The OAuth client ID used for SCIM authentication.
+  """
+  scimOAuthClientId: ID
+
+  """
+  The OAuth client secret used for SCIM authentication.
+  """
+  scimOAuthClientSecret: ID
+
+  """
+  The bearer token used for SCIM authentication.
+  """
+  scimBearerToken: String
+}
