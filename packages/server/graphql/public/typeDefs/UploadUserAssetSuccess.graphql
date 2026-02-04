@@ -3,4 +3,16 @@ type UploadUserAssetSuccess {
   the URL for the newly uploaded asset
   """
   url: String!
+  """
+  the name of the newly uploaded asset
+  """
+  name: String!
+  """
+  the type of the newly uploaded asset
+  """
+  type: String!
+  """
+  the size of the newly uploaded asset
+  """
+  size: Int!
 }

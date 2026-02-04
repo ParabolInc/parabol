@@ -12,7 +12,7 @@ import {Logger} from '../../../utils/Logger'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 import {validateScope} from './uploadUserAsset'
 
-const fetchImage = async (url: string) => {
+const fetchAsset = async (url: string) => {
   try {
     const res = await fetch(url)
     if (!res.ok) {
@@ -26,7 +26,7 @@ const fetchImage = async (url: string) => {
       return null
     }
 
-    return {contentType, buffer: Buffer.from(await res.arrayBuffer())}
+    return {contentType, buffer: Buffer.from<ArrayBufferLike>(await res.arrayBuffer())}
   } catch (error) {
     console.error('Error fetching the resource:', error)
     return null
@@ -57,13 +57,15 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
       const url = await manager.copyFile(sourcePartialPath, targetPartialPath)
-      return {url}
+      const contentType = mime.lookup(filename)
+      // TODO: fetch the real size
+      return {url, name: filename, type: contentType || '', size: 0}
     } catch (e) {
       Logger.warn(e)
       throw new GraphQLError('Could not copy parabol asset')
     }
   }
-  const asset = await fetchImage(url)
+  const asset = await fetchAsset(url)
   if (!asset) {
     return {error: {message: 'Unable to fetch asset'}}
   }
@@ -74,20 +76,30 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
-  if (compressedBuffer.byteLength > 2 ** 23) {
-    return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
+  let fileBuffer = buffer
+  let fileExtension = ext
+  if (contentType.includes('image')) {
+    const compressionRes = await compressImage(buffer, ext)
+    fileBuffer = compressionRes.buffer
+    fileExtension = compressionRes.extension
+    if (fileBuffer.byteLength > 2 ** 23) {
+      return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
+    }
   }
-  const hashName = base64url.fromBase64(
-    createHash('sha256').update(compressedBuffer).digest('base64')
-  )
+  const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
   const manager = getFileStoreManager()
   const hostedUrl = await manager.putUserFile(
-    compressedBuffer,
-    `${scope}/${scopeCode}/assets/${hashName}.${extension}`
+    fileBuffer,
+    `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`
   )
-  return {url: hostedUrl}
+
+  return {
+    url: hostedUrl,
+    name: `${hashName}.${fileExtension}`,
+    type: contentType,
+    size: fileBuffer.byteLength
+  }
 }
 
 export default embedUserAsset
