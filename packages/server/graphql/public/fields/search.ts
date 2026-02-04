@@ -59,7 +59,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds
+      teamIds,
+      viewerId
     })
   } else {
     return getEmbeddingsByRRF({
