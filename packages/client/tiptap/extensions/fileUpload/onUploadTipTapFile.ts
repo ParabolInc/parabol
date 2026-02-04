@@ -11,10 +11,10 @@ export const onUploadTipTapFile =
     highestTier: TierEnum | null | undefined,
     commit: ReturnType<typeof useUploadUserAsset>[0]
   ) =>
-  async (file: File, editor: Editor, targetType: FileUploadTargetType) => {
+  async (file: File, editor: Editor, targetType: FileUploadTargetType, pos?: number) => {
     if (!highestTier) return
     const isFree = highestTier === 'starter'
-    const sizeLimit = isFree ? 8_000_000 : 64_000_000
+    const sizeLimit = isFree || targetType === 'image' ? 8_000_000 : 64_000_000
     if (file.size > sizeLimit) {
       const prefix = `The file is too large.`
       const message = isFree
@@ -25,6 +25,7 @@ export const onUploadTipTapFile =
         message: `${prefix} ${message}`,
         autoDismiss: 5
       })
+      return
     }
     const bytes = await file.bytes()
     const info = filetypeinfo(bytes)
@@ -43,7 +44,16 @@ export const onUploadTipTapFile =
       }
     }
     const fileType = file.type ?? info[0]?.mime ?? ''
+    const nodeType = targetType === 'file' ? 'fileBlock' : 'imageBlock'
+    const localSrc = URL.createObjectURL(file)
     const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
+    if (targetType === 'file') {
+      editor.commands.setFileBlock({src: localSrc, name: file.name, size: file.size, fileType, pos})
+    } else if (targetType === 'image') {
+      editor.commands.setImageBlock({src: localSrc, pos})
+    } else {
+      console.error('Unknown target type', targetType)
+    }
     commit({
       variables: {scope: assetScope, scopeKey},
       uploadables: {file: file},
@@ -51,23 +61,33 @@ export const onUploadTipTapFile =
         const {uploadUserAsset} = res
         const {url} = uploadUserAsset!
         const message = uploadUserAsset?.error?.message
+        const {state, view} = editor
         if (message) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'errorUploadUserAsset',
             message,
             autoDismiss: 5
           })
+          state.doc.descendants((node, pos) => {
+            if (node.type.name === nodeType && node.attrs.src === localSrc) {
+              const tr = state.tr.deleteRange(pos, pos + node.nodeSize)
+              view.dispatch(tr)
+              return false
+            }
+            return true
+          })
           return
         }
         const src = url!
-        const {commands} = editor
-        if (targetType === 'file') {
-          commands.setFileBlock({src, name: file.name, size: file.size, fileType})
-        } else if (targetType === 'image') {
-          commands.setImageBlock({src})
-        } else {
-          console.error('Unknown target type', targetType)
-        }
+
+        state.doc.descendants((node, pos) => {
+          if (node.type.name === nodeType && node.attrs.src === localSrc) {
+            const tr = state.tr.setNodeAttribute(pos, 'src', src)
+            view.dispatch(tr)
+            return false
+          }
+          return true
+        })
       }
     })
   }

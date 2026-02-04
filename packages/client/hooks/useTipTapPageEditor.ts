@@ -239,16 +239,18 @@ export const useTipTapPageEditor = (
         ResponseBlock,
         FileBlock,
         FileHandler.configure({
-          // allowedMimeTypes: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-          onDrop: (currentEditor, files) => {
+          onDrop: (currentEditor, files, pos) => {
             files.forEach(async (file) => {
-              currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file')
+              // if they drop an image, treat it like an image, not a binary
+              const targetType = file.type.includes('image') ? 'image' : 'file'
+              currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType, pos)
             })
           },
           onPaste: (currentEditor, files, htmlContent) => {
             files.forEach((file) => {
               if (!htmlContent) {
-                currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file')
+                const targetType = file.type.includes('image') ? 'image' : 'file'
+                currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
               }
             })
           }

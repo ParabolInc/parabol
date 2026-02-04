@@ -12,6 +12,9 @@ const mutation = graphql`
       }
       ... on UploadUserAssetSuccess {
         url
+        name
+        type
+        size
       }
     }
   }

@@ -1,7 +1,5 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
-import {useCallback, useEffect, useRef, useState} from 'react'
-import useAtmosphere from '~/hooks/useAtmosphere'
-import {useEmbedUserAsset} from '~/mutations/useEmbedUserAsset'
+import {useCallback, useRef, useState} from 'react'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'
 import {useEmbedNewUserAsset} from '../fileBlock/useEmbedNewUserAsset'
@@ -38,33 +36,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   )
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')
-  const atmosphere = useAtmosphere()
-  const [commit] = useEmbedUserAsset()
-  useEffect(() => {
-    if (isHosted) return
-    commit({
-      variables: {url: src, scope: assetScope, scopeKey},
-      onCompleted: (res, error) => {
-        const {embedUserAsset} = res
-        if (!embedUserAsset) {
-          // Since this is triggered without user input, we log it silently
-          console.error(error?.[0]?.message)
-          return
-        }
-        const {url} = embedUserAsset
-        const message = embedUserAsset?.error?.message
-        if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorEmbeddingAsset',
-            message,
-            autoDismiss: 5
-          })
-          return
-        }
-        updateAttributes({src: url})
-      }
-    })
-  }, [isHosted])
+
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>

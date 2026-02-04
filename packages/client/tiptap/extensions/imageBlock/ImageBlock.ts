@@ -53,19 +53,14 @@ export const ImageBlock = ImageBlockBase.extend({
       setImageBlock:
         (attrs) =>
         ({commands}) => {
-          return commands.insertContent({
+          const node = {
             type: 'imageBlock',
             attrs: {src: attrs.src}
-          })
-        },
-
-      setImageBlockAt:
-        (attrs) =>
-        ({commands}) => {
-          return commands.insertContentAt(attrs.pos, {
-            type: 'imageBlock',
-            attrs: {src: attrs.src}
-          })
+          }
+          if (attrs.pos) {
+            return commands.insertContentAt(attrs.pos, node)
+          }
+          return commands.insertContent(node)
         },
 
       setImageBlockAlign:

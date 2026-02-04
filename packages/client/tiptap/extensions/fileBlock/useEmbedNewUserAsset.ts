@@ -31,7 +31,8 @@ export const useEmbedNewUserAsset = (
   const [commit] = useEmbedUserAsset()
   const isHosted = getIsHosted(src, scopeKey, assetScope)
   useEffect(() => {
-    if (isHosted) return
+    // blob urls are local and are in the process of being uploaded at this point
+    if (isHosted || !src || src.startsWith('blob:')) return
     commit({
       variables: {url: src, scope: assetScope, scopeKey},
       onCompleted: (res, error) => {
@@ -54,6 +55,6 @@ export const useEmbedNewUserAsset = (
         updateAttributes({src: url})
       }
     })
-  }, [isHosted])
+  }, [isHosted, src])
   return {isHosted}
 }

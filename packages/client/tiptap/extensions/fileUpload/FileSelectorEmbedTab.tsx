@@ -14,7 +14,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
   const {editor, targetType} = props
   const ref = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
-  const [commit] = useEmbedUserAsset()
+  const [commit, submitting] = useEmbedUserAsset()
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const url = ref.current?.value
@@ -24,7 +24,6 @@ export const FileSelectorEmbedTab = (props: Props) => {
       variables: {url, scope: assetScope, scopeKey},
       onCompleted: (res) => {
         const {embedUserAsset} = res
-        const {url} = embedUserAsset!
         const message = embedUserAsset?.error?.message
         if (message) {
           atmosphere.eventEmitter.emit('addSnackbar', {
@@ -34,15 +33,16 @@ export const FileSelectorEmbedTab = (props: Props) => {
           })
           return
         }
-        const blockType = targetType === 'image' ? 'imageBlock' : 'fileBlock'
-        editor
-          .chain()
-          .focus()
-          .insertContent({
-            type: blockType,
-            attrs: {src: url}
-          })
-          .run()
+        const {url, name, type, size} = embedUserAsset!
+        const src = url!
+        const fileName = name!
+        const fileType = type!
+        const fileSize = size!
+        if (targetType === 'image') {
+          editor.chain().focus().setImageBlock({src}).run()
+        } else {
+          editor.chain().focus().setFileBlock({src, name: fileName, fileType, size: fileSize}).run()
+        }
       }
     })
   }
@@ -59,7 +59,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
         className='w-full outline-hidden focus:ring-2'
         ref={ref}
       />
-      <Button variant='outline' shape='pill' className='w-full' type='submit'>
+      <Button variant='outline' shape='pill' className='w-full' type='submit' disabled={submitting}>
         Embed {targetType}
       </Button>
     </form>

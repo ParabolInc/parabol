@@ -60,11 +60,11 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   }
   const info = filetypeinfo(new Uint8Array(buffer))
   const contentIsCorrectType = info.some((i) => i.mime === file.type)
+  const assumedType = info[0]?.typename
   if (info.length > 0 && !contentIsCorrectType) {
-    const assumedType = info[0]!.typename
     throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)
   }
-  const isImage = file.type.startsWith('image')
+  const isImage = file.type.includes('image')
   let fileBuffer = buffer
   let fileExtension = ext
   if (isImage) {
@@ -87,7 +87,12 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     fileBuffer,
     `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`
   )
-  return {url}
+  return {
+    url,
+    name: file.name || hashName,
+    type: file.type || assumedType || '',
+    size: fileBuffer.byteLength
+  }
 }
 
 export default uploadUserAsset

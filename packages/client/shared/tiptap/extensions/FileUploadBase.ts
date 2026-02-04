@@ -35,7 +35,7 @@ declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     fileUpload: {
       setFileUpload: (targetType: FileUploadTargetType) => ReturnType
-      setFileBlock: (attrs: FileBlockAttrs) => ReturnType
+      setFileBlock: (attrs: FileBlockAttrs & {pos?: number}) => ReturnType
     }
   }
 }

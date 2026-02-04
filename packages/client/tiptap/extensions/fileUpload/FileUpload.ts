@@ -1,5 +1,4 @@
 import {ReactNodeViewRenderer} from '@tiptap/react'
-import type {FileBlockAttrs} from '../../../shared/tiptap/extensions/FileBlockBase'
 import {
   FileUploadBase,
   type FileUploadOptions,
@@ -56,12 +55,17 @@ export const FileUpload = FileUploadBase.extend<FileUploadOptions, FileUploadSto
           })
         },
       setFileBlock:
-        (attrs: FileBlockAttrs) =>
+        (attrs) =>
         ({commands}) => {
-          return commands.insertContent({
+          const {pos, ...rest} = attrs
+          const node = {
             type: 'fileBlock',
-            attrs
-          })
+            attrs: rest
+          }
+          if (pos) {
+            return commands.insertContentAt(pos, node)
+          }
+          return commands.insertContent(node)
         }
     }
   },
