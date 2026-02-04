@@ -6,7 +6,7 @@ import {Button} from '../../../ui/Button/Button'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 interface Props {
-  setImageURL: (url: string) => void
+  setImageURL: (url?: string, previewUrl?: string) => void
   editor: Editor
 }
 
@@ -25,24 +25,35 @@ export const ImageSelectorUploadTab = (props: Props) => {
         message: 'The image is too large. Please select an image smaller than 8MB',
         autoDismiss: 5
       })
+      return
     }
-    const {scopeKey, assetScope} = editor.extensionStorage.imageUpload
+
+    const {scopeKey, assetScope, pendingUploads} = editor.extensionStorage.imageUpload
+
+    // Opportunistic display: create blob URL and set it immediately
+    const previewUrl = URL.createObjectURL(file)
+    const previewId = crypto.randomUUID()
+    pendingUploads.set(previewId, previewUrl)
+    setImageURL(undefined, previewId)
+
     commit({
       variables: {scope: assetScope, scopeKey},
       uploadables: {file: file},
       onCompleted: (res) => {
         const {uploadUserAsset} = res
-        const {url} = uploadUserAsset!
         const message = uploadUserAsset?.error?.message
         if (message) {
           atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorUploadIdPtMetadata',
+            key: 'errorUploadImage',
             message,
             autoDismiss: 5
           })
           return
         }
-        setImageURL(url!)
+        const {url} = uploadUserAsset!
+        editor.emit('imageUploadCompleted', {previewId: previewId!, url: url!})
+        pendingUploads.delete(previewId)
+        URL.revokeObjectURL(previewUrl)
       }
     })
   }

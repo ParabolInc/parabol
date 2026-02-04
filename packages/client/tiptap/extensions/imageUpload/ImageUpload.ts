@@ -1,9 +1,9 @@
 import {ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageUploadBase} from '../../../shared/tiptap/extensions/ImageUploadBase'
-import {ImageUploadStorage} from '../imageBlock/ImageBlockBase'
+import {ImageUploadOptions, ImageUploadStorage} from '../imageBlock/ImageBlockBase'
 import {ImageUploadView} from './ImageUploadView'
 
-export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploadStorage>({
+export const ImageUpload = ImageUploadBase.extend<ImageUploadOptions, ImageUploadStorage>({
   addOptions() {
     return {
       editorWidth: 300,
@@ -17,7 +17,8 @@ export const ImageUpload = ImageUploadBase.extend<ImageUploadStorage, ImageUploa
       editorWidth: this.options.editorWidth,
       editorHeight: this.options.editorHeight,
       assetScope: this.options.assetScope,
-      scopeKey: this.options.scopeKey
+      scopeKey: this.options.scopeKey,
+      pendingUploads: new Map()
     }
   },
 

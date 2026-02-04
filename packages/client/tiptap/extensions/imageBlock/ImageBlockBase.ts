@@ -8,22 +8,28 @@ import {
 import {Image} from '@tiptap/extension-image'
 import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 
-export interface ImageUploadStorage {
+export interface ImageUploadOptions {
   editorWidth: number
   editorHeight: number
   assetScope: AssetScopeEnum
   scopeKey: string
 }
+export interface ImageUploadStorage extends ImageUploadOptions {
+  // previewId -> blobSrc
+  pendingUploads: Map<string, string>
+}
+
 declare module '@tiptap/core' {
   interface EditorEvents {
     enter: {editor: TipTapEditor}
+    imageUploadCompleted: {previewId: string; url: string}
   }
   interface Storage {
     imageUpload: ImageUploadStorage
   }
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlock: (attributes: {src: string}) => ReturnType
+      setImageBlock: (attributes: {src?: string; previewId?: string}) => ReturnType
       setImageBlockAt: (attributes: {src: string; pos: number | Range}) => ReturnType
       setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType
       setImageBlockWidth: (width: number) => ReturnType
