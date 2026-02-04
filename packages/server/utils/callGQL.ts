@@ -8,12 +8,13 @@ import {yoga} from '../yoga'
 export const callGQL = async <TData>(query: string, variables?: Record<string, any>) => {
   const authToken = new ServerAuthToken()
   const dataLoader = getNewDataLoader('callGQL')
-  const {execute, parse} = yoga.getEnveloped()
+  const {execute, parse, contextFactory} = yoga.getEnveloped()
+  const envelopedContext = await contextFactory()
   const result = await execute({
     document: parse(query),
     variableValues: variables,
     schema: privateSchema,
-    contextValue: {dataLoader, authToken}
+    contextValue: {...envelopedContext, dataLoader, authToken}
   })
   dataLoader.dispose()
   return result as ExecutionResult<TData>

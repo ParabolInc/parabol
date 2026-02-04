@@ -38,7 +38,7 @@ services:
       - parabol-network
     restart: unless-stopped
   redis:
-    image: redis:7.0-alpine
+    image: redis:8.4.0-alpine
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -47,7 +47,7 @@ services:
     networks:
       - parabol-network
   redis-commander:
-    image: ghcr.io/joeferner/redis-commander:0.8.1
+    image: ghcr.io/joeferner/redis-commander:0.9.1
     hostname: redis-commander
     restart: unless-stopped
     environment:
@@ -57,9 +57,13 @@ services:
     networks:
       parabol-network:
   text-embeddings-inference:
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2.2
-    command:
-      - "--model-id=llmrails/ember-v1"
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    environment:
+      - MODEL_ID=Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8
+      - POOLING=mean
+      - MAX_CLIENT_BATCH_SIZE=8
+      - MAX_BATCH_TOKENS=4096
+      - AUTO_TRUNCATE=true
     platform: linux/x86_64
     hostname: text-embeddings-inference
     restart: unless-stopped

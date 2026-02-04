@@ -1,4 +1,3 @@
-import ms from 'ms'
 import getKysely from '../../../server/postgres/getKysely'
 import type {AbstractEmbeddingsModel} from '../../ai_models/AbstractEmbeddingsModel'
 import numberVectorToString from '../../indexing/numberVectorToString'
@@ -47,11 +46,7 @@ export const getRerankedEmbeddingsFromChunks = async (
     chunks.map(async (chunk) => {
       const embeddingVector = await embeddingModel.getEmbedding(chunk)
       if (embeddingVector instanceof Error) {
-        return new JobQueueError(
-          `unable to get embeddings: ${embeddingVector.message}`,
-          ms('1m'),
-          10
-        )
+        return new JobQueueError(`unable to get embeddings: ${embeddingVector.message}`, true)
       }
       const embeddingVectorStr = numberVectorToString(embeddingVector)
       const embeddingsWithSimilarities = await pg

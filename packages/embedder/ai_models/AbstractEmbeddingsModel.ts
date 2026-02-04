@@ -1,37 +1,49 @@
 import {sql} from 'kysely'
-import getKysely from 'parabol-server/postgres/getKysely'
-import type {DB} from 'parabol-server/postgres/types/pg'
 import isValid from '../../server/graphql/isValid'
+import getKysely from '../../server/postgres/getKysely'
 import {Logger} from '../../server/utils/Logger'
-import {getEmbedderPriority} from '../getEmbedderPriority'
+import {getEmbedderJobPriority} from '../getEmbedderJobPriority'
+import {
+  type EmbeddingsPagesTable,
+  type EmbeddingsTable,
+  getEmbeddingsPagesTableName,
+  getEmbeddingsTableName
+} from '../getEmbeddingsTableName'
 import type {ISO6391} from '../iso6393To1'
 import {URLRegex} from '../regex'
 import {AbstractModel} from './AbstractModel'
+import type {ModelId} from './modelIdDefinitions'
 
 export interface EmbeddingModelParams {
   embeddingDimensions: number
-  maxInputTokens: number
+  precision: 32 | 16
   tableSuffix: string
-  languages: ISO6391[]
+  languages: readonly ISO6391[]
 }
-export type EmbeddingsTableName = `Embeddings_${string}`
-export type EmbeddingsTable = Extract<keyof DB, EmbeddingsTableName>
 
 export abstract class AbstractEmbeddingsModel extends AbstractModel {
   readonly embeddingDimensions: number
+  readonly embeddingPrecision: 32 | 16
   readonly maxInputTokens: number
   readonly tableName: EmbeddingsTable
-  readonly languages: ISO6391[]
-  constructor(modelId: string, url: string) {
+  readonly pagesTableName: EmbeddingsPagesTable
+  readonly languages: readonly ISO6391[]
+  readonly modelId: ModelId
+  protected isReady = false
+  constructor(modelId: ModelId, url: string, maxTokens: number) {
     super(url)
+    this.modelId = modelId
     const modelParams = this.constructModelParams(modelId)
     this.embeddingDimensions = modelParams.embeddingDimensions
+    this.embeddingPrecision = modelParams.precision
     this.languages = modelParams.languages
-    this.maxInputTokens = modelParams.maxInputTokens
-    this.tableName = `Embeddings_${modelParams.tableSuffix}` as EmbeddingsTable
+    this.maxInputTokens = maxTokens
+    this.tableName = getEmbeddingsTableName(modelId)
+    this.pagesTableName = getEmbeddingsPagesTableName(modelId)!
   }
-  protected abstract constructModelParams(modelId: string): EmbeddingModelParams
+  protected abstract constructModelParams(modelId: ModelId): EmbeddingModelParams
   abstract getEmbedding(content: string, retries?: number): Promise<number[] | Error>
+  abstract ready(): Promise<boolean>
 
   abstract getTokens(content: string): Promise<number[] | Error>
 
@@ -109,24 +121,49 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
   }
 
   async createEmbeddingsForModel() {
-    Logger.log(`Queueing EmbeddingsMetadata into EmbeddingsJobQueue for ${this.tableName}`)
+    Logger.log(`Queueing EmbeddingsMetadata, Pages into EmbeddingsJobQueueV2 for ${this.modelId}`)
     const pg = getKysely()
-    const priority = getEmbedderPriority(10)
+    const priority = await getEmbedderJobPriority('modelUpdate', null, 0)
     await pg
-      .insertInto('EmbeddingsJobQueue')
-      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'model'])
+      .insertInto('EmbeddingsJobQueueV2')
+      .columns(['jobType', 'priority', 'embeddingsMetadataId', 'modelId'])
       .expression(({selectFrom}) =>
         selectFrom('EmbeddingsMetadata')
           .select(({ref}) => [
             sql.lit('embed:start').as('jobType'),
-            priority.as('priority'),
+            sql.lit(priority).as('priority'),
             ref('id').as('embeddingsMetadataId'),
-            sql.lit(this.tableName).as('model')
+            sql.lit(this.modelId).as('modelId')
           ])
           .where('language', 'in', this.languages)
+          .where(({eb, or}) =>
+            or([
+              // for new models, we only grab a year's worth of data
+              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`),
+              // meetingTemplates are small & parabol-provided ones are older than a year
+              eb('objectType', '=', 'meetingTemplate')
+            ])
+          )
       )
       .onConflict((oc) => oc.doNothing())
       .execute()
+
+    // process pages first
+    const pagePriority = priority - 1_000
+    await pg
+      .insertInto('EmbeddingsJobQueueV2')
+      .columns(['jobType', 'priority', 'pageId', 'modelId'])
+      .expression(({selectFrom}) =>
+        selectFrom('Page').select(({ref}) => [
+          sql.lit('embedPage:start').as('jobType'),
+          sql.lit(pagePriority).as('priority'),
+          ref('id').as('pageId'),
+          sql.lit(this.modelId).as('modelId')
+        ])
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+    Logger.log(`Metadata loaded into JobQueue for new model ${this.modelId}`)
   }
   async createTable() {
     const pg = getKysely()
@@ -138,14 +175,21 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
       ).rows.length > 0
     if (hasTable) return
     const vectorDimensions = this.embeddingDimensions
-    Logger.log(`ModelManager: creating ${this.tableName} with ${vectorDimensions} dimensions`)
+    const precision = this.embeddingPrecision
+    const vectorType = precision === 16 ? 'halfvec' : 'vector'
+    const columnType = `${vectorType}(${vectorDimensions})`
+    const indexType = `${vectorType}_cosine_ops`
+    Logger.log(
+      `ModelManager: creating ${this.tableName}, ${this.pagesTableName} with ${vectorDimensions} dimensions`
+    )
     await sql`
       DO $$
         BEGIN
         CREATE TABLE IF NOT EXISTS ${sql.id(this.tableName)} (
           "id" INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
           "embedText" TEXT,
-          "embedding" vector(${sql.raw(vectorDimensions.toString())}),
+          "tsv" tsvector,
+          "embedding" ${sql.raw(columnType)},
           "embeddingsMetadataId" INTEGER NOT NULL,
           "chunkNumber" SMALLINT,
           UNIQUE NULLS NOT DISTINCT("embeddingsMetadataId", "chunkNumber"),
@@ -155,7 +199,29 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
         );
         CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.tableName)}_embedding_vector_cosign_ops"
           ON ${sql.id(this.tableName)}
-          USING hnsw ("embedding" vector_cosine_ops);
+          USING hnsw ("embedding" ${sql.raw(indexType)});
+        CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.tableName)}_tsv"
+          ON ${sql.id(this.tableName)}
+          USING GIN ("tsv");
+        CREATE TABLE IF NOT EXISTS ${sql.id(this.pagesTableName)} (
+          "id" INT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+          "embedText" TEXT NOT NULL,
+          "tsv" tsvector NOT NULL,
+          "embedding" ${sql.raw(columnType)},
+          "pageId" INTEGER NOT NULL,
+          "pageUpdatedAt" timestamp with time zone NOT NULL,
+          "chunkNumber" SMALLINT,
+          UNIQUE NULLS NOT DISTINCT("pageId", "chunkNumber"),
+          FOREIGN KEY ("pageId")
+            REFERENCES "Page"("id")
+            ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.pagesTableName)}_embedding_vector_cosign_ops"
+          ON ${sql.id(this.pagesTableName)}
+          USING hnsw ("embedding" ${sql.raw(indexType)});
+        CREATE INDEX IF NOT EXISTS "idx_${sql.raw(this.pagesTableName)}_tsv"
+          ON ${sql.id(this.pagesTableName)}
+          USING GIN ("tsv");
         END
       $$;
       `.execute(pg)

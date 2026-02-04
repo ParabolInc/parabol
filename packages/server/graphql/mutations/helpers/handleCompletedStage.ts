@@ -94,7 +94,8 @@ const handleCompletedRetrospectiveStage = async (
       publishToEmbedder({
         jobType: 'relatedDiscussions:start',
         data: {meetingId},
-        priority: 0
+        dataLoader,
+        userId: meeting.facilitatorUserId
       })
     ])
     if (videoMeetingURL) {

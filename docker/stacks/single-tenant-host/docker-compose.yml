@@ -21,7 +21,7 @@ services:
   pgadmin:
     profiles: ["database-debug"]
     container_name: pgadmin
-    image: dpage/pgadmin4:8.3
+    image: dpage/pgadmin4:9.11
     depends_on:
       postgres:
         condition: service_healthy
@@ -33,7 +33,7 @@ services:
   redis:
     container_name: redis
     profiles: ["databases"]
-    image: redis:7.0-alpine
+    image: redis:8.4.0-alpine
     healthcheck:
       test: "[ $$(redis-cli ping) = 'PONG' ]"
       interval: 10s
@@ -49,7 +49,7 @@ services:
   redis-commander:
     profiles: ["database-debug"]
     container_name: redis-commander
-    image: ghcr.io/joeferner/redis-commander:0.8.1
+    image: ghcr.io/joeferner/redis-commander:0.9.1
     depends_on:
       redis:
         condition: service_healthy
@@ -63,9 +63,13 @@ services:
   text-embeddings-inference:
     profiles: ["text-embeddings"]
     container_name: text-embeddings-inference
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.2.2
-    command:
-      - "--model-id=llmrails/ember-v1"
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.8
+    environment:
+      - MODEL_ID=Svenni551/Qwen3-Embedding-0.6B-ONNX-INT8
+      - POOLING=mean
+      - MAX_CLIENT_BATCH_SIZE=8
+      - MAX_BATCH_TOKENS=4096
+      - AUTO_TRUNCATE=true
     platform: linux/x86_64
     restart: always
     ports:

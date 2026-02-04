@@ -1,9 +1,12 @@
-import type {EmbeddingObjectType} from './custom'
+import type {EmbeddingMetadataObjectType} from './custom'
 import {importHistoricalMeetingTemplates} from './importHistoricalMeetingTemplates'
 import {importHistoricalRetrospectiveDiscussionTopic} from './importHistoricalRetrospectiveDiscussionTopic'
 
 export const importHistoricalMetadata = async () => {
-  const OBJECT_TYPES: EmbeddingObjectType[] = ['retrospectiveDiscussionTopic', 'meetingTemplate']
+  const OBJECT_TYPES: EmbeddingMetadataObjectType[] = [
+    'retrospectiveDiscussionTopic',
+    'meetingTemplate'
+  ]
   return Promise.all(
     OBJECT_TYPES.map(async (objectType) => {
       switch (objectType) {

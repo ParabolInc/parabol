@@ -1,7 +1,5 @@
-import type {Node} from '@tiptap/pm/model'
 import {TextSelection} from '@tiptap/pm/state'
 import {ReactNodeViewRenderer} from '@tiptap/react'
-import type {MarkdownNodeSpec} from 'tiptap-markdown'
 import type {MeetingTypeEnum} from '../../../__generated__/ExportToCSVQuery.graphql'
 import {InsightsBlockBase} from '../../../shared/tiptap/extensions/InsightsBlockBase'
 import {InsightsBlockView} from './InsightsBlockView'
@@ -27,24 +25,8 @@ declare module '@tiptap/core' {
       exitNode: () => ReturnType
     }
   }
-  interface Storage {
-    markdown: {
-      serializer: {
-        serialize: (node: Node) => string
-      }
-    }
-  }
 }
-export const InsightsBlock = InsightsBlockBase.extend<any, {markdown: MarkdownNodeSpec}>({
-  addStorage() {
-    return {
-      markdown: {
-        serialize(state, node) {
-          state.renderContent(node)
-        }
-      }
-    }
-  },
+export const InsightsBlock = InsightsBlockBase.extend<any, {}>({
   addCommands() {
     return {
       setInsights:

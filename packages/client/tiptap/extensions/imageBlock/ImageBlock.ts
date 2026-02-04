@@ -2,6 +2,12 @@ import {ReactNodeViewRenderer} from '@tiptap/react'
 import {ImageBlockBase} from './ImageBlockBase'
 import {ImageBlockView} from './ImageBlockView'
 
+export interface ImageBlockAttrs {
+  src: string
+  height: number
+  width: number
+  align: 'left' | 'right' | 'center'
+}
 export const ImageBlock = ImageBlockBase.extend({
   addAttributes() {
     return {

@@ -5,6 +5,63 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.10.5](https://github.com/ParabolInc/parabol/compare/v11.10.4...v11.10.5) (2026-02-03)
+
+
+### Fixed
+
+* bump fast-xml-parser ([#12536](https://github.com/ParabolInc/parabol/issues/12536)) ([41da489](https://github.com/ParabolInc/parabol/commit/41da489241a0725ff3f4213b5645618b7aafcef8))
+* extends timeouts, better logging for uncaught errors for embedder ([#12542](https://github.com/ParabolInc/parabol/issues/12542)) ([f404e77](https://github.com/ParabolInc/parabol/commit/f404e77c9a1516faff57e7e1b10cde0c73774f63))
+* rename persistentUserId to persistentNameId ([#12532](https://github.com/ParabolInc/parabol/issues/12532)) ([2a734ac](https://github.com/ParabolInc/parabol/commit/2a734acd530502d179867187a98139c6fde631ef))
+
+## [11.10.4](https://github.com/ParabolInc/parabol/compare/v11.10.3...v11.10.4) (2026-02-03)
+
+
+### Fixed
+
+* use contextFactory for all contexts ([#12539](https://github.com/ParabolInc/parabol/issues/12539)) ([75db54b](https://github.com/ParabolInc/parabol/commit/75db54b58a223de8e9283b066fb05f2a5c1b083c))
+
+## [11.10.3](https://github.com/ParabolInc/parabol/compare/v11.10.2...v11.10.3) (2026-01-30)
+
+
+### Fixed
+
+* process pages first when adding new model ([#12522](https://github.com/ParabolInc/parabol/issues/12522)) ([c09ae42](https://github.com/ParabolInc/parabol/commit/c09ae42c8f1fddac4f480d630396a274153097ba))
+* Qwen3 Quantized ([#12528](https://github.com/ParabolInc/parabol/issues/12528)) ([aae14db](https://github.com/ParabolInc/parabol/commit/aae14db999814e19f77a7204b07151f92c1eda3b))
+
+## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
+
+
+### Fixed
+
+* oneOf validator for buildEmbeddings ([#12519](https://github.com/ParabolInc/parabol/issues/12519)) ([999db60](https://github.com/ParabolInc/parabol/commit/999db608914fd51ec9800eea3784fd92265786d7))
+
+## [11.10.1](https://github.com/ParabolInc/parabol/compare/v11.10.0...v11.10.1) (2026-01-23)
+
+
+### Fixed
+
+* add ready() for TEI, only import recent items ([#12516](https://github.com/ParabolInc/parabol/issues/12516)) ([3711fc0](https://github.com/ParabolInc/parabol/commit/3711fc019707587a31b045e283469ceef13a241c))
+
+## [11.10.0](https://github.com/ParabolInc/parabol/compare/v11.9.0...v11.10.0) (2026-01-23)
+
+
+### Added
+
+* Support adhoc embeds ([#12508](https://github.com/ParabolInc/parabol/issues/12508)) ([c48cc06](https://github.com/ParabolInc/parabol/commit/c48cc061461394088783c44887dc6410ac612fa7))
+
+
+### Fixed
+
+* ensure pgvector version, run in dev as well ([#12514](https://github.com/ParabolInc/parabol/issues/12514)) ([a8d61e8](https://github.com/ParabolInc/parabol/commit/a8d61e8a6021bd85c223e0d3c7b65cb7d07273f6))
+
+## [11.9.0](https://github.com/ParabolInc/parabol/compare/v11.8.0...v11.9.0) (2026-01-22)
+
+
+### Added
+
+* User search for Pages ([#12499](https://github.com/ParabolInc/parabol/issues/12499)) ([2e5695b](https://github.com/ParabolInc/parabol/commit/2e5695be70e17ea7879d42f359c875edbb6cdbb9))
+
 ## [11.8.0](https://github.com/ParabolInc/parabol/compare/v11.7.0...v11.8.0) (2026-01-15)
 
 

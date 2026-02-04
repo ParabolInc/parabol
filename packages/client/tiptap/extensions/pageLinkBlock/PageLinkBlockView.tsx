@@ -14,7 +14,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import {PageDropTarget} from '../../../modules/pages/PageDropTarget'
 import {useArchivePageMutation} from '../../../mutations/useArchivePageMutation'
 import {hasMinPageRole} from '../../../shared/hasMinPageRole'
-import type {PageLinkBlockAttributes} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
+import type {PageLinkBlockAttrs} from '../../../shared/tiptap/extensions/PageLinkBlockBase'
 import {cn} from '../../../ui/cn'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
@@ -27,7 +27,7 @@ import {getPageSlug} from '../../getPageSlug'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
   const {node, getPos, view} = props
-  const attrs = node.attrs as PageLinkBlockAttributes
+  const attrs = node.attrs as PageLinkBlockAttrs
   const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
   const Icon = canonical ? (database ? StorageIcon : DescriptionIcon) : FileOpenIcon

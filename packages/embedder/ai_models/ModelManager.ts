@@ -1,61 +1,40 @@
-import type {AbstractEmbeddingsModel, EmbeddingsTableName} from './AbstractEmbeddingsModel'
+import type {AbstractEmbeddingsModel} from './AbstractEmbeddingsModel'
 import type {AbstractGenerationModel} from './AbstractGenerationModel'
+import type {ModelId} from './modelIdDefinitions'
+import OpenAIEmbedding from './OpenAIEmbedding'
 import OpenAIGeneration from './OpenAIGeneration'
+import {
+  type EmbeddingsModelType,
+  type GenerationModelType,
+  parseModelEnvVars
+} from './parseModelEnvVars'
 import TextEmbeddingsInference from './TextEmbeddingsInference'
 import TextGenerationInference from './TextGenerationInference'
 
-type EmbeddingsModelType = 'text-embeddings-inference'
-type GenerationModelType = 'openai' | 'text-generation-inference'
-
-export interface ModelConfig {
-  model: `${EmbeddingsModelType | GenerationModelType}:${string}`
-  url: string
-}
-
 export class ModelManager {
-  embeddingModels: Map<EmbeddingsTableName, AbstractEmbeddingsModel>
+  embeddingModels: Map<ModelId, AbstractEmbeddingsModel>
   generationModels: Map<string, AbstractGenerationModel>
-  getEmbedder(tableName?: EmbeddingsTableName): AbstractEmbeddingsModel {
-    return tableName
-      ? this.embeddingModels.get(tableName)!
+  getEmbedder(modelId?: ModelId): AbstractEmbeddingsModel {
+    return modelId
+      ? this.embeddingModels.get(modelId)!
       : this.embeddingModels.values().next().value!
-  }
-
-  private parseModelEnvVars(envVar: 'AI_EMBEDDING_MODELS' | 'AI_GENERATION_MODELS'): ModelConfig[] {
-    const envValue = process.env[envVar]
-    if (!envValue) return []
-    let models
-    try {
-      models = JSON.parse(envValue)
-    } catch {
-      throw new Error(`Invalid Env Var: ${envVar}. Must be a valid JSON`)
-    }
-
-    if (!Array.isArray(models)) {
-      throw new Error(`Invalid Env Var: ${envVar}. Must be an array`)
-    }
-    const properties = ['model', 'url']
-    models.forEach((model, idx) => {
-      properties.forEach((prop) => {
-        if (typeof model[prop] !== 'string') {
-          throw new Error(`Invalid Env Var: ${envVar}. Invalid "${prop}" at index ${idx}`)
-        }
-      })
-    })
-    return models
   }
 
   constructor() {
     // Initialize embeddings models
-    const embeddingConfig = this.parseModelEnvVars('AI_EMBEDDING_MODELS')
+    const embeddingConfig = parseModelEnvVars('AI_EMBEDDING_MODELS')
     this.embeddingModels = new Map(
       embeddingConfig.map((modelConfig) => {
-        const {model, url} = modelConfig
-        const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, string]
+        const {model, url, maxTokens} = modelConfig
+        const [modelType, modelId] = model.split(':') as [EmbeddingsModelType, ModelId]
         switch (modelType) {
           case 'text-embeddings-inference': {
-            const embeddingsModel = new TextEmbeddingsInference(modelId, url)
-            return [embeddingsModel.tableName, embeddingsModel]
+            const embeddingsModel = new TextEmbeddingsInference(modelId, url, maxTokens)
+            return [modelId, embeddingsModel] as [ModelId, AbstractEmbeddingsModel]
+          }
+          case 'vllm': {
+            const openAIModel = new OpenAIEmbedding(modelId, url, maxTokens)
+            return [modelId, openAIModel] as [ModelId, AbstractEmbeddingsModel]
           }
           default:
             throw new Error(`unsupported embeddings model '${modelType}'`)
@@ -64,7 +43,7 @@ export class ModelManager {
     )
 
     // Initialize generation models
-    const generationConfig = this.parseModelEnvVars('AI_GENERATION_MODELS')
+    const generationConfig = parseModelEnvVars('AI_GENERATION_MODELS')
     this.generationModels = new Map<string, AbstractGenerationModel>(
       generationConfig.map((modelConfig) => {
         const {model, url} = modelConfig

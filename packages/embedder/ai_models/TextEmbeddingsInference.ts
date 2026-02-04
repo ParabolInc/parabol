@@ -1,23 +1,9 @@
 import createClient, {type ClientMethod} from 'openapi-fetch'
 import sleep from 'parabol-client/utils/sleep'
+import {Logger} from '../../server/utils/Logger'
 import type {paths} from '../textEmbeddingsnterface'
 import {AbstractEmbeddingsModel, type EmbeddingModelParams} from './AbstractEmbeddingsModel'
-export type ModelId = 'BAAI/bge-large-en-v1.5' | 'llmrails/ember-v1'
-
-const modelIdDefinitions: Record<ModelId, EmbeddingModelParams> = {
-  'BAAI/bge-large-en-v1.5': {
-    embeddingDimensions: 1024,
-    maxInputTokens: 512,
-    tableSuffix: 'bge_l_en_1p5',
-    languages: ['en']
-  },
-  'llmrails/ember-v1': {
-    embeddingDimensions: 1024,
-    maxInputTokens: 512,
-    tableSuffix: 'ember_1',
-    languages: ['en']
-  }
-}
+import {type ModelId, modelIdDefinitions} from './modelIdDefinitions'
 
 const openAPIWithTimeout =
   (client: ClientMethod<any, any, any>, toError: (error: unknown) => any, timeout: number) =>
@@ -48,15 +34,41 @@ const openAPIWithTimeout =
 
 export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
   client: ReturnType<typeof createClient<paths>>
-  constructor(modelId: string, url: string) {
-    super(modelId, url)
+  constructor(modelId: ModelId, url: string, maxTokens: number) {
+    super(modelId, url, maxTokens)
     const client = createClient<paths>({baseUrl: this.url})
     const toError = (e: unknown) => ({
       error: e instanceof Error ? e.message : e
     })
-    client.GET = openAPIWithTimeout(client.GET, toError, 10000)
-    client.POST = openAPIWithTimeout(client.POST, toError, 10000)
+    client.GET = openAPIWithTimeout(client.GET, toError, 40_000)
+    client.POST = openAPIWithTimeout(client.POST, toError, 40_000)
     this.client = client
+  }
+
+  private readyPromise: Promise<boolean> | null = null
+  async ready() {
+    if (this.isReady) return true
+    const start = Date.now()
+    if (!this.readyPromise) {
+      this.readyPromise = (async () => {
+        while (!this.isReady) {
+          const res = await this.getTokens('ready')
+          const duration = Math.floor((Date.now() - start) / 1000)
+          if (res instanceof Error) {
+            console.log(res.message)
+            Logger.log(`TEI warming up for ${duration} seconds`)
+            await sleep(5_000)
+            continue
+          }
+          Logger.log(`TEI warmed up in ${duration} seconds`)
+          this.isReady = true
+          this.readyPromise = null
+          break
+        }
+        return true
+      })()
+    }
+    return this.readyPromise
   }
   async getTokens(content: string) {
     if (!content) return []
@@ -86,8 +98,8 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     return data[0]!
   }
 
-  protected constructModelParams(modelId: string): EmbeddingModelParams {
-    const modelParams = modelIdDefinitions[modelId as keyof typeof modelIdDefinitions]
+  protected constructModelParams(modelId: ModelId): EmbeddingModelParams {
+    const modelParams = modelIdDefinitions[modelId]
     if (!modelParams) throw new Error(`Unknown modelId ${modelId} for TextEmbeddingsInference`)
     return modelParams
   }

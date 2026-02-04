@@ -47,7 +47,7 @@ export const addEmbeddingsMetadataForMeetingTemplate = async ({
     const {updatedAtEpoch, id} = earliestInBatch
     curEndId = curEndAt === updatedAtEpoch ? id : ''
     curEndAt = updatedAtEpoch
-    await insertMeetingTemplatesIntoMetadataAndQueue(templates, 5)
+    await insertMeetingTemplatesIntoMetadataAndQueue(templates)
     const jsTime = new Date(updatedAtEpoch * 1000)
     Logger.log(`Inserted ${templates.length} meetingtemplates in metadata ending at ${jsTime}`)
   }

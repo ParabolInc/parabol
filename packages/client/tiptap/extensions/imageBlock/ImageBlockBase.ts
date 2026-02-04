@@ -1,7 +1,26 @@
-import {mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
+import {
+  createBlockMarkdownSpec,
+  mergeAttributes,
+  type NodeConfig,
+  type Range,
+  type Editor as TipTapEditor
+} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
+import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 
+export interface ImageUploadStorage {
+  editorWidth: number
+  editorHeight: number
+  assetScope: AssetScopeEnum
+  scopeKey: string
+}
 declare module '@tiptap/core' {
+  interface EditorEvents {
+    enter: {editor: TipTapEditor}
+  }
+  interface Storage {
+    imageUpload: ImageUploadStorage
+  }
   interface Commands<ReturnType> {
     imageBlock: {
       setImageBlock: (attributes: {src: string}) => ReturnType
@@ -41,6 +60,10 @@ export const ImageBlockBase = Image.extend({
       {style: `width: 100%; display: flex; justify-content: ${justify};`},
       ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)]
     ]
-  }
+  },
+  ...createBlockMarkdownSpec({
+    nodeName: 'imageBlock',
+    serializeAttributes: ({alt, src}) => `[${alt || ''}](${src})`
+  })
   // TipTap v3 got some types wrong, this cast shouldn't be necessary
 } as NodeConfig)

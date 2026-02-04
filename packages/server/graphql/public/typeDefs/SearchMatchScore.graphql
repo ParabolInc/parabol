@@ -1,0 +1,8 @@
+type SearchMatchScore {
+  # RRF of vectorRank and keywordRank
+  combined: Float!
+  vectorRank: Int
+  keywordRank: Int
+  vector: Float!
+  keyword: Float!
+}
