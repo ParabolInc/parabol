@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.11.0](https://github.com/ParabolInc/parabol/compare/v11.10.5...v11.11.0) (2026-02-04)
+
+
+### Added
+
+* **pages:** image block enhancements ([#12442](https://github.com/ParabolInc/parabol/issues/12442)) ([6a8d45a](https://github.com/ParabolInc/parabol/commit/6a8d45a50517f669a4c7e308602f6d8b6fcbb370))
+* **SCIM:** Add authentication configuration ([#12507](https://github.com/ParabolInc/parabol/issues/12507)) ([739d00a](https://github.com/ParabolInc/parabol/commit/739d00a6e83d5019707d2a598acc912ea0da4c34))
+
+
+### Fixed
+
+* Change `EmbeddingsJobQueueStream.next()` to use loop ([#12548](https://github.com/ParabolInc/parabol/issues/12548)) ([eddaa50](https://github.com/ParabolInc/parabol/commit/eddaa50d4b2a84b910bea237904db98b6d1849c4))
+
 ## [11.10.5](https://github.com/ParabolInc/parabol/compare/v11.10.4...v11.10.5) (2026-02-03)
 
 
