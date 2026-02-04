@@ -37,7 +37,6 @@ import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
-import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
@@ -115,8 +114,8 @@ export const useTipTapPageEditor = (
           highestTier: user?.highestTier
         }),
         ImageBlock.configure({
-          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88
+          editorWidth: 960,
+          editorHeight: 400
         }),
         IndentHandler,
         LoomExtension,
