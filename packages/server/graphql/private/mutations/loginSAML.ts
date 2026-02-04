@@ -42,31 +42,31 @@ const getRelayState = (body: querystring.ParsedUrlQuery) => {
   return relayState
 }
 
-const getUserByEmailOrPersistentUserId = async (
+const getUserByEmailOrPersistentNameId = async (
   email: string,
-  persistentUserId: string | undefined,
+  persistentNameId: string | undefined,
   domains: string[]
 ) => {
   const user = await getUserByEmail(email)
   if (user) return user
-  if (!persistentUserId) return null
+  if (!persistentNameId) return null
   const pg = getKysely()
-  const userByPersistentUserId = await pg
+  const userByPersistentNameId = await pg
     .selectFrom('User')
     .selectAll()
-    .where('persistentUserId', '=', persistentUserId)
+    .where('persistentNameId', '=', persistentNameId)
     .limit(1)
     .executeTakeFirst()
-  if (!userByPersistentUserId) return null
+  if (!userByPersistentNameId) return null
   // Do not blindly trust the IdP. Verify that it has control over the email address
-  const ssoDomain = getSSODomainFromEmail(userByPersistentUserId.email)
+  const ssoDomain = getSSODomainFromEmail(userByPersistentNameId.email)
   if (!isSingleTenantSSO && (!ssoDomain || !domains.includes(ssoDomain))) {
     // don't blindly trust the IdP unless there is only 1
-    return new Error(`${userByPersistentUserId.email} does not belong to ${domains.join(', ')}`)
+    return new Error(`${userByPersistentNameId.email} does not belong to ${domains.join(', ')}`)
   }
   // At this point we can trust that the IdP controls this account and has changed the users email address
-  await pg.updateTable('User').set({email}).where('id', '=', userByPersistentUserId.id).execute()
-  return userByPersistentUserId
+  await pg.updateTable('User').set({email}).where('id', '=', userByPersistentNameId.id).execute()
+  return userByPersistentNameId
 }
 
 const loginSAML: MutationResolvers['loginSAML'] = async (
@@ -163,10 +163,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     emailaddress,
     displayname,
     name,
-    persistentuserid
+    persistentuserid,
+    persistentnameid
   } = normalizedAttributes
   const preferredName = displayname || name || nameID
-  const persistentUserId = persistentuserid || nameID
+  const persistentNameId = persistentnameid || persistentuserid || nameID
   const email = inputEmail?.toLowerCase() || emailaddress?.toLowerCase()
   if (!email) {
     return standardError(
@@ -204,11 +205,11 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       .execute()
   }
 
-  const user = await getUserByEmailOrPersistentUserId(email, persistentUserId, domains)
+  const user = await getUserByEmailOrPersistentNameId(email, persistentNameId, domains)
   if (user instanceof Error) return standardError(user)
   if (user) {
-    if (persistentUserId && !user.persistentUserId) {
-      await pg.updateTable('User').set({persistentUserId}).where('id', '=', user.id).execute()
+    if (persistentNameId && !user.persistentNameId) {
+      await pg.updateTable('User').set({persistentNameId}).where('id', '=', user.id).execute()
     }
     return {
       userId: user.id,

@@ -155,7 +155,7 @@ export class WorkflowOrchestrator {
       result = await run({dataLoader, data})
     } catch (e) {
       if (e instanceof Error) {
-        result = new JobQueueError(`Uncaught error: ${e.message}`)
+        result = new JobQueueError(`Uncaught error: ${e.message} ${e.stack}`)
       }
     }
     dataLoader.dispose()
