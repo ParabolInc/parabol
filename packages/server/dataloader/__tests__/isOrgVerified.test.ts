@@ -62,7 +62,6 @@ afterAll(async () => {
   const pg = getKysely()
   await pg.schema.dropSchema(TEST_DB).cascade().execute()
   await pg.destroy()
-  console.log('org verified destroy')
 })
 
 test('Founder is billing lead', async () => {
