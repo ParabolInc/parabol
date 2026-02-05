@@ -1,4 +1,3 @@
-import './hocusPocus'
 import uws from 'uWebSockets.js'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
 import {stopChronos} from './chronos'
@@ -9,6 +8,7 @@ import ICSHandler from './ICSHandler'
 import PWAHandler from './PWAHandler'
 import './hocusPocus'
 import {assetProxyHandler} from './assetProxyHandler'
+import {buildProxyHandler} from './buildProxyHandler'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
@@ -66,6 +66,7 @@ const app = uws
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .get('/assets/*', assetProxyHandler)
+  .get('/build/*', buildProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)

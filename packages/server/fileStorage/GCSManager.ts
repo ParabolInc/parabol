@@ -202,7 +202,12 @@ export default class GCSManager extends FileStoreManager {
     return res.status !== 404
   }
   async presignUrl(partialPath: PartialPath): Promise<string> {
-    // not implemented yet!
+    // for PPMIs where a public bucket is not allowed, we special case build files
+    if (partialPath.startsWith('/build/')) {
+      const filename = partialPath.slice('/build/'.length)
+      const fullPath = this.prependPath(filename, 'build')
+      return this.getPublicFileLocation(fullPath)
+    }
     const fullPath = this.prependPath(partialPath, 'store')
     return this.getPublicFileLocation(fullPath)
   }

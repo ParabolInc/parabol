@@ -10,6 +10,7 @@ export type PartialPath =
   | `${AssetScopeEnum}/${string}/${AssetType}/${string}.${string}`
   | `Organization/${string}/idpMetadata.xml`
   | `__debug__/${string}`
+  | `build/${string}`
 
 export default abstract class FileStoreManager {
   abstract baseUrl: string
