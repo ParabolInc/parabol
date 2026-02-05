@@ -24,7 +24,7 @@ interface Params {
     endAt: Date
     dateField: 'createdAt' | 'updatedAt'
   } | null
-  teamIds: string[] | null | undefined
+  teamIds: [string, ...string[]] | undefined
   viewerId: string
 }
 
@@ -38,12 +38,15 @@ export const getPagesByRRF = async (params: Params) => {
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'
 
+  const MIN_RRF_SCORE = 0.004
+
   const results = await pg
     .with('Model', (qb) =>
       qb
         .selectFrom('PageAccess')
         .where('PageAccess.userId', '=', viewerId)
         .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
+        .where('PageAccess.userId', '=', viewerId)
         .$if(!!dateRange, (qb) =>
           qb
             .innerJoin('Page', 'Page.id', 'PageAccess.pageId')
@@ -133,6 +136,7 @@ export const getPagesByRRF = async (params: Params) => {
       }).as('snippet')
     )
     .orderBy('score', 'desc')
+    .where('score', '>', MIN_RRF_SCORE)
     .limit(first)
     .execute()
   return {

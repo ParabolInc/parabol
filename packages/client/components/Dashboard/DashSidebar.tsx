@@ -14,6 +14,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useRouteMatch} from 'react-router'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
+import {SearchDialog} from '../../modules/search/SearchDialog'
 import {NavSidebar} from '../../types/constEnums'
 import {
   AUTHENTICATION_PAGE,
@@ -141,6 +142,7 @@ const DashSidebar = (props: Props) => {
         <div className='flex h-full w-64 flex-col p-0'>
           <div className='px-3'>
             <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
+            <SearchDialog />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam/1'} label={'Add a Team'} />

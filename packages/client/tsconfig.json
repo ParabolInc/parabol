@@ -6,7 +6,8 @@
       "parabol-client/*": ["./*"]
     },
     "outDir": "lib",
+    "incremental": true,
     "lib": ["esnext", "dom"]
   },
-  "exclude": ["serviceWorker", "node_modules"]
+  "exclude": ["serviceWorker", "node_modules", "dist", "build"]
 }

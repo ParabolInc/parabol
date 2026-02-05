@@ -39,3 +39,4 @@ test-report.xml
 webpack-assets.json
 **/data
 backups/
+tsconfig.tsbuildinfo
