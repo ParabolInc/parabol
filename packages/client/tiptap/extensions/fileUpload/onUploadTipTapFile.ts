@@ -63,10 +63,9 @@ export const onUploadTipTapFile =
     commit({
       variables: {scope: assetScope, scopeKey},
       uploadables: {file: file},
-      onCompleted: (res) => {
+      onCompleted: (res, errors) => {
         const {uploadUserAsset} = res
-        const {url} = uploadUserAsset!
-        const message = uploadUserAsset?.error?.message
+        const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
         const {state, view} = editor
         if (message) {
           atmosphere.eventEmitter.emit('addSnackbar', {
@@ -84,7 +83,7 @@ export const onUploadTipTapFile =
           })
           return
         }
-        const src = url!
+        const src = uploadUserAsset!.url!
 
         state.doc.descendants((node, pos) => {
           if (node.type.name === nodeType && node.attrs.src === localSrc) {
