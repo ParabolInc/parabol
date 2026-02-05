@@ -237,3 +237,9 @@ export const AVG_CHARS_PER_TOKEN = 4 // 1 token ~= 4 chars https://help.openai.c
 
 // Fetch timeout used mainly in integrations
 export const MAX_REQUEST_TIME = 5000
+
+export const MAX_IMAGE_SIZE = 8_000_000
+export const MAX_FILE_SIZE_FREE = 8_000_000
+export const MAX_FILE_SIZE_PAID = 64_000_000
+export const MAX_USER_UPLOAD_BYTES_FREE = 500_000_000
+export const MAX_USER_UPLOAD_BYTES_PAID = 2_000_000_000

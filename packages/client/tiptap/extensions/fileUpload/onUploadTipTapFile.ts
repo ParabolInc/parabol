@@ -4,6 +4,7 @@ import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.g
 import type Atmosphere from '../../../Atmosphere'
 import type {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
 import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
+import {MAX_FILE_SIZE_FREE, MAX_FILE_SIZE_PAID, MAX_IMAGE_SIZE} from '../../../utils/constants'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
 export const onUploadTipTapFile =
@@ -15,12 +16,13 @@ export const onUploadTipTapFile =
   async (file: File, editor: Editor, targetType: FileUploadTargetType, pos?: number) => {
     if (!highestTier) return
     const isFree = highestTier === 'starter'
-    const sizeLimit = isFree || targetType === 'image' ? 8_000_000 : 64_000_000
+    const sizeLimit =
+      targetType === 'image' ? MAX_IMAGE_SIZE : isFree ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
     if (file.size > sizeLimit) {
       const prefix = `The file is too large.`
       const message = isFree
         ? `Please upgrade for larger file uploads.`
-        : `Please reach out if you need to store files larger than 64MB.`
+        : `Please reach out if you need to store files larger than ${MAX_FILE_SIZE_PAID / 1_000_000}MB.`
       atmosphere.eventEmitter.emit('addSnackbar', {
         key: 'fileTooBIG',
         message: `${prefix} ${message}`,
@@ -61,10 +63,9 @@ export const onUploadTipTapFile =
     commit({
       variables: {scope: assetScope, scopeKey},
       uploadables: {file: file},
-      onCompleted: (res) => {
+      onCompleted: (res, errors) => {
         const {uploadUserAsset} = res
-        const {url} = uploadUserAsset!
-        const message = uploadUserAsset?.error?.message
+        const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
         const {state, view} = editor
         if (message) {
           atmosphere.eventEmitter.emit('addSnackbar', {
@@ -82,7 +83,7 @@ export const onUploadTipTapFile =
           })
           return
         }
-        const src = url!
+        const src = uploadUserAsset!.url!
 
         state.doc.descendants((node, pos) => {
           if (node.type.name === nodeType && node.attrs.src === localSrc) {
