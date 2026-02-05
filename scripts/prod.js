@@ -21,9 +21,8 @@ const runChild = (cmd) => {
 
 const prod = async (isDeploy, noDeps) => {
   Logger.log('🙏🙏🙏      Building Production Server      🙏🙏🙏')
-  // return
   try {
-    // await generateGraphQLArtifacts()
+    await generateGraphQLArtifacts()
   } catch (e) {
     Logger.log('ERR generating artifacts', e)
     process.exit(1)

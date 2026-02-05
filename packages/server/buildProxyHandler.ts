@@ -21,6 +21,6 @@ export const buildProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   res
     .writeStatus('307')
     .writeHeader('Location', url)
-    .writeHeader('Cache-Control', 'public, max-age=86400')
+    .writeHeader('Cache-Control', 'public, max-age=604800')
     .end()
 })
