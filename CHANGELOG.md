@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.13.0](https://github.com/ParabolInc/parabol/compare/v11.12.0...v11.13.0) (2026-02-05)
+
+
+### Added
+
+* **SCIM:** user endpoints ([#12530](https://github.com/ParabolInc/parabol/issues/12530)) ([153dab4](https://github.com/ParabolInc/parabol/commit/153dab470d584e61cbdf8c988063490441813d11))
+
 ## [11.12.0](https://github.com/ParabolInc/parabol/compare/v11.11.0...v11.12.0) (2026-02-04)
 
 
