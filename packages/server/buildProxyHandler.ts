@@ -1,4 +1,5 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import ms from 'ms'
 import type {PartialPath} from './fileStorage/FileStoreManager'
 import getFileStoreManager from './fileStorage/getFileStoreManager'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
@@ -15,7 +16,7 @@ export const buildProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,
     () => manager.presignUrl(partialPath),
-    60_000
+    ms('6d')
   )
   res
     .writeStatus('307')
