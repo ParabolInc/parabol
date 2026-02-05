@@ -341,7 +341,6 @@ test('Leaving a team updates User.tms', async () => {
   })
   const teamId = user1.data.viewer.tms[0]
   const teamMemberId = TeamMemberId.join(teamId, user.userId)
-  console.log('teamMemberId', teamMemberId)
 
   const leftTeam = await sendPublic({
     query: `

@@ -1,14 +1,36 @@
 import base64url from 'base64url'
 import {createHash} from 'crypto'
+import {GraphQLError} from 'graphql'
+import filetypeinfo from 'magic-bytes.js'
 import mime from 'mime-types'
+import {
+  MAX_FILE_SIZE_FREE,
+  MAX_FILE_SIZE_PAID,
+  MAX_IMAGE_SIZE,
+  MAX_USER_UPLOAD_BYTES_FREE,
+  MAX_USER_UPLOAD_BYTES_PAID
+} from '../../../../client/utils/constants'
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
 import type {DataLoaderWorker} from '../../graphql'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
+export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: number) => {
+  const pg = getKysely()
+  await pg
+    .insertInto('UserDetail')
+    .values({id: userId, bytesUploaded: sizeInBytes})
+    .onConflict((oc) =>
+      oc.column('id').doUpdateSet((eb) => ({
+        bytesUploaded: eb('UserDetail.bytesUploaded', '+', sizeInBytes)
+      }))
+    )
+    .execute()
+}
 export const validateScope = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
@@ -43,31 +65,61 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   {authToken, dataLoader}
 ) => {
   // VALIDATION
-  const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
+  const viewerId = getUserId(authToken)
+  const [scopeCode, userDetails, viewerTier] = await Promise.all([
+    validateScope(authToken, scope, scopeKey, dataLoader),
+    dataLoader.get('userDetails').load(viewerId),
+    dataLoader.get('highestTierForUserId').load(viewerId)
+  ])
+  const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
+  if (BigInt(userDetails?.bytesUploaded || 0) > BigInt(maxSize)) {
+    return {error: {message: `Upload limit reached. Please contact sales`}}
+  }
   if (typeof scopeCode !== 'string') return scopeCode
 
   const contentType = file.type
-  const buffer = Buffer.from(await file.arrayBuffer())
+  const buffer = Buffer.from<ArrayBufferLike>(await file.arrayBuffer())
   const ext = mime.extension(contentType)
   if (!ext) {
     return {
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const {buffer: compressedBuffer, extension} = await compressImage(buffer, ext)
-  if (compressedBuffer.byteLength > 2 ** 23) {
-    return {error: {message: `Max asset size is ${2 ** 23} bytes`}}
+  const info = filetypeinfo(new Uint8Array(buffer))
+  const contentIsCorrectType = info.some((i) => i.mime === file.type)
+  const assumedType = info[0]?.typename
+  if (info.length > 0 && !contentIsCorrectType) {
+    throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)
   }
-  const hashName = base64url.fromBase64(
-    createHash('sha256').update(compressedBuffer).digest('base64')
-  )
+  const isImage = file.type.includes('image')
+  let fileBuffer = buffer
+  let fileExtension = ext
+  if (isImage) {
+    const res = await compressImage(buffer, ext)
+    fileBuffer = res.buffer
+    fileExtension = res.extension
+    if (fileBuffer.byteLength > MAX_IMAGE_SIZE) {
+      return {error: {message: `Max image size is ${MAX_IMAGE_SIZE} bytes`}}
+    }
+  } else {
+    const maxSize = viewerTier === 'starter' ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
+    if (buffer.byteLength > maxSize) {
+      return {error: {message: `Max file size is ${maxSize} bytes`}}
+    }
+  }
+  const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
   const manager = getFileStoreManager()
-  const url = await manager.putUserFile(
-    compressedBuffer,
-    `${scope}/${scopeCode}/assets/${hashName}.${extension}`
-  )
-  return {url}
+  const [url] = await Promise.all([
+    manager.putUserFile(fileBuffer, `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`),
+    incrementUserBytesUploaded(viewerId, fileBuffer.byteLength)
+  ])
+  return {
+    url,
+    name: file.name || hashName,
+    type: file.type || assumedType || '',
+    size: fileBuffer.byteLength
+  }
 }
 
 export default uploadUserAsset

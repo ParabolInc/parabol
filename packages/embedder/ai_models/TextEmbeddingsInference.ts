@@ -40,8 +40,8 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
     const toError = (e: unknown) => ({
       error: e instanceof Error ? e.message : e
     })
-    client.GET = openAPIWithTimeout(client.GET, toError, 10000)
-    client.POST = openAPIWithTimeout(client.POST, toError, 10000)
+    client.GET = openAPIWithTimeout(client.GET, toError, 40_000)
+    client.POST = openAPIWithTimeout(client.POST, toError, 40_000)
     this.client = client
   }
 

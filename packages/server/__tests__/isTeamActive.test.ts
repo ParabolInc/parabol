@@ -27,7 +27,6 @@ describe('isTeamActive', () => {
   afterAll(async () => {
     await pg.schema.dropSchema(TEST_DB).cascade().execute()
     await pg.destroy()
-    console.log('isTeamActive destroy')
   })
 
   const setupBaseTestData = async () => {

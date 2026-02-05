@@ -42,6 +42,7 @@ export const getPagesByRRF = async (params: Params) => {
     .with('Model', (qb) =>
       qb
         .selectFrom('PageAccess')
+        .where('PageAccess.userId', '=', viewerId)
         .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
         .where('PageAccess.userId', '=', viewerId)
         .$if(!!dateRange, (qb) =>
