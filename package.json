@@ -145,7 +145,7 @@
     "ts-loader": "9.2.6",
     "typescript": "^5.9.3",
     "vscode-apollo-relay": "^1.5.0",
-    "webpack": "^5.99.6",
+    "webpack": "^5.104.1",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "^5.2.2",
