@@ -13,7 +13,7 @@ flowchart LR
   Client2(Client 2)
   Server1(Server 1 - GraphQL Resolver)
   Server2(Server 2 - GraphQL Resolver)
-  RedisSubscriptionPubSub(Redis PubSub)
+  RedisSubscriptionPubSub(Valkey PubSub)
 
   click Server1 "../packages/server/server.ts"
 
@@ -39,10 +39,10 @@ sequenceDiagram
   par Resolve mutation
     Client ->>+ Server: updateTeamName
     note over Server: resolve mutation
-    Server ->> Redis: publish Team.teamId
+    Server ->> Valkey: publish Team.teamId
     Server ->>- Client: execution result
   and Resolve subscription
-    Redis ->>+ Server: Team.teamId
+    Valkey ->>+ Server: Team.teamId
     note over Server: resolve subscription
     Server ->>- Client: subscription next
   end
