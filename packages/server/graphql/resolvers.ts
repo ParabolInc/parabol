@@ -8,6 +8,7 @@ import type {AnyMeeting} from '../postgres/types/Meeting'
 import type {Newmeetingphasetypeenum} from '../postgres/types/pg'
 import {getUserId, isSuperUser} from '../utils/authorization'
 import type {GQLContext} from './graphql'
+import isValid from './isValid'
 
 export const resolveNewMeeting = (
   {
@@ -85,7 +86,8 @@ export const resolveGQLStageFromId = (stageId: string | undefined, meeting: AnyM
   const {stage} = stageRes
   return {
     ...stage,
-    meetingId
+    meetingId,
+    teamId: meeting.teamId
   }
 }
 
@@ -122,7 +124,7 @@ export const resolveUnlockedStages = async (
 ) => {
   if (!unlockedStageIds || unlockedStageIds.length === 0 || !meetingId) return undefined
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  return unlockedStageIds.map((stageId) => resolveGQLStageFromId(stageId, meeting))
+  return unlockedStageIds.map((stageId) => resolveGQLStageFromId(stageId, meeting)).filter(isValid)
 }
 
 export const resolveUser = (

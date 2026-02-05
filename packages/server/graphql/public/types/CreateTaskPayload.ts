@@ -2,32 +2,26 @@ import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
 import type {CreateTaskPayloadResolvers} from '../resolverTypes'
 
-export type CreateTaskPayloadSource = {
-  error?: Error
-  taskId?: string
-  notificationIds?: string[]
-}
+export type CreateTaskPayloadSource =
+  | {
+      taskId: string
+      notificationIds?: string[]
+    }
+  | {error: {message: string}}
 
 const CreateTaskPayload: CreateTaskPayloadResolvers = {
-  error: async ({error}) => {
-    if (!error) return null
-    return {
-      // although the error already has the correct shape, without this resolver, the error member in source would not be used as source here, but treated as if it was thrown by graphql
-      message: error.message
-    }
-  },
-  task: async ({taskId}, _args, {authToken, dataLoader}) => {
-    const taskDoc = taskId && (await dataLoader.get('tasks').load(taskId))
-    if (!taskDoc) return null
+  task: async (source, _args, {authToken, dataLoader}) => {
+    if ('error' in source) return null
+    const taskDoc = await dataLoader.get('tasks').loadNonNull(source.taskId)
     const {userId, tags, teamId} = taskDoc
     const isViewer = userId === getUserId(authToken)
     const isViewerOnTeam = authToken.tms.includes(teamId)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
   },
 
-  involvementNotification: async ({notificationIds}, _args, {authToken, dataLoader}) => {
-    if (!notificationIds) return null
-    const notifications = (await dataLoader.get('notifications').loadMany(notificationIds))
+  involvementNotification: async (source, _args, {authToken, dataLoader}) => {
+    if ('error' in source || !source.notificationIds) return null
+    const notifications = (await dataLoader.get('notifications').loadMany(source.notificationIds))
       .filter(isValid)
       .filter((n) => n.type === 'TASK_INVOLVES')
     const viewerId = getUserId(authToken)

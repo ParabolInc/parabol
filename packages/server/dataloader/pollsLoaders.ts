@@ -1,6 +1,7 @@
 import DataLoader from 'dataloader'
 import getKysely from '../postgres/getKysely'
 import type {Poll, PollOption} from '../postgres/types'
+import NullableDataLoader from './NullableDataLoader'
 import type RootDataLoader from './RootDataLoader'
 
 export const pollOptions = (parent: RootDataLoader) => {
@@ -20,7 +21,7 @@ export const pollOptions = (parent: RootDataLoader) => {
 }
 
 export const polls = (parent: RootDataLoader) => {
-  return new DataLoader<number, Poll | null, string>(
+  return new NullableDataLoader<number, Poll | null, string>(
     async (pollIds) => {
       const rows = await getKysely()
         .selectFrom('Poll')
