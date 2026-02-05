@@ -38,6 +38,8 @@ export const getPagesByRRF = async (params: Params) => {
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'
 
+  const MIN_RRF_SCORE = 0.004
+
   const results = await pg
     .with('Model', (qb) =>
       qb
@@ -134,7 +136,7 @@ export const getPagesByRRF = async (params: Params) => {
       }).as('snippet')
     )
     .orderBy('score', 'desc')
-    .where('score', '>', 0)
+    .where('score', '>', MIN_RRF_SCORE)
     .limit(first)
     .execute()
   return {

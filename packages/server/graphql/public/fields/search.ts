@@ -43,9 +43,10 @@ export const search: NonNullable<UserResolvers['search']> = async (
           dateField: dateField || 'createdAt'
         }
       : null
-  const teamIdsOrDefault = teamIds || ['aGhostTeam', ...authToken.tms]
-  const safeTeamIds =
-    teamIdsOrDefault.length > 0 ? (teamIdsOrDefault as [string, ...string[]]) : undefined
+  // if teamIds is defined for pages, it will limit the search to team pages
+  const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
+  // metadata requires a teamId, whereas pages don't because it uses RBAC
+  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...authToken.tms]
 
   if (query.length === 0) {
     const noQueryEdge = {
@@ -67,10 +68,10 @@ export const search: NonNullable<UserResolvers['search']> = async (
         .$if(!!dateRange, (qb) =>
           qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
-        .$if(!!safeTeamIds, (qb) =>
+        .$if(!!pageTeamIds, (qb) =>
           qb
             .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', `Page.id`)
-            .where('PageTeamAccess.teamId', 'in', safeTeamIds!)
+            .where('PageTeamAccess.teamId', 'in', pageTeamIds!)
         )
         .orderBy('Page.updatedAt', 'desc')
         .limit(first + 1)
@@ -97,7 +98,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
     const results = await pg
       .selectFrom('EmbeddingsMetadata')
-      .$if(!!safeTeamIds, (qb) => qb.where('teamId', 'in', safeTeamIds!))
+      .$if(!!metadataTeamIds, (qb) => qb.where('teamId', 'in', metadataTeamIds!))
       .where('EmbeddingsMetadata.objectType', '=', type)
       .$if(!!dateRange, (qb) =>
         qb
@@ -141,7 +142,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds: safeTeamIds,
+      teamIds: pageTeamIds,
       viewerId
     })
   } else {
@@ -153,7 +154,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds: safeTeamIds,
+      teamIds: metadataTeamIds,
       type
     })
   }

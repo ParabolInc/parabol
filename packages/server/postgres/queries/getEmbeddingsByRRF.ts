@@ -24,7 +24,7 @@ interface Params {
     endAt: Date
     dateField: 'createdAt' | 'updatedAt'
   } | null
-  teamIds: [string, ...string[]] | undefined
+  teamIds: [string, ...string[]]
   type: Exclude<SearchTypeEnum, 'page'>
 }
 
@@ -38,12 +38,14 @@ export const getEmbeddingsByRRF = async (params: Params) => {
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'
 
+  const MIN_RRF_SCORE = 0.004
+
   const results = await pg
     .with('Model', (qb) =>
       qb
         .selectFrom('EmbeddingsMetadata')
         .innerJoin(tableName, 'EmbeddingsMetadata.id', `${tableName}.embeddingsMetadataId`)
-        .$if(!!teamIds, (qb) => qb.where('teamId', 'in', teamIds!))
+        .where('teamId', 'in', teamIds)
         .where('EmbeddingsMetadata.objectType', '=', type)
         .$if(!!dateRange, (qb) =>
           qb
@@ -139,7 +141,7 @@ export const getEmbeddingsByRRF = async (params: Params) => {
     )
     .$narrowType<{embeddingsMetadataId: NotNull; refId: NotNull}>()
     .orderBy('score', 'desc')
-    .where('score', '>', 0)
+    .where('score', '>', MIN_RRF_SCORE)
     .limit(first)
     .execute()
   return {

@@ -83,6 +83,7 @@ export const SearchDialogContent = (props: Props) => {
         <div className='flex items-center gap-2'>
           <span className='rounded bg-blue-50 px-1.5 py-0.5 font-medium text-blue-600'>
             Hybrid Search
+            <span className='align-super font-semibold text-[8px]'>BETA</span>
           </span>
         </div>
       </div>
