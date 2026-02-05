@@ -201,7 +201,7 @@ export default class GCSManager extends FileStoreManager {
     const res = await fetch(url)
     return res.status !== 404
   }
-  async presignUrl(partialPath: PartialPath): Promise<string> {
+  async presignUrl(partialPath: PartialPath, _expiresIn = 604800): Promise<string> {
     // for PPMIs where a public bucket is not allowed, we special case build files
     if (partialPath.startsWith('/build/')) {
       const filename = partialPath.slice('/build/'.length)

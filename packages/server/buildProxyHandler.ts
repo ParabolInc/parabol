@@ -13,14 +13,16 @@ export const buildProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: 
   }
 
   const manager = getFileStoreManager()
+  const expiresIn = ms('7d') / 1000
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,
-    () => manager.presignUrl(partialPath),
-    ms('6d')
+    () => manager.presignUrl(partialPath, expiresIn),
+    // we want to refresh the presigned url before it expires
+    expiresIn - ms('1d') / 1000
   )
   res
     .writeStatus('307')
     .writeHeader('Location', url)
-    .writeHeader('Cache-Control', 'public, max-age=604800')
+    .writeHeader('Cache-Control', `public, max-age=${expiresIn}`)
     .end()
 })

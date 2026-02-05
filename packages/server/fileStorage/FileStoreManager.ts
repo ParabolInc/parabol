@@ -29,7 +29,7 @@ export default abstract class FileStoreManager {
 
   abstract copyFile(oldKey: PartialPath, newKey: PartialPath): Promise<string>
   abstract moveFile(oldKey: PartialPath, newKey: PartialPath): Promise<void>
-  abstract presignUrl(partialPath: PartialPath): Promise<string>
+  abstract presignUrl(partialPath: PartialPath, expiresIn?: number): Promise<string>
   async putUserFile(file: ArrayBufferLike | Buffer<ArrayBufferLike>, partialPath: PartialPath) {
     const fullPath = this.prependPath(partialPath)
     await this.putFile(file, fullPath)

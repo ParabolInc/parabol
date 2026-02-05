@@ -149,7 +149,7 @@ export default class S3Manager extends FileStoreManager {
     )
   }
 
-  async presignUrl(partialPath: PartialPath) {
+  async presignUrl(partialPath: PartialPath, expiresIn = 604800) {
     let fullPath: string | undefined = undefined
     if (partialPath.startsWith('/build/')) {
       const filename = partialPath.slice('/build/'.length)
@@ -161,7 +161,7 @@ export default class S3Manager extends FileStoreManager {
     const key = decodeURI(fullPath)
     const command = new GetObjectCommand({Bucket: this.bucket, Key: key})
     const encodedUri = await getSignedUrl(this.s3, command, {
-      expiresIn: 604800
+      expiresIn
     })
     return encodedUri
   }
