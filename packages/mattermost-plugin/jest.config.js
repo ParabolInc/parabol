@@ -10,6 +10,7 @@ module.exports = {
       }
     ]
   },
+  transformIgnorePatterns: ['/marked\.esm\.js/'],
   modulePaths: ['<rootDir>/packages/'],
   moduleNameMapper: {
     'server/(.*)': ['<rootDir>/$1'],

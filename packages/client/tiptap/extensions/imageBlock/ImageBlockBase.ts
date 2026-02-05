@@ -1,43 +1,25 @@
-import {
-  createBlockMarkdownSpec,
-  mergeAttributes,
-  type NodeConfig,
-  type Range,
-  type Editor as TipTapEditor
-} from '@tiptap/core'
+import {createBlockMarkdownSpec, mergeAttributes, type NodeConfig, type Range} from '@tiptap/core'
 import {Image} from '@tiptap/extension-image'
-import type {AssetScopeEnum} from '../../../__generated__/useUploadUserAssetMutation.graphql'
 
-export interface ImageUploadOptions {
+export interface ImageBlockStorage {
   editorWidth: number
   editorHeight: number
-  assetScope: AssetScopeEnum
-  scopeKey: string
-}
-export interface ImageUploadStorage extends ImageUploadOptions {
-  // previewId -> blobSrc
-  pendingUploads: Map<string, string>
 }
 
 declare module '@tiptap/core' {
-  interface EditorEvents {
-    enter: {editor: TipTapEditor}
-    imageUploadCompleted: {previewId: string; url: string}
-  }
   interface Storage {
-    imageUpload: ImageUploadStorage
+    imageBlock: ImageBlockStorage
   }
   interface Commands<ReturnType> {
     imageBlock: {
-      setImageBlock: (attributes: {src?: string; previewId?: string}) => ReturnType
-      setImageBlockAt: (attributes: {src: string; pos: number | Range}) => ReturnType
+      setImageBlock: (attributes: {src: string; pos?: number | Range}) => ReturnType
       setImageBlockAlign: (align: 'left' | 'center' | 'right') => ReturnType
       setImageBlockWidth: (width: number) => ReturnType
     }
   }
 }
 
-export const ImageBlockBase = Image.extend({
+export const ImageBlockBase = Image.extend<ImageBlockStorage, ImageBlockStorage>({
   name: 'imageBlock',
 
   group: 'block',
@@ -45,6 +27,20 @@ export const ImageBlockBase = Image.extend({
   defining: true,
 
   isolating: true,
+
+  addOptions() {
+    return {
+      editorWidth: 300,
+      editorHeight: 112
+    }
+  },
+
+  addStorage(this) {
+    return {
+      editorWidth: this.options.editorWidth,
+      editorHeight: this.options.editorHeight
+    }
+  },
 
   parseHTML() {
     return [

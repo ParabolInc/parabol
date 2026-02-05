@@ -6,6 +6,7 @@ module.exports = {
     '\\.(gql|graphql)$': '../server/__tests__/jest-transform-graphql-shim.js',
     '^.+\\.(t|j)sx?$': ['@swc/jest']
   },
+  transformIgnorePatterns: ['/marked\.esm\.js/'],
   modulePaths: ['<rootDir>/packages/'],
   moduleNameMapper: {
     '~/(.*)': ['<rootDir>/../client/$1']

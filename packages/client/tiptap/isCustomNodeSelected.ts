@@ -1,15 +1,19 @@
 import type {Editor} from '@tiptap/core'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import FileBlock from './extensions/fileBlock/FileBlock'
+import {FileUpload} from './extensions/fileUpload/FileUpload'
 import {ImageBlock} from './extensions/imageBlock/ImageBlock'
-import {ImageUpload} from './extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from './extensions/insightsBlock/InsightsBlock'
+import {ResponseBlock} from './extensions/insightsBlock/ResponseBlock'
 import {TaskBlock} from './extensions/insightsBlock/TaskBlock'
 import {PageLinkBlock} from './extensions/pageLinkBlock/PageLinkBlock'
 
 const customNodes = [
   TiptapLinkExtension.name,
   PageLinkBlock.name,
-  ImageUpload.name,
+  FileUpload.name,
+  FileBlock.name,
+  ResponseBlock.name,
   InsightsBlock.name,
   ImageBlock.name,
   TaskBlock.name

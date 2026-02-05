@@ -11,8 +11,8 @@ import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtens
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
+import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
-import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
@@ -57,13 +57,14 @@ export const useTipTapReflectionEditor = (
         }),
         ClearOnSubmit,
         Focus,
-        ImageUpload.configure({
-          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88,
+        FileUpload.configure({
           scopeKey: teamId,
           assetScope: 'Team'
         }),
-        ImageBlock,
+        ImageBlock.configure({
+          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
+          editorHeight: 88
+        }),
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
