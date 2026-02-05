@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.0.0](https://github.com/ParabolInc/parabol/compare/v11.13.0...v12.0.0) (2026-02-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **valkey:** Redis replaced with Valkey ([#12525](https://github.com/ParabolInc/parabol/issues/12525))
+
+### Added
+
+* Implement user and file upload limits ([#12563](https://github.com/ParabolInc/parabol/issues/12563)) ([59fb1c3](https://github.com/ParabolInc/parabol/commit/59fb1c30634838fbf3a52e8f870a60eed95389f3))
+* proxy build files through /build path ([#12554](https://github.com/ParabolInc/parabol/issues/12554)) ([0bae1a1](https://github.com/ParabolInc/parabol/commit/0bae1a1d37b7ba7fcedc3f07c3bd299648d4626f))
+* Search Pages frontend ([#12526](https://github.com/ParabolInc/parabol/issues/12526)) ([3b83fdb](https://github.com/ParabolInc/parabol/commit/3b83fdb56bd3c9bcf5aae86266cb35a1b6ff0ccd))
+* **valkey:** Redis replaced with Valkey ([#12525](https://github.com/ParabolInc/parabol/issues/12525)) ([e0e18f8](https://github.com/ParabolInc/parabol/commit/e0e18f8aad621a79576c76f77754e2e74696320e))
+
+
+### Changed
+
+* **deps-dev:** bump webpack from 5.103.0 to 5.104.1 ([#12562](https://github.com/ParabolInc/parabol/issues/12562)) ([7fa0226](https://github.com/ParabolInc/parabol/commit/7fa0226d0ddbda85d6f922f37ba64631fd14cc14))
+
 ## [11.13.0](https://github.com/ParabolInc/parabol/compare/v11.12.0...v11.13.0) (2026-02-05)
 
 
