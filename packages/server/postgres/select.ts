@@ -455,3 +455,7 @@ export const selectOAuthAPICode = () => {
     .select(['id', 'clientId', 'createdAt', 'expiresAt', 'redirectUri', 'userId'])
     .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
 }
+
+export const selectUserDetails = () => {
+  return getKysely().selectFrom('UserDetail').selectAll()
+}

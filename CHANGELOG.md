@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [11.13.0](https://github.com/ParabolInc/parabol/compare/v11.12.0...v11.13.0) (2026-02-05)
+
+
+### Added
+
+* **SCIM:** user endpoints ([#12530](https://github.com/ParabolInc/parabol/issues/12530)) ([153dab4](https://github.com/ParabolInc/parabol/commit/153dab470d584e61cbdf8c988063490441813d11))
+
+## [11.12.0](https://github.com/ParabolInc/parabol/compare/v11.11.0...v11.12.0) (2026-02-04)
+
+
+### Added
+
+* File uploads on pages ([#12533](https://github.com/ParabolInc/parabol/issues/12533)) ([03196bf](https://github.com/ParabolInc/parabol/commit/03196bff448336f73840426c88c92b6eaf94c01b))
+
+
+### Fixed
+
+* editor size for images ([#12551](https://github.com/ParabolInc/parabol/issues/12551)) ([71a541d](https://github.com/ParabolInc/parabol/commit/71a541db3f45ba2123214320ee7bfdcf75dceeae))
+* speed up search queries ([#12552](https://github.com/ParabolInc/parabol/issues/12552)) ([84c041c](https://github.com/ParabolInc/parabol/commit/84c041ce1f7195f8a88734a6494f833366da8791))
+
 ## [11.11.0](https://github.com/ParabolInc/parabol/compare/v11.10.5...v11.11.0) (2026-02-04)
 
 

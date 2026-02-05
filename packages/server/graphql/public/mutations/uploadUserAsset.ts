@@ -3,14 +3,34 @@ import {createHash} from 'crypto'
 import {GraphQLError} from 'graphql'
 import filetypeinfo from 'magic-bytes.js'
 import mime from 'mime-types'
+import {
+  MAX_FILE_SIZE_FREE,
+  MAX_FILE_SIZE_PAID,
+  MAX_IMAGE_SIZE,
+  MAX_USER_UPLOAD_BYTES_FREE,
+  MAX_USER_UPLOAD_BYTES_PAID
+} from '../../../../client/utils/constants'
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
 import type {DataLoaderWorker} from '../../graphql'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
+export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: number) => {
+  const pg = getKysely()
+  await pg
+    .insertInto('UserDetail')
+    .values({id: userId, bytesUploaded: sizeInBytes})
+    .onConflict((oc) =>
+      oc.column('id').doUpdateSet((eb) => ({
+        bytesUploaded: eb('UserDetail.bytesUploaded', '+', sizeInBytes)
+      }))
+    )
+    .execute()
+}
 export const validateScope = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
@@ -46,8 +66,15 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
 ) => {
   // VALIDATION
   const viewerId = getUserId(authToken)
-  const highestTier = await dataLoader.get('highestTierForUserId').load(viewerId)
-  const scopeCode = await validateScope(authToken, scope, scopeKey, dataLoader)
+  const [scopeCode, userDetails, viewerTier] = await Promise.all([
+    validateScope(authToken, scope, scopeKey, dataLoader),
+    dataLoader.get('userDetails').load(viewerId),
+    dataLoader.get('highestTierForUserId').load(viewerId)
+  ])
+  const maxSize = viewerTier === 'starter' ? MAX_USER_UPLOAD_BYTES_FREE : MAX_USER_UPLOAD_BYTES_PAID
+  if (BigInt(userDetails?.bytesUploaded || 0) > BigInt(maxSize)) {
+    return {error: {message: `Upload limit reached. Please contact sales`}}
+  }
   if (typeof scopeCode !== 'string') return scopeCode
 
   const contentType = file.type
@@ -71,22 +98,22 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     const res = await compressImage(buffer, ext)
     fileBuffer = res.buffer
     fileExtension = res.extension
-    if (fileBuffer.byteLength > 8_000_000) {
-      return {error: {message: `Max asset size is 8MB`}}
+    if (fileBuffer.byteLength > MAX_IMAGE_SIZE) {
+      return {error: {message: `Max image size is ${MAX_IMAGE_SIZE} bytes`}}
     }
   } else {
-    const maxSize = highestTier === 'starter' ? 8_000_000 : 64_000_000
+    const maxSize = viewerTier === 'starter' ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
     if (buffer.byteLength > maxSize) {
-      return {error: {message: `Max asset size is ${maxSize} bytes`}}
+      return {error: {message: `Max file size is ${maxSize} bytes`}}
     }
   }
   const hashName = base64url.fromBase64(createHash('sha256').update(fileBuffer).digest('base64'))
   // RESOLUTION
   const manager = getFileStoreManager()
-  const url = await manager.putUserFile(
-    fileBuffer,
-    `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`
-  )
+  const [url] = await Promise.all([
+    manager.putUserFile(fileBuffer, `${scope}/${scopeCode}/assets/${hashName}.${fileExtension}`),
+    incrementUserBytesUploaded(viewerId, fileBuffer.byteLength)
+  ])
   return {
     url,
     name: file.name || hashName,

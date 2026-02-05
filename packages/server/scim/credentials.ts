@@ -10,6 +10,7 @@ export function generateBearerToken(scimId: string) {
     scope: scopes,
     aud: 'action-scim'
   })
+  // don't sign the bearer token, it's compared directly to the stored token and we want it to survive server secret changes
   const accessToken = encodeUnsignedAuthToken(authToken)
   return accessToken
 }

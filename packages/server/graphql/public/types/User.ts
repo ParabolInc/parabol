@@ -804,7 +804,7 @@ const User: ReqResolvers<'User'> = {
       userId,
       dataLoader
     })
-    if (!vector) return []
+    if (!vector || vector instanceof Error) return []
 
     const pg = getKysely()
     const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
