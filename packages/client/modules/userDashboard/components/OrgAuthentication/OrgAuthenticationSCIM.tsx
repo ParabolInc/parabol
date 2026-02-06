@@ -162,15 +162,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
         </div>
       )
     }
-    const {
-      id: domain,
-      scimCensoredBearerToken,
-      scimOAuthClientId,
-      scimCensoredOAuthClientSecret
-    } = saml
+    const {scimCensoredBearerToken, scimOAuthClientId, scimCensoredOAuthClientSecret} = saml
     const startURL = window.location.origin
-    const scimURL = makeAppURL(startURL, `/scim/${domain}`)
-    const tokenURL = makeAppURL(startURL, `/oauth/token`)
+    const scimURL = makeAppURL(startURL, '/scim')
+    const tokenURL = makeAppURL(startURL, '/oauth/token')
     return (
       <div>
         <div className='flex pt-6 font-semibold text-base text-slate-700 leading-6'>
