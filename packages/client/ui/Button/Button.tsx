@@ -46,7 +46,7 @@ const SHAPE_STYLES: Record<Shape, string> = {
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
-  variant: Variant
+  variant?: Variant
   size?: Size
   shape?: Shape
 }
@@ -58,7 +58,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(
           BASE_STYLES,
-          VARIANT_STYLES[variant],
+          variant ? VARIANT_STYLES[variant] : null,
           size ? SIZE_STYLES[size] : null,
           SHAPE_STYLES[shape],
           className

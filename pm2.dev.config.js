@@ -42,8 +42,8 @@ module.exports = {
       script: 'scripts/hmrServer.js'
     },
     {
-      name: 'Flush Redis',
-      script: 'scripts/flushRedis.js',
+      name: 'Flush Valkey',
+      script: 'scripts/flushValkey.js',
       autorestart: false
     },
     {

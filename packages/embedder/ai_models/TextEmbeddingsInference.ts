@@ -55,7 +55,6 @@ export class TextEmbeddingsInference extends AbstractEmbeddingsModel {
           const res = await this.getTokens('ready')
           const duration = Math.floor((Date.now() - start) / 1000)
           if (res instanceof Error) {
-            console.log(res.message)
             Logger.log(`TEI warming up for ${duration} seconds`)
             await sleep(5_000)
             continue
