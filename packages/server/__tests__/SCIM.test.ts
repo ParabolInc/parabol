@@ -308,53 +308,229 @@ const enableSCIM = async (orgId: string, cookie: string) => {
   return res.data.updateSCIM.scimBearerToken
 }
 
-describe('Okta SCIM 2.0 Runscope test spec', () => {
+describe('Okta SCIM 2.0', () => {
+  let bearerToken: string
   const domain = faker.internet.domainName()
-  const variables: Record<string, string> = {}
 
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
     await verifyDomain(domain, orgId)
-    const bearerToken = await enableSCIM(orgId, cookie)
+    bearerToken = await enableSCIM(orgId, cookie)
+  })
 
-    const randomUsername = faker.internet.userName().toLowerCase()
-    Object.assign(variables, {
-      SCIMBaseURL: SCIM_URL,
-      auth: `Bearer ${bearerToken}`,
-      UserIdThatDoesNotExist: 'non-existent-user-id-12345',
-      InvalidUserEmail: 'invalid-email-format',
-      randomUsername,
-      randomUsernameCaps: randomUsername.toUpperCase(),
-      randomGivenName: faker.name.firstName(),
-      randomFamilyName: faker.name.lastName(),
-      randomEmail: faker.internet.email()
+  describe('Okta SCIM 2.0 Runscope test spec', () => {
+    const variables: Record<string, string> = {}
+
+    beforeAll(async () => {
+      const randomUsername = faker.internet.userName().toLowerCase()
+      Object.assign(variables, {
+        SCIMBaseURL: SCIM_URL,
+        auth: `Bearer ${bearerToken}`,
+        UserIdThatDoesNotExist: 'non-existent-user-id-12345',
+        InvalidUserEmail: 'invalid-email-format',
+        randomUsername,
+        randomUsernameCaps: randomUsername.toUpperCase(),
+        randomGivenName: faker.name.firstName(),
+        randomFamilyName: faker.name.lastName(),
+        randomEmail: faker.internet.email()
+      })
+    })
+
+    const spec = JSON.parse(fs.readFileSync('./__tests__/Okta-SCIM-20-SPEC-Test.json', 'utf8'))
+
+    const tests = (spec.steps as Step[]).filter((step: Step) => {
+      if (step.step_type === 'request') return true
+      if (step.step_type === 'pause') return false
+      throw new Error(`Unsupported step_type: ${step.step_type}`)
+    })
+
+    // Use test.each to parameterize per step
+    test.each(tests.map((step, idx) => [step.note || `Step ${idx}`, step]))(
+      '%s',
+      async (_name, step) => {
+        const res = await runRadarV1Step(step, variables)
+        assertRadarV1(step, res, variables)
+        extractRadarV1(step, res, variables)
+      }
+    )
+  })
+
+  describe('Soft delete and re-provision user', () => {
+    const userName = faker.internet.userName().toLowerCase()
+    const givenName = faker.name.firstName()
+    const familyName = faker.name.lastName()
+    const testEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const displayName = faker.name.firstName()
+    const externalId = faker.datatype.uuid()
+
+    let id: string
+    test('Create User for Disable', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          active: true,
+          displayName: displayName,
+          externalId,
+          emails: [
+            {
+              type: 'work',
+              value: testEmail
+            }
+          ],
+          name: {
+            givenName,
+            familyName
+          },
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName: userName
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: expect.anything(),
+        externalId,
+        userName,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        displayName,
+        name: {
+          givenName,
+          familyName
+        }
+      })
+      id = data.id
+    })
+
+    test('PATCH /Users/{id} - Disable User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          Operations: [
+            {
+              op: 'replace',
+              path: 'active',
+              value: false
+            }
+          ],
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp']
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        active: false
+      })
+    })
+
+    test('PATCH /Users/{id} - Re-enable User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'replace',
+              path: 'active',
+              value: true
+            }
+          ]
+        })
+      })
+
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      // check it didn't mess with other properties while re-enabling
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        externalId,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        displayName,
+        name: {
+          givenName,
+          familyName
+        }
+      })
+    })
+
+    const newEmail = faker.internet.userName().toLowerCase() + '@' + domain
+    const newUserName = faker.internet.userName().toLowerCase()
+
+    test('PUT /Users/{id} - Update User with the latest email and username', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          id,
+          externalId,
+          userName: newUserName,
+          active: true,
+          emails: [
+            {
+              value: newEmail,
+              type: 'work',
+              primary: true
+            }
+          ],
+          locale: 'en-US',
+          groups: []
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        externalId,
+        userName: newUserName,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: newEmail,
+            primary: true
+          }
+        ]
+      })
     })
   })
-
-  const spec = JSON.parse(fs.readFileSync('./__tests__/Okta-SCIM-20-SPEC-Test.json', 'utf8'))
-
-  const tests = (spec.steps as Step[]).filter((step: Step) => {
-    if (step.step_type === 'request') return true
-    if (step.step_type === 'pause') return false
-    throw new Error(`Unsupported step_type: ${step.step_type}`)
-  })
-
-  // Use test.each to parameterize per step
-  test.each(tests.map((step, idx) => [step.note || `Step ${idx}`, step]))(
-    '%s',
-    async (_name, step) => {
-      const res = await runRadarV1Step(step, variables)
-      assertRadarV1(step, res, variables)
-      extractRadarV1(step, res, variables)
-    }
-  )
 })
 
-describe('Microsoft Entra SCIM 2.0 test spec', () => {
+describe('Microsoft Entra SCIM 2.0', () => {
   // see https://learn.microsoft.com/en-us/entra/identity/app-provisioning/use-scim-to-provision-users-and-groups#user-operations
 
   let bearerToken: string
-
   const domain = faker.internet.domainName()
   beforeAll(async () => {
     const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
