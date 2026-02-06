@@ -26,7 +26,7 @@ SCIM provisioning **cannot**:
 
 ## Attributes
 The following attributes are supported for SCIM provisioning:
-- `userName`: unused by Parabol, can be used to query users; will fall back to SAML PersistentNameID, NameID or email if unknown
+- `userName` (required): unused by Parabol, can be used to query users; will fall back to SAML PersistentNameID, NameID or email if unknown
 - `displayName`: the user's full name, can be changed locally in Parabol
 - `emails` (required): Parabol will use the primary email provided, falling back to the first one; Parabol lowercases all email addresses
 - `externalId`: only stored and echoed back
@@ -35,7 +35,7 @@ The following attributes are supported for SCIM provisioning:
 [^1]: If `name.givenName` or `name.familyName` are unknown, the missing attribute(s) are guessed by the following algorithm:
     - if `displayName` consists of multiple parts (e.g. "Jane H. Doe"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")
     - else if `email` consists of multiple parts separated by `.` (e.g. "jane.h.doe@example.com"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")
-    - else `name.givenName` will be set to `displayName` and `name.lastName` will be set to the local email capitalized, so for "Jane<doe@example.com>" it will be "Jane" and "Doe"
+    - else `name.givenName` will be set to `displayName` and `name.lastName` will be set to the email local part capitalized, so for "Jane<doe@example.com>" it will be "Jane" and "Doe"
 
 ## Warning
 Org admins can be de-provisioned via SCIM, but currently users cannot be promoted to org admins via SCIM. Be sure to manually promote a new org admin before de-provisioning the last org admin.

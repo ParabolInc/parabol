@@ -2,6 +2,7 @@ import {ExpressionBuilder, ExpressionWrapper, SqlBool, sql} from 'kysely'
 import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
 import {DB} from '../postgres/types/pg'
+import {logSCIMRequest} from './logSCIMRequest'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 
@@ -32,7 +33,7 @@ const FilterColumnMap: Record<string, WhereExpressionBuilder> = {
 }
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCIMContext) => {
-  const {authToken, dataLoader} = ctx
+  const {ip, authToken, dataLoader} = ctx
 
   const {id: userId, constraints, filter} = resource
 
@@ -41,6 +42,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   const scimId = authToken.sub!
   const saml = await dataLoader.get('saml').loadNonNull(scimId)
   const {domains, orgId} = saml
+
+  logSCIMRequest(scimId, ip, {operation: `User engress`, userId})
 
   const orgMembers = await dataLoader.get('organizationUsersByOrgId').load(orgId!)
   const orgUsers = orgMembers.map(({userId}) => userId)
@@ -58,7 +61,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
         eb('id', '=', eb.fn.any(eb.val(orgUsers)))
       ])
     )
-    .where('isRemoved', '=', false)
+  //.where('isRemoved', '=', false)
 
   if (userId) {
     const user = await userQuery.executeTakeFirst()
@@ -76,7 +79,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
         eb('id', '=', eb.fn.any(eb.val(orgUsers)))
       ])
     )
-    .where('isRemoved', '=', false)
+  //.where('isRemoved', '=', false)
 
   if (startIndex) {
     // 1-based index

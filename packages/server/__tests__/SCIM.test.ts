@@ -856,6 +856,128 @@ describe('Microsoft Entra SCIM 2.0 test spec', () => {
       })
     })
   })
+
+  describe('Soft delete and re-provision user', () => {
+    const userName = faker.internet.userName().toLowerCase()
+    const lastName = faker.name.firstName()
+    const testEmail = lastName.toLowerCase() + '@' + domain
+    const displayName = faker.name.firstName()
+
+    let id: string
+    test('Create User for Disable', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          active: true,
+          displayName: displayName,
+          emails: [
+            {
+              type: 'work',
+              value: testEmail
+            }
+          ],
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName: userName
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: expect.anything(),
+        userName,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        displayName,
+        name: {
+          givenName: displayName,
+          familyName: lastName
+        }
+      })
+      id = data.id
+    })
+
+    test('PATCH /Users/{id} - Disable User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          Operations: [
+            {
+              op: 'replace',
+              path: 'active',
+              value: false
+            }
+          ],
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp']
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        active: false
+      })
+    })
+
+    test('PATCH /Users/{id} - Re-enable User', async () => {
+      const res = await fetch(`${SCIM_URL}/Users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json; charset=utf-8',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'replace',
+              path: 'emails[type eq "work"].value',
+              value: testEmail
+            },
+            {
+              op: 'replace',
+              path: 'active',
+              value: true
+            }
+          ]
+        })
+      })
+
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      // check it didn't mess with other properties while re-enabling
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: testEmail
+          }
+        ],
+        displayName,
+        name: {
+          givenName: displayName,
+          familyName: lastName
+        }
+      })
+    })
+  })
 })
 
 test('Invalid endpoint returns 404', async () => {

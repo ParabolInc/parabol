@@ -9,9 +9,11 @@ import {generateIdenticon} from '../graphql/private/mutations/helpers/generateId
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
+import {guessName} from './guessName'
 import {logSCIMRequest} from './logSCIMRequest'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
+import {softDeleteUser} from './softDeleteUser'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
   async (resource, instance, context: SCIMContext) => {
@@ -22,7 +24,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     logSCIMRequest(scimId, ip, {operation: `User ingress`, userId, instance})
 
-    const {userName: denormUserName, displayName, emails, externalId, name} = instance
+    const {userName: denormUserName, displayName, emails, externalId, name, active} = instance
     const {givenName, familyName} = name ?? {}
     const preferredName = displayName
     const userName = denormUserName?.toLowerCase().trim()
@@ -49,8 +51,23 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         throw new SCIMMY.Types.Error(404, '', 'User not found')
       }
 
+      if (active !== undefined) {
+        if (!active) {
+          const deletedUser = await softDeleteUser({userId, scimId, dataLoader})
+          return mapToSCIM(deletedUser)
+        } else if (!email) {
+          throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is required to activate user')
+        }
+      }
+
       const attributeChanged =
-        email || preferredName || externalId || userName || givenName || familyName
+        email ||
+        preferredName ||
+        externalId ||
+        userName ||
+        givenName ||
+        familyName ||
+        active !== undefined
       const isManagedUser = user.scimId === scimId || saml.domains.includes(user.domain!)
 
       if (attributeChanged && !isManagedUser) {
@@ -90,6 +107,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
           .set({
             ...(updateScimId ? {scimId} : {}),
             ...(email ? {email} : {}),
+            ...(active !== undefined ? {isRemoved: !active} : {}),
             ...(preferredName ? {preferredName} : {}),
             ...(externalId ? {scimExternalId: externalId} : {}),
             ...(userName ? {scimUserName: userName} : {}),
@@ -135,6 +153,14 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
           dataLoader.get('saml').load(scimId)
         ])
         const {orgId} = saml ?? {}
+
+        // guess name on ingress so it remains stable
+        const name = guessName({
+          scimGivenName: givenName ?? null,
+          scimFamilyName: familyName ?? null,
+          preferredName,
+          email
+        })
         const [user] = await Promise.all([
           pg
             .updateTable('User')
@@ -142,8 +168,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
               scimId,
               scimExternalId: externalId ?? null,
               scimUserName: userName,
-              scimGivenName: givenName ?? null,
-              scimFamilyName: familyName ?? null
+              scimGivenName: name.givenName,
+              scimFamilyName: name.familyName
             })
             .where('id', '=', userId)
             .returningAll()

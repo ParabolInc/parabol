@@ -162,15 +162,12 @@ const OrgAuthenticationSCIM = (props: Props) => {
         </div>
       )
     }
-    const {
-      id: domain,
-      scimCensoredBearerToken,
-      scimOAuthClientId,
-      scimCensoredOAuthClientSecret
-    } = saml
+    const {scimCensoredBearerToken, scimOAuthClientId, scimCensoredOAuthClientSecret} = saml
     const startURL = window.location.origin
-    const scimURL = makeAppURL(startURL, `/scim/${domain}`)
-    const tokenURL = makeAppURL(startURL, `/oauth/token`)
+    // MS Entra is only complient with the additional flag:
+    // https://learn.microsoft.com/en-us/entra/identity/app-provisioning/application-provisioning-config-problem-scim-compatibility#flags-to-alter-the-scim-behavior
+    const scimURL = makeAppURL(startURL, '/scim?aadOptscim062020')
+    const tokenURL = makeAppURL(startURL, '/oauth/token')
     return (
       <div>
         <div className='flex pt-6 font-semibold text-base text-slate-700 leading-6'>
