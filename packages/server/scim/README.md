@@ -1,6 +1,7 @@
 # Parabol SCIM Provisioning
 An enterprise organization with verified domains (i.e. SAML enabled) can use SCIM to provision and de-provision users. The users that can be managed via SCIM are limited by the verified domains associated with the organization.
 The SCIM setup is tightly coupled to the organization.
+Parabol only supports User provisioning via SCIM, Group provisioning is not supported.
 
 ## User categories used here
 - provisioned: users that were originally created via this SCIM provisioning
@@ -20,6 +21,7 @@ SCIM provisioning **cannot**:
 - apply roles.
 
 ## Notes
+- Parabol supports deactivation of a user by setting `active=false` or hard deletion of a user via egress.
 - deactivating a user via setting `active=false` will remothe from the organization and all associated teams. Re-provisioning them will not re-add team membership again. Externals will remain a Parabol user.
 - degress will hard delete a user
 - egress will list all users in the organization combined with users provisioned via this SCIM combined with users bolonging to the verified domains.
@@ -31,8 +33,11 @@ The following attributes are supported for SCIM provisioning:
 - `emails` (required): Parabol will use the primary email provided, falling back to the first one; Parabol lowercases all email addresses
 - `displayName`: the user's full name, can be changed locally in Parabol
 - `externalId`: only stored and echoed back
+- `active`: if set to false, the user will be deactivated and removed from the organization; if set to true, the user will be re-activated and added back to the organization but not to any teams
+    - Microsoft Entra ID: to use the `active` attribute the flag `?aadOptscim062020` needs to be appended to the SCIM endpoint URL, e.g. `https://action.parabol.co/scim?aadOptscim062020`
 - `name.givenName`: only stored and echoed back, guessed when unknown[^1]
 - `name.familyName`: only stored and echoed back, guessed when unknown[^1]
+
 [^1]: If `name.givenName` or `name.familyName` are unknown, the missing attribute(s) are guessed by the following algorithm:
     - if `displayName` consists of multiple parts (e.g. "Jane H. Doe"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")
     - else if `email` consists of multiple parts separated by `.` (e.g. "jane.h.doe@example.com"), then `name.givenName` will be the first, `name.familyName` the last part, (e.g. "Jane" and "Doe")
