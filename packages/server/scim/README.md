@@ -20,15 +20,16 @@ SCIM provisioning **cannot**:
 - apply roles.
 
 ## Notes
-- degress will remove a user from the organization and all associated teams. Re-provisioning them will not re-add team membership again. Externals will remain a Parabol user.
+- deactivating a user via setting `active=false` will remothe from the organization and all associated teams. Re-provisioning them will not re-add team membership again. Externals will remain a Parabol user.
+- degress will hard delete a user
 - egress will list all users in the organization combined with users provisioned via this SCIM combined with users bolonging to the verified domains.
 - all ingress will add the users (new and existing) to the organization regardless of their email domain.
 
 ## Attributes
 The following attributes are supported for SCIM provisioning:
 - `userName` (required): unused by Parabol, can be used to query users; will fall back to SAML PersistentNameID, NameID or email if unknown
-- `displayName`: the user's full name, can be changed locally in Parabol
 - `emails` (required): Parabol will use the primary email provided, falling back to the first one; Parabol lowercases all email addresses
+- `displayName`: the user's full name, can be changed locally in Parabol
 - `externalId`: only stored and echoed back
 - `name.givenName`: only stored and echoed back, guessed when unknown[^1]
 - `name.familyName`: only stored and echoed back, guessed when unknown[^1]

@@ -14,6 +14,7 @@ import {logSCIMRequest} from './logSCIMRequest'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 import {softDeleteUser} from './softDeleteUser'
+import {getUserCategory} from './UserCategory'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
   async (resource, instance, context: SCIMContext) => {
@@ -37,17 +38,18 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
     if (email && !parseOneAddress(email)) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is not valid')
     }
+    const saml = await dataLoader.get('saml').loadNonNull(scimId)
 
     const pg = getKysely()
     if (userId) {
       // updating existing user
 
       // check they're in the org, add them if not
-      const [user, saml] = await Promise.all([
+      const [user, category] = await Promise.all([
         dataLoader.get('users').load(userId),
-        dataLoader.get('saml').loadNonNull(scimId)
+        getUserCategory(userId, saml, dataLoader)
       ])
-      if (!user) {
+      if (!user || !category) {
         throw new SCIMMY.Types.Error(404, '', 'User not found')
       }
 
@@ -55,22 +57,10 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         if (!active) {
           const deletedUser = await softDeleteUser({userId, scimId, dataLoader})
           return mapToSCIM(deletedUser)
-        } else if (!email) {
-          throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is required to activate user')
         }
       }
 
-      const attributeChanged =
-        email ||
-        preferredName ||
-        externalId ||
-        userName ||
-        givenName ||
-        familyName ||
-        active !== undefined
-      const isManagedUser = user.scimId === scimId || saml.domains.includes(user.domain!)
-
-      if (attributeChanged && !isManagedUser) {
+      if (category !== 'managed') {
         Logger.warn('User ingress attempt to modify unmanaged user', {
           userId,
           scimId,
@@ -93,24 +83,16 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         }
       }
 
-      // The user existed prior to provisioning, assign it now
-      const updateScimId = !user.scimId && saml.domains.includes(user.domain!)
-
-      // no update is success
-      if (!attributeChanged && !updateScimId) {
-        return mapToSCIM(user)
-      }
-
       try {
         const updatedUser = await pg
           .updateTable('User')
           .set({
-            ...(updateScimId ? {scimId} : {}),
+            scimId,
+            scimUserName: userName,
             ...(email ? {email} : {}),
             ...(active !== undefined ? {isRemoved: !active} : {}),
             ...(preferredName ? {preferredName} : {}),
             ...(externalId ? {scimExternalId: externalId} : {}),
-            ...(userName ? {scimUserName: userName} : {}),
             ...(givenName ? {scimGivenName: givenName} : {}),
             ...(familyName ? {scimFamilyName: familyName} : {})
           })
@@ -148,14 +130,11 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         identities: []
       })
       try {
-        const [, saml] = await Promise.all([
-          bootstrapNewUser(newUser, false, dataLoader),
-          dataLoader.get('saml').load(scimId)
-        ])
-        const {orgId} = saml ?? {}
+        await bootstrapNewUser(newUser, false, dataLoader)
+        const {orgId} = saml
 
-        // guess name on ingress so it remains stable
-        const name = guessName({
+        // do all the guessing on ingress so it remains stable
+        const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
           scimGivenName: givenName ?? null,
           scimFamilyName: familyName ?? null,
           preferredName,
@@ -168,8 +147,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
               scimId,
               scimExternalId: externalId ?? null,
               scimUserName: userName,
-              scimGivenName: name.givenName,
-              scimFamilyName: name.familyName
+              scimGivenName,
+              scimFamilyName
             })
             .where('id', '=', userId)
             .returningAll()

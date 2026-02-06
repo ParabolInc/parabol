@@ -35,16 +35,15 @@ export const softDeleteUser = async ({
 
   // only users managed by this SCIM provider can be deleted
   if (isManaged) {
-    const deletedUserEmail = await softDeleteUserHelper(userId, dataLoader)
+    // we're not removing the email here to allow re-provisioning by just setting active=true again
+    await softDeleteUserHelper(userId, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
     const pg = getKysely()
     const deletedUser = await pg
       .updateTable('User')
       .set({
         isRemoved: true,
-        reasonRemoved,
-        updatedAt: new Date(),
-        email: deletedUserEmail
+        reasonRemoved
       })
       .where('id', '=', userId)
       .returningAll()

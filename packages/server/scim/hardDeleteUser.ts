@@ -2,6 +2,7 @@ import SCIMMY from 'scimmy'
 import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import {hardDeleteUser as hardDeleteUserHelper} from '../graphql/private/mutations/helpers/hardDeleteUser'
 import {SCIMContext} from './SCIMContext'
+import {getUserCategory} from './UserCategory'
 
 export const hardDeleteUser = async ({
   userId,
@@ -12,18 +13,19 @@ export const hardDeleteUser = async ({
   scimId: string
   dataLoader: SCIMContext['dataLoader']
 }) => {
-  const [user, saml] = await Promise.all([
+  const saml = await dataLoader.get('saml').loadNonNull(scimId)
+  const {orgId} = saml
+
+  const [user, category] = await Promise.all([
     dataLoader.get('users').load(userId),
-    dataLoader.get('saml').loadNonNull(scimId)
+    getUserCategory(userId, saml, dataLoader)
   ])
 
-  if (!user) {
+  if (!user || !category) {
     throw new SCIMMY.Types.Error(404, '', 'User not found')
   }
 
-  const {domains, orgId} = saml
-  const isManaged = user.scimId === scimId || domains.includes(user.domain!)
-  if (isManaged) {
+  if (category === 'managed') {
     await hardDeleteUserHelper(user, 'Deleted via SCIM', dataLoader)
     return
   }
