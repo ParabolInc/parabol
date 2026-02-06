@@ -120,14 +120,17 @@ export const getPagesByRRF = async (params: Params) => {
         .selectFrom('RRF')
         .selectAll()
         .distinctOn('pageId')
+        .where('score', '>', MIN_RRF_SCORE)
         .orderBy('pageId')
         .orderBy('score', 'desc')
+        .limit(first)
     )
     .selectFrom('ChunkMax')
-    .selectAll()
+    .selectAll('ChunkMax')
+    .innerJoin('Page', 'Page.id', 'ChunkMax.pageId')
     .$narrowType<{pageId: NotNull}>()
     .select((eb) =>
-      tsHeadline(eb, tsvLanguage, 'embedText', 'webQuery', {
+      tsHeadline(eb, tsvLanguage, 'Page.plaintextContent', 'webQuery', {
         StartSel: '<b>',
         StopSel: '</b>',
         MaxWords: 35,
@@ -135,9 +138,6 @@ export const getPagesByRRF = async (params: Params) => {
         FragmentDelimiter: '$!$'
       }).as('snippet')
     )
-    .orderBy('score', 'desc')
-    .where('score', '>', MIN_RRF_SCORE)
-    .limit(first)
     .execute()
   return {
     pageInfo: {

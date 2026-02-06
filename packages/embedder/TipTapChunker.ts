@@ -178,7 +178,7 @@ export class TipTapChunker {
     const {content} = doc
     content.forEach((node) => {
       if (node.type === 'heading') {
-        const headingText = node.content[0]?.text.trim().slice(0, 500)
+        const headingText = node.content?.[0]?.text.trim().slice(0, 500)
         if (!headingText) return
         if (!this.globalTitle) {
           this.globalTitle = headingText

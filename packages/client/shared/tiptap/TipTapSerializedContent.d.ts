@@ -29,7 +29,7 @@ interface TiptapHeadingNode<TLevel extends HeadingLevel = HeadingLevel> {
   attrs: {
     level: TLevel
   }
-  content: TipTapTextNode[]
+  content?: TipTapTextNode[]
 }
 
 export interface TiptapInsightsBlock {
