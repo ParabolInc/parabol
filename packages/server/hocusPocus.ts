@@ -86,13 +86,23 @@ export const hocuspocus = new Hocuspocus({
   },
 
   async onAuthenticate(data) {
-    const {documentName, request, connectionConfig} = data
-    const userId = (request as Req).userId
+    const {documentName, request, connectionConfig, requestHeaders} = data
+    let userId = (request as Req).userId
     if (documentName.startsWith('meeting:')) {
       const tms = (request as Req).tms
       const [, meetingId] = documentName.split(':')
       if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
-      if (!userId) throw new Error(`Meeting awareness requires a userId`)
+      if (!userId) {
+        // DEBUGGING PROD-ONLY BUG
+        const cookieToken = getAuthTokenFromCookie(requestHeaders['cookie'])
+        const authToken = getVerifiedAuthToken(cookieToken)
+        userId = authToken?.sub
+        if (!userId) {
+          const info = {cookieToken, authToken, tms}
+          Logger.error(`userId still not found, ${info}`)
+          throw new Error(`Meeting awareness requires a userId`)
+        }
+      }
       const meetingTeamId = await getMeetingTeamId(meetingId)
       if (!tms.includes(meetingTeamId ?? '')) {
         // They may have a stale token or client is making a request it shouldn't.

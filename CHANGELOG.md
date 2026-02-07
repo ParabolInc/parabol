@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.0.1](https://github.com/ParabolInc/parabol/compare/v12.0.0...v12.0.1) (2026-02-06)
+
+
+### Fixed
+
+* support heap dumps via sigusr2 on embedder ([#12569](https://github.com/ParabolInc/parabol/issues/12569)) ([bc98a20](https://github.com/ParabolInc/parabol/commit/bc98a20e6cc27393af134073bcd9c36b92fa972f))
+* use plaintext in snippets, fix chunking when heading has no content ([#12572](https://github.com/ParabolInc/parabol/issues/12572)) ([3fdf8ec](https://github.com/ParabolInc/parabol/commit/3fdf8ec535067957286ed1f6e516afbc46801568))
+
 ## [12.0.0](https://github.com/ParabolInc/parabol/compare/v11.13.0...v12.0.0) (2026-02-05)
 
 

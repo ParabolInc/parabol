@@ -6,14 +6,13 @@ import sleep from '../../../../client/utils/sleep'
 import {disconnectAllSockets} from '../../../disconnectAllSockets'
 import {setIsBusy} from '../../../getIsBusy'
 import {Logger} from '../../../utils/Logger'
-import type {MutationResolvers} from '../resolverTypes'
+import type {MutationResolvers, ResolverWithResolve} from '../resolverTypes'
 
 const {SERVER_ID, HEAP_DUMP_FOLDER} = process.env
 
-const dumpHeap: MutationResolvers['dumpHeap'] = async (
-  _source,
-  {isDangerous, disconnectSockets}
-) => {
+const dumpHeap: NonNullable<
+  Exclude<MutationResolvers['dumpHeap'], ResolverWithResolve<any, any, any, any>>
+> = async (_source, {isDangerous, disconnectSockets}) => {
   if (!isDangerous)
     return 'This action will block the server for about 1 minute, Must ack the danger!'
   Logger.log('[Heap Dump]: Marking server as busy')
@@ -52,7 +51,4 @@ const dumpHeap: MutationResolvers['dumpHeap'] = async (
   })
 }
 
-process.on('SIGUSR2', () => {
-  dumpHeap({}, {isDangerous: true}, {} as any, {} as any)
-})
 export default dumpHeap
