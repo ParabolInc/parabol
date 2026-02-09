@@ -1,5 +1,8 @@
 import faker from 'faker'
 import fs from 'fs'
+import {InvoiceItemType} from '../../client/types/constEnums'
+import adjustUserCount from '../billing/helpers/adjustUserCount'
+import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUpWithEmail} from './common'
 
 const SCIM_URL = `${PROTOCOL}://${HOST}/scim`
@@ -1165,4 +1168,660 @@ test('Invalid endpoint returns 404', async () => {
     }
   })
   expect(res.status).toBe(404)
+})
+
+describe('Org membership is reflected in SCIM', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+  let orgId: string
+
+  beforeAll(async () => {
+    const admin = await createOrgAdmin(`admin@${domain}`)
+    orgId = admin.orgId
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, admin.cookie)
+  })
+
+  test('Managed User in org shows up', async () => {
+    const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "admin@${domain}"`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      totalResults: 1,
+      Resources: [
+        {
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName: `admin@${domain}`,
+          emails: [
+            {
+              type: 'work',
+              value: `admin@${domain}`
+            }
+          ]
+        }
+      ]
+    })
+  })
+
+  // TODO does this trigger the correct reaction from the SCIM client?
+  test('Managed User outside org shows up', async () => {
+    const email = `user@${domain}`
+    const {userId} = await signUpWithEmail(email)
+    const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${email}"`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      totalResults: 1,
+      Resources: [
+        {
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          id: userId,
+          userName: email,
+          active: true,
+          emails: [
+            {
+              type: 'work',
+              value: email
+            }
+          ]
+        }
+      ]
+    })
+  })
+
+  test('External user in org shows up', async () => {
+    const email = faker.internet.email().toLowerCase()
+    const {userId} = await signUpWithEmail(email)
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+    const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${email}"`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      totalResults: 1,
+      Resources: [
+        {
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          id: userId,
+          userName: email,
+          active: true,
+          emails: [
+            {
+              type: 'work',
+              value: email
+            }
+          ]
+        }
+      ]
+    })
+  })
+
+  test('PATCH active=false deletes managed user from org', async () => {
+    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const {userId} = await signUpWithEmail(email)
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            path: 'active',
+            value: false
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: userId,
+      userName: email,
+      active: false,
+      emails: [
+        {
+          type: 'work',
+          value: email
+        }
+      ]
+    })
+    dataLoader.get('organizationUsersByUserId').clear(userId)
+    const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    expect(orgUsers).not.toContainEqual(
+      expect.objectContaining({
+        orgId
+      })
+    )
+    dataLoader.get('users').clear(userId)
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      isRemoved: true
+    })
+  })
+
+  test('PATCH active=false removes external user from org', async () => {
+    const email = faker.internet.email().toLowerCase()
+    const {userId} = await signUpWithEmail(email)
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            path: 'active',
+            value: false
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: userId,
+      userName: email,
+      active: false,
+      emails: [
+        {
+          type: 'work',
+          value: email
+        }
+      ]
+    })
+    dataLoader.get('organizationUsersByUserId').clear(userId)
+    const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    expect(orgUsers).not.toContainEqual(
+      expect.objectContaining({
+        orgId
+      })
+    )
+    dataLoader.get('users').clear(userId)
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      isRemoved: false
+    })
+  })
+
+  test('DELETE hard deletes managed user', async () => {
+    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const {userId} = await signUpWithEmail(email)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(204)
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const deletedUser = await dataLoader.get('users').load(userId)
+    expect(deletedUser).toBe(undefined)
+  })
+
+  test('DELETE external user just removes from org', async () => {
+    const email = faker.internet.email().toLowerCase()
+    const {userId} = await signUpWithEmail(email)
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(204)
+
+    dataLoader.get('users').clear(userId)
+    const deletedUser = await dataLoader.get('users').load(userId)
+    expect(deletedUser).toMatchObject({
+      id: userId,
+      isRemoved: false,
+      email
+    })
+
+    dataLoader.get('organizationUsersByUserId').clear(userId)
+    const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    expect(orgUsers).not.toContainEqual(
+      expect.objectContaining({
+        orgId
+      })
+    )
+  })
+
+  test('PATCH on managed user outside org adds user to org', async () => {
+    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const {userId} = await signUpWithEmail(email)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            path: 'active',
+            value: true
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const orgUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
+    expect(orgUsers).toContainEqual(
+      expect.objectContaining({
+        orgId
+      })
+    )
+    dataLoader.get('users').clear(userId)
+    const patchedUser = await dataLoader.get('users').load(userId)
+    expect(patchedUser).toMatchObject({
+      id: userId,
+      isRemoved: false,
+      email,
+      scimId: domain.split('.')[0]!
+    })
+  })
+})
+
+describe('Unrelated users are inaccessible', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+
+  let userId: string
+  let email: string
+
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+
+    email = faker.internet.email().toLowerCase()
+    const user = await signUpWithEmail(email)
+    userId = user.userId
+  })
+
+  test('GET/{id} on unrelated user returns 404', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(404)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      status: '404',
+      detail: expect.anything()
+    })
+  })
+
+  test('GET search returns []', async () => {
+    const res = await fetch(`${SCIM_URL}/Users?filter=userName eq "${email}"`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+      totalResults: 0,
+      Resources: []
+    })
+  })
+
+  test('PATCH on unrelated user returns 404', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            path: 'active',
+            value: true
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(404)
+  })
+
+  test('PUT on unrelated user returns 404', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: userId,
+        userName: faker.internet.userName().toLowerCase(),
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: faker.internet.email().toLowerCase()
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(404)
+  })
+
+  test('DELETE unrelated user returns 404', async () => {
+    const email = faker.internet.email().toLowerCase()
+    const {userId} = await signUpWithEmail(email)
+
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(404)
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const deletedUser = await dataLoader.get('users').load(userId)
+    expect(deletedUser).toMatchObject({
+      id: userId,
+      isRemoved: false,
+      email
+    })
+  })
+})
+
+describe('External Users cannot be modified', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+  let userId: string
+  let email: string
+
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+
+    email = faker.internet.email().toLowerCase()
+    const user = await signUpWithEmail(email)
+    userId = user.userId
+
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+  })
+
+  test('PATCH on external user returns 403', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'Replace',
+            path: 'emails[type eq "work"].value',
+            value: faker.internet.email().toLowerCase()
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(403)
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      isRemoved: false,
+      email,
+      scimId: null
+    })
+  })
+
+  test('PUT on external user returns 403', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: userId,
+        userName: faker.internet.userName().toLowerCase(),
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: faker.internet.email().toLowerCase()
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(403)
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      isRemoved: false,
+      email,
+      scimId: null
+    })
+  })
+})
+
+describe('Provisioned Users with external emails can be managed', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+  let email: string
+
+  let userId: string
+
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+
+    email = faker.internet.email().toLowerCase()
+  })
+
+  test('POST new user with external email', async () => {
+    const res = await fetch(`${SCIM_URL}/Users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        userName: email,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: email
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(201)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: expect.anything(),
+      userName: email,
+      active: true,
+      emails: [
+        {
+          type: 'work',
+          value: email
+        }
+      ]
+    })
+    userId = data.id
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      email,
+      scimId: domain.split('.')[0]!
+    })
+  })
+
+  test('PATCH user with external email', async () => {
+    const newEmail = faker.internet.email().toLowerCase()
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'Replace',
+            path: 'emails[type eq "work"].value',
+            value: newEmail
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: userId,
+      userName: email,
+      active: true,
+      emails: [
+        {
+          type: 'work',
+          value: newEmail
+        }
+      ]
+    })
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      email: newEmail
+    })
+  })
+
+  test('PATCH active=false on user with external email', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'Replace',
+            path: 'active',
+            value: false
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: userId,
+      userName: email,
+      active: false,
+      emails: [
+        {
+          type: 'work',
+          value: expect.anything()
+        }
+      ]
+    })
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      isRemoved: true,
+      scimId: domain.split('.')[0]!
+    })
+  })
+
+  test('DELETE user with external email', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      }
+    })
+    expect(res.status).toBe(204)
+    const dataLoader = getNewDataLoader('test-loader')
+    const deletedUser = await dataLoader.get('users').load(userId)
+    expect(deletedUser).toBe(undefined)
+  })
 })
