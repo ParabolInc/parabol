@@ -4,6 +4,7 @@ import softDeleteUserHelper from '../graphql/mutations/helpers/softDeleteUser'
 import getKysely from '../postgres/getKysely'
 import {analytics} from '../utils/analytics/analytics'
 import {SCIMContext} from './SCIMContext'
+import {getUserCategory} from './UserCategory'
 
 export const softDeleteUser = async ({
   userId,
@@ -14,27 +15,27 @@ export const softDeleteUser = async ({
   scimId: string
   dataLoader: SCIMContext['dataLoader']
 }) => {
-  const [user, saml] = await Promise.all([
+  const saml = await dataLoader.get('saml').loadNonNull(scimId)
+  const [user, category] = await Promise.all([
     dataLoader.get('users').load(userId),
-    dataLoader.get('saml').loadNonNull(scimId)
+    getUserCategory(userId, saml, dataLoader)
   ])
 
-  if (!user) {
+  if (!user || !category) {
     throw new SCIMMY.Types.Error(404, '', 'User not found')
   }
 
-  const {domains, orgId} = saml
-  const isManaged = user.scimId === scimId || domains.includes(user.domain!)
+  const {orgId} = saml
 
   if (user.isRemoved) {
-    if (!isManaged) {
+    if (category !== 'managed') {
       throw new SCIMMY.Types.Error(404, '', 'User not found')
     }
     return user
   }
 
   // only users managed by this SCIM provider can be deleted
-  if (isManaged) {
+  if (category === 'managed') {
     // we're not removing the email here to allow re-provisioning by just setting active=true again
     await softDeleteUserHelper(userId, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
@@ -59,5 +60,9 @@ export const softDeleteUser = async ({
     await removeFromOrg(userId, orgId, undefined, dataLoader)
   }
 
-  return user
+  // From the view of the SCIM client the user was removed as they're not managed by this SCIM provider anymore
+  return {
+    ...user,
+    isRemoved: true
+  }
 }
