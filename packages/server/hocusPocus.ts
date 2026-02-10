@@ -99,7 +99,7 @@ export const hocuspocus = new Hocuspocus({
         userId = authToken?.sub
         if (!userId) {
           const info = {cookieToken, authToken, tms}
-          Logger.error(`userId still not found, ${info}`)
+          Logger.error(`userId still not found`, info)
           throw new Error(`Meeting awareness requires a userId`)
         }
       }

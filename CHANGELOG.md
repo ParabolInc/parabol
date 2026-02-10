@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.1.0](https://github.com/ParabolInc/parabol/compare/v12.0.2...v12.1.0) (2026-02-10)
+
+
+### Added
+
+* Add inline rename functionality to file blocks and adjust menu ([#12577](https://github.com/ParabolInc/parabol/issues/12577)) ([2c017b7](https://github.com/ParabolInc/parabol/commit/2c017b7ea66c43811f48d9b0818bd7757b47ee6e))
+
+
+### Fixed
+
+* don't throw an error in PG when cannot join a meeting twice ([#12580](https://github.com/ParabolInc/parabol/issues/12580)) ([62b0ec7](https://github.com/ParabolInc/parabol/commit/62b0ec777c7296342d4f3d4fccfd0baf3d06f769))
+* improve missing user id logs ([#12578](https://github.com/ParabolInc/parabol/issues/12578)) ([4ae8940](https://github.com/ParabolInc/parabol/commit/4ae8940eb2485362ef1d22d79f03d58be8242123))
+
+## [12.0.2](https://github.com/ParabolInc/parabol/compare/v12.0.1...v12.0.2) (2026-02-10)
+
+
+### Fixed
+
+* insert title in meeting summaries ([#12574](https://github.com/ParabolInc/parabol/issues/12574)) ([8febfb3](https://github.com/ParabolInc/parabol/commit/8febfb3fd6431853fb8b277e571990d7bdb91821))
+
 ## [12.0.1](https://github.com/ParabolInc/parabol/compare/v12.0.0...v12.0.1) (2026-02-06)
 
 
