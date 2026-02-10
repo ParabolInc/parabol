@@ -120,8 +120,19 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       }
 
       const userId = `sso|${generateUID()}`
+
+      // do all the guessing on ingress so it remains stable
+      const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
+        scimGivenName: givenName ?? null,
+        scimFamilyName: familyName ?? null,
+        preferredName: displayName ?? '',
+        email
+      })
+
       const preferredName =
-        displayName || `${givenName}${givenName && familyName ? ' ' : ''}${familyName}` || userName
+        displayName ||
+        `${scimGivenName}${scimGivenName && scimFamilyName ? ' ' : ''}${scimFamilyName}` ||
+        userName
       const newUser = new User({
         id: userId,
         preferredName,
@@ -133,13 +144,6 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         await bootstrapNewUser(newUser, false, dataLoader)
         const {orgId} = saml
 
-        // do all the guessing on ingress so it remains stable
-        const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
-          scimGivenName: givenName ?? null,
-          scimFamilyName: familyName ?? null,
-          preferredName,
-          email
-        })
         const [user] = await Promise.all([
           pg
             .updateTable('User')

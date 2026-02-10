@@ -182,8 +182,16 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
       res.writeStatus('400 Bad Request')
       return
     }
-    const updatedUser = await new SCIMMY.Resources.User(id, query).patch(body as any, ctx)
-    res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(updatedUser))
+    const userResource = new SCIMMY.Resources.User(id, query)
+    const updatedUser = await userResource.patch(body as any, ctx)
+    if (updatedUser) {
+      res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(updatedUser))
+    } else {
+      // sending 204 No Content is compliant with the spec if nothing changed and nothing specific was requested, but some clients are supposedly not expecting it and 200 is compliant as well
+      const user = await userResource.read(ctx)
+      res.writeHeader('Content-Type', 'application/scim+json')
+      res.end(JSON.stringify(user))
+    }
   })
   addHandler('/Users/:id', 'del', async (res, {id, query}, ctx) => {
     await new SCIMMY.Resources.User(id, query).dispose(ctx)

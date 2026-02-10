@@ -1825,3 +1825,131 @@ describe('Provisioned Users with external emails can be managed', () => {
     expect(deletedUser).toBe(undefined)
   })
 })
+
+describe('Managed User can be taken over by SCIM with matched domain', () => {
+  // user is first provisioned by company A but domain matches with B, so B can take over
+  let bearerTokenA: string
+  let bearerTokenB: string
+  const domainA = faker.internet.domainName()
+  const domainB = faker.internet.domainName()
+  let email: string
+
+  let userId: string
+
+  beforeAll(async () => {
+    const {orgId: orgIdA, cookie: cookieA} = await createOrgAdmin(`admin@${domainA}`)
+    await verifyDomain(domainA, orgIdA)
+    bearerTokenA = await enableSCIM(orgIdA, cookieA)
+
+    const {orgId: orgIdB, cookie: cookieB} = await createOrgAdmin(`admin@${domainB}`)
+    await verifyDomain(domainB, orgIdB)
+    bearerTokenB = await enableSCIM(orgIdB, cookieB)
+
+    email = faker.internet.userName().toLowerCase() + '@' + domainB
+  })
+
+  test('POST new user with domainB email under orgA', async () => {
+    const res = await fetch(`${SCIM_URL}/Users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerTokenA}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        userName: email,
+        active: true,
+        emails: [
+          {
+            type: 'work',
+            value: email
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(201)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: expect.anything()
+    })
+    userId = data.id
+
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      email,
+      scimId: domainA.split('.')[0]!
+    })
+  })
+
+  test('PATCH from orgB takes over the user', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerTokenB}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'Replace',
+            path: 'active',
+            value: true
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+      id: userId,
+      userName: email,
+      active: true,
+      emails: [
+        {
+          type: 'work',
+          value: email
+        }
+      ]
+    })
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      email,
+      scimId: domainB.split('.')[0]!
+    })
+  })
+
+  test('PATCH from orgA will fail now', async () => {
+    const res = await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerTokenA}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'Replace',
+            path: 'emails[type eq "work"].value',
+            value: faker.internet.email().toLowerCase()
+          }
+        ]
+      })
+    })
+    expect(res.status).toBe(403)
+    const dataLoader = getNewDataLoader('test-loader')
+    const user = await dataLoader.get('users').load(userId)
+    expect(user).toMatchObject({
+      id: userId,
+      email,
+      scimId: domainB.split('.')[0]!
+    })
+  })
+})
