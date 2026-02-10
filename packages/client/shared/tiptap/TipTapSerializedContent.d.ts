@@ -161,6 +161,10 @@ interface TipTapPageLinkBlockNode {
   attrs: PageLinkBlockAttrs
 }
 
+interface TipTapThinkingBlockNode {
+  type: 'thinkingBlock'
+}
+
 export type TipTapContentNode =
   | TiptapHeadingNode
   | TiptapInsightsBlock
@@ -179,5 +183,6 @@ export type TipTapContentNode =
   | TipTapFileBlockNode
   | TipTapFileUploadNode
   | TipTapResponseBlockNode
+  | TipTapThinkingBlockNode
 
 type TipTapNode = TiptapDoc | TipTapContentNode

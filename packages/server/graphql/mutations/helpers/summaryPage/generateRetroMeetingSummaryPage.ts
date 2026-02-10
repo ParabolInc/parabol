@@ -7,7 +7,6 @@ import {getRetroMetaBlock} from './getRetroMetaBlock'
 import {getRetroSummaryTable} from './getRetroSummaryTable'
 import {getSubtitleBlock} from './getSubtitleBlock'
 import {getTaskBlocks} from './getTaskBlocks'
-import {getTitleBlock} from './getTitleBlock'
 import {getTopicBlocks} from './getTopicBlocks'
 
 export const generateRetroMeetingSummaryPage = async function* (
@@ -19,7 +18,6 @@ export const generateRetroMeetingSummaryPage = async function* (
     .loadNonNull(meetingId)) as RetrospectiveMeeting
   // start the work at the same time, then deliver it in order
   const promises = [
-    getTitleBlock(meeting),
     getSubtitleBlock(meeting, dataLoader),
     getRetroMetaBlock(meeting, dataLoader),
     getInsightsBlocks(meetingId, dataLoader),

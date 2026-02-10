@@ -6,7 +6,6 @@ import {getParticipantBlocks} from './getParticipantBlocks'
 import {getPokerMetaBlock} from './getPokerMetaBlock'
 import {getPokerTable} from './getPokerTable'
 import {getSubtitleBlock} from './getSubtitleBlock'
-import {getTitleBlock} from './getTitleBlock'
 
 export const generatePokerMeetingSummaryPage = async function* (
   meetingId: string,
@@ -17,7 +16,6 @@ export const generatePokerMeetingSummaryPage = async function* (
   const meeting = (await dataLoader.get('newMeetings').loadNonNull(meetingId)) as PokerMeeting
   // start the work at the same time, then deliver it in order
   const promises = [
-    getTitleBlock(meeting),
     getSubtitleBlock(meeting, dataLoader),
     getPokerMetaBlock(meeting, dataLoader),
     // getInsightsBlocks(meetingId, dataLoader),
