@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.2.0](https://github.com/ParabolInc/parabol/compare/v12.1.0...v12.2.0) (2026-02-10)
+
+
+### Added
+
+* **SCIM:** support soft deletion via active=false patch ([#12568](https://github.com/ParabolInc/parabol/issues/12568)) ([91a9623](https://github.com/ParabolInc/parabol/commit/91a9623caa9959d3339ccdd35a67fa77f3074a28))
+
+
+### Changed
+
+* Update labeler workflow ([#12583](https://github.com/ParabolInc/parabol/issues/12583)) ([9f7141a](https://github.com/ParabolInc/parabol/commit/9f7141a7ee0122540a7718f588b3a01561fe6195))
+
 ## [12.1.0](https://github.com/ParabolInc/parabol/compare/v12.0.2...v12.1.0) (2026-02-10)
 
 
