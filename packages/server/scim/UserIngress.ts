@@ -91,6 +91,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             scimUserName: userName,
             ...(email ? {email} : {}),
             ...(active !== undefined ? {isRemoved: !active} : {}),
+            ...(active ? {reasonRemoved: null} : {}),
             ...(preferredName ? {preferredName} : {}),
             ...(externalId ? {scimExternalId: externalId} : {}),
             ...(givenName ? {scimGivenName: givenName} : {}),

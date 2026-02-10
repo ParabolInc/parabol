@@ -1210,7 +1210,6 @@ describe('Org membership is reflected in SCIM', () => {
     })
   })
 
-  // TODO does this trigger the correct reaction from the SCIM client?
   test('Managed User outside org shows up', async () => {
     const email = `user@${domain}`
     const {userId} = await signUpWithEmail(email)
