@@ -1,31 +1,44 @@
 import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
-import {useState} from 'react'
 import LeftDashNavItem from '../../components/Dashboard/LeftDashNavItem'
 import useHotkey from '../../hooks/useHotkey'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogDescription} from '../../ui/Dialog/DialogDescription'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
+import {useSearchDialog} from './SearchContext'
 import {SearchDialogContent} from './SearchDialogContent'
 
 interface Props {}
 
 export const SearchDialog = (_props: Props) => {
-  const [open, setOpen] = useState(false)
-  const closeSearch = () => setOpen(false)
-  const openSearch = () => setOpen(true)
+  const {openSearch} = useSearchDialog()
+  return (
+    <LeftDashNavItem
+      Icon={SearchIcon}
+      href={''}
+      label={'Search'}
+      exact
+      onClick={() => openSearch()}
+    />
+  )
+}
+
+export const GlobalSearchDialog = () => {
+  const {isOpen, closeSearch, openSearch, initialQuery} = useSearchDialog()
+
   const onOpenChange = (willOpen: boolean) => {
-    setOpen(willOpen)
+    if (willOpen) {
+      openSearch(initialQuery)
+    } else {
+      closeSearch()
+    }
   }
-  useHotkey('mod+k', openSearch)
+
+  useHotkey('mod+k', () => openSearch())
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <LeftDashNavItem Icon={SearchIcon} href={''} label={'Search'} exact onClick={openSearch} />
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         className={
           'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-white p-0 duration-200 focus:outline-none'
@@ -37,7 +50,7 @@ export const SearchDialog = (_props: Props) => {
         <VisuallyHidden asChild>
           <DialogDescription>Search for pages and content in Parabol</DialogDescription>
         </VisuallyHidden>
-        <SearchDialogContent closeSearch={closeSearch} />
+        <SearchDialogContent closeSearch={closeSearch} initialQuery={initialQuery} />
       </DialogContent>
     </Dialog>
   )

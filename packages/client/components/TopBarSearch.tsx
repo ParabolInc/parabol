@@ -9,6 +9,7 @@ import {commitLocalUpdate} from 'relay-runtime'
 import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
+import {useSearchDialog} from '~/modules/search/SearchContext'
 import {PALETTE} from '~/styles/paletteV3'
 import type Atmosphere from '../Atmosphere'
 
@@ -92,8 +93,14 @@ const TopBarSearch = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {location} = useRouter()
+  const {openSearch} = useSearchDialog()
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(atmosphere, e.target.value)
+  }
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      openSearch(dashSearch)
+    }
   }
   const Icon = dashSearch ? Close : Search
   const onClick = () => {
@@ -102,7 +109,13 @@ const TopBarSearch = (props: Props) => {
   }
   return (
     <Wrapper location={location}>
-      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <SearchInput
+        ref={inputRef}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={'Search'}
+        value={dashSearch}
+      />
       <SearchIcon onClick={onClick}>
         <Icon />
       </SearchIcon>
