@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.0.2](https://github.com/ParabolInc/parabol/compare/v12.0.1...v12.0.2) (2026-02-10)
+
+
+### Fixed
+
+* insert title in meeting summaries ([#12574](https://github.com/ParabolInc/parabol/issues/12574)) ([8febfb3](https://github.com/ParabolInc/parabol/commit/8febfb3fd6431853fb8b277e571990d7bdb91821))
+
 ## [12.0.1](https://github.com/ParabolInc/parabol/compare/v12.0.0...v12.0.1) (2026-02-06)
 
 
