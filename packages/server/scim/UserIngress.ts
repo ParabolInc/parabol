@@ -9,9 +9,12 @@ import {generateIdenticon} from '../graphql/private/mutations/helpers/generateId
 import {USER_PREFERRED_NAME_LIMIT} from '../postgres/constants'
 import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
+import {guessName} from './guessName'
 import {logSCIMRequest} from './logSCIMRequest'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
+import {softDeleteUser} from './softDeleteUser'
+import {getUserCategory} from './UserCategory'
 
 SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
   async (resource, instance, context: SCIMContext) => {
@@ -22,7 +25,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     logSCIMRequest(scimId, ip, {operation: `User ingress`, userId, instance})
 
-    const {userName: denormUserName, displayName, emails, externalId, name} = instance
+    const {userName: denormUserName, displayName, emails, externalId, name, active} = instance
     const {givenName, familyName} = name ?? {}
     const preferredName = displayName
     const userName = denormUserName?.toLowerCase().trim()
@@ -35,25 +38,29 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
     if (email && !parseOneAddress(email)) {
       throw new SCIMMY.Types.Error(400, 'invalidValue', 'Email is not valid')
     }
+    const saml = await dataLoader.get('saml').loadNonNull(scimId)
 
     const pg = getKysely()
     if (userId) {
       // updating existing user
 
       // check they're in the org, add them if not
-      const [user, saml] = await Promise.all([
+      const [user, category] = await Promise.all([
         dataLoader.get('users').load(userId),
-        dataLoader.get('saml').loadNonNull(scimId)
+        getUserCategory(userId, saml, dataLoader)
       ])
-      if (!user) {
+      if (!user || !category) {
         throw new SCIMMY.Types.Error(404, '', 'User not found')
       }
 
-      const attributeChanged =
-        email || preferredName || externalId || userName || givenName || familyName
-      const isManagedUser = user.scimId === scimId || saml.domains.includes(user.domain!)
+      if (active !== undefined) {
+        if (!active) {
+          const deletedUser = await softDeleteUser({userId, scimId, dataLoader})
+          return mapToSCIM(deletedUser)
+        }
+      }
 
-      if (attributeChanged && !isManagedUser) {
+      if (category !== 'managed') {
         Logger.warn('User ingress attempt to modify unmanaged user', {
           userId,
           scimId,
@@ -76,23 +83,17 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         }
       }
 
-      // The user existed prior to provisioning, assign it now
-      const updateScimId = !user.scimId && saml.domains.includes(user.domain!)
-
-      // no update is success
-      if (!attributeChanged && !updateScimId) {
-        return mapToSCIM(user)
-      }
-
       try {
         const updatedUser = await pg
           .updateTable('User')
           .set({
-            ...(updateScimId ? {scimId} : {}),
+            scimId,
+            scimUserName: userName,
             ...(email ? {email} : {}),
+            ...(active !== undefined ? {isRemoved: !active} : {}),
+            ...(active ? {reasonRemoved: null} : {}),
             ...(preferredName ? {preferredName} : {}),
             ...(externalId ? {scimExternalId: externalId} : {}),
-            ...(userName ? {scimUserName: userName} : {}),
             ...(givenName ? {scimGivenName: givenName} : {}),
             ...(familyName ? {scimFamilyName: familyName} : {})
           })
@@ -120,8 +121,19 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       }
 
       const userId = `sso|${generateUID()}`
+
+      // do all the guessing on ingress so it remains stable
+      const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
+        scimGivenName: givenName ?? null,
+        scimFamilyName: familyName ?? null,
+        preferredName: displayName ?? '',
+        email
+      })
+
       const preferredName =
-        displayName || `${givenName}${givenName && familyName ? ' ' : ''}${familyName}` || userName
+        displayName ||
+        `${scimGivenName}${scimGivenName && scimFamilyName ? ' ' : ''}${scimFamilyName}` ||
+        userName
       const newUser = new User({
         id: userId,
         preferredName,
@@ -130,11 +142,9 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         identities: []
       })
       try {
-        const [, saml] = await Promise.all([
-          bootstrapNewUser(newUser, false, dataLoader),
-          dataLoader.get('saml').load(scimId)
-        ])
-        const {orgId} = saml ?? {}
+        await bootstrapNewUser(newUser, false, dataLoader)
+        const {orgId} = saml
+
         const [user] = await Promise.all([
           pg
             .updateTable('User')
@@ -142,8 +152,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
               scimId,
               scimExternalId: externalId ?? null,
               scimUserName: userName,
-              scimGivenName: givenName ?? null,
-              scimFamilyName: familyName ?? null
+              scimGivenName,
+              scimFamilyName
             })
             .where('id', '=', userId)
             .returningAll()
