@@ -6,6 +6,7 @@ import {
 } from '@tiptap/core'
 import BaseLink from '@tiptap/extension-link'
 import {type EditorState, Plugin} from '@tiptap/pm/state'
+import Mousetrap from 'mousetrap'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -37,10 +38,18 @@ export const TiptapLinkExtension = BaseLink.extend({
   addKeyboardShortcuts(this) {
     return {
       'Mod-k': () => {
-        this.editor.emit('linkStateChange', {
-          editor: this.editor,
-          linkState: 'edit'
-        })
+        const {state} = this.editor
+        const {selection} = state
+        // Check if the start and end positions are different
+        const isRangeSelected = !selection.empty
+        if (isRangeSelected) {
+          this.editor.emit('linkStateChange', {
+            editor: this.editor,
+            linkState: 'edit'
+          })
+        } else {
+          Mousetrap.trigger('mod+k')
+        }
         return true
       }
     }

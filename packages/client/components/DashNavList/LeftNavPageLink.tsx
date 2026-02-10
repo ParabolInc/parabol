@@ -9,6 +9,7 @@ import {useDraggablePage} from '../../hooks/useDraggablePage'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
+import {GQLID} from '../../utils/GQLID'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {LeftNavItem} from './LeftNavItem'
 import {PageActions} from './PageActions'
@@ -82,7 +83,7 @@ export const LeftNavPageLink = (props: Props) => {
   } = page
   const {viewer: viewerAccess} = access
 
-  const pageCode = id.split(':')[1]
+  const [pageCode] = GQLID.fromKey(id)
   const slug = getPageSlug(Number(pageCode), title)
   const isViewerPageEditor = ['owner', 'editor'].includes(viewerAccess!)
   const isViewerParentPageEditor = ['owner', 'editor'].includes(parentPageViewerAccess!)

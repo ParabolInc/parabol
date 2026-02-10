@@ -53,4 +53,24 @@ type SAML {
   The full attribute name used to provision users to specific orgs, see also Organization.samlId
   """
   samlOrgAttribute: ID
+
+  """
+  The authentication type.
+  """
+  scimAuthenticationType: SCIMAuthenticationTypeEnum
+
+  """
+  The OAuth client ID used for SCIM authentication.
+  """
+  scimOAuthClientId: ID
+
+  """
+  The censored OAuth client secret used for SCIM authentication.
+  """
+  scimCensoredOAuthClientSecret: ID
+
+  """
+  The censored bearer token used for SCIM authentication.
+  """
+  scimCensoredBearerToken: String
 }

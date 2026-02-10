@@ -20,7 +20,7 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 | Server                 | [Node](https://nodejs.org/)                                     |
 | Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
 | Database               | [PostgreSQL](https://www.postgresql.org/)                       |
-| PubSub & Cache         | [Redis](https://redis.io)                                       |
+| PubSub & Cache         | [Valkey](https://valkey.io)                                       |
 | Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
 | Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws)           |
 | Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
@@ -38,7 +38,7 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 #### Production
 
 - [PostgreSQL](https://www.postgresql.org/) (current specific version available in the [build action](./.github/workflows/build.yml)) with [pgvector plugin](https://github.com/pgvector/pgvector)
-- [Redis](https://redis.io) (current specific version available in the [build action](./.github/workflows/build.yml))
+- [Valkey](https://valkey.io) (current specific version available in the [build action](./.github/workflows/build.yml))
 
 #### Development
 

@@ -30,12 +30,12 @@ services:
       - "5050:80"
     networks:
       - parabol-network
-  redis:
-    container_name: redis
+  valkey:
+    container_name: valkey
     profiles: ["databases"]
-    image: redis:8.4.0-alpine
+    image: valkey/valkey:9.0-alpine
     healthcheck:
-      test: "[ $$(redis-cli ping) = 'PONG' ]"
+      test: "[ $$(valkey-cli ping) = 'PONG' ]"
       interval: 10s
       timeout: 5s
       retries: 5

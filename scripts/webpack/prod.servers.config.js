@@ -17,6 +17,7 @@ const distPath = path.join(PROJECT_ROOT, 'dist')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
 const INIT_LOGGING = path.join(SERVER_ROOT, 'initLogging.ts')
 const MONKEYPATCHES = path.join(SERVER_ROOT, 'monkeyPatches.ts')
+const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 const runtimePlatform = `${process.platform}-${process.arch}`
@@ -35,11 +36,12 @@ module.exports = (config) => {
         INIT_PUBLIC_PATH,
         INIT_LOGGING,
         MONKEYPATCHES,
+        DUMP_ON_USR2,
         // each instance of web needs to generate its own index.html to use on startup
         path.join(PROJECT_ROOT, 'scripts/toolboxSrc/applyEnvVarsToClientAssets.ts'),
         path.join(SERVER_ROOT, 'server.ts')
       ],
-      embedder: [DOTENV, path.join(EMBEDDER_ROOT, 'embedder.ts')],
+      embedder: [DOTENV, DUMP_ON_USR2, path.join(EMBEDDER_ROOT, 'embedder.ts')],
       preDeploy: [
         DOTENV,
         INIT_PUBLIC_PATH,

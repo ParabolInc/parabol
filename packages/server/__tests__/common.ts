@@ -8,7 +8,8 @@ import AuthToken from '../database/types/AuthToken'
 import getKysely from '../postgres/getKysely'
 import encodeAuthToken from '../utils/encodeAuthToken'
 
-export const HOST = `${process.env.HOST}:${process.env.PORT}` || 'localhost:3000'
+export const HOST =
+  process.env.HOST === 'localhost' ? `localhost:${process.env.PORT}` : process.env.HOST!
 export const PROTOCOL = process.env.PROTO || 'http'
 const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 

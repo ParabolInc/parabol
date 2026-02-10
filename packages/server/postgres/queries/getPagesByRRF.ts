@@ -24,11 +24,12 @@ interface Params {
     endAt: Date
     dateField: 'createdAt' | 'updatedAt'
   } | null
-  teamIds: string[] | null | undefined
+  teamIds: [string, ...string[]] | undefined
+  viewerId: string
 }
 
 export const getPagesByRRF = async (params: Params) => {
-  const {query, queryVector, first, after, dateRange, teamIds, alpha, k} = params
+  const {query, queryVector, first, after, dateRange, teamIds, alpha, k, viewerId} = params
   const pg = getKysely()
   const tableName = getEmbeddingsPagesTableName(activeEmbeddingModelId)
   if (!tableName) {
@@ -37,11 +38,15 @@ export const getPagesByRRF = async (params: Params) => {
   const language = inferLanguage(query) || 'en'
   const tsvLanguage = getTSV(language) || 'english'
 
+  const MIN_RRF_SCORE = 0.004
+
   const results = await pg
     .with('Model', (qb) =>
       qb
         .selectFrom('PageAccess')
+        .where('PageAccess.userId', '=', viewerId)
         .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
+        .where('PageAccess.userId', '=', viewerId)
         .$if(!!dateRange, (qb) =>
           qb
             .innerJoin('Page', 'Page.id', 'PageAccess.pageId')
@@ -115,14 +120,17 @@ export const getPagesByRRF = async (params: Params) => {
         .selectFrom('RRF')
         .selectAll()
         .distinctOn('pageId')
+        .where('score', '>', MIN_RRF_SCORE)
         .orderBy('pageId')
         .orderBy('score', 'desc')
+        .limit(first)
     )
     .selectFrom('ChunkMax')
-    .selectAll()
+    .selectAll('ChunkMax')
+    .innerJoin('Page', 'Page.id', 'ChunkMax.pageId')
     .$narrowType<{pageId: NotNull}>()
     .select((eb) =>
-      tsHeadline(eb, tsvLanguage, 'embedText', 'webQuery', {
+      tsHeadline(eb, tsvLanguage, 'Page.plaintextContent', 'webQuery', {
         StartSel: '<b>',
         StopSel: '</b>',
         MaxWords: 35,
@@ -130,8 +138,6 @@ export const getPagesByRRF = async (params: Params) => {
         FragmentDelimiter: '$!$'
       }).as('snippet')
     )
-    .orderBy('score', 'desc')
-    .limit(first)
     .execute()
   return {
     pageInfo: {

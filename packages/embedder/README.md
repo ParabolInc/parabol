@@ -8,7 +8,7 @@ use cases. It does so by:
 3. Uses PG to pick a job from the queue and sets the job from `queued` -> `embedding`,
    then `embedding` -> [deleting the `EmbeddingJobQueue` row]
 4. Embedding involves creating a `fullText` from the work item and then a vector from that `fullText`
-5. New jobs to add metadata are sent via redis streams from the GQL Executor
+5. New jobs to add metadata are sent via valkey streams from the GQL Executor
 6. If embedding fails, the application increments the `retryCount` and increases the `retryAfter` if a retry is desired
 7. If a job gets stalled, a process that runs every 5 minutes will look for jobs older than 5 minutes and reset them to `queued`
 

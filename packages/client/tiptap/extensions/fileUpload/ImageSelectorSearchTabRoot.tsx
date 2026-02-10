@@ -7,7 +7,6 @@ import {ImageSelectorSearchTab} from './ImageSelectorSearchTab'
 
 interface Props {
   editor: Editor
-  setImageURL: (url: string) => void
 }
 
 export const ImageSelectorSearchTabRoot = (props: Props) => {
@@ -17,7 +16,7 @@ export const ImageSelectorSearchTabRoot = (props: Props) => {
   const queryRef = useQueryLoaderNow<ImageSelectorSearchTabQuery>(
     imageSelectorSearchTabQuery,
     {
-      fetchOriginal: editor.storage.imageUpload.editorWidth > 500,
+      fetchOriginal: editor.storage.imageBlock.editorWidth > 500,
       query: queryToSendToServer
     },
     undefined,
@@ -28,7 +27,7 @@ export const ImageSelectorSearchTabRoot = (props: Props) => {
     <Suspense fallback={''}>
       {queryRef && (
         <ImageSelectorSearchTab
-          {...props}
+          editor={editor}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           queryRef={queryRef}

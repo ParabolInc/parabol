@@ -1,21 +1,22 @@
 import './hocusPocus'
 import uws from 'uWebSockets.js'
+import {assetProxyHandler} from './assetProxyHandler'
 import stripeWebhookHandler from './billing/stripeWebhookHandler'
+import {buildProxyHandler} from './buildProxyHandler'
 import {stopChronos} from './chronos'
 import createSSR from './createSSR'
 import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
-import ICSHandler from './ICSHandler'
-import PWAHandler from './PWAHandler'
-import './hocusPocus'
-import {assetProxyHandler} from './assetProxyHandler'
 import {hocusPocusHandler} from './hocusPocusHandler'
+import ICSHandler from './ICSHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
 import tokenHandler from './oauth2/tokenHandler'
+import PWAHandler from './PWAHandler'
+import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
 import getReqAuth from './utils/getReqAuth'
@@ -66,6 +67,7 @@ const app = uws
   .get('/self-hosted/*', selfHostedHandler)
   .get('/jira-attachments/:fileName', jiraImagesHandler)
   .get('/assets/*', assetProxyHandler)
+  .get('/build/*', buildProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
@@ -81,6 +83,7 @@ const app = uws
   .post('/oauth/token', tokenHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
+registerSCIMHandlers(app, '/scim')
 
 if (ENABLE_STATIC_FILE_HANDLER) {
   app.get('/static/*', createStaticFileHandler('/static/'))

@@ -1,4 +1,5 @@
 import {GraphQLError} from 'graphql'
+import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
 import {getUserId} from '../../../utils/authorization'
@@ -25,23 +26,15 @@ export const search: NonNullable<UserResolvers['search']> = async (
 
   // VALIDATION
   if (alpha < 0 || alpha > 1) throw new GraphQLError('alpha must be between 0 and 1')
-  if (query.length < 1 || query.length > 5000)
-    throw new GraphQLError('query must be between 1 and 5000 chars')
+  if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
   if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
   if (teamIds) {
-    const hasAccessToTeams = teamIds.every((teamId) => authToken.sub.includes(teamId))
+    const hasAccessToTeams = teamIds.every((teamId) => authToken.tms.includes(teamId))
     if (!hasAccessToTeams) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
   }
-
-  const queryVector = await publishToEmbedder({
-    jobType: 'userQuery:start',
-    dataLoader,
-    userId: viewerId,
-    data: getUserQueryJobData(query)
-  })
-  const k = 60 // RRF constant
+  const pg = getKysely()
   const dateRange =
     startAt || endAt
       ? {
@@ -50,6 +43,96 @@ export const search: NonNullable<UserResolvers['search']> = async (
           dateField: dateField || 'createdAt'
         }
       : null
+  // if teamIds is defined for pages, it will limit the search to team pages
+  const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
+  // metadata requires a teamId, whereas pages don't because it uses RBAC
+  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...authToken.tms]
+
+  if (query.length === 0) {
+    const noQueryEdge = {
+      score: {
+        keyword: 0,
+        vector: 0,
+        vectorRank: 0,
+        keywordRank: 0,
+        combined: 0
+      },
+      snippets: []
+    }
+    // show most recent for that user
+    if (type === 'page') {
+      const results = await pg
+        .selectFrom('PageAccess')
+        .innerJoin('Page', 'PageAccess.pageId', `Page.id`)
+        .where('PageAccess.userId', '=', viewerId)
+        .$if(!!dateRange, (qb) =>
+          qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
+        )
+        .$if(!!pageTeamIds, (qb) =>
+          qb
+            .innerJoin('PageTeamAccess', 'PageTeamAccess.pageId', `Page.id`)
+            .where('PageTeamAccess.teamId', 'in', pageTeamIds!)
+        )
+        .orderBy('Page.updatedAt', 'desc')
+        .limit(first + 1)
+        .select('Page.id')
+        .execute()
+      const edges = results
+        .map((page) => ({
+          ...noQueryEdge,
+          nodeTypeName: 'page' as const,
+          nodeId: page.id
+        }))
+        .slice(0, first)
+      const lastEdge = edges.at(-1)
+      const endCursor = lastEdge ? CipherId.toClient(lastEdge.nodeId, 'page') : undefined
+      return {
+        pageInfo: {
+          hasNextPage: results.length > first,
+          hasPreviousPage: false,
+          endCursor,
+          startCursor: null
+        },
+        edges
+      }
+    }
+    const results = await pg
+      .selectFrom('EmbeddingsMetadata')
+      .$if(!!metadataTeamIds, (qb) => qb.where('teamId', 'in', metadataTeamIds!))
+      .where('EmbeddingsMetadata.objectType', '=', type)
+      .$if(!!dateRange, (qb) =>
+        qb
+          // we don't update discussion topics, so we only use refUpdatedAt
+          .where((eb) => eb.between('refUpdatedAt', dateRange!.startAt, dateRange!.endAt))
+      )
+      .select(['refId', 'fullText', 'objectType'])
+      .execute()
+    return {
+      pageInfo: {
+        hasNextPage: results.length > first,
+        hasPreviousPage: false,
+        endCursor: results.at(-1)?.refId,
+        startCursor: null
+      },
+      edges: results
+        .map((page) => ({
+          ...noQueryEdge,
+          nodeTypeName: page.objectType,
+          nodeId: page.refId
+        }))
+        .slice(0, first)
+    }
+  }
+  const queryVector = await publishToEmbedder({
+    jobType: 'userQuery:start',
+    dataLoader,
+    userId: viewerId,
+    data: getUserQueryJobData(query)
+  })
+  if (queryVector instanceof Error) {
+    throw new GraphQLError('Error calling search')
+  }
+  const k = 60 // RRF constant
   if (type === 'page') {
     return getPagesByRRF({
       query,
@@ -59,7 +142,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds
+      teamIds: pageTeamIds,
+      viewerId
     })
   } else {
     return getEmbeddingsByRRF({
@@ -70,7 +154,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       alpha,
       k,
       first,
-      teamIds: teamIds || ['aGhostTeam', ...authToken.tms],
+      teamIds: metadataTeamIds,
       type
     })
   }

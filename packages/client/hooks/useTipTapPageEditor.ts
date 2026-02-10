@@ -4,6 +4,7 @@ import Collaboration from '@tiptap/extension-collaboration'
 import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {Document} from '@tiptap/extension-document'
+import {FileHandler} from '@tiptap/extension-file-handler'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
@@ -18,11 +19,13 @@ import AutoJoiner from 'tiptap-extension-auto-joiner'
 import type {useTipTapPageEditor_viewer$key} from '../__generated__/useTipTapPageEditor_viewer.graphql'
 import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
+import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
+import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
 import ImageBlock from '../tiptap/extensions/imageBlock/ImageBlock'
-import {ImageUpload} from '../tiptap/extensions/imageUpload/ImageUpload'
 import {InsightsBlock} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {ResponseBlock} from '../tiptap/extensions/insightsBlock/ResponseBlock'
 import {TaskBlock} from '../tiptap/extensions/insightsBlock/TaskBlock'
@@ -34,7 +37,6 @@ import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
-import {ElementWidth} from '../types/constEnums'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
@@ -54,6 +56,7 @@ export const useTipTapPageEditor = (
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
         preferredName
+        highestTier
         organizations {
           hasDatabases: featureFlag(featureName: "Databases")
         }
@@ -61,6 +64,7 @@ export const useTipTapPageEditor = (
     `,
     viewerRef
   )
+  const [commit] = useUploadUserAsset()
   const preferredName = user?.preferredName
   const hasDatabases = !!user?.organizations?.find((org) => org?.hasDatabases)
   const atmosphere = useAtmosphere()
@@ -102,13 +106,17 @@ export const useTipTapPageEditor = (
           Database: hasDatabases
         }),
         Focus,
-        ImageUpload.configure({
-          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88,
+        FileUpload.configure({
           scopeKey: pageId,
-          assetScope: 'Page'
+          assetScope: 'Page',
+          atmosphere,
+          commit,
+          highestTier: user?.highestTier
         }),
-        ImageBlock,
+        ImageBlock.configure({
+          editorWidth: 960,
+          editorHeight: 400
+        }),
         IndentHandler,
         LoomExtension,
         PageDragHandle.configure({pageId, atmosphere}),
@@ -227,7 +235,25 @@ export const useTipTapPageEditor = (
         PageLinkBlock.configure({yDoc: provider.document}),
         TaskBlock,
         ThinkingBlock,
-        ResponseBlock
+        ResponseBlock,
+        FileBlock,
+        FileHandler.configure({
+          onDrop: (currentEditor, files, pos) => {
+            files.forEach(async (file) => {
+              // if they drop an image, treat it like an image, not a binary
+              const targetType = file.type.includes('image') ? 'image' : 'file'
+              currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType, pos)
+            })
+          },
+          onPaste: (currentEditor, files, htmlContent) => {
+            files.forEach((file) => {
+              if (!htmlContent) {
+                const targetType = file.type.includes('image') ? 'image' : 'file'
+                currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
+              }
+            })
+          }
+        })
       ],
       autofocus: true,
       editable: true

@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "11.10.2",
+  "version": "12.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -68,6 +68,7 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "@radix-ui/react-visually-hidden": "^1.2.4",
     "@sereneinserenade/tiptap-search-and-replace": "^0.1.1",
     "@stripe/react-stripe-js": "^1.16.5",
     "@stripe/stripe-js": "^4.0.0",

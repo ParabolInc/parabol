@@ -5,6 +5,97 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.0.2](https://github.com/ParabolInc/parabol/compare/v12.0.1...v12.0.2) (2026-02-10)
+
+
+### Fixed
+
+* insert title in meeting summaries ([#12574](https://github.com/ParabolInc/parabol/issues/12574)) ([8febfb3](https://github.com/ParabolInc/parabol/commit/8febfb3fd6431853fb8b277e571990d7bdb91821))
+
+## [12.0.1](https://github.com/ParabolInc/parabol/compare/v12.0.0...v12.0.1) (2026-02-06)
+
+
+### Fixed
+
+* support heap dumps via sigusr2 on embedder ([#12569](https://github.com/ParabolInc/parabol/issues/12569)) ([bc98a20](https://github.com/ParabolInc/parabol/commit/bc98a20e6cc27393af134073bcd9c36b92fa972f))
+* use plaintext in snippets, fix chunking when heading has no content ([#12572](https://github.com/ParabolInc/parabol/issues/12572)) ([3fdf8ec](https://github.com/ParabolInc/parabol/commit/3fdf8ec535067957286ed1f6e516afbc46801568))
+
+## [12.0.0](https://github.com/ParabolInc/parabol/compare/v11.13.0...v12.0.0) (2026-02-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* **valkey:** Redis replaced with Valkey ([#12525](https://github.com/ParabolInc/parabol/issues/12525))
+
+### Added
+
+* Implement user and file upload limits ([#12563](https://github.com/ParabolInc/parabol/issues/12563)) ([59fb1c3](https://github.com/ParabolInc/parabol/commit/59fb1c30634838fbf3a52e8f870a60eed95389f3))
+* proxy build files through /build path ([#12554](https://github.com/ParabolInc/parabol/issues/12554)) ([0bae1a1](https://github.com/ParabolInc/parabol/commit/0bae1a1d37b7ba7fcedc3f07c3bd299648d4626f))
+* Search Pages frontend ([#12526](https://github.com/ParabolInc/parabol/issues/12526)) ([3b83fdb](https://github.com/ParabolInc/parabol/commit/3b83fdb56bd3c9bcf5aae86266cb35a1b6ff0ccd))
+* **valkey:** Redis replaced with Valkey ([#12525](https://github.com/ParabolInc/parabol/issues/12525)) ([e0e18f8](https://github.com/ParabolInc/parabol/commit/e0e18f8aad621a79576c76f77754e2e74696320e))
+
+
+### Changed
+
+* **deps-dev:** bump webpack from 5.103.0 to 5.104.1 ([#12562](https://github.com/ParabolInc/parabol/issues/12562)) ([7fa0226](https://github.com/ParabolInc/parabol/commit/7fa0226d0ddbda85d6f922f37ba64631fd14cc14))
+
+## [11.13.0](https://github.com/ParabolInc/parabol/compare/v11.12.0...v11.13.0) (2026-02-05)
+
+
+### Added
+
+* **SCIM:** user endpoints ([#12530](https://github.com/ParabolInc/parabol/issues/12530)) ([153dab4](https://github.com/ParabolInc/parabol/commit/153dab470d584e61cbdf8c988063490441813d11))
+
+## [11.12.0](https://github.com/ParabolInc/parabol/compare/v11.11.0...v11.12.0) (2026-02-04)
+
+
+### Added
+
+* File uploads on pages ([#12533](https://github.com/ParabolInc/parabol/issues/12533)) ([03196bf](https://github.com/ParabolInc/parabol/commit/03196bff448336f73840426c88c92b6eaf94c01b))
+
+
+### Fixed
+
+* editor size for images ([#12551](https://github.com/ParabolInc/parabol/issues/12551)) ([71a541d](https://github.com/ParabolInc/parabol/commit/71a541db3f45ba2123214320ee7bfdcf75dceeae))
+* speed up search queries ([#12552](https://github.com/ParabolInc/parabol/issues/12552)) ([84c041c](https://github.com/ParabolInc/parabol/commit/84c041ce1f7195f8a88734a6494f833366da8791))
+
+## [11.11.0](https://github.com/ParabolInc/parabol/compare/v11.10.5...v11.11.0) (2026-02-04)
+
+
+### Added
+
+* **pages:** image block enhancements ([#12442](https://github.com/ParabolInc/parabol/issues/12442)) ([6a8d45a](https://github.com/ParabolInc/parabol/commit/6a8d45a50517f669a4c7e308602f6d8b6fcbb370))
+* **SCIM:** Add authentication configuration ([#12507](https://github.com/ParabolInc/parabol/issues/12507)) ([739d00a](https://github.com/ParabolInc/parabol/commit/739d00a6e83d5019707d2a598acc912ea0da4c34))
+
+
+### Fixed
+
+* Change `EmbeddingsJobQueueStream.next()` to use loop ([#12548](https://github.com/ParabolInc/parabol/issues/12548)) ([eddaa50](https://github.com/ParabolInc/parabol/commit/eddaa50d4b2a84b910bea237904db98b6d1849c4))
+
+## [11.10.5](https://github.com/ParabolInc/parabol/compare/v11.10.4...v11.10.5) (2026-02-03)
+
+
+### Fixed
+
+* bump fast-xml-parser ([#12536](https://github.com/ParabolInc/parabol/issues/12536)) ([41da489](https://github.com/ParabolInc/parabol/commit/41da489241a0725ff3f4213b5645618b7aafcef8))
+* extends timeouts, better logging for uncaught errors for embedder ([#12542](https://github.com/ParabolInc/parabol/issues/12542)) ([f404e77](https://github.com/ParabolInc/parabol/commit/f404e77c9a1516faff57e7e1b10cde0c73774f63))
+* rename persistentUserId to persistentNameId ([#12532](https://github.com/ParabolInc/parabol/issues/12532)) ([2a734ac](https://github.com/ParabolInc/parabol/commit/2a734acd530502d179867187a98139c6fde631ef))
+
+## [11.10.4](https://github.com/ParabolInc/parabol/compare/v11.10.3...v11.10.4) (2026-02-03)
+
+
+### Fixed
+
+* use contextFactory for all contexts ([#12539](https://github.com/ParabolInc/parabol/issues/12539)) ([75db54b](https://github.com/ParabolInc/parabol/commit/75db54b58a223de8e9283b066fb05f2a5c1b083c))
+
+## [11.10.3](https://github.com/ParabolInc/parabol/compare/v11.10.2...v11.10.3) (2026-01-30)
+
+
+### Fixed
+
+* process pages first when adding new model ([#12522](https://github.com/ParabolInc/parabol/issues/12522)) ([c09ae42](https://github.com/ParabolInc/parabol/commit/c09ae42c8f1fddac4f480d630396a274153097ba))
+* Qwen3 Quantized ([#12528](https://github.com/ParabolInc/parabol/issues/12528)) ([aae14db](https://github.com/ParabolInc/parabol/commit/aae14db999814e19f77a7204b07151f92c1eda3b))
+
 ## [11.10.2](https://github.com/ParabolInc/parabol/compare/v11.10.1...v11.10.2) (2026-01-23)
 
 

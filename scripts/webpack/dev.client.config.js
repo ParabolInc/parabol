@@ -54,6 +54,7 @@ module.exports = {
         'assets',
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/',
+        'scim',
         'oauth'
       ].map((name) => ({
         context: [`/${name}`],

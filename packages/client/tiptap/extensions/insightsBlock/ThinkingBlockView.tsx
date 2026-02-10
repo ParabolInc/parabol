@@ -1,11 +1,17 @@
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect} from 'react'
+import {getHasPermanentlyUnmounted} from '../getHasPermanentlyUnmounted'
 export const ThinkingBlockView = (props: NodeViewProps) => {
-  const {editor} = props
+  const {editor, node} = props
   useEffect(() => {
-    editor.setEditable(false)
+    if (editor.isEditable) {
+      editor.setEditable(false)
+    }
     return () => {
-      editor.setEditable(true)
+      const hasPermanentlyUnmounted = getHasPermanentlyUnmounted(editor, node)
+      if (hasPermanentlyUnmounted) {
+        editor.setEditable(true)
+      }
     }
   }, [editor])
   return (

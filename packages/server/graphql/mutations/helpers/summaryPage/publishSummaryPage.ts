@@ -1,10 +1,12 @@
 import type {GraphQLResolveInfo} from 'graphql'
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
 import {Logger} from '../../../../utils/Logger'
 import {createTopLevelPage} from '../../../../utils/tiptap/createTopLevelPage'
 import type {InternalContext} from '../../../graphql'
+import {getTitleBlock} from './getTitleBlock'
 import {streamSummaryBlocksToPage} from './streamSummaryBlocksToPage'
 
 export const publishSummaryPage = async (
@@ -18,12 +20,25 @@ export const publishSummaryPage = async (
   dataLoader.share()
   const userId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId} = meeting
+  const {teamId, name} = meeting
   // start creating meeting summaries for everyone, feature flag or not
   const page = await createTopLevelPage(userId, dataLoader, {
     teamId,
     mutatorId,
-    summaryMeetingId: meetingId
+    summaryMeetingId: meetingId,
+    title: name,
+    content: {
+      type: 'doc',
+      content: [
+        // we do this here instead of in the stream
+        // because the schema enforces a title
+        // so we need a title before we can insert a thinking block
+        getTitleBlock(meeting),
+        {
+          type: 'thinkingBlock'
+        }
+      ]
+    } as TipTapSerializedContent
   })
   const {id: pageId} = page
   await getKysely()

@@ -1,4 +1,5 @@
 import DetailsIcon from '@mui/icons-material/ArrowRight'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CodeIcon from '@mui/icons-material/Code'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
@@ -234,7 +235,39 @@ export const slashCommands = [
           let command = editor
             .chain()
             .focus()
-            .setImageUpload()
+            .setFileUpload('image')
+            .setTextSelection(to + 1)
+          if (size - to <= 1) {
+            // if we're at the end of the doc, add an extra paragraph to make it easier to click below
+            command = command.insertContent('<p></p>').setTextSelection(to + 1)
+          }
+          return command.scrollIntoView().run()
+        }
+      },
+      {
+        title: 'File',
+        description: 'Upload any file from your device',
+        searchTerms: [
+          'archive',
+          'bin',
+          'blob',
+          'document',
+          'file',
+          'font',
+          'pdf',
+          'text',
+          'upload',
+          'zip'
+        ],
+        icon: AttachFileIcon,
+        // shouldHide: () => true,
+        action: (editor: Editor) => {
+          const {to} = editor.state.selection
+          const size = editor.state.doc.content.size
+          let command = editor
+            .chain()
+            .focus()
+            .setFileUpload('file')
             .setTextSelection(to + 1)
           if (size - to <= 1) {
             // if we're at the end of the doc, add an extra paragraph to make it easier to click below

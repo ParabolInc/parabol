@@ -30,7 +30,8 @@ import {
   selectTemplateRef,
   selectTemplateScale,
   selectTemplateScaleRef,
-  selectTimelineEvent
+  selectTimelineEvent,
+  selectUserDetails
 } from '../postgres/select'
 import type {TeamNotificationSettings} from '../postgres/types/pg'
 import {primaryKeyLoaderMaker} from './primaryKeyLoaderMaker'
@@ -195,4 +196,8 @@ export const pages = primaryKeyLoaderMaker((ids: readonly number[]) => {
 
 export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => {
   return selectOAuthAPIProvider().where('id', 'in', ids).execute()
+})
+
+export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectUserDetails().where('id', 'in', ids).execute()
 })

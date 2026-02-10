@@ -10,7 +10,8 @@ import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
 import {MentionTaskTag} from '../../utils/MentionTaskTag'
-import {ImageUploadBase} from './extensions/ImageUploadBase'
+import {FileBlockBase} from './extensions/FileBlockBase'
+import {FileUploadBase} from './extensions/FileUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
@@ -57,7 +58,8 @@ export const serverTipTapExtensions: Extensions = [
   TaskItem.configure({
     nested: true
   }),
-  ImageUploadBase,
+  FileBlockBase,
+  FileUploadBase,
   ImageBlockBase,
   LoomExtension,
   Mention.configure(mentionConfig),

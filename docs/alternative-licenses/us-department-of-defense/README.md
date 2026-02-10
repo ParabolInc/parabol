@@ -31,7 +31,7 @@ For all matters, please contact: support@parabol.co
 | Server                 | [Node](https://nodejs.org/)                                     |
 | Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
 | Database               | [PostgreSQL](https://www.postgresql.org/)                       |
-| PubSub & Cache         | [Redis](https://redis.io)                                       |
+| PubSub & Cache         | [Valkey](https://valkey.io)                                       |
 | Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
 | Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws)           |
 | Client Cache           | [Relay](https://facebook.github.io/relay/)                      |

@@ -13,11 +13,10 @@ interface Props {
   queryRef: PreloadedQuery<ImageSelectorSearchTabQuery>
   searchQuery: string
   setSearchQuery: (query: string) => void
-  setImageURL: (url: string) => void
 }
 
 export const ImageSelectorSearchTab = (props: Props) => {
-  const {queryRef, setImageURL, searchQuery, setSearchQuery} = props
+  const {queryRef, searchQuery, setSearchQuery, editor} = props
   const ref = useRef<HTMLInputElement>(null)
 
   const query = usePreloadedQuery<ImageSelectorSearchTabQuery>(
@@ -84,7 +83,8 @@ export const ImageSelectorSearchTab = (props: Props) => {
               style={{gridRow: 'span 200'}} // initially too tall to prevent the lastItem from intersecting viewport
               className={cn('row-span w-full cursor-pointer rounded-sm')}
               onClick={() => {
-                setImageURL(originalUrl || previewUrl)
+                const src = originalUrl || previewUrl
+                editor.commands.setImageBlock({src})
               }}
             >
               <img

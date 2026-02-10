@@ -1,5 +1,6 @@
 import type {SvgIconTypeMap} from '@mui/material'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
+import {forwardRef, type Ref} from 'react'
 import {useRouteMatch} from 'react-router'
 import {Link} from 'react-router-dom'
 import {cn} from '../../ui/cn'
@@ -13,12 +14,13 @@ interface Props {
   exact?: boolean
 }
 
-const LeftDashNavItem = (props: Props) => {
+const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {label, Icon, href, onClick, exact} = props
   const match = useRouteMatch(href)
-  const isActive = !!match && (match?.isExact || !exact)
+  const isActive = href && !!match && (match?.isExact || !exact)
+  const LinkWrapper = href ? Link : 'div'
   return (
-    <div className='relative rounded-md'>
+    <div className='relative rounded-md' ref={ref}>
       <div
         data-highlighted={isActive ? '' : undefined}
         className={cn(
@@ -26,7 +28,12 @@ const LeftDashNavItem = (props: Props) => {
           'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900'
         )}
       >
-        <Link draggable={false} to={href} className={'flex w-full items-center'} onClick={onClick}>
+        <LinkWrapper
+          draggable={false}
+          to={href}
+          className={'flex w-full items-center'}
+          onClick={onClick}
+        >
           <div
             className={cn(
               'flex size-6 shrink-0 items-center justify-center rounded-sm bg-inherit text-slate-600 group-data-highlighted:bg-slate-300'
@@ -38,10 +45,10 @@ const LeftDashNavItem = (props: Props) => {
           <LeftNavItem>
             <span className='pl-1'>{label}</span>
           </LeftNavItem>
-        </Link>
+        </LinkWrapper>
       </div>
     </div>
   )
-}
+})
 
 export default LeftDashNavItem
