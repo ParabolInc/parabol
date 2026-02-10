@@ -9,13 +9,12 @@ export type AddSlackAuthPayloadSource =
 
 const AddSlackAuthPayload: AddSlackAuthPayloadResolvers = {
   slackIntegration: async (source, _args, {dataLoader}) => {
-    return 'slackAuthId' in source
-      ? dataLoader.get('slackAuths').loadNonNull(source.slackAuthId)
-      : null
+    if ('error' in source) return null
+    return dataLoader.get('slackAuths').loadNonNull(source.slackAuthId)
   },
-
-  user: (source, _args, {dataLoader}) => {
-    return 'userId' in source ? dataLoader.get('users').loadNonNull(source.userId) : null
+  user: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return dataLoader.get('users').loadNonNull(source.userId)
   }
 }
 
