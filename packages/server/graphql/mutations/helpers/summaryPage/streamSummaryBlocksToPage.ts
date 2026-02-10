@@ -1,8 +1,8 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {GraphQLResolveInfo} from 'graphql'
+import sleep from 'parabol-client/utils/sleep'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
-import sleep from '../../../../../client/utils/sleep'
 import {hocuspocus, redisHocusPocus} from '../../../../hocusPocus'
 import {CipherId} from '../../../../utils/CipherId'
 import type {InternalContext} from '../../../graphql'
@@ -33,12 +33,7 @@ export const streamSummaryBlocksToPage = async (
   const documentName = CipherId.toClient(pageId, 'page')
   const unlock = await redisHocusPocus.lockDocument(documentName)
   const conn = await hocuspocus.openDirectConnection(documentName, {})
-  await conn.transact((doc) => {
-    const frag = doc.getXmlFragment('default')
-    const el = new XmlElement()
-    el.nodeName = 'thinkingBlock'
-    frag.push([el])
-  })
+  let lastBlock: XmlElement
   for await (const rawContent of contentGenerator) {
     if (!rawContent) continue
     const content = rawContent.filter(Boolean)
@@ -52,25 +47,16 @@ export const streamSummaryBlocksToPage = async (
         undefined,
         serverTipTapExtensions
       )
-      const blocks = tempYDoc.getXmlFragment('default').toArray() as XmlElement[]
+      const blocks = tempYDoc
+        .getXmlFragment('default')
+        .toArray()
+        .map((block) => cloneBlock(block as XmlElement))
+
       await conn.transact((doc) => {
         const frag = doc.getXmlFragment('default')
-        for (let i = frag.length - 1; i >= 0; i--) {
-          const node = frag.get(i) as XmlElement
-          if (node.nodeName === 'thinkingBlock') {
-            continue
-          }
-          if (node.length === 0 && ['paragraph', 'heading'].includes(node.nodeName)) {
-            // delete tailing empty headings or paragraphs that may have been added by the user
-            frag.delete(i)
-          } else {
-            break
-          }
-        }
-        for (const block of blocks) {
-          // insert it before the thinking block
-          frag.insert(frag.length - 1, [cloneBlock(block)])
-        }
+        lastBlock = lastBlock || frag.firstChild
+        frag.insertAfter(lastBlock, blocks)
+        lastBlock = blocks.at(-1)!
       })
     } catch (e) {
       console.error('Invalid block generated', e, JSON.stringify(content))
