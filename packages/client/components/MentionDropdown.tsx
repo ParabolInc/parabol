@@ -63,7 +63,7 @@ export default forwardRef(
           <div
             data-highlighted={idx === selectedIndex ? '' : undefined}
             className={
-              'flex w-full cursor-pointer items-center rounded-md px-4 py-1 text-slate-700 text-sm leading-8 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+              'mx-1 flex cursor-pointer items-center rounded-md px-4 py-1 text-slate-700 text-sm outline-hidden hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
             }
             key={item.userId}
             onClick={() => selectItem(idx)}
