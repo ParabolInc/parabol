@@ -1,32 +1,11 @@
 import type {Editor} from '@tiptap/core'
 import type {MentionOptions} from '@tiptap/extension-mention'
 import {PluginKey} from '@tiptap/pm/state'
-import graphql from 'babel-plugin-relay/macro'
 import stringScore from 'string-score'
-import type {pageUserSuggestionQuery} from '../../../__generated__/pageUserSuggestionQuery.graphql'
 import MentionDropdown from '../../../components/MentionDropdown'
 import renderSuggestion from '../renderSuggestion'
+import {fetchAllOrgUsers} from './fetchAllOrgUsers'
 import type {PageUserMentionOptions} from './PageUserMention'
-
-const queryNode = graphql`
-  query pageUserSuggestionQuery {
-    viewer {
-      organizations {
-        organizationUsers(first: 1000) {
-          edges {
-            node {
-              user {
-                id
-                picture
-                preferredName
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
 
 export const pageUserSuggestion: MentionOptions['suggestion'] = {
   allowSpaces: true,
@@ -39,29 +18,8 @@ export const pageUserSuggestion: MentionOptions['suggestion'] = {
     const {atmosphere} = options
     if (!atmosphere) return []
 
-    const res = await atmosphere.fetchQuery<pageUserSuggestionQuery>(queryNode, {
-      fetchPolicy: 'store-or-network'
-    })
-    if (!res || res instanceof Error) return []
-
-    const {viewer} = res
-    const {organizations} = viewer
-    if (!organizations) return []
-
-    const allUsers = new Map<string, {id: string; picture?: string; preferredName: string}>()
-
-    organizations.forEach((org: any) => {
-      org?.organizationUsers?.edges.forEach((edge: any) => {
-        const user = edge.node.user
-        if (!allUsers.has(user.id)) {
-          allUsers.set(user.id, {
-            id: user.id,
-            picture: user.picture,
-            preferredName: user.preferredName
-          })
-        }
-      })
-    })
+    const allUsers = await fetchAllOrgUsers(atmosphere)
+    if (allUsers.size === 0) return []
 
     return Array.from(allUsers.values())
       .map((user) => {
