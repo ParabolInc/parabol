@@ -27,19 +27,21 @@ export const syncPageUserMentionNames = async (document: Y.Doc) => {
 
   const dbUsers = await getKysely()
     .selectFrom('User')
-    .select(['id', 'preferredName'])
+    .select(['id', 'preferredName', 'isRemoved'])
     .where('id', 'in', userIds)
     .execute()
 
-  const userMap = new Map(dbUsers.map((u) => [u.id, u.preferredName]))
+  const userMap = new Map(
+    dbUsers.map((u) => [u.id, u.isRemoved ? 'Deactivated User' : u.preferredName])
+  )
 
   document.transact(() => {
     mentionElements.forEach((el) => {
       const id = el.getAttribute('id')
       if (!id) return
       const currentLabel = el.getAttribute('label')
-      const correctName = userMap.get(id)
-      if (correctName && correctName !== currentLabel) {
+      const correctName = userMap.get(id) ?? 'Deleted User'
+      if (correctName !== currentLabel) {
         el.setAttribute('label', correctName)
       }
     })
