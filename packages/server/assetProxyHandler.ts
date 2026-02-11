@@ -73,7 +73,9 @@ const checkAccess = async (
   } else if (scope === 'Page') {
     const dataLoader = getNewDataLoader('imageProxyPage')
     const pageId = CipherId.decrypt(Number(scopeCode))
-    const pageAccess = await dataLoader.get('pageAccessByUserId').load({pageId, userId: viewerId})
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
     dataLoader.dispose()
     if (pageAccess) return true
   }

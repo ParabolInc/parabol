@@ -9,7 +9,7 @@ const getUsersToIgnore = async (meetingId: string | null | undefined) => {
     documentName,
     {}
   )
-  return usersInMeeting
+  return usersInMeeting!
 }
 
 export default getUsersToIgnore

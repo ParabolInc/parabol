@@ -115,3 +115,22 @@ export const applyYjsUpdate = async (documentName: string, payload: {update: Uin
     applyUpdate(doc, update)
   })
 }
+export const updateUserMention = async (
+  documentName: string,
+  payload: {userId: string; preferredName: string}
+) => {
+  const {userId, preferredName} = payload
+  await withDoc(documentName, (doc) => {
+    const frag = doc.getXmlFragment('default')
+    const walker = frag.createTreeWalker((yxml) => {
+      if (!(yxml instanceof XmlElement)) return false
+      return yxml.nodeName === 'pageUserMention' && yxml.getAttribute('id') === userId
+    })
+    for (const node of walker) {
+      const el = node as XmlElement
+      if (el.getAttribute('label') !== preferredName) {
+        el.setAttribute('label', preferredName)
+      }
+    }
+  })
+}

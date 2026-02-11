@@ -1,8 +1,11 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
+import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import {CipherId} from '../../../utils/CipherId'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -61,6 +64,16 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
       userId,
       email: user.email,
       name: normalizedPreferredName
+    })
+
+    const pagesWithDirectAccess = await dataLoader.get('pageAccessByUserId').load(userId)
+    // If performance is an issue, we can batch these requests
+    pagesWithDirectAccess.forEach(({pageId}) => {
+      const documentName = CipherId.toClient(pageId, 'page')
+      const payload = {userId, preferredName: normalizedPreferredName}
+      redisHocusPocus
+        .handleEvent('updateUserMention', documentName, payload, true)
+        .catch(Logger.log)
     })
   }
 
