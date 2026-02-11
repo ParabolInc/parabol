@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.2.1](https://github.com/ParabolInc/parabol/compare/v12.2.0...v12.2.1) (2026-02-10)
+
+
+### Changed
+
+* Move GraphQL Objects to SDL Pattern ([#12534](https://github.com/ParabolInc/parabol/issues/12534)) ([d79ede6](https://github.com/ParabolInc/parabol/commit/d79ede6dcb2f62c6f829f9e31ab27f7ef1ee24ac))
+
 ## [12.2.0](https://github.com/ParabolInc/parabol/compare/v12.1.0...v12.2.0) (2026-02-10)
 
 
