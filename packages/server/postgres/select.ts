@@ -118,7 +118,8 @@ export const selectTeams = () =>
       'Team.orgId',
       'Team.qualAIMeetingsCount',
       'Team.isPublic',
-      'Team.updatedAt'
+      'Team.updatedAt',
+      'Team.scimCreated'
     ])
     .select(({fn}) => [
       fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')

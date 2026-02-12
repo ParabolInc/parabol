@@ -2,6 +2,7 @@ import {ExpressionBuilder, ExpressionWrapper, SqlBool, sql} from 'kysely'
 import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
 import {DB} from '../postgres/types/pg'
+import {Logger} from '../utils/Logger'
 import {mapGroupToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 
@@ -31,9 +32,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).egress(async (resource, ctx: SC
   if (teamId) {
     const team = await dataLoader.get('teams').load(teamId)
 
-    console.log('Loaded team for egress:', team, orgId)
-
-    if (!team || team.orgId !== orgId) {
+    if (!team || team.orgId !== orgId || (team.isArchived && !team.scimCreated)) {
       throw new SCIMMY.Types.Error(404, '', 'Team not found')
     }
     return mapGroupToSCIM(team, dataLoader)
@@ -110,13 +109,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).egress(async (resource, ctx: SC
     const [teams, total] = await Promise.all([teamQuery.execute(), totalQuery.executeTakeFirst()])
 
     const scimTeams = await Promise.all(teams.map((team) => mapGroupToSCIM(team, dataLoader)))
-    console.log('scimTeams:', scimTeams)
     // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
     // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
     scimTeams.length = total ? Number(total.total) : teams.length
     return scimTeams
   } catch (error) {
-    console.error('Error fetching teams:', error)
-    throw error
+    Logger.error('Error fetching teams for SCIM egress', {error})
+    throw new SCIMMY.Types.Error(500, '', 'Internal server error')
   }
 })

@@ -2,6 +2,7 @@ import {ExpressionBuilder, ExpressionWrapper, SqlBool, sql} from 'kysely'
 import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
 import {DB} from '../postgres/types/pg'
+import {Logger} from '../utils/Logger'
 import {mapToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 import {getUserCategory} from './UserCategory'
@@ -130,11 +131,16 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
     }
   }
 
-  const [users, total] = await Promise.all([userQuery.execute(), totalQuery.executeTakeFirst()])
+  try {
+    const [users, total] = await Promise.all([userQuery.execute(), totalQuery.executeTakeFirst()])
 
-  const scimUsers = users.map(mapToSCIM)
-  // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
-  // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
-  scimUsers.length = total ? Number(total.total) : users.length
-  return scimUsers
+    const scimUsers = users.map(mapToSCIM)
+    // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
+    // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
+    scimUsers.length = total ? Number(total.total) : users.length
+    return scimUsers
+  } catch (error) {
+    Logger.error('Failed to retrieve users', {error})
+    throw new SCIMMY.Types.Error(500, 'internalError', 'Failed to retrieve users')
+  }
 })
