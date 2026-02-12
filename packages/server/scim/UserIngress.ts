@@ -23,7 +23,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     const {id: userId} = resource
 
-    logSCIMRequest(scimId, ip, {operation: `User ingress`, userId, instance})
+    logSCIMRequest(scimId, ip, {operation: `User ingress`, instance})
 
     const {userName: denormUserName, displayName, emails, externalId, name, active} = instance
     const {givenName, familyName} = name ?? {}

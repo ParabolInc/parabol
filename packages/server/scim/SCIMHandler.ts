@@ -10,6 +10,9 @@ import {SCIMContext} from './SCIMContext'
 import './UserEgress'
 import './UserIngress'
 import './UserDegress'
+import './GroupEgress'
+import './GroupIngress'
+import './GroupDegress'
 import {decode} from 'jsonwebtoken'
 import makeAppURL from '../../client/utils/makeAppURL'
 import {Logger} from '../utils/Logger'
@@ -149,54 +152,63 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
     res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(resourceTypes))
   })
 
-  addHandler('/Users', 'get', async (res, {query}, ctx) => {
-    const users = await new SCIMMY.Resources.User(undefined, query).read(ctx)
-    res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(users))
-  })
-  addHandler('/Users', 'post', async (res, {body}, ctx) => {
-    if (body === null) {
-      res.writeStatus('400 Bad Request')
-      return
+  for (let Resource of Object.values(SCIMMY.Resources.declared())) {
+    const {name, endpoint} = Resource
+    if (['ServiceProviderConfig', 'ResourceType', 'Schema'].includes(name)) {
+      continue
     }
-    const user = await new SCIMMY.Resources.User().write(body, ctx)
-    res
-      .writeStatus('201 Created')
-      .writeHeader('Content-Type', 'application/scim+json')
-      .end(JSON.stringify(user))
-  })
-  addHandler('/Users/:id', 'get', async (res, {id, query}, ctx) => {
-    const user = await new SCIMMY.Resources.User(id, query).read(ctx)
-    res.writeHeader('Content-Type', 'application/scim+json')
-    res.end(JSON.stringify(user))
-  })
-  addHandler('/Users/:id', 'put', async (res, {id, query, body}, ctx) => {
-    if (body === null) {
-      res.writeStatus('400 Bad Request')
-      return
-    }
-    const updatedUser = await new SCIMMY.Resources.User(id, query).write(body as any, ctx)
-    res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(updatedUser))
-  })
-  addHandler('/Users/:id', 'patch', async (res, {id, query, body}, ctx) => {
-    if (body === null) {
-      res.writeStatus('400 Bad Request')
-      return
-    }
-    const userResource = new SCIMMY.Resources.User(id, query)
-    const updatedUser = await userResource.patch(body as any, ctx)
-    if (updatedUser) {
-      res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(updatedUser))
-    } else {
-      // sending 204 No Content is compliant with the spec if nothing changed and nothing specific was requested, but some clients are supposedly not expecting it and 200 is compliant as well
-      const user = await userResource.read(ctx)
+
+    addHandler(`${endpoint}`, 'get', async (res, {query}, ctx) => {
+      const resources = await new Resource(undefined, query).read(ctx)
+      res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(resources))
+    })
+    addHandler(`${endpoint}`, 'post', async (res, {body}, ctx) => {
+      if (body === null) {
+        res.writeStatus('400 Bad Request')
+        return
+      }
+      const resource = await new Resource().write(body, ctx)
+      res
+        .writeStatus('201 Created')
+        .writeHeader('Content-Type', 'application/scim+json')
+        .end(JSON.stringify(resource))
+    })
+    addHandler(`${endpoint}/:id`, 'get', async (res, {id, query}, ctx) => {
+      const resource = await new Resource(id, query).read(ctx)
       res.writeHeader('Content-Type', 'application/scim+json')
-      res.end(JSON.stringify(user))
-    }
-  })
-  addHandler('/Users/:id', 'del', async (res, {id, query}, ctx) => {
-    await new SCIMMY.Resources.User(id, query).dispose(ctx)
-    res.writeStatus('204 No Content').end()
-  })
+      res.end(JSON.stringify(resource))
+    })
+    addHandler(`${endpoint}/:id`, 'put', async (res, {id, query, body}, ctx) => {
+      if (body === null) {
+        res.writeStatus('400 Bad Request')
+        return
+      }
+      const updatedResource = await new Resource(id, query).write(body as any, ctx)
+      res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(updatedResource))
+    })
+    addHandler(`${endpoint}/:id`, 'patch', async (res, {id, query, body}, ctx) => {
+      if (body === null) {
+        res.writeStatus('400 Bad Request')
+        return
+      }
+      const resource = new Resource(id, query)
+      const updatedResource = await resource.patch(body as any, ctx)
+      if (updatedResource) {
+        res
+          .writeHeader('Content-Type', 'application/scim+json')
+          .end(JSON.stringify(updatedResource))
+      } else {
+        // sending 204 No Content is compliant with the spec if nothing changed and nothing specific was requested, but some clients are supposedly not expecting it and 200 is compliant as well
+        const unchangedResource = await resource.read(ctx)
+        res.writeHeader('Content-Type', 'application/scim+json')
+        res.end(JSON.stringify(unchangedResource))
+      }
+    })
+    addHandler(`${endpoint}/:id`, 'del', async (res, {id, query}, ctx) => {
+      await new Resource(id, query).dispose(ctx)
+      res.writeStatus('204 No Content').end()
+    })
+  }
 
   app.any(`${pathPrefix}/*`, (res) => {
     res.writeStatus('404 Not Found').end()

@@ -8,7 +8,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).degress(async (resource, ctx: SC
   const scimId = authToken.sub!
   const {id: userId} = resource
 
-  logSCIMRequest(scimId, ip, {operation: `User degress`, userId})
+  logSCIMRequest(scimId, ip, {operation: `User degress`})
 
   if (!userId) {
     throw new SCIMMY.Types.Error(400, 'invalidValue', 'User ID is required for degress')

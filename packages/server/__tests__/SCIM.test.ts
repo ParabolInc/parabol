@@ -1952,3 +1952,316 @@ describe('Managed User can be taken over by SCIM with matched domain', () => {
     })
   })
 })
+
+describe('Groups', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+  })
+
+  describe('Update Group displayName', () => {
+    let groupId: string
+    const initialDisplayName = faker.internet.userName()
+    const updatedDisplayName = faker.internet.userName()
+
+    test('POST new group', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+          displayName: initialDisplayName
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: expect.anything(),
+        displayName: initialDisplayName
+      })
+      groupId = data.id
+    })
+
+    test('PATCH /Groups/{id} Update displayName', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'replace',
+              value: {
+                displayName: updatedDisplayName
+              }
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: groupId,
+        displayName: updatedDisplayName
+      })
+    })
+
+    test('GET Updated Group', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: groupId,
+        displayName: updatedDisplayName
+      })
+    })
+
+    test('DELETE Group', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(204)
+    })
+  })
+
+  test('Adding duplicate displayName group should return 409', async () => {
+    const displayName = faker.internet.userName()
+    const res = await fetch(`${SCIM_URL}/Groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName
+      })
+    })
+    expect(res.status).toBe(201)
+
+    const res2 = await fetch(`${SCIM_URL}/Groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        displayName
+      })
+    })
+    expect(res2.status).toBe(409)
+    const data = await res2.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:Error'],
+      status: '409',
+      detail: expect.anything()
+    })
+  })
+
+  describe('Patch Group - Remove Member', () => {
+    let groupId: string
+    let memberId1: string
+    let memberId2: string
+
+    test('Create User and Group', async () => {
+      const displayName = faker.internet.userName()
+      const res = await fetch(`${SCIM_URL}/Groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+          displayName
+        })
+      })
+      expect(res.status).toBe(201)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: expect.anything(),
+        displayName
+      })
+      groupId = data.id
+    })
+
+    test('Create members', async () => {
+      const res1 = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName: faker.internet.email().toLowerCase(),
+          active: true,
+          emails: [
+            {
+              type: 'work',
+              value: faker.internet.email().toLowerCase()
+            }
+          ]
+        })
+      })
+      expect(res1.status).toBe(201)
+      const data1 = await res1.json()
+      expect(data1).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: expect.anything()
+      })
+      memberId1 = data1.id
+
+      const res2 = await fetch(`${SCIM_URL}/Users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+          userName: faker.internet.email().toLowerCase(),
+          active: true,
+          emails: [
+            {
+              type: 'work',
+              value: faker.internet.email().toLowerCase()
+            }
+          ]
+        })
+      })
+      expect(res2.status).toBe(201)
+      const data2 = await res2.json()
+      expect(data2).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+        id: expect.anything()
+      })
+      memberId2 = data2.id
+    })
+
+    test('Add Members to Group', async () => {
+      const memberRes1 = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'replace',
+              path: 'members',
+              value: [
+                {
+                  value: memberId1
+                },
+                {
+                  value: memberId2
+                }
+              ]
+            }
+          ]
+        })
+      })
+      expect(memberRes1.status).toBe(200)
+      const memberData1 = await memberRes1.json()
+      expect(memberData1).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: expect.anything(),
+        displayName: expect.anything(),
+        members: [
+          {
+            value: memberId1
+          },
+          {
+            value: memberId2
+          }
+        ]
+      })
+    })
+
+    test('Get Group with Members', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        }
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: groupId,
+        displayName: expect.anything(),
+        members: [
+          {
+            value: memberId1
+          },
+          {
+            value: memberId2
+          }
+        ]
+      })
+    })
+
+    test('Remove Member from Group', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups/${groupId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/scim+json',
+          Authorization: `Bearer ${bearerToken}`
+        },
+        body: JSON.stringify({
+          schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+          Operations: [
+            {
+              op: 'remove',
+              path: `members[value eq "${memberId1}"]`
+            }
+          ]
+        })
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data).toMatchObject({
+        schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+        id: groupId,
+        displayName: expect.anything(),
+        members: [
+          {
+            value: memberId2
+          }
+        ]
+      })
+    })
+  })
+  // TODO test empty teams are archived
+  // TODO test first user is lead
+})
