@@ -46,5 +46,5 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).degress(async (resource, ctx: S
     await pg.insertInto('Notification').values(notifications).execute()
   }
 
-  await pg.deleteFrom('Team').where('id', '=', teamId).execute()
+  await pg.updateTable('Team').set({scimCreated: false}).where('id', '=', teamId).execute()
 })

@@ -41,15 +41,18 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).egress(async (resource, ctx: SC
 
   try {
     const pg = getKysely()
-    let teamQuery = pg.selectFrom('Team').selectAll().where('orgId', '=', orgId)
-    //.where('isArchived', '=', false)
+    let teamQuery = pg
+      .selectFrom('Team')
+      .selectAll()
+      .where('orgId', '=', orgId)
+      .where((eb) => eb.or([eb('isArchived', '=', false), eb('scimCreated', '=', true)]))
 
     // if we have startIndex or count we need the total for pagination
     let totalQuery = pg
       .selectFrom('Team')
       .select(sql`COUNT(*)`.as('total'))
       .where('orgId', '=', orgId)
-    //.where('isArchived', '=', false)
+      .where((eb) => eb.or([eb('isArchived', '=', false), eb('scimCreated', '=', true)]))
 
     if (startIndex) {
       // 1-based index

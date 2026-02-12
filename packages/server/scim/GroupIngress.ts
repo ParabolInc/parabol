@@ -196,7 +196,8 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         orgId,
         name: displayName,
         isOnboardTeam: false,
-        isPublic: false
+        isPublic: false,
+        scimCreated: true
       }
       const teamLead = users[0]
       if (!teamLead) {
