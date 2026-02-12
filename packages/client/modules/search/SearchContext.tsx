@@ -32,9 +32,6 @@ export const SearchProvider = ({children}: SearchProviderProps) => {
 
   const closeSearch = () => {
     setIsOpen(false)
-    // Clear query after closing animation would typically finish, or immediately.
-    // Keeping it might be useful if re-opening, but typically we want fresh start or persisted state.
-    // For now, let's leave it as is, implementation in content handles reset if needed.
   }
 
   return (
