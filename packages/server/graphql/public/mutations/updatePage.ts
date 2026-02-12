@@ -34,9 +34,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
   if (!isReorder) {
     // changing parents will change permissions.
     const userRole = await dataLoader
-      .get('pageAccessByUserId')
+      .get('pageAccessByPageIdUserId')
       .load({pageId: dbPageId, userId: viewerId})
-    dataLoader.get('pageAccessByUserId').clearAll()
+    dataLoader.get('pageAccessByPageIdUserId').clearAll()
     if (userRole !== 'owner') {
       throw new GraphQLError('You must be an owner to move the page to a different parent')
     }

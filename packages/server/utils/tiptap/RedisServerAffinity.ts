@@ -186,6 +186,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     socket.emit('message', message)
   }
 
+  private getLock(documentName: string) {
+    return this.pub.get(this.getKey(documentName))
+  }
+
   private getOrClaimLock(documentName: string) {
     const lockPromise = this.pub.set(
       this.getKey(documentName),
@@ -301,7 +305,9 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   async handleEvent<TName extends Extract<keyof TCE, string>>(
     eventName: TName,
     documentName: string,
-    payload: any
+    payload: any,
+    // if true, don't claim the lock. Useful for targeting pages that are currently open
+    onlyIfOpen = false
   ) {
     const isDocLoadedOnInstance = this.instance.documents.has(documentName)
 
@@ -309,7 +315,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       return this.handleEventLocally(eventName, documentName, payload)
     }
 
-    const proxyTo = await this.getOrClaimLockThrottled(documentName)
+    const proxyTo = await (onlyIfOpen
+      ? this.getLock(documentName)
+      : this.getOrClaimLockThrottled(documentName))
+
+    if (!proxyTo && onlyIfOpen) {
+      return
+    }
+
     if (proxyTo && proxyTo !== this.serverId) {
       ++this.replyIdCounter // bug in biome thinks this.replyIdCounter is not used if written on the line below
       const replyId = this.replyIdCounter

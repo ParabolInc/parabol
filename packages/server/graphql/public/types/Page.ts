@@ -11,7 +11,7 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     if (!parentPageId) return null
     const [parentPage, access] = await Promise.all([
       dataLoader.get('pages').load(parentPageId),
-      dataLoader.get('pageAccessByUserId').load({userId: authToken.sub, pageId: parentPageId})
+      dataLoader.get('pageAccessByPageIdUserId').load({userId: authToken.sub, pageId: parentPageId})
     ])
     if (!parentPage) throw new GraphQLError('Parent page not found')
     return {
@@ -34,7 +34,7 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     }))
     const [pages, accesses] = await Promise.all([
       dataLoader.get('pages').loadMany(ancestorIds),
-      dataLoader.get('pageAccessByUserId').loadMany(accessKeys)
+      dataLoader.get('pageAccessByPageIdUserId').loadMany(accessKeys)
     ])
     const validPages = pages.filter(isValid)
     if (validPages.length < pages.length) {

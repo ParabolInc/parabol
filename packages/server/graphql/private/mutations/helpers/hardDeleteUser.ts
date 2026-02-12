@@ -3,6 +3,7 @@ import getKysely from '../../../../postgres/getKysely'
 import {analytics} from '../../../../utils/analytics/analytics'
 import blacklistJWT from '../../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../../utils/epochTime'
+import {broadcastUserMentionUpdate} from '../../../../utils/tiptap/hocusPocusHub'
 import {DataLoaderWorker} from '../../../graphql'
 import softDeleteUser from '../../../mutations/helpers/softDeleteUser'
 
@@ -48,6 +49,11 @@ export const hardDeleteUser = async (
   const teamMembers = await dataLoader.get('teamMembersByUserId').load(userIdToDelete)
   const teamIds = teamMembers.map(({teamId}) => teamId)
 
+  // Capture pages before softDeleteUser removes PageAccess records
+  const pageIds = (await dataLoader.get('pageAccessByUserId').load(userIdToDelete)).map(
+    (p) => p.pageId
+  )
+
   // soft delete first for side effects
   await softDeleteUser(userIdToDelete, dataLoader)
 
@@ -67,6 +73,8 @@ export const hardDeleteUser = async (
 
   // User needs to be deleted after children
   await pg.deleteFrom('User').where('id', '=', userIdToDelete).execute()
+
+  await broadcastUserMentionUpdate(userIdToDelete, 'Deleted User', dataLoader, pageIds)
 
   await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
   return {}

@@ -32,12 +32,24 @@ export const pageAccessByPageId = (parent: RootDataLoader) => {
   )
 }
 
-export const pageAccessByUserId = (parent: RootDataLoader) => {
+export const pageAccessByPageIdUserId = (parent: RootDataLoader) => {
   return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
     pageAccessByUserIdBatchFn,
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.pageId}:${key.userId}`
+    }
+  )
+}
+
+export const pageAccessByUserId = (parent: RootDataLoader) => {
+  return new DataLoader<string, Selectable<PageAccess>[], string>(
+    async (userIds) => {
+      const res = await selectPageAccess().where('userId', 'in', userIds).execute()
+      return userIds.map((userId) => res.filter((r) => r.userId === userId))
+    },
+    {
+      ...parent.dataLoaderOptions
     }
   )
 }
@@ -92,7 +104,7 @@ export const pageUserSection = (parent: RootDataLoader) => {
           // if the page has a parent, it will be a subpage unless it doesn't have access to that parent
           if (parentPageId) {
             const hasParentAccess = await parent
-              .get('pageAccessByUserId')
+              .get('pageAccessByPageIdUserId')
               .load({pageId: parentPageId, userId})
             return hasParentAccess ? 'page' : 'shared'
           }

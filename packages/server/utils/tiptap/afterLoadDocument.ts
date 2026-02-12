@@ -2,14 +2,17 @@ import type {Extension} from '@hocuspocus/server'
 import * as Y from 'yjs'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
 import {CipherId} from '../CipherId'
+import {Logger} from '../Logger'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
+import {syncPageUserMentionNames} from './syncPageUserMentionNames'
 
 export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   document,
   // DO NOT USE CONTEXT FROM HERE it's just the first user that caused the load on this server,
   documentName
 }) => {
+  syncPageUserMentionNames(document).catch(Logger.log)
   const [pageId] = CipherId.fromClient(documentName)
   const root = document.getXmlFragment('default')
   root.observeDeep((events) => {
