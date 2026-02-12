@@ -3,7 +3,7 @@ import {DataLoaderWorker} from '../graphql/graphql'
 import {Team, User} from '../postgres/types'
 import {guessName} from './guessName'
 
-export const mapToSCIM = (
+export const mapUserToSCIM = (
   user?: Pick<
     User,
     | 'id'
@@ -46,8 +46,6 @@ export const mapGroupToSCIM = async (
     throw new SCIMMY.Types.Error(404, '', 'Team not found')
   }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(team.id)
-
-  console.log('Mapping team to SCIM', {teamId: team.id, memberCount: teamMembers.length})
 
   const members = await Promise.all(
     teamMembers.map(async ({userId}) => {

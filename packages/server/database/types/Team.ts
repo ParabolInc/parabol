@@ -7,7 +7,7 @@ interface Input {
   autoJoin?: boolean
   name: string
   createdAt?: Date
-  createdBy: string
+  createdBy: string | null
   lastMeetingType?: MeetingTypeEnum
   isArchived?: boolean
   orgId: string
@@ -23,7 +23,7 @@ export default class Team {
   autoJoin: boolean
   name: string
   createdAt: Date
-  createdBy: string
+  createdBy: string | null
   isArchived: boolean
   lastMeetingType: MeetingTypeEnum
   orgId: string

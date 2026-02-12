@@ -11,7 +11,7 @@ import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 import {guessName} from './guessName'
 import {logSCIMRequest} from './logSCIMRequest'
-import {mapToSCIM} from './mapToSCIM'
+import {mapUserToSCIM} from './mapToSCIM'
 import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
 import {softDeleteUser} from './softDeleteUser'
@@ -60,7 +60,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       if (active !== undefined) {
         if (!active) {
           const deletedUser = await softDeleteUser({userId, scimId, dataLoader})
-          return mapToSCIM(deletedUser)
+          return mapUserToSCIM(deletedUser)
         }
       }
 
@@ -107,7 +107,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         if (!updatedUser) {
           throw new SCIMMY.Types.Error(412, '', 'User update failed')
         }
-        return mapToSCIM(updatedUser)
+        return mapUserToSCIM(updatedUser)
       } catch (error) {
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'User exists')
@@ -164,7 +164,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             .executeTakeFirst(),
           orgId && adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
         ])
-        return mapToSCIM(user)
+        return mapUserToSCIM(user)
       } catch (error) {
         if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'User exists')

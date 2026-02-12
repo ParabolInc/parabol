@@ -3,7 +3,7 @@ import SCIMMY from 'scimmy'
 import getKysely from '../postgres/getKysely'
 import {DB} from '../postgres/types/pg'
 import {Logger} from '../utils/Logger'
-import {mapToSCIM} from './mapToSCIM'
+import {mapUserToSCIM} from './mapToSCIM'
 import {SCIMContext} from './SCIMContext'
 import {getUserCategory} from './UserCategory'
 
@@ -52,7 +52,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
     if (!user || !category) {
       throw new SCIMMY.Types.Error(404, '', 'User not found')
     }
-    return mapToSCIM(user)
+    return mapUserToSCIM(user)
   }
 
   const orgMembers = orgId ? await dataLoader.get('organizationUsersByOrgId').load(orgId) : []
@@ -134,7 +134,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
   try {
     const [users, total] = await Promise.all([userQuery.execute(), totalQuery.executeTakeFirst()])
 
-    const scimUsers = users.map(mapToSCIM)
+    const scimUsers = users.map(mapUserToSCIM)
     // Paginated results need to have a totalResults field. Scimmy determines it by reading the array's length.
     // See https://github.com/scimmyjs/scimmy/issues/85#issuecomment-3698016234
     scimUsers.length = total ? Number(total.total) : users.length

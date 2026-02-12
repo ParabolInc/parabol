@@ -158,11 +158,11 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
         }
         await applyMembers({...instance, id: teamId}, dataLoader)
         return mapGroupToSCIM(updatedTeam, dataLoader)
-      } catch (e) {
-        if (e instanceof Error && 'code' in e && e.code === '23505') {
+      } catch (error) {
+        if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'Team exists')
         }
-        Logger.error(e)
+        Logger.error('Error updating team', {error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }
     } else {
@@ -193,10 +193,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
             new Team({
               ...validNewTeam,
               isArchived: true,
-              createdAt: new Date(),
-              isPublic: false,
-              isOnboardTeam: false,
-              createdBy: 'aGhostUser'
+              createdBy: null
             })
           )
         } else {
