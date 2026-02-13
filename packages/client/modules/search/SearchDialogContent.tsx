@@ -1,5 +1,5 @@
 import SearchIcon from '@mui/icons-material/Search'
-import {useEffect, useRef, useState} from 'react'
+import {useRef, useState} from 'react'
 import {Input} from '~/ui/Input/Input'
 import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
@@ -21,10 +21,6 @@ export const SearchDialogContent = (props: Props) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [teamIds, setTeamIds] = useState<string[]>([])
   const [inputQuery, setInputQuery] = useState(initialQuery || '')
-
-  useEffect(() => {
-    setInputQuery(initialQuery || '')
-  }, [initialQuery])
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
@@ -49,7 +45,7 @@ export const SearchDialogContent = (props: Props) => {
           name='search'
           onChange={onChange}
           onKeyDown={handleKeyDown}
-          value={inputQuery}
+          defaultValue={initialQuery}
           className='flex-1 border-none bg-transparent font-light text-lg outline-none placeholder:text-slate-500 focus:outline-none focus-visible:border-none'
           placeholder='Search pages…'
           type='text'

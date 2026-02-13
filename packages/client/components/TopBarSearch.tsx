@@ -88,20 +88,10 @@ const TopBarSearch = (props: Props) => {
     setLocalSearch(dashSearch)
   }, [dashSearch])
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (localSearch !== dashSearch) {
-        setSearch(atmosphere, localSearch)
-      }
-    }, 300)
-
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [localSearch, atmosphere, dashSearch])
-
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSearch(e.target.value)
+    const {value} = e.target
+    setLocalSearch(value)
+    setSearch(atmosphere, value)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
