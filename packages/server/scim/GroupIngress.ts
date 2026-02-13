@@ -154,7 +154,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.Group).ingress(
           .returningAll()
           .executeTakeFirst()
         if (!updatedTeam) {
-          throw new SCIMMY.Types.Error(412, '', 'User update failed')
+          throw new SCIMMY.Types.Error(412, '', 'Team update failed')
         }
         await applyMembers({...instance, id: teamId}, dataLoader)
         return mapGroupToSCIM(updatedTeam, dataLoader)
