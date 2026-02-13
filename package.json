@@ -192,7 +192,7 @@
     "html-minifier-terser": "^5.1.1",
     "kysely": "^0.28.5",
     "magic-bytes.js": "^1.13.0",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.1.1",
     "ms": "^2.0.0",
     "msgpackr": "^1.11.8",
     "openai": "^6.9.1",
