@@ -1,3 +1,10 @@
+/*
+ This file was created before we used TypeScript
+ Now that everything is strongly typed, we no longer need it & should work to deprecate it
+ Instead of adding variables to this file, please consider this list of alternatives:
+ - Does the variable come from the GraphQL schema? If so, import it from a file in the __generated__ folder
+ - Is the variable a string? Create a string union & pass in a plain string to get type safety
+*/
 import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import type {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import {Threshold} from '../types/constEnums'
