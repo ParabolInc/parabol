@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../postgres/constants'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../client/utils/constants'
 import {
   getUserId,
   isSuperUser,

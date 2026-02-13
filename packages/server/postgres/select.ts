@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
+import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration'
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import type {
@@ -15,7 +16,6 @@ import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
-import type {AnyTaskIntegration} from './types/TaskIntegration'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
