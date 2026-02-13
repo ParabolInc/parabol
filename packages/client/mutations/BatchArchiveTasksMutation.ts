@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {BatchArchiveTasksMutation_tasks$data} from '~/__generated__/BatchArchiveTasksMutation_tasks.graphql'
-import type {Task as ITask} from '../../server/postgres/types/index.d'
 import type {BatchArchiveTasksMutation as TBatchArchiveTasksMutation} from '../__generated__/BatchArchiveTasksMutation.graphql'
 import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
 import type {SharedUpdater, StandardMutation} from '../types/relayMutations'
@@ -61,7 +60,7 @@ const BatchArchiveTasksMutation: StandardMutation<TBatchArchiveTasksMutation> = 
       const error = payload.getLinkedRecord('error')
       if (error) {
         taskIds.forEach((taskId) => {
-          const task = store.get<ITask>(taskId)
+          const task = store.get(taskId)
           if (task) {
             const message = error.getValue('message')
             task.setValue(message, 'error')

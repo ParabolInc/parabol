@@ -1,7 +1,6 @@
 import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import type {Task as ITask} from '../../server/postgres/types/index.d'
 import type {UpdateTaskMutation as TUpdateTaskMutation} from '../__generated__/UpdateTaskMutation.graphql'
 import type {UpdateTaskMutation_task$data} from '../__generated__/UpdateTaskMutation_task.graphql'
 import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
@@ -100,7 +99,7 @@ const UpdateTaskMutation: StandardMutation<TUpdateTaskMutation, OptionalHandlers
       const error = payload.getLinkedRecord('error')
       if (error) {
         const {id: taskId} = updatedTask
-        const task = store.get<ITask>(taskId)
+        const task = store.get(taskId)
         if (task) {
           const message = error.getValue('message')
           task.setValue(message, 'error')

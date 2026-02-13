@@ -8,13 +8,6 @@ import type {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.
 import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
 import type ReflectPhase from '../../../server/database/types/ReflectPhase'
-import type {NewMeetingStage} from '../../../server/graphql/private/resolverTypes'
-import type {Task as ITask} from '../../../server/postgres/types/index.d'
-import type {
-  DiscussPhase,
-  DiscussStage,
-  NewMeetingPhase
-} from '../../../server/postgres/types/NewMeetingPhase'
 import {getTagsFromTipTapTask} from '../../shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../../shared/tiptap/splitTipTapContent'
@@ -96,6 +89,39 @@ export type DemoReflectionGroup = {
   voterIds: string[]
 }
 
+type DiscussPhase = {
+  id: string
+  endAt: string | Date
+  startAt: string | Date
+  stages: DiscussStage[]
+}
+
+type DiscussStage = {
+  id: string
+  endAt: string | Date
+  startAt: string | Date
+  isComplete: boolean
+  sortOrder: number
+}
+
+type NewMeetingPhase = {
+  id: string
+  endAt: string | Date
+  startAt: string | Date
+  stages: NewMeetingStage[]
+  phaseType: string
+}
+
+type NewMeetingStage = {
+  id: string
+  endAt: string | Date
+  startAt: string | Date
+  phaseType: string
+  stageType: string
+  isComplete: boolean
+  sortOrder: number
+}
+
 export type IDiscussPhase = DiscussPhase
 
 export type IReflectPhase = Omit<ReflectPhase, 'endAt' | 'startAt'> & {
@@ -118,7 +144,7 @@ export type INewMeetingPhase = Omit<NewMeetingPhase, 'endAt' | 'startAt'> & {
   endAt: string | Date
 }
 
-export type DemoTask = Omit<ITask, 'agendaItem' | 'createdAt' | 'updatedAt' | 'doneMeetingId'> & {
+export type DemoTask = {
   __typename: 'Task'
   __isThreadable: 'Comment'
   isActive: true
@@ -126,6 +152,19 @@ export type DemoTask = Omit<ITask, 'agendaItem' | 'createdAt' | 'updatedAt' | 'd
   updatedAt: string
   doneMeetingId: string | null
   replies: (DemoComment | DemoTask)[]
+  tags: string[]
+  content: string
+  plaintextContent: string
+  id: string
+  sortOrder: number
+  threadableId: string
+  threadableType: string
+  threadableEdge: DemoThreadableEdge
+  userId: string
+  dueDate: string | Date
+  discussionId: string
+  teamId: string
+  status: string
 }
 
 interface Payload {
