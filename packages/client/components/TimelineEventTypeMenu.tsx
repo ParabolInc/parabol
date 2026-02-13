@@ -3,7 +3,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
-import TimelineEventTypeEnum from '../../server/graphql/types/TimelineEventTypeEnum'
 import type {MenuProps} from '../hooks/useMenu'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import EventTypeFilterMenuItemLabel from './EventTypeFilterMenuItemLabel'
@@ -18,7 +17,14 @@ const TimelineEventTypeMenu = (props: Props) => {
   const {history} = useRouter()
   const {menuProps} = props
   const atmosphere = useAtmosphere()
-  const eventTypes = TimelineEventTypeEnum.getValues().map(({value}) => value)
+  const eventTypes = [
+    'retroComplete',
+    'POKER_COMPLETE',
+    'TEAM_PROMPT_COMPLETE',
+    'actionComplete',
+    'createdTeam',
+    'joinedParabol'
+  ] as const
   const {
     eventTypes: eventTypeFilters,
     teamIds,

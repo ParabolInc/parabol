@@ -7,7 +7,6 @@ import type StrictEventEmitter from 'strict-event-emitter-types'
 import type {ReactableEnum} from '~/__generated__/AddReactjiToReactableMutation.graphql'
 import type {DragReflectionDropTargetTypeEnum} from '~/__generated__/EndDraggingReflectionMutation.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import type ReflectPhase from '../../../server/database/types/ReflectPhase'
 import {getTagsFromTipTapTask} from '../../shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../shared/tiptap/serverTipTapExtensions'
 import {splitTipTapContent} from '../../shared/tiptap/splitTipTapContent'
@@ -124,7 +123,7 @@ type NewMeetingStage = {
 
 export type IDiscussPhase = DiscussPhase
 
-export type IReflectPhase = Omit<ReflectPhase, 'endAt' | 'startAt'> & {
+export type IReflectPhase = {
   startAt: string | Date
   endAt: string | Date
   focusedPromptId: string | null
@@ -1364,7 +1363,7 @@ class ClientGraphQLServer extends (EventEmitter as GQLDemoEmitter) {
       )
 
       let isUnlock
-      let unlockedStageIds
+      let unlockedStageIds: string[] | undefined
       if (voteCount === 0) {
         isUnlock = false
       } else if (voteCount === 1 && !isUnvote) {

@@ -1,6 +1,4 @@
-import type GenericMeetingStage from '../../server/database/types/GenericMeetingStage'
-
-const startStage_ = (stage: GenericMeetingStage) => {
+const startStage_ = (stage: any) => {
   stage.startAt = stage.startAt || new Date()
   stage.viewCount = stage.viewCount ? stage.viewCount + 1 : 1
 }

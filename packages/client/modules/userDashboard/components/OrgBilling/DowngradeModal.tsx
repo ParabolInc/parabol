@@ -4,7 +4,6 @@ import {Checkbox} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {ReadableReasonToDowngradeEnum} from '../../../../../server/graphql/types/ReasonToDowngrade'
 import type {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -152,6 +151,7 @@ type Props = {
   organizationRef: DowngradeModal_organization$key
 }
 
+type ReadableReasonToDowngradeEnum = keyof typeof reasonsToDowngradeLookup
 const DowngradeModal = (props: Props) => {
   const {closeModal, organizationRef} = props
   const [hasConfirmedDowngrade, setHasConfirmedDowngrade] = useState(false)

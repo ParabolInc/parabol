@@ -1,12 +1,3 @@
-/*
- This file was created before we used TypeScript
- Now that everything is strongly typed, we no longer need it & should work to deprecate it
- Instead of adding variables to this file, please consider this list of alternatives:
- - Does the variable come from the GraphQL schema? If so, import it from a file in the __generated__ folder
- - Is the variable a string? Create a string union & pass in a plain string to get type safety
-*/
-import type {ReadableReasonToDowngradeEnum} from '../../server/graphql/types/ReasonToDowngrade'
-import type {ReasonToDowngradeEnum} from '../__generated__/DowngradeToStarterMutation.graphql'
 import type {TimelineEventEnum} from '../__generated__/MyDashboardTimelineQuery.graphql'
 import type {TaskStatusEnum} from '../__generated__/UpdateTaskMutation.graphql'
 import {Threshold} from '../types/constEnums'
@@ -192,24 +183,21 @@ export const EnterpriseBenefits = [
   'Self Managed GitLab Integration'
 ]
 
-export const readableReasonsToDowngrade: ReadableReasonToDowngradeEnum[] = [
+export const readableReasonsToDowngrade = [
   'Parabol is too expensive',
   'Budget changes',
   'Missing key features',
   `Not using Parabol's paid features`,
   'Moving to another tool (please specify)'
-]
+] as const
 
-export const reasonsToDowngradeLookup: Record<
-  ReadableReasonToDowngradeEnum,
-  ReasonToDowngradeEnum
-> = {
+export const reasonsToDowngradeLookup = {
   'Parabol is too expensive': 'tooExpensive',
   'Budget changes': 'budgetChanges',
   'Missing key features': 'missingKeyFeatures',
   "Not using Parabol's paid features": 'notUsingPaidFeatures',
   'Moving to another tool (please specify)': 'anotherTool'
-}
+} as const
 
 export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   retroComplete: 'Retrospective',
@@ -243,3 +231,4 @@ export const MAX_FILE_SIZE_FREE = 8_000_000
 export const MAX_FILE_SIZE_PAID = 64_000_000
 export const MAX_USER_UPLOAD_BYTES_FREE = 500_000_000
 export const MAX_USER_UPLOAD_BYTES_PAID = 2_000_000_000
+export const BATCH_ORG_USER_REMOVAL_LIMIT = 100
