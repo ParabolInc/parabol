@@ -18,7 +18,8 @@ const handleFirstAcceptedInvitation = async (
   const {id: teamId, isOnboardTeam} = team
   if (!isOnboardTeam) return null
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-  const teamLead = teamMembers.find((tm) => tm.isLead)!
+  const teamLead = teamMembers.find((tm) => tm.isLead)
+  if (!teamLead) return null
   const {userId} = teamLead
   const suggestedActions = await dataLoader.get('suggestedActionsByUserId').load(userId)
   const hasTryRetro = suggestedActions.some((sa) => sa.type === 'tryRetroMeeting')
@@ -59,7 +60,12 @@ const handleFirstAcceptedInvitation = async (
   return userId
 }
 
-const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: DataLoaderWorker) => {
+const acceptTeamInvitation = async (
+  team: Team,
+  userId: string,
+  dataLoader: DataLoaderWorker,
+  isLead = false
+) => {
   const pg = getKysely()
   const {id: teamId, orgId} = team
   const [user, organizationUser] = await Promise.all([
@@ -76,9 +82,10 @@ const acceptTeamInvitation = async (team: Team, userId: string, dataLoader: Data
           id: TeamMemberId.join(teamId, userId),
           teamId,
           userId,
-          openDrawer: 'manageTeam'
+          openDrawer: 'manageTeam',
+          isLead
         })
-        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead: false}))
+        .onConflict((oc) => oc.column('id').doUpdateSet({isNotRemoved: true, isLead}))
     )
     .with('TeamInvitationUpdate', (qb) =>
       // redeem all invitations, otherwise if they have 2 someone could join after they've been kicked out
