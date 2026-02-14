@@ -245,7 +245,11 @@ const EditableText = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) =
         role='button'
         tabIndex={0}
         onFocus={() => setEditing(true)}
-        onClick={() => setEditing(true)}
+        onPointerDown={(e) => {
+          if (e.button !== 0) return
+          e.preventDefault()
+          setEditing(true)
+        }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
