@@ -11,7 +11,8 @@ import getKysely from '../postgres/getKysely'
 import {Logger} from '../utils/Logger'
 import {guessName} from './guessName'
 import {logSCIMRequest} from './logSCIMRequest'
-import {mapToSCIM} from './mapToSCIM'
+import {mapUserToSCIM} from './mapToSCIM'
+import {reservedUserIds} from './reservedIds'
 import {SCIMContext} from './SCIMContext'
 import {softDeleteUser} from './softDeleteUser'
 import {getUserCategory} from './UserCategory'
@@ -23,7 +24,10 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
 
     const {id: userId} = resource
 
-    logSCIMRequest(scimId, ip, {operation: `User ingress`, userId, instance})
+    logSCIMRequest(scimId, ip, {operation: `User ingress`, instance})
+    if (reservedUserIds.includes(userId ?? '')) {
+      throw new SCIMMY.Types.Error(403, '', 'Forbidden')
+    }
 
     const {userName: denormUserName, displayName, emails, externalId, name, active} = instance
     const {givenName, familyName} = name ?? {}
@@ -56,7 +60,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
       if (active !== undefined) {
         if (!active) {
           const deletedUser = await softDeleteUser({userId, scimId, dataLoader})
-          return mapToSCIM(deletedUser)
+          return mapUserToSCIM(deletedUser)
         }
       }
 
@@ -72,18 +76,18 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         throw new SCIMMY.Types.Error(403, '', 'User cannot be modified')
       }
 
-      const {orgId} = saml
-      if (orgId) {
-        const organizationUser = await dataLoader
-          .get('organizationUsersByUserIdOrgId')
-          .load({userId, orgId})
-        // ingress means adding the user to the org if not already present
-        if (!organizationUser) {
-          adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
-        }
-      }
-
       try {
+        const {orgId} = saml
+        if (orgId) {
+          const organizationUser = await dataLoader
+            .get('organizationUsersByUserIdOrgId')
+            .load({userId, orgId})
+          // ingress means adding the user to the org if not already present
+          if (!organizationUser) {
+            adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+          }
+        }
+
         const updatedUser = await pg
           .updateTable('User')
           .set({
@@ -103,12 +107,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         if (!updatedUser) {
           throw new SCIMMY.Types.Error(412, '', 'User update failed')
         }
-        return mapToSCIM(updatedUser)
-      } catch (e) {
-        if (e instanceof Error && 'code' in e && e.code === '23505') {
+        return mapUserToSCIM(updatedUser)
+      } catch (error) {
+        if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'User exists')
         }
-        Logger.error(e)
+        Logger.error('Failed to update user', {error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }
     } else {
@@ -120,28 +124,28 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
         throw new SCIMMY.Types.Error(400, 'invalidValue', 'userName is required')
       }
 
-      const userId = `sso|${generateUID()}`
-
-      // do all the guessing on ingress so it remains stable
-      const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
-        scimGivenName: givenName ?? null,
-        scimFamilyName: familyName ?? null,
-        preferredName: displayName ?? '',
-        email
-      })
-
-      const preferredName =
-        displayName ||
-        `${scimGivenName}${scimGivenName && scimFamilyName ? ' ' : ''}${scimFamilyName}` ||
-        userName
-      const newUser = new User({
-        id: userId,
-        preferredName,
-        email,
-        picture: await generateIdenticon(userId, preferredName),
-        identities: []
-      })
       try {
+        const userId = `sso|${generateUID()}`
+
+        // do all the guessing on ingress so it remains stable
+        const {givenName: scimGivenName, familyName: scimFamilyName} = guessName({
+          scimGivenName: givenName ?? null,
+          scimFamilyName: familyName ?? null,
+          preferredName: displayName ?? '',
+          email
+        })
+
+        const preferredName =
+          displayName ||
+          `${scimGivenName}${scimGivenName && scimFamilyName ? ' ' : ''}${scimFamilyName}` ||
+          userName
+        const newUser = new User({
+          id: userId,
+          preferredName,
+          email,
+          picture: await generateIdenticon(userId, preferredName),
+          identities: []
+        })
         await bootstrapNewUser(newUser, false, dataLoader)
         const {orgId} = saml
 
@@ -160,12 +164,12 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             .executeTakeFirst(),
           orgId && adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
         ])
-        return mapToSCIM(user)
-      } catch (e) {
-        if (e instanceof Error && 'code' in e && e.code === '23505') {
+        return mapUserToSCIM(user)
+      } catch (error) {
+        if (error instanceof Error && 'code' in error && error.code === '23505') {
           throw new SCIMMY.Types.Error(409, 'uniqueness', 'User exists')
         }
-        Logger.error(e)
+        Logger.error('Failed to create user via SCIM', {error})
         throw new SCIMMY.Types.Error(500, '', 'Internal server error')
       }
     }

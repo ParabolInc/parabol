@@ -48,7 +48,7 @@ export const PageDropTarget = (props: Props) => {
     if (--dragCounterRef.current > 0) return
     e.currentTarget.removeAttribute('data-hover')
     if (!draggingPageId || !canEdit) return
-    const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+    const dropCursor = document.getElementsByClassName('prosemirror-dropcursor-block')[0]
     dropCursor?.classList.remove('hidden')
   }
   return (
@@ -59,7 +59,7 @@ export const PageDropTarget = (props: Props) => {
         dragCounterRef.current++
         e.currentTarget.setAttribute('data-hover', '')
         if (!draggingPageId || !canEdit) return
-        const [dropCursor] = document.getElementsByClassName('prosemirror-dropcursor-block')
+        const dropCursor = document.getElementsByClassName('prosemirror-dropcursor-block')[0]
         // Never display a dropCursor at the same time as the hover state, they can only drop in, not below
         dropCursor?.classList.add('hidden')
       }}

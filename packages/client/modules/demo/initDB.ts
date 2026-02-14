@@ -1,7 +1,5 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
 import {PALETTE} from '~/styles/paletteV3'
-import type {Task as ITask} from '../../../server/postgres/types/index.d'
-import type {RetrospectiveMeeting} from '../../../server/postgres/types/Meeting'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
@@ -19,10 +17,7 @@ export const demoTeamId = 'demoTeam'
 export const demoOrgId = 'demoOrg'
 export const demoTeamName = 'Demo Team'
 
-type IRetrospectiveMeeting = Omit<
-  RetrospectiveMeeting,
-  'summarySentAt' | 'createdAt' | 'endedAt'
-> & {
+type IRetrospectiveMeeting = {
   __typename: string
   createdAt: string | Date
   endedAt: string | Date | null
@@ -31,6 +26,17 @@ type IRetrospectiveMeeting = Omit<
   settings: any
   summarySentAt: string | Date | null
   votesRemaining: number
+  commentCount: number
+  reflectionCount: number
+  taskCount: number
+  topicCount: number
+  teamId: string
+  facilitatorStageId: string
+  phases: any[]
+  totalVotes: number
+  maxVotesPerGroup: number
+  name: string
+  id: string
 }
 
 type IRetrospectiveMeetingSettings = {
@@ -289,7 +295,7 @@ const initDemoMeetingMember = (user: DemoUser) => {
     meetingType: RETROSPECTIVE,
     teamId: demoTeamId,
     teamMember: initDemoTeamMember(user, 0),
-    tasks: [] as ITask[],
+    tasks: [] as any[],
     user,
     userId: user.id,
     votesRemaining: 5,

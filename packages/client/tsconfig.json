@@ -9,5 +9,5 @@
     "incremental": true,
     "lib": ["esnext", "dom"]
   },
-  "exclude": ["serviceWorker", "node_modules", "dist", "build"]
+  "exclude": ["serviceWorker", "node_modules", "dist", "build", "../server", "../embedder"]
 }

@@ -2,8 +2,6 @@ import type {RecordSourceSelectorProxy} from 'relay-runtime'
 import getDiscussionThreadConn from '~/mutations/connections/getDiscussionThreadConn'
 import {handleRemoveReply} from '~/mutations/DeleteCommentMutation'
 import {parseQueryParams} from '~/utils/useQueryParameterParser'
-import type IUser from '../../../server/database/types/User'
-import type {Task as ITask} from '../../../server/postgres/types/index.d'
 import safeRemoveNodeFromArray from '../../utils/relay/safeRemoveNodeFromArray'
 import safeRemoveNodeFromConn from '../../utils/relay/safeRemoveNodeFromConn'
 import getArchivedTasksConn from '../connections/getArchivedTasksConn'
@@ -13,17 +11,17 @@ import getUserTasksConn from '../connections/getUserTasksConn'
 import pluralizeHandler from './pluralizeHandler'
 
 const handleRemoveTask = (taskId: string, store: RecordSourceSelectorProxy<any>) => {
-  const viewer = store.getRoot().getLinkedRecord<IUser>('viewer')
-  const task = store.get<ITask>(taskId)
+  const viewer = store.getRoot().getLinkedRecord('viewer')!
+  const task = store.get(taskId)
   if (!task) return
-  const teamId = task.getValue('teamId')
-  const discussionId = task.getValue('discussionId')
-  const threadParentId = task.getValue('threadParentId')
+  const teamId = task.getValue('teamId') as string
+  const discussionId = task.getValue('discussionId') as string
+  const threadParentId = task.getValue('threadParentId') as string
   if (threadParentId) {
     handleRemoveReply(taskId, threadParentId, store)
     return
   }
-  const meetingId = task.getValue('meetingId')
+  const meetingId = task.getValue('meetingId') as string
   const meeting = store.get(meetingId!)!
   const team = store.get(teamId)
   const {userIds, teamIds} = parseQueryParams(viewer.getDataID(), window.location)

@@ -21,7 +21,6 @@ import {LoomExtension} from '../components/promptResponse/loomExtension'
 import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
 import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {themeBackgroundColors} from '../shared/themeBackgroundColors'
-import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import FileBlock from '../tiptap/extensions/fileBlock/FileBlock'
 import {FileUpload} from '../tiptap/extensions/fileUpload/FileUpload'
 import {IndentHandler} from '../tiptap/extensions/IndentHandler'
@@ -33,12 +32,13 @@ import {ThinkingBlock} from '../tiptap/extensions/insightsBlock/ThinkingBlock'
 import {PageDragHandle} from '../tiptap/extensions/PageDragHandle'
 import {PageLinkBlock} from '../tiptap/extensions/pageLinkBlock/PageLinkBlock'
 import {PageLinkPicker} from '../tiptap/extensions/pageLinkPicker/PageLinkPicker'
+import {PageUserMention} from '../tiptap/extensions/pageUserMention/PageUserMention'
+import {pageUserSuggestion} from '../tiptap/extensions/pageUserMention/pageUserSuggestion'
 import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
-import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 
@@ -51,7 +51,7 @@ export const useTipTapPageEditor = (
     teamId?: string
   }
 ) => {
-  const {pageId, viewerRef, teamId} = options
+  const {pageId, viewerRef} = options
   const user = readInlineData(
     graphql`
       fragment useTipTapPageEditor_viewer on User @inline {
@@ -152,9 +152,10 @@ export const useTipTapPageEditor = (
             }
           }
         }),
-        Mention.configure(
-          atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
-        ),
+        PageUserMention.configure({
+          atmosphere,
+          suggestion: pageUserSuggestion
+        }),
         Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
         TiptapLinkExtension.configure({
           openOnClick: false

@@ -51,7 +51,9 @@ export const validateScope = async (
   } else if (scope === 'Page') {
     const [pageId, pageCode] = CipherId.fromClient(scopeKey)
     scopeCode = `${pageCode}`
-    const pageAccess = await dataLoader.get('pageAccessByUserId').load({pageId, userId: viewerId})
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
     if (!pageAccess || pageAccess === 'viewer') {
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }

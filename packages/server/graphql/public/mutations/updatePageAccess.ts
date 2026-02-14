@@ -95,7 +95,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const subOptions = {operationId, mutatorId}
   const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
   const userRole = await dataLoader
-    .get('pageAccessByUserId')
+    .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})
   if (!userRole) {
     throw new GraphQLError(`Insufficient permission. User role: 'None'. Role required: 'owner'`)

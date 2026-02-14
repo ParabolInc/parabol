@@ -5,6 +5,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isAuthenticated} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import {broadcastUserMentionUpdate} from '../../../utils/tiptap/hocusPocusHub'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
@@ -62,6 +63,8 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
       email: user.email,
       name: normalizedPreferredName
     })
+
+    await broadcastUserMentionUpdate(userId, normalizedPreferredName, dataLoader)
   }
 
   const teamIds = teamMembers.map(({teamId}) => teamId)
