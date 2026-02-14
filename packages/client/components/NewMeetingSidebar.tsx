@@ -76,6 +76,11 @@ const MeetingCompletedTag = styled(InactiveTag)({
   margin: '4px 0 0 0'
 })
 
+const ContentWrapper = styled('div')({
+  flex: 1,
+  minWidth: 0
+})
+
 interface Props {
   children: ReactNode
   handleMenuClick: () => void
@@ -120,12 +125,12 @@ const NewMeetingSidebar = (props: Props) => {
     <SidebarParent isDesktop={isDesktop} data-cy='sidebar'>
       <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
-        <div style={{flex: 1, minWidth: 0}}>
+        <ContentWrapper>
           {isFacilitator ? (
             <EditableMeetingName
               error={error?.message}
               handleSubmit={handleSubmit}
-              initialValue={meetingName}
+              initialValue={meetingName || ''}
               isWrap
               maxLength={50}
               validate={validate}
@@ -140,7 +145,7 @@ const NewMeetingSidebar = (props: Props) => {
             {teamName}
           </TeamDashboardLink>
           {endedAt && <MeetingCompletedTag>Meeting Completed</MeetingCompletedTag>}
-        </div>
+        </ContentWrapper>
       </SidebarHeader>
       <Facilitator meetingRef={meeting} />
       {children}

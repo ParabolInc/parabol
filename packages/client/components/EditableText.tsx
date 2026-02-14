@@ -107,7 +107,7 @@ interface Props {
   onEditingChange?: (isEditing: boolean) => void
 }
 
-const EditableText = forwardRef((props: Props, ref: any) => {
+const EditableText = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => {
   const {
     initialValue,
     error,
@@ -200,9 +200,8 @@ const EditableText = forwardRef((props: Props, ref: any) => {
 
   const showEditing = (error || isEditing || autoFocus) && !disabled
   if (showEditing) {
-    const inProps = {
+    const commonProps = {
       autoFocus: true,
-      ref: inputRef as any,
       maxLength,
       onBlur: onSubmit,
       onChange: onChange,
@@ -210,8 +209,9 @@ const EditableText = forwardRef((props: Props, ref: any) => {
       onKeyDown: onKeyDown,
       placeholder,
       value,
-      style: {width: isWrap ? undefined : !inputWidth ? 'auto' : `${inputWidth}px`}
-    } as const
+      ref: inputRef as any
+    }
+
     return (
       <div className={className} ref={ref}>
         <Form
@@ -225,10 +225,10 @@ const EditableText = forwardRef((props: Props, ref: any) => {
           }}
         >
           {isWrap ? (
-            <TextArea {...inProps} maxRows={3} />
+            <TextArea {...commonProps} maxRows={3} style={{width: undefined}} />
           ) : (
             <>
-              <Input {...inProps} />
+              <Input {...commonProps} style={{width: !inputWidth ? 'auto' : `${inputWidth}px`}} />
               <HiddenSpan ref={spanRef}>{value || placeholder}</HiddenSpan>
             </>
           )}
@@ -242,9 +242,16 @@ const EditableText = forwardRef((props: Props, ref: any) => {
     <div className={className} ref={ref}>
       <StaticBlock
         disabled={disabled}
+        role='button'
         tabIndex={0}
         onFocus={() => setEditing(true)}
         onClick={() => setEditing(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            setEditing(true)
+          }
+        }}
       >
         {showPlaceholder && <Placeholder>{placeholder}</Placeholder>}
         {value && <StaticValue>{value}</StaticValue>}
