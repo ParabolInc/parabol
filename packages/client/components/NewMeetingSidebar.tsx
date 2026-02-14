@@ -120,7 +120,7 @@ const NewMeetingSidebar = (props: Props) => {
     <SidebarParent isDesktop={isDesktop} data-cy='sidebar'>
       <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
-        <div>
+        <div style={{flex: 1, minWidth: 0}}>
           {isFacilitator ? (
             <EditableMeetingName
               error={error?.message}

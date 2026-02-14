@@ -54,6 +54,7 @@ const EditableTemplateDescription = (props: Props) => {
 
   return (
     <EditableSubText
+      isWrap
       disabled={!isOwner}
       error={error?.message}
       hideIcon

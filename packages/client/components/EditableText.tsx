@@ -82,14 +82,15 @@ const TextArea = styled(TextAreaAutoSize)({
   width: '100%'
 })
 
-const Form = styled('form')({
+const Form = styled('form')<{isWrap?: boolean}>(({isWrap}) => ({
   border: 0,
-  display: 'inline-flex',
+  display: isWrap ? 'flex' : 'inline-flex',
+  width: isWrap ? '100%' : undefined,
   alignItems: 'center',
   margin: 0,
   padding: 0,
   position: 'relative'
-})
+}))
 
 interface Props {
   autoFocus?: boolean
@@ -209,11 +210,20 @@ const EditableText = forwardRef((props: Props, ref: any) => {
       onKeyDown: onKeyDown,
       placeholder,
       value,
-      style: {width: inputWidth ? `${inputWidth}px` : 'auto'}
+      style: {width: isWrap ? undefined : !inputWidth ? 'auto' : `${inputWidth}px`}
     } as const
     return (
       <div className={className} ref={ref}>
-        <Form onSubmit={onSubmit}>
+        <Form
+          isWrap={isWrap}
+          onSubmit={onSubmit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              onSubmit(e)
+            }
+          }}
+        >
           {isWrap ? (
             <TextArea {...inProps} maxRows={3} />
           ) : (
