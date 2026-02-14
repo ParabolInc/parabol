@@ -60,16 +60,19 @@ const getHeaderFields = (
       const name = __typename === 'JiraIssue' ? 'Jira' : 'Jira Data Center'
       const {summary, descriptionHTML, jiraUrl, issueKey} = integration
       return {
+        __typename,
         cardTitle: summary,
         descriptionHTML,
         url: jiraUrl,
         linkTitle: `${name} Issue #${issueKey}`,
-        linkText: issueKey
+        linkText: issueKey,
+        extraFields: (integration as any).extraFields ?? null
       }
     }
     case '_xGitHubIssue': {
       const {number, title: githubTitle, bodyHTML, ghUrl} = integration
       return {
+        __typename,
         cardTitle: githubTitle,
         descriptionHTML: bodyHTML,
         url: ghUrl,
@@ -79,12 +82,14 @@ const getHeaderFields = (
     }
     case 'AzureDevOpsWorkItem': {
       const {
+        __typename,
         title: azureDevOpsTitle,
         url: azureDevOpsUrl,
         id: workItemId,
         descriptionHTML: azureDevOpsDescriptionHTML
       } = integration
       return {
+        __typename,
         cardTitle: azureDevOpsTitle,
         descriptionHTML: azureDevOpsDescriptionHTML,
         url: azureDevOpsUrl,
@@ -95,6 +100,7 @@ const getHeaderFields = (
     case '_xGitLabIssue': {
       const {iid, title: gitlabTitle, descriptionHtml, webUrl} = integration
       return {
+        __typename,
         cardTitle: gitlabTitle,
         descriptionHTML: descriptionHtml ?? '',
         url: webUrl,
@@ -106,6 +112,7 @@ const getHeaderFields = (
       const {identifier, title: linearTitle, description, url} = integration
       const linearDescHTML = renderMarkdown(description ?? '_no description found_')
       return {
+        __typename,
         cardTitle: linearTitle,
         descriptionHTML: linearDescHTML ?? '',
         url: url,
@@ -138,6 +145,12 @@ graphql`
         summary
         descriptionHTML
         jiraUrl: url
+        extraFields {
+          fieldId
+          fieldName
+          fieldValue
+          fieldType
+        }
       }
       ... on JiraServerIssue {
         __typename
@@ -183,11 +196,24 @@ const PokerEstimateHeaderCard = (props: Props) => {
         task {
           ...PokerEstimateHeaderCardTask @relay(mask: false)
         }
+        meeting {
+          team {
+            meetingSettings(meetingType: poker) {
+              ... on PokerMeetingSettings {
+                id
+                jiraDisplayFieldIds
+              }
+            }
+          }
+        }
       }
     `,
     stageRef
   )
-  const {meetingId, task} = stage
+  const {meetingId, task, meeting} = stage
+  const {team} = meeting
+  const {meetingSettings} = team
+  const {id: settingsId, jiraDisplayFieldIds} = meetingSettings
   if (!task) {
     const {taskId} = stage
     const onRemove = () => {
@@ -264,6 +290,8 @@ const PokerEstimateHeaderCard = (props: Props) => {
       {...headerFields}
       onRefresh={handleRefresh}
       isRefreshing={isRefreshing}
+      jiraDisplayFieldIds={jiraDisplayFieldIds}
+      settingsId={settingsId!}
     />
   )
 }

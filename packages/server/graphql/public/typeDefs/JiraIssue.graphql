@@ -86,4 +86,9 @@ type JiraIssue implements TaskIntegration {
   The last time this issue was updated
   """
   lastUpdated: DateTime!
+
+  """
+  All the other fields associated with the issue
+  """
+  extraFields: [JiraExtraField!]!
 }
