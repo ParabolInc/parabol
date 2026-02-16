@@ -3,7 +3,7 @@ import {type Editor, getTextBetween, useEditorState} from '@tiptap/react'
 import {
   getRangeForType,
   type LinkMenuState
-} from 'parabol-client/components/promptResponse/TiptapLinkExtension'
+} from 'parabol-client/components/TipTapEditor/TiptapLinkExtension'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {Popover} from 'react-bootstrap'
 import {TipTapLinkEditor} from './LinkEditor'

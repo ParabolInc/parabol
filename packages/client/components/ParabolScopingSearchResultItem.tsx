@@ -14,7 +14,7 @@ import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {Threshold} from '../types/constEnums'
 import Checkbox from './Checkbox'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 interface Props {
   meetingId: string
