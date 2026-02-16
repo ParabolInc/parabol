@@ -35,7 +35,6 @@ export const onUploadTipTapFile =
     }
     const bytes = await file.bytes()
     const info = filetypeinfo(bytes)
-    console.log('file info', file.type, info)
     if (file.type !== '') {
       if (info.length > 0) {
         const contentIsCorrectType = file.type.startsWith('text/')
