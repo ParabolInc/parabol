@@ -13,8 +13,8 @@ import {PALETTE} from '../../styles/paletteV3'
 import Avatar from '../Avatar/Avatar'
 import DiscussionThreadRoot from '../DiscussionThreadRoot'
 import PlainButton from '../PlainButton/PlainButton'
-import PromptResponseEditor from '../promptResponse/PromptResponseEditor'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
+import PromptResponseEditor from './PromptResponseEditor'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 
 const ThreadColumn = styled('div')({

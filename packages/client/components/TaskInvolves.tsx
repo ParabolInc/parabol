@@ -13,7 +13,7 @@ import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMut
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
 import {ASSIGNEE, MENTIONEE} from '../utils/constants'
 import NotificationTemplate from './NotificationTemplate'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 const involvementWord = {
   [ASSIGNEE]: 'assigned',
