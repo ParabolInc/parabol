@@ -88,7 +88,10 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     }
   }
   const info = filetypeinfo(new Uint8Array(buffer))
-  const contentIsCorrectType = info.some((i) => i.mime === file.type)
+  // text file subtypes cannot be determined from magic bytes, so assume text/plain is correct for any text/*
+  const contentIsCorrectType = file.type.startsWith('text/')
+    ? info.some((i) => i.mime?.startsWith('text/plain'))
+    : info.some((i) => i.mime === file.type)
   const assumedType = info[0]?.typename
   if (info.length > 0 && !contentIsCorrectType) {
     throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)
