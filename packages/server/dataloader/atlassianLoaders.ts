@@ -17,6 +17,7 @@ import AtlassianServerManager, {
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
 import {getIssue} from '../utils/atlassian/jiraIssues'
+import {generateJiraExtraFields} from '../utils/generateJiraExtraFields'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
 import type RootDataLoader from './RootDataLoader'
@@ -191,6 +192,7 @@ export type JiraIssue = JiraGetIssueRes['fields'] & {
   descriptionHTML: string
   teamId: string
   userId: string
+  extraFields: ReturnType<typeof generateJiraExtraFields>
 }
 
 export const jiraIssue = (
@@ -290,6 +292,7 @@ export const jiraIssue = (
 
             return {
               ...fields,
+              extraFields: generateJiraExtraFields(issueRes),
               issueType: fields.issuetype.id,
               possibleEstimationFields,
               missingEstimationFieldHint,
@@ -318,7 +321,7 @@ export const jiraIssue = (
             })
             return null
           }
-          const res = await cacheImagesUpdateEstimates(issueRes)
+          const res = await cacheImagesUpdateEstimates(issueRes as any)
           return res
         })
       )

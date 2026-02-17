@@ -13,6 +13,7 @@ import type {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import {generateJiraExtraFields} from './generateJiraExtraFields'
 import {Logger} from './Logger'
 import {makeOAuth2Redirect} from './makeOAuth2Redirect'
 
@@ -125,9 +126,25 @@ type GetProjectsCallback = (
   result: GetProjectsResult | null
 ) => void
 
+interface JiraSchemaEntryBase {
+  type: string
+  items?: string
+}
+
+interface JiraSchemaEntrySystem extends JiraSchemaEntryBase {
+  system: string
+}
+
+interface JiraSchemaEntryCustom extends JiraSchemaEntryBase {
+  custom: string
+  customId: string
+}
+type JiraSchemaEntry = JiraSchemaEntrySystem | JiraSchemaEntryCustom
+type JiraFieldId = string
+type JiraFieldName = string
 type JiraIssueProperties = any
-type JiraIssueNames = any
-type JiraIssueSchema = any
+type JiraIssueNames = Record<JiraFieldId, JiraFieldName>
+type JiraIssueSchema = Record<JiraFieldId, JiraSchemaEntry>
 type JiraIssueTransition = any
 type JiraOperations = any
 type JiraIssueUpdateMetadata = any
@@ -160,7 +177,7 @@ export type JiraIssueRaw = JiraIssueBean<
     issuetype: {id: string; iconUrl: string}
     created: string
   },
-  {description: string}
+  Record<JiraFieldId, string>
 >
 
 interface JiraAuthor {
@@ -188,7 +205,7 @@ interface JiraAddCommentResponse {
   jsdPublic: true
 }
 
-export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields>
+export type JiraGetIssueRes = JiraIssueBean<JiraGQLFields, any>
 
 export interface JiraGQLFields {
   issuetype: {
@@ -204,6 +221,7 @@ export interface JiraGQLFields {
   issueKey: string
   summary: string
   lastUpdated: string
+  extraFields: ReturnType<typeof generateJiraExtraFields>
 }
 interface JiraSearchResponse<
   T = {

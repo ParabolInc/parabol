@@ -82,7 +82,7 @@ const getIssueFromJira = async (
     // there was a cached value in redis, firstToResolve already called
     if (issueFromJiraStr !== requests.cachedIssue) {
       // update redis & push an update via pubsub
-      pushUpdateToClient(res as JiraGetIssueRes).catch((e) => {
+      pushUpdateToClient(res as any).catch((e) => {
         Logger.error(e)
       })
       redis.set(redisKey, issueFromJiraStr, 'PX', ISSUE_TTL_MS) // set cache behind

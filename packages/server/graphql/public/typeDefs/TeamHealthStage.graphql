@@ -17,7 +17,7 @@ type TeamHealthStage implements NewMeetingStage {
   """
   The meeting this stage belongs to
   """
-  meeting: NewMeeting
+  meeting: NewMeeting!
 
   """
   true if the facilitator has completed this stage, else false. Should be boolean(endAt)

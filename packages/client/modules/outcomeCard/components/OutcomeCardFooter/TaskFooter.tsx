@@ -3,9 +3,11 @@ import graphql from 'babel-plugin-relay/macro'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {TaskJiraFieldsContent} from '~/components/TaskJiraFieldsContent'
 import type {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
+import {TaskMoreOptionsMenu} from '../../../../components/TaskMoreOptionsMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
@@ -15,8 +17,8 @@ import {USER_DASH} from '../../../../utils/constants'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import setLocalTaskError from '../../../../utils/relay/setLocalTaskError'
 import OutcomeCardMessage from '../OutcomeCardMessage/OutcomeCardMessage'
+import {TaskTagContent} from '../OutcomeCardStatusMenu/TaskTagContent'
 import TaskFooterIntegrateToggle from './TaskFooterIntegrateToggle'
-import TaskFooterTagMenuToggle from './TaskFooterTagMenuToggle'
 import TaskFooterTeamAssignee from './TaskFooterTeamAssignee'
 import TaskFooterUserAssignee from './TaskFooterUserAssignee'
 
@@ -61,19 +63,20 @@ const TaskFooter = (props: Props) => {
   const task = useFragment(
     graphql`
       fragment TaskFooter_task on Task {
+        ...TaskTagContent_task
+        ...TaskJiraFieldsContent_task
         id
         error
-        integration {
-          __typename
-        }
         tags
         team {
           id
         }
+        integration {
+          __typename
+        }
         userId
         ...TaskFooterTeamAssignee_task
         ...TaskFooterUserAssignee_task
-        ...TaskFooterTagMenu_task
         ...TaskFooterIntegrateMenuRoot_task
       }
     `,
@@ -139,13 +142,20 @@ const TaskFooter = (props: Props) => {
               <IconLabel icon='reply' />
             </CardButton>
           ) : (
-            <TaskFooterTagMenuToggle
-              area={area}
-              toggleTag={toggleTag}
-              isAgenda={isAgenda}
-              task={task}
-              useTaskChild={useTaskChild}
-              mutationProps={mutationProps}
+            <TaskMoreOptionsMenu
+              jiraFieldsContent={
+                integration?.__typename === 'JiraIssue' && <TaskJiraFieldsContent taskRef={task} />
+              }
+              tagContent={
+                <TaskTagContent
+                  area={area}
+                  toggleTag={toggleTag}
+                  isAgenda={isAgenda}
+                  task={task}
+                  useTaskChild={useTaskChild}
+                  mutationProps={mutationProps}
+                />
+              }
             />
           )}
         </ButtonGroup>

@@ -1,5 +1,6 @@
 import JiraIssueId from '../../../../client/shared/gqlIds/JiraIssueId'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
+import {generateJiraExtraFields} from '../../../utils/generateJiraExtraFields'
 import type {JiraIssueResolvers} from '../resolverTypes'
 
 export type JiraIssueSource = {
@@ -11,6 +12,7 @@ export type JiraIssueSource = {
   issuetype: {
     iconUrl: string
   }
+  extraFields: ReturnType<typeof generateJiraExtraFields>
 }
 
 const JiraIssue: JiraIssueResolvers = {
@@ -44,7 +46,8 @@ const JiraIssue: JiraIssueResolvers = {
         }
       : null
   },
-  description: ({description}) => (description ? JSON.stringify(description) : '')
+  description: ({description}) => (description ? JSON.stringify(description) : ''),
+  extraFields: async ({extraFields}) => extraFields || []
 }
 
 export default JiraIssue
