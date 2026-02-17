@@ -4,20 +4,12 @@ import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
-import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import getKysely from '../postgres/getKysely'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
 import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
-import AtlassianServerManager, {
-  type JiraGetIssueRes,
-  type JiraGQLFields,
-  type JiraProject
-} from '../utils/AtlassianServerManager'
-import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
-import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
-import {getIssue} from '../utils/atlassian/jiraIssues'
-import {generateJiraExtraFields} from '../utils/generateJiraExtraFields'
+import AtlassianServerManager, {type JiraProject} from '../utils/AtlassianServerManager'
+import {getIssue, type TransformedJiraIssue} from '../utils/atlassian/jiraIssues'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
 import type RootDataLoader from './RootDataLoader'
@@ -181,18 +173,9 @@ export const jiraRemoteProject = (
   )
 }
 
-type JiraIssueField = {
-  fieldId: string
-  fieldName: string
-  fieldType: 'string' | 'number'
-}
-export type JiraIssue = JiraGetIssueRes['fields'] & {
-  issueType: string
-  possibleEstimationFields: JiraIssueField[]
-  descriptionHTML: string
+export type JiraIssue = TransformedJiraIssue & {
   teamId: string
   userId: string
-  extraFields: ReturnType<typeof generateJiraExtraFields>
 }
 
 export const jiraIssue = (
@@ -210,110 +193,17 @@ export const jiraIssue = (
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
 
-          const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
-            const {fields} = issueRes
-            const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
-              cloudId,
-              issueRes.fields.descriptionHTML
-            )
-            downloadAndCacheImages(manager, imageUrlToHash)
-            // update our records
-            await Promise.all(
-              estimates.map((estimate) => {
-                const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
-                if (!jiraFieldId) {
-                  return undefined
-                }
-                const freshEstimate = String(fields[jiraFieldId as keyof JiraGQLFields]).slice(
-                  0,
-                  100
-                )
-                if (freshEstimate === label) return undefined
-                // mutate current dataloader
-                estimate.label = freshEstimate
-                return getKysely()
-                  .insertInto('TaskEstimate')
-                  .values({
-                    changeSource: 'external',
-                    // keep the link to the discussion alive, if possible
-                    discussionId,
-                    jiraFieldId,
-                    label: freshEstimate,
-                    name,
-                    meetingId: null,
-                    stageId: null,
-                    taskId,
-                    userId
-                  })
-                  .execute()
-              })
-            )
-
-            const possibleEstimationFields = [] as JiraIssueField[]
-            Object.entries<{schema: {type: string}}>(issueRes.editmeta?.fields)?.forEach(
-              ([fieldId, {schema}]) => {
-                const fieldName = issueRes.names[fieldId] ?? fieldId
-                if (isValidEstimationField(schema.type, fieldName, fieldId)) {
-                  possibleEstimationFields.push({
-                    fieldId,
-                    fieldName,
-                    fieldType: schema.type as 'string' | 'number'
-                  })
-                }
-                if (schema.type === 'timetracking') {
-                  const timeEstimate = issueRes.names['timeestimate']
-                  if (timeEstimate) {
-                    possibleEstimationFields.push({
-                      fieldId: 'timeestimate',
-                      fieldName: timeEstimate,
-                      fieldType: 'string'
-                    })
-                  }
-                  const timeOriginalEstimate = issueRes.names['timeoriginalestimate']
-                  if (timeOriginalEstimate) {
-                    possibleEstimationFields.push({
-                      fieldId: 'timeoriginalestimate',
-                      fieldName: timeOriginalEstimate,
-                      fieldType: 'string'
-                    })
-                  }
-                }
-              }
-            )
-            possibleEstimationFields.sort((a, b) => a.fieldName.localeCompare(b.fieldName))
-
-            const simplified = !!issueRes.fields.project?.simplified
-            const missingEstimationFieldHint: JiraIssueMissingEstimationFieldHintEnum | undefined =
-              hasDefaultEstimationField(possibleEstimationFields.map(({fieldName}) => fieldName))
-                ? undefined
-                : simplified
-                  ? 'teamManagedStoryPoints'
-                  : 'companyManagedStoryPoints'
-
-            return {
-              ...fields,
-              extraFields: generateJiraExtraFields(issueRes),
-              issueType: fields.issuetype.id,
-              possibleEstimationFields,
-              missingEstimationFieldHint,
-              descriptionHTML: updatedDescription,
+          const onStaleCache = (freshIssue: TransformedJiraIssue) => {
+            const issue: JiraIssue = {
+              ...freshIssue,
               teamId,
               userId
             }
+            publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JiraIssue', issue)
           }
 
-          const publishUpdatedIssue = async (issue: JiraGetIssueRes) => {
-            const res = await cacheImagesUpdateEstimates(issue)
-            publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JiraIssue', res)
-          }
-          const issueRes = await getIssue(
-            manager,
-            cloudId,
-            issueKey,
-            publishUpdatedIssue,
-            ['*all'],
-            ['names', 'schema']
-          )
+          const issueRes = await getIssue(manager, cloudId, issueKey, onStaleCache, estimates)
+
           if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
             logError(issueRes, {
               userId,
@@ -321,8 +211,12 @@ export const jiraIssue = (
             })
             return null
           }
-          const res = await cacheImagesUpdateEstimates(issueRes as any)
-          return res
+
+          return {
+            ...issueRes,
+            teamId,
+            userId
+          }
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))

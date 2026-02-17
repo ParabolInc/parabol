@@ -1,5 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+import ms from 'ms'
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
@@ -8,6 +8,7 @@ import AtlassianManager, {
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
+import sleep from 'parabol-client/utils/sleep'
 import {authorizeOAuth2} from '../integrations/helpers/authorizeOAuth2'
 import type {
   OAuth2AuthorizationParams,
@@ -177,7 +178,7 @@ export type JiraIssueRaw = JiraIssueBean<
     issuetype: {id: string; iconUrl: string}
     created: string
   },
-  Record<JiraFieldId, string>
+  {description: string; [key: string]: string | number | Record<string, any> | any[]}
 >
 
 interface JiraAuthor {
@@ -302,6 +303,8 @@ interface JiraPageBean<T> {
 
 export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
+const DEFAULT_RETRY_DURATION = ms('9s')
+
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
   static async init(code: string) {
@@ -334,6 +337,20 @@ class AtlassianServerManager extends AtlassianManager {
 
   constructor(accessToken: string) {
     super(accessToken)
+  }
+
+  async fetchWithRetry<T>(
+    operation: () => Promise<T | RateLimitError | Error>,
+    tryUntil: Date = new Date(Date.now() + DEFAULT_RETRY_DURATION)
+  ): Promise<T | RateLimitError | Error> {
+    const res = await operation()
+    if (res instanceof RateLimitError) {
+      if (res.retryAt > tryUntil) return res
+      const delay = Math.max(0, res.retryAt.getTime() - Date.now())
+      await sleep(delay)
+      return this.fetchWithRetry(operation, tryUntil)
+    }
+    return res
   }
 
   async getAccessibleResources() {
@@ -518,21 +535,9 @@ class AtlassianServerManager extends AtlassianManager {
       ? '*all'
       : ['summary', 'description', 'issuetype', 'created', ...extraFieldIds].join(',')
     const expand = ['renderedFields', 'changelog', 'editmeta', 'names', ...extraExpand].join(',')
-    const issueRes = await this.get<JiraIssueRaw>(
+    return this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
-    if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
-    return {
-      ...issueRes,
-      fields: {
-        ...issueRes.fields,
-        descriptionHTML: issueRes.renderedFields.description,
-        cloudId,
-        issueKey,
-        id: JiraIssueId.join(cloudId, issueKey),
-        lastUpdated: issueRes.changelog.histories[0]?.created ?? issueRes.fields.created
-      }
-    }
   }
 
   async getIssues(
