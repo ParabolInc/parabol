@@ -21,8 +21,8 @@ import AddTaskButton from './AddTaskButton'
 import Avatar from './Avatar/Avatar'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import {createLocalPoll} from './Poll/local/newPoll'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
 import SendCommentButton from './SendCommentButton'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 const makeReplyTo = ({id, preferredName}: {id: string; preferredName: string}) => ({
   type: 'doc',

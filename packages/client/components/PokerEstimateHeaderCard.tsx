@@ -51,7 +51,7 @@ type Integration = NonNullable<PokerEstimateHeaderCard_stage$data['task']>['inte
 
 const getHeaderFields = (
   integration: Integration | null
-): PokerEstimateHeaderCardContentProps | null => {
+): Omit<PokerEstimateHeaderCardContentProps, 'taskRef'> | null => {
   if (!integration) return null
   const {__typename} = integration
   switch (__typename) {
@@ -120,6 +120,7 @@ const getHeaderFields = (
 graphql`
   fragment PokerEstimateHeaderCardTask on Task {
     ...PokerEstimateHeaderCardParabol_task
+    ...PokerEstimateHeaderCardContent_task
     integrationHash
     integration {
       ... on AzureDevOpsWorkItem {
@@ -264,6 +265,7 @@ const PokerEstimateHeaderCard = (props: Props) => {
       {...headerFields}
       onRefresh={handleRefresh}
       isRefreshing={isRefreshing}
+      taskRef={task}
     />
   )
 }

@@ -18,11 +18,11 @@ import {PARABOL_AI_USER_ID} from '../utils/constants'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import type {DiscussionThreadables} from './DiscussionThreadList'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
 import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedCommentFooter from './ThreadedCommentFooter'
 import ThreadedCommentHeader from './ThreadedCommentHeader'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]

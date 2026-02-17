@@ -171,6 +171,11 @@ const subscription = graphql`
       UpdateUserProfilePayload {
         ...UpdateUserProfileMutation_team @relay(mask: false)
       }
+      SetJiraDisplayFieldIdsPayload {
+        team {
+          jiraDisplayFieldIds
+        }
+      }
     }
   }
 `

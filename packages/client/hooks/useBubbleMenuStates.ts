@@ -1,5 +1,5 @@
 import {type Editor, useEditorState} from '@tiptap/react'
-import isTextSelected from '../components/promptResponse/isTextSelected'
+import isTextSelected from '../components/TipTapEditor/isTextSelected'
 import {isCustomNodeSelected} from '../tiptap/isCustomNodeSelected'
 
 export const getShouldShow = (editor: Editor) => {
