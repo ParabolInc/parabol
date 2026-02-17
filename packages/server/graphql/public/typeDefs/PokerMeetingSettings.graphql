@@ -62,9 +62,4 @@ type PokerMeetingSettings implements TeamMeetingSettings {
     """
     after: ID
   ): PokerTemplateConnection!
-
-  """
-  The list of Jira fields to be displayed on the estimate header card along with their values.
-  """
-  jiraDisplayFieldIds: [String!]
 }

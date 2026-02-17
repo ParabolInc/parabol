@@ -1,14 +1,18 @@
 import styled from '@emotion/styled'
 import {Launch} from '@mui/icons-material'
+import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
-import type {PokerEstimateHeaderCard_stage$data} from '~/__generated__/PokerEstimateHeaderCard_stage.graphql'
+import {useFragment} from 'react-relay'
+import type {PokerEstimateHeaderCardContent_task$key} from '~/__generated__/PokerEstimateHeaderCardContent_task.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
-import {PokerEstimateHeaderCardMenu} from './PokerEstimateHeaderCardMenu'
+import {JiraExtraFieldsContent} from './JiraExtraFieldsContent'
+import {TaskJiraFieldsContent} from './TaskJiraFieldsContent'
+import {TaskMoreOptionsMenu} from './TaskMoreOptionsMenu'
 
 const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
   display: 'flex',
@@ -91,33 +95,12 @@ export type PokerEstimateHeaderCardContentProps = {
   linkText: string
   onRefresh?: () => void
   isRefreshing?: boolean
-  extraFields?:
-    | Extract<
-        NonNullable<PokerEstimateHeaderCard_stage$data['task']>['integration'],
-        {__typename: 'JiraIssue'}
-      >['extraFields']
-    | null
-    | undefined
-  jiraDisplayFieldIds?: readonly string[] | null | undefined
-  __typename: string
+  taskRef: PokerEstimateHeaderCardContent_task$key
 }
 
-const PokerEstimateHeaderCardContent = (
-  props: PokerEstimateHeaderCardContentProps & {settingsId: string}
-) => {
-  const {
-    settingsId,
-    cardTitle,
-    descriptionHTML,
-    url,
-    linkTitle,
-    linkText,
-    onRefresh,
-    isRefreshing,
-    extraFields,
-    jiraDisplayFieldIds,
-    __typename
-  } = props
+const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentProps) => {
+  const {cardTitle, descriptionHTML, url, linkTitle, linkText, onRefresh, isRefreshing, taskRef} =
+    props
   const [isExpanded, setIsExpanded] = useState(true)
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
@@ -127,6 +110,23 @@ const PokerEstimateHeaderCardContent = (
       onRefresh()
     }
   }
+  const task = useFragment(
+    graphql` fragment PokerEstimateHeaderCardContent_task on Task {
+    ...TaskJiraFieldsContent_task
+    team {
+      jiraDisplayFieldIds
+    }
+    integration {
+      __typename
+      ... on JiraIssue {
+        ...JiraExtraFieldsContent_issue
+      }
+    }
+  }`,
+    taskRef
+  )
+  const {team, integration} = task
+  const {jiraDisplayFieldIds} = team
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
     <HeaderCardWrapper isDesktop={isDesktop}>
@@ -148,32 +148,26 @@ const PokerEstimateHeaderCardContent = (
                 <IconLabel icon='unfold_more' onClick={toggleExpand} tooltip='Expand contents' />
               )}
             </CardButton>
-            {__typename === 'JiraIssue' && (
-              <PokerEstimateHeaderCardMenu
-                setIsExpanded={setIsExpanded}
-                settingsId={settingsId}
-                jiraDisplayFieldIds={jiraDisplayFieldIds}
-                extraFields={extraFields}
+            {integration?.__typename === 'JiraIssue' && (
+              <TaskMoreOptionsMenu
+                jiraFieldsContent={
+                  <TaskJiraFieldsContent
+                    taskRef={task}
+                    onAddJiraField={() => setIsExpanded(true)}
+                  />
+                }
               />
             )}
           </CardIcons>
         </CardTitleWrapper>
         <CardDescriptionWrapper isExpanded={isExpanded}>
           <CardDescriptionContent dangerouslySetInnerHTML={{__html: descriptionHTML}} />
-          {jiraDisplayFieldIds?.map((fieldId) => {
-            const extraField = extraFields?.find((field) => field.fieldId === fieldId)
-            if (!extraField) return null
-            const {fieldName, fieldType, fieldValue} = extraField
-            return (
-              <div key={fieldName}>
-                <h4 className={'mt-3 mb-1'}>{fieldName}</h4>
-                {fieldType === 'html' && (
-                  <div dangerouslySetInnerHTML={{__html: fieldValue as string}} />
-                )}
-                {fieldType !== 'html' && <div>{fieldValue}</div>}
-              </div>
-            )
-          })}
+          {integration?.__typename === 'JiraIssue' && (
+            <JiraExtraFieldsContent
+              jiraDisplayFieldIds={jiraDisplayFieldIds!}
+              issueRef={integration}
+            />
+          )}
         </CardDescriptionWrapper>
         <StyledLink href={url} rel='noopener noreferrer' target='_blank' title={linkTitle}>
           <StyledLabel>{linkText}</StyledLabel>

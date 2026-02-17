@@ -21,6 +21,8 @@ export const generateJiraExtraFields = (issue: JiraGetIssueRes) => {
   return (
     Object.keys(names)
       .map((fieldId) => {
+        // skip the description field since that's the main one that we already show
+        if (fieldId === 'description') return null
         const value = renderedFields[fieldId as keyof typeof renderedFields] as
           | null
           | string

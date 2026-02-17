@@ -103,28 +103,15 @@ export const selectSuggestedAction = () => {
 }
 
 // Can revert to using .selectAll() when https://github.com/kysely-org/kysely/pull/1102 is merged
-export const selectTeams = () =>
-  getKysely()
+export const selectTeams = () => {
+  const query = getKysely()
     .selectFrom('Team')
-    .select([
-      'Team.autoJoin',
-      'Team.createdAt',
-      'Team.createdBy',
-      'Team.id',
-      'Team.isArchived',
-      'Team.isOnboardTeam',
-      'Team.kudosEmojiUnicode',
-      'Team.lastMeetingType',
-      'Team.name',
-      'Team.orgId',
-      'Team.qualAIMeetingsCount',
-      'Team.isPublic',
-      'Team.updatedAt',
-      'Team.scimCreated'
-    ])
+    .selectAll()
     .select(({fn}) => [
       fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
     ])
+  return query as AssertedQuery<typeof query, {jiraDimensionFields: JiraDimensionField[]}>
+}
 
 export const selectRetroReflections = () =>
   getKysely()

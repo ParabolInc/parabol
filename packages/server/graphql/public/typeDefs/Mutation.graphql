@@ -1668,12 +1668,15 @@ type Mutation {
     the url of the video meeting, e.g. the Zoom link
     """
     videoMeetingURL: String
-
-    """
-    The additional fields to display beneath a Jira issue in the poker meeting
-    """
-    jiraDisplayFieldIds: [String!]
   ): SetMeetingSettingsPayload!
+
+  """
+  Set the Jira fields to display on the estimate header card
+  """
+  setJiraDisplayFieldIds(
+    teamId: ID!
+    jiraDisplayFieldIds: [String!]!
+  ): SetJiraDisplayFieldIdsPayload!
 
   """
   Set the music being played in the meeting

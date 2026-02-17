@@ -209,4 +209,9 @@ type Team implements Node & TeamPartial {
   The viewer-specific sort order index. Present in User.teams
   """
   sortOrder: String!
+
+  """
+  The list of Jira fields to be displayed alongside the task content
+  """
+  jiraDisplayFieldIds: [String!]
 }

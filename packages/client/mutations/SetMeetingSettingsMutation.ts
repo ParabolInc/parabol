@@ -11,9 +11,7 @@ graphql`
         disableAnonymity
         videoMeetingURL
       }
-      ... on PokerMeetingSettings {
-        jiraDisplayFieldIds
-      }
+
     }
   }
 `
@@ -25,7 +23,6 @@ const mutation = graphql`
     $teamHealthEnabled: Boolean
     $disableAnonymity: Boolean
     $videoMeetingURL: String
-    $jiraDisplayFieldIds: [String!]
   ) {
     setMeetingSettings(
       settingsId: $settingsId
@@ -33,7 +30,6 @@ const mutation = graphql`
       teamHealthEnabled: $teamHealthEnabled
       disableAnonymity: $disableAnonymity
       videoMeetingURL: $videoMeetingURL
-      jiraDisplayFieldIds: $jiraDisplayFieldIds
     ) {
       ...SetMeetingSettingsMutation_team @relay(mask: false)
     }

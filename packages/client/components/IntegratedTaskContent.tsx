@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
 import renderMarkdown from '../utils/renderMarkdown'
+import {JiraExtraFieldsContent} from './JiraExtraFieldsContent'
 
 interface Props {
   task: IntegratedTaskContent_task$key
@@ -12,9 +13,13 @@ const IntegratedTaskContent = (props: Props) => {
   const task = useFragment(
     graphql`
       fragment IntegratedTaskContent_task on Task {
+        team {
+          jiraDisplayFieldIds
+        }
         integration {
           __typename
           ... on JiraIssue {
+            ...JiraExtraFieldsContent_issue
             descriptionHTML
             summary
           }
@@ -43,14 +48,16 @@ const IntegratedTaskContent = (props: Props) => {
     `,
     taskRef
   )
-  const {integration} = task
+  const {integration, team} = task
   if (!integration) return null
   if (integration.__typename === 'JiraIssue') {
+    const {jiraDisplayFieldIds} = team
     const {descriptionHTML, summary} = integration
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{summary}</div>
         <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+        <JiraExtraFieldsContent jiraDisplayFieldIds={jiraDisplayFieldIds} issueRef={integration} />
       </div>
     )
   } else if (integration.__typename === 'JiraServerIssue') {

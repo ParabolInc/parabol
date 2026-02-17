@@ -10,14 +10,7 @@ import type {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
-  {
-    settingsId,
-    checkinEnabled,
-    teamHealthEnabled,
-    disableAnonymity,
-    videoMeetingURL,
-    jiraDisplayFieldIds
-  },
+  {settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity, videoMeetingURL},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -57,8 +50,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
       ? isNotNull(videoMeetingURL)
         ? videoMeetingURL
         : settings.videoMeetingURL
-      : null,
-    jiraDisplayFieldIds: jiraDisplayFieldIds || settings.jiraDisplayFieldIds
+      : null
   }
 
   await getKysely()
