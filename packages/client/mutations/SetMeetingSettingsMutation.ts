@@ -11,7 +11,6 @@ graphql`
         disableAnonymity
         videoMeetingURL
       }
-
     }
   }
 `
