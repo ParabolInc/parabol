@@ -35,6 +35,7 @@ export const createTopLevelPage = async (
     isPrivate,
     teamId || null
   )
+  console.log('Creating top level page with content', content)
   const yDoc = content
     ? Buffer.from(
         encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))

@@ -76,7 +76,7 @@ const columnsAreDefault = (doc: Y.Doc) => {
   return true
 }
 
-const importRecords = (doc: Y.Doc, viewerId: string, records: string[][]) => {
+export const importRecords = (doc: Y.Doc, viewerId: string, records: string[][]) => {
   const first = records[0]
   if (!first) return
 

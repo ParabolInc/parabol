@@ -1,18 +1,45 @@
+import {TiptapTransformer} from '@hocuspocus/transformer'
+import {encodeStateAsUpdate} from 'yjs'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
 import {analytics} from '../../utils/analytics/analytics'
 import {publishPageNotification} from '../publishPageNotification'
+import {getPlaintextFromTipTap} from './getPlaintextFromTipTap'
 import {validateParentPage} from './validateParentPage'
 
 export const createChildPage = async (
   parentPageId: number,
   userId: string,
-  isDatabase: boolean
+  isDatabase: boolean,
+  title?: string
 ) => {
   const pg = getKysely()
   const parentPageWithRole = await validateParentPage(parentPageId, userId, 'viewer')
   const {isPrivate, ancestorIds} = parentPageWithRole
+
+  const content = title
+    ? {
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: {level: 1},
+            content: [{type: 'text', text: title}]
+          }
+        ]
+      }
+    : undefined
+
+  console.log('Creating child page with content', content)
+  const yDoc = content
+    ? Buffer.from(
+        encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))
+      )
+    : undefined
+  const contentRes = content ? getPlaintextFromTipTap(content) : {}
+
   const page = await pg
     .insertInto('Page')
     .values({
@@ -21,7 +48,10 @@ export const createChildPage = async (
       isPrivate,
       ancestorIds: ancestorIds.concat(parentPageId),
       sortOrder: '',
-      isDatabase
+      isDatabase,
+      yDoc,
+      ...contentRes,
+      title
     })
     .returningAll()
     .executeTakeFirstOrThrow()
