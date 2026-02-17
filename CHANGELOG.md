@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.4.0](https://github.com/ParabolInc/parabol/compare/v12.3.0...v12.4.0) (2026-02-17)
+
+
+### Added
+
+* Enable users to select and display additional Jira fields ([#12600](https://github.com/ParabolInc/parabol/issues/12600)) ([5f5f67f](https://github.com/ParabolInc/parabol/commit/5f5f67fa7dfee9099d2ba12303acde0535520a32))
+
+
+### Fixed
+
+* Allow upload of CSV and other text/* formats ([#12603](https://github.com/ParabolInc/parabol/issues/12603)) ([e0009a9](https://github.com/ParabolInc/parabol/commit/e0009a909ce2a2d794233f6c9f86b6429d5dcdf8))
+* jira extra fields correction ([#12606](https://github.com/ParabolInc/parabol/issues/12606)) ([cddab23](https://github.com/ParabolInc/parabol/commit/cddab23019dcf1e9f9e85e686f4a3be663103bd1))
+
+
+### Changed
+
+* move TipTapEditor into its own folder ([#12605](https://github.com/ParabolInc/parabol/issues/12605)) ([d334630](https://github.com/ParabolInc/parabol/commit/d334630e9b8fa37a4087fea261cfa6a5f4403e42))
+
 ## [12.3.0](https://github.com/ParabolInc/parabol/compare/v12.2.1...v12.3.0) (2026-02-13)
 
 
