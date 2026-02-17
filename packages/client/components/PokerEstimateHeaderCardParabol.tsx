@@ -12,7 +12,7 @@ import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 interface Props {
   task: PokerEstimateHeaderCardParabol_task$key

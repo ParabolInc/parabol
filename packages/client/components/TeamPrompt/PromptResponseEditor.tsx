@@ -13,9 +13,9 @@ import {modEnter} from '../../utils/platform'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
 import BaseButton from '../BaseButton'
-import {LoomExtension, unfurlLoomLinks} from './loomExtension'
-import {TipTapEditor} from './TipTapEditor'
-import {TiptapLinkExtension} from './TiptapLinkExtension'
+import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
+import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
+import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,

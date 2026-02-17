@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.3.0](https://github.com/ParabolInc/parabol/compare/v12.2.1...v12.3.0) (2026-02-13)
+
+
+### Added
+
+* Add user mentions to Pages ([#12588](https://github.com/ParabolInc/parabol/issues/12588)) ([d44f4d3](https://github.com/ParabolInc/parabol/commit/d44f4d3e3293bb1cbac839d7063c01503a83aff0))
+* **SCIM:** Add Group Provisioning ([#12594](https://github.com/ParabolInc/parabol/issues/12594)) ([6330417](https://github.com/ParabolInc/parabol/commit/6330417d82804fd388afac8edd6d28661bf793a1))
+
+
+### Fixed
+
+* no imports to server from client ([#12599](https://github.com/ParabolInc/parabol/issues/12599)) ([56f628b](https://github.com/ParabolInc/parabol/commit/56f628bca30dba3ac82efdb3d4e636329683f4e8))
+
 ## [12.2.1](https://github.com/ParabolInc/parabol/compare/v12.2.0...v12.2.1) (2026-02-10)
 
 
