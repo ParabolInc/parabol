@@ -13,7 +13,6 @@ const mutation = graphql`
       jiraDisplayFieldIds: $jiraDisplayFieldIds
     ) {
       team {
-        id
         jiraDisplayFieldIds
       }
     }
