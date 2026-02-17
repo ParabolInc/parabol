@@ -32,7 +32,6 @@ export const createChildPage = async (
       }
     : undefined
 
-  console.log('Creating child page with content', content)
   const yDoc = content
     ? Buffer.from(
         encodeStateAsUpdate(TiptapTransformer.toYdoc(content, undefined, serverTipTapExtensions))

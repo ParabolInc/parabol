@@ -249,7 +249,6 @@ export const useTipTapPageEditor = (
               // if they drop an image, treat it like an image, not a binary
               const targetType = getFileType(file)
               if (targetType === 'csv') {
-                console.log('Emitting importCSV event for dropped file', {file, targetType, pos})
                 currentEditor.emit('importCSV', {file, targetType, pos})
                 return
               }
