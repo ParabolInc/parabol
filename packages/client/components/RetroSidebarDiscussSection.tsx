@@ -140,7 +140,15 @@ const RetroSidebarDiscussSection = (props: Props) => {
                 {stages.map((stage, idx) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
-                  const {title, voteCount} = reflectionGroup
+                  const {title, voteCount, reflections} = reflectionGroup
+                  const reflectionColors = reflections.map(({prompt}) => prompt.groupColor)
+                  const colors = [...new Set(reflectionColors)]
+                    .sort(
+                      (a, b) =>
+                        reflectionColors.filter((v) => v === b).length -
+                        reflectionColors.filter((v) => v === a).length
+                    )
+                    .slice(0, 3)
                   // the local user is at another stage than the facilitator stage
                   const isUnsyncedFacilitatorStage = !inSync && stage.id === facilitatorStageId
                   const voteMeta = (
@@ -175,7 +183,38 @@ const RetroSidebarDiscussSection = (props: Props) => {
                               isDisabled={!stage.isNavigable}
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             >
-                              {title!}
+                              <div className='flex w-full items-center space-x-0.5'>
+                                <div>
+                                  {colors.map((color, idx) => {
+                                    const DOT_SIZE = 8
+                                    const TOTAL_HEIGHT = 18
+                                    const DESIRED_VISIBLE = 4 // how much of each lower dot shows
+
+                                    const visible =
+                                      colors.length > 1
+                                        ? Math.min(
+                                            DESIRED_VISIBLE,
+                                            (TOTAL_HEIGHT - DOT_SIZE) / (colors.length - 1)
+                                          )
+                                        : 0
+
+                                    const overlap = DOT_SIZE - visible
+
+                                    return (
+                                      <div
+                                        key={idx}
+                                        style={{
+                                          backgroundColor: color,
+                                          marginTop: idx === 0 ? 0 : -overlap,
+                                          zIndex: colors.length - idx
+                                        }}
+                                        className='relative h-2 w-2 rounded-full'
+                                      />
+                                    )
+                                  })}
+                                </div>
+                                <div>{title!}</div>
+                              </div>
                             </MeetingSubnavItem>
                           </DraggableMeetingSubnavItem>
                         )
@@ -203,6 +242,11 @@ graphql`
       reflectionGroup {
         title
         voteCount
+        reflections {
+          prompt {
+            groupColor
+          }
+        }
       }
       sortOrder
     }
