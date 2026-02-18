@@ -7,6 +7,7 @@ export const pgEnsureExtensions = async () => {
   if (process.env.POSTGRES_USE_PGVECTOR === 'true') {
     Logger.log('   pgvector')
     const pg = getKysely()
+    // Ensure the desired version is available in ironbank, AWS, and GCP
     await sql`
     CREATE EXTENSION IF NOT EXISTS "vector";
     ALTER EXTENSION vector UPDATE TO '0.8.0';

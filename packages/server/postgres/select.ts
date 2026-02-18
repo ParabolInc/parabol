@@ -1,6 +1,7 @@
 import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
+import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration'
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import type {
@@ -15,13 +16,13 @@ import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
 import type {DB} from './types/pg'
-import type {AnyTaskIntegration} from './types/TaskIntegration'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
 // since string[] && {id: string}[] do not intersect, we can't do this natively within kysely with $assertType
 type AssertedQuery<Q, K> = Q extends SelectQueryBuilder<infer T1, infer T2, infer X>
-  ? SelectQueryBuilder<T1, T2, Omit<X, keyof K> & K>
+  ? // extending unknown (or any) distributes K to each member of X because extending must evaluate the statement each time
+    SelectQueryBuilder<T1, T2, X extends unknown ? K & Omit<X, keyof K> : X>
   : never
 
 export const selectTimelineEvent = () => {
@@ -102,27 +103,15 @@ export const selectSuggestedAction = () => {
 }
 
 // Can revert to using .selectAll() when https://github.com/kysely-org/kysely/pull/1102 is merged
-export const selectTeams = () =>
-  getKysely()
+export const selectTeams = () => {
+  const query = getKysely()
     .selectFrom('Team')
-    .select([
-      'Team.autoJoin',
-      'Team.createdAt',
-      'Team.createdBy',
-      'Team.id',
-      'Team.isArchived',
-      'Team.isOnboardTeam',
-      'Team.kudosEmojiUnicode',
-      'Team.lastMeetingType',
-      'Team.name',
-      'Team.orgId',
-      'Team.qualAIMeetingsCount',
-      'Team.isPublic',
-      'Team.updatedAt'
-    ])
+    .selectAll()
     .select(({fn}) => [
       fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
     ])
+  return query as AssertedQuery<typeof query, {jiraDimensionFields: JiraDimensionField[]}>
+}
 
 export const selectRetroReflections = () =>
   getKysely()
@@ -187,21 +176,15 @@ export const selectTeamPromptResponses = () =>
     .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
 
-export const selectMeetingSettings = () =>
-  getKysely()
+export const selectMeetingSettings = () => {
+  const query = getKysely()
     .selectFrom('MeetingSettings')
-    .select([
-      'id',
-      'meetingType',
-      'teamId',
-      'selectedTemplateId',
-      'maxVotesPerGroup',
-      'totalVotes',
-      'disableAnonymity',
-      'videoMeetingURL'
+    .selectAll()
+    .select(({fn}) => [
+      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
+      fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
     ])
     .$narrowType<
-      // NewMeeetingPhaseTypeEnum[] should be inferred from kysely-codegen, but it's not
       | {meetingType: 'action' | 'poker' | 'teamPrompt'}
       | {
           meetingType: 'retrospective'
@@ -210,11 +193,11 @@ export const selectMeetingSettings = () =>
           disableAnonymity: NotNull
         }
     >()
-    .select(({fn}) => [
-      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
-      fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
-    ])
-
+  return query as AssertedQuery<
+    typeof query,
+    {jiraSearchQueries: JiraSearchQuery[]; phaseTypes: NewMeetingPhaseTypeEnum[]}
+  >
+}
 export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()
 
 export const selectSlackAuths = () => getKysely().selectFrom('SlackAuth').selectAll()

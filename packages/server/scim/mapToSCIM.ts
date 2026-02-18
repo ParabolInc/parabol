@@ -1,51 +1,9 @@
 import SCIMMY from 'scimmy'
-import {User} from '../postgres/types'
+import {DataLoaderWorker} from '../graphql/graphql'
+import {Team, User} from '../postgres/types'
+import {guessName} from './guessName'
 
-// Guess the first and last name for existing users
-// Okta really really wants these, even for existing users where we don't have any values, so guess them and let Okta update these if needed
-const guessName = (
-  user: Pick<User, 'email' | 'preferredName' | 'scimGivenName' | 'scimFamilyName'>
-): {givenName: string; familyName: string} => {
-  const {preferredName, email, scimGivenName, scimFamilyName} = user
-  let givenName = scimGivenName
-  let familyName = scimFamilyName
-
-  if (!scimGivenName || !scimFamilyName) {
-    const nameParts = preferredName.split(' ')
-    if (!scimGivenName && nameParts.length >= 2) {
-      givenName = nameParts[0]!
-    }
-    if (!scimFamilyName && nameParts.length >= 2) {
-      familyName = nameParts[nameParts.length - 1]!
-    }
-  }
-
-  if (!givenName || !familyName) {
-    const emailParts = email.split('@')[0]!.split('.')
-    if (!givenName && emailParts.length >= 2) {
-      givenName = emailParts[0]!
-    }
-    if (!familyName && emailParts.length >= 2) {
-      familyName = emailParts[emailParts.length - 1]!
-    }
-  }
-
-  if (!givenName || !familyName) {
-    const local = email.split('@')[0]!
-    const capitalized = local.charAt(0).toUpperCase() + local.slice(1)
-
-    if (!givenName) {
-      givenName = preferredName || capitalized
-    }
-    if (!familyName) {
-      familyName = capitalized
-    }
-  }
-
-  return {givenName, familyName}
-}
-
-export const mapToSCIM = (
+export const mapUserToSCIM = (
   user?: Pick<
     User,
     | 'id'
@@ -77,5 +35,31 @@ export const mapToSCIM = (
         primary: true
       }
     ]
+  }
+}
+
+export const mapGroupToSCIM = async (
+  team: Pick<Team, 'id' | 'name'>,
+  dataLoader: DataLoaderWorker
+) => {
+  if (!team) {
+    throw new SCIMMY.Types.Error(404, '', 'Team not found')
+  }
+  const teamMembers = await dataLoader.get('teamMembersByTeamId').load(team.id)
+
+  const members = await Promise.all(
+    teamMembers.map(async ({userId}) => {
+      const user = await dataLoader.get('users').load(userId)
+      return {
+        value: userId,
+        display: user?.preferredName || user?.email || 'Unknown User'
+      }
+    })
+  )
+
+  return {
+    id: team.id,
+    displayName: team.name,
+    members
   }
 }

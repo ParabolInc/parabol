@@ -5,6 +5,89 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.5.0](https://github.com/ParabolInc/parabol/compare/v12.4.0...v12.5.0) (2026-02-18)
+
+
+### Added
+
+* Add reflection group color dots to retro sidebar ([#12616](https://github.com/ParabolInc/parabol/issues/12616)) ([5202a07](https://github.com/ParabolInc/parabol/commit/5202a07646c74d1392fe4bb880d0b649820300db))
+
+
+### Fixed
+
+* new user infinite loop on accept team invitation ([#12613](https://github.com/ParabolInc/parabol/issues/12613)) ([e6b45cb](https://github.com/ParabolInc/parabol/commit/e6b45cbb3fe80061e60664020bbbe0fe0c40152c))
+* Task typo ([#12614](https://github.com/ParabolInc/parabol/issues/12614)) ([7effd89](https://github.com/ParabolInc/parabol/commit/7effd89296d08a98ff739cf5200516bcfd6f43a7))
+
+## [12.4.0](https://github.com/ParabolInc/parabol/compare/v12.3.0...v12.4.0) (2026-02-17)
+
+
+### Added
+
+* Enable users to select and display additional Jira fields ([#12600](https://github.com/ParabolInc/parabol/issues/12600)) ([5f5f67f](https://github.com/ParabolInc/parabol/commit/5f5f67fa7dfee9099d2ba12303acde0535520a32))
+
+
+### Fixed
+
+* Allow upload of CSV and other text/* formats ([#12603](https://github.com/ParabolInc/parabol/issues/12603)) ([e0009a9](https://github.com/ParabolInc/parabol/commit/e0009a909ce2a2d794233f6c9f86b6429d5dcdf8))
+* jira extra fields correction ([#12606](https://github.com/ParabolInc/parabol/issues/12606)) ([cddab23](https://github.com/ParabolInc/parabol/commit/cddab23019dcf1e9f9e85e686f4a3be663103bd1))
+
+
+### Changed
+
+* move TipTapEditor into its own folder ([#12605](https://github.com/ParabolInc/parabol/issues/12605)) ([d334630](https://github.com/ParabolInc/parabol/commit/d334630e9b8fa37a4087fea261cfa6a5f4403e42))
+
+## [12.3.0](https://github.com/ParabolInc/parabol/compare/v12.2.1...v12.3.0) (2026-02-13)
+
+
+### Added
+
+* Add user mentions to Pages ([#12588](https://github.com/ParabolInc/parabol/issues/12588)) ([d44f4d3](https://github.com/ParabolInc/parabol/commit/d44f4d3e3293bb1cbac839d7063c01503a83aff0))
+* **SCIM:** Add Group Provisioning ([#12594](https://github.com/ParabolInc/parabol/issues/12594)) ([6330417](https://github.com/ParabolInc/parabol/commit/6330417d82804fd388afac8edd6d28661bf793a1))
+
+
+### Fixed
+
+* no imports to server from client ([#12599](https://github.com/ParabolInc/parabol/issues/12599)) ([56f628b](https://github.com/ParabolInc/parabol/commit/56f628bca30dba3ac82efdb3d4e636329683f4e8))
+
+## [12.2.1](https://github.com/ParabolInc/parabol/compare/v12.2.0...v12.2.1) (2026-02-10)
+
+
+### Changed
+
+* Move GraphQL Objects to SDL Pattern ([#12534](https://github.com/ParabolInc/parabol/issues/12534)) ([d79ede6](https://github.com/ParabolInc/parabol/commit/d79ede6dcb2f62c6f829f9e31ab27f7ef1ee24ac))
+
+## [12.2.0](https://github.com/ParabolInc/parabol/compare/v12.1.0...v12.2.0) (2026-02-10)
+
+
+### Added
+
+* **SCIM:** support soft deletion via active=false patch ([#12568](https://github.com/ParabolInc/parabol/issues/12568)) ([91a9623](https://github.com/ParabolInc/parabol/commit/91a9623caa9959d3339ccdd35a67fa77f3074a28))
+
+
+### Changed
+
+* Update labeler workflow ([#12583](https://github.com/ParabolInc/parabol/issues/12583)) ([9f7141a](https://github.com/ParabolInc/parabol/commit/9f7141a7ee0122540a7718f588b3a01561fe6195))
+
+## [12.1.0](https://github.com/ParabolInc/parabol/compare/v12.0.2...v12.1.0) (2026-02-10)
+
+
+### Added
+
+* Add inline rename functionality to file blocks and adjust menu ([#12577](https://github.com/ParabolInc/parabol/issues/12577)) ([2c017b7](https://github.com/ParabolInc/parabol/commit/2c017b7ea66c43811f48d9b0818bd7757b47ee6e))
+
+
+### Fixed
+
+* don't throw an error in PG when cannot join a meeting twice ([#12580](https://github.com/ParabolInc/parabol/issues/12580)) ([62b0ec7](https://github.com/ParabolInc/parabol/commit/62b0ec777c7296342d4f3d4fccfd0baf3d06f769))
+* improve missing user id logs ([#12578](https://github.com/ParabolInc/parabol/issues/12578)) ([4ae8940](https://github.com/ParabolInc/parabol/commit/4ae8940eb2485362ef1d22d79f03d58be8242123))
+
+## [12.0.2](https://github.com/ParabolInc/parabol/compare/v12.0.1...v12.0.2) (2026-02-10)
+
+
+### Fixed
+
+* insert title in meeting summaries ([#12574](https://github.com/ParabolInc/parabol/issues/12574)) ([8febfb3](https://github.com/ParabolInc/parabol/commit/8febfb3fd6431853fb8b277e571990d7bdb91821))
+
 ## [12.0.1](https://github.com/ParabolInc/parabol/compare/v12.0.0...v12.0.1) (2026-02-06)
 
 

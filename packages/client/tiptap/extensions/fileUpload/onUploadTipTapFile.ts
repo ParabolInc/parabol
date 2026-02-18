@@ -37,7 +37,9 @@ export const onUploadTipTapFile =
     const info = filetypeinfo(bytes)
     if (file.type !== '') {
       if (info.length > 0) {
-        const contentIsCorrectType = info.some((i) => i.mime === file.type)
+        const contentIsCorrectType = file.type.startsWith('text/')
+          ? info.some((i) => i.mime?.startsWith('text/plain'))
+          : info.some((i) => i.mime === file.type)
         if (!contentIsCorrectType) {
           const assumedType = info[0]?.typename ?? 'Unknown'
           atmosphere.eventEmitter.emit('addSnackbar', {

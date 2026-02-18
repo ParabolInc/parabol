@@ -6,6 +6,7 @@ import updateUser from '../../postgres/queries/updateUser'
 import {analytics} from '../../utils/analytics/analytics'
 import {unsetAuthCookie} from '../../utils/authCookie'
 import {getUserId, isSuperUser} from '../../utils/authorization'
+import {broadcastUserMentionUpdate} from '../../utils/tiptap/hocusPocusHub'
 import type {GQLContext} from '../graphql'
 import DeleteUserPayload from '../types/DeleteUserPayload'
 import softDeleteUser from './helpers/softDeleteUser'
@@ -15,13 +16,16 @@ const markUserSoftDeleted = async (
   deletedUserEmail: string,
   validReason: string
 ) => {
-  const update = {
-    isRemoved: true,
-    email: deletedUserEmail,
-    reasonRemoved: validReason,
-    updatedAt: new Date()
-  }
-  await updateUser(update, userIdToDelete)
+  await updateUser(
+    {
+      isRemoved: true,
+      email: deletedUserEmail,
+      reasonRemoved: validReason,
+      persistentNameId: null,
+      updatedAt: new Date()
+    },
+    userIdToDelete
+  )
 }
 
 export default {
@@ -67,9 +71,14 @@ export default {
       return {error: {message: 'User not found'}}
     }
     const {id: userIdToDelete} = user
+    const pageIds = (await dataLoader.get('pageAccessByUserId').load(userIdToDelete)).map(
+      (p) => p.pageId
+    )
 
     const deletedUserEmail = await softDeleteUser(userIdToDelete, dataLoader)
     await markUserSoftDeleted(userIdToDelete, deletedUserEmail, validReason)
+
+    await broadcastUserMentionUpdate(userIdToDelete, 'Deactivated User', dataLoader, pageIds)
 
     analytics.accountRemoved(user, validReason)
 

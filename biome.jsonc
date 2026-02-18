@@ -184,6 +184,21 @@
       "linter": {
         "domains": {
           "react": "recommended"
+        },
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["**/server/**"],
+                    "message": "Do not import server code from the client. This pulls the entire server dependency graph into the client TS project and degrades IDE performance."
+                  }
+                ]
+              }
+            }
+          }
         }
       }
     },

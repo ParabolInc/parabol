@@ -51,7 +51,9 @@ export const validateScope = async (
   } else if (scope === 'Page') {
     const [pageId, pageCode] = CipherId.fromClient(scopeKey)
     scopeCode = `${pageCode}`
-    const pageAccess = await dataLoader.get('pageAccessByUserId').load({pageId, userId: viewerId})
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
     if (!pageAccess || pageAccess === 'viewer') {
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }
@@ -86,7 +88,10 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
     }
   }
   const info = filetypeinfo(new Uint8Array(buffer))
-  const contentIsCorrectType = info.some((i) => i.mime === file.type)
+  // text file subtypes cannot be determined from magic bytes, so assume text/plain is correct for any text/*
+  const contentIsCorrectType = file.type.startsWith('text/')
+    ? info.some((i) => i.mime?.startsWith('text/plain'))
+    : info.some((i) => i.mime === file.type)
   const assumedType = info[0]?.typename
   if (info.length > 0 && !contentIsCorrectType) {
     throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)

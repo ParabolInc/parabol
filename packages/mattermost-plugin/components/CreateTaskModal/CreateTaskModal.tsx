@@ -5,7 +5,7 @@ import type {
   TaskStatusEnum
 } from 'parabol-client/__generated__/CreateTaskModalMutation.graphql'
 import type {CreateTaskModalQuery} from 'parabol-client/__generated__/CreateTaskModalQuery.graphql'
-import {TipTapEditor} from 'parabol-client/components/promptResponse/TipTapEditor'
+import {TipTapEditor} from 'parabol-client/components/TipTapEditor/TipTapEditor'
 import useEventCallback from 'parabol-client/hooks/useEventCallback'
 import {plaintextToTipTap} from 'parabol-client/shared/tiptap/plaintextToTipTap'
 import {PALETTE} from 'parabol-client/styles/paletteV3'

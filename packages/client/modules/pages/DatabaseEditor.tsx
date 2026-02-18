@@ -1,7 +1,7 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import {useEffect} from 'react'
 import type {useTipTapDatabaseEditor_viewer$key} from '../../__generated__/useTipTapDatabaseEditor_viewer.graphql'
-import {TipTapEditor} from '../../components/promptResponse/TipTapEditor'
+import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
 import {useTipTapDatabaseEditor} from '../../hooks/useTipTapDatabaseEditor'
 import {cn} from '../../ui/cn'
 

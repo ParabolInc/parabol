@@ -7,11 +7,10 @@ import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'rea
 import type {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.graphql'
 import type {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import type {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
-import type User from '../../../../../server/database/types/User'
-import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../../server/postgres/constants'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
 import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
+import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../utils/constants'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
 
@@ -81,7 +80,7 @@ const OrgMembers = (props: Props) => {
     (count, {node}) => (['ORG_ADMIN'].includes(node.role ?? '') ? count + 1 : count),
     0
   )
-  const [sortBy, setSortBy] = useState<keyof User>('lastSeenAt')
+  const [sortBy, setSortBy] = useState<string>('lastSeenAt')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [searchInput, setSearchInput] = useState('')
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
@@ -123,7 +122,7 @@ const OrgMembers = (props: Props) => {
     })
   }, [filteredOrgUsers, sortBy, sortDirection])
 
-  const handleSort = (column: keyof User) => {
+  const handleSort = (column: string) => {
     if (sortBy === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
     } else {

@@ -1,6 +1,6 @@
 import SendIcon from '@mui/icons-material/Send'
 import {useState} from 'react'
-import type {PageRoleEnum} from '../../../server/graphql/private/resolverTypes'
+import {PageRoleEnum} from '../../__generated__/useRequestPageAccessMutation.graphql'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useUpdatePageAccessMutation} from '../../mutations/useUpdatePageAccessMutation'

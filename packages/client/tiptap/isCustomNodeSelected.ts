@@ -1,5 +1,5 @@
 import type {Editor} from '@tiptap/core'
-import {TiptapLinkExtension} from '../components/promptResponse/TiptapLinkExtension'
+import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import FileBlock from './extensions/fileBlock/FileBlock'
 import {FileUpload} from './extensions/fileUpload/FileUpload'
 import {ImageBlock} from './extensions/imageBlock/ImageBlock'

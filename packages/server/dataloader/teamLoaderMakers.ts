@@ -21,7 +21,7 @@ export const teamsWithUserSort = (parent: RootDataLoader, dependsOn: RegisterDep
       const teamsLoader = parent.get('teams')
       const res = await selectTeams()
         .innerJoin('TeamMember', 'Team.id', 'TeamMember.teamId')
-        .select(['sortOrder', 'userId'])
+        .select(['sortOrder', 'userId', 'Team.id'])
         .where(({eb}) =>
           eb(
             'TeamMember.id',

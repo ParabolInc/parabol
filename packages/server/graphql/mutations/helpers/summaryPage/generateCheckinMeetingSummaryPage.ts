@@ -7,7 +7,6 @@ import {getCheckinSummaryTable} from './getCheckinSummaryTable'
 import {getParticipantBlocks} from './getParticipantBlocks'
 import {getSubtitleBlock} from './getSubtitleBlock'
 import {getTaskBlocks} from './getTaskBlocks'
-import {getTitleBlock} from './getTitleBlock'
 
 export const generateCheckinMeetingSummaryPage = async function* (
   meetingId: string,
@@ -17,7 +16,6 @@ export const generateCheckinMeetingSummaryPage = async function* (
   const meeting = (await dataLoader.get('newMeetings').loadNonNull(meetingId)) as CheckInMeeting
   // start the work at the same time, then deliver it in order
   const promises = [
-    getTitleBlock(meeting),
     getSubtitleBlock(meeting, dataLoader),
     getCheckinMetaBlock(meeting, dataLoader),
     getTaskBlocks(meetingId, dataLoader),

@@ -1,5 +1,6 @@
 import type {ReasonToDowngradeEnum} from 'parabol-client/__generated__/DowngradeToStarterMutation.graphql'
 import TeamPromptResponseId from '../../../client/shared/gqlIds/TeamPromptResponseId'
+import type {TaskServiceEnum} from '../../../client/shared/types/TaskIntegration'
 import type {UpgradeCTALocationEnumType} from '../../../client/shared/UpgradeCTALocationEnumType'
 import {PARABOL_AI_USER_ID} from '../../../client/utils/constants'
 import type {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmail'
@@ -19,7 +20,6 @@ import type {
   MeetingTypeEnum,
   RetrospectiveMeeting
 } from '../../postgres/types/Meeting'
-import type {TaskServiceEnum} from '../../postgres/types/TaskIntegration'
 import {AmplitudeAnalytics} from './amplitude/AmplitudeAnalytics'
 import {createMeetingProperties} from './helpers'
 

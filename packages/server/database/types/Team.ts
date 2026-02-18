@@ -7,7 +7,7 @@ interface Input {
   autoJoin?: boolean
   name: string
   createdAt?: Date
-  createdBy: string
+  createdBy: string | null
   lastMeetingType?: MeetingTypeEnum
   isArchived?: boolean
   orgId: string
@@ -15,6 +15,7 @@ interface Input {
   isOnboardTeam?: boolean
   updatedAt?: Date
   isPublic?: boolean
+  scimCreated?: boolean
 }
 
 export default class Team {
@@ -22,7 +23,7 @@ export default class Team {
   autoJoin: boolean
   name: string
   createdAt: Date
-  createdBy: string
+  createdBy: string | null
   isArchived: boolean
   lastMeetingType: MeetingTypeEnum
   orgId: string
@@ -30,6 +31,7 @@ export default class Team {
   qualAIMeetingsCount: number
   updatedAt: Date
   isPublic: boolean
+  scimCreated?: boolean
   constructor(input: Input) {
     const {
       autoJoin,
@@ -43,7 +45,8 @@ export default class Team {
       orgId,
       qualAIMeetingsCount,
       updatedAt,
-      isPublic
+      isPublic,
+      scimCreated
     } = input
     this.autoJoin = autoJoin ?? false
     this.name = name.trim().slice(0, TEAM_NAME_LIMIT)
@@ -57,5 +60,6 @@ export default class Team {
     this.isOnboardTeam = isOnboardTeam ?? false
     this.qualAIMeetingsCount = qualAIMeetingsCount ?? 0
     this.isPublic = isPublic ?? false
+    this.scimCreated = scimCreated
   }
 }

@@ -5,7 +5,8 @@ import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/exten
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
 import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
-import {LoomExtension} from '../../components/promptResponse/loomExtension'
+import {PageUserMention} from '~/tiptap/extensions/pageUserMention/PageUserMention'
+import {LoomExtension} from '../../components/TipTapEditor/LoomExtension'
 import {Database} from '../../tiptap/extensions/database/Database'
 import {UniqueID} from '../../tiptap/extensions/docWithID/UniqueID'
 import {ImageBlockBase} from '../../tiptap/extensions/imageBlock/ImageBlockBase'
@@ -64,6 +65,7 @@ export const serverTipTapExtensions: Extensions = [
   LoomExtension,
   Mention.configure(mentionConfig),
   MentionTaskTag,
+  PageUserMention,
   InsightsBlockBase,
   UniqueID,
   PageLinkBlockBase,

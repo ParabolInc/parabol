@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "12.0.1",
+  "version": "12.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -13,7 +13,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "engines": {
-    "node": "^22.21.1"
+    "node": "^24.13.1"
   },
   "private": true,
   "scripts": {
@@ -58,7 +58,7 @@
     "git-url-parse": "12.0.0",
     "fbjs": "^3.0.0",
     "parse-url": "^8.1.0",
-    "fast-xml-parser": "^5.3.4",
+    "fast-xml-parser": "^5.3.6",
     "recursive-readdir": "^2.2.3",
     "axios": "^1.7.8",
     "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
@@ -192,7 +192,7 @@
     "html-minifier-terser": "^5.1.1",
     "kysely": "^0.28.5",
     "magic-bytes.js": "^1.13.0",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.1.1",
     "ms": "^2.0.0",
     "msgpackr": "^1.11.8",
     "openai": "^6.9.1",

@@ -77,11 +77,13 @@ const joinMeeting = {
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     const meetingMember = createMeetingMember(meeting, teamMember)
-    try {
-      await pg.insertInto('MeetingMember').values(meetingMember).execute()
-    } catch {
-      return {error: {message: 'Could not join meeting'}}
-    }
+    const insertResult = await pg
+      .insertInto('MeetingMember')
+      .values(meetingMember)
+      .onConflict((oc) => oc.doNothing())
+      .executeTakeFirstOrThrow()
+    const wasInserted = Number(insertResult.numInsertedOrUpdatedRows) > 0
+    if (!wasInserted) return {error: {message: 'Could not join meeting'}}
 
     const addStageToPhase = async (
       stage: CheckInStageDB | UpdatesStageDB | TeamPromptResponseStageDB,
