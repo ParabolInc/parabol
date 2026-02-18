@@ -9,7 +9,8 @@ import {commitLocalUpdate} from 'relay-runtime'
 import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useRouter from '~/hooks/useRouter'
-import {PALETTE} from '~/styles/paletteV3'
+import {useSearchDialog} from '~/modules/search/SearchContext'
+import {Input} from '~/ui/Input/Input'
 import type Atmosphere from '../Atmosphere'
 
 const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
@@ -37,7 +38,7 @@ interface Props {
   viewer: TopBarSearch_viewer$key | null
 }
 
-const Wrapper = styled('div')<{location: any}>(({location}) => ({
+const Wrapper = styled('div')<{location: NonNullable<RouteProps['location']>}>(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
   borderRadius: 4,
@@ -48,19 +49,6 @@ const Wrapper = styled('div')<{location: any}>(({location}) => ({
   maxWidth: 480,
   visibility: getShowSearch(location) ? undefined : 'hidden'
 }))
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  border: '1px solid transparent',
-  color: PALETTE.SLATE_200,
-  fontSize: 20,
-  lineHeight: '24px',
-  margin: 0,
-  outline: 0,
-  padding: '12px 16px',
-  backgroundColor: 'transparent',
-  width: '100%'
-})
 
 const SearchIcon = styled('div')({
   height: 24,
@@ -92,17 +80,37 @@ const TopBarSearch = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
   const {location} = useRouter()
+  const {openSearch} = useSearchDialog()
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(atmosphere, e.target.value)
+    const {value} = e.target
+    setSearch(atmosphere, value)
   }
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      openSearch(dashSearch)
+    }
+  }
+
   const Icon = dashSearch ? Close : Search
+
   const onClick = () => {
     setSearch(atmosphere, '')
     inputRef.current?.focus()
   }
+
   return (
     <Wrapper location={location}>
-      <SearchInput ref={inputRef} onChange={onChange} placeholder={'Search'} value={dashSearch} />
+      <Input
+        ref={inputRef}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        placeholder={'Search'}
+        value={dashSearch}
+        className='m-0 h-full w-full appearance-none border-transparent bg-transparent px-4 py-3 text-slate-200 text-xl leading-6 outline-none placeholder:text-slate-200/50 focus:outline-none focus-visible:border-transparent'
+        maxLength={255}
+      />
       <SearchIcon onClick={onClick}>
         <Icon />
       </SearchIcon>
