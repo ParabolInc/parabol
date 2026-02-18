@@ -198,6 +198,7 @@
           "SAML": "./types/SAML#SAMLSource",
           "SearchResultEdge": "./types/SearchResultEdge#SearchResultEdgeSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
+          "SetJiraDisplayFieldIdsPayload": "./types/SetJiraDisplayFieldIdsPayload#SetJiraDisplayFieldIdsPayloadSource",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
           "SetNotificationStatusPayload": "./types/SetNotificationStatusPayload#SetNotificationStatusPayloadSource",
           "SetOrgUserRoleSuccess": "./types/SetOrgUserRoleSuccess#SetOrgUserRoleSuccessSource",

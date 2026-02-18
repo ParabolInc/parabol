@@ -78,7 +78,8 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
             ...issue,
             teamId,
             userId,
-            descriptionHTML: updatedDescription
+            descriptionHTML: updatedDescription,
+            extraFields: []
           }
         })
 

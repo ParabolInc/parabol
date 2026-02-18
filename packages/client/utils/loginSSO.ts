@@ -24,11 +24,11 @@ const loginSSO = (url: string, top?: number): ReturnType | Promise<ReturnType> =
       // an extension posted to the opener
       if (typeof event.data !== 'object') return
       const {error, userId} = event.data
-      if (!userId || event.origin !== window.location.origin) return
+      if (event.origin !== window.location.origin) return
 
       const params = new URLSearchParams(popup.location.search)
       if (userId !== params.get('userId')) {
-        resolve({error: 'Error logging in.'})
+        resolve({error: error || 'Error logging in.'})
         return
       }
       const isNewUser = params.get('isNewUser') === 'true'

@@ -7,7 +7,7 @@ import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
 import NotificationTemplate from './NotificationTemplate'
-import {TipTapEditor} from './promptResponse/TipTapEditor'
+import {TipTapEditor} from './TipTapEditor/TipTapEditor'
 
 interface Props {
   notification: DiscussionMentioned_notification$key

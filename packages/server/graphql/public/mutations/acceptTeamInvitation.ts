@@ -7,6 +7,7 @@ import {
 import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
+import {setAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
@@ -120,7 +121,8 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   })
   // This is to triage https://github.com/ParabolInc/parabol/issues/11167. We know it worked if we don't see it again
   context.authToken = nextAuthToken
-
+  // if this gets called without a websocket, we need to set it: https://github.com/ParabolInc/parabol/issues/12610
+  setAuthCookie(context, nextAuthToken)
   // Send the new team member a welcome & a new token
   publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
     tms

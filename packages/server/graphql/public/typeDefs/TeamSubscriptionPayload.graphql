@@ -70,4 +70,5 @@ type TeamSubscriptionPayload {
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   GenerateInsightSuccess: GenerateInsightSuccess
   JoinTeamSuccess: JoinTeamSuccess
+  SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload
 }

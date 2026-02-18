@@ -1,14 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import type {TaskTagContent_task$key} from '~/__generated__/TaskTagContent_task.graphql'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
-import type {TaskFooterTagMenu_task$key} from '../../../../__generated__/TaskFooterTagMenu_task.graphql'
-import Menu from '../../../../components/Menu'
-import MenuItem from '../../../../components/MenuItem'
+import {MenuItem} from '~/ui/Menu/MenuItem'
 import MenuItemDot from '../../../../components/MenuItemDot'
 import MenuItemHR from '../../../../components/MenuItemHR'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import type {MenuProps} from '../../../../hooks/useMenu'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
@@ -21,20 +18,19 @@ const statusItems = [TaskStatus.DONE, TaskStatus.ACTIVE, TaskStatus.STUCK, TaskS
 
 interface Props {
   area: AreaEnum
-  menuProps: MenuProps
   toggleTag: (tag: string) => void
   // TODO make area enum more fine grained to get rid of isAgenda
   isAgenda: boolean
   mutationProps: MenuMutationProps
-  task: TaskFooterTagMenu_task$key
+  task: TaskTagContent_task$key
   useTaskChild: UseTaskChild
 }
 
-const TaskFooterTagMenu = (props: Props) => {
-  const {area, menuProps, toggleTag, isAgenda, task: taskRef, useTaskChild} = props
+export const TaskTagContent = (props: Props) => {
+  const {area, toggleTag, isAgenda, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
-      fragment TaskFooterTagMenu_task on Task {
+      fragment TaskTagContent_task on Task {
         ...TaskFooterTagMenuStatusItem_task
         id
         status
@@ -48,7 +44,7 @@ const TaskFooterTagMenu = (props: Props) => {
   const {id: taskId, status: taskStatus, tags} = task
   const isPrivate = isTaskPrivate(tags)
   return (
-    <Menu ariaLabel={'Change the status of the task'} {...menuProps}>
+    <>
       {statusItems
         .filter((status) => status !== taskStatus)
         .map((status) => (
@@ -60,47 +56,27 @@ const TaskFooterTagMenu = (props: Props) => {
           />
         ))}
       <MenuItemHR key='HR1' />
-      <MenuItem
-        key='private'
-        label={
-          <MenuItemLabel>
-            <MenuItemDot color={PALETTE.GOLD_300} />
-            <span>
-              {isPrivate ? 'Remove ' : 'Set as '}
-              <b>{'#private'}</b>
-            </span>
-          </MenuItemLabel>
-        }
-        onClick={() => toggleTag('private')}
-      />
+      <MenuItem key='private' onSelect={() => toggleTag('private')}>
+        <MenuItemDot color={PALETTE.GOLD_300} />
+        <span>
+          {isPrivate ? 'Remove ' : 'Set as '}
+          <b>{'#private'}</b>
+        </span>
+      </MenuItem>
       {isAgenda ? (
-        <MenuItem
-          key='delete'
-          label={
-            <MenuItemLabel>
-              <MenuItemDot color={PALETTE.TOMATO_500} />
-              {'Delete this Task'}
-            </MenuItemLabel>
-          }
-          onClick={() => DeleteTaskMutation(atmosphere, {taskId})}
-        />
+        <MenuItem key='delete' onSelect={() => DeleteTaskMutation(atmosphere, {taskId})}>
+          <MenuItemDot color={PALETTE.TOMATO_500} />
+          {'Delete this Task'}
+        </MenuItem>
       ) : (
-        <MenuItem
-          key='archive'
-          label={
-            <MenuItemLabel>
-              <MenuItemDot color={PALETTE.SLATE_500} />
-              <span>
-                {'Set as '}
-                <b>{'#archived'}</b>
-              </span>
-            </MenuItemLabel>
-          }
-          onClick={() => toggleTag('archived')}
-        />
+        <MenuItem key='archive' onSelect={() => toggleTag('archived')}>
+          <MenuItemDot color={PALETTE.SLATE_500} />
+          <span>
+            {'Set as '}
+            <b>{'#archived'}</b>
+          </span>
+        </MenuItem>
       )}
-    </Menu>
+    </>
   )
 }
-
-export default TaskFooterTagMenu

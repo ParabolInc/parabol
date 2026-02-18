@@ -1,0 +1,24 @@
+"""
+A Jira field to be displayed on the estimate header card along with its value.
+"""
+type JiraExtraField {
+  """
+  The ID of the field (e.g. 'customfield_1001')
+  """
+  fieldId: String!
+
+  """
+  The human-readable name of the field (e.g. 'Acceptance Criteria')
+  """
+  fieldName: String!
+
+  """
+  The type of the field as returned by Jira (e.g. 'number', 'string', 'option')
+  """
+  fieldType: String
+
+  """
+  The value of the field for the specific issue.
+  """
+  fieldValue: String
+}

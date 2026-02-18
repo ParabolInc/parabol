@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
+import {MenuItem} from '~/ui/Menu/MenuItem'
 import type {TaskFooterTagMenuStatusItem_task$key} from '../../../../__generated__/TaskFooterTagMenuStatusItem_task.graphql'
-import MenuItem from '../../../../components/MenuItem'
 import MenuItemDot from '../../../../components/MenuItemDot'
-import MenuItemLabel from '../../../../components/MenuItemLabel'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import {taskStatusColors, taskStatusLabels} from '../../../../utils/taskStatus'
@@ -16,7 +14,7 @@ interface Props {
   task: TaskFooterTagMenuStatusItem_task$key
 }
 
-const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
+const TaskFooterTagMenuStatusItem = (props: Props) => {
   const {area, status, task: taskRef} = props
   const task = useFragment(
     graphql`
@@ -41,18 +39,11 @@ const TaskFooterTagMenuStatusItem = forwardRef((props: Props, ref) => {
     UpdateTaskMutation(atmosphere, {updatedTask, area}, {})
   }
   return (
-    <MenuItem
-      ref={ref}
-      key={status}
-      label={
-        <MenuItemLabel>
-          <MenuItemDot color={color} />
-          {`Move to ${label}`}
-        </MenuItemLabel>
-      }
-      onClick={handleTaskUpdateFactory}
-    />
+    <MenuItem onSelect={handleTaskUpdateFactory}>
+      <MenuItemDot color={color} />
+      {`Move to ${label}`}
+    </MenuItem>
   )
-})
+}
 
 export default TaskFooterTagMenuStatusItem
