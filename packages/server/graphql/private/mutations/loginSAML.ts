@@ -172,7 +172,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   if (!email) {
     return standardError(
       new Error(
-        `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ')}`
+        `Email attribute is missing from the SAML response. The following attributes were included: ${Object.keys(attributes).join(', ') || '<None>'}`
       ),
       {extras: {attributes}}
     )

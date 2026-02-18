@@ -34,7 +34,7 @@ export const TaskMoreOptionsMenu = (props: Props) => {
       }}
       trigger={
         <CardButton>
-          <IconLabel icon='more_vert' tooltip='Edit Taks Details' />
+          <IconLabel icon='more_vert' tooltip='Edit Task Details' />
         </CardButton>
       }
       className='group'
