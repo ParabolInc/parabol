@@ -1,5 +1,6 @@
 import SearchIcon from '@mui/icons-material/Search'
 import {useRef, useState} from 'react'
+import {Input} from '~/ui/Input/Input'
 import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import {ModIcon} from '../../utils/platform'
@@ -11,14 +12,16 @@ export type ResultsListRefHandler = {onKeyDown: (e: React.KeyboardEvent) => bool
 
 interface Props {
   closeSearch: () => void
+  initialQuery?: string
 }
 
 export const SearchDialogContent = (props: Props) => {
-  const {closeSearch} = props
+  const {closeSearch, initialQuery} = props
   const [dateField, setDateField] = useState<SearchDateTypeEnum>('updatedAt')
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
   const [teamIds, setTeamIds] = useState<string[]>([])
-  const [inputQuery, setInputQuery] = useState('')
+  const [inputQuery, setInputQuery] = useState(initialQuery || '')
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target
     setInputQuery(value)
@@ -37,15 +40,17 @@ export const SearchDialogContent = (props: Props) => {
           className='mr-3 text-slate-500 data-dirty:text-slate-700'
           sx={{fontSize: 22}}
         />{' '}
-        <input
+        <Input
           autoFocus
           name='search'
           onChange={onChange}
           onKeyDown={handleKeyDown}
-          className='flex-1 bg-transparent font-light text-lg outline-none placeholder:text-slate-500'
+          defaultValue={initialQuery}
+          className='flex-1 border-none bg-transparent font-light text-lg outline-none placeholder:text-slate-500 focus:outline-none focus-visible:border-none'
           placeholder='Search pages…'
           type='text'
           autoComplete='off'
+          maxLength={255}
         />
       </div>
       <div className='space-x-1 px-2 pb-2'>

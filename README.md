@@ -45,6 +45,12 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 - [Docker Compose](https://docs.docker.com/compose/install/) (Development only)
 - [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
 
+> 📘 Notes on Docker Resources
+>
+> Some of Parabol's container services can be resource intensive (I'm looking at you, text-embedding-inference!)
+> You may need to increase Docker's resource limits (e.g. Docker Desktop -> Settings -> Resources) to increase
+> the memory limit to ~16GB.
+
 ### Installation
 
 ```bash
