@@ -63,8 +63,14 @@ export const UploadDatabaseImport = (props: Props) => {
 
   return (
     <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
-      Upload a CSV into the database.
-      <input className='hidden' ref={fileInputRef} type='file' accept='.csv' onChange={onChange} />
+      Upload a CSV or XLSX file into the database.
+      <input
+        className='hidden'
+        ref={fileInputRef}
+        type='file'
+        accept='.csv,.xlsx'
+        onChange={onChange}
+      />
       <div
         className={
           'mt-3 flex h-50 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-slate-400 border-dashed bg-slate-50 text-slate-500 hover:border-slate-600 data-drop:border-slate-600 data-drop:bg-slate-100'
@@ -82,7 +88,7 @@ export const UploadDatabaseImport = (props: Props) => {
         >
           Browse
         </Button>
-        <span> or drop a CSV file here.</span>
+        <span> or drop a file here.</span>
       </div>
     </div>
   )
