@@ -16,13 +16,16 @@ const markUserSoftDeleted = async (
   deletedUserEmail: string,
   validReason: string
 ) => {
-  const update = {
-    isRemoved: true,
-    email: deletedUserEmail,
-    reasonRemoved: validReason,
-    updatedAt: new Date()
-  }
-  await updateUser(update, userIdToDelete)
+  await updateUser(
+    {
+      isRemoved: true,
+      email: deletedUserEmail,
+      reasonRemoved: validReason,
+      persistentNameId: null,
+      updatedAt: new Date()
+    },
+    userIdToDelete
+  )
 }
 
 export default {
