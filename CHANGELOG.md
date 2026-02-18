@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.5.0](https://github.com/ParabolInc/parabol/compare/v12.4.0...v12.5.0) (2026-02-18)
+
+
+### Added
+
+* Add reflection group color dots to retro sidebar ([#12616](https://github.com/ParabolInc/parabol/issues/12616)) ([5202a07](https://github.com/ParabolInc/parabol/commit/5202a07646c74d1392fe4bb880d0b649820300db))
+
+
+### Fixed
+
+* new user infinite loop on accept team invitation ([#12613](https://github.com/ParabolInc/parabol/issues/12613)) ([e6b45cb](https://github.com/ParabolInc/parabol/commit/e6b45cbb3fe80061e60664020bbbe0fe0c40152c))
+* Task typo ([#12614](https://github.com/ParabolInc/parabol/issues/12614)) ([7effd89](https://github.com/ParabolInc/parabol/commit/7effd89296d08a98ff739cf5200516bcfd6f43a7))
+
 ## [12.4.0](https://github.com/ParabolInc/parabol/compare/v12.3.0...v12.4.0) (2026-02-17)
 
 
