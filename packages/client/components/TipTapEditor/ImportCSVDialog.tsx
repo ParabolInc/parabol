@@ -1,4 +1,5 @@
 import type {Editor, EditorEvents} from '@tiptap/react'
+import {parseXlsx} from 'extract-xlsx'
 import {useEffect, useMemo, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {getPageLinks} from '../../shared/tiptap/getPageLinks'
@@ -18,8 +19,25 @@ import {parseCSV} from '../UploadCSV'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
-    importCSV: {file: File; targetType: 'csv'; pos: number | undefined}
+    importDatabase: {file: File; targetType: 'csv' | 'xlsx'; pos: number | undefined}
   }
+}
+
+const parseXLSX = async (file: File): Promise<string[][]> => {
+  const buffer = await file.arrayBuffer()
+
+  const data = await parseXlsx(buffer as any)
+  if (!data || data.length === 0) {
+    return []
+  }
+
+  // data is sparse, make sure the first row has the maxumum length
+  const columnCount = Math.max(...data.map((row) => row.length))
+  const firstRowLength = data[0]!.length
+  data[0]!.length = columnCount
+  data[0]!.fill(null, firstRowLength, columnCount)
+
+  return data
 }
 
 type Props = {
@@ -40,36 +58,38 @@ export const ImportCSVDialog = (props: Props) => {
   const [records, setRecords] = useState<string[][] | null>(null)
 
   useEffect(() => {
-    const importCSV = (change: EditorEvents['importCSV']) => {
+    const importData = (change: EditorEvents['importDatabase']) => {
       const {file, targetType, pos} = change
-      if (targetType !== 'csv') return
       setImportingFile({file, pos})
 
-      parseCSV(file)
+      const parser = targetType === 'csv' ? parseCSV : parseXLSX
+      parser(file)
         .then((parsedRecords) => {
           setRecords(parsedRecords)
         })
         .catch((error) => {
-          console.error('Error parsing CSV:', error)
+          console.error(`Error parsing ${targetType}:`, error)
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: 'corruptedCSV',
-            message: 'Failed to load CSV',
+            message: `Failed to load ${targetType}`,
             autoDismiss: 5
           })
           setRecords(null)
         })
     }
 
-    editor.on('importCSV', importCSV)
+    editor.on('importDatabase', importData)
     return () => {
-      editor.off('importCSV', importCSV)
+      editor.off('importDatabase', importData)
     }
   }, [editor])
 
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []
 
-    return firstRowIsHeader ? records[0]! : records[0]!.map((_, index) => `Column ${index + 1}`)
+    return records[0]!.map(
+      (cell, index) => (firstRowIsHeader && cell?.toString()) || `Column ${index + 1}`
+    )
   }, [firstRowIsHeader, records])
 
   const onClose = () => {

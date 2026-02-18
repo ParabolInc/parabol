@@ -574,6 +574,9 @@ importers:
       eventemitter3:
         specifier: ^4.0.0
         version: 4.0.7
+      extract-xlsx:
+        specifier: ^1.0.4
+        version: 1.0.4
       fbjs:
         specifier: ^3.0.0
         version: 3.0.5
@@ -7954,6 +7957,9 @@ packages:
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
+
+  extract-xlsx@1.0.4:
+    resolution: {integrity: sha512-dZgNCjDh3d2o9c+nDMxYlwwook9nUi+f8cTbdn48nvL9j/Kz+NfNK3yiYh74Ki2WnI7Dm3/vgiyBqVgO6vKRXw==}
 
   extrareqp2@1.0.0:
     resolution: {integrity: sha512-Gum0g1QYb6wpPJCVypWP3bbIuaibcFiJcpuPM10YSXp/tzqi84x9PJageob+eN4xVRIOto4wjSGNLyMD54D2xA==}
@@ -20885,6 +20891,11 @@ snapshots:
   exsolve@1.0.8: {}
 
   extend@3.0.2: {}
+
+  extract-xlsx@1.0.4:
+    dependencies:
+      fast-xml-parser: 5.3.4
+      jszip: 3.10.1
 
   extrareqp2@1.0.0(debug@4.3.7):
     dependencies:
