@@ -143,7 +143,7 @@ export const ImportDatabaseDialog = (props: Props) => {
   return (
     <Dialog isOpen={true} onClose={onClose}>
       <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
-        <DialogTitle className='mb-4'>Import CSV</DialogTitle>
+        <DialogTitle className='mb-4'>Import Data</DialogTitle>
         <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
           Import settings
           <div

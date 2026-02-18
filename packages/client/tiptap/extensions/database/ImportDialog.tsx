@@ -129,7 +129,7 @@ export const ImportDialog = (props: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={onCancel}>
       <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
-        <DialogTitle className='mb-4'>Import CSV</DialogTitle>
+        <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {!records ? (
           <UploadDatabaseImport onRecordsParsed={setRecords} onError={setError} />
         ) : (

@@ -2,8 +2,6 @@ import * as Y from 'yjs'
 import {columnsAreDefault} from './columnsAreDefault'
 import {appendColumn, appendRow, changeColumn, getColumns} from './data'
 
-const HEADER_MISMATCH = 'CSV headers do not match current table columns'
-
 export const getRecordHeaders = (records: (string | null)[][], firstRowIsHeader: boolean) => {
   // data may be sparse, make sure to have columns for each row
   const columnCount = Math.max(...records.map((row) => row.length))
@@ -36,13 +34,13 @@ export const importRecords = (
       })
     }
     newHeaders.slice(columns.length).forEach((name) => {
-      appendColumn(doc, {name, type: 'text'})
+      columns.push(appendColumn(doc, {name, type: 'text'}))
     })
 
     const firstRowOffset = firstRowIsHeader ? 1 : 0
     records.slice(firstRowOffset).forEach((record) => {
       if (columns.length < record.length) {
-        throw new Error(HEADER_MISMATCH)
+        throw new Error('headers do not match current table columns')
       }
       const mappedRecord = Object.fromEntries(record.map((value, index) => [columns[index], value]))
       appendRow(doc, viewerId, mappedRecord)

@@ -36,16 +36,19 @@ export async function parseXLSX(file: File) {
     const shared = parser.parse(sharedXml)
 
     const si = shared.sst.si
-    const items = Array.isArray(si) ? si : [si]
+    if (si) {
+      const items = Array.isArray(si) ? si : [si]
 
-    sharedStrings = items.map((entry: any) => {
-      if (entry.t) return entry.t
-      if (entry.r) {
-        const runs = Array.isArray(entry.r) ? entry.r : [entry.r]
-        return runs.map((r: any) => r.t).join('')
-      }
-      return ''
-    })
+      sharedStrings = items.map((entry: any) => {
+        if (!entry) return ''
+        if (entry.t) return entry.t
+        if (entry.r) {
+          const runs = Array.isArray(entry.r) ? entry.r : [entry.r]
+          return runs.map((r: any) => r.t).join('')
+        }
+        return ''
+      })
+    }
   }
 
   const sheetXml = await zip.file(sheetPath)!.async('string')
