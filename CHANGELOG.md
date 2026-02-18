@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.6.0](https://github.com/ParabolInc/parabol/compare/v12.5.0...v12.6.0) (2026-02-18)
+
+
+### Added
+
+* Search on enter ([#12595](https://github.com/ParabolInc/parabol/issues/12595)) ([99173c8](https://github.com/ParabolInc/parabol/commit/99173c85802dff2d26234336f12d32023140171e))
+
+
+### Fixed
+
+* bump to nodejs v24.13.1 ([#12620](https://github.com/ParabolInc/parabol/issues/12620)) ([a8dec9c](https://github.com/ParabolInc/parabol/commit/a8dec9c1d304eaf01dcb077770475ab75c037865))
+* security bumps: fast-xml-parser and markdown-it ([#12622](https://github.com/ParabolInc/parabol/issues/12622)) ([6cbfa41](https://github.com/ParabolInc/parabol/commit/6cbfa414fa1cae224c93c1cb0d155d8947dc020c))
+
 ## [12.5.0](https://github.com/ParabolInc/parabol/compare/v12.4.0...v12.5.0) (2026-02-18)
 
 
