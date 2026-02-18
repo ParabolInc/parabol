@@ -2,7 +2,7 @@ import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
-import {UploadCSV} from '../../../components/UploadCSV'
+import {UploadDatabaseImport} from '../../../components/UploadDatabaseImport'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
@@ -11,19 +11,10 @@ import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
-import {DEFAULT_COLUMNS} from './Database'
-import {
-  appendColumn,
-  appendRow,
-  changeColumn,
-  getColumnMeta,
-  getColumns,
-  getData,
-  getRows
-} from './data'
+import {columnsAreDefault} from './columnsAreDefault'
+import {getColumnMeta, getColumns, getData, getRows} from './data'
 import {useYArray, useYMap} from './hooks'
-
-const HEADER_MISMATCH = 'CSV headers do not match current table columns'
+import {getRecordHeaders, importRecords} from './importRecords'
 
 const clearAllData = (doc: Y.Doc) => {
   const columns = getColumns(doc)
@@ -61,37 +52,6 @@ const useIsDataEmpty = (doc: Y.Doc) => {
   }, [data, rows])
 }
 
-const columnsAreDefault = (doc: Y.Doc) => {
-  const columns = getColumns(doc)
-  const columnMeta = getColumnMeta(doc)
-  if (columns.length !== DEFAULT_COLUMNS.length) return false
-  for (let i = 0; i < DEFAULT_COLUMNS.length; i++) {
-    const columnId = columns.get(i)!
-    const meta = columnMeta.get(columnId)
-    if (!meta) return false
-    if (meta.name !== DEFAULT_COLUMNS[i]!.name || meta.type !== DEFAULT_COLUMNS[i]!.type) {
-      return false
-    }
-  }
-  return true
-}
-
-export const importRecords = (doc: Y.Doc, viewerId: string, records: string[][]) => {
-  const first = records[0]
-  if (!first) return
-
-  const columns = getColumns(doc).toArray()
-
-  if (columns.length < first.length) {
-    throw new Error(HEADER_MISMATCH)
-  }
-
-  records.forEach((record) => {
-    const mappedRecord = Object.fromEntries(record.map((value, index) => [columns[index], value]))
-    appendRow(doc, viewerId, mappedRecord)
-  })
-}
-
 type Props = {
   isOpen: boolean
   onClose: () => void
@@ -103,7 +63,7 @@ export const ImportDialog = (props: Props) => {
   const {viewerId} = useAtmosphere()
 
   const [error, setError] = useState<Error | null>(null)
-  const [records, setRecords] = useState<string[][]>()
+  const [records, setRecords] = useState<(string | null)[][]>()
 
   const [firstRowIsHeader, setFirstRowIsHeader] = useState(true)
   const [discardExistingData, setDiscardExistingData] = useState(false)
@@ -118,9 +78,7 @@ export const ImportDialog = (props: Props) => {
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []
 
-    const newHeaders = firstRowIsHeader
-      ? records[0]!
-      : records[0]!.map((_, index) => `Column ${index + 1}`)
+    const newHeaders = getRecordHeaders(records, firstRowIsHeader)
     if (discardExistingData || columnsAreDefault(doc)) {
       return newHeaders
     }
@@ -146,20 +104,7 @@ export const ImportDialog = (props: Props) => {
         clearAllData(doc)
       }
 
-      const newHeaders = firstRowIsHeader
-        ? records[0]!
-        : records[0]!.map((_, index) => `Column ${index + 1}`)
-      const columns = getColumns(doc)
-      if (columnsAreDefault(doc)) {
-        columns.forEach((columnId, index) => {
-          changeColumn(doc, columnId, {name: newHeaders[index]!, type: 'text'})
-        })
-      }
-      newHeaders.slice(columns.length).forEach((name) => {
-        appendColumn(doc, {name, type: 'text'})
-      })
-
-      importRecords(doc, viewerId, records.slice(firstRowOffset))
+      importRecords(doc, viewerId, records, {firstRowIsHeader})
     })
     resetState()
     onClose()
@@ -186,7 +131,7 @@ export const ImportDialog = (props: Props) => {
       <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import CSV</DialogTitle>
         {!records ? (
-          <UploadCSV onRecordsParsed={setRecords} onError={setError} />
+          <UploadDatabaseImport onRecordsParsed={setRecords} onError={setError} />
         ) : (
           <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
             Import settings

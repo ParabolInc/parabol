@@ -1,21 +1,19 @@
 import type {Editor, EditorEvents} from '@tiptap/react'
-import {parseXlsx} from 'extract-xlsx'
 import {useEffect, useMemo, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {getPageLinks} from '../../shared/tiptap/getPageLinks'
 import {isPageLink} from '../../shared/tiptap/isPageLink'
-import {appendColumn} from '../../tiptap/extensions/database/data'
-import {importRecords} from '../../tiptap/extensions/database/ImportDialog'
+import {getRecordHeaders, importRecords} from '../../tiptap/extensions/database/importRecords'
 import {providerManager} from '../../tiptap/providerManager'
 import {Checkbox} from '../../ui/Checkbox/Checkbox'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import SecondaryButton from '../SecondaryButton'
-import {parseCSV} from '../UploadCSV'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -23,28 +21,11 @@ declare module '@tiptap/core' {
   }
 }
 
-const parseXLSX = async (file: File): Promise<string[][]> => {
-  const buffer = await file.arrayBuffer()
-
-  const data = await parseXlsx(buffer as any)
-  if (!data || data.length === 0) {
-    return []
-  }
-
-  // data is sparse, make sure the first row has the maxumum length
-  const columnCount = Math.max(...data.map((row) => row.length))
-  const firstRowLength = data[0]!.length
-  data[0]!.length = columnCount
-  data[0]!.fill(null, firstRowLength, columnCount)
-
-  return data
-}
-
 type Props = {
   editor: Editor
 }
 
-export const ImportCSVDialog = (props: Props) => {
+export const ImportDatabaseDialog = (props: Props) => {
   const {editor} = props
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
@@ -55,15 +36,14 @@ export const ImportCSVDialog = (props: Props) => {
   const [importingFile, setImportingFile] = useState<{file: File; pos: number | undefined} | null>(
     null
   )
-  const [records, setRecords] = useState<string[][] | null>(null)
+  const [records, setRecords] = useState<(string | null)[][] | null>(null)
 
   useEffect(() => {
     const importData = (change: EditorEvents['importDatabase']) => {
       const {file, targetType, pos} = change
       setImportingFile({file, pos})
 
-      const parser = targetType === 'csv' ? parseCSV : parseXLSX
-      parser(file)
+      parseDatabaseImport(file)
         .then((parsedRecords) => {
           setRecords(parsedRecords)
         })
@@ -86,10 +66,7 @@ export const ImportCSVDialog = (props: Props) => {
 
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []
-
-    return records[0]!.map(
-      (cell, index) => (firstRowIsHeader && cell?.toString()) || `Column ${index + 1}`
-    )
+    return getRecordHeaders(records, firstRowIsHeader)
   }, [firstRowIsHeader, records])
 
   const onClose = () => {
@@ -132,8 +109,7 @@ export const ImportCSVDialog = (props: Props) => {
             const provider = providerManager.register(pageId)
             const {document: doc} = provider
 
-            headers.forEach((name) => appendColumn(doc, {name, type: 'text'}))
-            importRecords(doc, viewerId, records.slice(firstRowOffset))
+            importRecords(doc, viewerId, records, {firstRowIsHeader})
           }
         }
       })
