@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {useEffect, useRef, useState} from 'react'
+import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {matchPath, type RouteProps} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
@@ -82,38 +82,20 @@ const TopBarSearch = (props: Props) => {
   const {location} = useRouter()
   const {openSearch} = useSearchDialog()
 
-  const [localSearch, setLocalSearch] = useState(dashSearch)
-
-  useEffect(() => {
-    setLocalSearch(dashSearch)
-  }, [dashSearch])
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (localSearch !== dashSearch) {
-        setSearch(atmosphere, localSearch)
-      }
-    }, 300)
-
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [localSearch, atmosphere, dashSearch])
-
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalSearch(e.target.value)
+    const {value} = e.target
+    setSearch(atmosphere, value)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      openSearch(localSearch)
+      openSearch(dashSearch)
     }
   }
 
-  const Icon = localSearch ? Close : Search
+  const Icon = dashSearch ? Close : Search
 
   const onClick = () => {
-    setLocalSearch('')
     setSearch(atmosphere, '')
     inputRef.current?.focus()
   }
@@ -125,7 +107,7 @@ const TopBarSearch = (props: Props) => {
         onChange={onChange}
         onKeyDown={onKeyDown}
         placeholder={'Search'}
-        value={localSearch}
+        value={dashSearch}
         className='m-0 h-full w-full appearance-none border-transparent bg-transparent px-4 py-3 text-slate-200 text-xl leading-6 outline-none placeholder:text-slate-200/50 focus:outline-none focus-visible:border-transparent'
         maxLength={255}
       />
