@@ -282,11 +282,9 @@ const RemoteReflection = (props: Props) => {
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
-          <div className='py-[2px]'>
-            <HTMLReflection html={html} disableAnonymity={disableAnonymity} />
-          </div>
+          <HTMLReflection html={html} disableAnonymity={disableAnonymity} />
           {disableAnonymity && (
-            <div className='pb-3'>
+            <div className='px-2 pt-0.5 pb-2'>
               <ReflectionCardAuthor>{creator?.preferredName}</ReflectionCardAuthor>
             </div>
           )}
