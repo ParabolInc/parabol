@@ -43,7 +43,7 @@ export const TeamAvatar: React.FC<TeamAvatarProps> = ({teamName, teamId, classNa
   return (
     <div
       className={cn(
-        'mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-light font-sans text-[10px] text-white text-xs uppercase',
+        'pointer-cursor mr-2 flex h-6 w-6 shrink-0 select-none items-center justify-center rounded-full font-light font-sans text-[10px] text-white text-xs uppercase',
         className
       )}
       style={{backgroundColor: `#${backgroundColor}`}}
