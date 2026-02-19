@@ -575,8 +575,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.7
       fast-xml-parser:
-        specifier: ^5.3.4
-        version: 5.3.4
+        specifier: ^5.3.6
+        version: 5.3.6
       fbjs:
         specifier: ^3.0.0
         version: 3.0.5
