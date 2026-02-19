@@ -45,12 +45,11 @@ export const getPagesByRRF = async (params: Params) => {
       qb
         .selectFrom('PageAccess')
         .where('PageAccess.userId', '=', viewerId)
+        .innerJoin('Page', 'Page.id', 'PageAccess.pageId')
+        .where('Page.deletedAt', 'is', null)
         .innerJoin(tableName, 'PageAccess.pageId', `${tableName}.pageId`)
-        .where('PageAccess.userId', '=', viewerId)
         .$if(!!dateRange, (qb) =>
-          qb
-            .innerJoin('Page', 'Page.id', 'PageAccess.pageId')
-            .where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
+          qb.where((eb) => eb.between(dateRange!.dateField, dateRange!.startAt, dateRange!.endAt))
         )
         .$if(!!teamIds, (qb) =>
           qb
