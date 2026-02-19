@@ -174,7 +174,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
         <div className={'flex items-center text-slate-700 text-sm'}>
           Paste the following URL into your Identity Provider’s SCIM configuration
         </div>
-        <div className='column-ga grid grid-cols-[max-content_fit-content(400px)_24px] items-center gap-x-2 pt-4 pb-8'>
+        <div className='column-ga grid grid-cols-[max-content_fit-content(600px)_24px] items-center gap-x-2 pt-4 pb-8'>
           <CopyServiceProviderURL url={scimURL} label={'SCIM URL'} />
           {scimAuthenticationType === 'bearerToken' && (
             <>

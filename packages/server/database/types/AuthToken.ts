@@ -11,6 +11,7 @@ interface Input {
   lifespan_ms?: number
   scope?: string[]
   aud?: string
+  jti?: string
 }
 
 export default class AuthToken {
@@ -23,8 +24,9 @@ export default class AuthToken {
   iss: string
   exp: number
   aud: string
+  jti?: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms, lifespan_ms, scope, aud} = input
+    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms
@@ -34,6 +36,7 @@ export default class AuthToken {
     this.exp = toEpochSeconds(now.getTime() + (lifespan_ms ?? Threshold.JWT_LIFESPAN))
     this.rol = rol ?? null
     this.scope = scope
+    this.jti = jti
 
     if (bet) {
       this.bet = bet
