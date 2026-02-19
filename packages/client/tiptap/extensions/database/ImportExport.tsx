@@ -73,7 +73,7 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
                 onSelect={() => setImportDialogOpen(true)}
               >
                 <FileUpload />
-                Import CSV
+                Import Data
               </DropdownMenu.Item>
               <DropdownMenu.Item
                 className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-slate-100'

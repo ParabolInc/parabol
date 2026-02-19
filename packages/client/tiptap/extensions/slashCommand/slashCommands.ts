@@ -162,7 +162,7 @@ export const slashCommands = [
 
           const pageLinkNode = schema.nodes.pageLinkBlock!.create({
             pageCode: -1,
-            title: '<Untitled>',
+            title: undefined,
             canonical: true
           })
 
@@ -189,7 +189,7 @@ export const slashCommands = [
 
           const databaseNode = schema.nodes.pageLinkBlock!.create({
             pageCode: -1,
-            title: '<Untitled>',
+            title: undefined,
             canonical: true,
             database: true
           })

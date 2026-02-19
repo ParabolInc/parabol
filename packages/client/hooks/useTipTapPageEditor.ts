@@ -42,6 +42,13 @@ import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 
+const getFileType = (file: File) => {
+  if (file.type.includes('image')) return 'image'
+  if (file.type.includes('text/csv')) return 'csv'
+  if (file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
+    return 'xlsx'
+  return 'file'
+}
 const colorIdx = Math.floor(Math.random() * themeBackgroundColors.length)
 export const useTipTapPageEditor = (
   provider: HocuspocusProvider,
@@ -242,14 +249,22 @@ export const useTipTapPageEditor = (
           onDrop: (currentEditor, files, pos) => {
             files.forEach(async (file) => {
               // if they drop an image, treat it like an image, not a binary
-              const targetType = file.type.includes('image') ? 'image' : 'file'
+              const targetType = getFileType(file)
+              if (targetType === 'csv' || targetType === 'xlsx') {
+                currentEditor.emit('importDatabase', {file, targetType, pos})
+                return
+              }
               currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType, pos)
             })
           },
           onPaste: (currentEditor, files, htmlContent) => {
             files.forEach((file) => {
               if (!htmlContent) {
-                const targetType = file.type.includes('image') ? 'image' : 'file'
+                const targetType = getFileType(file)
+                if (targetType === 'csv' || targetType === 'xlsx') {
+                  currentEditor.emit('importDatabase', {file, targetType, pos: undefined})
+                  return
+                }
                 currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
               }
             })

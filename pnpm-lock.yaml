@@ -574,6 +574,9 @@ importers:
       eventemitter3:
         specifier: ^4.0.0
         version: 4.0.7
+      fast-xml-parser:
+        specifier: ^5.3.6
+        version: 5.3.6
       fbjs:
         specifier: ^3.0.0
         version: 3.0.5
@@ -595,6 +598,9 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       jwt-decode:
         specifier: ^2.1.0
         version: 2.2.0
