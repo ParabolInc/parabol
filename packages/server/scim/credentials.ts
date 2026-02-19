@@ -8,7 +8,9 @@ export function generateBearerToken(scimId: string) {
     sub: scimId,
     tms: [],
     scope: scopes,
-    aud: 'action-scim'
+    aud: 'action-scim',
+    // include this because of the low resolution of iat
+    jti: generateRandomString(8)
   })
   // don't sign the bearer token, it's compared directly to the stored token and we want it to survive server secret changes
   const accessToken = encodeUnsignedAuthToken(authToken)

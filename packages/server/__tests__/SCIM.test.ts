@@ -2508,6 +2508,41 @@ describe('Groups', () => {
       })
     })
   })
+})
 
-  // TODO test first user is lead
+describe('SCIM Bearer Token authentication', () => {
+  test('Refreshing creates a new token', async () => {
+    const domain = faker.internet.domainName()
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    const bearerToken = await enableSCIM(orgId, cookie)
+    const refreshedBearerToken = await enableSCIM(orgId, cookie)
+    expect(refreshedBearerToken).not.toBe(bearerToken)
+
+    const res = await fetch(`${SCIM_URL}/Users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${refreshedBearerToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+  })
+
+  test('Refreshing invalidates the old one', async () => {
+    const domain = faker.internet.domainName()
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    const oldBearerToken = await enableSCIM(orgId, cookie)
+    await enableSCIM(orgId, cookie)
+
+    const res = await fetch(`${SCIM_URL}/Users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${oldBearerToken}`
+      }
+    })
+    expect(res.status).toBe(401)
+  })
 })
