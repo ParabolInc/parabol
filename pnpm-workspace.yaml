@@ -26,4 +26,3 @@ onlyBuiltDependencies:
   - sharp
   - ssh2
   - styled-components
-  - swiper
