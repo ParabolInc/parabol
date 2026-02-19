@@ -9,7 +9,6 @@ import {
   type onLoadDocumentPayload
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
-import {readVarString} from 'lib0/decoding.js'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
 
 export type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => any ? A : never
@@ -371,7 +370,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   ) {
     const message = new Uint8Array(detachableMsg.slice())
     const tmpMsg = new IncomingMessage(detachableMsg)
-    const documentName = readVarString(tmpMsg.decoder)
+    const documentName = tmpMsg.readVarString()
     const isDocLoadedOnInstance = this.instance.documents.has(documentName)
 
     if (isDocLoadedOnInstance) {
