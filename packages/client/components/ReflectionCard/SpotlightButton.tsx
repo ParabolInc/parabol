@@ -12,7 +12,7 @@ const SpotlightButton = (props: Props) => {
   return (
     <ReflectionCardButton
       className={cn(
-        'invisible absolute right-1 bottom-1 bg-transparent hover:bg-slate-200',
+        'invisible absolute right-1 bottom-1 bg-white hover:bg-slate-200',
         showSpotlight && 'visible'
       )}
       aria-label='Find similar reflections'

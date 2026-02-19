@@ -281,7 +281,7 @@ const PhaseItemEditor = (props: Props) => {
               >
                 <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
                 {disableAnonymity && (
-                  <div className='py-2 pl-4'>
+                  <div className='px-2 pt-0.5 pb-2'>
                     <ReflectionCardAuthor>
                       {viewerMeetingMember?.user.preferredName}
                     </ReflectionCardAuthor>
