@@ -64,13 +64,18 @@ const DeleteAccountModal = () => {
   }
   const validReason = reason.trim().slice(0, 20000)
   const handleDelete = () => {
-    DeleteUserMutation(atmosphere, {
-      userId: atmosphere.viewerId,
-      reason: validReason
-    })
-    setTimeout(() => {
-      window.location.href = ExternalLinks.RESOURCES
-    }, 100)
+    DeleteUserMutation(
+      atmosphere,
+      {
+        userId: atmosphere.viewerId,
+        reason: validReason
+      },
+      {
+        onCompleted: () => {
+          window.location.href = ExternalLinks.RESOURCES
+        }
+      }
+    )
   }
 
   return (
