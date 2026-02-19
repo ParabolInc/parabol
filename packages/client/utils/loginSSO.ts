@@ -21,10 +21,17 @@ const loginSSO = (url: string, top?: number): ReturnType | Promise<ReturnType> =
   let closeCheckerId: undefined | number
   return new Promise<ReturnType>((resolve) => {
     const handler = (event: MessageEvent) => {
-      // an extension posted to the opener
-      if (typeof event.data !== 'object') return
+      // filter out messages coming from extensions
+      try {
+        if (event.origin !== window.location.origin) return
+        if (popup.location.origin !== window.location.origin) return
+        if (typeof event.data !== 'object') return
+      } catch (_e) {
+        // If it's coming from an extension, popup.location might throw
+        return
+      }
+
       const {error, userId} = event.data
-      if (event.origin !== window.location.origin) return
 
       const params = new URLSearchParams(popup.location.search)
       if (userId !== params.get('userId')) {
