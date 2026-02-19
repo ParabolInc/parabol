@@ -52,6 +52,9 @@ const ShareTopicRouterRoot = lazy(
   () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
 )
 
+import {SearchProvider} from '../modules/search/SearchContext'
+import {GlobalSearchDialog} from '../modules/search/SearchDialog'
+
 interface Props {
   queryRef: PreloadedQuery<DashboardQuery>
 }
@@ -140,50 +143,56 @@ const Dashboard = (props: Props) => {
   useNewFeatureSnackbar(viewer)
 
   return (
-    <DashLayout>
-      <SkipLink href='#main'>Skip to content</SkipLink>
-      {isDesktop ? (
-        <DashTopBar queryRef={data} toggle={toggle} />
-      ) : (
-        <MobileDashTopBar queryRef={data} toggle={toggle} />
-      )}
-      <DashPanel>
+    <SearchProvider>
+      <GlobalSearchDialog />
+      <DashLayout>
+        <SkipLink href='#main'>Skip to content</SkipLink>
         {isDesktop ? (
-          <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          <DashTopBar queryRef={data} toggle={toggle} />
         ) : (
-          <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
-            <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
-          </SwipeableDashSidebar>
+          <MobileDashTopBar queryRef={data} toggle={toggle} />
         )}
-        <DashMain id='main' ref={meetingsDashRef}>
-          <Switch>
-            <Route
-              path='(/meetings)'
-              render={(routeProps) => (
-                <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
-              )}
-            />
-            <Route path='/me' component={UserDashboard} />
-            <Route
-              exact
-              path='/team/:teamId/requestToJoin'
-              render={(routeProps) => (
-                <RequestToJoinComponent key={routeProps.match.params.teamId} {...routeProps} />
-              )}
-            />
-            <Route path='/team/:teamId' component={TeamRoot} />
-            <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-            <Route
-              path='/pages/:pageSlug'
-              render={(routeProps) => <PageRoot {...routeProps} viewerRef={viewer} />}
-            />
-            <Route path='/pages' component={MakePage} />
-            <Route path='/new-summary/:meetingId/share/:stageId' component={ShareTopicRouterRoot} />
-            <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
-          </Switch>
-        </DashMain>
-      </DashPanel>
-    </DashLayout>
+        <DashPanel>
+          {isDesktop ? (
+            <DashSidebar viewerRef={viewer} isOpen={isOpen} />
+          ) : (
+            <SwipeableDashSidebar isOpen={isOpen} onToggle={toggle}>
+              <MobileDashSidebar viewerRef={viewer} handleMenuClick={handleMenuClick} />
+            </SwipeableDashSidebar>
+          )}
+          <DashMain id='main' ref={meetingsDashRef}>
+            <Switch>
+              <Route
+                path='(/meetings)'
+                render={(routeProps) => (
+                  <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
+                )}
+              />
+              <Route path='/me' component={UserDashboard} />
+              <Route
+                exact
+                path='/team/:teamId/requestToJoin'
+                render={(routeProps) => (
+                  <RequestToJoinComponent key={routeProps.match.params.teamId} {...routeProps} />
+                )}
+              />
+              <Route path='/team/:teamId' component={TeamRoot} />
+              <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
+              <Route
+                path='/pages/:pageSlug'
+                render={(routeProps) => <PageRoot {...routeProps} viewerRef={viewer} />}
+              />
+              <Route path='/pages' component={MakePage} />
+              <Route
+                path='/new-summary/:meetingId/share/:stageId'
+                component={ShareTopicRouterRoot}
+              />
+              <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
+            </Switch>
+          </DashMain>
+        </DashPanel>
+      </DashLayout>
+    </SearchProvider>
   )
 }
 

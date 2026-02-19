@@ -333,7 +333,7 @@ const ReflectionCard = (props: Props) => {
       onMouseLeave={() => setIsHovering(false)}
       showDragHintAnimation={showDragHintAnimation}
       ref={reflectionDivRef}
-      className='py-3'
+      className='py-2'
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
     >
