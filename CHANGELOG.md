@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.6.1](https://github.com/ParabolInc/parabol/compare/v12.6.0...v12.6.1) (2026-02-19)
+
+
+### Fixed
+
+* exclude deleted pages from search ([#12627](https://github.com/ParabolInc/parabol/issues/12627)) ([cb7e1c8](https://github.com/ParabolInc/parabol/commit/cb7e1c82e5f6217e3b09ecd4de7372157c85865e))
+* reflection card padding in reflect and group phase  ([#12625](https://github.com/ParabolInc/parabol/issues/12625)) ([2c3921f](https://github.com/ParabolInc/parabol/commit/2c3921fc8751fc932d1c5f084b29c42993889b80))
+
 ## [12.6.0](https://github.com/ParabolInc/parabol/compare/v12.5.0...v12.6.0) (2026-02-18)
 
 
