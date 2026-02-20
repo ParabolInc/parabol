@@ -64,7 +64,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
     .selectAll()
     .where((eb) =>
       eb.or([
-        eb('scimId', '=', scimId),
+        eb.and([eb('scimId', '=', scimId), eb('scimUserName', 'is not', null)]),
         eb('domain', '=', eb.fn.any(eb.val(domains))),
         eb('id', '=', eb.fn.any(eb.val(orgUsers)))
       ])
