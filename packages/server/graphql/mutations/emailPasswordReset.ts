@@ -1,9 +1,11 @@
+import bcrypt from 'bcryptjs'
 import {GraphQLID, GraphQLNonNull} from 'graphql'
 import ms from 'ms'
-import {AuthenticationError, Threshold} from 'parabol-client/types/constEnums'
+import {AuthenticationError, Security, Threshold} from 'parabol-client/types/constEnums'
 import {AuthIdentityTypeEnum} from '../../../client/types/constEnums'
 import getSSODomainFromEmail from '../../../client/utils/getSSODomainFromEmail'
-import type AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
+import AuthIdentityLocal from '../../database/types/AuthIdentityLocal'
+import generateRandomString from '../../generateRandomString'
 import getKysely from '../../postgres/getKysely'
 import {getUserByEmail} from '../../postgres/queries/getUsersByEmails'
 import type {GQLContext} from '../graphql'
@@ -66,22 +68,39 @@ const emailPasswordReset = {
       if (samlDomainExists) return {error: {message: AuthenticationError.USER_EXISTS_SAML}}
       if (!user) return {error: {message: AuthenticationError.USER_NOT_FOUND}}
       const {id: userId, identities} = user
+
       const googleIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.GOOGLE
       )
-      if (googleIdentity) return {error: {message: AuthenticationError.USER_EXISTS_GOOGLE}}
+      if (googleIdentity) {
+        return {error: {message: AuthenticationError.USER_EXISTS_GOOGLE}}
+      }
+
       const microsoftIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.MICROSOFT
       )
-      if (microsoftIdentity)
+      if (microsoftIdentity) {
         return {
           error: {message: AuthenticationError.USER_EXISTS_MICROSOFT}
         }
+      }
 
       const localIdentity = identities.find(
         (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
       ) as AuthIdentityLocal
-      if (!localIdentity) return {error: {message: AuthenticationError.IDENTITY_NOT_FOUND}}
+      if (!localIdentity) {
+        // we don't have a local identity, so they probably signed up using SAML at some point but that does not work anymore, so let them have their password reset.
+        const identityId = `${userId}:${AuthIdentityTypeEnum.LOCAL}`
+        const dummyPassword = generateRandomString(Security.SALT_ROUNDS)
+        const dummyHashedPassword = await bcrypt.hash(dummyPassword, Security.SALT_ROUNDS)
+        const newIdentity = new AuthIdentityLocal({
+          hashedPassword: dummyHashedPassword,
+          id: identityId,
+          isEmailVerified: false
+        })
+        const newIdentities = [...identities, newIdentity]
+        return await processEmailPasswordReset(ip, email, newIdentities, userId)
+      }
       // seems legit, make a record of it create a reset code
       return await processEmailPasswordReset(ip, email, identities, userId)
     }
