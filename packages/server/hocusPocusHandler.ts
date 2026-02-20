@@ -4,6 +4,7 @@ import {redisHocusPocus} from './hocusPocus'
 import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
+import {Logger} from './utils/Logger'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
 export type HocusPocusSocketData = {
@@ -18,6 +19,9 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   upgrade(res, req, context) {
     const headers: IncomingHttpHeaders = {}
     req.forEach((key, value) => {
+      if (headers[key]) {
+        Logger.warn(`hocuspocus: overwriting ${key} header. The user may not be able to log in`)
+      }
       headers[key] = value
     })
     const ip =
