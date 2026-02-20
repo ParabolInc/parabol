@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.7.2](https://github.com/ParabolInc/parabol/compare/v12.7.1...v12.7.2) (2026-02-20)
+
+
+### Fixed
+
+* slow queries ([#12640](https://github.com/ParabolInc/parabol/issues/12640)) ([b032fa1](https://github.com/ParabolInc/parabol/commit/b032fa1b07bf2a0babda14f3313e3d31e65415d0))
+
+
+### Changed
+
+* separate v11 changelogs ([#12644](https://github.com/ParabolInc/parabol/issues/12644)) ([6bbf49e](https://github.com/ParabolInc/parabol/commit/6bbf49eba079938bf64d48309689b371234fcc9f))
+
 ## [12.7.1](https://github.com/ParabolInc/parabol/compare/v12.7.0...v12.7.1) (2026-02-20)
 
 
