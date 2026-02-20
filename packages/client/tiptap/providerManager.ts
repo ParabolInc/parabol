@@ -37,6 +37,8 @@ class ProviderManager {
       websocketProvider: this.getSocket(),
       name: documentName,
       document: doc,
+      // can remove after debugging server websocket auth on hocuspocus
+      token: window.document.cookie,
       onAuthenticationFailed: ({reason}) => {
         if (reason === 'Unauthenticated') {
           this.atmosphere?.invalidateSession(reason)

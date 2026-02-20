@@ -108,7 +108,8 @@ export const hocuspocus = new Hocuspocus({
             authToken,
             tms,
             connectedFor,
-            reqCookie: (request as Req).cookie
+            reqCookie: (request as Req).cookie,
+            clientSideCookie: data.token
           }
           Logger.error(`userId still not found`, info)
           throw new Error(`Meeting awareness requires a userId`)
