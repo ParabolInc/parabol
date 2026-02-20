@@ -24,6 +24,7 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
       }
       headers[key] = value
     })
+
     const ip =
       Buffer.from(res.getProxiedRemoteAddressAsText()).toString() ||
       Buffer.from(res.getRemoteAddressAsText()).toString()
@@ -34,6 +35,13 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
       url: query ? `${pathname}?${query}` : pathname,
       headers,
       socket: {remoteAddress: ip}
+    }
+    if (!serializedHTTPRequest.headers['cookie']) {
+      const cookie = req.getHeader('cookie')
+      Logger.log('Upgrading yjs websocket without cookie. Should only happen for public pages', {
+        ...serializedHTTPRequest,
+        cookie
+      })
     }
     res.upgrade<HocusPocusSocketData>(
       {
