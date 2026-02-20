@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.7.1](https://github.com/ParabolInc/parabol/compare/v12.7.0...v12.7.1) (2026-02-20)
+
+
+### Fixed
+
+* even more logging for cookieless websocket ([#12641](https://github.com/ParabolInc/parabol/issues/12641)) ([d379c80](https://github.com/ParabolInc/parabol/commit/d379c80313b11a5cfb3e856398a66bfe2045f762))
+
 ## [12.7.0](https://github.com/ParabolInc/parabol/compare/v12.6.1...v12.7.0) (2026-02-20)
 
 
