@@ -69,6 +69,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).egress(async (resource, ctx: SCI
         eb('id', '=', eb.fn.any(eb.val(orgUsers)))
       ])
     )
+    .where('scimUserName', 'is not', null)
 
   // if we have startIndex or count we need the total for pagination
   let totalQuery = pg
