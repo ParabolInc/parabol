@@ -39,7 +39,7 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   dataLoader.dispose()
 }
 
-type Req = IncomingMessage & {userId?: string; tms: string[]}
+type Req = IncomingMessage & {userId?: string; tms: string[]; cookie?: string; startAt?: number}
 
 const getMeetingTeamId = async (meetingId: string) => {
   // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
@@ -83,6 +83,10 @@ export const hocuspocus = new Hocuspocus({
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
     request.tms = authToken?.tms ?? []
+    if (!request.userId) {
+      request.cookie = request.headers['cookie']
+      request.startAt = Date.now()
+    }
   },
 
   async onAuthenticate(data) {
@@ -98,7 +102,14 @@ export const hocuspocus = new Hocuspocus({
         const authToken = getVerifiedAuthToken(cookieToken)
         userId = authToken?.sub
         if (!userId) {
-          const info = {cookieToken, authToken, tms}
+          const connectedFor = Date.now() - Number((request as Req).startAt)
+          const info = {
+            cookieToken,
+            authToken,
+            tms,
+            connectedFor,
+            reqCookie: (request as Req).cookie
+          }
           Logger.error(`userId still not found`, info)
           throw new Error(`Meeting awareness requires a userId`)
         }

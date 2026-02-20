@@ -574,6 +574,9 @@ importers:
       eventemitter3:
         specifier: ^4.0.0
         version: 4.0.7
+      fast-xml-parser:
+        specifier: ^5.3.6
+        version: 5.3.6
       fbjs:
         specifier: ^3.0.0
         version: 3.0.5
@@ -595,6 +598,9 @@ importers:
       js-cookie:
         specifier: ^3.0.5
         version: 3.0.5
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       jwt-decode:
         specifier: ^2.1.0
         version: 2.2.0
@@ -658,9 +664,6 @@ importers:
       sanitize-html:
         specifier: ^2.13.0
         version: 2.17.0
-      swiper:
-        specifier: 8.3.1
-        version: 8.3.1
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.4.0
@@ -7647,9 +7650,6 @@ packages:
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
 
-  dom7@4.0.6:
-    resolution: {integrity: sha512-emjdpPLhpNubapLFdjNL9tP06Sr+GZkrIHEXLWvOGsytACUrkbeIdjO5g77m00BrHTznnlcNqgmn7pCN192TBA==}
-
   domelementtype@2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
 
@@ -11391,9 +11391,6 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  ssr-window@4.0.2:
-    resolution: {integrity: sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==}
-
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
@@ -11585,10 +11582,6 @@ packages:
 
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
-
-  swiper@8.3.1:
-    resolution: {integrity: sha512-oASYsulsERlbQVTZ8FjlTDJSN4YZwhp+AkvepOj8EOhgpvxzKoMpWpBPrk7ypkMioQUx6x2NPvkRU0Qv9mpS0A==}
-    engines: {node: '>= 4.7.0'}
 
   sync-fetch@0.6.0-2:
     resolution: {integrity: sha512-c7AfkZ9udatCuAy9RSfiGPpeOKKUAUK5e1cXadLOGUjasdxqYqAK0jTNkM/FSEyJ3a5Ra27j/tw/PS0qLmaF/A==}
@@ -20502,10 +20495,6 @@ snapshots:
       domhandler: 5.0.3
       entities: 4.5.0
 
-  dom7@4.0.6:
-    dependencies:
-      ssr-window: 4.0.2
-
   domelementtype@2.3.0: {}
 
   domhandler@4.3.1:
@@ -24926,8 +24915,6 @@ snapshots:
       safer-buffer: 2.1.2
       tweetnacl: 0.14.5
 
-  ssr-window@4.0.2: {}
-
   stack-utils@2.0.6:
     dependencies:
       escape-string-regexp: 2.0.0
@@ -25143,11 +25130,6 @@ snapshots:
   swap-case@2.0.2:
     dependencies:
       tslib: 2.8.1
-
-  swiper@8.3.1:
-    dependencies:
-      dom7: 4.0.6
-      ssr-window: 4.0.2
 
   sync-fetch@0.6.0-2:
     dependencies:

@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.7.0](https://github.com/ParabolInc/parabol/compare/v12.6.1...v12.7.0) (2026-02-20)
+
+
+### Added
+
+* import dropped CSV and XLSX files into database ([#12608](https://github.com/ParabolInc/parabol/issues/12608)) ([6b932d4](https://github.com/ParabolInc/parabol/commit/6b932d445dc908455f9089a786b7c427e5539122))
+
+
+### Fixed
+
+* broken page removal on team member removal ([#12633](https://github.com/ParabolInc/parabol/issues/12633)) ([ba1ab3b](https://github.com/ParabolInc/parabol/commit/ba1ab3b5fed2d92dd694ba4d8f88f60f36976afb))
+* logout on delete account ([#12632](https://github.com/ParabolInc/parabol/issues/12632)) ([6689a6c](https://github.com/ParabolInc/parabol/commit/6689a6cbcf5d6abb6ed353d9775e263cf116921a))
+* more logging for awareness bug ([#12637](https://github.com/ParabolInc/parabol/issues/12637)) ([cda6bf2](https://github.com/ParabolInc/parabol/commit/cda6bf20e9e5e029403ecfcb7cfcc72f4956823e))
+* remove swiper (unused) ([#12636](https://github.com/ParabolInc/parabol/issues/12636)) ([39fd07e](https://github.com/ParabolInc/parabol/commit/39fd07e6eb42c168cf337f6de4f434dbea7587f1))
+* update readVarString usage to create new Uint8 to avoid buffer overflow ([#12634](https://github.com/ParabolInc/parabol/issues/12634)) ([387a64f](https://github.com/ParabolInc/parabol/commit/387a64fb4f8a7057d7babf54a3273059d91e125f))
+
+
+### Changed
+
+* ensure fresh SCIM Bearer Token each time ([#12630](https://github.com/ParabolInc/parabol/issues/12630)) ([9161cc6](https://github.com/ParabolInc/parabol/commit/9161cc6cf6db115d0e5364a64056c0fac10d24aa))
+* more robust extension detection for loginSSO ([#12629](https://github.com/ParabolInc/parabol/issues/12629)) ([d903da4](https://github.com/ParabolInc/parabol/commit/d903da432d8333b05fde411677a0d7cdd8365777))
+
 ## [12.6.1](https://github.com/ParabolInc/parabol/compare/v12.6.0...v12.6.1) (2026-02-19)
 
 

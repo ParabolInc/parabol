@@ -42,7 +42,10 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
       }
       node.observe(observer)
       const isDatabase = node.getAttribute('database') || false
-      const newPage = await createChildPage(parentPageId, userId, isDatabase).catch(Logger.log)
+      const title = node.getAttribute('title')
+      const newPage = await createChildPage(parentPageId, userId, isDatabase, title).catch(
+        Logger.error
+      )
       if (!newPage) return
       const pageCode = CipherId.encrypt(newPage.id)
       node.setAttribute('pageCode', pageCode)

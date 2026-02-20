@@ -1,67 +1,13 @@
-import {parse} from 'csv-parse/browser/esm'
 import {useRef} from 'react'
 import {Button} from '../ui/Button/Button'
-
-const parseCSV = (file: File) => {
-  return new Promise<string[][]>((resolve, reject) => {
-    if (file.type !== 'text/csv') {
-      reject(new Error('Please upload a valid CSV file.'))
-      return
-    }
-
-    const parser = parse({
-      bom: true,
-      columns: false,
-      skip_empty_lines: true
-    })
-
-    const records = [] as string[][]
-    parser.on('readable', function () {
-      let record: string[]
-      while ((record = parser.read()) !== null) {
-        records.push(record)
-      }
-    })
-    parser.once('error', function (error) {
-      reject(error)
-    })
-    parser.once('end', function () {
-      resolve(records)
-    })
-
-    const decoder = new TextDecoder('utf-8')
-    file
-      .stream()
-      .pipeTo(
-        new WritableStream({
-          write: (chunk, controller) => {
-            return new Promise((resolve, reject) => {
-              const decoded = decoder.decode(chunk)
-              parser.write(decoded, (error) => {
-                if (error) {
-                  controller.error(error)
-                  reject(error)
-                } else {
-                  resolve()
-                }
-              })
-            })
-          },
-          close: () => {
-            parser.end()
-          }
-        })
-      )
-      .catch(reject)
-  })
-}
+import {parseDatabaseImport} from '../utils/parseDatabaseImport'
 
 type Props = {
-  onRecordsParsed: (records: string[][]) => void
+  onRecordsParsed: (records: (string | null)[][]) => void
   onError: (error: Error | null) => void
 }
 
-export const UploadCSV = (props: Props) => {
+export const UploadDatabaseImport = (props: Props) => {
   const {onRecordsParsed, onError} = props
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -71,7 +17,7 @@ export const UploadCSV = (props: Props) => {
     onError(null)
     fileRef.current = file
     try {
-      const records = await parseCSV(file)
+      const records = await parseDatabaseImport(file)
       onRecordsParsed(records)
     } catch (error) {
       onError(error as Error)
@@ -117,8 +63,14 @@ export const UploadCSV = (props: Props) => {
 
   return (
     <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
-      Upload a CSV into the database.
-      <input className='hidden' ref={fileInputRef} type='file' accept='.csv' onChange={onChange} />
+      Upload a CSV or XLSX file into the database.
+      <input
+        className='hidden'
+        ref={fileInputRef}
+        type='file'
+        accept='.csv,.xlsx'
+        onChange={onChange}
+      />
       <div
         className={
           'mt-3 flex h-50 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-slate-400 border-dashed bg-slate-50 text-slate-500 hover:border-slate-600 data-drop:border-slate-600 data-drop:bg-slate-100'
@@ -136,7 +88,7 @@ export const UploadCSV = (props: Props) => {
         >
           Browse
         </Button>
-        <span> or drop a CSV file here.</span>
+        <span> or drop a file here.</span>
       </div>
     </div>
   )

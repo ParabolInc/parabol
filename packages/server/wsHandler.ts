@@ -264,6 +264,9 @@ wsHandler.upgrade = async (res, req, context) => {
   }
   const headers: http.IncomingHttpHeaders = {}
   req.forEach((key, value) => {
+    if (headers[key]) {
+      Logger.warn(`wsHandler: overwriting ${key} header. The user may not be able to log in`)
+    }
     headers[key] = value
   })
   const ip =
