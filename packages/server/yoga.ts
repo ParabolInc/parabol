@@ -186,7 +186,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const headerToken = authHeader?.slice(7)
         const cookieToken = getAuthTokenFromCookie(headers.get('cookie'))
         const token = headerToken || cookieToken
-        const authToken = getVerifiedAuthToken(token)
+        const authToken = getVerifiedAuthToken(token, false)
 
         const isSuperUser = authToken?.rol === 'su'
         const isOAuthToken = authToken?.aud === 'action-oauth2'
