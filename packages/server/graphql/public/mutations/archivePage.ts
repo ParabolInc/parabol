@@ -24,6 +24,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
     throw new GraphQLError('Invalid pageId')
   }
   dataLoader.get('pages').clearAll()
+  if (page.isMeetingTOC)
+    throw new GraphQLError('Meeting Summaries pages cannot be archived or deleted')
   if (action === 'delete') {
     await pg.deleteFrom('Page').where('id', '=', dbPageId).execute()
   } else if (action === 'archive') {

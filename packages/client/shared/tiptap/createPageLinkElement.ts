@@ -5,8 +5,7 @@ export const createPageLinkElement = (
   title: string | null | undefined,
   isDatabase: boolean
 ) => {
-  const el = new Y.XmlElement<PageLinkBlockAttrs>()
-  el.nodeName = 'pageLinkBlock'
+  const el = new Y.XmlElement<PageLinkBlockAttrs>('pageLinkBlock')
   el.setAttribute('pageCode', pageCode)
   el.setAttribute('title', title ?? '<Untitled>')
   el.setAttribute('canonical', true)
