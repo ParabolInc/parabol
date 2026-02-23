@@ -8,6 +8,7 @@ const createPage: MutationResolvers['createPage'] = async (
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
+
   const page = await createTopLevelPage(viewerId, dataLoader, {
     teamId,
     mutatorId

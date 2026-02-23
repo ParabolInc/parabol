@@ -1,12 +1,14 @@
 import {and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
+import getTeamIdFromArgSettingsId from './rules/getTeamIdFromArgSettingsId'
 import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
+import {isMeetingMember} from './rules/isMeetingMember'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
@@ -39,6 +41,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
+    createPage: isTeamMember<'Mutation.createPage'>('args.teamId'),
+    selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
+    setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
+    createReflection: isMeetingMember<'Mutation.createReflection'>('args.input.meetingId'),
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
       'args.orgId',
       'ORG_ADMIN'
