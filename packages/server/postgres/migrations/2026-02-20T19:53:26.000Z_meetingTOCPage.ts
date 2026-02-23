@@ -1,7 +1,65 @@
-import {type Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 import * as Y from 'yjs'
 import {encodeStateAsUpdate} from 'yjs'
 import {CipherId} from '../../utils/CipherId'
+
+export const selectDescendantPages = (db: any, pageId: number) =>
+  db.withRecursive('descendants', (qc: any) =>
+    qc
+      .selectFrom('Page')
+      .select(['id', 'parentPageId'])
+      .where('id', '=', pageId)
+      .unionAll(
+        qc
+          .selectFrom('Page as p')
+          .innerJoin('descendants as d', 'd.id', 'p.parentPageId')
+          .where('p.isParentLinked', '=', true)
+          .select(['p.id', 'p.parentPageId'])
+      )
+  )
+export const updatePageAccessTable = async (trx: any, pageId: number) => {
+  const res = selectDescendantPages(trx, pageId)
+    .with('unionAccess', (qc: any) =>
+      qc
+        .selectFrom('PageUserAccess')
+        .select(['userId', 'pageId', 'role'])
+        .where('pageId', 'in', (eb: any) => eb.selectFrom('descendants').select('id'))
+        .unionAll(({parens, selectFrom}: any) =>
+          parens(
+            selectFrom('PageTeamAccess')
+              .where('pageId', 'in', (eb: any) => eb.selectFrom('descendants').select('id'))
+              .innerJoin('TeamMember', 'PageTeamAccess.teamId', 'TeamMember.teamId')
+              .where('TeamMember.isNotRemoved', '=', true)
+              .select(['TeamMember.userId', 'pageId', 'role'])
+          )
+        )
+    )
+    .with('nextPageAccess', (qc: any) =>
+      qc
+        .selectFrom('unionAccess')
+        .select(({fn}: any) => ['userId', 'pageId', fn.min('role').as('role')])
+        .groupBy(['userId', 'pageId'])
+    )
+    .with('insertNew', (qc: any) =>
+      qc
+        .insertInto('PageAccess')
+        .columns(['userId', 'pageId', 'role'])
+        .expression((eb: any) =>
+          eb.selectFrom('nextPageAccess').select(['userId', 'pageId', 'role'])
+        )
+        .onConflict((oc: any) =>
+          oc
+            .columns(['userId', 'pageId'])
+            .doUpdateSet((eb: any) => ({
+              role: eb.ref('excluded.role')
+            }))
+            .where(({eb, ref}: any) =>
+              eb('PageAccess.role', 'is distinct from', ref('excluded.role'))
+            )
+        )
+    )
+  await res.selectNoFrom(sql`1`.as('t')).execute()
+}
 
 export async function up(db: Kysely<any>): Promise<void> {
   // 1. Schema changes
@@ -46,7 +104,6 @@ export async function up(db: Kysely<any>): Promise<void> {
           .where('deletedAt', 'is', null)
           .orderBy('createdAt', 'desc')
           .execute()
-
         if (summaryPages.length === 0) return
         // Determine TOC owner: prefer the most recent summary page's userId, fall back to createdBy
         const tocUserId = summaryPages[0]?.userId ?? team.createdBy
@@ -94,6 +151,18 @@ export async function up(db: Kysely<any>): Promise<void> {
           .executeTakeFirstOrThrow()
 
         const tocPageId = tocPage.id
+        await Promise.all([
+          db
+            .insertInto('PageUserAccess')
+            .values({userId: tocUserId, pageId: tocPageId, role: 'owner'})
+            .execute(),
+          db
+            .insertInto('PageTeamAccess')
+            .values({teamId, pageId: tocPageId, role: 'editor'})
+            .execute()
+        ])
+
+        await updatePageAccessTable(db, tocPageId)
 
         await Promise.all([
           // UPDATE Team.meetingTOCpageId
