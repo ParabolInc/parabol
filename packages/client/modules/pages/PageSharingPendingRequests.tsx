@@ -64,11 +64,11 @@ export const PageSharingPendingRequests = (props: Props) => {
           const {id: userId, preferredName: name, email, picture} = user
           return (
             <div key={userId} className='flex items-start justify-between'>
-              <div className='flex items-start gap-3 pr-2'>
-                <Avatar className='h-10 w-10' picture={picture} />
-                <div className='flex flex-col py-0.5'>
-                  <div className='font-medium text-slate-700 text-sm'>{name}</div>
-                  <div className='text-slate-800 text-xs'>{email}</div>
+              <div className='flex min-w-0 flex-1 items-start gap-3 pr-2'>
+                <Avatar className='h-10 w-10 shrink-0' picture={picture} />
+                <div className='flex min-w-0 flex-col py-0.5'>
+                  <div className='truncate font-medium text-slate-700 text-sm'>{name}</div>
+                  <div className='truncate text-slate-800 text-xs'>{email}</div>
                   {reason && <div className='pt-2 text-slate-800 text-sm italic'>{reason}</div>}
                 </div>
               </div>
@@ -76,11 +76,11 @@ export const PageSharingPendingRequests = (props: Props) => {
               <Button
                 variant='outline'
                 shape='pill'
-                className='mt-1 flex items-center gap-1 pr-4 pl-3 text-slate-700'
+                className='mt-1 flex shrink-0 items-center gap-1 px-3 py-1 text-slate-700 text-sm'
                 onClick={() => acceptRequest(userId, role)}
                 disabled={submitting}
               >
-                <AddIcon className='h-6 w-6' />
+                <AddIcon className='h-4 w-4' />
                 Add {role}
               </Button>
             </div>

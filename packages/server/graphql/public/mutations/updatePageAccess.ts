@@ -104,15 +104,13 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   if (userRole !== 'owner') {
     // check to see if the page is an orphan
     const userRoles = await dataLoader.get('pageAccessByPageId').load(dbPageId)
-    const owner = userRoles.filter(({role}) => role === 'owner')
-    if (!owner) {
-      // the page is an orphan. Allow the viewer to claim it
-      const isValidOwnerClaim = subjectType === 'user' && subjectId === viewerId && role === 'owner'
-      if (!isValidOwnerClaim) {
-        throw new GraphQLError(
-          `Insufficient permission. User role: ${userRole}. Role required: 'owner'`
-        )
-      }
+    const owner = userRoles.find(({role}) => role === 'owner')
+    const isValidOwnerClaim =
+      !owner && subjectType === 'user' && subjectId === viewerId && role === 'owner'
+    if (!isValidOwnerClaim) {
+      throw new GraphQLError(
+        `Insufficient permission. User role: ${userRole}. Role required: 'owner'`
+      )
     }
   }
   const tableMap = {
