@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getSimpleGroupTitle} from 'parabol-client/utils/getSimpleGroupTitle'
@@ -25,16 +26,21 @@ const createReflection: MutationResolvers['createReflection'] = async (
   const {content, sortOrder, meetingId, promptId} = input
   // AUTH
   const viewerId = getUserId(authToken)
-  const [reflectPrompt, meeting, viewer] = await Promise.all([
+  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+  const [reflectPrompt, meeting, viewer, meetingMember] = await Promise.all([
     dataLoader.get('reflectPrompts').load(promptId),
     dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('users').loadNonNull(viewerId),
+    dataLoader.get('meetingMembers').loadNonNull(meetingMemberId)
   ])
   if (!reflectPrompt) {
     return {error: {message: 'Category not found'}}
   }
   if (!meeting) {
     return {error: {message: 'Meeting not found'}}
+  }
+  if (!meetingMember) {
+    return {error: {message: 'Viewer is not a meeting member'}}
   }
   const {endedAt, phases, teamId} = meeting
   if (endedAt) {

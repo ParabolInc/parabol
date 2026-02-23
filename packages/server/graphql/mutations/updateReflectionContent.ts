@@ -1,5 +1,6 @@
 import {generateText} from '@tiptap/core'
 import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
+import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
@@ -42,14 +43,17 @@ export default {
         userId: viewerId
       })
     }
-    const {creatorId, meetingId, reflectionGroupId, promptId} = reflection
-    const reflectPrompt = await dataLoader.get('reflectPrompts').load(promptId)
-    if (!reflectPrompt) {
-      return standardError(new Error('Category not found'), {
-        userId: viewerId
-      })
+    const {creatorId, meetingId, reflectionGroupId} = reflection
+    const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
+    const [meeting, meetingMember] = await Promise.all([
+      dataLoader.get('newMeetings').loadNonNull(meetingId),
+      dataLoader.get('meetingMembers').loadNonNull(meetingMemberId)
+    ])
+
+    if (!meetingMember) {
+      return {error: {message: 'Viewer is not a meeting member'}}
     }
-    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+
     const {endedAt, phases, teamId} = meeting
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})

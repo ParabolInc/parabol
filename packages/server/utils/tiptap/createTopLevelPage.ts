@@ -1,5 +1,7 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
+import {GraphQLError} from 'graphql'
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
@@ -23,6 +25,12 @@ export const createTopLevelPage = async (
   } = {}
 ) => {
   const {teamId, content, mutatorId, summaryMeetingId, title} = options
+  if (teamId) {
+    const teamMember = await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
+    if (!teamMember) {
+      throw new GraphQLError('Viewer is not a member of this team')
+    }
+  }
   const operationId = dataLoader.share()
   const subOptions = {mutatorId: mutatorId || undefined, operationId}
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)

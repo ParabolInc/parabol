@@ -3,7 +3,7 @@ import {isNotNull} from 'parabol-client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingSettings} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
@@ -25,6 +25,9 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
 
   // RESOLUTION
   const {teamId, meetingType, phaseTypes} = settings
+  if (!isTeamMember(authToken, teamId)) {
+    return {error: {message: 'Viewer is not a member of this team'}}
+  }
   const [team, viewer] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId)
