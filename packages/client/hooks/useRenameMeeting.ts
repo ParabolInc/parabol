@@ -57,7 +57,7 @@ export const useRenameMeeting = (
       if (error?.message !== res.error) {
         onError(new Error(res.error))
       }
-    } else if (error) {
+    } else {
       onCompleted()
     }
     return res

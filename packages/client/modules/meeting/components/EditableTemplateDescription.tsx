@@ -40,9 +40,11 @@ const EditableTemplateDescription = (props: Props) => {
 
   const validate = (rawValue: string) => {
     const res = legitify(rawValue)
-    if (res.error && error?.message !== res.error) {
-      onError(new Error(res.error))
-    } else if (error) {
+    if (res.error) {
+      if (error?.message !== res.error) {
+        onError(new Error(res.error))
+      }
+    } else {
       onCompleted()
     }
     return res
