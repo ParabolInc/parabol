@@ -1,4 +1,4 @@
-import type {MeetingSettings} from '../../../postgres/types'
+import {GraphQLError} from 'graphql'
 import type {GQLContext} from '../../graphql'
 
 const getTeamIdFromArgSettingsId = async (
@@ -6,11 +6,9 @@ const getTeamIdFromArgSettingsId = async (
   args: any,
   context: GQLContext
 ): Promise<string | Error> => {
-  const settings = (await context.dataLoader
-    .get('meetingSettings')
-    .load(args.settingsId)) as MeetingSettings
+  const settings = await context.dataLoader.get('meetingSettings').load(args.settingsId)
   if (!settings) {
-    return new Error('Settings not found')
+    return new GraphQLError('Settings not found')
   }
 
   return settings.teamId
