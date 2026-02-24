@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.8.3](https://github.com/ParabolInc/parabol/compare/v12.8.2...v12.8.3) (2026-02-24)
+
+
+### Fixed
+
+* refactor selectTemplate mutation ([#12662](https://github.com/ParabolInc/parabol/issues/12662)) ([0070fa5](https://github.com/ParabolInc/parabol/commit/0070fa5800a1480cc1fab64a2ecbd0250da689eb))
+
 ## [12.8.2](https://github.com/ParabolInc/parabol/compare/v12.8.1...v12.8.2) (2026-02-24)
 
 
