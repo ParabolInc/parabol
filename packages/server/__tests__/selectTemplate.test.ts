@@ -26,8 +26,8 @@ const getRetroSettings = async (teamId: string, cookie: string) => {
 const SELECT_TEMPLATE_MUTATION = `
   mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
     selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
-      meetingTemplate {
-        id
+      meetingSettings {
+        selectedTemplateId
       }
       error {
         message
@@ -80,13 +80,12 @@ test('select a public template', async () => {
   expect(selectTemplateRes).toEqual({
     data: {
       selectTemplate: {
-        meetingTemplate: {
-          id: '360ReviewFeedbackOnDevelopmentTemplate'
-        },
-        error: null
+        error: null,
+        meetingSettings: {
+          selectedTemplateId: '360ReviewFeedbackOnDevelopmentTemplate'
+        }
       }
-    },
-    errors: null
+    }
   })
 
   const after = await getRetroSettings(teamId, cookie)
