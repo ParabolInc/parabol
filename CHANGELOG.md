@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.8.0](https://github.com/ParabolInc/parabol/compare/v12.7.2...v12.8.0) (2026-02-24)
+
+
+### Added
+
+* meeting summaries toc ([#12653](https://github.com/ParabolInc/parabol/issues/12653)) ([16938b7](https://github.com/ParabolInc/parabol/commit/16938b7700a3f1605c3d46c3f49869dae4cd9284))
+
+
+### Fixed
+
+* various input text wrapping bugs ([#12602](https://github.com/ParabolInc/parabol/issues/12602)) ([b0ec1d7](https://github.com/ParabolInc/parabol/commit/b0ec1d7c2a884a795eb05ce15bb91783b7f6b9d3))
+
 ## [12.7.2](https://github.com/ParabolInc/parabol/compare/v12.7.1...v12.7.2) (2026-02-20)
 
 
