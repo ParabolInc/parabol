@@ -1,9 +1,9 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
-import {useEffect} from 'react'
 import type {useTipTapDatabaseEditor_viewer$key} from '../../__generated__/useTipTapDatabaseEditor_viewer.graphql'
 import {TipTapEditor} from '../../components/TipTapEditor/TipTapEditor'
 import {useTipTapDatabaseEditor} from '../../hooks/useTipTapDatabaseEditor'
 import {cn} from '../../ui/cn'
+import {useEditablePage} from './useEditablePage'
 
 interface Props {
   provider: HocuspocusProvider
@@ -14,9 +14,7 @@ interface Props {
 export const DatabaseEditor = (props: Props) => {
   const {provider, isEditable, viewerRef} = props
   const {editor} = useTipTapDatabaseEditor(provider, {viewerRef})
-  useEffect(() => {
-    editor?.setEditable(isEditable)
-  }, [editor, isEditable])
+  useEditablePage(provider, editor, isEditable)
   if (!editor) return <div>No editor</div>
   return (
     <>

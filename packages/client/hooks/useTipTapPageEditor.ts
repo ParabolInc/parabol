@@ -272,7 +272,7 @@ export const useTipTapPageEditor = (
         })
       ],
       autofocus: true,
-      editable: true
+      editable: provider.authorizedScope !== 'readonly'
     },
     [provider]
   )

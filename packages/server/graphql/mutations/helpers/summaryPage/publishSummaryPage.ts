@@ -22,11 +22,12 @@ export const publishSummaryPage = async (
   dataLoader.share()
   const userId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId, name: meetingName} = meeting
+  const {teamId} = meeting
   const pg = getKysely()
   // Get or create the meeting TOC page for this team
   const meetingTOCpageId = await ensureMeetingTOCPage(userId, teamId, dataLoader, mutatorId)
-
+  const titleBlock = getTitleBlock(meeting)
+  const title = titleBlock.content[0]?.text ?? '<Untitled>'
   const meetingSummaryPage = await createNewPage({
     parentPageId: meetingTOCpageId,
     userId,
@@ -36,7 +37,7 @@ export const publishSummaryPage = async (
         // we do this here instead of in the stream
         // because the schema enforces a title
         // so we need a title before we can insert a thinking block
-        getTitleBlock(meeting),
+        titleBlock,
         {
           type: 'thinkingBlock'
         }
@@ -45,7 +46,7 @@ export const publishSummaryPage = async (
   })
   const documentName = CipherId.toClient(meetingTOCpageId, 'page')
   await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
-    title: meetingName,
+    title,
     pageCode: CipherId.encrypt(meetingSummaryPage.id),
     isDatabase: false
   })
