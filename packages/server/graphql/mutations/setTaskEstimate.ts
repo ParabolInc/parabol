@@ -109,7 +109,6 @@ const setTaskEstimate = {
         // Check Jira export limits for starter-tier orgs
         const team = await dataLoader.get('teams').loadNonNull(teamId)
         const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
-
         if (org.tier === 'starter') {
           const pg = getKysely()
           const MAX_FREE_JIRA_EXPORTS = 100
@@ -124,14 +123,13 @@ const setTaskEstimate = {
                 }))
                 .where((eb) =>
                   eb.or([
-                    eb('JiraExport.limitReachedAt', 'is', null)
-                    // eb('JiraExport.limitReachedAt', '>', sql<Date>`now() - interval '1 day'`)
+                    eb('JiraExport.limitReachedAt', 'is', null),
+                    eb('JiraExport.limitReachedAt', '>', sql<Date>`now() - interval '1 day'`)
                   ])
                 )
             )
             .returning(['exportCount', 'limitReachedAt'])
             .executeTakeFirst()
-
           if (!result) {
             // No row returned means limitReachedAt is older than 1 day (conflict WHERE failed)
             throw new GraphQLError(

@@ -8,7 +8,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('limitReachedAt', 'timestamptz')
     .execute()
 
-  // Backfill from existing Jira tasks
   await sql`
     INSERT INTO "JiraExport" ("cloudId", "exportCount")
     SELECT integration->>'cloudId', COUNT(*)::integer
