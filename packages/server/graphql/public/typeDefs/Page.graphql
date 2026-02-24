@@ -21,4 +21,5 @@ type Page implements PagePartial {
   deletedByUser: User
   ancestorIds: [ID!]!
   ancestors: [PagePartial!]!
+  isMeetingTOC: Boolean!
 }

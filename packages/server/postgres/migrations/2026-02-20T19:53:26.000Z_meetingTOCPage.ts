@@ -144,7 +144,7 @@ export async function up(db: Kysely<any>): Promise<void> {
             isPrivate: false,
             title: 'Meeting Summaries',
             yDoc,
-            sortOrder: '!',
+            sortOrder: ' !',
             isParentLinked: true
           })
           .returning('id')

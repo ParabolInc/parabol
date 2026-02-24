@@ -65,6 +65,7 @@ export const LeftNavPageLink = (props: Props) => {
         userSortOrder
         sortOrder # used implicityly in store traversal by useDraggingPage
         isDatabase
+        isMeetingTOC
       }
     `,
     pageRef
@@ -79,7 +80,8 @@ export const LeftNavPageLink = (props: Props) => {
     teamId,
     isPrivate,
     currentPageAncestorDepth,
-    isDatabase
+    isDatabase,
+    isMeetingTOC
   } = page
   const {viewer: viewerAccess} = access
 
@@ -123,7 +125,12 @@ export const LeftNavPageLink = (props: Props) => {
     isDropBelowReorder || (isViewerOwnerOfDraggingPage && isEditorOfDroppingSection)
 
   const canDropIn =
-    draggingPageId && !isSourceDragParent && !isSelf && !isDraggingLastChild && hasDragDropInAccess
+    draggingPageId &&
+    !isSourceDragParent &&
+    !isSelf &&
+    !isDraggingLastChild &&
+    hasDragDropInAccess &&
+    !isMeetingTOC
   const hasDragDropInOrBelow = showChildren ? hasDragDropInAccess : hasDragDropBelowAccess
 
   const canDropBelow =
