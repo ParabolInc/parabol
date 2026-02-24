@@ -32,10 +32,8 @@ test('selectTemplate blocks selecting a template for a team the viewer is not a 
     query: `
       mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
         selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
-          ... on SelectTemplatePayload {
-            meetingTemplate {
-              id
-            }
+          meetingTemplate {
+            id
           }
         }
       }
@@ -47,10 +45,16 @@ test('selectTemplate blocks selecting a template for a team the viewer is not a 
     cookie: attacker.cookie
   })
 
-  expect(selectTemplateRes.data?.selectTemplate).toBeNull()
-  expect(selectTemplateRes.errors?.[0].message).toMatch(
-    /Not Authorised|Not Authorized|Unexpected Error/i
-  )
+  expect(selectTemplateRes).toEqual({
+    data: {
+      selectTemplate: null
+    },
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Viewer is not on team')
+      })
+    ]
+  })
 
   const after = await getRetroSettings(victim.teamId, victim.cookie)
   expect(after.selectedTemplateId).toBe(before.selectedTemplateId)

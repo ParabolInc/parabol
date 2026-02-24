@@ -9,6 +9,7 @@ import {hasProviderAccess} from './rules/hasProviderAccess'
 import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingMember} from './rules/isMeetingMember'
+import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
@@ -41,7 +42,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
-    createPage: isTeamMember<'Mutation.createPage'>('args.teamId'),
+    createPage: or(
+      isNull<'Mutation.createPage'>('args.teamId'),
+      isTeamMember<'Mutation.createPage'>('args.teamId')
+    ),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
     setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
     createReflection: isMeetingMember<'Mutation.createReflection'>('args.input.meetingId'),

@@ -833,3 +833,51 @@ test('Page can be made private again', async () => {
     ]
   })
 })
+
+test('createPage blocks creating a team page for a team the viewer is not a member of', async () => {
+  const [attacker, victim] = await Promise.all([signUp(), signUp()])
+  const pg = getKysely()
+
+  const before = await pg
+    .selectFrom('Page')
+    .select('id')
+    .where('teamId', '=', victim.teamId)
+    .where('userId', '=', attacker.userId)
+    .execute()
+
+  const createPageRes = await sendPublic({
+    query: `
+      mutation CreatePage($teamId: ID!) {
+        createPage(teamId: $teamId) {
+          ... on CreatePagePayload {
+            page {
+              id
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      teamId: victim.teamId
+    },
+    cookie: attacker.cookie
+  })
+
+  const after = await pg
+    .selectFrom('Page')
+    .select('id')
+    .where('teamId', '=', victim.teamId)
+    .where('userId', '=', attacker.userId)
+    .execute()
+
+  expect(after.length).toBe(before.length)
+
+  expect(createPageRes).toEqual({
+    data: null,
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Viewer is not on team')
+      })
+    ]
+  })
+})
