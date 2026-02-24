@@ -169,7 +169,15 @@ export const rawOnPointerUp =
           console.warn('Page not found in Relay')
           return
         }
-        const {title, isDatabase} = pageGQLRecord
+        const {title, isDatabase, isMeetingTOC} = pageGQLRecord
+        if (isMeetingTOC) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: 'useDraggablePage:noDropAccess',
+            message: 'Cannot move Meeting Summaries',
+            autoDismiss: 5
+          })
+          return
+        }
         const children = getPageLinks(document, true)
         const idx = dropIdx === null ? -1 : dropIdx
         const dropTarget = children.at(idx) as Y.XmlElement
@@ -217,6 +225,16 @@ export const rawOnPointerUp =
           teamId: targetTeamId
         },
         onError: snackOnError(atmosphere, 'updatePageErr'),
+        onCompleted: (_res, errors) => {
+          const firstError = errors?.[0]
+          if (firstError) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              message: firstError.message,
+              autoDismiss: 10,
+              key: 'dragPageError'
+            })
+          }
+        },
         sourceTeamId,
         sourceParentPageId,
         sourceConnectionKey,

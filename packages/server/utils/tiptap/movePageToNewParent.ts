@@ -18,12 +18,15 @@ export const movePageToNewParent = async (
   const pg = getKysely()
   const childPage = await pg
     .selectFrom('Page')
-    .select(['parentPageId', 'deletedAt'])
+    .select(['parentPageId', 'deletedAt', 'isMeetingTOC'])
     .where('id', '=', pageId)
     .executeTakeFirstOrThrow()
   if (childPage.parentPageId === parentPageId) {
     // the child page will already have the correct parent if we created a PageLink on the parent doc
     if (!childPage.deletedAt) return
+  }
+  if (childPage.isMeetingTOC) {
+    throw new GraphQLError(`Cannot move Meeting Summaries`)
   }
 
   const [viewerAccess] = await pageAccessByUserIdBatchFn([{pageId, userId: viewerId}])

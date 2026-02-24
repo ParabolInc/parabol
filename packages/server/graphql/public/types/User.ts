@@ -1020,8 +1020,6 @@ const User: ReqResolvers<'User'> = {
       .$if(dbParentPageId === null, (qb) => qb.where('parentPageId', 'is', null))
       .$if(teamId === null, (qb) => qb.where('teamId', 'is', null))
       .$if(!!after, (qb) => qb.where('sortOrder', '>', after!))
-      // TODO make this a variable, but for now, hide summaries from everything
-      .where('summaryMeetingId', 'is', null)
       .$if(!!textFilter, (qb) => qb.where('title', 'ilike', `%${textFilter}%`))
       .where('deletedBy', 'is', null)
       .orderBy('sortOrder')

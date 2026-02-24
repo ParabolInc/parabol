@@ -142,6 +142,12 @@ export const hocuspocus = new Hocuspocus({
       logError(error, {userId, tags: {dbId, documentName}})
       throw error
     }
+    const pg = getKysely()
+    const page = await pg
+      .selectFrom('Page')
+      .select('isMeetingTOC')
+      .where('id', '=', dbId)
+      .executeTakeFirstOrThrow()
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()
@@ -168,7 +174,7 @@ export const hocuspocus = new Hocuspocus({
       }
     }
     const {role} = pageAccess
-    if (role === 'viewer' || role === 'commenter') {
+    if (role === 'viewer' || role === 'commenter' || page.isMeetingTOC) {
       connectionConfig.readOnly = true
     }
     return {userId}

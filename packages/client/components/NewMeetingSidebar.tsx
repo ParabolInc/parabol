@@ -120,12 +120,12 @@ const NewMeetingSidebar = (props: Props) => {
     <SidebarParent isDesktop={isDesktop} data-cy='sidebar'>
       <SidebarHeader>
         <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
-        <div>
+        <div className='min-w-0 flex-1'>
           {isFacilitator ? (
             <EditableMeetingName
               error={error?.message}
               handleSubmit={handleSubmit}
-              initialValue={meetingName}
+              initialValue={meetingName || ''}
               isWrap
               maxLength={50}
               validate={validate}

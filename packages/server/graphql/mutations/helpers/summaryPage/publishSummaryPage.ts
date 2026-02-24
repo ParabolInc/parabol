@@ -1,11 +1,13 @@
 import type {GraphQLResolveInfo} from 'graphql'
-import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
+import {redisHocusPocus} from '../../../../hocusPocus'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
+import {CipherId} from '../../../../utils/CipherId'
 import {Logger} from '../../../../utils/Logger'
-import {createTopLevelPage} from '../../../../utils/tiptap/createTopLevelPage'
+import {createNewPage} from '../../../../utils/tiptap/createNewPage'
 import type {InternalContext} from '../../../graphql'
+import {ensureMeetingTOCPage} from './ensureMeetingTOCPage'
 import {getTitleBlock} from './getTitleBlock'
 import {streamSummaryBlocksToPage} from './streamSummaryBlocksToPage'
 
@@ -20,36 +22,43 @@ export const publishSummaryPage = async (
   dataLoader.share()
   const userId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId, name} = meeting
-  // start creating meeting summaries for everyone, feature flag or not
-  const page = await createTopLevelPage(userId, dataLoader, {
-    teamId,
-    mutatorId,
-    summaryMeetingId: meetingId,
-    title: name,
+  const {teamId} = meeting
+  const pg = getKysely()
+  // Get or create the meeting TOC page for this team
+  const meetingTOCpageId = await ensureMeetingTOCPage(userId, teamId, dataLoader, mutatorId)
+  const titleBlock = getTitleBlock(meeting)
+  const title = titleBlock.content[0]?.text ?? '<Untitled>'
+  const meetingSummaryPage = await createNewPage({
+    parentPageId: meetingTOCpageId,
+    userId,
     content: {
       type: 'doc',
       content: [
         // we do this here instead of in the stream
         // because the schema enforces a title
         // so we need a title before we can insert a thinking block
-        getTitleBlock(meeting),
+        titleBlock,
         {
           type: 'thinkingBlock'
         }
       ]
-    } as TipTapSerializedContent
+    }
   })
-  const {id: pageId} = page
-  await getKysely()
+  const documentName = CipherId.toClient(meetingTOCpageId, 'page')
+  await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
+    title,
+    pageCode: CipherId.encrypt(meetingSummaryPage.id),
+    isDatabase: false
+  })
+  const {id: pageId} = meetingSummaryPage
+  await pg
     .updateTable('NewMeeting')
     .set({summaryPageId: pageId})
     .where('id', '=', meetingId)
     .execute()
-  // #12270, attempting to update cache vs. clear it to see if that fixes some subscribers having this be null
   meeting.summaryPageId = pageId
   // don't wait for the stream to finish
   streamSummaryBlocksToPage(pageId, meetingId, context, info).catch(Logger.log)
   dataLoader.dispose()
-  return page
+  return meetingSummaryPage
 }

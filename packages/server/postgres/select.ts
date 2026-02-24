@@ -318,7 +318,8 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'ancestorIds',
     'deletedAt',
     'deletedBy',
-    'isDatabase'
+    'isDatabase',
+    'isMeetingTOC'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()

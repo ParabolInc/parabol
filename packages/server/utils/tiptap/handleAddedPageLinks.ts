@@ -5,7 +5,7 @@ import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
-import {createChildPage} from './createChildPage'
+import {createNewPage} from './createNewPage'
 import {movePageToNewParent} from './movePageToNewParent'
 import {updateBacklinks} from './updateBacklinks'
 
@@ -43,9 +43,21 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
       node.observe(observer)
       const isDatabase = node.getAttribute('database') || false
       const title = node.getAttribute('title')
-      const newPage = await createChildPage(parentPageId, userId, isDatabase, title).catch(
-        Logger.error
-      )
+      const newPage = await createNewPage({
+        parentPageId,
+        userId,
+        isDatabase,
+        content: {
+          type: 'doc',
+          content: [
+            {
+              type: 'heading',
+              attrs: {level: 1},
+              content: title ? [{type: 'text', text: title}] : []
+            }
+          ]
+        }
+      }).catch(Logger.error)
       if (!newPage) return
       const pageCode = CipherId.encrypt(newPage.id)
       node.setAttribute('pageCode', pageCode)

@@ -30,8 +30,13 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
   if (!page) throw new GraphQLError('Invalid pageId')
-  const isReorder = sourceSection === targetSection && (!teamId || teamId === page.teamId)
+
+  const isReorder =
+    sourceSection === targetSection && ((!teamId && !page.teamId) || teamId === page.teamId)
   if (!isReorder) {
+    if (page.isMeetingTOC) {
+      throw new GraphQLError('Meeting Summaries pages cannot be moved')
+    }
     // changing parents will change permissions.
     const userRole = await dataLoader
       .get('pageAccessByPageIdUserId')

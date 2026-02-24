@@ -15,6 +15,7 @@ const queryNode = graphql`
         isPrivate
         title
         isDatabase
+        isMeetingTOC
         access {
           viewer
         }
