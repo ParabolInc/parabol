@@ -45,10 +45,14 @@ test('setMeetingSettings blocks updating settings for a team the viewer is not a
     cookie: attacker.cookie
   })
 
-  expect(setMeetingSettingsRes.data).toBeNull()
-  expect(setMeetingSettingsRes.errors?.[0].message).toMatch(
-    /Not Authorised|Not Authorized|Unexpected Error/i
-  )
+  expect(setMeetingSettingsRes).toEqual({
+    data: null,
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Viewer is not on team')
+      })
+    ]
+  })
 
   const after = await getRetroSettings(victim.teamId, victim.cookie)
   expect(after.disableAnonymity).toBe(before.disableAnonymity)

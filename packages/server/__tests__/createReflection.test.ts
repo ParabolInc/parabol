@@ -85,10 +85,16 @@ test('createReflection blocks adding a reflection when viewer is not a member of
     cookie: attacker.cookie
   })
 
-  expect(createReflectionRes.data?.createReflection).toBeNull()
-  expect(createReflectionRes.errors?.[0].message).toMatch(
-    /Not Authorised|Not Authorized|Unexpected Error/i
-  )
+  expect(createReflectionRes).toEqual({
+    data: {
+      createReflection: null
+    },
+    errors: [
+      expect.objectContaining({
+        message: expect.stringMatching('Viewer is not on team')
+      })
+    ]
+  })
 
   const afterCount = await getReflectionCount(meetingId, victim.cookie)
   expect(afterCount).toBe(beforeCount)
