@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.8.1](https://github.com/ParabolInc/parabol/compare/v12.8.0...v12.8.1) (2026-02-24)
+
+
+### Fixed
+
+* prevent moving and dragging of Meeting Summaries pages ([#12657](https://github.com/ParabolInc/parabol/issues/12657)) ([f35cb22](https://github.com/ParabolInc/parabol/commit/f35cb22dc30a430a450b9c3b73eda333c724769c))
+
 ## [12.8.0](https://github.com/ParabolInc/parabol/compare/v12.7.2...v12.8.0) (2026-02-24)
 
 
