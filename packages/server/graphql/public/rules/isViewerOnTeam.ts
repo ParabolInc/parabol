@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {getUserId} from '../../../utils/authorization'
@@ -14,8 +15,8 @@ const isViewerOnTeam = (getTeamId: GetTeamId) =>
       if (teamId instanceof Error) return teamId
       const teamMemberId = TeamMemberId.join(teamId, viewerId)
       const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
-      if (!teamMember) return new Error('Viewer is not on team')
-      if (!teamMember.isNotRemoved) return new Error('Viewer is not on team anymore')
+      if (!teamMember) return new GraphQLError('Viewer is not on team')
+      if (!teamMember.isNotRemoved) return new GraphQLError('Viewer is not on team anymore')
       return true
     }
   )

@@ -197,6 +197,7 @@
           "RetrospectiveMeetingSettings": "../../postgres/types/index#RetrospectiveMeetingSettings as RetrospectiveMeetingSettingsDB",
           "SAML": "./types/SAML#SAMLSource",
           "SearchResultEdge": "./types/SearchResultEdge#SearchResultEdgeSource",
+          "SelectTemplatePayload": "./types/SelectTemplatePayload#SelectTemplatePayloadSource",
           "SetDefaultSlackChannelSuccess": "./types/SetDefaultSlackChannelSuccess#SetDefaultSlackChannelSuccessSource",
           "SetJiraDisplayFieldIdsPayload": "./types/SetJiraDisplayFieldIdsPayload#SetJiraDisplayFieldIdsPayloadSource",
           "SetMeetingSettingsPayload": "../types/SetMeetingSettingsPayload#SetMeetingSettingsPayloadSource",
