@@ -22,6 +22,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   if (!settings) {
     return standardError(new Error('Settings not found'), {userId: viewerId})
   }
+
   // RESOLUTION
   const {teamId, meetingType, phaseTypes} = settings
   const [team, viewer] = await Promise.all([

@@ -29,6 +29,7 @@ const selectTemplate = {
     const subOptions = {operationId, mutatorId}
     const viewerId = getUserId(authToken)
 
+    // AUTH
     const [template] = await Promise.all([
       dataLoader.get('meetingTemplates').load(selectedTemplateId) as Promise<MeetingTemplate>
     ])
