@@ -8,6 +8,7 @@ graphql`
     stage {
       finalScore
     }
+    exportCount
   }
 `
 

@@ -1,4 +1,5 @@
-import {GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
+import {GraphQLError, GraphQLNonNull, type GraphQLResolveInfo} from 'graphql'
+import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../client/shared/gqlIds/JiraProjectKeyId'
@@ -100,9 +101,56 @@ const setTaskEstimate = {
 
     let success = false
     let errorMessage: string | undefined
+    let exportCount = 0
     switch (service) {
       case 'jira': {
         const {accessUserId, cloudId, issueKey} = integration!
+
+        // Check Jira export limits for starter-tier orgs
+        const team = await dataLoader.get('teams').loadNonNull(teamId)
+        const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
+
+        if (org.tier === 'starter') {
+          const pg = getKysely()
+          const MAX_FREE_JIRA_EXPORTS = 100
+          const result = await pg
+            .insertInto('JiraExport')
+            .values({cloudId, exportCount: 1})
+            .onConflict((oc) =>
+              oc
+                .column('cloudId')
+                .doUpdateSet((eb) => ({
+                  exportCount: eb('JiraExport.exportCount', '+', 1)
+                }))
+                .where((eb) =>
+                  eb.or([
+                    eb('JiraExport.limitReachedAt', 'is', null)
+                    // eb('JiraExport.limitReachedAt', '>', sql<Date>`now() - interval '1 day'`)
+                  ])
+                )
+            )
+            .returning(['exportCount', 'limitReachedAt'])
+            .executeTakeFirst()
+
+          if (!result) {
+            // No row returned means limitReachedAt is older than 1 day (conflict WHERE failed)
+            throw new GraphQLError(
+              'Your free Jira export limit has been reached. Please upgrade to continue.',
+              {
+                extensions: {code: 'UPGRADE_REQUIRED'}
+              }
+            )
+          }
+
+          exportCount = result.exportCount
+          if (result.exportCount >= MAX_FREE_JIRA_EXPORTS && !result.limitReachedAt) {
+            await pg
+              .updateTable('JiraExport')
+              .set({limitReachedAt: sql`now()`})
+              .where('cloudId', '=', cloudId)
+              .execute()
+          }
+        }
         const projectKey = JiraProjectKeyId.join(issueKey)
         const [auth, jiraIssue] = await Promise.all([
           dataLoader.get('freshAtlassianAuth').load({teamId, userId: accessUserId}),
@@ -425,7 +473,7 @@ const setTaskEstimate = {
         })
         .execute()
 
-      const data = {meetingId, stageId, taskId}
+      const data = {meetingId, stageId, taskId, exportCount}
       publish(SubscriptionChannel.MEETING, meetingId, 'SetTaskEstimateSuccess', data, subOptions)
       return data
     } else {

@@ -1,4 +1,4 @@
-import {GraphQLNonNull, GraphQLObjectType} from 'graphql'
+import {GraphQLInt, GraphQLNonNull, GraphQLObjectType} from 'graphql'
 import type {GQLContext} from '../graphql'
 import resolveStage from '../resolvers/resolveStage'
 import EstimateStage from './EstimateStage'
@@ -15,6 +15,11 @@ export const SetTaskEstimateSuccess = new GraphQLObjectType<any, GQLContext>({
       type: EstimateStage,
       description: 'The stage that holds the updated finalScore, if meetingId was provided',
       resolve: resolveStage('ESTIMATE')
+    },
+    exportCount: {
+      type: new GraphQLNonNull(GraphQLInt),
+      description: 'The number of Jira exports for this cloudId. 0 for non-Jira integrations.',
+      resolve: (source: any) => source.exportCount ?? 0
     }
   })
 })

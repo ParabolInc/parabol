@@ -5,4 +5,9 @@ type SetTaskEstimateSuccess {
   The stage that holds the updated finalScore, if meetingId was provided
   """
   stage: EstimateStage
+
+  """
+  The number of Jira exports for this cloudId. 0 for non-Jira integrations.
+  """
+  exportCount: Int!
 }
