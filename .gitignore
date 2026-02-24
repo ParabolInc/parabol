@@ -12,6 +12,7 @@
 .roomodes
 .nx/
 .yarn/
+.claude/
 pgBackup/
 build/
 coverage/

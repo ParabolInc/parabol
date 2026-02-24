@@ -23,21 +23,26 @@ const getRetroSettings = async (teamId: string, cookie: string) => {
   return res.data.viewer.team.meetingSettings
 }
 
+const SELECT_TEMPLATE_MUTATION = `
+  mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
+    selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
+      meetingSettings {
+        selectedTemplateId
+      }
+      error {
+        message
+      }
+    }
+  }
+`
+
 test('selectTemplate blocks selecting a template for a team the viewer is not a member of', async () => {
   const [attacker, victim] = await Promise.all([signUp(), signUp()])
 
   const before = await getRetroSettings(victim.teamId, victim.cookie)
 
   const selectTemplateRes = await sendPublic({
-    query: `
-      mutation SelectTemplate($selectedTemplateId: ID!, $teamId: ID!) {
-        selectTemplate(selectedTemplateId: $selectedTemplateId, teamId: $teamId) {
-          meetingTemplate {
-            id
-          }
-        }
-      }
-    `,
+    query: SELECT_TEMPLATE_MUTATION,
     variables: {
       selectedTemplateId: before.selectedTemplateId,
       teamId: victim.teamId
@@ -58,4 +63,31 @@ test('selectTemplate blocks selecting a template for a team the viewer is not a 
 
   const after = await getRetroSettings(victim.teamId, victim.cookie)
   expect(after.selectedTemplateId).toBe(before.selectedTemplateId)
+})
+
+test('select a public template', async () => {
+  const {cookie, teamId} = await signUp()
+
+  const selectTemplateRes = await sendPublic({
+    query: SELECT_TEMPLATE_MUTATION,
+    variables: {
+      selectedTemplateId: '360ReviewFeedbackOnDevelopmentTemplate',
+      teamId
+    },
+    cookie
+  })
+
+  expect(selectTemplateRes).toEqual({
+    data: {
+      selectTemplate: {
+        error: null,
+        meetingSettings: {
+          selectedTemplateId: '360ReviewFeedbackOnDevelopmentTemplate'
+        }
+      }
+    }
+  })
+
+  const after = await getRetroSettings(teamId, cookie)
+  expect(after.selectedTemplateId).toBe('360ReviewFeedbackOnDevelopmentTemplate')
 })
