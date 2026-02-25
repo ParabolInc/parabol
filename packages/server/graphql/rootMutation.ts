@@ -1,7 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import deleteTask from './mutations/deleteTask'
-import deleteUser from './mutations/deleteUser'
 import denyPushInvitation from './mutations/denyPushInvitation'
 import dismissNewFeature from './mutations/dismissNewFeature'
 import dismissSuggestedAction from './mutations/dismissSuggestedAction'
@@ -79,8 +77,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      deleteTask,
-      deleteUser,
       denyPushInvitation,
       dismissNewFeature,
       dismissSuggestedAction,
