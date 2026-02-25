@@ -26,7 +26,7 @@ const createCookies = (token: AuthToken | null) => {
       domain: null,
       path: '/',
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
       secure: true
     },
     {
