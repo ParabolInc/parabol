@@ -3,7 +3,7 @@
 ## Styling
 
 - **All new components must use Tailwind CSS** — do not use emotion (`styled`, `css` from `@emotion/styled` / `@emotion/react`).
-- Biome enforces Tailwind class sort order (`lint/nursery/useSortedClasses`). Run `pnpm biome` — it autofixes on save.
+- Biome enforces Tailwind class sort order (`lint/nursery/useSortedClasses`). After modifying a file, run `pnpm exec biome check --write <file>` to auto-fix. Do **not** use `pnpm biome check --write` — the `biome` script already includes `check`, so it would expand to `biome check check --write` and fail.
 
 ## UI primitives (modals, dialogs, popovers, tooltips, menus)
 
