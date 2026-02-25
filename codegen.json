@@ -112,6 +112,7 @@
           "DragEstimatingTaskSuccess": "./types/DragEstimatingTaskSuccess#DragEstimatingTaskSuccessSource",
           "EndTeamPromptSuccess": "./types/EndTeamPromptSuccess#EndTeamPromptSuccessSource",
           "EstimateStage": "./types/EstimateStage#EstimateStageSource",
+          "EstimateUserScore": "./types/EstimateUserScore#EstimateUserScoreSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",

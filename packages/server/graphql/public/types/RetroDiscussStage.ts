@@ -1,5 +1,5 @@
-import type DiscussStage from '../../../database/types/DiscussStage'
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
+import type {DiscussStage} from '../../../postgres/types/NewMeetingPhase'
 import type {RetroDiscussStageResolvers} from '../resolverTypes'
 
 export interface DiscussStageSource extends DiscussStage {

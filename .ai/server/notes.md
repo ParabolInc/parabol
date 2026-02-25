@@ -51,10 +51,10 @@ The `rateLimit` rule in permissions.ts is imported from `./rules/rateLimit` (gra
 ### Adding source types to existing GraphQL type resolvers (e.g. RetroDiscussStage)
 Some SDL types already have a resolver file in `public/types/` but no exported source type. When a payload field needs to return one of these types (e.g. `stage: RetroDiscussStage`), you must:
 
-1. **Define a source interface** in the existing type file (`public/types/RetroDiscussStage.ts`) that extends the DB class with the extra fields added at runtime. For stage types, `augmentDBStage` (in `packages/server/graphql/resolvers.ts`) spreads `{...stage, meetingId, phaseType, teamId}`, so the source extends the DB stage class with `meetingId` and `teamId` (`phaseType` is already a literal on concrete stage classes):
+1. **Define a source interface** in the existing type file using types from `packages/server/postgres/types/NewMeetingPhase.d.ts` (NOT the deprecated `/database` directory). For stage types, `augmentDBStage` (in `packages/server/graphql/resolvers.ts`) spreads `{...stage, meetingId, phaseType, teamId}`, so the source extends the Postgres stage interface with `meetingId` and `teamId` (`phaseType` is already a literal on the interface):
    ```ts
    // public/types/RetroDiscussStage.ts
-   import type DiscussStage from '../../../database/types/DiscussStage'
+   import type {DiscussStage} from '../../../postgres/types/NewMeetingPhase'
 
    export interface DiscussStageSource extends DiscussStage {
      meetingId: string
@@ -67,7 +67,12 @@ Some SDL types already have a resolver file in `public/types/` but no exported s
    "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource"
    ```
 
-The same pattern applies to other concrete stage types (e.g. `EstimateStage` → extends `EstimateStage` DB class). Check the existing `public/types/` file first — a resolver file may already exist without a source type export.
+The same pattern applies to other concrete stage types (e.g. `EstimateStage` → extends `EstimateStage` from `NewMeetingPhase.d.ts`). Check the existing `public/types/` file first — a resolver file may already exist without a source type export.
+
+### Deprecated `/database` directory — always use `postgres/types/`
+All classes/types in `packages/server/database/types/` are **deprecated**. When writing source type interfaces for `public/types/` resolvers, always import from `packages/server/postgres/types/NewMeetingPhase.d.ts` (or other files in `postgres/types/`) instead. If an existing file imports from the `database/` directory, flag it and replace the import.
+
+If a codegen mapper references a type from the `database/` directory, replace it with the equivalent interface from `postgres/types/NewMeetingPhase.d.ts`.
 
 ### Field resolvers with IDs vs full objects
 When a mutation returns IDs (not full objects), the payload type source needs custom field resolvers:
