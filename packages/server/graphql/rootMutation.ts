@@ -1,12 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import editCommenting from './mutations/editCommenting'
-import editReflection from './mutations/editReflection'
-import editTask from './mutations/editTask'
-import emailPasswordReset from './mutations/emailPasswordReset'
-import endCheckIn from './mutations/endCheckIn'
-import endDraggingReflection from './mutations/endDraggingReflection'
-import endSprintPoker from './mutations/endSprintPoker'
 import flagReadyToAdvance from './mutations/flagReadyToAdvance'
 import invalidateSessions from './mutations/invalidateSessions'
 import inviteToTeam from './mutations/inviteToTeam'
@@ -71,13 +64,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      emailPasswordReset,
-      editCommenting,
-      endSprintPoker,
-      editReflection,
-      editTask,
-      endCheckIn,
-      endDraggingReflection,
       flagReadyToAdvance,
       invalidateSessions,
       inviteToTeam,
