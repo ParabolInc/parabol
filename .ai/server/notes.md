@@ -26,8 +26,69 @@ Only needed when the payload type requires **custom field resolvers** beyond the
 ### codegen.json mappers
 Only add a mapper entry when you create a new source type file. If the payload's fields are all handled by existing mapped types (e.g. `Task → TaskDB`) and the default resolver suffices, no mapper is needed.
 
+**Always run `pnpm codegen` after modifying `codegen.json`** to regenerate `resolverTypes.ts` and confirm no type errors were introduced. Do not assume the mapper is correct until codegen succeeds.
+
 ### Import paths from `public/mutations/`
 - postgres utilities: `../../../postgres/...`
 - server utils: `../../../utils/...`
 - resolverTypes: `../resolverTypes`
 - old shared helpers (not yet migrated): `../../mutations/helpers/<helper>`
+
+### Rate limiting / higher-order resolver wrappers
+Old mutations sometimes wrap their resolve function with a `rateLimit({perMinute, perHour})` higher-order function from `packages/server/graphql/rateLimit.ts`. In the SDL-first architecture, this pattern is replaced by a graphql-shield rule in `packages/server/graphql/public/permissions.ts`.
+
+Migration:
+```ts
+// OLD (in mutations/foo.ts)
+resolve: rateLimit({perMinute: 10, perHour: 20})(async (_source, args, context) => { ... })
+
+// NEW: resolver has no wrapper; add to permissions.ts instead:
+denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+```
+
+The `rateLimit` rule in permissions.ts is imported from `./rules/rateLimit` (graphql-shield based), which is distinct from the old middleware wrapper. Both use the same `rateLimiter` from context but the shield version returns a `GraphQLError` on violation rather than a standardError payload.
+
+### Adding source types to existing GraphQL type resolvers (e.g. RetroDiscussStage)
+Some SDL types already have a resolver file in `public/types/` but no exported source type. When a payload field needs to return one of these types (e.g. `stage: RetroDiscussStage`), you must:
+
+1. **Define a source interface** in the existing type file (`public/types/RetroDiscussStage.ts`) that extends the DB class with the extra fields added at runtime. For stage types, `augmentDBStage` (in `packages/server/graphql/resolvers.ts`) spreads `{...stage, meetingId, phaseType, teamId}`, so the source extends the DB stage class with `meetingId` and `teamId` (`phaseType` is already a literal on concrete stage classes):
+   ```ts
+   // public/types/RetroDiscussStage.ts
+   import type DiscussStage from '../../../database/types/DiscussStage'
+
+   export interface DiscussStageSource extends DiscussStage {
+     meetingId: string
+     teamId: string
+   }
+   ```
+
+2. **Add a mapper** in `codegen.json`:
+   ```json
+   "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource"
+   ```
+
+The same pattern applies to other concrete stage types (e.g. `EstimateStage` → extends `EstimateStage` DB class). Check the existing `public/types/` file first — a resolver file may already exist without a source type export.
+
+### Field resolvers with IDs vs full objects
+When a mutation returns IDs (not full objects), the payload type source needs custom field resolvers:
+- Store the ID in the source (e.g. `{orgId, teamIds}`)
+- In the type source file, use dataLoader to resolve the full object
+- Add a mapper entry in `codegen.json`
+- Use `loadNonNull` when the SDL field is non-nullable (e.g. `meeting: NewMeeting`), `load` when nullable
+
+The error branch pattern for union-style payloads with inline error:
+```ts
+export type FooPayloadSource = {orgId: string; teamIds: string[]} | {error: {message: string}}
+
+const FooPayload: FooPayloadResolvers = {
+  organization: (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return dataLoader.get('organizations').loadNonNull(source.orgId)
+  },
+  // loadMany returns (T | Error)[] — always filter with isValid and make the resolver async
+  teams: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return (await dataLoader.get('teams').loadMany(source.teamIds)).filter(isValid)
+  }
+}
+```

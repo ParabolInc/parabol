@@ -40,6 +40,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
     createPage: or(

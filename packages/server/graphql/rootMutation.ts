@@ -1,11 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import denyPushInvitation from './mutations/denyPushInvitation'
-import dismissNewFeature from './mutations/dismissNewFeature'
-import dismissSuggestedAction from './mutations/dismissSuggestedAction'
-import downgradeToStarter from './mutations/downgradeToStarter'
-import dragDiscussionTopic from './mutations/dragDiscussionTopic'
-import dragEstimatingTask from './mutations/dragEstimatingTask'
 import editCommenting from './mutations/editCommenting'
 import editReflection from './mutations/editReflection'
 import editTask from './mutations/editTask'
@@ -77,12 +71,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      denyPushInvitation,
-      dismissNewFeature,
-      dismissSuggestedAction,
-      downgradeToStarter,
-      dragDiscussionTopic,
-      dragEstimatingTask,
       emailPasswordReset,
       editCommenting,
       endSprintPoker,
