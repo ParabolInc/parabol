@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.9.0](https://github.com/ParabolInc/parabol/compare/v12.8.3...v12.9.0) (2026-02-25)
+
+
+### Added
+
+* Implement Jira export limits for starter tier organizations ([#12668](https://github.com/ParabolInc/parabol/issues/12668)) ([86d8c32](https://github.com/ParabolInc/parabol/commit/86d8c32f11718b84762895730cc2261eabd3cb9b))
+
+
+### Fixed
+
+* jira exports 2 ([#12670](https://github.com/ParabolInc/parabol/issues/12670)) ([552ab3c](https://github.com/ParabolInc/parabol/commit/552ab3c92f83b89a5a5bbb1dba13337ea4f7cf2e))
+* Refactor asset fetching in `embedUserAsset` to use safer fetch ([#12671](https://github.com/ParabolInc/parabol/issues/12671)) ([1c1da75](https://github.com/ParabolInc/parabol/commit/1c1da754c0a3188938a5280c7ffe2e84173a437a))
+
 ## [12.8.3](https://github.com/ParabolInc/parabol/compare/v12.8.2...v12.8.3) (2026-02-24)
 
 
