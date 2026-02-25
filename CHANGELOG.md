@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.9.2](https://github.com/ParabolInc/parabol/compare/v12.9.1...v12.9.2) (2026-02-25)
+
+
+### Changed
+
+* lax authCookie ([#12675](https://github.com/ParabolInc/parabol/issues/12675)) ([61b2fcf](https://github.com/ParabolInc/parabol/commit/61b2fcf712e373360ba06539fcb1b8c6e93bc63b))
+
 ## [12.9.1](https://github.com/ParabolInc/parabol/compare/v12.9.0...v12.9.1) (2026-02-25)
 
 
