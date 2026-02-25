@@ -51,20 +51,21 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     ) as AuthIdentityGoogle
     if (!googleIdentity) {
       const [bestIdentity] = identities
-      if (!bestIdentity) {
-        return standardError(new Error('No identity found! Please contact support'))
-      }
-      const {type, isEmailVerified} = bestIdentity
-      // the existing account could belong to a squatter. If it's theirs, they need to verify the email
-      // if it's not, they need to reset the password
-      if (!isEmailVerified) {
-        if (type === AuthIdentityTypeEnum.LOCAL) {
-          return {
-            error: {message: 'Try logging in with email and password'}
+
+      if (bestIdentity) {
+        const {type, isEmailVerified} = bestIdentity
+        // the existing account could belong to a squatter. If it's theirs, they need to verify the email
+        // if it's not, they need to reset the password
+        if (!isEmailVerified) {
+          if (type === AuthIdentityTypeEnum.LOCAL) {
+            return {
+              error: {message: 'Try logging in with email and password'}
+            }
           }
+          throw new Error(`Unknown identity type: ${type}`)
         }
-        throw new Error(`Unknown identity type: ${type}`)
       }
+      // they don't have any identity, so a former SSO user, now abandoned, let them have their OAuth identity and move on
 
       // add a google identity to the user if we're sure the local isn't a squatter
       googleIdentity = new AuthIdentityGoogle({

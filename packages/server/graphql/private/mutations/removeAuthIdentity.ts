@@ -3,17 +3,26 @@ import {AuthIdentityTypeEnum, Security} from 'parabol-client/types/constEnums'
 import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
+import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
+import isValid from '../../isValid'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
 import type {MutationResolvers} from '../../private/resolverTypes'
 
 const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
   _source,
-  {domain, identityType, addLocal, sendEmail = true},
-  {ip}
+  {domain, userIds, emails, identityType, addLocal, sendEmail = true},
+  {ip, dataLoader}
 ) => {
   // VALIDATION
-  const normalizedDomain = domain.toLowerCase().trim()
-  const users = await getUsersByDomain(normalizedDomain)
+  const [usersByDomain, usersById, usersByEmail] = await Promise.all([
+    domain && getUsersByDomain(domain.toLowerCase().trim()),
+    userIds && dataLoader.get('users').loadMany(userIds),
+    emails && getUsersByEmails(emails.map((email) => email.toLowerCase().trim()))
+  ])
+  const users = [...(usersByDomain || []), ...(usersById || []), ...(usersByEmail || [])].filter(
+    isValid
+  )
+
   if (!users.length) {
     return {error: {message: 'No user emails match that domain'}}
   }

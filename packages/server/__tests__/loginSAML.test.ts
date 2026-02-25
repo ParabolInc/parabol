@@ -1,14 +1,85 @@
-// Can't test because loginSAML fetches the metadataURL & we can't mock that from here
-// Skipping for now
-
+import base64url from 'base64url'
 import faker from 'faker'
+import * as samlify from 'samlify'
+import getKysely from '../postgres/getKysely'
+import {samlXMLValidator} from '../utils/samlXMLValidator'
 import {sendIntranet} from './common'
 
-test.skip('SAML', async () => {
+// Test-only RSA key pair (self-signed cert valid for 100 years, no real security value)
+const TEST_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
+MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCiq6o+TKgQFAvR
+VH45z/rwFhy6EdKOAhTPU13RsaLq8iEsFxlrPLGOHH/NTRwMQftdTK9ZzXkUhPGO
+opVCITPEG+1vdZGeJxwLNWBMfMc/kD5BUfwY48/nXnWykB2iGb2NuOBl86gBSmWV
+nnnYJODrYyNMgGRK8OxfqlMs/QiMrTfLaay+K/ego3MOd5s4dQ1DjmqtUTcHMDxr
+SUQsWPcejzqOKr6XqezphS2miL+xRaKnsF8wYI7Z/AKN9WSdFs+V97gesYx7rqZK
+pSVAPNoB6/tGpW9TSiwbmiVr12wHSRPmz/99Bo4jLt0g3rzDSwflqCXCx4fMUnNr
+YFc6naUFAgMBAAECggEADjlJdRIZ3fIKyH6FXQPBEu40C9cUHKO08x38haHtN3L9
+kI/igpx3gBAg4rA75Bx+4L0cVhNf43nub0TrHTGvB5ZTkBvtJDGSQ66ioX2FpJq1
+vttu2jRNURNS4k60sKBkkThZssB378j0Ef2d9NbgreRoyT8uxdjEKmdHx5bGgRpe
+priZP17nS9uKz8lL81DFKWsC3xOeAnUnfckp9XYs+zu1xbVcAEbsfsarxw9g/nmb
+PUtOxwlZoTqUCre0LBzDXyBCMI33UwiU/LeGiBEtsZm+tJab/n3SBJRTtnKiXkAC
+cM2rtZshoMQSXMU6XQpyFbj8FsAfTHjbRccg6nwKoQKBgQDN1NmxaYCBZUm9GNGH
+RIVQFNOqVSqEHOIp7NH51vNDvanrIBr/FLe75PwKRaand+OZY7jQsTs8GceAtLXL
+/Rp8bAQUVVyNbPo8fYo7r8vBdi1E4W7b9LdcmEQvnRwowgfmCiHqZQUHlvRWv+fw
+WlyvcOCQFS7e6fd6sI4hFdDUdQKBgQDKUbq2jsK08P/A7zu5A/bdijZqkVsTDHkB
+aL9y9VJK78CQ+B5HpakYCVSlDfZw3MVV0UnollNUSds87Uu1InqjoBWTzUGdEROc
+bMn/fqFPGg3nixq33Ortmtz41UK4YvfACo3wfnidLeobe5XUSF9uIzQD2qmFix+5
+VRrGRuM8UQKBgHKsQxw0SwPMCmjvisxxwFP9Rm9/Q1CXRulUpycqOh1jbWcxW9kB
+Edv8lu6iH1bt1D+A71ZVZ0r0kdGC3EXpnPf0tdEePZINRNyulHTsW/hMfqwBbGHe
+1Mkhi9t7DFUoxH3E52BPJ54y2634/J9LuJeFq5aaNqK6dsZD1utX3CCBAoGAeA6r
+x61LqWfhvLG6NP4/PhPIWtDKxLEAFW/9O9CL9t/y25QBE+8gOp0+13tDpJG9oEFD
+pHugE0KIkM0XwfMl53cVltGUgAokIw0DiVOxkWkamy4WusijuD/PpPGYWCaScilR
+NUc3d75JT+m0bXZM+uR091yIgDCgsK/p5YMnUSECgYBBr3T2VdOCb0ItCePs4VJj
+Mt6aXmJORyWTCfjzqdDKT//PH/7Q0zeBGUGXZxtR8ydIAwxu4hC2gWJhbDcfjQ1D
+OwIJqVR76iMNitz1lerViRdbPFHUpKYCWnd1HXLoo0Baz5PA9SCmXf/9qQj5AQHd
+8LTc47+kYGiFLoKMa+mbgA==
+-----END PRIVATE KEY-----`
+
+// Certificate body without PEM headers (base64 DER), valid until 2126
+const TEST_CERT_BODY =
+  'MIIDcTCCAlmgAwIBAgIUZcc/FbjGK0g9OtHpz7joaCZi590wDQYJKoZIhvcNAQEL' +
+  'BQAwRzELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMRAwDgYDVQQKDAdUZXN0IENv' +
+  'MRkwFwYDVQQDDBB0ZXN0LmV4YW1wbGUuY29tMCAXDTI2MDIyNDE0MTgwM1oYDzIx' +
+  'MjYwMTMxMTQxODAzWjBHMQswCQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExEDAOBgNV' +
+  'BAoMB1Rlc3QgQ28xGTAXBgNVBAMMEHRlc3QuZXhhbXBsZS5jb20wggEiMA0GCSqG' +
+  'SIb3DQEBAQUAA4IBDwAwggEKAoIBAQCiq6o+TKgQFAvRVH45z/rwFhy6EdKOAhTP' +
+  'U13RsaLq8iEsFxlrPLGOHH/NTRwMQftdTK9ZzXkUhPGOopVCITPEG+1vdZGeJxwL' +
+  'NWBMfMc/kD5BUfwY48/nXnWykB2iGb2NuOBl86gBSmWVnnnYJODrYyNMgGRK8Oxf' +
+  'qlMs/QiMrTfLaay+K/ego3MOd5s4dQ1DjmqtUTcHMDxrSUQsWPcejzqOKr6Xqezp' +
+  'hS2miL+xRaKnsF8wYI7Z/AKN9WSdFs+V97gesYx7rqZKpSVAPNoB6/tGpW9TSiwb' +
+  'miVr12wHSRPmz/99Bo4jLt0g3rzDSwflqCXCx4fMUnNrYFc6naUFAgMBAAGjUzBR' +
+  'MB0GA1UdDgQWBBSD6zML1wCzONVM+eZoimgv3Z+/hjAfBgNVHSMEGDAWgBSD6zML' +
+  '1wCzONVM+eZoimgv3Z+/hjAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUA' +
+  'A4IBAQAcAhABnN/gk1yz+0nsz7mSaxTHzFpVnWLL31r6S20sKei658dyb1TQaMU5' +
+  'XLGdSbEn0DAuttNpBUsvoLqfsJ9q/6TClums7qE3uslTOeQ7dCv9/uBz24DRvv9V' +
+  'PzODzZNOWvIfZ4SQgFIPXA6sh9/o3RMmtd0EWTP06CQsK1Gsjjy25nHNXQXSerb6' +
+  'zV7nYc8St0ugugF+C/sUmWjHGWCzmAZN6zU+0kbUolVv4CedCdE/SaUDGfzmrR9g' +
+  'S6n0/f+ugfxl5Raj4r0iItfRQ8ejUDPJD27JEl29dv79TI5l66UKsG+0fXyhDeNO' +
+  '/DZm+gLCReSuCNzPAYXXA622bf5b'
+
+const IDP_ENTITY_ID = 'https://idp.example.com/metadata'
+
+const buildIdpMetadata = (certBody: string) => `<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor entityID="${IDP_ENTITY_ID}" xmlns="urn:oasis:names:tc:SAML:2.0:metadata">
+  <IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <KeyDescriptor use="signing">
+      <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <X509Data>
+          <X509Certificate>${certBody}</X509Certificate>
+        </X509Data>
+      </KeyInfo>
+    </KeyDescriptor>
+    <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp.example.com/sso/saml"/>
+  </IDPSSODescriptor>
+</EntityDescriptor>`
+
+test('SAML', async () => {
   const companyName = faker.company.companyName()
   const samlName = faker.helpers.slugify(companyName).toLowerCase()
   const orgId = `${samlName}-orgId`
   const domain = 'example.com'
+  const testEmail = `test@${domain}`
 
   const verifyDomain = await sendIntranet({
     query: `
@@ -44,51 +115,72 @@ test.skip('SAML', async () => {
     }
   })
 
-  const response = `
-    <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_8e8dc5f69a98cc4c1ff3427e5ce34606fd672f91e6" Version="2.0" IssueInstant="2021-09-09T12:00:00Z" Destination="http://sp.example.com/demo1/index.php?acs" InResponseTo="_41e758fee373d51639552c4b040b1090e97f6685">
-    <saml:Issuer>https://idp.example.com/metadata</saml:Issuer>
-    <samlp:Status>
-        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
-    </samlp:Status>
-    <saml:Assertion xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" ID="pfx49466302-35d7-3ac2-955b-b982f937d50a" Version="2.0" IssueInstant="2021-09-09T12:00:00Z">
-        <saml:Issuer>https://idp.example.com/metadata</saml:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-  <ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-    <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-  <ds:Reference URI="#pfx49466302-35d7-3ac2-955b-b982f937d50a"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>BcG3bCJwBTsNi5jyWw1gWUKTYJQ=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>RdY7WsYtE/L8seau3CSVsuswoUe0XCsdFJOfQGi8UY4FuBF6hEmzCHS+rsEkVy5SKzZTvL95fdcgR8ZRkaKE3ki42skwo2SgZMYrxuIq64qpnMsg86efzlMMUDSO5DX6B1rLRLGWHOO62Fg6TS1qA+r997ZwQyM/a1Gq08A2tBQ=</ds:SignatureValue>
-<ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIICUDCCAbmgAwIBAgIBADANBgkqhkiG9w0BAQ0FADBFMQswCQYDVQQGEwJ1czELMAkGA1UECAwCQ0ExEzARBgNVBAoMCkV4YW1wbGUgQ28xFDASBgNVBAMMC2V4YW1wbGUuY29tMB4XDTIxMDkxMDA3NTkzMFoXDTI2MDkwOTA3NTkzMFowRTELMAkGA1UEBhMCdXMxCzAJBgNVBAgMAkNBMRMwEQYDVQQKDApFeGFtcGxlIENvMRQwEgYDVQQDDAtleGFtcGxlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEArg9DZwR9v7Vok1IW+hIpYin9llPBh1MV5CxjfK596EwuadyQuko3jGv8qDlx4tG6JiGTjQfCuzJVAhYi2OKuKBqyJewKoen1uF0dRyws9n6zZl0GsVJkObdrNo5P6eib3VOsXPJ10RjxWsWx5WRur2dYdkOJFxC6zN1IbXSXYYMCAwEAAaNQME4wHQYDVR0OBBYEFKr/1y4R+kamPz623HnHM7tz6C4XMB8GA1UdIwQYMBaAFKr/1y4R+kamPz623HnHM7tz6C4XMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQENBQADgYEALKBl6QPk9HMB5V+GYu50XNFmzyuuXt3zAKMSYcyhxVSBCe6SKw1iqvvPza4rGp7DpeJI/8R3qBTuZqfl0rX624wvHGc4N9WubMLPejAn7dMu3oGfm9KUX+Um1RG0U6zsi9t3X90rroea/5SQvw/uAWUxS59U2r8massI/WFJKh8=</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature>
-        <saml:Subject>
-            <saml:NameID SPNameQualifier="https://sp.example.com/metadata" Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress">test@example.com</saml:NameID>
-            <saml:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
-                <saml:SubjectConfirmationData NotOnOrAfter="2024-01-18T06:21:48Z" Recipient="http://sp.example.com/demo1/index.php?acs" InResponseTo="_4fee3b046395c4e751011e97f8900b5273d56685"/>
-            </saml:SubjectConfirmation>
-        </saml:Subject>
-        <saml:Conditions NotBefore="2021-09-09T12:00:00Z" NotOnOrAfter="2024-09-09T12:00:00Z">
-            <saml:AudienceRestriction>
-                <saml:Audience>https://sp.example.com/metadata</saml:Audience>
-            </saml:AudienceRestriction>
-        </saml:Conditions>
-        <saml:AuthnStatement AuthnInstant="2021-09-09T12:00:00Z" SessionNotOnOrAfter="2024-09-09T12:00:00Z" SessionIndex="_be9967abd904ddcae3c0eb4189adbe3f71e327cf93">
-            <saml:AuthnContext>
-                <saml:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:Password</saml:AuthnContextClassRef>
-            </saml:AuthnContext>
-        </saml:AuthnStatement>
-        <saml:AttributeStatement>
-            <saml:Attribute Name="uid" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
-                <saml:AttributeValue xsi:type="xs:string">test</saml:AttributeValue>
-            </saml:Attribute>
-            <saml:Attribute Name="email" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
-                <saml:AttributeValue xsi:type="xs:string">test@example.com</saml:AttributeValue>
-            </saml:Attribute>
-        </saml:AttributeStatement>
-    </saml:Assertion>
-  </samlp:Response>
-  `
-  const samlResponse = Buffer.from(response).toString('base64url')
-  const relayState = Buffer.from(
-    JSON.stringify({
-      metadataURL: 'https://idp.example.com/app/sso/saml/metadata'
+  // Store metadata directly in DB so loginSAML uses it without fetching from a URL
+  const idpMetadata = buildIdpMetadata(TEST_CERT_BODY)
+  const pg = getKysely()
+  // Clear orgId so loginSAML doesn't try to add user to a non-existent org
+  await pg
+    .updateTable('SAML')
+    .set({metadata: idpMetadata, metadataURL: null, orgId: null})
+    .where('id', '=', samlName)
+    .execute()
+
+  // Build a signed SAML response dynamically with fresh timestamps
+  samlify.setSchemaValidator(samlXMLValidator)
+  const idp = samlify.IdentityProvider({
+    metadata: idpMetadata,
+    privateKey: TEST_PRIVATE_KEY,
+    loginResponseTemplate: {
+      context: samlify.SamlLib.defaultLoginResponseTemplate.context,
+      attributes: [
+        {
+          name: 'email',
+          nameFormat: 'urn:oasis:names:tc:SAML:2.0:attrname-format:basic',
+          valueTag: 'email',
+          valueXsiType: 'xs:string'
+        }
+      ]
+    }
+  })
+  const sp = samlify.ServiceProvider({})
+
+  const now = new Date().toISOString()
+  const fiveMinutesLater = new Date(Date.now() + 5 * 60 * 1000).toISOString()
+  const id = `_test${Date.now()}`
+  const {context: samlResponseBase64} = await idp.createLoginResponse(
+    sp,
+    {},
+    'post',
+    {email: testEmail},
+    (template: string) => ({
+      id,
+      context: samlify.SamlLib.replaceTagsByValue(template, {
+        ID: id,
+        AssertionID: `_assertion${Date.now()}`,
+        Destination: '',
+        Audience: '',
+        EntityID: '',
+        SubjectRecipient: '',
+        Issuer: IDP_ENTITY_ID,
+        IssueInstant: now,
+        AssertionConsumerServiceURL: '',
+        StatusCode: 'urn:oasis:names:tc:SAML:2.0:status:Success',
+        ConditionsNotBefore: now,
+        ConditionsNotOnOrAfter: fiveMinutesLater,
+        SubjectConfirmationDataNotOnOrAfter: fiveMinutesLater,
+        NameIDFormat: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+        NameID: testEmail,
+        InResponseTo: '',
+        AuthnStatement: '',
+        attrEmail: testEmail
+      })
     })
-  ).toString('base64url')
+  )
+
+  // samlify returns standard base64; convert to base64url to avoid URL encoding issues
+  const samlResponse = Buffer.from(samlResponseBase64, 'base64').toString('base64url')
+  const relayState = base64url.encode(JSON.stringify({}))
+
   const saml = await sendIntranet({
     query: `
       mutation loginSAML($queryString: String!, $samlName: ID!) {

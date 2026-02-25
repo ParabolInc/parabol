@@ -447,7 +447,17 @@ type Mutation {
     """
     Change the auth identity for users with this domain
     """
-    domain: String!
+    domain: String
+
+    """
+    Remove the auth identity for these users
+    """
+    userIds: [ID!]
+
+    """
+    Remove the auth identity for these emails
+    """
+    emails: [String!]
 
     """
     The type of auth to remove

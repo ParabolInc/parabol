@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.9.1](https://github.com/ParabolInc/parabol/compare/v12.9.0...v12.9.1) (2026-02-25)
+
+
+### Changed
+
+* enable SAML test ([#12663](https://github.com/ParabolInc/parabol/issues/12663)) ([5ec1289](https://github.com/ParabolInc/parabol/commit/5ec12895466803e17a69a56589de30b6852c67df))
+* let abandoned SSO users recover their accounts ([#12646](https://github.com/ParabolInc/parabol/issues/12646)) ([fd43fdd](https://github.com/ParabolInc/parabol/commit/fd43fdde2c35aa4042c49be18dc92124badf714b))
+
 ## [12.9.0](https://github.com/ParabolInc/parabol/compare/v12.8.3...v12.9.0) (2026-02-25)
 
 
