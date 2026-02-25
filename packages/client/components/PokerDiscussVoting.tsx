@@ -11,6 +11,7 @@ import type {
 import useForceUpdate from '../hooks/useForceUpdate'
 import {PokerCards} from '../types/constEnums'
 import isSpecialPokerLabel from '../utils/isSpecialPokerLabel'
+import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
@@ -30,7 +31,17 @@ interface Props {
 
 const PokerDiscussVoting = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {setTaskEstimate, error, submitting, onCompleted, onError} = useSetTaskEstimate()
+  const {
+    setTaskEstimate,
+    error,
+    submitting,
+    onCompleted,
+    onError,
+    showUpgradeModal,
+    upgradeExportCount,
+    isHardBlock,
+    dismissUpgradeModal
+  } = useSetTaskEstimate()
   const forceUpdate = useForceUpdate()
   const {viewerId} = atmosphere
   const {meeting: meetingRef, stage: stageRef, isInitialStageRender} = props
@@ -68,11 +79,15 @@ const PokerDiscussVoting = (props: Props) => {
       fragment PokerDiscussVoting_meeting on PokerMeeting {
         id
         facilitatorUserId
+        team {
+          orgId
+        }
       }
     `,
     meetingRef
   )
-  const {id: meetingId, facilitatorUserId} = meeting
+  const {id: meetingId, facilitatorUserId, team} = meeting
+  const {orgId} = team
   const {id: stageId, dimensionRef, scores, taskId, serviceField} = stage
   const finalScore = stage.finalScore || ''
   const {name: serviceFieldName} = serviceField
@@ -149,6 +164,13 @@ const PokerDiscussVoting = (props: Props) => {
 
   return (
     <>
+      <JiraExportUpgradeModal
+        isOpen={showUpgradeModal}
+        exportCount={upgradeExportCount}
+        isHardBlock={isHardBlock}
+        orgId={orgId}
+        onClose={dismissUpgradeModal}
+      />
       <PokerDimensionValueControl
         placeholder={isFacilitator ? topLabel : '?'}
         stage={stage}

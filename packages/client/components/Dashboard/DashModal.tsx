@@ -1,3 +1,4 @@
+// @deprecated Use the radix-ui based Dialog components from packages/client/ui/Dialog/ instead.
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import type * as React from 'react'

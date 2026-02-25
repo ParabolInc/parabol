@@ -13,30 +13,10 @@ import type {AssetType, PartialPath} from '../../../fileStorage/FileStoreManager
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
+import {fetchUntrusted} from '../../../utils/fetchUntrusted'
 import {Logger} from '../../../utils/Logger'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 import {incrementUserBytesUploaded, validateScope} from './uploadUserAsset'
-
-const fetchAsset = async (url: string) => {
-  try {
-    const res = await fetch(url)
-    if (!res.ok) {
-      console.error('Failed to fetch the resource:', res.statusText)
-      return null
-    }
-
-    const contentType = res.headers.get('Content-Type')
-    if (!contentType) {
-      console.error('Content-Type header is missing')
-      return null
-    }
-
-    return {contentType, buffer: Buffer.from<ArrayBufferLike>(await res.arrayBuffer())}
-  } catch (error) {
-    console.error('Error fetching the resource:', error)
-    return null
-  }
-}
 
 const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   _,
@@ -90,7 +70,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
       throw new GraphQLError('Could not copy parabol asset')
     }
   }
-  const asset = await fetchAsset(url)
+  const asset = await fetchUntrusted(url, maxSize)
   if (!asset) {
     return {error: {message: 'Unable to fetch asset'}}
   }
