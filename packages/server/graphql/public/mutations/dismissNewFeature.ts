@@ -8,7 +8,11 @@ const dismissNewFeature: MutationResolvers['dismissNewFeature'] = async (
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
-  await getKysely().updateTable('User').set({newFeatureId: null}).where('id', '=', viewerId).execute()
+  await getKysely()
+    .updateTable('User')
+    .set({newFeatureId: null})
+    .where('id', '=', viewerId)
+    .execute()
   return {}
 }
 
