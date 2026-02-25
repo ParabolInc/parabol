@@ -42,6 +42,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
+    inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     createImposterToken: isSuperUser,
     createPage: or(

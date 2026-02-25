@@ -1,15 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import invalidateSessions from './mutations/invalidateSessions'
-import inviteToTeam from './mutations/inviteToTeam'
-import joinMeeting from './mutations/joinMeeting'
-import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
-import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
-import moveTeamToOrg from './mutations/moveTeamToOrg'
-import navigateMeeting from './mutations/navigateMeeting'
-import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
-import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
 import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
 import pokerResetDimension from './mutations/pokerResetDimension'
 import pokerRevealVotes from './mutations/pokerRevealVotes'
@@ -64,13 +54,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      flagReadyToAdvance,
-      invalidateSessions,
-      inviteToTeam,
-      movePokerTemplateDimension,
-      moveTeamToOrg,
-      navigateMeeting,
-      persistJiraSearchQuery,
       pushInvitation,
       promoteNewMeetingFacilitator,
       promoteToTeamLead,
@@ -112,10 +95,7 @@ export default new GraphQLObjectType<any, GQLContext>({
       pokerRevealVotes,
       pokerResetDimension,
       pokerAnnounceDeckHover,
-      movePokerTemplateScaleValue,
-      joinMeeting,
       setPokerSpectate,
-      persistGitHubSearchQuery,
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,

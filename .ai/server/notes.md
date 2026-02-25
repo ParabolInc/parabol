@@ -13,6 +13,13 @@ Old mutations live in `packages/server/graphql/mutations/`. New mutations go in 
 
 New mutations are auto-discovered via `require.context('./mutations', ...)` in `resolvers.ts` — no explicit registration needed.
 
+### Follow named exports when migrating
+If the old mutation file had **named exports** (e.g. `export const createMeetingMember = ...`) in addition to the default export, other files may import those helpers. After deleting the old file, grep for the export name across the codebase and update all import paths to point to the new location. Example:
+```bash
+grep -r "createMeetingMember" packages/server --include="*.ts" -l
+```
+Then update each consumer's import path from the old file to the new one.
+
 ### SDL/typeDefs
 - Mutation entry in `public/typeDefs/Mutation.graphql` must exist before migrating
 - Payload type `.graphql` files must exist in `public/typeDefs/`
@@ -97,3 +104,10 @@ const FooPayload: FooPayloadResolvers = {
   }
 }
 ```
+
+### IMPORTANT: Always include `{error: {message: string}}` in Payload source types
+Every `*Payload` source type (the non-Success union variant) **must** include `| {error: {message: string}}` in its union, because the mutation resolver can return `standardError(...)` or `{error: {...}}` on failure. This applies to any type whose SDL name ends in `Payload` (as opposed to `Success` types, which are the guaranteed-success branch of a discriminated union and do not need the error case).
+
+All field resolvers in a Payload type must guard with `if ('error' in source) return null` before accessing success-branch fields.
+
+`*Success` types (e.g. `JoinMeetingSuccess`, `FlagReadyToAdvanceSuccess`) do **not** need the error case — they are always the success branch.

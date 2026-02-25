@@ -67,7 +67,7 @@ export default class TaskIntegrationManagerFactory {
 
     if (service === 'github') {
       const auth = await dataLoader.get('githubAuth').load({teamId, userId})
-      return auth && new GitHubServerManager(auth, context, info)
+      return auth ? new GitHubServerManager(auth, context, info) : null
     }
 
     if (service === 'gitlab') {

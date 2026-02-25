@@ -1,10 +1,11 @@
 import DataLoader from 'dataloader'
 import {selectGitHubAuth, selectGitHubDimensionFieldMap} from '../postgres/select'
 import type {GitHubAuth, GitHubDimensionFieldMap} from '../postgres/types'
+import NullableDataLoader from './NullableDataLoader'
 import type RootDataLoader from './RootDataLoader'
 
 export const githubAuth = (parent: RootDataLoader) => {
-  return new DataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
+  return new NullableDataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({teamId, userId}) => {

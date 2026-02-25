@@ -22,7 +22,8 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
 
   github: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return null
-    return dataLoader.get('githubAuth').load({teamId, userId})
+    const res = await dataLoader.get('githubAuth').load({teamId, userId})
+    return res || null
   },
 
   gitlab: (source) => source,
