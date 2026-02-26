@@ -8,10 +8,10 @@ import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManage
 import getPhase from '../../../utils/getPhase'
 import makeScoreGitLabComment from '../../../utils/makeScoreGitLabComment'
 import type {GQLContext} from '../../graphql'
-import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {TaskEstimateInput} from '../../public/resolverTypes'
 
 const pushEstimateToGitLab = async (
-  taskEstimate: ITaskEstimateInput,
+  taskEstimate: TaskEstimateInput,
   context: GQLContext,
   info: GraphQLResolveInfo,
   stageId: string

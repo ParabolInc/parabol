@@ -29,42 +29,10 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
   name: 'Team',
   description: 'A team',
   fields: () => ({
-    id: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'A shortid for the team'
-    },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLISO8601Type),
-      description: 'The datetime the team was created'
-    },
-    createdBy: {
-      type: GraphQLID,
-      description: 'The userId that created the team. Non-null at v2.22.0+'
-    },
     isOnboardTeam: {
       type: new GraphQLNonNull(GraphQLBoolean),
       description: 'true if the team was created when the account was created, else false',
       resolve: ({isOnboardTeam}) => !!isOnboardTeam
-    },
-    lastMeetingType: {
-      type: new GraphQLNonNull(MeetingTypeEnum),
-      description: 'The type of the last meeting run'
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-      description: 'The name of the team'
-    },
-    orgId: {
-      type: new GraphQLNonNull(GraphQLID),
-      description: 'The organization to which the team belongs'
-    },
-    tags: {
-      type: new GraphQLList(GraphQLString),
-      description: 'Arbitrary tags that the team uses'
-    },
-    updatedAt: {
-      type: GraphQLISO8601Type,
-      description: 'The datetime the team was last updated'
     },
     teamInvitations: {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(TeamInvitation))),
@@ -145,11 +113,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           .loadMany([teamId, 'aGhostTeam'])
         return availableScales.filter(isValid).flat()
       }
-    },
-    qualAIMeetingsCount: {
-      type: new GraphQLNonNull(GraphQLInt),
-      description:
-        'The number of qualifying meetings that have an AI generated summary. Qualifying meetings are meetings with three or more meeting members and five or more reflections'
     },
     meeting: {
       type: NewMeeting,
@@ -260,10 +223,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
         })
         return teamMembersWithUserFields
       }
-    },
-    isArchived: {
-      type: GraphQLBoolean,
-      description: 'true if the team has been archived'
     }
   })
 })

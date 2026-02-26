@@ -6,10 +6,10 @@ import LinearServerManager from '../../../integrations/linear/LinearServerManage
 import makeScoreLinearComment from '../../../integrations/linear/makeScoreLinearComment'
 import getPhase from '../../../utils/getPhase'
 import type {GQLContext} from '../../graphql'
-import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {TaskEstimateInput} from '../../public/resolverTypes'
 
 const pushEstimateToLinear = async (
-  taskEstimate: ITaskEstimateInput,
+  taskEstimate: TaskEstimateInput,
   context: GQLContext,
   info: GraphQLResolveInfo,
   stageId: string

@@ -30,10 +30,10 @@ import getRepoLabels from '../../../utils/githubQueries/getRepoLabels.graphql'
 import removeLabels from '../../../utils/githubQueries/removeLabels.graphql'
 import makeScoreGitHubComment from '../../../utils/makeScoreGitHubComment'
 import type {GQLContext} from '../../graphql'
-import type {ITaskEstimateInput} from '../../types/TaskEstimateInput'
+import type {TaskEstimateInput} from '../../public/resolverTypes'
 
 const pushEstimateToGitHub = async (
-  taskEstimate: ITaskEstimateInput,
+  taskEstimate: TaskEstimateInput,
   context: GQLContext,
   info: GraphQLResolveInfo,
   stageId: string
