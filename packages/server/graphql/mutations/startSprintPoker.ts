@@ -14,6 +14,7 @@ import publish from '../../utils/publish'
 import standardError from '../../utils/standardError'
 import type {DataLoaderWorker, GQLContext} from '../graphql'
 import isValid from '../isValid'
+import {createMeetingMember} from '../public/mutations/joinMeeting'
 import CreateGcalEventInput, {
   type CreateGcalEventInputType
 } from '../public/types/CreateGcalEventInput'
@@ -22,7 +23,6 @@ import createGcalEvent from './helpers/createGcalEvent'
 import createNewMeetingPhases from './helpers/createNewMeetingPhases'
 import isStartMeetingLocked from './helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from './helpers/notifications/IntegrationNotifier'
-import {createMeetingMember} from './joinMeeting'
 
 const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWorker) => {
   const pg = getKysely()

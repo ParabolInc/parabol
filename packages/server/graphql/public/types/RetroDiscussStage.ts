@@ -1,5 +1,11 @@
 import ReflectionGroup from '../../../database/types/ReflectionGroup'
+import type {DiscussStage} from '../../../postgres/types/NewMeetingPhase'
 import type {RetroDiscussStageResolvers} from '../resolverTypes'
+
+export interface DiscussStageSource extends DiscussStage {
+  meetingId: string
+  teamId: string
+}
 
 // note: this is the GraphQL type, not source DB type
 const DUMMY_DISCUSSION = {

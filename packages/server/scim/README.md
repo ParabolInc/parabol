@@ -1,7 +1,6 @@
 # Parabol SCIM Provisioning
 An enterprise organization with verified domains (i.e. SAML enabled) can use SCIM to provision and de-provision users. The users that can be managed via SCIM are limited by the verified domains associated with the organization.
 The SCIM setup is tightly coupled to the organization.
-Parabol only supports User provisioning via SCIM, Group provisioning is not supported.
 
 ## User categories used here
 - provisioned: users that were originally created via this SCIM provisioning
@@ -13,11 +12,11 @@ SCIM provisioning **can**:
 - update provisioned and domain-matched users.
 - list provisioned, domain-matched, and external users in the organization.
 - de-provision provisioned and domain-matched users.
+- provision groups and group memberships for the organization, which will be reflected in Parabol as teams.
 
 SCIM provisioning **cannot**:
 - de-provision externals. They will be removed from the organization but not deleted from Parabol.
 - update externals.
-- manage groups/teams.
 - apply roles.
 
 ## Notes

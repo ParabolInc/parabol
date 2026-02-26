@@ -1,22 +1,26 @@
 import type {TeamInvitationNotification} from '../../../postgres/types/Notification'
 import type {InviteToTeamPayloadResolvers} from '../resolverTypes'
 
-export type InviteToTeamPayloadSource = {
-  removedSuggestedActionId: string | undefined
-  teamId: string
-  invitees: string[]
-  teamInvitationNotificationId?: string
-}
+export type InviteToTeamPayloadSource =
+  | {
+      removedSuggestedActionId: string | undefined
+      teamId: string
+      invitees: string[]
+      teamInvitationNotificationId?: string
+    }
+  | {error: {message: string}}
 
 const InviteToTeamPayload: InviteToTeamPayloadResolvers = {
-  team: async ({teamId}, _args, {dataLoader}) => {
-    return dataLoader.get('teams').loadNonNull(teamId)
+  team: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return dataLoader.get('teams').loadNonNull(source.teamId)
   },
-  teamInvitationNotification: async ({teamInvitationNotificationId}, _args, {dataLoader}) => {
-    if (!teamInvitationNotificationId) return null
+  teamInvitationNotification: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    if (!source.teamInvitationNotificationId) return null
     const teamInvitation = await dataLoader
       .get('notifications')
-      .loadNonNull<TeamInvitationNotification>(teamInvitationNotificationId)
+      .loadNonNull<TeamInvitationNotification>(source.teamInvitationNotificationId)
     return teamInvitation
   }
 }

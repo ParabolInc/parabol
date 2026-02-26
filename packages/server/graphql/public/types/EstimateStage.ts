@@ -4,12 +4,18 @@ import LinearProjectId from '../../../../client/shared/gqlIds/LinearProjectId'
 import {SprintPokerDefaults} from '../../../../client/types/constEnums'
 import GitLabServerManager from '../../../integrations/gitlab/GitLabServerManager'
 import LinearServerManager from '../../../integrations/linear/LinearServerManager'
+import type {EstimateStage as EstimateStageDB} from '../../../postgres/types/NewMeetingPhase'
 import {getUserId} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
 import {resolveStoryFinalScore} from '../../resolvers/resolveStoryFinalScore'
 import type {EstimateStageResolvers} from '../resolverTypes'
+
+export interface EstimateStageSource extends EstimateStageDB {
+  meetingId: string
+  teamId: string
+}
 
 const EstimateStage: EstimateStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'ESTIMATE',

@@ -91,8 +91,8 @@ export const resolveGQLStageFromId = (stageId: string | undefined, meeting: AnyM
   }
 }
 
-export const augmentDBStage = (
-  stage: GenericMeetingStage,
+export const augmentDBStage = <TStage = GenericMeetingStage>(
+  stage: TStage,
   meetingId: string,
   phaseType: Newmeetingphasetypeenum,
   teamId: string

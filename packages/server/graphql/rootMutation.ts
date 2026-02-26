@@ -1,40 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import deleteTask from './mutations/deleteTask'
-import deleteUser from './mutations/deleteUser'
-import denyPushInvitation from './mutations/denyPushInvitation'
-import dismissNewFeature from './mutations/dismissNewFeature'
-import dismissSuggestedAction from './mutations/dismissSuggestedAction'
-import downgradeToStarter from './mutations/downgradeToStarter'
-import dragDiscussionTopic from './mutations/dragDiscussionTopic'
-import dragEstimatingTask from './mutations/dragEstimatingTask'
-import editCommenting from './mutations/editCommenting'
-import editReflection from './mutations/editReflection'
-import editTask from './mutations/editTask'
-import emailPasswordReset from './mutations/emailPasswordReset'
-import endCheckIn from './mutations/endCheckIn'
-import endDraggingReflection from './mutations/endDraggingReflection'
-import endSprintPoker from './mutations/endSprintPoker'
-import flagReadyToAdvance from './mutations/flagReadyToAdvance'
-import invalidateSessions from './mutations/invalidateSessions'
-import inviteToTeam from './mutations/inviteToTeam'
-import joinMeeting from './mutations/joinMeeting'
-import movePokerTemplateDimension from './mutations/movePokerTemplateDimension'
-import movePokerTemplateScaleValue from './mutations/movePokerTemplateScaleValue'
-import moveTeamToOrg from './mutations/moveTeamToOrg'
-import navigateMeeting from './mutations/navigateMeeting'
-import persistGitHubSearchQuery from './mutations/persistGitHubSearchQuery'
-import persistJiraSearchQuery from './mutations/persistJiraSearchQuery'
-import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
-import pokerResetDimension from './mutations/pokerResetDimension'
-import pokerRevealVotes from './mutations/pokerRevealVotes'
-import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
-import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
-import promoteToTeamLead from './mutations/promoteToTeamLead'
-import pushInvitation from './mutations/pushInvitation'
-import removeAtlassianAuth from './mutations/removeAtlassianAuth'
-import removeGitHubAuth from './mutations/removeGitHubAuth'
-import removeIntegrationProvider from './mutations/removeIntegrationProvider'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
@@ -79,34 +44,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      deleteTask,
-      deleteUser,
-      denyPushInvitation,
-      dismissNewFeature,
-      dismissSuggestedAction,
-      downgradeToStarter,
-      dragDiscussionTopic,
-      dragEstimatingTask,
-      emailPasswordReset,
-      editCommenting,
-      endSprintPoker,
-      editReflection,
-      editTask,
-      endCheckIn,
-      endDraggingReflection,
-      flagReadyToAdvance,
-      invalidateSessions,
-      inviteToTeam,
-      movePokerTemplateDimension,
-      moveTeamToOrg,
-      navigateMeeting,
-      persistJiraSearchQuery,
-      pushInvitation,
-      promoteNewMeetingFacilitator,
-      promoteToTeamLead,
-      pokerTemplateDimensionUpdateDescription,
-      removeAtlassianAuth,
-      removeGitHubAuth,
       removeReflectTemplate,
       removePokerTemplateDimension,
       renameMeeting,
@@ -139,17 +76,10 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTemplateScope,
       voteForReflectionGroup,
       voteForPokerStory,
-      pokerRevealVotes,
-      pokerResetDimension,
-      pokerAnnounceDeckHover,
-      movePokerTemplateScaleValue,
-      joinMeeting,
       setPokerSpectate,
-      persistGitHubSearchQuery,
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,
-      removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any
 })

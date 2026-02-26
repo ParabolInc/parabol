@@ -12,8 +12,8 @@ import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import createNewMeetingPhases from '../../mutations/helpers/createNewMeetingPhases'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import {createMeetingMember} from '../../mutations/joinMeeting'
 import type {MutationResolvers} from '../resolverTypes'
+import {createMeetingMember} from './joinMeeting'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,

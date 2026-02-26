@@ -10,8 +10,8 @@ import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
-import {createMeetingMember} from '../../mutations/joinMeeting'
 import type {MutationResolvers} from '../resolverTypes'
+import {createMeetingMember} from './joinMeeting'
 import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (

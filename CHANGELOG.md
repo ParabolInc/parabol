@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.9.3](https://github.com/ParabolInc/parabol/compare/v12.9.2...v12.9.3) (2026-02-26)
+
+
+### Fixed
+
+* MeetingSubnavItem multiple tooltips ([#12679](https://github.com/ParabolInc/parabol/issues/12679)) ([324e251](https://github.com/ParabolInc/parabol/commit/324e25123aae4e58e9bc88440dddcfa643872157))
+* push task to GitHub or Linear ([#12685](https://github.com/ParabolInc/parabol/issues/12685)) ([bdcbdad](https://github.com/ParabolInc/parabol/commit/bdcbdad2558cd40a09829bbd3d102b6b1eb53dbd))
+* SDL Refactor Part 2 ([#12681](https://github.com/ParabolInc/parabol/issues/12681)) ([f0fdf99](https://github.com/ParabolInc/parabol/commit/f0fdf99fea1242c799e86068c053967374d9499a))
+* SDL Refactor Part 3 ([#12682](https://github.com/ParabolInc/parabol/issues/12682)) ([3be4e6d](https://github.com/ParabolInc/parabol/commit/3be4e6ddcbbc37fbaa9a03216d1f26efea57e023))
+
+
+### Changed
+
+* **SCIM:** update README to reflect Group provisioning capability ([#12684](https://github.com/ParabolInc/parabol/issues/12684)) ([219a95f](https://github.com/ParabolInc/parabol/commit/219a95f1069c895a7fbc67cca54a89c937c49408))
+
 ## [12.9.2](https://github.com/ParabolInc/parabol/compare/v12.9.1...v12.9.2) (2026-02-25)
 
 

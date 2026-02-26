@@ -290,7 +290,7 @@ type Mutation {
     """
     the reasons the user is leaving
     """
-    reasonsForLeaving: [ReasonToDowngradeEnum]
+    reasonsForLeaving: [ReasonToDowngradeEnum!]
 
     """
     the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade

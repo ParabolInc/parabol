@@ -35,6 +35,7 @@ import {
   type selectTemplateDimension,
   type selectTemplateScale,
   type selectTemplateScaleRef,
+  selectTimelineEvent,
   type selectUser
 } from '../select'
 
@@ -199,3 +200,5 @@ export type EmbeddingsJobQueueV2 = Omit<Selectable<DB['EmbeddingsJobQueueV2']>, 
   jobType: JobType
   jobData: Record<string, any>
 }
+
+export type TimelineEvent = ExtractTypeFromQueryBuilderSelect<typeof selectTimelineEvent>
