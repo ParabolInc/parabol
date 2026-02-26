@@ -1,4 +1,3 @@
-import type {GraphQLResolveInfo} from 'graphql'
 import upsertGitHubAuth from '../../../postgres/queries/upsertGitHubAuth'
 import type {GetProfileQuery} from '../../../types/githubTypes'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -14,7 +13,7 @@ const addGitHubAuth: MutationResolvers['addGitHubAuth'] = async (
   _source,
   {code, teamId},
   context,
-  info: GraphQLResolveInfo
+  info
 ) => {
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)

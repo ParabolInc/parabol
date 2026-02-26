@@ -1,15 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
-import removePokerTemplateScale from './mutations/removePokerTemplateScale'
-import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
-import removeReflection from './mutations/removeReflection'
-import removeReflectTemplate from './mutations/removeReflectTemplate'
-import removeSlackAuth from './mutations/removeSlackAuth'
-import removeTeamMember from './mutations/removeTeamMember'
-import renameMeeting from './mutations/renameMeeting'
-import renameMeetingTemplate from './mutations/renameMeetingTemplate'
-import renamePokerTemplateDimension from './mutations/renamePokerTemplateDimension'
 import renamePokerTemplateScale from './mutations/renamePokerTemplateScale'
 import resetPassword from './mutations/resetPassword'
 import resetRetroMeetingToGroupStage from './mutations/resetRetroMeetingToGroupStage'
@@ -44,17 +34,7 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      removeReflectTemplate,
-      removePokerTemplateDimension,
-      renameMeeting,
-      renameMeetingTemplate,
-      renamePokerTemplateDimension,
       renamePokerTemplateScale,
-      removePokerTemplateScale,
-      removePokerTemplateScaleValue,
-      removeReflection,
-      removeSlackAuth,
-      removeTeamMember,
       resetPassword,
       resetRetroMeetingToGroupStage,
       setPhaseFocus,

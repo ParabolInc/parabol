@@ -12,7 +12,8 @@ import type {MutationResolvers} from '../resolverTypes'
 const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async (
   _source,
   {integrationProviderService, integrationRepoId, taskId},
-  context
+  context,
+  info
 ) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
@@ -46,10 +47,8 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
           teamId: teamId,
           userId: viewerId
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        context as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        {} as any // info is not easily available
+        context,
+        info
       ),
       userId
         ? TaskIntegrationManagerFactory.initManager(
@@ -59,10 +58,8 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
               teamId: teamId,
               userId
             },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            context as any,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            {} as any
+            context,
+            info
           )
         : null,
       dataLoader.get('teams').loadNonNull(teamId),
