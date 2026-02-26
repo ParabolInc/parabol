@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import type {GraphQLResolveInfo} from 'graphql'
 import type {Insertable} from 'kysely'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {getAllNodesAttributesByType} from 'parabol-client/shared/tiptap/getAllNodesAttributesByType'
@@ -133,7 +134,8 @@ const handleAddTaskNotifications = async (
 const createTask: MutationResolvers['createTask'] = async (
   _source,
   {newTask, area: _area},
-  context
+  context,
+  info: GraphQLResolveInfo
 ) => {
   const {authToken, dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
@@ -174,10 +176,8 @@ const createTask: MutationResolvers['createTask'] = async (
     content,
     viewerId,
     teamId,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    context as any,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    {} as any // info is not easily available in SDL resolvers without extra effort, but createTaskInService might not need full info
+    context,
+    info
   )
   if (integrationRes.error) {
     return {error: {message: integrationRes.error.message}}
