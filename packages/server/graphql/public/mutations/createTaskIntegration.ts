@@ -47,9 +47,7 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
           teamId: teamId,
           userId: viewerId
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        context as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        context,
         info
       ),
       userId
@@ -60,8 +58,7 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
               teamId: teamId,
               userId
             },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            context as any,
+            context,
             info
           )
         : null,
