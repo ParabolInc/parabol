@@ -2,14 +2,16 @@ import type {TaskInvolvesNotification} from '../../../postgres/types/Notificatio
 import {getUserId} from '../../../utils/authorization'
 import type {UpdateTaskPayloadResolvers} from '../resolverTypes'
 
-export type UpdateTaskPayloadSource = {
-  taskId: string
-  isPrivatized: boolean
-  notificationsToAdd?: TaskInvolvesNotification[]
-}
+type PartialNotification = {id: string; userId: string}
+
+export type UpdateTaskPayloadSource =
+  | {taskId: string; isPrivatized: boolean; notificationsToAdd?: PartialNotification[]}
+  | {error: {message: string}}
 
 const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
-  task: async ({taskId}, _args, {authToken, dataLoader}) => {
+  task: async (source, _args, {authToken, dataLoader}) => {
+    if ('error' in source) return null
+    const {taskId} = source
     const taskDoc = await dataLoader.get('tasks').load(taskId)
     if (!taskDoc) return null
     const {userId, tags, teamId} = taskDoc
@@ -18,11 +20,15 @@ const UpdateTaskPayload: UpdateTaskPayloadResolvers = {
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
   },
 
-  privatizedTaskId: ({taskId, isPrivatized}) => {
+  privatizedTaskId: (source) => {
+    if ('error' in source) return null
+    const {taskId, isPrivatized} = source
     return isPrivatized ? taskId : null
   },
 
-  addedNotification: async ({notificationsToAdd}, _args, {authToken, dataLoader}) => {
+  addedNotification: async (source, _args, {authToken, dataLoader}) => {
+    if ('error' in source) return null
+    const {notificationsToAdd} = source
     const viewerId = getUserId(authToken)
     const partial =
       notificationsToAdd?.find((notification) => notification.userId === viewerId) ?? null

@@ -99,7 +99,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
     updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
-    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId')
+    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
+    resetPassword: rateLimit({perMinute: 10, perHour: 100})
   },
   Query: {
     '*': isAuthenticated,
