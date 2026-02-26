@@ -10,9 +10,7 @@ import {GraphQLObjectType, GraphQLSchema} from 'graphql'
 import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
-import mutation from '../rootMutation'
 import query from '../rootQuery'
-import rootTypes from '../rootTypes'
 import {typeDefs} from './importedTypeDefs'
 import {nestGitLab} from './nestGitLab'
 import {nestLinear} from './nestLinear'
@@ -22,10 +20,9 @@ import resolvers from './resolvers'
 // Schema from legacy TypeScript first definitions instead of SDL pattern
 const legacyTypeDefs = new GraphQLSchema({
   query,
-  mutation,
+  mutation: new GraphQLObjectType({name: 'Mutation', fields: {}}),
   // defining a placeholder subscription because there's a bug in nest-graphql-schema that prefixes to _xGitHubSubscription if missing
-  subscription: new GraphQLObjectType({name: 'Subscription', fields: {}}),
-  types: rootTypes
+  subscription: new GraphQLObjectType({name: 'Subscription', fields: {}})
 })
 
 // Merge old POJO definitions with SDL definitions

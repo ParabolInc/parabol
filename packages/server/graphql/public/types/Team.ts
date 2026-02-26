@@ -10,6 +10,10 @@ import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
+  agendaItems: ({id: teamId}, _args, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) return []
+    return dataLoader.get('agendaItemsByTeamId').load(teamId)
+  },
   viewerTeamMember: async ({id: teamId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     if (!viewerId) return null

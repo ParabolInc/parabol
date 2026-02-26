@@ -15,7 +15,6 @@ import standardError from '../../utils/standardError'
 import type {GQLContext} from './../graphql'
 import isValid from '../isValid'
 import connectionFromTasks from '../queries/helpers/connectionFromTasks'
-import AgendaItem from './AgendaItem'
 import GraphQLISO8601Type from './GraphQLISO8601Type'
 import MeetingTypeEnum from './MeetingTypeEnum'
 import NewMeeting from './NewMeeting'
@@ -191,18 +190,6 @@ const Team: GraphQLObjectType = new GraphQLObjectType<ITeam, GQLContext>({
           }
         }
         return organization
-      }
-    },
-    agendaItems: {
-      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(AgendaItem))),
-      description: 'The agenda items for the upcoming or current meeting',
-      async resolve(
-        {id: teamId}: {id: string},
-        _args: unknown,
-        {authToken, dataLoader}: GQLContext
-      ) {
-        if (!isTeamMember(authToken, teamId)) return null
-        return dataLoader.get('agendaItemsByTeamId').load(teamId)
       }
     },
     tasks: {

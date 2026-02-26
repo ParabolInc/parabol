@@ -50,7 +50,6 @@ type TeamSubscriptionPayload {
   RemovePokerTemplateDimensionPayload: RemovePokerTemplateDimensionPayload
   RemovePokerTemplateScalePayload: RemovePokerTemplateScalePayload
   RenameMeetingTemplatePayload: RenameMeetingTemplatePayload
-  RenamePokerTemplatePayload: RenamePokerTemplatePayload
   RenameReflectTemplatePromptPayload: RenameReflectTemplatePromptPayload
   RenamePokerTemplateDimensionPayload: RenamePokerTemplateDimensionPayload
   RenamePokerTemplateScalePayload: RenamePokerTemplateScalePayload

@@ -8,11 +8,6 @@ type OrganizationUser {
   id: ID!
 
   """
-  true if the user is paused and the orgs are not being billed, else false
-  """
-  inactive: Boolean!
-
-  """
   the datetime the user first joined the org
   """
   joinedAt: DateTime!
