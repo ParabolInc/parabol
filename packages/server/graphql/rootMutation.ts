@@ -1,15 +1,5 @@
 import {GraphQLObjectType} from 'graphql'
 import type {GQLContext} from './graphql'
-import pokerAnnounceDeckHover from './mutations/pokerAnnounceDeckHover'
-import pokerResetDimension from './mutations/pokerResetDimension'
-import pokerRevealVotes from './mutations/pokerRevealVotes'
-import pokerTemplateDimensionUpdateDescription from './mutations/pokerTemplateDimensionUpdateDescription'
-import promoteNewMeetingFacilitator from './mutations/promoteNewMeetingFacilitator'
-import promoteToTeamLead from './mutations/promoteToTeamLead'
-import pushInvitation from './mutations/pushInvitation'
-import removeAtlassianAuth from './mutations/removeAtlassianAuth'
-import removeGitHubAuth from './mutations/removeGitHubAuth'
-import removeIntegrationProvider from './mutations/removeIntegrationProvider'
 import removePokerTemplateDimension from './mutations/removePokerTemplateDimension'
 import removePokerTemplateScale from './mutations/removePokerTemplateScale'
 import removePokerTemplateScaleValue from './mutations/removePokerTemplateScaleValue'
@@ -54,12 +44,6 @@ export default new GraphQLObjectType<any, GQLContext>({
   fields: () =>
     ({
       setNotificationStatus,
-      pushInvitation,
-      promoteNewMeetingFacilitator,
-      promoteToTeamLead,
-      pokerTemplateDimensionUpdateDescription,
-      removeAtlassianAuth,
-      removeGitHubAuth,
       removeReflectTemplate,
       removePokerTemplateDimension,
       renameMeeting,
@@ -92,14 +76,10 @@ export default new GraphQLObjectType<any, GQLContext>({
       updateTemplateScope,
       voteForReflectionGroup,
       voteForPokerStory,
-      pokerRevealVotes,
-      pokerResetDimension,
-      pokerAnnounceDeckHover,
       setPokerSpectate,
       setTaskEstimate,
       toggleTeamDrawer,
       updateGitHubDimensionField,
-      removeIntegrationProvider,
       updateAzureDevOpsDimensionField
     }) as any
 })

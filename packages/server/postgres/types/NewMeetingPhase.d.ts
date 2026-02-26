@@ -179,7 +179,7 @@ export type RetroMeetingPhase =
   | VotePhase
   | DiscussPhase
 
-export type PokerMeetingPhase = CheckInPhase | TeamHealthPhase | ScopePhase | EstimatePhase
+export type PokerMeetingPhase = CheckInPhase | ScopePhase | EstimatePhase
 
 export type CheckInMeetingPhase =
   | CheckInPhase

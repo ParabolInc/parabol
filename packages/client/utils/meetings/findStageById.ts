@@ -1,11 +1,9 @@
 export interface FindStageByIdStage {
   id: string
-  [key: string]: any
 }
 
 export interface FindStageByIdPhase {
   stages: readonly FindStageByIdStage[]
-  [key: string]: any
 }
 
 const findStageById = <T extends FindStageByIdPhase>(
@@ -18,8 +16,8 @@ const findStageById = <T extends FindStageByIdPhase>(
     const phase = phases[ii]!
     const {stages} = phase
     for (let jj = 0; jj < stages.length; jj++) {
-      const stage = stages[jj] as T['stages'][0] & FindStageByIdStage
-      if (stage[stageKey] === foreignKey) {
+      const stage = stages[jj] as T['stages'][number] & FindStageByIdStage
+      if (stage[stageKey as keyof typeof stage] === foreignKey) {
         return {phase, stage, stageIdx: jj}
       }
     }

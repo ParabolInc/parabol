@@ -6,10 +6,19 @@ Old mutations live in `packages/server/graphql/mutations/`. New mutations go in 
 
 ### Migration steps for each mutation
 
-1. **Create** `public/mutations/<name>.ts` — extract the `resolve` function body, change signature to `MutationResolvers['<name>']` from `../resolverTypes`
-2. **Remove** from `packages/server/graphql/rootMutation.ts` (imports + fields object)
-3. **Delete** old `mutations/<name>.ts`
-4. **Delete** old `types/<PayloadType>.ts` if only used by that mutation
+Use `git mv` to move files so git records them as renames (not delete+add). The workflow:
+
+1. **Write new content to a temp location**, or save it in memory
+2. **`git mv`** old file to new location:
+   - Mutation: `git mv mutations/<name>.ts public/mutations/<name>.ts`
+   - Type: `git mv types/<OldPayload>.ts public/types/<NewType>.ts` (name may change, e.g. `Payload→Success`)
+3. **Overwrite** the moved file with the new SDL-first implementation
+4. **Remove** from `packages/server/graphql/rootMutation.ts` (imports + fields object)
+
+If you've already created the new file and deleted the old one (both untracked/unstaged), fix it with:
+```bash
+cp new_file tmp && rm new_file && git restore old_file && git mv old_file new_file && cp tmp new_file && rm tmp
+```
 
 New mutations are auto-discovered via `require.context('./mutations', ...)` in `resolvers.ts` — no explicit registration needed.
 

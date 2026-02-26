@@ -1,28 +1,12 @@
-import {GraphQLID, GraphQLNonNull, GraphQLString} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import getKysely from '../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../utils/authorization'
-import publish from '../../utils/publish'
-import standardError from '../../utils/standardError'
-import type {GQLContext} from '../graphql'
-import PokerTemplateDimensionUpdateDescriptionPayload from '../types/PokerTemplateDimensionUpdateDescriptionPayload'
+import getKysely from '../../../postgres/getKysely'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
+import publish from '../../../utils/publish'
+import standardError from '../../../utils/standardError'
+import type {MutationResolvers} from '../resolverTypes'
 
-const pokerTemplateDimensionUpdateDescription = {
-  description: 'Update the description of a poker template dimension',
-  type: PokerTemplateDimensionUpdateDescriptionPayload,
-  args: {
-    dimensionId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    description: {
-      type: new GraphQLNonNull(GraphQLString)
-    }
-  },
-  async resolve(
-    _source: unknown,
-    {dimensionId, description}: {dimensionId: string; description: string},
-    {authToken, dataLoader, socketId: mutatorId}: GQLContext
-  ) {
+const pokerTemplateDimensionUpdateDescription: MutationResolvers['pokerTemplateDimensionUpdateDescription'] =
+  async (_source, {dimensionId, description}, {authToken, dataLoader, socketId: mutatorId}) => {
     const pg = getKysely()
     const operationId = dataLoader.share()
     const subOptions = {operationId, mutatorId}
@@ -31,9 +15,7 @@ const pokerTemplateDimensionUpdateDescription = {
 
     // AUTH
     if (!dimension || dimension.removedAt) {
-      return standardError(new Error('Dimension not found'), {
-        userId: viewerId
-      })
+      return standardError(new Error('Dimension not found'), {userId: viewerId})
     }
     if (!isTeamMember(authToken, dimension.teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
@@ -60,6 +42,5 @@ const pokerTemplateDimensionUpdateDescription = {
     )
     return data
   }
-}
 
 export default pokerTemplateDimensionUpdateDescription
