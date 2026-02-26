@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.9.4](https://github.com/ParabolInc/parabol/compare/v12.9.3...v12.9.4) (2026-02-26)
+
+
+### Fixed
+
+* retro discuss to unknown ([#12692](https://github.com/ParabolInc/parabol/issues/12692)) ([bf22ea3](https://github.com/ParabolInc/parabol/commit/bf22ea318bffd505da7339c8def79d14f7556f8f))
+
 ## [12.9.3](https://github.com/ParabolInc/parabol/compare/v12.9.2...v12.9.3) (2026-02-26)
 
 
