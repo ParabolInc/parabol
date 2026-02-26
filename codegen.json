@@ -204,6 +204,8 @@
           "PokerRevealVotesSuccess": "./types/PokerRevealVotesSuccess#PokerRevealVotesSuccessSource",
           "PokerTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
           "PokerTemplateDimensionUpdateDescriptionPayload": "./types/PokerTemplateDimensionUpdateDescriptionPayload#PokerTemplateDimensionUpdateDescriptionPayloadSource",
+          "Poll": "../../postgres/types/index#Poll as PollDB",
+          "PollOption": "../../postgres/types/index#PollOption as PollOptionDB",
           "PromoteNewMeetingFacilitatorPayload": "./types/PromoteNewMeetingFacilitatorPayload#PromoteNewMeetingFacilitatorPayloadSource",
           "PromoteToTeamLeadPayload": "./types/PromoteToTeamLeadPayload#PromoteToTeamLeadPayloadSource",
           "PushInvitationPayload": "./types/PushInvitationPayload#PushInvitationPayloadSource",

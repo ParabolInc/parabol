@@ -40,7 +40,7 @@ const removePokerTemplate: MutationResolvers['removePokerTemplate'] = async (
   const {teamId} = template
   const [templates, settings] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
-    dataLoader.get('meetingSettingsByType').load({meetingType: 'poker', teamId})
+    dataLoader.get('meetingSettingsByType').loadNonNull({meetingType: 'poker', teamId})
   ])
 
   // RESOLUTION

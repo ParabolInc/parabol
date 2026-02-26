@@ -248,7 +248,7 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
 
 export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingSettings')
-  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+  return new NullableDataLoader<MeetingSettingsKey, MeetingSettings, string>(
     async (keys) => {
       const res = await selectMeetingSettings()
         .where(({eb, refTuple, tuple}) =>

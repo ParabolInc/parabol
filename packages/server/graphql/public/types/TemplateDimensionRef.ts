@@ -9,9 +9,6 @@ export interface TemplateDimensionRefSource {
 
 const TemplateDimensionRef: TemplateDimensionRefResolvers = {
   id: ({meetingId, dimensionRefIdx}) => TemplateDimensionRefId.join(meetingId, dimensionRefIdx),
-
-  sortOrder: ({dimensionRefIdx}) => dimensionRefIdx,
-
   scale: async ({scaleRefId}, _args, {dataLoader}) => {
     const scaleFromPg = await dataLoader.get('templateScaleRefs').loadNonNull(scaleRefId)
     return scaleFromPg

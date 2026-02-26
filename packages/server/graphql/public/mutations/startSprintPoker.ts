@@ -106,7 +106,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   )
   const meetingSettings = await dataLoader
     .get('meetingSettingsByType')
-    .load({teamId, meetingType: 'poker'})
+    .loadNonNull({teamId, meetingType: 'poker'})
   const {selectedTemplateId} = meetingSettings
   if (!selectedTemplateId) {
     throw new Error('selectedTemplateId is required')

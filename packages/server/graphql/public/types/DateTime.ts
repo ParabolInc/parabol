@@ -1,6 +1,6 @@
-import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
 import isValidDate from 'parabol-client/utils/isValidDate'
+import type {DateTimeScalarConfig} from '../resolverTypes'
 
 function parseDate(value: string) {
   const result = new Date(value)
@@ -13,20 +13,17 @@ function parseDate(value: string) {
   return result
 }
 
-const GraphQLISO8601Type = new GraphQLScalarType({
+const DateTime: DateTimeScalarConfig = {
   name: 'DateTime',
 
-  // Serialize a date to send to the client.
   serialize(value) {
     const date = new Date(value as string)
-
     if (isNaN(date.getTime())) {
       throw new Error('Field error: value is an invalid Date')
     }
     return date.toJSON()
   },
 
-  // Parse a date received as a query variable.
   parseValue(value) {
     if (typeof value !== 'string') {
       throw new Error('Field error: value is not an instance of string')
@@ -34,7 +31,6 @@ const GraphQLISO8601Type = new GraphQLScalarType({
     return parseDate(value)
   },
 
-  // Parse a date received as an inline value.
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
       throw new Error(`Query error: Can only parse strings to dates but got a: ${ast.kind}`)
@@ -45,6 +41,6 @@ const GraphQLISO8601Type = new GraphQLScalarType({
       throw new Error(`Query error: ${e instanceof Error ? e.message : 'Unable to parseDate'}`)
     }
   }
-})
+}
 
-export default GraphQLISO8601Type
+export default DateTime

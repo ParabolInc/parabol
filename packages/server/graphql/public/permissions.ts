@@ -105,8 +105,10 @@ const permissionMap: PermissionMap<Resolvers> = {
   Query: {
     '*': isAuthenticated,
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
+    massInvitation: rateLimit({perMinute: 60, perHour: 1800}),
     SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
-    public: rateLimit({perMinute: 20, perHour: 100})
+    public: rateLimit({perMinute: 20, perHour: 100}),
+    verifiedInvitation: rateLimit({perMinute: 60, perHour: 1800})
   },
   PublicRoot: {
     page: and(

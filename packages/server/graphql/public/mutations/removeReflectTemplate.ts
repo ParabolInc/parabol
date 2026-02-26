@@ -40,7 +40,7 @@ const removeReflectTemplate: MutationResolvers['removeReflectTemplate'] = async 
   const {teamId} = template
   const [templates, settings] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'retrospective', teamId}),
-    dataLoader.get('meetingSettingsByType').load({meetingType: 'retrospective', teamId})
+    dataLoader.get('meetingSettingsByType').loadNonNull({meetingType: 'retrospective', teamId})
   ])
 
   // RESOLUTION

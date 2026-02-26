@@ -1,8 +1,8 @@
-import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
 import {emailRegex} from 'parabol-client/validation/regex'
+import type {EmailScalarConfig} from '../resolverTypes'
 
-const GraphQLEmailType = new GraphQLScalarType({
+const Email: EmailScalarConfig = {
   name: 'Email',
   serialize: (value) => (value as string).toLowerCase(),
   parseValue: (value) => (value as string).toLowerCase(),
@@ -21,6 +21,6 @@ const GraphQLEmailType = new GraphQLScalarType({
     }
     return ast.value.toLowerCase()
   }
-})
+}
 
-export default GraphQLEmailType
+export default Email

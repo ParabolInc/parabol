@@ -17,7 +17,9 @@ const UpdateTemplateScopeSuccess: UpdateTemplateScopeSuccessResolvers = {
     return (await dataLoader.get('meetingTemplates').load(clonedTemplateId)) ?? null
   },
   settings: async ({teamId, meetingType}, _args, {dataLoader}) => {
-    return (await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})) ?? null
+    return (
+      (await dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType})) ?? null
+    )
   }
 }
 

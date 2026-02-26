@@ -1,8 +1,8 @@
-import {GraphQLScalarType} from 'graphql'
 import {Kind} from 'graphql/language'
 import {urlRegex} from 'parabol-client/validation/regex'
+import type {UrlScalarConfig} from '../resolverTypes'
 
-const GraphQLURLType = new GraphQLScalarType({
+const URL: UrlScalarConfig = {
   name: 'URL',
   serialize: (value) => String(value),
   parseValue: (value) => String(value),
@@ -21,6 +21,6 @@ const GraphQLURLType = new GraphQLScalarType({
     }
     return String(ast.value)
   }
-})
+}
 
-export default GraphQLURLType
+export default URL

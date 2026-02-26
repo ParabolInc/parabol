@@ -1,4 +1,5 @@
-import resolveReactjis from '../../resolvers/resolveReactjis'
+import {getUserId} from '../../../utils/authorization'
+import getGroupedReactjis from '../../../utils/getGroupedReactjis'
 import type {ReactableEnum, ReactableResolvers} from '../resolverTypes'
 
 export const getReactableType = (reactable: any): ReactableEnum => {
@@ -21,7 +22,10 @@ const Reactable: ReactableResolvers = {
     } as const
     return lookup[reactableType]
   },
-  reactjis: resolveReactjis as any
+  reactjis: ({reactjis, id}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    return getGroupedReactjis(reactjis, viewerId, id)
+  }
 }
 
 export default Reactable

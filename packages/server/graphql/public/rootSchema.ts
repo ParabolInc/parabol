@@ -5,29 +5,18 @@
  *  - GitHub and GitLab schemas
  */
 import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
-import {GraphQLObjectType, GraphQLSchema} from 'graphql'
 // Resolvers from SDL first definitions
 import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
-import query from '../rootQuery'
 import {typeDefs} from './importedTypeDefs'
 import {nestGitLab} from './nestGitLab'
 import {nestLinear} from './nestLinear'
 import permissions from './permissions'
 import resolvers from './resolvers'
 
-// Schema from legacy TypeScript first definitions instead of SDL pattern
-const legacyTypeDefs = new GraphQLSchema({
-  query,
-  mutation: new GraphQLObjectType({name: 'Mutation', fields: {}}),
-  // defining a placeholder subscription because there's a bug in nest-graphql-schema that prefixes to _xGitHubSubscription if missing
-  subscription: new GraphQLObjectType({name: 'Subscription', fields: {}})
-})
-
 // Merge old POJO definitions with SDL definitions
 const parabolTypeDefs = mergeSchemas({
-  schemas: [legacyTypeDefs],
   typeDefs
 })
 
