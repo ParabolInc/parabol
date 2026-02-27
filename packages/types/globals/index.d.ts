@@ -42,8 +42,8 @@ interface Window {
     github: string
     google: string
     googleAnalytics: string
-    mattermostWebhookIntegrationHidden: boolean | undefined
-    msTeamsWebhookIntegrationHidden: boolean | undefined
+    mattermostWebhookIntegrationDisabled: boolean | undefined
+    msTeamsWebhookIntegrationDisabled: boolean | undefined
     publicPath: string
     slack: string
     stripe: string

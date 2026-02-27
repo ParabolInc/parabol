@@ -60,7 +60,7 @@ const MattermostProviderRow = (props: Props) => {
   const {mattermost} = integrations
   const {auth} = mattermost
 
-  if (window.__ACTION__.mattermostWebhookIntegrationHidden) return null
+  if (window.__ACTION__.mattermostWebhookIntegrationDisabled) return null
 
   return (
     <>
