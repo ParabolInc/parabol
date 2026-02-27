@@ -1,4 +1,4 @@
-import {and, not, or} from 'graphql-shield'
+import {allow, and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
 import getTeamIdFromArgSettingsId from './rules/getTeamIdFromArgSettingsId'
@@ -75,6 +75,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       rateLimit({perMinute: 50, perHour: 500})
     ),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
+    signOut: allow,
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(
