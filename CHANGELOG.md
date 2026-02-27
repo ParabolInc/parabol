@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.2](https://github.com/ParabolInc/parabol/compare/v12.10.1...v12.10.2) (2026-02-27)
+
+
+### Fixed
+
+* **embedder:** abort pending drought promise on graceful shutdown ([#12708](https://github.com/ParabolInc/parabol/issues/12708)) ([41cb22d](https://github.com/ParabolInc/parabol/commit/41cb22d89ee5c3f4a4e4640bcf24d79b6fd96cb6))
+
 ## [12.10.1](https://github.com/ParabolInc/parabol/compare/v12.10.0...v12.10.1) (2026-02-27)
 
 
