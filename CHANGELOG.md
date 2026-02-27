@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.5](https://github.com/ParabolInc/parabol/compare/v12.10.4...v12.10.5) (2026-02-27)
+
+
+### Fixed
+
+* properly notify client if AuthToken is unauthorized ([#12724](https://github.com/ParabolInc/parabol/issues/12724)) ([1cab8a0](https://github.com/ParabolInc/parabol/commit/1cab8a0c2664ba3b70fc4be0c8e0b7e0cad89777))
+
+## [12.10.4](https://github.com/ParabolInc/parabol/compare/v12.10.3...v12.10.4) (2026-02-27)
+
+
+### Fixed
+
+* rollback aggressive logging out ([#12720](https://github.com/ParabolInc/parabol/issues/12720)) ([6abcafc](https://github.com/ParabolInc/parabol/commit/6abcafcfc426d98e520fef7fc2bfaed705274ad9))
+
 ## [12.10.3](https://github.com/ParabolInc/parabol/compare/v12.10.2...v12.10.3) (2026-02-27)
 
 
