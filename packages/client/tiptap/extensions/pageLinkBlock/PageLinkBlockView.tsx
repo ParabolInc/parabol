@@ -35,7 +35,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const atmosphere = useAtmosphere()
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageViewerAccess} = viewer
+  const {draggingPageId, draggingPageViewerAccess} = viewer ?? {}
   const hasDragAccess = hasMinPageRole('editor', draggingPageViewerAccess)
   const isOptimistic = pageCode === -1
   const focusLink = () => {
