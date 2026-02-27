@@ -29,6 +29,12 @@ function isEmptyParagraph(node: Node) {
   return node.type.name === 'paragraph' && node.textContent.length === 0
 }
 
+interface NodeChangeData {
+  editor: Editor
+  node: Node | null
+  pos: number
+}
+
 type Options = {
   atmosphere: Atmosphere
   pageId: string
@@ -50,21 +56,25 @@ export const PageDragHandle = Extension.create<Options>({
     let editorRef: Editor | null = null
     const {atmosphere, pageId} = this.options
 
-    // The extension's dragstart listener on the element gets removed during
-    // ProseMirror plugin lifecycle rebuilds and never re-added (known issue,
-    // see "TODO: Kills even on hot reload" in extension source). We add our
-    // own persistent listener that replicates the extension's dragHandler.
+    // WORKAROUND: The DragHandle extension adds a dragstart listener to the element
+    // inside DragHandlePlugin(), but removes it in the plugin view's destroy() during
+    // ProseMirror plugin lifecycle rebuilds (e.g. Collaboration syncs). Because
+    // the listener is never re-added after destroy, the extension's dragHandler never
+    // fires, so view.dragging is never set and ProseMirror treats every drop as external.
+    //
+    // Our listener here, attached in addExtensions() (called once during extension
+    // resolution), persists across plugin rebuilds because it's on the element itself,
+    // not managed by any plugin view lifecycle.
     dragHandleElement.addEventListener('dragstart', (e) => {
       if (!editorRef || !dragHandleNode || dragHandleNodePos < 0) return
       if (!e.dataTransfer) return
       const {view} = editorRef
-      if (view.dragging) return // extension handled it (defensive guard)
+      if (view.dragging) return
       const {doc} = view.state
       const from = dragHandleNodePos
       const to = dragHandleNodePos + dragHandleNode.nodeSize
       const slice = doc.slice(from, to)
 
-      // Create drag image from cloned DOM node
       const imageWrapper = document.createElement('div')
       const domNode = view.nodeDOM(from)
       if (domNode instanceof HTMLElement) {
@@ -77,10 +87,9 @@ export const PageDragHandle = Extension.create<Options>({
       e.dataTransfer.clearData()
       e.dataTransfer.setDragImage(imageWrapper, 0, 0)
 
-      // Tell ProseMirror this is an internal drag-move
+      // Tells ProseMirror this is an internal drag-move so drop deletes the source
       view.dragging = {slice, move: true}
 
-      // Select the node being dragged
       const selection = NodeSelection.create(doc, from)
       const {tr} = view.state
       tr.setSelection(selection)
@@ -88,7 +97,7 @@ export const PageDragHandle = Extension.create<Options>({
 
       document.addEventListener('drop', () => imageWrapper.remove(), {once: true})
 
-      // pageLinkBlock: also update Relay store for sidebar drop targets
+      // pageLinkBlock: update Relay store so sidebar drop targets can respond
       if (dragHandleNode.type.name === 'pageLinkBlock') {
         const attrs = dragHandleNode.attrs as PageLinkBlockAttrs
         if (!attrs.canonical) return
@@ -138,11 +147,10 @@ export const PageDragHandle = Extension.create<Options>({
           return dragHandleElement
         },
         onNodeChange: (data) => {
-          const {node} = data
-          const pos: number = (data as any).pos ?? -1
-          editorRef = (data as any).editor ?? editorRef
+          const {editor, node, pos} = data as NodeChangeData
+          editorRef = editor ?? editorRef
           dragHandleNode = node
-          dragHandleNodePos = pos
+          dragHandleNodePos = pos ?? -1
           const isEmpty = node ? isEmptyParagraph(node) : false
           const isHidden = dragHandleElement.classList.contains('hide')
           if (isEmpty !== isHidden) {
@@ -158,8 +166,7 @@ export const PageDragHandle = Extension.create<Options>({
   },
 
   addProseMirrorPlugins() {
-    // Ensure dataTransfer has data after clearData() calls.
-    // Some browsers won't fire 'drop' without at least one data item.
+    // dataTransfer must have at least one item for browsers to fire 'drop'.
     return [
       new Plugin({
         view() {
