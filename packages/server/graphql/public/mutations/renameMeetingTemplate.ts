@@ -1,8 +1,10 @@
+import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import updateMeetingTemplateName from '../../../postgres/queries/updateMeetingTemplateName'
+import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {MutationResolvers} from '../resolverTypes'
 
 const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async (
@@ -42,8 +44,31 @@ const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async 
 
   // RESOLUTION
   template.name = normalizedName
-  await updateMeetingTemplateName(templateId, normalizedName)
+  const pg = getKysely()
+  const [embeddingsMetadata] = await Promise.all([
+    pg
+      .insertInto('EmbeddingsMetadata')
+      .values({
+        objectType: 'meetingTemplate',
+        refId: templateId,
+        refUpdatedAt: sql`CURRENT_TIMESTAMP`,
+        teamId
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow(),
+    pg
+      .updateTable('MeetingTemplate')
+      .set({name: normalizedName})
+      .where('id', '=', templateId)
+      .execute()
+  ])
 
+  await publishToEmbedder({
+    jobType: 'embed:start',
+    embeddingsMetadataId: embeddingsMetadata.id,
+    dataLoader,
+    userId: viewerId
+  })
   const data = {templateId}
   publish(SubscriptionChannel.TEAM, teamId, 'RenameMeetingTemplatePayload', data, subOptions)
   return data
