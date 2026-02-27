@@ -75,7 +75,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
   teamId: string,
   meetingId: string,
   meetingCount: number,
-  meetingType: MeetingTypeEnum,
+  meetingType: Exclude<MeetingTypeEnum, 'teamPrompt'>,
   dataLoader: DataLoaderWorker
 ) => {
   const pg = getKysely()

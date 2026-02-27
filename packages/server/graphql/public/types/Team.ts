@@ -123,9 +123,7 @@ const Team: TeamResolvers = {
   },
   meetingSettings: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return null as any
-    const settings = await dataLoader
-      .get('meetingSettingsByType')
-      .loadNonNull({teamId, meetingType})
+    const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
     return settings
   },
   organization: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {

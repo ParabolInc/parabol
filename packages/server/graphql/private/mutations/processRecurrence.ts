@@ -42,7 +42,7 @@ const startRecurringMeeting = async (
 
   const [lastMeeting, meetingSettings] = await Promise.all([
     dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId),
-    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType})
+    dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
   ])
 
   const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
@@ -70,7 +70,7 @@ const startRecurringMeeting = async (
     } else if (meetingSeries.meetingType === 'retrospective') {
       const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
         (lastMeeting as RetrospectiveMeeting) ?? {
-          templateId: meetingSettings.selectedTemplateId,
+          templateId: meetingSettings?.selectedTemplateId,
           ...meetingSettings
         }
       const meeting = await safeCreateRetrospective(
