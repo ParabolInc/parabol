@@ -54,7 +54,8 @@ const rewriteIndexHTML = () => {
     github: process.env.GITHUB_CLIENT_ID,
     google: process.env.GOOGLE_OAUTH_CLIENT_ID,
     googleAnalytics: process.env.GA_TRACKING_ID,
-    mattermostWebhookIntegrationHidden: process.env.MATTERMOST_WEBHOOK_INTEGRATION_HIDDEN === 'true',
+    mattermostWebhookIntegrationHidden:
+      process.env.MATTERMOST_WEBHOOK_INTEGRATION_HIDDEN === 'true',
     msTeamsWebhookIntegrationHidden: process.env.MSTEAMS_WEBHOOK_INTEGRATION_HIDDEN === 'true',
     slack: process.env.SLACK_CLIENT_ID,
     stripe: process.env.STRIPE_PUBLISHABLE_KEY,
