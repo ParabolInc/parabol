@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.4](https://github.com/ParabolInc/parabol/compare/v12.10.3...v12.10.4) (2026-02-27)
+
+
+### Fixed
+
+* rollback aggressive logging out ([#12720](https://github.com/ParabolInc/parabol/issues/12720)) ([6abcafc](https://github.com/ParabolInc/parabol/commit/6abcafcfc426d98e520fef7fc2bfaed705274ad9))
+
 ## [12.10.3](https://github.com/ParabolInc/parabol/compare/v12.10.2...v12.10.3) (2026-02-27)
 
 
