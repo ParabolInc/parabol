@@ -44,7 +44,6 @@ const OrgMembers = (props: Props) => {
                 cursor
                 node {
                   id
-                  inactive
                   role
                   user {
                     id
@@ -180,7 +179,8 @@ const OrgMembers = (props: Props) => {
         Row: idx,
         Name: node.user.preferredName,
         Email: node.user.email,
-        Inactive: node.inactive,
+        // legacy: inactive was removed from the DB, so i removed it from GraphQL
+        Inactive: false,
         'Billing Lead': node.role === 'BILLING_LEADER',
         'Last Seen At': formattedLastSeenAt
       }

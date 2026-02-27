@@ -30,6 +30,12 @@ interface MessageToEmbedderEmbedPage extends BaseMessageToEmbedder {
   data?: {}
 }
 
+interface MessageToEmbedderEmbed extends BaseMessageToEmbedder {
+  jobType: 'embed:start'
+  embeddingsMetadataId: number
+  data?: {}
+}
+
 interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   jobType: 'relatedDiscussions:start'
   data: RelatedDiscussionsJobData
@@ -61,17 +67,20 @@ export async function publishToEmbedder(
   payload: MessageToEmbedderUserQuery
 ): Promise<Float32Array | Error>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
+export async function publishToEmbedder(payload: MessageToEmbedderEmbed): Promise<undefined>
 export async function publishToEmbedder(
   payload:
     | MessageToEmbedderUserQuery
     | MessageToEmbedderRelatedDiscussions
     | MessageToEmbedderEmbedPage
+    | MessageToEmbedderEmbed
 ) {
   if (!IS_EMBEDDER_ENALBED) return
   const {jobType, userId, dataLoader, data} = payload
   const jobKind = jobTypeToKind[jobType]
   const priority = await getEmbedderJobPriority(jobKind, userId, 0, dataLoader)
   const pageId = (payload as MessageToEmbedderEmbedPage).pageId
+  const embeddingsMetadataId = (payload as MessageToEmbedderEmbed).embeddingsMetadataId
   await getKysely()
     .insertInto('EmbeddingsJobQueueV2')
     .values({
@@ -79,6 +88,7 @@ export async function publishToEmbedder(
       priority,
       modelId: activeEmbeddingModelId,
       pageId,
+      embeddingsMetadataId,
       jobData: JSON.stringify(data || {})
     })
     .$if(!!pageId, (qb) =>

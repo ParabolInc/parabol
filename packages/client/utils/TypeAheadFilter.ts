@@ -21,4 +21,9 @@ export default class TypeAheadFilter {
     this.lastQuery = query
     return this.lastResult
   }
+
+  reset() {
+    this.lastQuery = ''
+    this.lastResult = []
+  }
 }

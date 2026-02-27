@@ -1,7 +1,5 @@
 import type {DataLoaderWorker} from '../graphql/graphql'
-import IntegrationProviderServiceEnum, {
-  type IntegrationProviderServiceEnumType
-} from '../graphql/types/IntegrationProviderServiceEnum'
+import type {IntegrationProviderServiceEnumType} from '../integrations/TaskIntegrationManagerFactory'
 
 const getTaskServicesWithPerms = async (
   dataLoader: DataLoaderWorker,
@@ -17,10 +15,13 @@ const getTaskServicesWithPerms = async (
       .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
       .load({service: 'jiraServer', teamId, userId})
   ])
-  const allPossibleTaskServices = IntegrationProviderServiceEnum.getValues().map(
-    ({name}) => name
-  ) as IntegrationProviderServiceEnumType[]
-
+  const allPossibleTaskServices: IntegrationProviderServiceEnumType[] = [
+    'jira',
+    'github',
+    'gitlab',
+    'azureDevOps',
+    'jiraServer'
+  ]
   return allPossibleTaskServices.filter((service) => {
     switch (service) {
       case 'jira':

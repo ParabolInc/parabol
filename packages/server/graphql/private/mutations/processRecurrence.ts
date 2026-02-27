@@ -42,7 +42,7 @@ const startRecurringMeeting = async (
 
   const [lastMeeting, meetingSettings] = await Promise.all([
     dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId),
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
+    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType})
   ])
 
   const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)

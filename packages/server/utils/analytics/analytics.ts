@@ -7,7 +7,7 @@ import type {TeamLimitsEmailType} from '../../billing/helpers/sendTeamsLimitEmai
 import type MeetingTemplate from '../../database/types/MeetingTemplate'
 import type {DataLoaderWorker} from '../../graphql/graphql'
 import type {ModifyType, ReactableEnum} from '../../graphql/public/resolverTypes'
-import type {IntegrationProviderServiceEnumType} from '../../graphql/types/IntegrationProviderServiceEnum'
+import type {IntegrationProviderServiceEnumType} from '../../integrations/TaskIntegrationManagerFactory'
 import type {
   MeetingSeries,
   SlackNotification,

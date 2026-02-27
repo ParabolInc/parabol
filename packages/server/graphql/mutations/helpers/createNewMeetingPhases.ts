@@ -80,7 +80,7 @@ const createNewMeetingPhases = async <T extends NewMeetingPhase = NewMeetingPhas
 ) => {
   const pg = getKysely()
   const [meetingSettings, stageDurations, team] = await Promise.all([
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
+    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
     getPastStageDurations(teamId, dataLoader),
     dataLoader.get('teams').loadNonNull(teamId)
   ])

@@ -34,7 +34,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingType: MeetingTypeEnum = 'retrospective'
   const [viewer, meetingSettings, meetingCount] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
+    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
     dataLoader.get('meetingCount').load({teamId, meetingType})
   ])
 

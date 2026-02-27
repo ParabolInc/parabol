@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.0](https://github.com/ParabolInc/parabol/compare/v12.9.4...v12.10.0) (2026-02-27)
+
+
+### Added
+
+* linear search by issue id ([#12688](https://github.com/ParabolInc/parabol/issues/12688)) ([924bb36](https://github.com/ParabolInc/parabol/commit/924bb36c0c6d3e4b21ac973e926d2c37103f23bd))
+
+
+### Fixed
+
+* cleanup PG from embedder refactor ([#12699](https://github.com/ParabolInc/parabol/issues/12699)) ([b5ffd14](https://github.com/ParabolInc/parabol/commit/b5ffd1472c9589ad07400d018bb76b7788443086))
+* Refactor to SDL part 4 ([#12698](https://github.com/ParabolInc/parabol/issues/12698)) ([4c80526](https://github.com/ParabolInc/parabol/commit/4c8052699f4cec69f04edf40fdcf561cd9e26aba))
+* show updated filter result in integration footer ([#12695](https://github.com/ParabolInc/parabol/issues/12695)) ([8f003e2](https://github.com/ParabolInc/parabol/commit/8f003e2af53de54a03f450a9a703d01c3edb8991))
+
 ## [12.9.4](https://github.com/ParabolInc/parabol/compare/v12.9.3...v12.9.4) (2026-02-26)
 
 

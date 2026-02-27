@@ -5,26 +5,28 @@ import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
 import type {RemoveTeamMemberPayloadResolvers} from '../resolverTypes'
 
-export type RemoveTeamMemberPayloadSource = {
-  teamMemberId: string
-  teamId: string
-  taskIds: string[]
-  userId: string
-  notificationId: string
-}
+export type RemoveTeamMemberPayloadSource =
+  | {
+      teamMemberId: string
+      teamId: string
+      taskIds: string[]
+      userId: string
+      notificationId: string | undefined
+    }
+  | {error: {message: string}}
 
 const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
-  teamMember: async ({teamMemberId}, _args, {dataLoader}: GQLContext) => {
-    return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
+  teamMember: async (source, _args, {dataLoader}: GQLContext) => {
+    if ('error' in source) return null
+    return dataLoader.get('teamMembers').loadNonNull(source.teamMemberId)
   },
-  team: async ({teamId}, _args, {dataLoader}) => {
-    return dataLoader.get('teams').loadNonNull(teamId)
+  team: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return dataLoader.get('teams').loadNonNull(source.teamId)
   },
-  updatedTasks: async (
-    {taskIds}: {taskIds: string[]},
-    _args: unknown,
-    {authToken, dataLoader}: GQLContext
-  ) => {
+  updatedTasks: async (source, _args, {authToken, dataLoader}: GQLContext) => {
+    if ('error' in source) return null
+    const {taskIds} = source
     if (!taskIds || taskIds.length === 0) return null
     const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
     const {userId} = tasks[0]!
@@ -32,10 +34,13 @@ const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
     const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId))
     return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
   },
-  user: async ({userId}, _args, {dataLoader}) => {
-    return dataLoader.get('users').loadNonNull(userId)
+  user: async (source, _args, {dataLoader}) => {
+    if ('error' in source) return null
+    return dataLoader.get('users').loadNonNull(source.userId)
   },
-  kickOutNotification: async ({notificationId}, _args, {authToken, dataLoader}) => {
+  kickOutNotification: async (source, _args, {authToken, dataLoader}) => {
+    if ('error' in source) return null
+    const {notificationId} = source
     if (!notificationId) return null
     const viewerId = getUserId(authToken)
     const notification = await dataLoader
