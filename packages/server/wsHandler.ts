@@ -303,12 +303,13 @@ wsHandler.upgrade = async (res, req, context) => {
     const authToken = getVerifiedAuthToken(token)
     const {sub: viewerId, iat} = authToken
     const [isBlacklistedJWT, user] = await Promise.all([
-      checkBlacklistJWT(viewerId, iat),
-      getKysely()
-        .selectFrom('User')
-        .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
-        .where('id', '=', viewerId)
-        .executeTakeFirst()
+      !viewerId || checkBlacklistJWT(viewerId, iat),
+      viewerId &&
+        getKysely()
+          .selectFrom('User')
+          .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+          .where('id', '=', viewerId)
+          .executeTakeFirst()
     ])
 
     if (isAborted) {
