@@ -25,8 +25,3 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 
 - **Do not add new values to `constEnums.ts`** (`packages/client/types/constEnums.ts`) — it is deprecated.
 - Add new constants to `packages/client/utils/constants.ts` as plain `export const` values.
-
-## Testing Stripe
-
-- `brew install stripe/stripe-cli/stripe` and then `stripe login` to get the port forwarder up and running
-- Use `stripe listen --forward-to https://localhost:3000/stripe --skip-verify` to forward Stripe events to your local server.

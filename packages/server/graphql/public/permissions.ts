@@ -13,6 +13,7 @@ import {isNull} from './rules/isNull'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
+import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
 import isUserViewer from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
@@ -39,25 +40,33 @@ const permissionMap: PermissionMap<Resolvers> = {
     '*': isAuthenticated,
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
-    addOrg: rateLimit({perMinute: 2, perHour: 5}),
-    denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
-    inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
-    addTeam: rateLimit({perMinute: 15, perHour: 50}),
-    createImposterToken: isSuperUser,
-    createPage: or(
-      isNull<'Mutation.createPage'>('args.teamId'),
-      isTeamMember<'Mutation.createPage'>('args.teamId')
+    addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
+    addApprovedOrganizationDomains: or(
+      isSuperUser,
+      and(
+        isViewerBillingLeader<'Mutation.addApprovedOrganizationDomains'>('args.orgId'),
+        isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
+      )
     ),
-    selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
-    setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
-    createReflection: isMeetingMember<'Mutation.createReflection'>('args.input.meetingId'),
+    addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
+    addTeam: rateLimit({perMinute: 15, perHour: 50}),
+    archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    createImposterToken: isSuperUser,
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
       'args.orgId',
       'ORG_ADMIN'
     ),
-    updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
+    createPage: or(
+      isNull<'Mutation.createPage'>('args.teamId'),
+      isTeamMember<'Mutation.createPage'>('args.teamId')
+    ),
+    createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
+    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
+    denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
+    generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
+    inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
@@ -66,49 +75,43 @@ const permissionMap: PermissionMap<Resolvers> = {
       not(isEnvVarTrue('AUTH_MICROSOFT_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
-    signUpWithPassword: and(
-      not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
-      rateLimit({perMinute: 50, perHour: 500})
-    ),
     loginWithPassword: and(
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
-    verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
-    signOut: allow,
-    addApprovedOrganizationDomains: or(
-      isSuperUser,
-      and(
-        isViewerBillingLeader<'Mutation.addApprovedOrganizationDomains'>('args.orgId'),
-        isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
-      )
-    ),
+    pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
-    uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    resetPassword: rateLimit({perMinute: 10, perHour: 100}),
+    selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
+    setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
+    signOut: allow,
+    signUpWithPassword: and(
+      not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
+      rateLimit({perMinute: 50, perHour: 500})
+    ),
+    updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
     updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
-    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
-    archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),
       // limit looking up users by email
       rateLimit({perMinute: 50, perHour: 100})
     ),
-    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
-    generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
-    updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
-    deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
-    resetPassword: rateLimit({perMinute: 10, perHour: 100})
+    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    verifyEmail: rateLimit({perMinute: 50, perHour: 100})
   },
   Query: {
     '*': isAuthenticated,
     getDemoGroupTitle: rateLimit({perMinute: 15, perHour: 150}),
     massInvitation: rateLimit({perMinute: 60, perHour: 1800}),
-    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
     public: rateLimit({perMinute: 20, perHour: 100}),
+    SAMLIdP: rateLimit({perMinute: 120, perHour: 3600}),
     verifiedInvitation: rateLimit({perMinute: 60, perHour: 1800})
   },
   PublicRoot: {
