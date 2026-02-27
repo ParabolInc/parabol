@@ -124,7 +124,8 @@ module.exports = {
         googleAnalytics: process.env.GA_TRACKING_ID,
         mattermostWebhookIntegrationDisabled:
           process.env.MATTERMOST_WEBHOOK_INTEGRATION_DISABLED === 'true',
-        msTeamsWebhookIntegrationDisabled: process.env.MSTEAMS_WEBHOOK_INTEGRATION_DISABLED === 'true',
+        msTeamsWebhookIntegrationDisabled:
+          process.env.MSTEAMS_WEBHOOK_INTEGRATION_DISABLED === 'true',
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
         oauth2Redirect: makeOAuth2Redirect(),
