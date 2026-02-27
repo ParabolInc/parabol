@@ -34,9 +34,12 @@ const MattermostIntegration: MattermostIntegrationResolvers = {
   sharedProviders: async ({teamId}, _args, {dataLoader}) => {
     const team = await dataLoader.get('teams').loadNonNull(teamId)
     const {orgId} = team
-    return dataLoader
+    const providers = await dataLoader
       .get('sharedIntegrationProviders')
       .load({service: 'mattermost', orgIds: [orgId], teamIds: [teamId]})
+    return providers.filter(
+      ({authStrategy, scope}) => authStrategy === 'webhook' && scope !== 'global'
+    )
   },
 
   isActive: async ({teamId}, _args, {dataLoader}) => {
