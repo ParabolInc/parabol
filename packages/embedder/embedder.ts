@@ -77,4 +77,7 @@ const run = async () => {
   process.exit()
 }
 
-run()
+run().catch((error) => {
+  console.error("Fatal error during embedder startup:", error)
+  process.exit(1)
+})
