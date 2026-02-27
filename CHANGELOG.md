@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.3](https://github.com/ParabolInc/parabol/compare/v12.10.2...v12.10.3) (2026-02-27)
+
+
+### Fixed
+
+* allow signOut ([#12709](https://github.com/ParabolInc/parabol/issues/12709)) ([e605bed](https://github.com/ParabolInc/parabol/commit/e605bed7661c68da389cc8262aecf54e289c0018))
+* await adding organization user in SCIM ([#12715](https://github.com/ParabolInc/parabol/issues/12715)) ([00a2522](https://github.com/ParabolInc/parabol/commit/00a2522a9d3ff72ccf6a5e55ab950a8a0cbfd544))
+* log out client if auth token is rejected ([#12714](https://github.com/ParabolInc/parabol/issues/12714)) ([e5feca3](https://github.com/ParabolInc/parabol/commit/e5feca34743a8ca456414513202e63fbd3e4825e))
+* Recurrence wouldn't restart meetings due to missing meeting settings ([#12717](https://github.com/ParabolInc/parabol/issues/12717)) ([606c44e](https://github.com/ParabolInc/parabol/commit/606c44ea5b928a025ca460f207f6a77600d333bc))
+
 ## [12.10.2](https://github.com/ParabolInc/parabol/compare/v12.10.1...v12.10.2) (2026-02-27)
 
 
