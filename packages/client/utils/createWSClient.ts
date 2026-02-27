@@ -118,6 +118,11 @@ export function createWSClient(atmosphere: Atmosphere) {
           setConnectedStatus(atmosphere, true)
         },
         closed: (event) => {
+          if ((event as CloseEvent).code === 1006) {
+            // closed abnormally, this happens if we reject with 401 from the server
+            atmosphere.invalidateSession('Connection rejected')
+          }
+
           if (!hasConnected) {
             console.error('Could not connect via WebSocket', event)
             reject(event)

@@ -6,7 +6,6 @@ import {selectTeams} from '../postgres/select'
 import type {Team} from '../postgres/types'
 import type {TeamMeetingTemplate} from '../postgres/types/pg'
 import NullableDataLoader from './NullableDataLoader'
-import normalizeArrayResults from './normalizeArrayResults'
 import type RootDataLoader from './RootDataLoader'
 import type {RegisterDependsOn} from './RootDataLoader'
 
@@ -54,7 +53,9 @@ export const teamMeetingTemplateByTeamId = (parent: RootDataLoader) => {
         .selectAll()
         .where('teamId', 'in', teamIds)
         .execute()
-      return normalizeArrayResults(teamIds, teamMeetingTemplates, 'teamId')
+      return teamIds.map((teamId) => {
+        return teamMeetingTemplates.filter((template) => template.teamId === teamId)
+      })
     },
     {
       ...parent.dataLoaderOptions
