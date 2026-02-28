@@ -1,3 +1,4 @@
+import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useCallback, useRef, useState} from 'react'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
@@ -15,7 +16,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const alignClass =
     align === 'left' ? 'justify-start' : align === 'right' ? 'justify-end' : 'justify-center'
   const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const {isHosted} = useEmbedNewUserAsset(src, scopeKey, assetScope, updateAttributes)
+  const {isHosted, embedError} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
   const onClick = useCallback(() => {
     const pos = getPos()
     if (!pos) return
@@ -37,7 +38,50 @@ export const ImageBlockView = (props: NodeViewProps) => {
   const onMouseDownLeft = onMouseDown('left')
   const onMouseDownRight = onMouseDown('right')
 
-  const isLoading = !isHosted
+  const isLoading = !isHosted && !embedError
+
+  if (embedError) {
+    let displayUrl = src
+    try {
+      const parsed = new URL(src)
+      displayUrl = parsed.hostname + parsed.pathname
+    } catch {
+      // keep raw src
+    }
+    return (
+      <NodeViewWrapper>
+        <div className={cn('flex', alignClass)}>
+          <div
+            contentEditable={false}
+            onClick={onClick}
+            className='w-full rounded-md border border-slate-200 bg-slate-50 px-4 py-3'
+          >
+            <div className='flex items-start gap-3'>
+              <div className='flex size-10 shrink-0 items-center justify-center rounded-md bg-slate-200'>
+                <BrokenImageIcon className='size-5 text-slate-500' />
+              </div>
+              <div className='min-w-0 flex-1'>
+                <p className='font-medium text-slate-700 text-sm'>Image couldn't be embedded</p>
+                <p className='mt-0.5 text-slate-500 text-xs'>
+                  The source requires authentication or is behind a firewall.
+                </p>
+                <a
+                  href={src}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='mt-1 block truncate text-blue-600 text-xs underline decoration-blue-300 hover:text-blue-700'
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {displayUrl}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </NodeViewWrapper>
+    )
+  }
+
   return (
     <NodeViewWrapper>
       <div className={cn('flex', alignClass)}>

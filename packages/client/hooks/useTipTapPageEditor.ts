@@ -254,28 +254,47 @@ export const useTipTapPageEditor = (
         FileBlock,
         FileHandler.configure({
           onDrop: (currentEditor, files, pos) => {
-            files.forEach(async (file) => {
-              // if they drop an image, treat it like an image, not a binary
-              const targetType = getFileType(file)
-              if (targetType === 'csv' || targetType === 'xlsx') {
-                if (file.size > MAX_FILE_SIZE_FREE) {
-                  atmosphere.eventEmitter.emit('addSnackbar', {
-                    key: 'fileTooBIG',
-                    message: `The file is too large to import, embedding it.`,
-                    autoDismiss: 5
-                  })
-                  currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file', pos)
-                  return
+            ;(async () => {
+              for (const file of files) {
+                const targetType = getFileType(file)
+                if (targetType === 'csv' || targetType === 'xlsx') {
+                  if (file.size > MAX_FILE_SIZE_FREE) {
+                    atmosphere.eventEmitter.emit('addSnackbar', {
+                      key: 'fileTooBIG',
+                      message: `The file is too large to import, embedding it.`,
+                      autoDismiss: 5
+                    })
+                    await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file', pos)
+                    continue
+                  }
+                  currentEditor.emit('importDatabase', {file, targetType, pos})
+                  continue
                 }
-                currentEditor.emit('importDatabase', {file, targetType, pos})
-                return
+                await currentEditor.storage.fileUpload.onUpload(
+                  file,
+                  currentEditor,
+                  targetType,
+                  pos
+                )
               }
-              currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType, pos)
-            })
+            })()
           },
           onPaste: (currentEditor, files, htmlContent) => {
-            files.forEach((file) => {
-              if (!htmlContent) {
+            if (htmlContent) {
+              // Process image files that were provided alongside HTML content.
+              // These typically correspond to data: URI images that parseHTML excludes.
+              const imageFiles = files.filter((f) => f.type.startsWith('image/'))
+              if (imageFiles.length > 0) {
+                ;(async () => {
+                  for (const file of imageFiles) {
+                    await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
+                  }
+                })()
+              }
+              return
+            }
+            ;(async () => {
+              for (const file of files) {
                 const targetType = getFileType(file)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   if (file.size > MAX_FILE_SIZE_FREE) {
@@ -288,11 +307,11 @@ export const useTipTapPageEditor = (
                     return
                   }
                   currentEditor.emit('importDatabase', {file, targetType, pos: undefined})
-                  return
+                  continue
                 }
-                currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
+                await currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
               }
-            })
+            })()
           }
         })
       ],
