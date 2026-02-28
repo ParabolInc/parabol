@@ -3,7 +3,7 @@ import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
 import {NodeSelection} from '@tiptap/pm/state'
-import {ReactRenderer} from '@tiptap/react'
+import {isNodeSelection, ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
@@ -54,6 +54,37 @@ export const PageDragHandle = Extension.create<Options>({
 
   onDestroy() {
     this.storage.closeMenu?.()
+  },
+
+  addKeyboardShortcuts() {
+    return {
+      'Mod-d': ({editor}) => {
+        const {$from} = editor.state.selection
+        if ($from.depth < 1) return false
+        const blockPos = $from.before(1)
+        const blockNode = editor.state.doc.nodeAt(blockPos)
+        if (!blockNode) return false
+
+        const json = blockNode.toJSON()
+        if (json.type === 'pageLinkBlock' && json.attrs?.canonical) {
+          json.attrs = {...json.attrs, canonical: false}
+        }
+        editor.commands.insertContentAt(blockPos + blockNode.nodeSize, json)
+        return true
+      },
+      Delete: ({editor}) => {
+        const {selection} = editor.state
+        if (!isNodeSelection(selection)) return false
+
+        const node = selection.node
+        const pos = selection.from
+        if (node.type.name === 'pageLinkBlock' && node.attrs.canonical) return false
+        if (pos === 1) return false
+
+        editor.view.dispatch(editor.state.tr.delete(pos, pos + node.nodeSize))
+        return true
+      }
+    }
   },
 
   addExtensions() {

@@ -3,6 +3,7 @@ import DeleteOutlined from '@mui/icons-material/DeleteOutlined'
 import type {Editor} from '@tiptap/core'
 import type {Node} from '@tiptap/pm/model'
 import {useEffect, useRef} from 'react'
+import {modKey} from '../../utils/platform'
 
 interface DragHandleMenuProps {
   editor: Editor
@@ -24,6 +25,10 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
       if (e.key === 'Escape') {
         e.preventDefault()
         onClose()
+      }
+      if (e.key === 'Delete' && showDelete) {
+        e.preventDefault()
+        handleDelete()
       }
     }
     const handlePointerDown = (e: PointerEvent) => {
@@ -66,7 +71,8 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         onPointerDown={handleDuplicate}
       >
         <ContentCopy className='mr-2 text-base text-slate-600' />
-        Duplicate block
+        <span className='flex-1 text-left'>Duplicate block</span>
+        <span className='ml-4 text-slate-400 text-xs'>{modKey}+D</span>
       </button>
       {showDelete && (
         <button
@@ -75,7 +81,8 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
           onPointerDown={handleDelete}
         >
           <DeleteOutlined className='mr-2 text-base text-slate-600' />
-          Delete block
+          <span className='flex-1 text-left'>Delete block</span>
+          <span className='ml-4 text-slate-400 text-xs'>Del</span>
         </button>
       )}
     </div>
