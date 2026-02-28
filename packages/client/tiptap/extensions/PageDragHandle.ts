@@ -1,4 +1,3 @@
-import {computePosition, flip, offset, shift} from '@floating-ui/dom'
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
@@ -124,22 +123,10 @@ export const PageDragHandle = Extension.create<Options>({
 
       menuRenderer = new ReactRenderer(DragHandleMenu, {
         editor: editorRef,
-        props: {editor: editorRef, node, pos, onClose: closeMenu}
+        props: {editor: editorRef, node, pos, onClose: closeMenu, anchorElement: dragHandleElement}
       })
 
-      const menuElement = menuRenderer.element as HTMLElement
-      menuElement.style.position = 'absolute'
-      menuElement.style.zIndex = '50'
-      document.body.appendChild(menuElement)
-
-      computePosition(dragHandleElement, menuElement, {
-        placement: 'bottom-start',
-        strategy: 'absolute',
-        middleware: [offset(4), shift(), flip()]
-      }).then(({x, y}) => {
-        menuElement.style.left = `${x}px`
-        menuElement.style.top = `${y}px`
-      })
+      document.body.appendChild(menuRenderer.element)
     }
 
     dragHandleElement.addEventListener('click', handleDragHandleClick)
