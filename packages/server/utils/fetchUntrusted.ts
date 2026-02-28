@@ -1,5 +1,6 @@
 import dns from 'dns/promises'
 import net from 'net'
+import {Logger} from './Logger'
 
 const TIMEOUT_MS = 15_000
 
@@ -127,8 +128,9 @@ export const fetchUntrusted = async (input: string, maxSize: number) => {
       contentType: normalized,
       size: total
     }
-  } catch {
+  } catch (e) {
     clearTimeout(timeout)
+    Logger.warn('fetchUntrusted failed', {url: input, error: e instanceof Error ? e.message : e})
     return null
   }
 }

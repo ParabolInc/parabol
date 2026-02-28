@@ -48,6 +48,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
     } catch {
       // keep raw src
     }
+    const isSafeUrl = /^https?:\/\//i.test(src)
     return (
       <NodeViewWrapper>
         <div className={cn('flex', alignClass)}>
@@ -65,15 +66,19 @@ export const ImageBlockView = (props: NodeViewProps) => {
                 <p className='mt-0.5 text-slate-500 text-xs'>
                   The source requires authentication or is behind a firewall.
                 </p>
-                <a
-                  href={src}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='mt-1 block truncate text-blue-600 text-xs underline decoration-blue-300 hover:text-blue-700'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {displayUrl}
-                </a>
+                {isSafeUrl ? (
+                  <a
+                    href={src}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='mt-1 block truncate text-blue-600 text-xs underline decoration-blue-300 hover:text-blue-700'
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {displayUrl}
+                  </a>
+                ) : (
+                  <span className='mt-1 block truncate text-slate-500 text-xs'>{displayUrl}</span>
+                )}
               </div>
             </div>
           </div>

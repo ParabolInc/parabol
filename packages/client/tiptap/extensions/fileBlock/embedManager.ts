@@ -15,7 +15,9 @@ type EmbedEntry = {
   retryTimer?: ReturnType<typeof setTimeout>
 }
 
-// Module-level state (survives component remounts)
+// Module-level state (survives component remounts).
+// This is client-side (browser) state — each user has their own instance,
+// so there are no horizontal-scaling concerns.
 const embedEntries = new Map<string, EmbedEntry>()
 let activeCount = 0
 const MAX_CONCURRENT = 3
@@ -32,6 +34,51 @@ const processQueue = () => {
   }
 }
 
+const scheduleRetryOrFail = (
+  entry: EmbedEntry,
+  src: string,
+  scope: AssetScopeEnum,
+  scopeKey: string,
+  atmosphere: Atmosphere,
+  editor: Editor
+) => {
+  if (entry.attempts < MAX_RETRIES) {
+    entry.status = 'queued'
+    const delay = Math.pow(2, entry.attempts) * 1000
+    entry.retryTimer = setTimeout(() => {
+      pendingQueue.push({
+        src,
+        execute: () => executeEmbed(src, scope, scopeKey, atmosphere, editor)
+      })
+      processQueue()
+    }, delay)
+  } else {
+    entry.status = 'error'
+  }
+  processQueue()
+}
+
+const updateMatchingNodes = (editor: Editor, src: string, hostedUrl: string) => {
+  const {state, view} = editor
+  const positions: number[] = []
+  state.doc.descendants((node, pos) => {
+    if (
+      (node.type.name === 'imageBlock' || node.type.name === 'fileBlock') &&
+      node.attrs.src === src
+    ) {
+      positions.push(pos)
+    }
+    return true
+  })
+  if (positions.length > 0) {
+    let tr = state.tr
+    for (const pos of positions) {
+      tr = tr.setNodeAttribute(pos, 'src', hostedUrl)
+    }
+    view.dispatch(tr)
+  }
+}
+
 const executeEmbed = (
   src: string,
   scope: AssetScopeEnum,
@@ -45,29 +92,21 @@ const executeEmbed = (
   entry.attempts++
   activeCount++
 
+  // Using commitMutation (not the useMutation hook) because Yjs collaboration
+  // syncs rebuild ProseMirror node views, unmounting the React components that
+  // host these images. useMutation cancels its subscription on unmount, which
+  // would kill in-flight mutations and cause perpetual shimmer.
   commitMutation<TEmbedUserAssetMutation>(atmosphere, {
     mutation: useEmbedUserAssetMutation,
     variables: {url: src, scope, scopeKey},
     onCompleted: (res, errors) => {
-      activeCount--
+      // Guard: clearEmbedEntries may have reset activeCount while in-flight
+      if (activeCount > 0) activeCount--
       const {embedUserAsset} = res
       const errorMessage = embedUserAsset?.error?.message ?? errors?.[0]?.message
 
       if (!embedUserAsset || errorMessage) {
-        if (entry.attempts < MAX_RETRIES) {
-          entry.status = 'queued'
-          const delay = Math.pow(2, entry.attempts) * 1000
-          entry.retryTimer = setTimeout(() => {
-            pendingQueue.push({
-              src,
-              execute: () => executeEmbed(src, scope, scopeKey, atmosphere, editor)
-            })
-            processQueue()
-          }, delay)
-        } else {
-          entry.status = 'error'
-        }
-        processQueue()
+        scheduleRetryOrFail(entry, src, scope, scopeKey, atmosphere, editor)
         return
       }
 
@@ -79,39 +118,12 @@ const executeEmbed = (
       }
 
       entry.status = 'success'
-
-      // Update all matching nodes in the document
-      const {state, view} = editor
-      state.doc.descendants((node, pos) => {
-        if (
-          (node.type.name === 'imageBlock' || node.type.name === 'fileBlock') &&
-          node.attrs.src === src
-        ) {
-          const tr = state.tr.setNodeAttribute(pos, 'src', hostedUrl)
-          view.dispatch(tr)
-          return false
-        }
-        return true
-      })
-
+      updateMatchingNodes(editor, src, hostedUrl)
       processQueue()
     },
     onError: () => {
-      activeCount--
-      if (entry.attempts < MAX_RETRIES) {
-        entry.status = 'queued'
-        const delay = Math.pow(2, entry.attempts) * 1000
-        entry.retryTimer = setTimeout(() => {
-          pendingQueue.push({
-            src,
-            execute: () => executeEmbed(src, scope, scopeKey, atmosphere, editor)
-          })
-          processQueue()
-        }, delay)
-      } else {
-        entry.status = 'error'
-      }
-      processQueue()
+      if (activeCount > 0) activeCount--
+      scheduleRetryOrFail(entry, src, scope, scopeKey, atmosphere, editor)
     }
   })
 }
