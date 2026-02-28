@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "12.10.5",
+  "version": "12.10.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -188,6 +188,7 @@
     "dd-trace": "5.67.0",
     "dotenv": "8.0.0",
     "dotenv-expand": "5.1.0",
+    "fast-xml-parser": "^5.3.8",
     "graphql-ws": "^6.0.4",
     "html-minifier-terser": "^5.1.1",
     "kysely": "^0.28.5",

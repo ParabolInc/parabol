@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import TeamPromptResponseId from 'parabol-client/shared/gqlIds/TeamPromptResponseId'
 import {SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import type {ValueOf} from '../../../../client/types/generics'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
 import getKysely from '../../../postgres/getKysely'
@@ -44,7 +43,6 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  //AUTH
   const reactableDBId =
     reactableType === 'RESPONSE' ? TeamPromptResponseId.split(reactableId) : reactableId
 
@@ -58,14 +56,7 @@ const addReactjiToReactable: MutationResolvers['addReactjiToReactable'] = async 
   if (verifiedType !== reactableType) {
     return {error: {message: `Unknown item`}}
   }
-  const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-  const [viewerMeetingMember, viewer] = await Promise.all([
-    dataLoader.get('meetingMembers').load(meetingMemberId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
-  if (!viewerMeetingMember) {
-    return {error: {message: `Not a member of the meeting`}}
-  }
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // VALIDATION
   if (!emojiIds.includes(reactji)) {
