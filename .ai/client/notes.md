@@ -26,6 +26,34 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 - **Do not add new values to `constEnums.ts`** (`packages/client/types/constEnums.ts`) — it is deprecated.
 - Add new constants to `packages/client/utils/constants.ts` as plain `export const` values.
 
+## React Component Design
+
+- **Use `onPointerDown`** instead of `onMouseDown` + `onTouchStart`. The unified pointer API handles mouse, touch, and pen.
+- **Prevent unnecessary re-renders:**
+  - `useMemo` for expensive computations
+  - `useCallback` for event handlers passed to child components
+  - Early returns in `useEffect` when values haven't changed (e.g. `if (cellValue !== value)`)
+- **Lazy `useState` initialization** for hot-path components: `useState(() => expensiveComputation())` not `useState(expensiveComputation())`. The thunk runs only on mount, not every render.
+- **Provide clear user feedback.** Forms need submit buttons or auto-save — don't rely on implicit Enter-to-save without visual cues.
+
+## UI/UX Patterns
+
+- **Autocomplete behavior**: Allow Tab and Enter to complete suggestions. Show a visual preview of what will be completed (inline ghost text or bold matching).
+- **Stable tag/label colors**: Assign colors when tags are created and persist them. Don't generate colors from the current text on every keystroke.
+- **Destructive actions need explicit confirmation.** Use clear labels like "Delete Permanently" not just "Delete".
+- **Clear role naming**: prefer simple names like "Team Lead" and "Member" over "Member team".
+- **Validate and limit input sizes** — set `maxLength` on all input fields. Prevent users from pasting megabytes of text into cells.
+
+## Dependencies & Package Management
+
+- **Consolidate package versions** in the root `package.json`. Don't install the same package in multiple `package.json` files — this causes version conflicts (e.g. TipTap extensions with different versions on server vs client).
+
+## Code Organization
+
+- **Use descriptive file names.** Avoid generic names like `data.ts` — prefer `tableOps.ts`, `transforms.ts`, etc.
+- **Kebab-case for HTML/CSS attributes.** Use `data-is-database` not `data-isDatabase`.
+- **Consistent ordering**: CHANGELOG entries in reverse chronological order (newest first).
+
 ## Testing Stripe
 
 - `brew install stripe/stripe-cli/stripe` and then `stripe login` to get the port forwarder up and running
