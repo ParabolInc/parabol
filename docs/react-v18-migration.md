@@ -70,14 +70,16 @@ Incremental migration of Parabol from React 17.0.2 to React 18, including React 
 
 ## Phase 1: Pre-work (safe on React 17)
 
-### PR 1 — Replace `react-beautiful-dnd` with `@hello-pangea/dnd`
+### PR 1 — Replace `react-beautiful-dnd` with `@hello-pangea/dnd` — DONE
 
-**~30 lines changed | Risk: LOW**
+**~30 lines changed | Risk: LOW | Branch: `chore/react-18-migration-pr-1`**
 
 `@hello-pangea/dnd` is a maintained fork of `react-beautiful-dnd` with an identical API and full React 18 support. This is a mechanical find-and-replace of import paths.
 
+**Important:** Use `v16.6.0` (not v17+ or v18+) since v17+ dropped React 17 support and uses `useId` which is a React 18-only hook. v16.6.0 has peer deps `^16.8.5 || ^17.0.0 || ^18.0.0`, so it works on React 17 now and on React 18 after the version bump in PR 7.
+
 **Changes:**
-- Update `package.json`: remove `react-beautiful-dnd`, add `@hello-pangea/dnd`
+- Update `package.json`: remove `react-beautiful-dnd`, add `@hello-pangea/dnd@^16.6.0`
 - Update `@types/react-beautiful-dnd` → types are bundled in `@hello-pangea/dnd`
 - Find-and-replace imports in 15 files:
 
@@ -276,7 +278,23 @@ This is the critical PR. All Phase 1 pre-work de-risks this to the maximum exten
 
 ---
 
-### PR 8 — Migrate to `createRoot` API
+### PR 8 — Bump `@hello-pangea/dnd` v16 → v18
+
+**~10 lines changed | Risk: LOW**
+
+Now that React 18 is installed, upgrade `@hello-pangea/dnd` from `^16.6.0` (the React 17-compatible version used in PR 1) to `^18.0.1` (latest, uses React 18 features like `useId` for better SSR support and concurrent rendering compatibility).
+
+**Changes:**
+- `packages/client/package.json`: `"@hello-pangea/dnd": "^16.6.0"` → `"@hello-pangea/dnd": "^18.0.1"`
+- Run `pnpm install` to update lockfile
+
+**Why this is separate from PR 1:** v18.0.1 uses `React.useId()` which only exists in React 18. PR 1 had to use v16.6.0 to remain compatible with React 17 during the pre-work phase. Now that PR 7 has landed React 18, we can pick up the latest version.
+
+**Testing:** Smoke test all 9 drag-and-drop contexts (same list as PR 1).
+
+---
+
+### PR 9 — Migrate to `createRoot` API
 
 **~15 lines changed | Risk: LOW**
 
@@ -303,7 +321,7 @@ createRoot(container).render(<Root />)
 
 ---
 
-### PR 9 — Verify email SSR rendering
+### PR 10 — Verify email SSR rendering
 
 **~20 lines changed | Risk: LOW**
 
@@ -343,7 +361,7 @@ createRoot(container).render(<Root />)
 
 ---
 
-### PR 10 — Upgrade `react-router-dom` to v6, convert core route definitions
+### PR 11 — Upgrade `react-router-dom` to v6, convert core route definitions
 
 **~500 lines changed | Risk: HIGH**
 
@@ -382,7 +400,7 @@ This is the atomic router switch. All top-level route definitions must be conver
 
 ---
 
-### PR 11 — Convert nested route trees
+### PR 12 — Convert nested route trees
 
 **~400 lines changed | Risk: MEDIUM**
 
@@ -418,7 +436,7 @@ Note: Parent routes that contain nested `<Routes>` must use `/*` suffix in their
 
 ---
 
-### PR 12 — Replace `useRouter` custom hook + migrate `useHistory` batch 1
+### PR 13 — Replace `useRouter` custom hook + migrate `useHistory` batch 1
 
 **~500 lines changed | Risk: MEDIUM**
 
@@ -471,7 +489,7 @@ modules/userDashboard/components/Organization/OrgNav.tsx
 
 ---
 
-### PR 13 — Migrate `useHistory` batch 2 + `useRouteMatch`
+### PR 14 — Migrate `useHistory` batch 2 + `useRouteMatch`
 
 **~400 lines changed | Risk: MEDIUM**
 
@@ -516,7 +534,7 @@ components/ActivityLibrary/ActivityLibraryRoutes.tsx
 
 ---
 
-### PR 14 — Remove `withRouter` HOC usage
+### PR 15 — Remove `withRouter` HOC usage
 
 **~500 lines changed | Risk: MEDIUM**
 
@@ -555,7 +573,7 @@ export default MyComponent
 
 ---
 
-### PR 15 — Update `Link`/`NavLink` patterns + final router cleanup
+### PR 16 — Update `Link`/`NavLink` patterns + final router cleanup
 
 **~300 lines changed | Risk: LOW**
 
@@ -599,7 +617,7 @@ Clean up remaining React Router v5 patterns and update Link/NavLink components.
 
 ## Phase 4: Polish
 
-### PR 16 — Add `React.StrictMode` wrapper
+### PR 17 — Add `React.StrictMode` wrapper
 
 **~50-200 lines changed | Risk: MEDIUM**
 
@@ -628,7 +646,7 @@ export default function Root() {
 
 ---
 
-### PR 17 — Mattermost plugin React 18 upgrade
+### PR 18 — Mattermost plugin React 18 upgrade
 
 **~300 lines changed | Risk: LOW**
 
@@ -647,27 +665,28 @@ The Mattermost plugin is an independent package with its own webpack config and 
 
 ## Estimated Scope
 
-| PR | Phase | Description | Est. Lines | Risk |
-|---|---|---|---|---|
-| 1 | Pre-work | `react-beautiful-dnd` → `@hello-pangea/dnd` | ~30 | LOW |
-| 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW |
-| 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW |
-| 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM |
-| 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM |
-| 6 | Pre-work | Update minor dependencies | ~100 | LOW |
-| 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** |
-| 8 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW |
-| 9 | Version Bump | Verify email SSR | ~20 | LOW |
-| 10 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** |
-| 11 | Router | Nested route trees | ~400 | MEDIUM |
-| 12 | Router | Replace `useRouter` + `useHistory` batch 1 | ~500 | MEDIUM |
-| 13 | Router | `useHistory` batch 2 + `useRouteMatch` | ~400 | MEDIUM |
-| 14 | Router | Remove `withRouter` HOC | ~500 | MEDIUM |
-| 15 | Router | `Link`/`NavLink` + cleanup | ~300 | LOW |
-| 16 | Polish | Add `React.StrictMode` | ~50-200 | MEDIUM |
-| 17 | Polish | Mattermost plugin upgrade | ~300 | LOW |
+| PR | Phase | Description | Est. Lines | Risk | Status |
+|---|---|---|---|---|---|
+| 1 | Pre-work | `react-beautiful-dnd` → `@hello-pangea/dnd` v16 | ~30 | LOW | **DONE** |
+| 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW | |
+| 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW | |
+| 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | |
+| 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | |
+| 6 | Pre-work | Update minor dependencies | ~100 | LOW | |
+| 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** | |
+| 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | |
+| 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | |
+| 10 | Version Bump | Verify email SSR | ~20 | LOW | |
+| 11 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** | |
+| 12 | Router | Nested route trees | ~400 | MEDIUM | |
+| 13 | Router | Replace `useRouter` + `useHistory` batch 1 | ~500 | MEDIUM | |
+| 14 | Router | `useHistory` batch 2 + `useRouteMatch` | ~400 | MEDIUM | |
+| 15 | Router | Remove `withRouter` HOC | ~500 | MEDIUM | |
+| 16 | Router | `Link`/`NavLink` + cleanup | ~300 | LOW | |
+| 17 | Polish | Add `React.StrictMode` | ~50-200 | MEDIUM | |
+| 18 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
 
-**Total: ~4,500-5,000 lines across 17 PRs**
+**Total: ~4,500-5,000 lines across 18 PRs**
 
 ---
 
@@ -685,23 +704,24 @@ PR 4 ─── (depends on PR 3 being merged, since batch 2 is more complex)
        ▼
 PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
        │
-       ├─ PR 8  (createRoot — depends on PR 7)
-       └─ PR 9  (email SSR — depends on PR 7)
+       ├─ PR 8  (@hello-pangea/dnd v16 → v18 — depends on PR 7)
+       ├─ PR 9  (createRoot — depends on PR 7)
+       └─ PR 10 (email SSR — depends on PR 7)
             │
             ▼
-       PR 10 ── Router v6 upgrade (depends on PR 7)
+       PR 11 ── Router v6 upgrade (depends on PR 7)
             │
-            ├─ PR 11 (nested routes — depends on PR 10)
-            ├─ PR 12 (useRouter + useHistory batch 1 — depends on PR 10)
+            ├─ PR 12 (nested routes — depends on PR 11)
+            ├─ PR 13 (useRouter + useHistory batch 1 — depends on PR 11)
             │    │
-            │    └─ PR 13 (useHistory batch 2 — depends on PR 12)
+            │    └─ PR 14 (useHistory batch 2 — depends on PR 13)
             │
-            ├─ PR 14 (withRouter removal — depends on PR 10)
-            └─ PR 15 (Link/NavLink + cleanup — depends on PR 11-14)
+            ├─ PR 15 (withRouter removal — depends on PR 11)
+            └─ PR 16 (Link/NavLink + cleanup — depends on PR 12-15)
                   │
                   ▼
-             PR 16 ── StrictMode (depends on all Router PRs)
-             PR 17 ── Mattermost plugin (independent, can be done anytime after PR 7)
+             PR 17 ── StrictMode (depends on all Router PRs)
+             PR 18 ── Mattermost plugin (independent, can be done anytime after PR 7)
 ```
 
 ---
@@ -709,9 +729,9 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
 ## Rollback Strategy
 
 - **Phase 1 PRs** are independently revertible since they work on React 17.
-- **PR 7 (version bump)** is the point of no return. If issues arise, revert PR 7+8+9 together to return to React 17.
+- **PR 7 (version bump)** is the point of no return. If issues arise, revert PR 7+8+9+10 together to return to React 17.
 - **Phase 3 (Router)** should not be started until Phase 2 is stable in production. If router issues arise, revert the specific PR — each nested route tree conversion is somewhat independent.
-- **PR 16 (StrictMode)** can be reverted trivially since it's a single wrapper component.
+- **PR 17 (StrictMode)** can be reverted trivially since it's a single wrapper component.
 
 ## Testing Checklist
 

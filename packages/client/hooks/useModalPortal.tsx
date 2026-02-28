@@ -56,7 +56,7 @@ const modalStyles = {
     transition: `transform ${Duration.MODAL_OPEN}ms ${DECELERATE}, opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
   },
   [PortalStatus.Entered]: {
-    // wipe transform so it plays nicely with react-beautiful-dnd
+    // wipe transform so it plays nicely with @hello-pangea/dnd
   },
   [PortalStatus.Exiting]: {
     opacity: 0,

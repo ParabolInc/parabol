@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
+import {Droppable, type DroppableProvided, type DroppableStateSnapshot} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
-import {Droppable, type DroppableProvided, type DroppableStateSnapshot} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import type {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'

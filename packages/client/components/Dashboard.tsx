@@ -63,7 +63,7 @@ const DashLayout = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   height: '100%'
-  // overflow: 'auto', removed because react-beautiful-dnd only supports 1 scrolling parent
+  // overflow: 'auto', removed because @hello-pangea/dnd only supports 1 scrolling parent
 })
 
 const DashPanel = styled('div')({

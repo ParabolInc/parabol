@@ -1,6 +1,6 @@
+import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import {useHistory} from 'react-router'
 import type {LeftNavTeamsSection_viewer$key} from '../../__generated__/LeftNavTeamsSection_viewer.graphql'

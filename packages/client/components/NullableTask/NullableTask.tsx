@@ -1,6 +1,6 @@
+import type {DraggableProvided, DraggableStateSnapshot} from '@hello-pangea/dnd'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
-import type {DraggableProvided, DraggableStateSnapshot} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import type {NullableTask_task$key} from '../../__generated__/NullableTask_task.graphql'

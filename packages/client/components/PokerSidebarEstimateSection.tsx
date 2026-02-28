@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
+import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import type {PokerSidebarEstimateSection_meeting$key} from '~/__generated__/PokerSidebarEstimateSection_meeting.graphql'
 import type useGotoStageId from '~/hooks/useGotoStageId'
