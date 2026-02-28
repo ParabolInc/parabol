@@ -1,13 +1,16 @@
+import {computePosition, flip, offset, shift} from '@floating-ui/dom'
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
 import {NodeSelection} from '@tiptap/pm/state'
+import {ReactRenderer} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../../Atmosphere'
 import type {PageLinkBlockAttrs} from '../../shared/tiptap/extensions/PageLinkBlockBase'
 import {GQLID} from '../../utils/GQLID'
+import DragHandleMenu from './DragHandleMenu'
 
 const queryNode = graphql`
   query PageDragHandleQuery($pageId: ID!) {
@@ -44,8 +47,13 @@ export const PageDragHandle = Extension.create<Options>({
 
   addStorage() {
     return {
-      dragHandleElement: null as HTMLDivElement | null
+      dragHandleElement: null as HTMLDivElement | null,
+      closeMenu: null as (() => void) | null
     }
+  },
+
+  onDestroy() {
+    this.storage.closeMenu?.()
   },
 
   addExtensions() {
@@ -53,8 +61,57 @@ export const PageDragHandle = Extension.create<Options>({
     this.storage.dragHandleElement = dragHandleElement
     let dragHandleNode: Node | null = null
     let dragHandleNodePos: number = -1
+    let menuRenderer: ReactRenderer<typeof DragHandleMenu> | null = null
     let editorRef: Editor | null = null
     const {atmosphere, pageId} = this.options
+
+    const closeMenu = () => {
+      if (!menuRenderer) return
+      menuRenderer.element.remove()
+      menuRenderer.destroy()
+      menuRenderer = null
+      editorRef?.commands.unlockDragHandle()
+    }
+
+    this.storage.closeMenu = closeMenu
+
+    const handleDragHandleClick = (e: MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      if (menuRenderer) {
+        closeMenu()
+        return
+      }
+
+      if (!dragHandleNode || dragHandleNodePos < 0 || !editorRef) return
+
+      editorRef.commands.lockDragHandle()
+
+      const node = dragHandleNode
+      const pos = dragHandleNodePos
+
+      menuRenderer = new ReactRenderer(DragHandleMenu, {
+        editor: editorRef,
+        props: {editor: editorRef, node, pos, onClose: closeMenu}
+      })
+
+      const menuElement = menuRenderer.element as HTMLElement
+      menuElement.style.position = 'absolute'
+      menuElement.style.zIndex = '50'
+      document.body.appendChild(menuElement)
+
+      computePosition(dragHandleElement, menuElement, {
+        placement: 'bottom-start',
+        strategy: 'absolute',
+        middleware: [offset(4), shift(), flip()]
+      }).then(({x, y}) => {
+        menuElement.style.left = `${x}px`
+        menuElement.style.top = `${y}px`
+      })
+    }
+
+    dragHandleElement.addEventListener('click', handleDragHandleClick)
 
     // WORKAROUND: The DragHandle extension adds a dragstart listener to the element
     // inside DragHandlePlugin(), but removes it in the plugin view's destroy() during
@@ -151,6 +208,9 @@ export const PageDragHandle = Extension.create<Options>({
           editorRef = editor ?? editorRef
           dragHandleNode = node
           dragHandleNodePos = pos ?? -1
+          if (menuRenderer) {
+            closeMenu()
+          }
           const isEmpty = node ? isEmptyParagraph(node) : false
           const isHidden = dragHandleElement.classList.contains('hide')
           if (isEmpty !== isHidden) {
