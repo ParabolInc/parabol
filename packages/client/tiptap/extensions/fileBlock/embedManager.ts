@@ -27,6 +27,25 @@ const pendingQueue: Array<{
   execute: () => void
 }> = []
 
+// Subscription mechanism for React integration.
+// Components call subscribe() to be notified when any embed status changes,
+// allowing them to re-render and read the latest status via getEmbedStatus().
+type Listener = () => void
+const listeners = new Set<Listener>()
+
+const notifyListeners = () => {
+  for (const listener of listeners) {
+    listener()
+  }
+}
+
+export const subscribe = (listener: Listener) => {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
 const processQueue = () => {
   while (activeCount < MAX_CONCURRENT && pendingQueue.length > 0) {
     const next = pendingQueue.shift()!
@@ -43,8 +62,9 @@ const scheduleRetryOrFail = (
   editor: Editor
 ) => {
   if (entry.attempts < MAX_RETRIES) {
-    entry.status = 'queued'
     const delay = Math.pow(2, entry.attempts) * 1000
+    entry.status = 'queued'
+    notifyListeners()
     entry.retryTimer = setTimeout(() => {
       pendingQueue.push({
         src,
@@ -54,6 +74,7 @@ const scheduleRetryOrFail = (
     }, delay)
   } else {
     entry.status = 'error'
+    notifyListeners()
   }
   processQueue()
 }
@@ -91,6 +112,7 @@ const executeEmbed = (
   entry.status = 'pending'
   entry.attempts++
   activeCount++
+  notifyListeners()
 
   // Using commitMutation (not the useMutation hook) because Yjs collaboration
   // syncs rebuild ProseMirror node views, unmounting the React components that
@@ -113,11 +135,13 @@ const executeEmbed = (
       const hostedUrl = embedUserAsset.url
       if (!hostedUrl) {
         entry.status = 'error'
+        notifyListeners()
         processQueue()
         return
       }
 
       entry.status = 'success'
+      notifyListeners()
       updateMatchingNodes(editor, src, hostedUrl)
       processQueue()
     },
@@ -162,6 +186,7 @@ export const clearEmbedEntries = () => {
   embedEntries.clear()
   pendingQueue.length = 0
   activeCount = 0
+  notifyListeners()
 }
 
 export const getEmbedStatus = (src: string): EmbedStatus | null => {

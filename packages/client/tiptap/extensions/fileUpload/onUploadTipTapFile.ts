@@ -14,9 +14,7 @@ export const onUploadTipTapFile =
     commit: ReturnType<typeof useUploadUserAsset>[0]
   ) =>
   async (file: File, editor: Editor, targetType: FileUploadTargetType, pos?: number) => {
-    if (!highestTier) {
-      return
-    }
+    if (!highestTier) return
     const isFree = highestTier === 'starter'
     const sizeLimit =
       targetType === 'image' ? MAX_IMAGE_SIZE : isFree ? MAX_FILE_SIZE_FREE : MAX_FILE_SIZE_PAID
@@ -90,21 +88,14 @@ export const onUploadTipTapFile =
             return
           }
           const src = uploadUserAsset!.url!
-          let found = false
           state.doc.descendants((node, pos) => {
             if (node.type.name === nodeType && node.attrs.src === localSrc) {
               const tr = state.tr.setNodeAttribute(pos, 'src', src)
               view.dispatch(tr)
-              found = true
               return false
             }
             return true
           })
-          if (!found) {
-            console.warn(
-              `Could not find ${nodeType} node with src=${localSrc} to update after upload`
-            )
-          }
           resolve()
         }
       })
