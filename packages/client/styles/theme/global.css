@@ -605,7 +605,7 @@
     font-weight: 600;
     color: var(--color-slate-900);
     margin-top: 0;
-    margin-bottom: 4px;
+    margin-bottom: 2rem;
   }
 
   /* H1 — user-typed headings (not the page title) */
