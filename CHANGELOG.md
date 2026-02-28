@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.6](https://github.com/ParabolInc/parabol/compare/v12.10.5...v12.10.6) (2026-02-28)
+
+
+### Fixed
+
+* bump vuln package ([#12742](https://github.com/ParabolInc/parabol/issues/12742)) ([f38b38b](https://github.com/ParabolInc/parabol/commit/f38b38bcf0f5b5dbcca0f518e78ee500c54cc9e1))
+* centralize GraphQL authorization ([#12745](https://github.com/ParabolInc/parabol/issues/12745)) ([3539a4e](https://github.com/ParabolInc/parabol/commit/3539a4ef8e7402bad70ab8de6d9c115ed129e934))
+* revert maps change ([#12747](https://github.com/ParabolInc/parabol/issues/12747)) ([1bb8eaf](https://github.com/ParabolInc/parabol/commit/1bb8eaff56033a3fd5356279c87c873e730fd2b3))
+* updated minified-path-prefix for datadog maps ([#12746](https://github.com/ParabolInc/parabol/issues/12746)) ([a7296d9](https://github.com/ParabolInc/parabol/commit/a7296d9f3b830b7589edd3e599602b402cd14318))
+
+
+### Changed
+
+* make Mattermost Webhook and Plugin integration independent ([#12716](https://github.com/ParabolInc/parabol/issues/12716)) ([0841387](https://github.com/ParabolInc/parabol/commit/084138721f6b51eed8276af6052339836906298e))
+
 ## [12.10.5](https://github.com/ParabolInc/parabol/compare/v12.10.4...v12.10.5) (2026-02-27)
 
 
