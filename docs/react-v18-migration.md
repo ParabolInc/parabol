@@ -1,0 +1,730 @@
+# React 18 Migration Plan
+
+Incremental migration of Parabol from React 17.0.2 to React 18, including React Router v5 to v6. Each PR targets fewer than 1,000 lines of diff to keep reviews manageable.
+
+## Current State
+
+- **React**: 17.0.2 (pinned via root `package.json` resolutions)
+- **React DOM**: 17.0.2
+- **@types/react**: 17.0.2
+- **React Router**: v5.2.1 / react-router-dom v5.3.0
+- **TypeScript**: 5.9.3 with `jsx: "react-jsx"` (automatic transform, already React 18 compatible)
+- **Bundler**: Webpack 5 with Sucrase (`jsxRuntime: 'automatic'`) and Babel
+- **Testing**: Jest 29 with SWC transformer; Playwright for E2E
+- **Monorepo**: pnpm workspace with packages: client, server, mattermost-plugin, embedder, integration-tests, types
+
+## Strategy: Hybrid (Compatibility-First + Version Flip + Post-work)
+
+1. **Phase 1 — Pre-work**: Make code compatible with React 18 while still on React 17. Each PR is safe to merge and deploy independently.
+2. **Phase 2 — Version Bump**: Smallest possible PR to flip to React 18 + fix compilation.
+3. **Phase 3 — React Router v5 → v6**: Incremental migration of 108 files that use React Router.
+4. **Phase 4 — Polish**: StrictMode, Mattermost plugin, final cleanup.
+
+---
+
+## Audit Summary
+
+### What's already compatible (no changes needed)
+
+- Relay v20 — full React 18 support
+- MUI v6 / Radix UI v1 / Emotion v11 / Tailwind v4 — all compatible
+- TipTap v3 — compatible
+- @tanstack/react-table v8 — compatible
+- @stripe/react-stripe-js — compatible
+- All @react-email/* packages — compatible
+- Functional component architecture (~3,168 of ~3,179 client TS/TSX files)
+- Automatic JSX transform already configured in tsconfig and Sucrase
+- Jest 29 + SWC transformer — compatible
+- Webpack 5 + React Refresh plugin v0.5.16 — compatible
+
+### What must change
+
+| Category | Count | Effort |
+|---|---|---|
+| `ReactDOM.render()` → `createRoot()` | 1 file | Trivial |
+| `react-beautiful-dnd` (React 18 incompatible) | 15 files | Low (drop-in replacement) |
+| Class components | 11 files (889 LOC) | Low-Medium |
+| `React.FC` type (implicit children removed in v18 types) | 2 files | Trivial |
+| `useEffect` cleanup / StrictMode safety issues | ~10 files | Medium |
+| React Router v5 APIs | 108 files | High |
+| Minor dependency updates | 3 packages | Low |
+| Mattermost plugin | 37 React files | Low (isolated) |
+
+### Corner cases requiring special attention
+
+| Issue | Detail | Resolution |
+|---|---|---|
+| `ErrorBoundary` must stay as class | React requires class components for `componentDidCatch` | Keep as class; do not convert |
+| `react-swipeable-views` custom fork | Tarball from `mattkrick/react-swipeable-views` — 5 files | Test with React 18; replace with CSS scroll-snap if broken |
+| `react-virtualized` internal class components | 1 file (`TeamArchive.tsx`) | Test with React 18; replace with `@tanstack/react-virtual` if StrictMode issues |
+| Relay subscription double-fire | `useSubscription.ts` registers queries in `useEffect` | Add guard to prevent double-registration in StrictMode |
+| WebSocket `resolve()` double-call | `createWSClient.ts` connected handler | Add idempotency guard |
+| Module-level `addEventListener` | 11 SSO/OAuth client managers attach `message` listeners at import time | Outside React lifecycle — safe from StrictMode but should be audited |
+| `withForm.tsx` ref mutation in render | `fieldsRef.current = fields` set during render | Move to `useEffect` or convert component |
+| `PokerCardDeck.tsx` missing cleanup | `addEventListener` in `useEffect` with no `removeEventListener` in cleanup | Add cleanup return |
+| `useMeetingMusicSync.ts` missing cleanup | `play` event listener added without cleanup | Add cleanup return |
+| `react-dom-confetti` | Small celebration animation lib | Verify compatibility; replace if needed |
+| `@babel/preset-react` runtime | Not explicitly set to `'automatic'` | Set explicitly during version bump |
+
+---
+
+## Phase 1: Pre-work (safe on React 17)
+
+### PR 1 — Replace `react-beautiful-dnd` with `@hello-pangea/dnd`
+
+**~30 lines changed | Risk: LOW**
+
+`@hello-pangea/dnd` is a maintained fork of `react-beautiful-dnd` with an identical API and full React 18 support. This is a mechanical find-and-replace of import paths.
+
+**Changes:**
+- Update `package.json`: remove `react-beautiful-dnd`, add `@hello-pangea/dnd`
+- Update `@types/react-beautiful-dnd` → types are bundled in `@hello-pangea/dnd`
+- Find-and-replace imports in 15 files:
+
+```
+packages/client/components/RetroSidebarDiscussSection.tsx
+packages/client/components/DashNavList/LeftNavTeamsSection.tsx
+packages/client/modules/teamDashboard/components/TaskColumn/TaskColumn.tsx
+packages/client/modules/teamDashboard/components/AgendaList/AgendaList.tsx
+packages/client/modules/meeting/components/TemplatePromptList.tsx
+packages/client/modules/meeting/components/TemplateScaleValueItem.tsx
+packages/client/modules/meeting/components/TemplateScaleValueList.tsx
+packages/client/modules/meeting/components/TemplateDimensionItem.tsx
+packages/client/modules/meeting/components/TemplateDimensionList.tsx
+packages/client/modules/meeting/components/TemplatePromptItem.tsx
+packages/client/containers/TaskCard/DraggableTaskWrapper.tsx
+packages/client/components/TimelinePriorityTasks.tsx
+packages/client/components/TaskColumns/TaskColumns.tsx
+packages/client/components/PokerSidebarEstimateSection.tsx
+packages/client/components/NullableTask/NullableTask.tsx
+```
+
+**Testing:** Manually test all 9 drag-and-drop contexts:
+1. Task kanban columns (move between status columns + reorder within)
+2. Retrospective discuss topic reordering
+3. Poker estimate task reordering
+4. Agenda item reordering
+5. Template prompt reordering
+6. Template scale value reordering
+7. Template dimension reordering
+8. Left nav team reordering
+9. Timeline priority task reordering
+
+---
+
+### PR 2 — Fix `React.FC` types and explicit `children` typing
+
+**~50 lines changed | Risk: LOW**
+
+React 18's `@types/react` removes the implicit `children` prop from `React.FC`. Fix the 2 files that use `React.FC` and audit forwardRef components for implicit children.
+
+**Changes:**
+
+1. Convert `React.FC` to plain function declarations:
+   - `packages/client/components/TeamAvatar/TeamAvatar.tsx`
+   - `packages/client/ui/Menu/Menu.tsx`
+
+2. Audit forwardRef components (~85 files) for implicit children usage. Where a component destructures `children` from props without it being declared in the Props type, add `children: ReactNode` to the type.
+
+**Example conversion:**
+```tsx
+// Before
+export const TeamAvatar: React.FC<TeamAvatarProps> = ({teamName, teamId, className}) => {
+
+// After
+export const TeamAvatar = ({teamName, teamId, className}: TeamAvatarProps) => {
+```
+
+---
+
+### PR 3 — Convert class components to functional (batch 1: simple)
+
+**~400 lines changed | Risk: LOW**
+
+Convert 6 straightforward class components to functional components with hooks. These are small (48-87 LOC each) and use only simple state + lifecycle patterns.
+
+**Files:**
+| File | LOC | Key conversion |
+|---|---|---|
+| `components/Tabs/Tabs.tsx` | 87 | State → `useState` |
+| `components/Radio/Radio.tsx` | 48 | State → `useState` |
+| `components/AvatarInput.tsx` | 69 | `createRef` → `useRef`, state → `useState` |
+| `components/AddTeamMemberModalSuccess.tsx` | 60 | `componentWillUnmount` timer cleanup → `useEffect` |
+| `components/TimelineEventDate.tsx` | 54 | `componentWillUnmount` timer cleanup → `useEffect` |
+| `components/DelayUnmount.tsx` | 79 | `getDerivedStateFromProps` → `useEffect` with state |
+
+---
+
+### PR 4 — Convert class components to functional (batch 2: complex)
+
+**~500 lines changed | Risk: MEDIUM**
+
+Convert the remaining class components that have more nuanced patterns. **`ErrorBoundary.tsx` stays as a class** — React requires it for `componentDidCatch`.
+
+**Files:**
+| File | LOC | Key conversion |
+|---|---|---|
+| `components/AtmosphereProvider/AtmosphereProvider.tsx` | 50 | WebSocket lifecycle → `useEffect` |
+| `components/MasonryCSSGrid.tsx` | 93 | `createRef` → `useRef`, `componentDidMount` resize listener → `useEffect` |
+| `utils/relay/withForm.tsx` | 157 | HOC with state/refs — convert to custom hook `useForm` |
+| `utils/relay/withMutationProps.tsx` | 118 | HOC with mutation state — convert to custom hook `useMutationProps` |
+
+**Notes:**
+- `withForm` and `withMutationProps` are HOCs wrapping other components. Converting these to custom hooks (e.g., `useForm`, `useMutationProps`) will also require updating all call sites. Audit call sites first to assess the blast radius.
+- `ErrorBoundary.tsx` — no changes. It's already well-structured with `componentDidCatch` and `componentDidUpdate`.
+
+---
+
+### PR 5 — Fix `useEffect` cleanup and StrictMode safety
+
+**~300 lines changed | Risk: MEDIUM**
+
+React 18 StrictMode double-invokes effects in development to catch bugs. Fix patterns that would break or misbehave under double-invocation.
+
+**Files and fixes:**
+
+1. **`components/PokerCardDeck.tsx`** (lines 143-145)
+   - `document.addEventListener('touchstart', ...)` and `click` with empty deps and no cleanup
+   - Fix: add cleanup function returning `removeEventListener`
+
+2. **`hooks/useMeetingMusicSync.ts`** (line 104)
+   - `audioRef.current.addEventListener('play', ...)` with no cleanup
+   - Fix: add cleanup return
+
+3. **`hooks/useSubscription.ts`**
+   - Calls `atmosphere.registerQuery()` in `useEffect` — will double-register in StrictMode
+   - Fix: add guard or use ref to track registration state
+
+4. **`utils/createWSClient.ts`** (line 116)
+   - Connected handler calls `resolve()` which could execute twice
+   - Fix: add idempotency guard (e.g., `let resolved = false`)
+
+5. **`utils/relay/withForm.tsx`** (line 137)
+   - `fieldsRef.current = fields` mutated during render
+   - Fix: move to `useEffect` (if already converted in PR 4, apply there)
+
+6. **`components/SpotlightResultsRoot.tsx`**
+   - `groupIdRef.current = nextGroupId` mutated in render path
+   - Fix: move to `useEffect`
+
+**Testing:** Enable `<React.StrictMode>` locally in `Root.tsx` during development to verify these fixes. Do not ship StrictMode yet (that's PR 16).
+
+---
+
+### PR 6 — Update minor dependencies
+
+**~100 lines changed | Risk: LOW**
+
+Update third-party libraries that need newer versions for React 18 compatibility.
+
+**Changes:**
+
+1. **`react-textarea-autosize`**: 7.1.0 → 8.x
+   - Files: `components/EditableText.tsx`, `TeamPromptEditablePromptModal.tsx`
+   - API is mostly the same; verify `maxRows` prop still works
+
+2. **`react-swipeable-views`** (custom fork): test with React 18
+   - Files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`, `TeamPromptEditablePromptModal.tsx`
+   - If broken: replace with CSS `scroll-snap` or a maintained alternative
+   - Decision can be deferred to after Phase 2 if testing is inconclusive
+
+3. **`react-virtualized`**: test with React 18
+   - File: `modules/teamDashboard/components/TeamArchive/TeamArchive.tsx`
+   - If StrictMode issues: replace with `@tanstack/react-virtual` (one file, isolated change)
+
+---
+
+## Phase 2: Version Bump
+
+### PR 7 — Bump React 17 → 18 and fix TypeScript compilation
+
+**~200-500 lines changed | Risk: HIGH**
+
+This is the critical PR. All Phase 1 pre-work de-risks this to the maximum extent possible.
+
+**Changes:**
+
+1. Update root `package.json` resolutions:
+   ```json
+   "react": "^18.2.0",
+   "react-dom": "^18.2.0",
+   "@types/react": "^18.2.0",
+   "@types/react-dom": "^18.2.0"
+   ```
+
+2. Update package-level `package.json` files:
+   - `packages/client/package.json`: `react-dom` → `^18.2.0`
+   - `packages/mattermost-plugin/package.json`: `react`, `react-dom` → `^18.2.0` (+ overrides)
+
+3. Update `@babel/preset-react` options to explicitly set `runtime: 'automatic'`:
+   - `scripts/webpack/utils/clientTransformRules.js`
+
+4. Run `pnpm install` to regenerate lockfile
+
+5. Fix any TypeScript compilation errors:
+   - Expected: minimal, since Phase 1 already addressed `React.FC` and `children` types
+   - Watch for: `this.context` type changes in remaining class components, event handler type changes, any `StatelessComponent` usage
+
+6. Update React type augmentation in `packages/types/augments/index.d.ts` if needed (currently augments `TdHTMLAttributes` and `TableHTMLAttributes` for email rendering)
+
+**Testing:**
+- `pnpm tsc --noEmit` — full type check
+- `pnpm test` — all Jest tests
+- `pnpm build` — full production build
+- Manual smoke test of key user flows
+- Playwright E2E tests
+
+---
+
+### PR 8 — Migrate to `createRoot` API
+
+**~15 lines changed | Risk: LOW**
+
+Replace the legacy `ReactDOM.render()` call with the React 18 `createRoot()` API.
+
+**File:** `packages/client/client.tsx`
+
+```tsx
+// Before
+import {render} from 'react-dom'
+import Root from './Root'
+import './scrollIntoViewIfNeeded'
+
+render(<Root />, document.getElementById('root'))
+
+// After
+import {createRoot} from 'react-dom/client'
+import Root from './Root'
+import './scrollIntoViewIfNeeded'
+
+const container = document.getElementById('root')!
+createRoot(container).render(<Root />)
+```
+
+---
+
+### PR 9 — Verify email SSR rendering
+
+**~20 lines changed | Risk: LOW**
+
+`ReactDOMServer.renderToStaticMarkup` is fully compatible with React 18. This PR verifies the email rendering pipeline and makes any necessary import path updates.
+
+**File:** `packages/server/email/renderSSRElement.tsx`
+
+**Testing:** Send test emails for each of the 7 email creators:
+1. `emailVerificationEmailCreator`
+2. `resetPasswordEmailCreator`
+3. `pageSharedEmailCreator`
+4. `pageAccessRequestEmailCreator`
+5. `teamLimitsEmailCreator`
+6. `sendSummaryEmailV2`
+7. `notificationSummaryCreator`
+
+---
+
+## Phase 3: React Router v5 → v6
+
+### Overview
+
+108 files use React Router v5 APIs. The migration is broken into 6 PRs organized by API pattern.
+
+**Key API changes:**
+| v5 | v6 | Files affected |
+|---|---|---|
+| `<Switch>` | `<Routes>` | 12 |
+| `<Route component={X}>` | `<Route element={<X />}>` | 35 |
+| `<Route render={fn}>` | `<Route element={<X />}>` | 18 |
+| `useHistory()` | `useNavigate()` | 23 |
+| `useRouteMatch()` | `useMatch()` | 7 |
+| `withRouter(X)` | Use hooks directly | 9 |
+| `<Redirect>` | `<Navigate>` | 11+ |
+| `exact` prop | Default in v6 (remove) | 6 |
+| Custom `useRouter()` hook | Standard v6 hooks | Transitive |
+
+---
+
+### PR 10 — Upgrade `react-router-dom` to v6, convert core route definitions
+
+**~500 lines changed | Risk: HIGH**
+
+This is the atomic router switch. All top-level route definitions must be converted together.
+
+**Changes:**
+
+1. Update `package.json`:
+   - `react-router` → `^6.x`
+   - `react-router-dom` → `^6.x`
+   - Remove `@types/react-router`, `@types/react-router-dom` (types are bundled in v6)
+
+2. Convert `Root.tsx`:
+   - Update `BrowserRouter` import path (same API, different internals)
+
+3. Convert `components/Action/Action.tsx`:
+   - `Switch` → `Routes`
+   - All `<Route exact path="/" render={(p) => <X {...p} />} />` → `<Route path="/" element={<X />} />`
+   - All `<Route path="/x" component={X} />` → `<Route path="/x" element={<X />} />`
+   - `<Redirect to="/x" />` → `<Navigate to="/x" replace />`
+   - Remove all `exact` props (v6 routes are exact by default; use trailing `/*` for prefix matching)
+
+4. Convert `components/PrivateRoutes.tsx`:
+   - Same `Switch` → `Routes` conversion
+   - Update `backgroundLocation` pattern for v6 `location` prop on `<Routes>`
+   - `<Redirect>` → `<Navigate>`
+   - Routes that had `component` prop → `element` prop
+
+**Testing:** Every route in the app must be reachable. Test:
+- Sign in / create account flows
+- Dashboard navigation
+- Meeting entry and phase navigation
+- Admin routes
+- Invitation flows
+- 404 handling
+
+---
+
+### PR 11 — Convert nested route trees
+
+**~400 lines changed | Risk: MEDIUM**
+
+Convert all nested `Switch` components to `Routes` in secondary routing files.
+
+**Files:**
+| File | Routes defined |
+|---|---|
+| `components/Dashboard.tsx` | `/meetings`, `/me`, `/team/:teamId`, `/pages`, `/pages/:pageSlug`, etc. |
+| `modules/userDashboard/components/UserDashboard/UserDashboard.tsx` | `/me/profile`, `/me/organizations`, `/me/organizations/:orgId` |
+| `modules/teamDashboard/containers/Team/TeamContainer.tsx` | `/team/:teamId/settings`, `/team/:teamId/archive` |
+| `modules/userDashboard/components/OrgBilling/Organization.tsx` | Billing sub-routes |
+| `modules/userDashboard/components/UserDashMain.tsx` | User dashboard sub-routes |
+| `modules/teamDashboard/components/TeamDashMain/TeamDashMain.tsx` | Team dashboard sub-routes |
+| `components/ActivityLibrary/ActivityLibraryRoutes.tsx` | Activity library sub-routes |
+
+**Pattern:** Each file follows the same mechanical conversion:
+```tsx
+// Before (v5)
+<Switch>
+  <Route exact path="/me/profile" component={UserProfileRoot} />
+  <Route path="/me/organizations/:orgId" component={OrganizationRoot} />
+</Switch>
+
+// After (v6)
+<Routes>
+  <Route path="/me/profile" element={<UserProfileRoot />} />
+  <Route path="/me/organizations/:orgId" element={<OrganizationRoot />} />
+</Routes>
+```
+
+Note: Parent routes that contain nested `<Routes>` must use `/*` suffix in their path (e.g., `path="/me/*"`).
+
+---
+
+### PR 12 — Replace `useRouter` custom hook + migrate `useHistory` batch 1
+
+**~500 lines changed | Risk: MEDIUM**
+
+The custom `useRouter` hook (`packages/client/hooks/useRouter.ts`) directly accesses React Router v5's `__RouterContext`, which doesn't exist in v6. Replace it with v6 hooks and migrate the first batch of `useHistory` usages.
+
+**Changes:**
+
+1. Rewrite `hooks/useRouter.ts` to provide a compatibility shim using v6 hooks:
+   ```tsx
+   // New implementation using v6 APIs
+   import {useNavigate, useLocation, useParams} from 'react-router-dom'
+
+   const useRouter = <T extends Record<string, string> = Record<string, string>>() => {
+     const navigate = useNavigate()
+     const location = useLocation()
+     const params = useParams<T>()
+     return {navigate, location, params}
+   }
+   ```
+   - Audit all call sites that use `useRouter()` for `.history`, `.match`, `.location` and update to new return shape
+
+2. Migrate first 12 files from `useHistory()` → `useNavigate()`:
+   ```tsx
+   // Before
+   const history = useHistory()
+   history.push('/path')
+   history.replace('/path')
+
+   // After
+   const navigate = useNavigate()
+   navigate('/path')
+   navigate('/path', {replace: true})
+   ```
+
+**Files (batch 1):**
+```
+hooks/useRouter.ts (rewrite)
+modules/search/useSearchListNavigation.ts
+modules/pages/RequestPageAccess.tsx
+components/DashNavList/LeftNavPrivatePagesSection.tsx
+components/DashNavList/LeftNavTeamLink.tsx
+components/DashNavList/PageActions.tsx
+modules/userDashboard/components/OrgIntegrations/OrgIntegrations.tsx
+modules/pages/PageNoAccess.tsx
+modules/pages/ArchivedPages.tsx
+modules/pages/PageDeletedHeader.tsx
+components/DashNavList/LeftNavTeamsSection.tsx
+modules/userDashboard/components/Organization/OrgNav.tsx
+```
+
+---
+
+### PR 13 — Migrate `useHistory` batch 2 + `useRouteMatch`
+
+**~400 lines changed | Risk: MEDIUM**
+
+Complete the `useHistory` → `useNavigate` migration and convert `useRouteMatch` → `useMatch`.
+
+**`useHistory` batch 2 (11 files):**
+```
+modules/userDashboard/components/OrgTeams/TeaserOrgTeamsRow.tsx
+modules/pages/PageHeaderPublic.tsx
+modules/meeting/components/CustomTemplateUpgradeMsg.tsx
+components/TeamPromptMeeting.tsx
+components/ShareTopicRouterRoot.tsx
+components/ReviewRequestToJoinOrgRoot.tsx
+components/ActivityLibrary/CreateNewActivity/CreateNewActivity.tsx
+components/ActivityLibrary/TeamPickerModal.tsx
+components/ActivityLibrary/ActivityDetails/TemplateDetails.tsx
+components/ActivityLibrary/ActivityDetailsSidebar.tsx
+components/NewMeetingSidebarUpgradeBlock.tsx
+```
+
+**`useRouteMatch` → `useMatch` (7 files):**
+```tsx
+// Before
+const match = useRouteMatch('/team/:teamId')
+match?.params.teamId
+
+// After
+const match = useMatch('/team/:teamId')
+match?.params.teamId
+```
+
+**Files:**
+```
+components/Dashboard/DashSidebar.tsx
+components/Dashboard/LeftDashNavItem.tsx
+components/DashNavList/LeftNavTeamLink.tsx (may already be updated in PR 12)
+modules/userDashboard/components/OrgBilling/Organization.tsx
+components/Dashboard/MobileDashSidebar.tsx
+components/RequestToJoin.tsx
+components/ActivityLibrary/ActivityLibraryRoutes.tsx
+```
+
+---
+
+### PR 14 — Remove `withRouter` HOC usage
+
+**~500 lines changed | Risk: MEDIUM**
+
+`withRouter` is removed in React Router v6. Convert all 9 wrapped components to use hooks directly.
+
+**Files and approach:**
+| File | Current pattern | Conversion |
+|---|---|---|
+| `components/DemoCreateAccountButton.tsx` | `withRouter` wraps component | Use `useNavigate()` inline |
+| `components/DemoCreateAccountPrimaryButton.tsx` | `withRouter` wraps component | Use `useNavigate()` inline |
+| `components/SuggestedActionTryRetroMeeting.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
+| `components/SuggestedActionTryActionMeeting.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
+| `components/SuggestedActionTryTheDemo.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
+| `components/SuggestedActionCreateNewTeam.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
+| `components/DashboardRoot.tsx` | `withRouter` for location/history | Use `useLocation()` + `useNavigate()` |
+| `components/TeamInvitationDialog.tsx` | `withRouter` for history | Use `useNavigate()` |
+| `modules/userDashboard/components/UserProfileRoot.tsx` | `withRouter` for history | Use `useNavigate()` |
+
+**Pattern:**
+```tsx
+// Before
+import {withRouter, RouteComponentProps} from 'react-router-dom'
+const MyComponent = ({history}: RouteComponentProps) => {
+  return <button onClick={() => history.push('/path')}>Go</button>
+}
+export default withRouter(MyComponent)
+
+// After
+import {useNavigate} from 'react-router-dom'
+const MyComponent = () => {
+  const navigate = useNavigate()
+  return <button onClick={() => navigate('/path')}>Go</button>
+}
+export default MyComponent
+```
+
+---
+
+### PR 15 — Update `Link`/`NavLink` patterns + final router cleanup
+
+**~300 lines changed | Risk: LOW**
+
+Clean up remaining React Router v5 patterns and update Link/NavLink components.
+
+**Changes:**
+
+1. **Link/NavLink updates** (~36 files):
+   - v6 `NavLink` changes `activeClassName`/`activeStyle` to a render function:
+     ```tsx
+     // Before (v5)
+     <NavLink to="/path" activeClassName="active">
+
+     // After (v6)
+     <NavLink to="/path" className={({isActive}) => isActive ? 'active' : ''}>
+     ```
+   - Audit `components/StyledLink.tsx` and update
+
+2. **Remove v5 type packages**:
+   - Remove `@types/react-router` from `devDependencies`
+   - Remove `@types/react-router-dom` from `devDependencies`
+
+3. **Update utility files**:
+   - `utils/getMeetingPathParams.ts`
+   - `utils/getTeamIdFromPathname.ts`
+   - `utils/onMeetingRoute.ts`
+   - `utils/onExOrgRoute.ts`
+   - `utils/onTeamRoute.ts`
+   - `subscriptions/createSubscription.ts`
+   - `subscriptions/subscriptionOnNext.ts`
+   - `mutations/toasts/popInvolvementToast.ts`
+   - `mutations/InviteToTeamMutation.ts`
+   - `mutations/StartDraggingReflectionMutation.ts`
+   - `types/relayMutations.ts`
+
+4. **Update non-component files** that import `History` or `RouteComponentProps` types:
+   - `Atmosphere.ts`
+   - Various mutation files that accept `history` as a parameter
+
+---
+
+## Phase 4: Polish
+
+### PR 16 — Add `React.StrictMode` wrapper
+
+**~50-200 lines changed | Risk: MEDIUM**
+
+Wrap the app in `<React.StrictMode>` to surface bugs from unsafe patterns. StrictMode double-invokes effects and renders in development only.
+
+**File:** `packages/client/Root.tsx`
+```tsx
+import {StrictMode} from 'react'
+
+export default function Root() {
+  return (
+    <StrictMode>
+      <AtmosphereProvider>
+        {/* ... existing tree ... */}
+      </AtmosphereProvider>
+    </StrictMode>
+  )
+}
+```
+
+**Expected issues to fix:**
+- Any remaining `useEffect` without proper cleanup
+- Any remaining ref mutations in render paths
+- Subscription handlers that don't handle double-fire
+- Third-party libraries that don't support StrictMode (react-swipeable-views fork, react-virtualized)
+
+---
+
+### PR 17 — Mattermost plugin React 18 upgrade
+
+**~300 lines changed | Risk: LOW**
+
+The Mattermost plugin is an independent package with its own webpack config and React dependencies. It can be upgraded separately.
+
+**Changes:**
+- `packages/mattermost-plugin/package.json`: update `react`, `react-dom` to `^18.2.0`
+- Update overrides/resolutions
+- Fix any TypeScript compilation errors
+- `packages/mattermost-plugin/webpack.config.js`: verify externals config
+- 37 React files, 2.7K LOC — mostly MUI + Redux components
+
+**Testing:** Build the Mattermost plugin and test in a Mattermost instance.
+
+---
+
+## Estimated Scope
+
+| PR | Phase | Description | Est. Lines | Risk |
+|---|---|---|---|---|
+| 1 | Pre-work | `react-beautiful-dnd` → `@hello-pangea/dnd` | ~30 | LOW |
+| 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW |
+| 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW |
+| 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM |
+| 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM |
+| 6 | Pre-work | Update minor dependencies | ~100 | LOW |
+| 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** |
+| 8 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW |
+| 9 | Version Bump | Verify email SSR | ~20 | LOW |
+| 10 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** |
+| 11 | Router | Nested route trees | ~400 | MEDIUM |
+| 12 | Router | Replace `useRouter` + `useHistory` batch 1 | ~500 | MEDIUM |
+| 13 | Router | `useHistory` batch 2 + `useRouteMatch` | ~400 | MEDIUM |
+| 14 | Router | Remove `withRouter` HOC | ~500 | MEDIUM |
+| 15 | Router | `Link`/`NavLink` + cleanup | ~300 | LOW |
+| 16 | Polish | Add `React.StrictMode` | ~50-200 | MEDIUM |
+| 17 | Polish | Mattermost plugin upgrade | ~300 | LOW |
+
+**Total: ~4,500-5,000 lines across 17 PRs**
+
+---
+
+## Dependencies and Ordering
+
+```
+PR 1 ─┐
+PR 2 ─┤
+PR 3 ─┼─ (all independent, can be done in parallel)
+PR 5 ─┤
+PR 6 ─┘
+       │
+PR 4 ─── (depends on PR 3 being merged, since batch 2 is more complex)
+       │
+       ▼
+PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
+       │
+       ├─ PR 8  (createRoot — depends on PR 7)
+       └─ PR 9  (email SSR — depends on PR 7)
+            │
+            ▼
+       PR 10 ── Router v6 upgrade (depends on PR 7)
+            │
+            ├─ PR 11 (nested routes — depends on PR 10)
+            ├─ PR 12 (useRouter + useHistory batch 1 — depends on PR 10)
+            │    │
+            │    └─ PR 13 (useHistory batch 2 — depends on PR 12)
+            │
+            ├─ PR 14 (withRouter removal — depends on PR 10)
+            └─ PR 15 (Link/NavLink + cleanup — depends on PR 11-14)
+                  │
+                  ▼
+             PR 16 ── StrictMode (depends on all Router PRs)
+             PR 17 ── Mattermost plugin (independent, can be done anytime after PR 7)
+```
+
+---
+
+## Rollback Strategy
+
+- **Phase 1 PRs** are independently revertible since they work on React 17.
+- **PR 7 (version bump)** is the point of no return. If issues arise, revert PR 7+8+9 together to return to React 17.
+- **Phase 3 (Router)** should not be started until Phase 2 is stable in production. If router issues arise, revert the specific PR — each nested route tree conversion is somewhat independent.
+- **PR 16 (StrictMode)** can be reverted trivially since it's a single wrapper component.
+
+## Testing Checklist
+
+Each PR should verify:
+- [ ] `pnpm tsc --noEmit` passes (TypeScript compilation)
+- [ ] `pnpm test` passes (Jest unit tests)
+- [ ] `pnpm build` succeeds (production build)
+- [ ] Playwright E2E tests pass
+- [ ] Manual smoke test of affected features
+
+For Phase 2 (version bump), also verify:
+- [ ] All email templates render correctly
+- [ ] WebSocket connections establish and maintain
+- [ ] Relay subscriptions fire correctly
+- [ ] Service worker registration works
+- [ ] Hot module replacement works in dev mode
