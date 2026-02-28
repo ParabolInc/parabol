@@ -57,7 +57,9 @@ export const PageSharingPendingRequests = (props: Props) => {
   }
   return (
     <>
-      <div className='p-2 font-semibold text-slate-600 text-sm'>Pending requests...</div>
+      <div className='p-2 font-semibold text-[11px] text-slate-500 uppercase tracking-wider'>
+        Pending requests...
+      </div>
       <div className='space-y-4'>
         {pendingRequests.map((request) => {
           const {user, role, reason} = request
@@ -68,7 +70,7 @@ export const PageSharingPendingRequests = (props: Props) => {
                 <Avatar className='h-10 w-10 shrink-0' picture={picture} />
                 <div className='flex min-w-0 flex-col py-0.5'>
                   <div className='truncate font-medium text-slate-700 text-sm'>{name}</div>
-                  <div className='truncate text-slate-800 text-xs'>{email}</div>
+                  <div className='truncate text-[12px] text-slate-500'>{email}</div>
                   {reason && <div className='pt-2 text-slate-800 text-sm italic'>{reason}</div>}
                 </div>
               </div>

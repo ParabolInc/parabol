@@ -37,7 +37,7 @@ export const PageHeader = (props: Props) => {
     <div className='sticky top-0 z-10 w-full bg-white print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
-        <div className='flex items-center justify-center space-x-3 pt-1 font-semibold text-md'>
+        <div className='flex items-center justify-center space-x-3 pt-1 font-medium text-slate-700 text-sm'>
           <Popover.Root
             key={`${page.id}-${sharePageDefaultOpen}`}
             defaultOpen={sharePageDefaultOpen}
@@ -64,7 +64,7 @@ export const PageHeader = (props: Props) => {
           </Popover.Root>
           <Menu
             trigger={
-              <button className='flex size-6 cursor-pointer items-center justify-center rounded-md bg-white px-0.5 font-semibold text-md hover:bg-slate-200 focus:bg-slate-200'>
+              <button className='flex size-6 cursor-pointer items-center justify-center rounded-md bg-white px-0.5 font-medium text-sm hover:bg-slate-200 focus:bg-slate-200'>
                 <MoreHorizIcon className={'p-0.5'} />
               </button>
             }

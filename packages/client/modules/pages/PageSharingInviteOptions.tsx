@@ -37,7 +37,9 @@ export const PageSharingInviteOptions = (props: Props) => {
         return (
           <Fragment key={group}>
             <li>
-              <div className='font-bold text-slate-700 text-xs'>{groupLabels[group]}</div>
+              <div className='font-semibold text-[11px] text-slate-500 uppercase tracking-wider'>
+                {groupLabels[group]}
+              </div>
             </li>
             {options.map((option, idx) => {
               const optionProps = getOptionProps({

@@ -591,6 +591,97 @@
   }
 }
 
+/* ── Page Editor Typography ────────────────────────────────────── */
+/* Scoped to .page-editor .tiptap so other editors are unaffected  */
+
+.page-editor .tiptap {
+  font-size: 1rem;
+
+  /* Page title — always the first h1 child */
+  > h1:first-child {
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--color-slate-900);
+    margin-top: 0;
+    margin-bottom: 4px;
+  }
+
+  /* H1 — user-typed headings (not the page title) */
+  h1:not(:first-child) {
+    font-size: 1.625rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    color: var(--color-slate-900);
+    margin-top: 36px;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    color: var(--color-slate-900);
+    margin-top: 28px;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: 1rem;
+    line-height: 1.45;
+    letter-spacing: 0.01em;
+    font-weight: 600;
+    color: var(--color-slate-800);
+    margin-top: 24px;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5625;
+    color: var(--color-slate-700);
+    margin-block-start: 6px;
+    margin-block-end: 6px;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--color-slate-400);
+    margin: 20px 0;
+    padding-left: 20px;
+    color: var(--color-slate-600);
+    font-style: italic;
+  }
+
+  pre {
+    background-color: var(--color-slate-100);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-slate-800);
+  }
+
+  :not(pre) > code {
+    background-color: var(--color-slate-200);
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    color: var(--color-slate-800);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-slate-300);
+    margin: 32px 0;
+  }
+}
+
 /* If a page title is empty, always show it */
 /* If a top-level page block is empty, show when focused */
 /* For other editors, only show placeholder when the whole thing is empty */

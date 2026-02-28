@@ -66,14 +66,16 @@ export const SlashCommandMenu = forwardRef(
       <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden'>
         {items.map((item) => (
           <Fragment key={item.group}>
-            <div className='mx-1 px-3 py-1 font-semibold text-xs'>{item.group}</div>
+            <div className='mx-1 px-3 py-1 font-semibold text-[11px] text-slate-500 uppercase tracking-wider'>
+              {item.group}
+            </div>
             {item.commands.map((command) => (
               <div className='mx-1 flex' key={command.title}>
                 <div
                   ref={command === activeItem ? activeRef : undefined}
                   data-highlighted={command === activeItem ? '' : undefined}
                   className={
-                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-slate-700 text-sm leading-8 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-[14px] text-slate-700 leading-7 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
                   }
                   onClick={() => selectItem(command.title)}
                 >
@@ -82,7 +84,7 @@ export const SlashCommandMenu = forwardRef(
                   </div>
                   <div className='flex flex-col text-sm'>
                     <span>{command.title}</span>
-                    <span className='text-slate-600 text-xs'>{command.description}</span>
+                    <span className='text-[12px] text-slate-500'>{command.description}</span>
                   </div>
                 </div>
               </div>

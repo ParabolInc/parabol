@@ -11,7 +11,7 @@ export const TooltipContent = forwardRadix<typeof Content>(
         align='center'
         sideOffset={2}
         className={cn(
-          'pointer-events-none z-20 animate-scale-in overflow-hidden whitespace-nowrap rounded-xs bg-slate-700 px-2 py-1 text-center font-bold text-white text-xs',
+          'pointer-events-none z-20 animate-scale-in overflow-hidden whitespace-nowrap rounded-xs bg-slate-700 px-2 py-1 text-center font-semibold text-[11px] text-white tracking-wide',
           className
         )}
         {...props}

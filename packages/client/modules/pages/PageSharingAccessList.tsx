@@ -161,7 +161,7 @@ export const PageSharingAccessList = (props: Props) => {
                 <Avatar className='h-10 w-10' picture={picture} />
                 <div className='flex flex-col'>
                   <div className='font-medium text-slate-700 text-sm'>{name}</div>
-                  <div className='text-slate-800 text-xs'>{email}</div>
+                  <div className='text-[12px] text-slate-500'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox

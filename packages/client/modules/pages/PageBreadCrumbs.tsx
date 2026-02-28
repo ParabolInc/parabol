@@ -101,7 +101,7 @@ export const PageBreadCrumbs = (props: Props) => {
             {team.name}
           </Link>
         </PageDropTarget>
-        <span className='px-1'>/</span>
+        <span className='px-1 text-slate-400'>/</span>
       </>
     )
   }
@@ -127,13 +127,13 @@ export const PageBreadCrumbs = (props: Props) => {
             {page.title}
           </Link>
         </PageDropTarget>
-        <span className='px-1'>/</span>
+        <span className='px-1 text-slate-400'>/</span>
       </React.Fragment>
     )
   }
 
   return (
-    <nav className='flex items-center pl-2 text-slate-600 text-sm'>
+    <nav className='flex items-center pl-2 text-[13px] text-slate-500'>
       {/* Oldest ancestor (if any) */}
       {visibleAncestors.length > 0 && renderBreadcrumbItem(visibleAncestors[0]!)}
 
@@ -181,7 +181,7 @@ export const PageBreadCrumbs = (props: Props) => {
               })}
             </DropdownMenu.Content>
           </Menu>
-          <span className='px-1'>/</span>
+          <span className='px-1 text-slate-400'>/</span>
         </>
       )}
 
@@ -190,7 +190,7 @@ export const PageBreadCrumbs = (props: Props) => {
 
       {/* Self (not a link) */}
       {ancestors.length === 0 && team && renderTeamCrumb(team)}
-      <span className='font-medium text-slate-900'>{self.title}</span>
+      <span className='font-medium text-[13px] text-slate-700'>{self.title}</span>
     </nav>
   )
 }

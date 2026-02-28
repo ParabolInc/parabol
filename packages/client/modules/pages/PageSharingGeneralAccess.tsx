@@ -69,7 +69,9 @@ export const PageSharingGeneralAccess = (props: Props) => {
   const {icon: AccessIcon, label} = GARole
   return (
     <>
-      <div className='pt-1 font-semibold text-slate-600 text-sm'>General access</div>
+      <div className='pt-1 font-semibold text-[11px] text-slate-500 uppercase tracking-wider'>
+        General access
+      </div>
       <div className='flex w-full items-center justify-between'>
         <div className='flex items-center gap-3'>
           <div className='h-10 w-10 rounded-full bg-slate-300 p-2 text-slate-800'>
