@@ -1,3 +1,4 @@
+import {offset} from '@floating-ui/dom'
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
@@ -216,6 +217,13 @@ export const PageDragHandle = Extension.create<Options>({
 
     return [
       DragHandle.configure({
+        computePositionConfig: {
+          middleware: [
+            offset(({rects}) => ({
+              crossAxis: Math.min((rects.reference.height - rects.floating.height) / 2, 12)
+            }))
+          ]
+        },
         nested: true,
         render: () => {
           dragHandleElement.classList.add('drag-handle', 'hide')
