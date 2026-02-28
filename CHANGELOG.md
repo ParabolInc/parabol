@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.7](https://github.com/ParabolInc/parabol/compare/v12.10.6...v12.10.7) (2026-02-28)
+
+
+### Changed
+
+* fail staging and prod deployments properly and restrict PR creation ([#12754](https://github.com/ParabolInc/parabol/issues/12754)) ([7826d31](https://github.com/ParabolInc/parabol/commit/7826d317a6ad1241cc68fd55ecb50553df273930))
+
 ## [12.10.6](https://github.com/ParabolInc/parabol/compare/v12.10.5...v12.10.6) (2026-02-28)
 
 
