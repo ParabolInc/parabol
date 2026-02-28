@@ -248,7 +248,8 @@ export const useTipTapPageEditor = (
         FileHandler.configure({
           onDrop: (currentEditor, files, pos) => {
             ;(async () => {
-              for (const file of files) {
+              for (let i = 0; i < files.length; i++) {
+                const file = files[i]!
                 const targetType = getFileType(file)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   currentEditor.emit('importDatabase', {file, targetType, pos})
@@ -270,7 +271,8 @@ export const useTipTapPageEditor = (
               const imageFiles = files.filter((f) => f.type.startsWith('image/'))
               if (imageFiles.length > 0) {
                 ;(async () => {
-                  for (const file of imageFiles) {
+                  for (let i = 0; i < imageFiles.length; i++) {
+                    const file = imageFiles[i]!
                     await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
                   }
                 })()
@@ -278,7 +280,8 @@ export const useTipTapPageEditor = (
               return
             }
             ;(async () => {
-              for (const file of files) {
+              for (let i = 0; i < files.length; i++) {
+                const file = files[i]!
                 const targetType = getFileType(file)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   currentEditor.emit('importDatabase', {file, targetType, pos: undefined})
