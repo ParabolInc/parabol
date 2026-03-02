@@ -183,6 +183,7 @@
     "@tiptap/react": "3.18.0",
     "@tiptap/starter-kit": "3.18.0",
     "@tiptap/suggestion": "3.18.0",
+    "@tiptap/y-tiptap": "3.0.2",
     "@whatwg-node/fetch": "^0.10.10",
     "base64url": "^3.0.1",
     "dd-trace": "5.67.0",
