@@ -4,8 +4,8 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 
 export default class StripeManager {
-  static TEAM_PRICE_APP_ID = 'parabol-pro-800' // $8/seat/mo
-  static ENTERPRISE_PRICE_APP_ID = 'plan_2021_ann_low'
+  static TEAM_PRICE_APP_ID = process.env.STRIPE_TEAM_PRICE_APP_ID
+  static ENTERPRISE_PRICE_APP_ID = process.env.STRIPE_ENTERPRISE_PRICE_APP_ID
   static WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2020-08-27',
