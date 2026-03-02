@@ -1,7 +1,7 @@
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
-import {NodeSelection, Plugin} from '@tiptap/pm/state'
+import {NodeSelection} from '@tiptap/pm/state'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {PageDragHandleQuery} from '../../__generated__/PageDragHandleQuery.graphql'
@@ -158,29 +158,6 @@ export const PageDragHandle = Extension.create<Options>({
               dragHandleElement.classList.add('hide')
             } else {
               dragHandleElement.classList.remove('hide')
-            }
-          }
-        }
-      })
-    ]
-  },
-
-  addProseMirrorPlugins() {
-    // dataTransfer must have at least one item for browsers to fire 'drop'.
-    return [
-      new Plugin({
-        view() {
-          const onDragStart = (e: DragEvent) => {
-            const target = e.target as HTMLElement
-            if (!target?.classList?.contains('drag-handle')) return
-            if (e.dataTransfer && !e.dataTransfer.types.length) {
-              e.dataTransfer.setData('text/plain', '')
-            }
-          }
-          window.addEventListener('dragstart', onDragStart)
-          return {
-            destroy() {
-              window.removeEventListener('dragstart', onDragStart)
             }
           }
         }
