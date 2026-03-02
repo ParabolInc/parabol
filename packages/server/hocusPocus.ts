@@ -83,37 +83,17 @@ export const hocuspocus = new Hocuspocus({
     // put the userId on the request because context isn't available until onAuthenticate
     request.userId = authToken?.sub
     request.tms = authToken?.tms ?? []
-    if (!request.userId) {
-      request.cookie = request.headers['cookie']
-      request.startAt = Date.now()
-    }
   },
 
   async onAuthenticate(data) {
-    const {documentName, request, connectionConfig, requestHeaders} = data
+    const {documentName, request, connectionConfig} = data
     let userId = (request as Req).userId
     if (documentName.startsWith('meeting:')) {
       const tms = (request as Req).tms
       const [, meetingId] = documentName.split(':')
       if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
       if (!userId) {
-        // DEBUGGING PROD-ONLY BUG
-        const cookieToken = getAuthTokenFromCookie(requestHeaders['cookie'])
-        const authToken = getVerifiedAuthToken(cookieToken)
-        userId = authToken?.sub
-        if (!userId) {
-          const connectedFor = Date.now() - Number((request as Req).startAt)
-          const info = {
-            cookieToken,
-            authToken,
-            tms,
-            connectedFor,
-            reqCookie: (request as Req).cookie,
-            clientSideCookie: data.token
-          }
-          Logger.error(`userId still not found`, info)
-          throw new Error(`Meeting awareness requires a userId`)
-        }
+        throw new Error(`Meeting awareness requires a userId`)
       }
       const meetingTeamId = await getMeetingTeamId(meetingId)
       if (!tms.includes(meetingTeamId ?? '')) {
