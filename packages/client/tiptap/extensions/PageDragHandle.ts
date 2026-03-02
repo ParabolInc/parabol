@@ -223,12 +223,11 @@ export const PageDragHandle = Extension.create<Options>({
           if (!editorRef || dragHandleNodePos < 0) return null
           const dom = editorRef.view.nodeDOM(dragHandleNodePos)
           if (!(dom instanceof HTMLElement)) return null
-          // Walk up to the outermost block so handle stays in the gutter
-          let outerDom: HTMLElement = dom
-          while (outerDom.parentElement && outerDom.parentElement !== editorRef.view.dom) {
-            outerDom = outerDom.parentElement
-          }
-          const outerRect = outerDom.getBoundingClientRect()
+          // For list items, use the parent <ul>/<ol> rect so the handle is in the gutter
+          // (with list-style-position: outside, the bullet marker sits between the ul and li edges)
+          const horizontalRef =
+            dom.tagName === 'LI' && dom.parentElement ? dom.parentElement : dom
+          const horizontalRect = horizontalRef.getBoundingClientRect()
           const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
             acceptNode: (node) =>
               node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
@@ -241,26 +240,32 @@ export const PageDragHandle = Extension.create<Options>({
           const lineRect = range.getBoundingClientRect()
           return {
             getBoundingClientRect: () => ({
-              x: outerRect.x,
+              x: horizontalRect.x,
               y: lineRect.y,
-              width: outerRect.width,
+              width: horizontalRect.width,
               height: lineRect.height,
               top: lineRect.top,
-              right: outerRect.right,
+              right: horizontalRect.right,
               bottom: lineRect.bottom,
-              left: outerRect.left
+              left: horizontalRect.left
             }),
-            contextElement: outerDom
+            contextElement: horizontalRef
           }
         },
         nested: {
+          edgeDetection: 'none',
           rules: [
             {
-              id: 'detailsChildren',
-              evaluate: ({$pos, depth}) => {
+              id: 'detailsStructure',
+              evaluate: ({$pos, depth, node}) => {
+                // Exclude detailsSummary and detailsContent themselves
+                const name = node.type.name
+                if (name === 'detailsSummary' || name === 'detailsContent') return 1000
+                // Exclude children nested inside detailsSummary
                 for (let d = depth - 1; d >= 0; d--) {
-                  if ($pos.node(d).type.name === 'details') return 1000
+                  if ($pos.node(d).type.name === 'detailsSummary') return 1000
                 }
+                // Allow children of detailsContent (they should be independently draggable)
                 return 0
               }
             }
