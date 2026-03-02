@@ -1,4 +1,3 @@
-import {offset} from '@floating-ui/dom'
 import {type Editor, Extension} from '@tiptap/core'
 import DragHandle from '@tiptap/extension-drag-handle'
 import type {Node} from '@tiptap/pm/model'
@@ -218,13 +217,55 @@ export const PageDragHandle = Extension.create<Options>({
     return [
       DragHandle.configure({
         computePositionConfig: {
-          middleware: [
-            offset(({rects}) => ({
-              crossAxis: Math.min((rects.reference.height - rects.floating.height) / 2, 12)
-            }))
+          placement: 'left'
+        },
+        getReferencedVirtualElement: () => {
+          if (!editorRef || dragHandleNodePos < 0) return null
+          const dom = editorRef.view.nodeDOM(dragHandleNodePos)
+          if (!(dom instanceof HTMLElement)) return null
+          // Walk up to the outermost block so handle stays in the gutter
+          let outerDom: HTMLElement = dom
+          while (outerDom.parentElement && outerDom.parentElement !== editorRef.view.dom) {
+            outerDom = outerDom.parentElement
+          }
+          const outerRect = outerDom.getBoundingClientRect()
+          const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
+            acceptNode: (node) =>
+              node.textContent?.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+          })
+          const textNode = walker.nextNode()
+          if (!textNode) return null
+          const range = document.createRange()
+          range.setStart(textNode, 0)
+          range.setEnd(textNode, 1)
+          const lineRect = range.getBoundingClientRect()
+          return {
+            getBoundingClientRect: () => ({
+              x: outerRect.x,
+              y: lineRect.y,
+              width: outerRect.width,
+              height: lineRect.height,
+              top: lineRect.top,
+              right: outerRect.right,
+              bottom: lineRect.bottom,
+              left: outerRect.left
+            }),
+            contextElement: outerDom
+          }
+        },
+        nested: {
+          rules: [
+            {
+              id: 'detailsChildren',
+              evaluate: ({$pos, depth}) => {
+                for (let d = depth - 1; d >= 0; d--) {
+                  if ($pos.node(d).type.name === 'details') return 1000
+                }
+                return 0
+              }
+            }
           ]
         },
-        nested: true,
         render: () => {
           dragHandleElement.classList.add('drag-handle', 'hide')
           return dragHandleElement
