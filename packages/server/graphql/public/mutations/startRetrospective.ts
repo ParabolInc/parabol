@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
-import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -31,10 +30,10 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   // RESOLUTION
-  const meetingType: MeetingTypeEnum = 'retrospective'
+  const meetingType = 'retrospective' as const
   const [viewer, meetingSettings, meetingCount] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType}),
+    dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
     dataLoader.get('meetingCount').load({teamId, meetingType})
   ])
 

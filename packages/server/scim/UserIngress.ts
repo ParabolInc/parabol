@@ -84,7 +84,7 @@ SCIMMY.Resources.declare(SCIMMY.Resources.User).ingress(
             .load({userId, orgId})
           // ingress means adding the user to the org if not already present
           if (!organizationUser) {
-            adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+            await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
           }
         }
 

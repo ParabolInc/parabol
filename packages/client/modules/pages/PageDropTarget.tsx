@@ -27,7 +27,7 @@ export const PageDropTarget = (props: Props) => {
   const {children, className, ...rest} = props
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
   const {viewer} = data
-  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer
+  const {draggingPageId, draggingPageParentSection, draggingPageViewerAccess} = viewer ?? {}
   const canEdit = hasMinPageRole('editor', draggingPageViewerAccess)
   const atmosphere = useAtmosphere()
   const [executeUpdatePage] = useUpdatePageMutation()

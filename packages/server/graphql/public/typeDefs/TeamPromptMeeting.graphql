@@ -8,11 +8,6 @@ type TeamPromptMeeting implements NewMeeting {
   meetingPrompt: String!
 
   """
-  The settings that govern the team prompt meeting
-  """
-  settings: TeamPromptMeetingSettings!
-
-  """
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!

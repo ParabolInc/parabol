@@ -16,6 +16,8 @@ import getSummaryText from './getSummaryText'
 import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 
+const WEBHOOK_INTEGRATION_DISABLED = process.env.MSTEAMS_WEBHOOK_INTEGRATION_DISABLED === 'true'
+
 const notifyMSTeams = async (
   event: SlackNotification['event'],
   webhookUrl: string,
@@ -345,6 +347,7 @@ async function getMSTeams(
   userId: string,
   event: SlackNotificationEventEnum
 ) {
+  if (WEBHOOK_INTEGRATION_DISABLED) return []
   const [auths, user] = await Promise.all([
     dataLoader
       .get('teamMemberIntegrationAuthsByTeamIdAndService')

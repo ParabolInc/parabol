@@ -1,6 +1,5 @@
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import {getUserId} from '../../../utils/authorization'
-import resolveReactjis from '../../resolvers/resolveReactjis'
 import type {CommentResolvers} from '../resolverTypes'
 
 const TOMBSTONE = JSON.stringify(plaintextToTipTap('[deleted]'))
@@ -27,11 +26,6 @@ const Comment: CommentResolvers = {
   isViewerComment: ({createdBy, isActive}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
     return isActive ? viewerId === createdBy : false
-  },
-
-  reactjis: (source, args, context) => {
-    const {isActive} = source
-    return isActive ? resolveReactjis(source, args, context) : []
   }
 }
 

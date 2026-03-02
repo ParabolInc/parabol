@@ -53,10 +53,6 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return filterTasksByMeeting(teamTasks, meetingId, viewerId)
   },
 
-  settings: async ({teamId}, _args, {dataLoader}) => {
-    return await dataLoader.get('meetingSettingsByType').load({teamId, meetingType: 'teamPrompt'})
-  },
-
   responses: ({id: meetingId}, _args) => {
     return getTeamPromptResponsesByMeetingId(meetingId)
   },

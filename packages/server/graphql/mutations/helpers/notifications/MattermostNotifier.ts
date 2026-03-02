@@ -24,6 +24,8 @@ import {
 import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
 import {createNotifier} from './Notifier'
 
+const WEBHOOK_INTEGRATION_DISABLED = process.env.MATTERMOST_WEBHOOK_INTEGRATION_DISABLED === 'true'
+
 const notifyMattermost = async (
   event: SlackNotification['event'],
   channel: {
@@ -374,7 +376,7 @@ const MattermostNotificationHelper: NotificationIntegrationHelper<MattermostNoti
   }
 })
 
-async function getMattermost(
+async function getMattermostPluginNotificationHelpers(
   dataLoader: DataLoaderWorker,
   teamId: string,
   userId: string,
@@ -401,7 +403,16 @@ async function getMattermost(
         })
       )
   }
+  return []
+}
 
+async function getMattermostWebhookNotificationHelpers(
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string,
+  event: SlackNotificationEventEnum
+) {
+  if (WEBHOOK_INTEGRATION_DISABLED) return []
   const auths = await dataLoader
     .get('teamMemberIntegrationAuthsByTeamIdAndService')
     .load({service: 'mattermost', teamId})
@@ -433,6 +444,19 @@ async function getMattermost(
       channelId: null
     })
   )
+}
+
+async function getMattermost(
+  dataLoader: DataLoaderWorker,
+  teamId: string,
+  userId: string,
+  event: SlackNotificationEventEnum
+) {
+  const [pluginHelpers, webhookHelpers] = await Promise.all([
+    getMattermostPluginNotificationHelpers(dataLoader, teamId, userId, event),
+    getMattermostWebhookNotificationHelpers(dataLoader, teamId, userId, event)
+  ])
+  return [...pluginHelpers, ...webhookHelpers]
 }
 
 export const MattermostNotifier = createNotifier(getMattermost)

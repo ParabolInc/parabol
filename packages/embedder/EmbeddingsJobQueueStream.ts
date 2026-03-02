@@ -99,6 +99,10 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
   }
   return() {
     this.done = true
+    if (this.resolveDrought) {
+      this.resolveDrought()
+      this.resolveDrought = undefined
+    }
     return Promise.resolve({done: true as const, value: undefined})
   }
   throw(error: any) {

@@ -5,5 +5,5 @@ type RemovePokerTemplateScalePayload {
   """
   A list of dimensions that were using the archived scale
   """
-  dimensions: [TemplateDimension!]!
+  dimensions: [TemplateDimension!]
 }

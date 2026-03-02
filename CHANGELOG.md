@@ -5,6 +5,87 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.7](https://github.com/ParabolInc/parabol/compare/v12.10.6...v12.10.7) (2026-02-28)
+
+
+### Changed
+
+* fail staging and prod deployments properly and restrict PR creation ([#12754](https://github.com/ParabolInc/parabol/issues/12754)) ([7826d31](https://github.com/ParabolInc/parabol/commit/7826d317a6ad1241cc68fd55ecb50553df273930))
+
+## [12.10.6](https://github.com/ParabolInc/parabol/compare/v12.10.5...v12.10.6) (2026-02-28)
+
+
+### Fixed
+
+* bump vuln package ([#12742](https://github.com/ParabolInc/parabol/issues/12742)) ([f38b38b](https://github.com/ParabolInc/parabol/commit/f38b38bcf0f5b5dbcca0f518e78ee500c54cc9e1))
+* centralize GraphQL authorization ([#12745](https://github.com/ParabolInc/parabol/issues/12745)) ([3539a4e](https://github.com/ParabolInc/parabol/commit/3539a4ef8e7402bad70ab8de6d9c115ed129e934))
+* revert maps change ([#12747](https://github.com/ParabolInc/parabol/issues/12747)) ([1bb8eaf](https://github.com/ParabolInc/parabol/commit/1bb8eaff56033a3fd5356279c87c873e730fd2b3))
+* updated minified-path-prefix for datadog maps ([#12746](https://github.com/ParabolInc/parabol/issues/12746)) ([a7296d9](https://github.com/ParabolInc/parabol/commit/a7296d9f3b830b7589edd3e599602b402cd14318))
+
+
+### Changed
+
+* make Mattermost Webhook and Plugin integration independent ([#12716](https://github.com/ParabolInc/parabol/issues/12716)) ([0841387](https://github.com/ParabolInc/parabol/commit/084138721f6b51eed8276af6052339836906298e))
+
+## [12.10.5](https://github.com/ParabolInc/parabol/compare/v12.10.4...v12.10.5) (2026-02-27)
+
+
+### Fixed
+
+* properly notify client if AuthToken is unauthorized ([#12724](https://github.com/ParabolInc/parabol/issues/12724)) ([1cab8a0](https://github.com/ParabolInc/parabol/commit/1cab8a0c2664ba3b70fc4be0c8e0b7e0cad89777))
+
+## [12.10.4](https://github.com/ParabolInc/parabol/compare/v12.10.3...v12.10.4) (2026-02-27)
+
+
+### Fixed
+
+* rollback aggressive logging out ([#12720](https://github.com/ParabolInc/parabol/issues/12720)) ([6abcafc](https://github.com/ParabolInc/parabol/commit/6abcafcfc426d98e520fef7fc2bfaed705274ad9))
+
+## [12.10.3](https://github.com/ParabolInc/parabol/compare/v12.10.2...v12.10.3) (2026-02-27)
+
+
+### Fixed
+
+* allow signOut ([#12709](https://github.com/ParabolInc/parabol/issues/12709)) ([e605bed](https://github.com/ParabolInc/parabol/commit/e605bed7661c68da389cc8262aecf54e289c0018))
+* await adding organization user in SCIM ([#12715](https://github.com/ParabolInc/parabol/issues/12715)) ([00a2522](https://github.com/ParabolInc/parabol/commit/00a2522a9d3ff72ccf6a5e55ab950a8a0cbfd544))
+* log out client if auth token is rejected ([#12714](https://github.com/ParabolInc/parabol/issues/12714)) ([e5feca3](https://github.com/ParabolInc/parabol/commit/e5feca34743a8ca456414513202e63fbd3e4825e))
+* Recurrence wouldn't restart meetings due to missing meeting settings ([#12717](https://github.com/ParabolInc/parabol/issues/12717)) ([606c44e](https://github.com/ParabolInc/parabol/commit/606c44ea5b928a025ca460f207f6a77600d333bc))
+
+## [12.10.2](https://github.com/ParabolInc/parabol/compare/v12.10.1...v12.10.2) (2026-02-27)
+
+
+### Fixed
+
+* **embedder:** abort pending drought promise on graceful shutdown ([#12708](https://github.com/ParabolInc/parabol/issues/12708)) ([41cb22d](https://github.com/ParabolInc/parabol/commit/41cb22d89ee5c3f4a4e4640bcf24d79b6fd96cb6))
+
+## [12.10.1](https://github.com/ParabolInc/parabol/compare/v12.10.0...v12.10.1) (2026-02-27)
+
+
+### Fixed
+
+* page links on public pages ([#12703](https://github.com/ParabolInc/parabol/issues/12703)) ([613f0f6](https://github.com/ParabolInc/parabol/commit/613f0f61f01246964bfb1bb31d99762546c17149))
+
+## [12.10.0](https://github.com/ParabolInc/parabol/compare/v12.9.4...v12.10.0) (2026-02-27)
+
+
+### Added
+
+* linear search by issue id ([#12688](https://github.com/ParabolInc/parabol/issues/12688)) ([924bb36](https://github.com/ParabolInc/parabol/commit/924bb36c0c6d3e4b21ac973e926d2c37103f23bd))
+
+
+### Fixed
+
+* cleanup PG from embedder refactor ([#12699](https://github.com/ParabolInc/parabol/issues/12699)) ([b5ffd14](https://github.com/ParabolInc/parabol/commit/b5ffd1472c9589ad07400d018bb76b7788443086))
+* Refactor to SDL part 4 ([#12698](https://github.com/ParabolInc/parabol/issues/12698)) ([4c80526](https://github.com/ParabolInc/parabol/commit/4c8052699f4cec69f04edf40fdcf561cd9e26aba))
+* show updated filter result in integration footer ([#12695](https://github.com/ParabolInc/parabol/issues/12695)) ([8f003e2](https://github.com/ParabolInc/parabol/commit/8f003e2af53de54a03f450a9a703d01c3edb8991))
+
+## [12.9.4](https://github.com/ParabolInc/parabol/compare/v12.9.3...v12.9.4) (2026-02-26)
+
+
+### Fixed
+
+* retro discuss to unknown ([#12692](https://github.com/ParabolInc/parabol/issues/12692)) ([bf22ea3](https://github.com/ParabolInc/parabol/commit/bf22ea318bffd505da7339c8def79d14f7556f8f))
+
 ## [12.9.3](https://github.com/ParabolInc/parabol/compare/v12.9.2...v12.9.3) (2026-02-26)
 
 

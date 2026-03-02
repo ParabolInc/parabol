@@ -1,5 +1,5 @@
 const ReactjiId = {
-  join: (reactableId: string, reactjiName: string) => `${reactableId}:${reactjiName}`,
+  join: (reactableId: string | number, reactjiName: string) => `${reactableId}:${reactjiName}`,
   split: (id: string) => {
     const splitIndex = id.lastIndexOf(':')
     const name = splitIndex !== -1 ? id.slice(splitIndex + 1) : ''

@@ -70,7 +70,7 @@ const startRecurringMeeting = async (
     } else if (meetingSeries.meetingType === 'retrospective') {
       const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
         (lastMeeting as RetrospectiveMeeting) ?? {
-          templateId: meetingSettings.selectedTemplateId,
+          templateId: meetingSettings?.selectedTemplateId,
           ...meetingSettings
         }
       const meeting = await safeCreateRetrospective(

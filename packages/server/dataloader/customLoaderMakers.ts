@@ -34,7 +34,6 @@ import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
 import NullableDataLoader from './NullableDataLoader'
-import normalizeArrayResults from './normalizeArrayResults'
 import normalizeResults from './normalizeResults'
 import type RootDataLoader from './RootDataLoader'
 import type {RegisterDependsOn} from './RootDataLoader'
@@ -248,7 +247,7 @@ export const gitlabDimensionFieldMaps = (parent: RootDataLoader) => {
 
 export const meetingSettingsByType = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('meetingSettings')
-  return new DataLoader<MeetingSettingsKey, MeetingSettings, string>(
+  return new NullableDataLoader<MeetingSettingsKey, MeetingSettings, string>(
     async (keys) => {
       const res = await selectMeetingSettings()
         .where(({eb, refTuple, tuple}) =>
@@ -512,13 +511,15 @@ export const activeMeetingsByMeetingSeriesId = (
 ) => {
   dependsOn('newMeetings')
   return new DataLoader<number, AnyMeeting[], string>(
-    async (keys) => {
+    async (meetingSeriesIds) => {
       const res = await selectNewMeetings()
-        .where('meetingSeriesId', 'in', keys)
+        .where('meetingSeriesId', 'in', meetingSeriesIds)
         .where('endedAt', 'is', null)
         .orderBy('createdAt')
         .execute()
-      return normalizeArrayResults(keys, res, 'meetingSeriesId')
+      return meetingSeriesIds.map((meetingSeriesId) => {
+        return res.filter((row) => row.meetingSeriesId === meetingSeriesId)
+      })
     },
     {
       ...parent.dataLoaderOptions

@@ -1,5 +1,8 @@
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import type {NavigateMeetingPayloadResolvers} from '../resolverTypes'
+import type {GroupPhaseCompletePayloadSource} from './GroupPhaseCompletePayload'
+import type {ReflectPhaseCompletePayloadSource} from './ReflectPhaseCompletePayload'
+import type {VotePhaseCompletePayloadSource} from './VotePhaseCompletePayload'
 
 export type NavigateMeetingPayloadSource =
   | {
@@ -7,9 +10,9 @@ export type NavigateMeetingPayloadSource =
       oldFacilitatorStageId: string
       facilitatorStageId: string | null | undefined
       unlockedStageIds: string[] | undefined
-      reflect?: unknown
-      group?: unknown
-      vote?: unknown
+      reflect?: ReflectPhaseCompletePayloadSource
+      group?: GroupPhaseCompletePayloadSource
+      vote?: VotePhaseCompletePayloadSource
     }
   | {error: {message: string}}
 
@@ -37,7 +40,7 @@ const NavigateMeetingPayload: NavigateMeetingPayloadResolvers = {
   },
   phaseComplete: (source) => {
     if ('error' in source) return null
-    return source as any
+    return source
   },
   unlockedStages: async (source, _args, {dataLoader}) => {
     if ('error' in source) return null

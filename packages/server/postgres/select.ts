@@ -102,7 +102,6 @@ export const selectSuggestedAction = () => {
     >()
 }
 
-// Can revert to using .selectAll() when https://github.com/kysely-org/kysely/pull/1102 is merged
 export const selectTeams = () => {
   const query = getKysely()
     .selectFrom('Team')

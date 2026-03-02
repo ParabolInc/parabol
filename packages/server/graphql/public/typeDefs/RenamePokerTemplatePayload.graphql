@@ -1,4 +1,0 @@
-type RenamePokerTemplatePayload {
-  error: StandardMutationError
-  pokerTemplate: PokerTemplate
-}
