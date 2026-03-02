@@ -225,8 +225,7 @@ export const PageDragHandle = Extension.create<Options>({
           if (!(dom instanceof HTMLElement)) return null
           // For list items, use the parent <ul>/<ol> rect so the handle is in the gutter
           // (with list-style-position: outside, the bullet marker sits between the ul and li edges)
-          const horizontalRef =
-            dom.tagName === 'LI' && dom.parentElement ? dom.parentElement : dom
+          const horizontalRef = dom.tagName === 'LI' && dom.parentElement ? dom.parentElement : dom
           const horizontalRect = horizontalRef.getBoundingClientRect()
           const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
             acceptNode: (node) =>
