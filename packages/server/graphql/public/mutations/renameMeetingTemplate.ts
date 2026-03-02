@@ -54,6 +54,11 @@ const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async 
         refUpdatedAt: sql`CURRENT_TIMESTAMP`,
         teamId
       })
+      .onConflict((oc) =>
+        oc.columns(['refId', 'objectType']).doUpdateSet((eb) => ({
+          refUpdatedAt: eb.ref('excluded.refUpdatedAt')
+        }))
+      )
       .returning('id')
       .executeTakeFirstOrThrow(),
     pg
