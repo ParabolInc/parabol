@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import ms from 'ms'
-import {Component} from 'react'
+import {useEffect, useState} from 'react'
 import {PALETTE} from '../styles/paletteV3'
 import absoluteDate from '../utils/date/absoluteDate'
 import relativeDate from '../utils/date/relativeDate'
@@ -12,43 +12,29 @@ const StyledSpan = styled('span')({
   lineHeight: '16px'
 })
 
-interface State {
-  fromNow: string
-}
-
 interface Props {
   createdAt: string | Date
 }
 
-class TimelineEventDate extends Component<Props, State> {
-  state = {
-    fromNow: relativeDate(this.props.createdAt)
-  }
-  intervalId?: number
+const TimelineEventDate = (props: Props) => {
+  const {createdAt} = props
+  const [fromNow, setFromNow] = useState(() => relativeDate(createdAt))
 
-  componentDidMount() {
-    this.intervalId = window.setInterval(() => {
-      const fromNow = relativeDate(this.props.createdAt)
-      if (fromNow !== this.state.fromNow) {
-        this.setState({
-          fromNow
-        })
-      }
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      const next = relativeDate(createdAt)
+      setFromNow((prev) => (prev === next ? prev : next))
     }, ms('1m'))
-  }
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [createdAt])
 
-  componentWillUnmount(): void {
-    clearInterval(this.intervalId)
-  }
-
-  render() {
-    const {fromNow} = this.state
-    return (
-      <StyledSpan>
-        <SimpleTooltip text={absoluteDate(this.props.createdAt)}>{fromNow}</SimpleTooltip>
-      </StyledSpan>
-    )
-  }
+  return (
+    <StyledSpan>
+      <SimpleTooltip text={absoluteDate(createdAt)}>{fromNow}</SimpleTooltip>
+    </StyledSpan>
+  )
 }
 
 export default TimelineEventDate

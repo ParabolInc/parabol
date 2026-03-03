@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import * as React from 'react'
-import {Component, lazy, Suspense} from 'react'
+import {type ChangeEvent, type FormEvent, lazy, Suspense, useRef} from 'react'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 
@@ -23,47 +22,39 @@ interface Props {
 
 const Confetti = lazy(() => import(/* webpackChunkName: 'Confetti' */ './Confetti'))
 
-class AvatarInput extends Component<Props> {
-  inputRef = React.createRef<HTMLInputElement>()
-  onClick = () => {
-    if (this.inputRef.current) {
-      this.inputRef.current.click()
-    }
+const AvatarInput = (props: Props) => {
+  const {error, onSubmit} = props
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const onClick = () => {
+    inputRef.current?.click()
   }
-  onChange = (e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLFormElement>) => {
-    const {onSubmit} = this.props
+
+  const onChange = (e: ChangeEvent<HTMLInputElement> | FormEvent<HTMLFormElement>) => {
     const {files} = e.currentTarget
     const imageToUpload = files ? files[0] : null
     if (!imageToUpload) return
     onSubmit(imageToUpload)
   }
 
-  render() {
-    const {error} = this.props
-    const isHack = error === 'xss'
-    const errorStr = isHack ? 'You hacked us!' : error
-    return (
-      <div>
-        <Control>
-          <RaisedButton size='small' onClick={this.onClick} palette='gray' type='button'>
-            {'Choose File'}
-          </RaisedButton>
-          <form onSubmit={this.onChange}>
-            <HiddenInput
-              accept='image/*'
-              onChange={this.onChange}
-              type='file'
-              ref={this.inputRef}
-            />
-          </form>
-        </Control>
-        <Suspense fallback={''}>
-          <Confetti active={isHack} />
-        </Suspense>
-        {error && <StyledError>{errorStr}</StyledError>}
-      </div>
-    )
-  }
+  const isHack = error === 'xss'
+  const errorStr = isHack ? 'You hacked us!' : error
+  return (
+    <div>
+      <Control>
+        <RaisedButton size='small' onClick={onClick} palette='gray' type='button'>
+          {'Choose File'}
+        </RaisedButton>
+        <form onSubmit={onChange}>
+          <HiddenInput accept='image/*' onChange={onChange} type='file' ref={inputRef} />
+        </form>
+      </Control>
+      <Suspense fallback={''}>
+        <Confetti active={isHack} />
+      </Suspense>
+      {error && <StyledError>{errorStr}</StyledError>}
+    </div>
+  )
 }
 
 export default AvatarInput
