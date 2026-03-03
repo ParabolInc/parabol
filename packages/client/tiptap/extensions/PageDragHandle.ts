@@ -60,7 +60,16 @@ export const PageDragHandle = Extension.create<Options>({
       'Mod-d': ({editor}) => {
         const {$from} = editor.state.selection
         if ($from.depth < 1) return false
-        const blockPos = $from.before(1)
+        // Find the innermost listItem/taskItem ancestor so we duplicate just the item
+        let targetDepth = 1
+        for (let d = $from.depth; d > 1; d--) {
+          const name = $from.node(d).type.name
+          if (name === 'listItem' || name === 'taskItem') {
+            targetDepth = d
+            break
+          }
+        }
+        const blockPos = $from.before(targetDepth)
         const blockNode = editor.state.doc.nodeAt(blockPos)
         if (!blockNode) return false
 
