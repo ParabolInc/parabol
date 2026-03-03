@@ -3,12 +3,11 @@ import {useFragment} from 'react-relay'
 import {type RouteComponentProps, withRouter} from 'react-router'
 import type {SuggestedActionCreateNewTeam_suggestedAction$key} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
 import {PALETTE} from '../styles/paletteV3'
-import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
   suggestedAction: SuggestedActionCreateNewTeam_suggestedAction$key
 }
 
@@ -40,4 +39,4 @@ const SuggestedActionCreateNewTeam = (props: Props) => {
   )
 }
 
-export default withMutationProps(withRouter(SuggestedActionCreateNewTeam))
+export default withRouter(SuggestedActionCreateNewTeam)
