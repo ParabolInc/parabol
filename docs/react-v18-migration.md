@@ -114,7 +114,7 @@ packages/client/components/NullableTask/NullableTask.tsx
 
 ---
 
-### PR 2 — Fix `React.FC` types and explicit `children` typing
+### PR 2 — Fix `React.FC` types and explicit `children` typing - DONE
 
 **~50 lines changed | Risk: LOW**
 
