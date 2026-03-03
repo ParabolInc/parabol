@@ -82,18 +82,20 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const {connectionParams, extra} = ctx
 
     let authToken = extra.socket.authToken
-    // When the clients updated to use cookies for auth, then this if can be removed and we simply reject on missing token
     if (!authToken) {
       const token = connectionParams?.token
-      if (!(typeof token === 'string')) return false
-
-      authToken = getVerifiedAuthToken(token)
-      const {sub: viewerId, iat} = authToken
-      const [isBlacklistedJWT] = await Promise.all([checkBlacklistJWT(viewerId, iat)])
-      if (isBlacklistedJWT) return false
+      if (typeof token === 'string') {
+        authToken = getVerifiedAuthToken(token)
+        const {sub: viewerId, iat} = authToken
+        if (!viewerId) return false
+        const isBlacklistedJWT = await checkBlacklistJWT(viewerId, iat)
+        if (isBlacklistedJWT) return false
+      }
     }
     if (!authToken) return false
     const {sub: viewerId, tms: teamIds} = authToken
+    if (!viewerId) return false
+
     const [socketCount, user] = await Promise.all([
       // getUserSocketCount must run before the notification subscription start is received
       getUserSocketCount(viewerId),
@@ -302,28 +304,30 @@ wsHandler.upgrade = async (res, req, context) => {
   if (typeof token === 'string') {
     const authToken = getVerifiedAuthToken(token)
     const {sub: viewerId, iat} = authToken
-    const [isBlacklistedJWT, user] = await Promise.all([
-      !viewerId || checkBlacklistJWT(viewerId, iat),
-      viewerId &&
-        getKysely()
-          .selectFrom('User')
-          .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
-          .where('id', '=', viewerId)
-          .executeTakeFirst()
-    ])
+    const [isBlacklistedJWT, user] = viewerId
+      ? await Promise.all([
+          checkBlacklistJWT(viewerId, iat),
+          getKysely()
+            .selectFrom('User')
+            .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+            .where('id', '=', viewerId)
+            .executeTakeFirst()
+        ])
+      : [true, null]
 
     if (isAborted) {
       return
     }
     if (isBlacklistedJWT || !user) {
-      res.cork(() => {
-        res.writeStatus('401 Unauthorized').end()
-      })
-      return
+      // We cannot reject here with a 401 because it will be swallowed by the browser and the client cannot distinguish it from other connection errors
+      // Let us reject after we've established the connection
+      // Setting an empty token here to not allow passing an additional token via the connectionParams in onConnect
+      upgradeData.authToken = {} as AuthToken
+    } else {
+      upgradeData.user = user
+      freshToken = getFreshTokenIfNeeded(authToken, user.tms)
+      upgradeData.authToken = freshToken || authToken
     }
-    upgradeData.user = user
-    freshToken = getFreshTokenIfNeeded(authToken, user.tms)
-    upgradeData.authToken = freshToken || authToken
   }
 
   res.cork(() => {

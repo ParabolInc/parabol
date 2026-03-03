@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
+import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
-import {DragDropContext, Draggable, Droppable, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import type {TemplateScaleValueList_scale$key} from '~/__generated__/TemplateScaleValueList_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'

@@ -122,9 +122,10 @@ module.exports = {
         github: process.env.GITHUB_CLIENT_ID,
         google: process.env.GOOGLE_OAUTH_CLIENT_ID,
         googleAnalytics: process.env.GA_TRACKING_ID,
-        mattermostDisabled: process.env.MATTERMOST_DISABLED === 'true',
-        mattermostGlobal: !!process.env.MATTERMOST_SECRET,
-        msTeamsDisabled: process.env.MSTEAMS_DISABLED === 'true',
+        mattermostWebhookIntegrationDisabled:
+          process.env.MATTERMOST_WEBHOOK_INTEGRATION_DISABLED === 'true',
+        msTeamsWebhookIntegrationDisabled:
+          process.env.MSTEAMS_WEBHOOK_INTEGRATION_DISABLED === 'true',
         slack: process.env.SLACK_CLIENT_ID,
         stripe: process.env.STRIPE_PUBLISHABLE_KEY,
         oauth2Redirect: makeOAuth2Redirect(),

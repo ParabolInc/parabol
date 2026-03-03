@@ -60,7 +60,7 @@ const MSTeamsProviderRow = (props: Props) => {
   const {msTeams} = integrations
   const {auth} = msTeams
 
-  if (window.__ACTION__.msTeamsDisabled) return null
+  if (window.__ACTION__.mattermostWebhookIntegrationDisabled) return null
 
   return (
     <>

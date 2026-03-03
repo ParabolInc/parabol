@@ -13,11 +13,15 @@ export const updateBacklinks = async (
     addToPageId &&
       pg
         .insertInto('PageBacklink')
-        .values({
-          toPageId: addToPageId,
-          fromPageId
-        })
-        // conflict possible in a race condition
+        .columns(['toPageId', 'fromPageId'])
+        // SELECT instead of VALUES so the insert is a no-op if the page doesn't exist,
+        // avoiding a FK violation when the target page is deleted concurrently
+        .expression(
+          pg
+            .selectFrom('Page')
+            .select((eb) => ['id as toPageId', eb.val(fromPageId).as('fromPageId')])
+            .where('id', '=', addToPageId)
+        )
         .onConflict((oc) => oc.doNothing())
         .execute(),
     deleteToPageId &&

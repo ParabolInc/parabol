@@ -611,7 +611,7 @@
 }
 
 .drag-handle {
-  position: fixed;
+  position: absolute;
   opacity: 1;
   transition: opacity ease-in 150ms;
   border-radius: 0.25rem;

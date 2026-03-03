@@ -3,9 +3,8 @@ import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import addAgendaItemToActiveActionMeeting from '../../mutations/helpers/addAgendaItemToActiveActionMeeting'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -17,11 +16,7 @@ const addAgendaItem: MutationResolvers['addAgendaItem'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  // AUTH
   const {teamId} = newAgendaItem
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   // VALIDATION
   if (newAgendaItem.content.length > 64) {

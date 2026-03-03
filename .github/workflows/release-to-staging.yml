@@ -91,6 +91,21 @@ jobs:
             echo $RES
             JOB_ID_DONE=$(echo $RES | jq '.id // empty')
             [ -z "$JOB_ID_DONE" ] && exit 1 || exit 0
+      - name: Poll Staging Release
+        timeout-minutes: 30
+        run: |
+          while true; do
+            STATUS=$(curl -s "https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}" --header 'PRIVATE-TOKEN: ${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}' | jq -r '.status')
+            echo "Current status: $STATUS"
+            if [ "$STATUS" == "success" ]; then
+              echo "Job completed successfully."
+              exit 0
+            elif [[ "$STATUS" == "failed" || "$STATUS" == "canceled" ]]; then
+              echo "Job failed or was canceled."
+              exit 1
+            fi
+            sleep 15
+          done
       - name: Open PR to Push to Prod
         env:
           GH_TOKEN: ${{ github.token }}
@@ -112,15 +127,6 @@ jobs:
             --head release/v${{ env.ACTION_VERSION }} \
             --title "chore(release): Test and deploy to Production v${{ env.ACTION_VERSION }}" \
             --body "$BODY"
-      - name: Poll Staging Release
-        uses: artiz/poll-endpoint@1.0.2
-        with:
-          url: https://gitlab.com/api/v4/projects/${{ vars.GITLAB_PROJECT_ID }}/jobs/${{ env.JOB_ID }}?access_token=${{ secrets.GITLAB_DEPLOYMENT_ACCESS_TOKEN }}
-          method: GET
-          expect-status: 200
-          expect-response-regex: '"status":"success"'
-          timeout: 120000
-          interval: 3000
 
       - name: Report Status
         if: failure()

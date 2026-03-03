@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {DragDropContext, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
-import {DragDropContext, type DropResult} from 'react-beautiful-dnd'
 import {useFragment} from 'react-relay'
 import type {TaskColumns_teams$key} from '~/__generated__/TaskColumns_teams.graphql'
 import type {TaskStatusEnum} from '../../__generated__/CreateTaskMutation.graphql'

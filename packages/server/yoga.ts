@@ -3,8 +3,8 @@ import {OneOfInputObjectsRule, useExtendedValidation} from '@envelop/extended-va
 import {useDeferStream} from '@graphql-yoga/plugin-defer-stream'
 import {usePersistedOperations} from '@graphql-yoga/plugin-persisted-operations'
 import {useCookies} from '@whatwg-node/server-plugin-cookies'
-import type {GraphQLParams} from 'graphql-yoga'
-import {createYoga, useReadinessCheck} from 'graphql-yoga'
+import {print} from 'graphql'
+import {createYoga, type GraphQLParams, useReadinessCheck} from 'graphql-yoga'
 import {sql} from 'kysely'
 import sleep from '../client/utils/sleep'
 import type AuthToken from './database/types/AuthToken'
@@ -210,7 +210,18 @@ export const yoga = createYoga<ServerContext, UserContext>({
     useOAuthScopeValidation(),
     useDisposeDataloader,
     useExtendedValidation({
-      rules: [OneOfInputObjectsRule]
+      rules: [OneOfInputObjectsRule],
+      onValidationFailed: (params) => {
+        const {operationName, variableValues, document} = params.args
+        const query = print(document)
+        Logger.error(`Failed validation: ${operationName}`, {
+          extras: {
+            operationName,
+            query,
+            variableValues
+          }
+        })
+      }
     }),
     useReadinessCheck({
       check: async () => {
