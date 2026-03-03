@@ -139,7 +139,7 @@ export const TeamAvatar = ({teamName, teamId, className}: TeamAvatarProps) => {
 
 ---
 
-### PR 3 — Convert class components to functional (batch 1: simple)
+### PR 3 — Convert class components to functional (batch 1: simple) - DONE
 
 **~400 lines changed | Risk: LOW**
 
