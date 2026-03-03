@@ -353,7 +353,9 @@ export default class Atmosphere extends Environment {
     if (!isRequested) {
       subscription(this, variables, router)
     }
-    this.querySubscriptions.push({queryKey, subKey})
+    if (!this.querySubscriptions.some((qs) => qs.queryKey === queryKey && qs.subKey === subKey)) {
+      this.querySubscriptions.push({queryKey, subKey})
+    }
   }
 
   /*
