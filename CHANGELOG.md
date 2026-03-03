@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.9](https://github.com/ParabolInc/parabol/compare/v12.10.8...v12.10.9) (2026-03-03)
+
+
+### Fixed
+
+* remove unused hubspot API vars ([#12769](https://github.com/ParabolInc/parabol/issues/12769)) ([b2e7576](https://github.com/ParabolInc/parabol/commit/b2e757618c2364d5b0a3e5376c180af9b91d1a1c))
+
+
+### Changed
+
+* AI rules from past review comments ([#12752](https://github.com/ParabolInc/parabol/issues/12752)) ([316f730](https://github.com/ParabolInc/parabol/commit/316f7306f0581f98120715b9563f533977c813f8))
+
 ## [12.10.8](https://github.com/ParabolInc/parabol/compare/v12.10.7...v12.10.8) (2026-03-03)
 
 
