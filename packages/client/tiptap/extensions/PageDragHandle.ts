@@ -232,9 +232,17 @@ export const PageDragHandle = Extension.create<Options>({
           if (!editorRef || dragHandleNodePos < 0) return null
           const dom = editorRef.view.nodeDOM(dragHandleNodePos)
           if (!(dom instanceof HTMLElement)) return null
-          // For list items, use the parent <ul>/<ol> rect so the handle is in the gutter
-          // (with list-style-position: outside, the bullet marker sits between the ul and li edges)
-          const horizontalRef = dom.tagName === 'LI' && dom.parentElement ? dom.parentElement : dom
+          // Walk up one DOM level for horizontal positioning so the handle stays in the
+          // gutter even when the extension detects a deeply nested node (e.g. <p> inside
+          // a <blockquote>). For <li> elements, walk up to the parent <ul>/<ol> so the
+          // handle sits in the list gutter (outside the bullet marker area).
+          let horizontalRef: HTMLElement = dom
+          if (dom.parentElement && dom.parentElement !== editorRef.view.dom) {
+            horizontalRef = dom.parentElement
+          }
+          if (horizontalRef.tagName === 'LI' && horizontalRef.parentElement) {
+            horizontalRef = horizontalRef.parentElement
+          }
           const horizontalRect = horizontalRef.getBoundingClientRect()
           const walker = document.createTreeWalker(dom, NodeFilter.SHOW_TEXT, {
             acceptNode: (node) =>
