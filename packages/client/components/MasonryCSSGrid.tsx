@@ -72,9 +72,11 @@ const MasonryCSSGrid = (props: Props) => {
 
   // Recalculate on items change (replaces componentDidUpdate)
   useEffect(() => {
-    if (items !== undefined) {
-      // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
-      setTimeout(() => setSpans())
+    if (items === undefined) return
+    // the setTimeout is required for the task list (issue #2432), but it shouldn't be.
+    const timer = setTimeout(() => setSpans())
+    return () => {
+      clearTimeout(timer)
     }
   }, [items, setSpans])
 
