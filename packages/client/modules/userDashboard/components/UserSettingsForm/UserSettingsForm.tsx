@@ -7,13 +7,13 @@ import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
+import useForm from '../../../../hooks/useForm'
 import useModal from '../../../../hooks/useModal'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateUserProfileMutation from '../../../../mutations/UpdateUserProfileMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import {Breakpoint, Layout} from '../../../../types/constEnums'
-import withForm, {type WithFormProps} from '../../../../utils/relay/withForm'
 import Legitity from '../../../../validation/Legitity'
 import NotificationErrorMessage from '../../../notifications/components/NotificationErrorMessage'
 
@@ -62,12 +62,23 @@ const UserAvatarInput = lazy(
   () => import(/* webpackChunkName: 'UserAvatarInput' */ '../../../../components/UserAvatarInput')
 )
 
-interface UserSettingsProps extends WithFormProps<'preferredName'> {
+interface UserSettingsProps {
   viewer: UserProfileQuery['response']['viewer']
 }
 
 function UserSettings(props: UserSettingsProps) {
-  const {fields, onChange, validateField, viewer} = props
+  const {viewer} = props
+  const {fields, onChange, validateField} = useForm({
+    preferredName: {
+      getDefault: () => viewer.preferredName,
+      validate: (value: string) =>
+        new Legitity(value)
+          .trim()
+          .required('\u2018That\u2019s not much of a name, is it?')
+          .min(2, '\u2018C\u2019mon, you call that a name?')
+          .max(100, 'I want your name, not your life story')
+    }
+  })
   const atmosphere = useAtmosphere()
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const onSubmit = (e: React.FormEvent) => {
@@ -82,6 +93,7 @@ function UserSettings(props: UserSettingsProps) {
   const {picture} = viewer
   const pictureOrDefault = picture || defaultUserAvatar
   const {togglePortal, modalPortal} = useModal()
+  const {value, error: fieldError} = fields.preferredName
   return (
     <SettingsForm onSubmit={onSubmit}>
       <div onClick={togglePortal}>
@@ -100,7 +112,8 @@ function UserSettings(props: UserSettingsProps) {
           <FieldBlock>
             {/* TODO: Make me Editable.js (TA) */}
             <BasicInput
-              {...fields.preferredName}
+              value={value}
+              error={fieldError}
               autoFocus
               onChange={onChange}
               name='preferredName'
@@ -115,16 +128,4 @@ function UserSettings(props: UserSettingsProps) {
   )
 }
 
-const form = withForm({
-  preferredName: {
-    getDefault: ({viewer}) => viewer.preferredName,
-    validate: (value) =>
-      new Legitity(value)
-        .trim()
-        .required('That’s not much of a name, is it?')
-        .min(2, 'C’mon, you call that a name?')
-        .max(100, 'I want your name, not your life story')
-  }
-})
-
-export default form(UserSettings)
+export default UserSettings
