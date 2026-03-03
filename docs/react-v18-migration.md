@@ -157,7 +157,7 @@ Convert 6 straightforward class components to functional components with hooks. 
 
 ---
 
-### PR 4 — Convert class components to functional (batch 2: complex)
+### PR 4 — Convert class components to functional (batch 2: complex) - DONE
 
 **~500 lines changed | Risk: MEDIUM**
 
@@ -668,9 +668,9 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | PR | Phase | Description | Est. Lines | Risk | Status |
 |---|---|---|---|---|---|
 | 1 | Pre-work | `react-beautiful-dnd` → `@hello-pangea/dnd` v16 | ~30 | LOW | **DONE** |
-| 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW | |
-| 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW | |
-| 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | |
+| 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW | **DONE** |
+| 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW | **DONE** |
+| 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | **DONE** |
 | 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | |
 | 6 | Pre-work | Update minor dependencies | ~100 | LOW | |
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** | |

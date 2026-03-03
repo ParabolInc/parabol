@@ -1,19 +1,22 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import type {EditableTeamName_team$key} from '../../../../__generated__/EditableTeamName_team.graphql'
 import EditableText from '../../../../components/EditableText'
 import UpdateTeamNameMutation from '../../../../mutations/UpdateTeamNameMutation'
-import withMutationProps, {type WithMutationProps} from '../../../../utils/relay/withMutationProps'
 import teamNameValidation from '../../../../validation/teamNameValidation'
 
-interface Props extends WithMutationProps {
+interface Props {
   team: EditableTeamName_team$key
 }
 
 const EditableTeamName = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {onError, onCompleted, setDirty, submitMutation, submitting, error, team: teamRef} = props
+  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const [validationError, setValidationError] = useState<string | undefined>()
+  const {team: teamRef} = props
   const team = useFragment(
     graphql`
       fragment EditableTeamName_team on Team {
@@ -34,7 +37,6 @@ const EditableTeamName = (props: Props) => {
 
   const handleSubmit = (rawName: string) => {
     if (submitting) return
-    setDirty()
     const {error, value: name} = validate(rawName)
     if (error) return
     submitMutation()
@@ -48,17 +50,14 @@ const EditableTeamName = (props: Props) => {
   const validate = (rawTeamName: string) => {
     const teamNames = teams.filter(({id}) => id !== teamId).map(({name}) => name)
     const res = teamNameValidation(rawTeamName, teamNames)
-    if (res.error) {
-      onError(res.error)
-    } else if (error) {
-      onError()
-    }
+    setValidationError(res.error)
     return res
   }
 
+  const displayError = validationError ?? (error as any)?.message
   return (
     <EditableText
-      error={error as string}
+      error={displayError as string}
       handleSubmit={handleSubmit}
       initialValue={teamName}
       maxLength={50}
@@ -69,4 +68,4 @@ const EditableTeamName = (props: Props) => {
   )
 }
 
-export default withMutationProps(EditableTeamName)
+export default EditableTeamName

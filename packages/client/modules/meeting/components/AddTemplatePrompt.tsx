@@ -3,12 +3,12 @@ import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import {Threshold} from '~/types/constEnums'
 import type {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
 import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {positionAfter} from '../../../shared/sortOrder'
-import withMutationProps, {type WithMutationProps} from '../../../utils/relay/withMutationProps'
 
 const AddPromptLink = styled(LinkButton)({
   alignItems: 'center',
@@ -28,15 +28,16 @@ const AddPromptLinkPlus = styled(Add)({
   margin: '0 16px 0 16px'
 })
 
-interface Props extends WithMutationProps {
+interface Props {
   prompts: AddTemplatePrompt_prompts$key
   templateId: string
 }
 
 const AddTemplatePrompt = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
-  const {prompts: promptsRef, submitting} = props
+  const {prompts: promptsRef, templateId} = props
   const prompts = useFragment(
     graphql`
       fragment AddTemplatePrompt_prompts on ReflectPrompt @relay(plural: true) {
@@ -47,7 +48,6 @@ const AddTemplatePrompt = (props: Props) => {
   )
 
   const addPrompt = () => {
-    const {templateId, onError, onCompleted, submitMutation, submitting} = props
     if (submitting) return
     submitMutation()
     const lastPrompt = prompts.at(-1)!
@@ -73,4 +73,4 @@ const AddTemplatePrompt = (props: Props) => {
   )
 }
 
-export default withMutationProps(AddTemplatePrompt)
+export default AddTemplatePrompt
