@@ -11,21 +11,7 @@ Stripe integration is **optional**. A Parabol instance runs normally without it 
 
 ---
 
-## 1. Create API Keys
-
-In the [Stripe Dashboard → Developers → API keys](https://dashboard.stripe.com/apikeys), create or copy the following keys and add them to your `.env` file:
-
-```env
-STRIPE_SECRET_KEY=''          # Secret key (sk_live_... or sk_test_...)
-STRIPE_PUBLISHABLE_KEY=''     # Publishable key (pk_live_... or pk_test_...)
-STRIPE_WEBHOOK_SECRET=''      # Webhook signing secret (whsec_...) — see Section 3
-```
-
-Use `sk_test_` / `pk_test_` keys for development and `sk_live_` / `pk_live_` for production. See [Stripe API keys docs](https://stripe.com/docs/keys) for details.
-
----
-
-## 2. Create Products and Prices
+## 1. Create Products and Prices
 
 In the [Stripe Dashboard → Products](https://dashboard.stripe.com/products), create two products with recurring prices — one for the Team tier and one for the Enterprise tier. Once created, copy each price ID and set the following variables in your `.env`:
 
@@ -37,6 +23,20 @@ In the [Stripe Dashboard → Products](https://dashboard.stripe.com/products), c
 Both variables are required for payments to work. If either is missing, subscription creation will fail.
 
 The Stripe API version used by the server is `2020-08-27`. See [Stripe API versioning](https://stripe.com/docs/api/versioning) for information on compatibility.
+
+---
+
+## 2. Create API Keys
+
+In the [Stripe Dashboard → Developers → API keys](https://dashboard.stripe.com/apikeys), create or copy the following keys and add them to your `.env` file:
+
+```env
+STRIPE_SECRET_KEY=''          # Secret key (sk_live_... or sk_test_...)
+STRIPE_PUBLISHABLE_KEY=''     # Publishable key (pk_live_... or pk_test_...)
+STRIPE_WEBHOOK_SECRET=''      # Webhook signing secret (whsec_...) — see Section 3
+```
+
+Use `sk_test_` / `pk_test_` keys for development and `sk_live_` / `pk_live_` for production. See [Stripe API keys docs](https://stripe.com/docs/keys) for details.
 
 ---
 
@@ -76,34 +76,11 @@ STRIPE_WEBHOOK_SECRET='whsec_...'
 
 The server verifies every inbound webhook using this secret via [`stripe.webhooks.constructEvent`](https://stripe.com/docs/webhooks/signatures). Requests with an invalid or missing signature are rejected with `401`.
 
-### Local development with the Stripe CLI
-
-For local testing, use the [Stripe CLI](https://stripe.com/docs/stripe-cli) to forward events to your local server:
-
-```bash
-stripe listen --forward-to localhost:3000/stripe
-```
-
-The CLI outputs a temporary webhook signing secret. Set it as `STRIPE_WEBHOOK_SECRET` while developing locally.
-
 ---
 
 ## 4. Client-Side (Publishable Key)
 
 `STRIPE_PUBLISHABLE_KEY` is injected into the client bundle at build/deploy time by [`scripts/toolboxSrc/applyEnvVarsToClientAssets.ts`](../scripts/toolboxSrc/applyEnvVarsToClientAssets.ts). It is exposed on the global `window.__ACTION__.stripe` object and used by [Stripe.js / Stripe Elements](https://stripe.com/docs/js) to securely collect payment method details in the browser.
-
----
-
-## 5. Subscription Flow
-
-The following describes what happens when a user upgrades to the Team tier:
-
-1. The client collects card details using Stripe Elements and creates a `PaymentMethod`.
-2. The client calls the `createStripeSubscription` GraphQL mutation with the `paymentMethodId`.
-3. The server creates (or retrieves) a Stripe `Customer` for the organization and attaches the payment method.
-4. The server calls `stripe.subscriptions.create` with `payment_behavior: 'default_incomplete'`, which returns a `client_secret` from the latest invoice's `PaymentIntent`.
-5. The client confirms the payment using the `client_secret` (handles [3D Secure / SCA](https://stripe.com/docs/strong-customer-authentication) if required).
-6. On success, Stripe fires `invoice.payment_succeeded` to the webhook, which triggers the `upgradeToTeamTier` mutation to promote the organization.
 
 ---
 
