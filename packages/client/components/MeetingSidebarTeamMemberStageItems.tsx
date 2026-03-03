@@ -18,7 +18,7 @@ const ScrollStageItems = styled('div')<{isActive: boolean}>(({isActive}) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%', // trickle down height for overflow
-  // react-beautiful-dnd supports scrolling on 1 parent
+  // @hello-pangea/dnd supports scrolling on 1 parent
   // this is where we need it, in order to scroll a long list
   overflow: isActive ? 'auto' : 'hidden',
   paddingRight: 8,

@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.8](https://github.com/ParabolInc/parabol/compare/v12.10.7...v12.10.8) (2026-03-03)
+
+
+### Fixed
+
+* pages dnd ([#12719](https://github.com/ParabolInc/parabol/issues/12719)) ([de642f1](https://github.com/ParabolInc/parabol/commit/de642f1fd8fe0612cf61106afe90d62a667a6c2e))
+* remove cookie logging, add validation logging ([#12763](https://github.com/ParabolInc/parabol/issues/12763)) ([bf9f077](https://github.com/ParabolInc/parabol/commit/bf9f0771719e971ef21cc49b26ae3a60ce6b113a))
+* Tab/S+Tab indention for details, tasks ([#12762](https://github.com/ParabolInc/parabol/issues/12762)) ([a655843](https://github.com/ParabolInc/parabol/commit/a6558438a6bb75091279b79c82f55601b6b33573))
+* Update `refUpdatedAt` on conflict when renaming meeting templates. ([#12749](https://github.com/ParabolInc/parabol/issues/12749)) ([e05bb5c](https://github.com/ParabolInc/parabol/commit/e05bb5c0fe619c0402af4f2258d03c7480aec1bc))
+* upgrade react-beautiful-dnd ([#12761](https://github.com/ParabolInc/parabol/issues/12761)) ([5298734](https://github.com/ParabolInc/parabol/commit/52987342cd62e4e9c2bf5c12e267bbfa333f51b0))
+* Use INSERT ... SELECT for PageBacklink to prevent foreign key violation ([#12760](https://github.com/ParabolInc/parabol/issues/12760)) ([20621a8](https://github.com/ParabolInc/parabol/commit/20621a88d29b6995277328e6082a3dac6e6cd06a))
+
+## [12.10.7](https://github.com/ParabolInc/parabol/compare/v12.10.6...v12.10.7) (2026-02-28)
+
+
+### Changed
+
+* fail staging and prod deployments properly and restrict PR creation ([#12754](https://github.com/ParabolInc/parabol/issues/12754)) ([7826d31](https://github.com/ParabolInc/parabol/commit/7826d317a6ad1241cc68fd55ecb50553df273930))
+
 ## [12.10.6](https://github.com/ParabolInc/parabol/compare/v12.10.5...v12.10.6) (2026-02-28)
 
 

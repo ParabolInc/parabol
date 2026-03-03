@@ -149,8 +149,14 @@ export const useTipTapPageEditor = (
                 return "Press '/' for commands"
               case 'detailsSummary':
                 return 'New summary'
-              case 'detailsContent':
-                return 'Add details, use / to add blocks'
+              case 'detailsContent': {
+                const isDefaultEmpty =
+                  node.childCount === 0 ||
+                  (node.childCount === 1 &&
+                    node.firstChild?.type.name === 'paragraph' &&
+                    node.firstChild.content.size === 0)
+                return isDefaultEmpty ? 'Add details, use / to add blocks' : ''
+              }
               case 'bulletList':
               case 'listItem':
               case 'orderedList':
