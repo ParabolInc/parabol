@@ -177,7 +177,7 @@ Convert the remaining class components that have more nuanced patterns. **`Error
 
 ---
 
-### PR 5 — Fix `useEffect` cleanup and StrictMode safety
+### PR 5 — Fix `useEffect` cleanup and StrictMode safety - DONE
 
 **~300 lines changed | Risk: MEDIUM**
 
@@ -671,7 +671,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 2 | Pre-work | Fix `React.FC` types, explicit `children` | ~50 | LOW | **DONE** |
 | 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW | **DONE** |
 | 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | **DONE** |
-| 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | |
+| 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | **DONE** |
 | 6 | Pre-work | Update minor dependencies | ~100 | LOW | |
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** | |
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | |
