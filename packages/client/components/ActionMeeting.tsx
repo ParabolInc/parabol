@@ -76,7 +76,8 @@ const ActionMeeting = (props: Props) => {
   }, [])
   if (!safeRoute) return null
   const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
-  const Phase = phaseLookup[localPhaseType]
+  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
+  const Phase = phaseLookup[localPhaseType] as any
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

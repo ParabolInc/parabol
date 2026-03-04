@@ -18,7 +18,6 @@ declare module '*.graphql' {
 }
 
 declare module 'react-copy-to-clipboard'
-declare module 'react/jsx-runtime'
 declare module '@authenio/samlify-node-xmllint'
 declare module 'node-env-flag'
 declare module '*getProjectRoot'

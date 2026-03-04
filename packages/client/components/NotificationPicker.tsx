@@ -96,7 +96,8 @@ const NotificationPicker = (props: Props) => {
     notificationRef
   )
   const {type} = notification
-  const SpecificNotification = typePicker[type]
+  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
+  const SpecificNotification = typePicker[type] as any
   return (
     <Suspense fallback={''}>
       <SpecificNotification notification={notification} />
