@@ -80,7 +80,8 @@ const RetroMeeting = (props: Props) => {
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
-  const Phase = phaseLookup[localPhaseType]!
+  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
+  const Phase = phaseLookup[localPhaseType] as any
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
