@@ -55,7 +55,7 @@ Incremental migration of Parabol from React 17.0.2 to React 18, including React 
 | Issue | Detail | Resolution |
 |---|---|---|
 | `ErrorBoundary` must stay as class | React requires class components for `componentDidCatch` | Keep as class; do not convert |
-| `react-swipeable-views` custom fork | Tarball from `mattkrick/react-swipeable-views` — 5 files | Test with React 18; replace with CSS scroll-snap if broken |
+| `react-swipeable-views` custom fork | Tarball from `mattkrick/react-swipeable-views` — 4 files | Test with React 18; replace with CSS scroll-snap if broken |
 | `react-virtualized` internal class components | 1 file (`TeamArchive.tsx`) | Test with React 18; replace with `@tanstack/react-virtual` if StrictMode issues |
 | Relay subscription double-fire | `useSubscription.ts` registers queries in `useEffect` | Add guard to prevent double-registration in StrictMode |
 | WebSocket `resolve()` double-call | `createWSClient.ts` connected handler | Add idempotency guard |
@@ -63,7 +63,7 @@ Incremental migration of Parabol from React 17.0.2 to React 18, including React 
 | `withForm.tsx` ref mutation in render | `fieldsRef.current = fields` set during render | Move to `useEffect` or convert component |
 | `PokerCardDeck.tsx` missing cleanup | `addEventListener` in `useEffect` with no `removeEventListener` in cleanup | Add cleanup return |
 | `useMeetingMusicSync.ts` missing cleanup | `play` event listener added without cleanup | Add cleanup return |
-| `react-dom-confetti` | Small celebration animation lib | Verify compatibility; replace if needed |
+| `react-dom-confetti` | Small celebration animation lib (4 files) | Compatible with React 18 — peer dep `^16.3.0`, uses simple DOM refs |
 | `@babel/preset-react` runtime | Not explicitly set to `'automatic'` | Set explicitly during version bump |
 
 ---
@@ -213,26 +213,39 @@ React 18 StrictMode double-invokes effects in development to catch bugs. Fix pat
 
 ---
 
-### PR 6 — Update minor dependencies
+### PR 6 — Update minor dependencies — DONE
 
-**~100 lines changed | Risk: LOW**
+**~30 lines changed | Risk: LOW**
 
 Update third-party libraries that need newer versions for React 18 compatibility.
 
 **Changes:**
 
-1. **`react-textarea-autosize`**: 7.1.0 → 8.x
+1. **`react-textarea-autosize`**: 7.1.0 → 8.5.9
    - Files: `components/EditableText.tsx`, `TeamPromptEditablePromptModal.tsx`
-   - API is mostly the same; verify `maxRows` prop still works
+   - `maxRows` prop is unchanged; both files work without API changes
+   - Removed deprecated `@types/react-textarea-autosize` (v8 bundles its own types)
+   - Removed ambient `declare module 'react-textarea-autosize'` from `packages/types/globals/index.d.ts` (was hiding real types)
+   - Fixed `useForm` hook `onChange` type: widened from `ChangeEvent<HTMLInputElement>` to `ChangeEvent<HTMLInputElement | HTMLTextAreaElement>` (v8's real types caught this mismatch)
 
-2. **`react-swipeable-views`** (custom fork): test with React 18
-   - Files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`, `TeamPromptEditablePromptModal.tsx`
-   - If broken: replace with CSS `scroll-snap` or a maintained alternative
-   - Decision can be deferred to after Phase 2 if testing is inconclusive
+**Deferred to post-React 18 (PR 7+):**
 
-3. **`react-virtualized`**: test with React 18
-   - File: `modules/teamDashboard/components/TeamArchive/TeamArchive.tsx`
-   - If StrictMode issues: replace with `@tanstack/react-virtual` (one file, isolated change)
+2. **`react-swipeable-views`** (custom fork): deferred to after Phase 2
+   - Uses custom fork from `mattkrick/react-swipeable-views` with peer dep `react: 17.0.2`
+   - Upstream is deprecated and unmaintained (GitHub issue #676)
+   - Known React 18 compatibility issues: uses `UNSAFE_componentWillReceiveProps`
+   - 4 consuming files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`
+   - **Recommendation:** Replace with CSS `scroll-snap` or `react-swipeable-views-react-18-fix` after PR 7 lands React 18 — see PR 17
+
+3. **`react-virtualized`**: deferred to after Phase 2
+   - Works with React 18 but emits `findDOMNode` deprecation warnings in StrictMode
+   - 1 consuming file: `modules/teamDashboard/components/TeamArchive/TeamArchive.tsx`
+   - **Recommendation:** Replace with `@tanstack/react-virtual` when StrictMode is enabled — see PR 17
+
+4. **`react-dom-confetti`**: no action needed
+   - v0.2.0 uses simple DOM manipulation via refs, peer dep `react: "^16.3.0"`
+   - 4 consuming files: `Confetti.tsx`, `NotFound.tsx`, `UpgradeSuccess.tsx`, `OrgPlanDrawer.tsx`
+   - Compatible with React 18 — no code changes or replacement needed
 
 ---
 
@@ -642,7 +655,9 @@ export default function Root() {
 - Any remaining `useEffect` without proper cleanup
 - Any remaining ref mutations in render paths
 - Subscription handlers that don't handle double-fire
-- Third-party libraries that don't support StrictMode (react-swipeable-views fork, react-virtualized)
+- Third-party libraries that don't support StrictMode:
+  - **`react-swipeable-views`** (custom fork): deprecated upstream, uses `UNSAFE_componentWillReceiveProps`. Replace with CSS `scroll-snap` or `react-swipeable-views-react-18-fix`. 4 consuming files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`
+  - **`react-virtualized`**: emits `findDOMNode` deprecation warnings in StrictMode. Replace with `@tanstack/react-virtual` — only 1 consuming file (`TeamArchive.tsx`)
 
 ---
 
@@ -672,7 +687,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 3 | Pre-work | Convert class components (batch 1: simple) | ~400 | LOW | **DONE** |
 | 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | **DONE** |
 | 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | **DONE** |
-| 6 | Pre-work | Update minor dependencies | ~100 | LOW | |
+| 6 | Pre-work | Update minor dependencies | ~30 | LOW | **DONE** |
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** | |
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | |
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | |

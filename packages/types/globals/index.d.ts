@@ -17,7 +17,6 @@ declare module '*.graphql' {
   export = value
 }
 
-declare module 'react-textarea-autosize'
 declare module 'react-copy-to-clipboard'
 declare module 'react/jsx-runtime'
 declare module '@authenio/samlify-node-xmllint'
