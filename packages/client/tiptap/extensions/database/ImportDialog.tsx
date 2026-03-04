@@ -12,7 +12,7 @@ import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
-import {getColumnMeta, getColumns, getData, getRows} from './data'
+import {getColumnMeta, getColumns, getData, getRows, type RowData} from './data'
 import {useYArray, useYMap} from './hooks'
 import {getRecordHeaders, importRecords} from './importRecords'
 
@@ -30,12 +30,8 @@ const clearAllData = (doc: Y.Doc) => {
   })
 }
 
-const rowIsEmpty = (row: Y.Map<string>) => {
-  if (row.size === 0) return true
-  for (const key of row.keys()) {
-    if (!key.startsWith('_')) return false
-  }
-  return true
+const rowIsEmpty = (row: RowData) => {
+  return row.toArray().every(({key}) => key.startsWith('_'))
 }
 const useIsDataEmpty = (doc: Y.Doc) => {
   const rows = useYArray(getRows(doc))
