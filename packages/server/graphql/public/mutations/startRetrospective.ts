@@ -1,8 +1,10 @@
+import {writeFileSync} from 'node:fs'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import getCompanyVennData from '../../../utils/getCompanyVennData'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -49,7 +51,8 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
-
+  const vennData = await getCompanyVennData(teamId)
+  writeFileSync('vennData.json', JSON.stringify(vennData, null, 2))
   const meeting = await safeCreateRetrospective(
     {
       teamId,
@@ -69,7 +72,16 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingId = meeting.id
   const template = await dataLoader.get('meetingTemplates').load(selectedTemplateId)
   await updateMeetingTemplateLastUsedAt(selectedTemplateId, teamId)
-
+  // const isOver = false await isCompanyOverLimit(teamId, dataLoader)
+  // const isOver = false
+  // await getCompanyLimitDetails(teamId)
+  // console.log({isOver})
+  // if (isOver) {
+  //   throw new GraphQLError(
+  //     'Your company has exceeded the free two-team tier. Please upgrade to continue using Parabol.',
+  //     {extensions: {code: 'MAX_ACTIVE_TEAMS_REACHED'}}
+  //   )
+  // }
   const meetingMember = createMeetingMember(meeting, {
     userId: viewerId,
     teamId,
