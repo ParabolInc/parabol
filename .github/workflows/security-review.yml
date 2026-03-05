@@ -3,8 +3,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - "packages/server/**"
-      - "packages/client/**"
+      - "packages/**"
+      - "scripts/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -14,6 +14,7 @@ jobs:
   security-review:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-security-review') }}
     permissions:
       contents: read
       pull-requests: write
