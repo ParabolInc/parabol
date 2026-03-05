@@ -33,7 +33,7 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
   lastcall: lazyPreload(
     () => import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
+}
 
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement

@@ -26,7 +26,7 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
   ESTIMATE: lazyPreload(
     () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
-} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
+}
 
 export interface PokerMeetingPhaseProps {
   toggleSidebar: () => void
