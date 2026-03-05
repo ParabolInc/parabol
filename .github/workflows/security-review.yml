@@ -1,0 +1,97 @@
+name: Security Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "packages/server/**"
+      - "packages/client/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            -- '*.ts' '*.tsx' '*.js' '*.jsx' \
+            | grep -v 'node_modules' \
+            | grep -v '__generated__' \
+            | head -30)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "count=$(echo "$FILES" | grep -c . || echo 0)" >> $GITHUB_OUTPUT
+
+      - name: Install Claude Code
+        if: steps.changed-files.outputs.count > 0
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run security review
+        if: steps.changed-files.outputs.count > 0
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: |
+          # Build file list for the prompt
+          FILE_LIST=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+
+          REVIEW=$(claude -p \
+            "You are a security reviewer. Review the following changed files in this PR for security vulnerabilities including but not limited to: OWASP Top 10, SSRF, IDOR, path traversal, injection attacks, broken access control, insecure deserialization, and sensitive data exposure.
+
+          Files to review: $FILE_LIST
+
+          For each file, read it and analyze the code. Output a structured report with:
+          - A list of findings, each with: file path, line numbers, severity (CRITICAL/HIGH/MEDIUM/LOW), and a clear explanation.
+          - If no issues are found, say 'No security issues found'.
+
+          Be precise and avoid false positives. Only flag real, exploitable issues." \
+            2>&1)
+
+          echo "review<<EOF" >> $GITHUB_OUTPUT
+          echo "$REVIEW" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post review comment
+        if: steps.changed-files.outputs.count > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = `${{ steps.review.outputs.review }}`;
+            const hasIssues = /CRITICAL|HIGH/i.test(review);
+            const icon = hasIssues ? '🔴' : '🟢';
+            const status = hasIssues ? 'Issues found' : 'No critical issues found';
+
+            const body = `## ${icon} Security Review — ${status}
+
+            <details>
+            <summary>Claude Code Security Analysis</summary>
+
+            \`\`\`
+            ${review}
+            \`\`\`
+
+            </details>
+
+            > Automated review by [Claude Code](https://github.com/anthropics/claude-code). This is a best-effort analysis — always apply human judgement.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
