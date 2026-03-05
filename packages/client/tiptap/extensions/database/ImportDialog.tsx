@@ -1,5 +1,5 @@
-import {useMemo, useState} from 'react'
 import {CircularProgress} from '@mui/material'
+import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
@@ -95,6 +95,20 @@ export const ImportDialog = (props: Props) => {
     setIsImporting(false)
   }
 
+  const onParseStarted = () => {
+    setIsImporting(true)
+    setError(null)
+  }
+
+  const onError = (error: Error | null) => {
+    setIsImporting(false)
+    setError(error)
+  }
+
+  const onRecordsParsed = (records: (string | null)[][]) => {
+    setIsImporting(false)
+    setRecords(records)
+  }
 
   const onImport = async () => {
     if (!records) return
@@ -132,15 +146,19 @@ export const ImportDialog = (props: Props) => {
 
   return (
     <Dialog isOpen={isOpen} onClose={onCancel}>
-      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl absolute'>
+      <DialogContent className='absolute z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
-          <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/50 z-10'>
+          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-white/50'>
             <CircularProgress />
           </div>
         )}
         {!records ? (
-          <UploadDatabaseImport onRecordsParsed={setRecords} onError={setError} />
+          <UploadDatabaseImport
+            onParseStarted={onParseStarted}
+            onRecordsParsed={onRecordsParsed}
+            onError={onError}
+          />
         ) : (
           <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
             Import settings

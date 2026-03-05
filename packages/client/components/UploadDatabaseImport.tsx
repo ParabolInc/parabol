@@ -3,12 +3,13 @@ import {Button} from '../ui/Button/Button'
 import {parseDatabaseImport} from '../utils/parseDatabaseImport'
 
 type Props = {
+  onParseStarted: () => void
   onRecordsParsed: (records: (string | null)[][]) => void
   onError: (error: Error | null) => void
 }
 
 export const UploadDatabaseImport = (props: Props) => {
-  const {onRecordsParsed, onError} = props
+  const {onParseStarted, onRecordsParsed, onError} = props
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const fileRef = useRef<File | null>(null)
@@ -17,6 +18,7 @@ export const UploadDatabaseImport = (props: Props) => {
     onError(null)
     fileRef.current = file
     try {
+      onParseStarted()
       const records = await parseDatabaseImport(file)
       onRecordsParsed(records)
     } catch (error) {
