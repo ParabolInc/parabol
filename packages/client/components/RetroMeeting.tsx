@@ -10,7 +10,7 @@ import useMeeting from '../hooks/useMeeting'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
-import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
@@ -35,7 +35,7 @@ const phaseLookup = {
   discuss: lazyPreload(
     () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -80,8 +80,7 @@ const RetroMeeting = (props: Props) => {
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const Phase = phaseLookup[localPhaseType] as any
+  const Phase = phaseLookup[localPhaseType]!
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID

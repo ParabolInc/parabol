@@ -7,7 +7,7 @@ import type {
 } from '~/__generated__/PokerMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
@@ -26,7 +26,7 @@ const phaseLookup = {
   ESTIMATE: lazyPreload(
     () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
 
 export interface PokerMeetingPhaseProps {
   toggleSidebar: () => void
@@ -70,8 +70,7 @@ const PokerMeeting = (props: Props) => {
 
   if (!safeRoute) return null
   const localPhaseType = localPhase?.phaseType
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const Phase = phaseLookup[localPhaseType] as any
+  const Phase = phaseLookup[localPhaseType]!
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

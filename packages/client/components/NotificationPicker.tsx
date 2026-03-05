@@ -5,9 +5,9 @@ import type {
   NotificationEnum,
   NotificationPicker_notification$key
 } from '~/__generated__/NotificationPicker_notification.graphql'
-import lazyPreload, {type LazyExoticPreload} from '~/utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 
-const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
+const typePicker: Record<NotificationEnum, LazyPreloadedComponent> = {
   DISCUSSION_MENTIONED: lazyPreload(
     () => import(/* webpackChunkName: 'DiscussionMentioned' */ './DiscussionMentioned')
   ),
@@ -96,8 +96,7 @@ const NotificationPicker = (props: Props) => {
     notificationRef
   )
   const {type} = notification
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const SpecificNotification = typePicker[type] as any
+  const SpecificNotification = typePicker[type]!
   return (
     <Suspense fallback={''}>
       <SpecificNotification notification={notification} />
