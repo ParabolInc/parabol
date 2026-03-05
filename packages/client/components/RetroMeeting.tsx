@@ -35,7 +35,7 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
   discuss: lazyPreload(
     () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-}
+} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -80,8 +80,7 @@ const RetroMeeting = (props: Props) => {
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const Phase = phaseLookup[localPhaseType] as any
+  const Phase = phaseLookup[localPhaseType]!
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
