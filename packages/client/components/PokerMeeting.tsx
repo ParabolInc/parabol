@@ -18,7 +18,7 @@ interface Props {
   meeting: PokerMeeting_meeting$key
 }
 
-const phaseLookup = {
+const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
@@ -26,7 +26,7 @@ const phaseLookup = {
   ESTIMATE: lazyPreload(
     () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
-} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
+}
 
 export interface PokerMeetingPhaseProps {
   toggleSidebar: () => void

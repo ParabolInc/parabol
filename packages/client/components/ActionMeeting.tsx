@@ -17,7 +17,7 @@ interface Props {
   meeting: ActionMeeting_meeting$key
 }
 
-const phaseLookup = {
+const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
@@ -33,7 +33,7 @@ const phaseLookup = {
   lastcall: lazyPreload(
     () => import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
+}
 
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement

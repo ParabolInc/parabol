@@ -21,7 +21,7 @@ interface Props {
   meeting: RetroMeeting_meeting$key
 }
 
-const phaseLookup = {
+const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
@@ -35,7 +35,7 @@ const phaseLookup = {
   discuss: lazyPreload(
     () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
+}
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
