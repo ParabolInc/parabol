@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import {columnsAreDefault} from './columnsAreDefault'
-import {appendColumn, changeColumn, getColumns, generateId} from './data'
+import {appendColumn, changeColumn, generateId, getColumns} from './data'
 
 export const getRecordHeaders = (records: (string | null)[][], firstRowIsHeader: boolean) => {
   // data may be sparse, but let's only consider the length of the first 100 rows
@@ -54,7 +54,9 @@ export const importRecords = (
       }
 
       const rowId = rowIds[index]!
-      const row = record.map((value, index) => ({key: headers[index], val: value})).filter(({val}) => val !== '' && val !== undefined && val !== null)
+      const row = record
+        .map((value, index) => ({key: headers[index], val: value}))
+        .filter(({val}) => val !== '' && val !== undefined && val !== null)
       row.push({key: `_createdAt`, val: now as any}, {key: `_createdBy`, val: viewerId})
       data.set(rowId, Y.Array.from(row))
     })

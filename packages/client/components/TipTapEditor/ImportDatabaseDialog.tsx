@@ -1,3 +1,4 @@
+import CircularProgress from '@mui/material/CircularProgress'
 import type {Editor, EditorEvents} from '@tiptap/react'
 import {useEffect, useMemo, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -14,7 +15,6 @@ import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import SecondaryButton from '../SecondaryButton'
-import CircularProgress from '@mui/material/CircularProgress'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -156,10 +156,10 @@ export const ImportDatabaseDialog = (props: Props) => {
 
   return (
     <Dialog isOpen={true} onClose={onClose}>
-      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl absolute'>
+      <DialogContent className='absolute z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
-          <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/50 z-10'>
+          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-white/50'>
             <CircularProgress />
           </div>
         )}
