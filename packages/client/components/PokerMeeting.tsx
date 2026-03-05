@@ -26,7 +26,7 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
   ESTIMATE: lazyPreload(
     () => import(/* webpackChunkName: 'PokerEstimatePhase' */ './PokerEstimatePhase')
   )
-}
+} as unknown as Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>
 
 export interface PokerMeetingPhaseProps {
   toggleSidebar: () => void
@@ -70,8 +70,7 @@ const PokerMeeting = (props: Props) => {
 
   if (!safeRoute) return null
   const localPhaseType = localPhase?.phaseType
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const Phase = phaseLookup[localPhaseType] as any
+  const Phase = phaseLookup[localPhaseType]!
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

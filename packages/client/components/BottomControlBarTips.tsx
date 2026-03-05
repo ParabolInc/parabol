@@ -145,8 +145,7 @@ const BottomControlBarTips = (props: Props) => {
   const atmosphere = useAtmosphere()
   const demoPauseOpen = useTimeout(1000)
   const menus = isDemoRoute() ? demoHelps : helps
-  // React 18's stricter LazyExoticComponent types don't resolve props from `any` in tsgo
-  const MenuContent = menus[phaseType] as any
+  const MenuContent = menus[phaseType]
   useEffect(() => {
     if (demoPauseOpen && isDemoRoute()) {
       const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
