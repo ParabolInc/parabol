@@ -1,10 +1,10 @@
 import * as Y from 'yjs'
 import {columnsAreDefault} from './columnsAreDefault'
-import {appendColumn, appendRow, changeColumn, getColumns} from './data'
+import {appendColumn, changeColumn, getColumns, generateId} from './data'
 
 export const getRecordHeaders = (records: (string | null)[][], firstRowIsHeader: boolean) => {
-  // data may be sparse, make sure to have columns for each row
-  const columnCount = Math.max(...records.map((row) => row.length))
+  // data may be sparse, but let's only consider the length of the first 100 rows
+  const columnCount = Math.max(...records.slice(0, 100).map((row) => row.length))
 
   const firstRowHeaders = (firstRowIsHeader && records[0]) || []
 
@@ -25,6 +25,7 @@ export const importRecords = (
   doc.transact(() => {
     if (records.length === 0) return
 
+    // prepare columns
     const newHeaders = getRecordHeaders(records, firstRowIsHeader)
 
     const columns = getColumns(doc).toArray()
@@ -37,13 +38,25 @@ export const importRecords = (
       columns.push(appendColumn(doc, {name, type: 'text'}))
     })
 
-    const firstRowOffset = firstRowIsHeader ? 1 : 0
-    records.slice(firstRowOffset).forEach((record) => {
-      if (columns.length < record.length) {
-        throw new Error('headers do not match current table columns')
+    // insert records
+
+    const rowIds = records.map(() => generateId(doc))
+    doc.getArray('rows').push(rowIds)
+
+    const data = doc.getMap('data')
+
+    const now = Date.now()
+    const headers = getColumns(doc).toArray()
+    records.forEach((record, index) => {
+      // we only check the first 100 rows for the column count, don't fail if there are longer rows later on
+      while (headers.length < record.length) {
+        headers.push(appendColumn(doc, {name: `Column ${headers.length + 1}`, type: 'text'}))
       }
-      const mappedRecord = Object.fromEntries(record.map((value, index) => [columns[index], value]))
-      appendRow(doc, viewerId, mappedRecord)
+
+      const rowId = rowIds[index]!
+      const row = record.map((value, index) => ({key: headers[index], val: value})).filter(({val}) => val !== '' && val !== undefined && val !== null)
+      row.push({key: `_createdAt`, val: now as any}, {key: `_createdBy`, val: viewerId})
+      data.set(rowId, Y.Array.from(row))
     })
   })
 }

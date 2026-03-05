@@ -14,6 +14,7 @@ import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import SecondaryButton from '../SecondaryButton'
+import CircularProgress from '@mui/material/CircularProgress'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -82,8 +83,11 @@ export const ImportDatabaseDialog = (props: Props) => {
     onClose()
   }
 
-  const onImport = () => {
+  const [isImporting, setIsImporting] = useState(false)
+
+  const onImport = async () => {
     if (!records || !importingFile) return
+    setIsImporting(true)
     const {file, pos} = importingFile
 
     const {schema} = editor
@@ -100,34 +104,44 @@ export const ImportDatabaseDialog = (props: Props) => {
     }
 
     const root = doc.getXmlFragment('default')
-    root.observeDeep((events) => {
-      events.forEach((e) => {
-        if (isPageLink(e.target) && e.target.getAttribute('title') === title) {
-          const pageCode = e.target.getAttribute('pageCode')
-          if (pageCode !== -1) {
-            const pageId = `page:${pageCode}`
-            const provider = providerManager.register(pageId)
-            const {document: doc} = provider
 
-            importRecords(doc, viewerId, records, {firstRowIsHeader})
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Timed out waiting for page link to be created'))
+      }, 60000)
+
+      root.observeDeep((events) => {
+        events.forEach(async (e) => {
+          if (isPageLink(e.target) && e.target.getAttribute('title') === title) {
+            const pageCode = e.target.getAttribute('pageCode')
+            if (pageCode !== -1) {
+              clearTimeout(timeout)
+              const pageId = `page:${pageCode}`
+              const provider = providerManager.register(pageId)
+              const {document: doc} = provider
+
+              importRecords(doc, viewerId, records, {firstRowIsHeader})
+              resolve()
+            }
           }
-        }
+        })
       })
+
+      const databaseNode = schema.nodes.pageLinkBlock!.create({
+        pageCode: -1,
+        title,
+        canonical: true,
+        database: true
+      })
+
+      if (pos !== undefined) {
+        editor.chain().focus().insertContentAt(pos, databaseNode).run()
+      } else {
+        editor.chain().focus().insertContent(databaseNode).run()
+      }
     })
 
-    const databaseNode = schema.nodes.pageLinkBlock!.create({
-      pageCode: -1,
-      title,
-      canonical: true,
-      database: true
-    })
-
-    if (pos !== undefined) {
-      editor.chain().focus().insertContentAt(pos, databaseNode).run()
-    } else {
-      editor.chain().focus().insertContent(databaseNode).run()
-    }
-
+    setIsImporting(false)
     setRecords(null)
     setImportingFile(null)
   }
@@ -142,8 +156,13 @@ export const ImportDatabaseDialog = (props: Props) => {
 
   return (
     <Dialog isOpen={true} onClose={onClose}>
-      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
+      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl absolute'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
+        {isImporting && (
+          <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/50 z-10'>
+            <CircularProgress />
+          </div>
+        )}
         <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
           Import settings
           <div

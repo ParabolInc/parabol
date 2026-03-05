@@ -1,4 +1,5 @@
 import {useMemo, useState} from 'react'
+import {CircularProgress} from '@mui/material'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
@@ -65,7 +66,7 @@ export const ImportDialog = (props: Props) => {
 
   const columns = useYArray(getColumns(doc))
   const columnMeta = useYMap(getColumnMeta(doc))
-  const rows = useYArray(getRows(doc))
+  const yRows = getRows(doc)
 
   const dataIsEmpty = useMemo(() => !isOpen || isDataEmpty(doc), [isOpen, rows.length, doc])
 
@@ -84,21 +85,30 @@ export const ImportDialog = (props: Props) => {
     })
   }, [columns, columnMeta, firstRowIsHeader, discardExistingData, records])
 
+  const [isImporting, setIsImporting] = useState(false)
+
   const resetState = () => {
     setRecords(undefined)
     setError(null)
     setFirstRowIsHeader(true)
     setDiscardExistingData(false)
+    setIsImporting(false)
   }
 
-  const onImport = () => {
+
+  const onImport = async () => {
     if (!records) return
+    setIsImporting(true)
     doc.transact(() => {
       if (discardExistingData || dataIsEmpty) {
         clearAllData(doc)
       }
-
-      importRecords(doc, viewerId, records, {firstRowIsHeader})
+    })
+    await new Promise<void>((resolve) => {
+      setImmediate(() => {
+        importRecords(doc, viewerId, records, {firstRowIsHeader})
+        resolve()
+      })
     })
     resetState()
     onClose()
@@ -118,12 +128,17 @@ export const ImportDialog = (props: Props) => {
 
   const moreExistingHeaders = headers.length < columns.length && !discardExistingData
   // if there is some data, then we count all rows, including empty ones
-  const existingRowCount = dataIsEmpty ? 0 : rows.length
+  const existingRowCount = dataIsEmpty ? 0 : yRows.length
 
   return (
     <Dialog isOpen={isOpen} onClose={onCancel}>
-      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
+      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl absolute'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
+        {isImporting && (
+          <div className='absolute top-0 left-0 w-full h-full flex items-center justify-center bg-white/50 z-10'>
+            <CircularProgress />
+          </div>
+        )}
         {!records ? (
           <UploadDatabaseImport onRecordsParsed={setRecords} onError={setError} />
         ) : (
@@ -142,7 +157,7 @@ export const ImportDialog = (props: Props) => {
                 onClick={() => setDiscardExistingData(!discardExistingData)}
               >
                 <Checkbox checked={discardExistingData} disabled={dataIsEmpty} />
-                Discard existing data ({rows.length} {plural(rows.length, 'row')})
+                Discard existing data ({yRows.length} {plural(yRows.length, 'row')})
               </div>
             )}
             <div className={'mt-4 text-sm'}>
