@@ -1,5 +1,6 @@
 import {useRef} from 'react'
 import {Button} from '../ui/Button/Button'
+import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {parseDatabaseImport} from '../utils/parseDatabaseImport'
 
 type Props = {
@@ -15,6 +16,14 @@ export const UploadDatabaseImport = (props: Props) => {
   const fileRef = useRef<File | null>(null)
 
   const startImport = async (file: File) => {
+    if (file.size > MAX_FILE_SIZE_FREE) {
+      onError(
+        new Error(
+          'File is too large. Please reach out if you need to import files larger than 8MB.'
+        )
+      )
+      return
+    }
     onError(null)
     fileRef.current = file
     try {
