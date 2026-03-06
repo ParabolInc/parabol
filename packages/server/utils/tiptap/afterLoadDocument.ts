@@ -1,5 +1,5 @@
 import type {Extension} from '@hocuspocus/server'
-import * as Y from 'yjs'
+import {getData} from '../../../client/tiptap/extensions/database/data'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -23,7 +23,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
     })
   })
 
-  const data = document.getMap<Y.Map<any>>('data')
+  const data = getData(document)
   data.observeDeep((events, transaction) => {
     const userId = transaction.origin?.context?.userId ?? undefined
     if (!userId) {
