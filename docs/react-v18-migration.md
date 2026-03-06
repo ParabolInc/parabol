@@ -283,7 +283,7 @@ This is the critical PR. All Phase 1 pre-work de-risks this to the maximum exten
 
 ---
 
-### PR 8 — Bump `@hello-pangea/dnd` v16 → v18
+### PR 8 — Bump `@hello-pangea/dnd` v16 → v18 — DONE
 
 **~10 lines changed | Risk: LOW**
 
@@ -681,7 +681,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | **DONE** |
 | 6 | Pre-work | Update minor dependencies | ~30 | LOW | **DONE** |
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~120 | **HIGH** | **DONE** |
-| 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | |
+| 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | **DONE** |
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | |
 | 10 | Version Bump | Verify email SSR | ~20 | LOW | |
 | 11 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** | |
