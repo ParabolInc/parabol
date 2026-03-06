@@ -3,7 +3,7 @@ import {Component, type ErrorInfo, type ReactNode} from 'react'
 import type Atmosphere from '~/Atmosphere'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
-import {isIgnoredError} from '../utils/errorFilters'
+import {isIgnoredError, isNotSignedInError} from '../utils/errorFilters'
 import ErrorComponent from './ErrorComponent/ErrorComponent'
 
 interface Props {
@@ -35,6 +35,9 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const {atmosphere} = this.props
+    if (isNotSignedInError(error)) {
+      atmosphere.invalidateSession('Not signed in')
+    }
     const {viewerId} = atmosphere
     const store = atmosphere.getStore()
     const email = (store?.getSource?.().get?.(viewerId) as any)?.email ?? ''
