@@ -326,22 +326,30 @@ createRoot(container).render(<Root />)
 
 ---
 
-### PR 10 — Verify email SSR rendering
+### PR 10 — Verify email SSR rendering — DONE
 
-**~20 lines changed | Risk: LOW**
+**~60 lines changed | Risk: LOW**
 
-`ReactDOMServer.renderToStaticMarkup` is fully compatible with React 18. This PR verifies the email rendering pipeline and makes any necessary import path updates.
+`ReactDOMServer.renderToStaticMarkup` is fully compatible with React 18 — no API changes, no import path changes needed. This PR adds unit tests verifying all 5 simple email creators produce correct HTML output, plus a direct `renderToStaticMarkup` smoke test confirming React 18 SSR works correctly.
 
-**File:** `packages/server/email/renderSSRElement.tsx`
+**Changes (actual):**
 
-**Testing:** Send test emails for each of the 7 email creators:
-1. `emailVerificationEmailCreator`
-2. `resetPasswordEmailCreator`
-3. `pageSharedEmailCreator`
-4. `pageAccessRequestEmailCreator`
-5. `teamLimitsEmailCreator`
-6. `sendSummaryEmailV2`
-7. `notificationSummaryCreator`
+1. Added `packages/server/__tests__/emailSSR.test.ts` with 8 tests covering:
+   - `emailVerificationEmailCreator` — verifies HTML output, token URL construction, invitation token appending
+   - `resetPasswordEmailCreator` — verifies HTML output, reset URL construction
+   - `pageSharedEmailCreator` — verifies HTML output, subject line, page name rendering
+   - `pageAccessRequestEmailCreator` — verifies HTML output, subject line, page name rendering
+   - `teamLimitsEmailCreator` — verifies HTML output for all 3 email types (thirtyDayWarning, sevenDayWarning, locked), correct subject lines
+   - Direct `renderToStaticMarkup` smoke test — confirms React 18 SSR API works
+2. No changes needed to any email creator files — all imports and APIs are React 18 compatible as-is
+
+**Not unit-tested (covered by integration tests):**
+- `notificationSummaryCreator` — requires Relay `ServerEnvironment` with live GraphQL context
+- `sendSummaryEmailV2` — requires full `InternalContext` with dataLoader
+
+**Testing results:**
+- `pnpm --filter parabol-server typecheck` — PASS
+- `npx jest __tests__/emailSSR.test.ts` — PASS (8/8)
 
 ---
 
@@ -683,7 +691,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~120 | **HIGH** | **DONE** |
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | **DONE** |
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | **DONE** |
-| 10 | Version Bump | Verify email SSR | ~20 | LOW | |
+| 10 | Version Bump | Verify email SSR | ~60 | LOW | **DONE** |
 | 11 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** | |
 | 12 | Router | Nested route trees | ~400 | MEDIUM | |
 | 13 | Router | Replace `useRouter` + `useHistory` batch 1 | ~500 | MEDIUM | |
