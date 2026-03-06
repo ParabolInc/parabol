@@ -12,11 +12,10 @@ import {Header} from './Header'
 import {useYArray} from './hooks'
 import {ImportExport} from './ImportExport'
 import {MetaCell} from './MetaCell'
-import {useFocusedCell, useFocusFallback} from './useFocus'
+import {TableBody} from './TableBody'
 
 // add additional debug columns
 const DEBUG = false
-const DEBUG_FOCUS = false
 
 const getRowId = (row: RowId) => row
 
@@ -32,9 +31,6 @@ export default function DatabaseView(props: Props) {
 
   const columns = useYArray(getColumns(doc))
   const rows = useYArray(getRows(doc))
-
-  const focusedCell = useFocusedCell(provider)
-  useFocusFallback(provider)
 
   const dataColumns = useMemo(() => {
     const dataColumns: ColumnDef<RowId>[] = columns.map((columnId) => {
@@ -108,7 +104,6 @@ export default function DatabaseView(props: Props) {
   return (
     <>
       <div className='flex w-full flex-row justify-end'>
-        {DEBUG_FOCUS && focusedCell}
         <ImportExport doc={doc} editor={editor} />
       </div>
       <div className='overflow-x-auto pb-2'>
@@ -148,20 +143,7 @@ export default function DatabaseView(props: Props) {
               </tr>
             ))}
           </thead>
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className='h-12 border-slate-400 border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
+          <TableBody table={table} />
           <tfoot>
             <tr className='text-slate-600'>
               <td

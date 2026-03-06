@@ -82,17 +82,22 @@ const findDeletedIndex = (delta: Y.YArrayEvent<string>['delta']) => {
 }
 
 export const useFocusFallback = (provider: HocuspocusProvider) => {
-  const doc = provider.document
+  const {document: doc, awareness} = provider
 
   const columns = getColumns(doc)
   const rows = getRows(doc)
 
-  const focusedCell = useFocusedCell(provider)
-  const focusedCellRef = useRef(focusedCell)
-
+  const focusedCellRef = useRef(awareness?.getLocalState()?.focusedCell ?? null)
   useEffect(() => {
-    focusedCellRef.current = focusedCell
-  }, [focusedCell])
+    const onChange = () => {
+      const state = awareness?.getLocalState()
+      focusedCellRef.current = state?.focusedCell ?? null
+    }
+    awareness?.on('change', onChange)
+    return () => {
+      awareness?.off('change', onChange)
+    }
+  }, [awareness])
 
   useEffect(() => {
     const onRowDelete = (event: Y.YArrayEvent<string>) => {
@@ -144,6 +149,26 @@ export const useFocusFallback = (provider: HocuspocusProvider) => {
   }, [columns])
 }
 
+const useIsFocused = (provider: HocuspocusProvider, key: string) => {
+  const {awareness} = provider
+
+  const [isFocused, setIsFocused] = useState<boolean>(
+    awareness?.getLocalState()?.focusedCell === key
+  )
+  useEffect(() => {
+    const onChange = () => {
+      const state = awareness?.getLocalState()
+      setIsFocused(state?.focusedCell === key)
+    }
+    awareness?.on('change', onChange)
+    return () => {
+      awareness?.off('change', onChange)
+    }
+  }, [awareness])
+
+  return isFocused
+}
+
 type Props = {
   provider: HocuspocusProvider
   key: string
@@ -154,16 +179,16 @@ export const useFocus = (props: Props) => {
   const {provider, key, onStartEditing, onStopEditing} = props
   const {awareness} = provider
 
-  const focusedCell = useFocusedCell(provider)
+  const isFocused = useIsFocused(provider, key)
   const ref = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    if (focusedCell === key) {
+    if (isFocused) {
       requestAnimationFrame(() => {
         ref.current?.focus()
       })
     }
-  }, [focusedCell, key, ref])
+  }, [isFocused, ref])
 
   const onKeyDown = useCallback(
     (e: Pick<KeyboardEvent, 'preventDefault' | 'target' | 'key'>) => {
@@ -205,15 +230,13 @@ export const useFocus = (props: Props) => {
   )
 
   const onFocus = useCallback(() => {
-    if (focusedCell === key) return
+    if (isFocused) return
     awareness?.setLocalStateField('focusedCell', key)
-  }, [awareness, key, focusedCell])
+  }, [awareness, key, isFocused])
 
   const focusCell = useCallback(() => {
     ref.current?.focus()
   }, [ref.current])
-
-  const isFocused = focusedCell === key
 
   const focusProps = {
     ref: <T extends HTMLElement>(r: T | null) => (ref.current = r),
