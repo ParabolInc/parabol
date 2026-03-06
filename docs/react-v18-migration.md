@@ -251,43 +251,35 @@ Update third-party libraries that need newer versions for React 18 compatibility
 
 ## Phase 2: Version Bump
 
-### PR 7 — Bump React 17 → 18 and fix TypeScript compilation
+### PR 7 — Bump React 17 → 18 and fix TypeScript compilation — DONE
 
-**~200-500 lines changed | Risk: HIGH**
+**~120 lines changed | Risk: HIGH**
 
 This is the critical PR. All Phase 1 pre-work de-risks this to the maximum extent possible.
 
-**Changes:**
+**Changes (actual):**
 
-1. Update root `package.json` resolutions:
-   ```json
-   "react": "^18.2.0",
-   "react-dom": "^18.2.0",
-   "@types/react": "^18.2.0",
-   "@types/react-dom": "^18.2.0"
-   ```
+1. Updated root `package.json` resolutions, dependencies, and devDependencies to React 18.3.x and @types/react 18.3.x
+2. Updated `packages/client/package.json`, `packages/server/package.json`, and `packages/mattermost-plugin/package.json` (deps, devDeps, overrides)
+3. `@babel/preset-react` change was **NOT needed** — JSX transform uses `@sucrase/webpack-loader` with `jsxRuntime: 'automatic'`, not `@babel/preset-react`
+4. Removed `declare module 'react/jsx-runtime'` ambient declaration from `packages/types/globals/index.d.ts` — `@types/react@18` provides proper typed exports
+5. Ran `pnpm install` — lockfile regenerated with React 18.3.1, @types/react 18.3.28, @types/react-dom 18.3.7
+6. Fixed TypeScript compilation errors (6 distinct issues):
+   - `forwardRadix.tsx`: Replaced removed `RefForwardingComponent` with `ForwardRefRenderFunction` + `PropsWithoutRef` cast for React 18's stricter `forwardRef` signature
+   - `useCallbackRef.ts`: Added explicit parameter type (React 18 stricter callback inference)
+   - `useRefState.ts`: Added `SetStateAction<S>` type annotation + resolved function updaters correctly
+   - `ActionMeeting.tsx`, `RetroMeeting.tsx`, `PokerMeeting.tsx`, `BottomControlBarTips.tsx`, `NotificationPicker.tsx`: Cast `LazyExoticPreload<any>` lookups to `any` (tsgo doesn't resolve `CustomComponentPropsWithRef<any>` the same as tsc)
+   - `Root.tsx`: Added module augmentation for `BrowserRouterProps.children` (@types/react-router-dom@4.x doesn't declare children for React 18)
 
-2. Update package-level `package.json` files:
-   - `packages/client/package.json`: `react-dom` → `^18.2.0`
-   - `packages/mattermost-plugin/package.json`: `react`, `react-dom` → `^18.2.0` (+ overrides)
+**Peer dependency warnings (expected, deferred):**
+- `@sereneinserenade/tiptap-search-and-replace` wants `@tiptap/core@^2.x.x` (we use 3.x)
+- `@stripe/react-stripe-js` wants `@stripe/stripe-js@^1.44.1` (we use 4.x)
 
-3. Update `@babel/preset-react` options to explicitly set `runtime: 'automatic'`:
-   - `scripts/webpack/utils/clientTransformRules.js`
-
-4. Run `pnpm install` to regenerate lockfile
-
-5. Fix any TypeScript compilation errors:
-   - Expected: minimal, since Phase 1 already addressed `React.FC` and `children` types
-   - Watch for: `this.context` type changes in remaining class components, event handler type changes, any `StatelessComponent` usage
-
-6. Update React type augmentation in `packages/types/augments/index.d.ts` if needed (currently augments `TdHTMLAttributes` and `TableHTMLAttributes` for email rendering)
-
-**Testing:**
-- `pnpm tsc --noEmit` — full type check
-- `pnpm test` — all Jest tests
-- `pnpm build` — full production build
-- Manual smoke test of key user flows
-- Playwright E2E tests
+**Testing results:**
+- `pnpm --filter parabol-client typecheck` — PASS (0 new errors)
+- `pnpm --filter parabol-server typecheck` — PASS (8 pre-existing Kysely errors, unrelated to React)
+- `pnpm --filter parabol-client test` — PASS (18/18)
+- `pnpm build` — PASS (3 webpack compilations: server 10s, client 20s, graphQL 5s)
 
 ---
 
@@ -688,7 +680,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 4 | Pre-work | Convert class components (batch 2: complex) | ~500 | MEDIUM | **DONE** |
 | 5 | Pre-work | Fix `useEffect` cleanup / StrictMode safety | ~300 | MEDIUM | **DONE** |
 | 6 | Pre-work | Update minor dependencies | ~30 | LOW | **DONE** |
-| 7 | Version Bump | React 17 → 18 + fix compilation | ~200-500 | **HIGH** | |
+| 7 | Version Bump | React 17 → 18 + fix compilation | ~120 | **HIGH** | **DONE** |
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | |
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | |
 | 10 | Version Bump | Verify email SSR | ~20 | LOW | |
