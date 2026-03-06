@@ -1,3 +1,4 @@
+import {YKeyValue} from 'y-utility/y-keyvalue'
 import * as Y from 'yjs'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
@@ -15,7 +16,8 @@ import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
 export type ColumnId = string
 export type RowId = string
-export type RowData = Y.Map<string>
+export type RawCell = {key: string; val: string | null}
+export type RowData = Y.Array<RawCell>
 
 export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
 export type ColumnMeta = {
@@ -38,7 +40,7 @@ const defaultColumnMeta: ColumnMeta = {
   type: 'text'
 }
 
-const generateId = (_doc: Y.Doc) => {
+export const generateId = (_doc: Y.Doc) => {
   return crypto.randomUUID()
 }
 
@@ -116,11 +118,12 @@ export const duplicateColumn = (doc: Y.Doc, columnId: ColumnId) => {
     }
     columnMeta.set(id, {...existingMeta})
 
-    const data = doc.getMap<RowData>('data')
+    const data = getData(doc)
     data.forEach((value) => {
-      const source = value.get(columnId)
+      const row = new YKeyValue(value)
+      const source = row.get(columnId)
       if (source !== undefined) {
-        value.set(id, source)
+        row.set(id, source)
       }
     })
 
@@ -137,8 +140,9 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
     const index = columns.toArray().indexOf(columnId)
     columns.delete(index, 1)
 
-    const data = doc.getMap<RowData>('data')
-    data.forEach((row, key) => {
+    const data = getData(doc)
+    data.forEach((value, key) => {
+      const row = new YKeyValue(value)
       if (row.delete) {
         row.delete(columnId)
       } else {
@@ -152,20 +156,20 @@ export const appendRow = (doc: Y.Doc, userId?: string, rowData?: Record<string, 
   const id = generateId(doc)
   doc.transact(() => {
     const rows = doc.getArray<RowId>('rows')
-    const data = doc.getMap<RowData>('data')
-    const row = new Y.Map<any>()
+    const row: {key: string; val: any}[] = []
     if (rowData) {
       Object.entries(rowData).forEach(([columnId, value]: [string, any]) => {
         if (value !== '' && value !== undefined && value !== null) {
-          row.set(columnId, value)
+          row.push({key: columnId, val: value})
         }
       })
     }
     if (userId) {
-      row.set('_createdBy', userId)
-      row.set('_createdAt', Date.now())
+      row.push({key: '_createdBy', val: userId})
+      row.push({key: '_createdAt', val: Date.now()})
     }
-    data.set(id, row)
+    const data = getData(doc)
+    data.set(id, Y.Array.from(row) as any)
     rows.push([id])
   })
   return id
@@ -179,7 +183,7 @@ export const deleteRow = (doc: Y.Doc, rowId: RowId) => {
       rows.delete(index, 1)
     }
 
-    const data = doc.getMap<RowData>('data')
+    const data = getData(doc)
     data.delete(rowId)
   })
 }

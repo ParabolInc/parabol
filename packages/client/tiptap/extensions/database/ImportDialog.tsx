@@ -1,3 +1,4 @@
+import {CircularProgress} from '@mui/material'
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
@@ -12,7 +13,7 @@ import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
-import {getColumnMeta, getColumns, getData, getRows} from './data'
+import {getColumnMeta, getColumns, getData, getRows, type RowData} from './data'
 import {useYArray, useYMap} from './hooks'
 import {getRecordHeaders, importRecords} from './importRecords'
 
@@ -30,26 +31,22 @@ const clearAllData = (doc: Y.Doc) => {
   })
 }
 
-const rowIsEmpty = (row: Y.Map<string>) => {
-  if (row.size === 0) return true
-  for (const key of row.keys()) {
-    if (!key.startsWith('_')) return false
-  }
-  return true
+const rowIsEmpty = (row: RowData) => {
+  return row.toArray().every(({key}) => key.startsWith('_'))
 }
 const useIsDataEmpty = (doc: Y.Doc) => {
-  const rows = useYArray(getRows(doc))
+  const yRows = getRows(doc)
   const data = useYMap(getData(doc))
 
   return useMemo(() => {
-    if (rows.length === 0) return true
+    if (yRows.length === 0) return true
     for (const row of data.values()) {
       if (!rowIsEmpty(row)) {
         return false
       }
     }
     return true
-  }, [data, rows])
+  }, [data, yRows])
 }
 
 type Props = {
@@ -71,7 +68,7 @@ export const ImportDialog = (props: Props) => {
 
   const columns = useYArray(getColumns(doc))
   const columnMeta = useYMap(getColumnMeta(doc))
-  const rows = useYArray(getRows(doc))
+  const yRows = getRows(doc)
 
   const dataIsEmpty = useIsDataEmpty(doc)
 
@@ -90,21 +87,44 @@ export const ImportDialog = (props: Props) => {
     })
   }, [columns, columnMeta, firstRowIsHeader, discardExistingData, records])
 
+  const [isImporting, setIsImporting] = useState(false)
+
   const resetState = () => {
     setRecords(undefined)
     setError(null)
     setFirstRowIsHeader(true)
     setDiscardExistingData(false)
+    setIsImporting(false)
   }
 
-  const onImport = () => {
+  const onParseStarted = () => {
+    setIsImporting(true)
+    setError(null)
+  }
+
+  const onError = (error: Error | null) => {
+    setIsImporting(false)
+    setError(error)
+  }
+
+  const onRecordsParsed = (records: (string | null)[][]) => {
+    setIsImporting(false)
+    setRecords(records)
+  }
+
+  const onImport = async () => {
     if (!records) return
+    setIsImporting(true)
     doc.transact(() => {
       if (discardExistingData || dataIsEmpty) {
         clearAllData(doc)
       }
-
-      importRecords(doc, viewerId, records, {firstRowIsHeader})
+    })
+    await new Promise<void>((resolve) => {
+      setImmediate(() => {
+        importRecords(doc, viewerId, records, {firstRowIsHeader})
+        resolve()
+      })
     })
     resetState()
     onClose()
@@ -124,14 +144,23 @@ export const ImportDialog = (props: Props) => {
 
   const moreExistingHeaders = headers.length < columns.length && !discardExistingData
   // if there is some data, then we count all rows, including empty ones
-  const existingRowCount = dataIsEmpty ? 0 : rows.length
+  const existingRowCount = dataIsEmpty ? 0 : yRows.length
 
   return (
     <Dialog isOpen={isOpen} onClose={onCancel}>
-      <DialogContent className='z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
+      <DialogContent className='absolute z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
+        {isImporting && (
+          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-white/50'>
+            <CircularProgress />
+          </div>
+        )}
         {!records ? (
-          <UploadDatabaseImport onRecordsParsed={setRecords} onError={setError} />
+          <UploadDatabaseImport
+            onParseStarted={onParseStarted}
+            onRecordsParsed={onRecordsParsed}
+            onError={onError}
+          />
         ) : (
           <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
             Import settings
@@ -148,7 +177,7 @@ export const ImportDialog = (props: Props) => {
                 onClick={() => setDiscardExistingData(!discardExistingData)}
               >
                 <Checkbox checked={discardExistingData} disabled={dataIsEmpty} />
-                Discard existing data ({rows.length} {plural(rows.length, 'row')})
+                Discard existing data ({yRows.length} {plural(yRows.length, 'row')})
               </div>
             )}
             <div className={'mt-4 text-sm'}>
