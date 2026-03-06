@@ -299,7 +299,7 @@ Now that React 18 is installed, upgrade `@hello-pangea/dnd` from `^16.6.0` (the 
 
 ---
 
-### PR 9 — Migrate to `createRoot` API
+### PR 9 — Migrate to `createRoot` API — DONE
 
 **~15 lines changed | Risk: LOW**
 
@@ -682,7 +682,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 6 | Pre-work | Update minor dependencies | ~30 | LOW | **DONE** |
 | 7 | Version Bump | React 17 → 18 + fix compilation | ~120 | **HIGH** | **DONE** |
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | **DONE** |
-| 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | |
+| 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | **DONE** |
 | 10 | Version Bump | Verify email SSR | ~20 | LOW | |
 | 11 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** | |
 | 12 | Router | Nested route trees | ~400 | MEDIUM | |
