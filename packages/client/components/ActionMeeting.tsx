@@ -5,7 +5,7 @@ import type {ActionMeeting_meeting$key} from '~/__generated__/ActionMeeting_meet
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
 import useMeeting from '../hooks/useMeeting'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
 import ActionMeetingSidebar from './ActionMeetingSidebar'
 import MeetingArea from './MeetingArea'
 import MeetingControlBar from './MeetingControlBar'
@@ -17,7 +17,7 @@ interface Props {
   meeting: ActionMeeting_meeting$key
 }
 
-const phaseLookup = {
+const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
@@ -33,7 +33,7 @@ const phaseLookup = {
   lastcall: lazyPreload(
     () => import(/* webpackChunkName: 'ActionMeetingLastCall' */ './ActionMeetingLastCall')
   )
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
 export interface ActionMeetingPhaseProps {
   avatarGroup: ReactElement
@@ -76,7 +76,7 @@ const ActionMeeting = (props: Props) => {
   }, [])
   if (!safeRoute) return null
   const localPhaseType = (localPhase && localPhase.phaseType) || 'lobby'
-  const Phase = phaseLookup[localPhaseType]
+  const Phase = phaseLookup[localPhaseType]!
   return (
     <MeetingStyles>
       <ResponsiveDashSidebar isOpen={showSidebar} onToggle={toggleSidebar}>

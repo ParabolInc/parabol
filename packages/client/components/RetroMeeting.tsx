@@ -10,7 +10,7 @@ import useMeeting from '../hooks/useMeeting'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
 import NewMeetingAvatarGroup from '../modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {RetroDemo} from '../types/constEnums'
-import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '../utils/lazyPreload'
 import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
@@ -21,7 +21,7 @@ interface Props {
   meeting: RetroMeeting_meeting$key
 }
 
-const phaseLookup = {
+const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: lazyPreload(
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
@@ -35,7 +35,7 @@ const phaseLookup = {
   discuss: lazyPreload(
     () => import(/* webpackChunkName: 'RetroDiscussPhase' */ './RetroDiscussPhase')
   )
-} as Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
+}
 
 export interface RetroMeetingPhaseProps {
   toggleSidebar: () => void
@@ -80,7 +80,7 @@ const RetroMeeting = (props: Props) => {
   if (!safeRoute) return null
   const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
-  const Phase = phaseLookup[localPhaseType]
+  const Phase = phaseLookup[localPhaseType]!
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
