@@ -18,11 +18,13 @@ const isCompanyOverLimit = async (
   teamId: string,
   dataLoader: DataLoaderInstance
 ): Promise<boolean> => {
+  if (process.env.IS_ENTERPRISE) return false
   const pg = getKysely()
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
-  // if (organization.tier !== 'starter') return false
-
+  if (organization.tier !== 'starter') return false
+  const MIN_MEETING_MEMBERS = 3
+  const {id: orgId} = organization
   const result = await pg
     // Recursive transitive closure with depth limit: starting from the seed org,
     // expand to orgs reachable through shared admin memberships.
@@ -30,55 +32,55 @@ const isCompanyOverLimit = async (
     //   - abusers who create new orgs are caught (they own every org they create)
     //   - consultants who are plain members in client orgs don't bridge unrelated companies
     // UNION ALL with depth < 3 bounds the traversal to 3 hops.
-    .withRecursive('ConnectedOrgByUsers', (qb) =>
+    .withRecursive('UserConnectedOrgIds', (qb) =>
       qb
-        .selectFrom('Team')
-        .select(['orgId', sql<number>`1`.as('depth')])
-        .where('id', '=', teamId)
+        .selectNoFrom((eb) => [eb.val(orgId).as('orgId'), eb.val(1).as('depth')])
         .unionAll(
           qb
-            .selectFrom('ConnectedOrgByUsers')
-            .innerJoin('OrganizationUser as Ou1', 'Ou1.orgId', 'ConnectedOrgByUsers.orgId')
+            .selectFrom('UserConnectedOrgIds')
+            .innerJoin('OrganizationUser as Ou1', 'Ou1.orgId', 'UserConnectedOrgIds.orgId')
             .innerJoin('OrganizationUser as Ou2', 'Ou2.userId', 'Ou1.userId')
-            .select(['Ou2.orgId', sql<number>`"ConnectedOrgByUsers".depth + 1`.as('depth')])
+            .select(({eb, ref}) => [
+              eb('UserConnectedOrgIds.depth', '+', 1).as('depth'),
+              ref('Ou2.orgId').as('orgId')
+            ])
             .where('Ou1.removedAt', 'is', null)
             .where('Ou1.role', 'is not', null)
             .where('Ou2.removedAt', 'is', null)
-            .where(sql<boolean>`"ConnectedOrgByUsers".depth < 3`)
+            .where('UserConnectedOrgIds.depth', '<', 3)
         )
     )
-    .with('SeedOrg', (qb) => qb.selectFrom('Team').select('orgId').where('id', '=', teamId))
-    .with('ConnectedOrgsByDomain', (qb) =>
+    // .with('SeedOrg', (qb) => qb.selectFrom('Team').select('orgId').where('id', '=', teamId))
+    .with('UserConnectedOrgs', (qb) =>
       qb
         .selectFrom('Organization')
         .select(['id', 'tier', 'activeDomain'])
-        .where('id', 'in', (eb) => eb.selectFrom('ConnectedOrgByUsers').select('orgId'))
+        .where('id', 'in', (eb) => eb.selectFrom('UserConnectedOrgIds').select('orgId'))
     )
-    .with('AllCompanyOrgs', (qb) =>
+    .with('UserAndDomainConnectedOrgs', (qb) =>
       qb
-        .selectFrom('ConnectedOrgsByDomain')
+        .selectFrom('UserConnectedOrgs')
         .select(['id', 'tier'])
         .union(
           qb
             .selectFrom('Organization')
             .select(['id', 'tier'])
-            .where('activeDomain', 'is not', null)
             .where('activeDomain', 'in', (eb) =>
               eb
-                .selectFrom('ConnectedOrgsByDomain')
+                .selectFrom('UserConnectedOrgs')
                 .select('activeDomain')
                 .where('activeDomain', 'is not', null)
             )
+            .where('activeDomain', 'is not', null)
         )
     )
-    .with(
-      'CompanyTeams',
-      (qb) =>
-        qb
-          .selectFrom('Team')
-          .select('id')
-          .where('orgId', 'in', (eb) => eb.selectFrom('AllCompanyOrgs').select('id'))
-      // .where('isArchived', '=', false)
+    .with('CompanyTeams', (qb) =>
+      qb
+        .selectFrom('Team')
+        .select(['id', 'orgId'])
+        .where('orgId', 'in', (eb) =>
+          eb.selectFrom('UserAndDomainConnectedOrgs').select('id').where('tier', '=', 'starter')
+        )
     )
     // LATERAL forces a nested loop: for each of the ~N company teams, Postgres executes
     // the subquery using idx_MeetingMember_teamId, then filters updatedAt in-pass.
@@ -94,32 +96,32 @@ const isCompanyOverLimit = async (
               .whereRef('MeetingMember.teamId', '=', 'CompanyTeams.id')
               .where('MeetingMember.updatedAt', '>=', sql<Date>`NOW() - INTERVAL '30 days'`)
               .groupBy('MeetingMember.meetingId')
-              .having(({fn}) => fn.countAll<number>(), '>=', 3)
+              .having(({fn}) => fn.countAll<number>(), '>=', MIN_MEETING_MEMBERS)
               .as('mm'),
           (join) => join.onTrue()
         )
-        .select(['mm.meetingId', 'CompanyTeams.id as teamId'])
+        .select(['mm.meetingId', 'CompanyTeams.id as teamId', 'CompanyTeams.orgId'])
     )
-    .with('ActiveTeams', (qb) => qb.selectFrom('QualifyingMeetings').select('teamId').distinct())
-    .selectFrom('SeedOrg')
-    .innerJoin('Organization', 'Organization.id', 'SeedOrg.orgId')
-    .select(({fn, eb}) => [
-      'Organization.tier',
-      eb
-        .exists(eb.selectFrom('AllCompanyOrgs').select('id').where('tier', '!=', 'starter'))
-        .as('anyPaid'),
-      eb.selectFrom('ActiveTeams').select(fn.countAll<string>().as('cnt')).as('activeTeamCount')
-    ])
-    .$call((qb) => {
-      console.log(qb.compile().sql)
-      return qb
-    })
-    .executeTakeFirst()
+    .selectFrom('QualifyingMeetings')
+    .select(['teamId', 'orgId'])
+    .distinct()
+    .execute()
 
-  if (!result) return false
-  if (result.tier !== 'starter') return false
-  if (result.anyPaid) return false
-  return Number(result.activeTeamCount) >= 3
+  const teamIdSet = new Set([teamId, ...result.map((r) => r.teamId)])
+  if (teamIdSet.size < 3) return false
+  const orgIds = [...new Set(result.map((r) => r.orgId))]
+  const companyClusters = await pg
+    .selectFrom('CompanyCluster')
+    .innerJoin(
+      'CompanyClusterOrganization',
+      'CompanyCluster.id',
+      'CompanyClusterOrganization.companyClusterId'
+    )
+    .selectAll('CompanyCluster')
+    .where('orgId', 'in', orgIds)
+    .execute()
+  console.log(companyClusters)
+  return true
 }
 
 export default isCompanyOverLimit
