@@ -409,11 +409,20 @@ Removed all 9 `withRouter` usages from the codebase and replaced with direct hoo
 
 ---
 
-### PR 12 — Replace custom `useRouter` hook — batch 1 (components/)
+### PR 12 — Replace custom `useRouter` hook — batch 1 (components/) — DONE
 
-**~500 lines changed | Risk: LOW**
+**61 files changed, 133 insertions, 160 deletions | Risk: LOW**
 
-Replace the custom `useRouter` hook with standard React Router v5 hooks (`useHistory`, `useLocation`, `useParams`) in the first batch of files (components/ directory).
+Replaced the custom `useRouter` hook with standard React Router v5 hooks (`useHistory`, `useLocation`, `useParams`) in all 61 components/ files. This is pre-work that runs on v5.
+
+**Breakdown by pattern:**
+
+| Pattern | Files | Replacement |
+|---|---|---|
+| `{history}` only | 43 | `useHistory()` |
+| `{location}` only | 4 | `useLocation()` |
+| `{history, location}` | 3 | `useHistory()` + `useLocation()` |
+| `{match}` (params access) | 11 | `useParams<T>()` |
 
 ---
 
@@ -514,7 +523,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | **DONE** |
 | 10 | Version Bump | Verify email SSR | ~60 | LOW | **DONE** |
 | 11 | Router Pre-work | Remove `withRouter` HOC → use hooks directly | ~250 | LOW | **DONE** |
-| 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~500 | LOW | |
+| 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~300 | LOW | **DONE** |
 | 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~500 | LOW | |
 | 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~500 | MEDIUM | |
 | 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |

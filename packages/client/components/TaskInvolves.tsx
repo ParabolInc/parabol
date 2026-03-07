@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import {cardShadow} from '~/styles/elevation'
 import type {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
@@ -109,7 +109,7 @@ const TaskInvolves = (props: Props) => {
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {editor} = useTipTapTaskEditor(content, {readOnly: true})
-  const {history} = useRouter()
+  const history = useHistory()
 
   const gotoBoard = () => {
     if (submitting) return

@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
+import {useHistory} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 const TeamInvitationAccept = (props: Props) => {
   const {invitationToken} = props
-  const {history} = useRouter()
+  const history = useHistory()
   const atmosphere = useAtmosphere()
   useEffect(() => {
     AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history})

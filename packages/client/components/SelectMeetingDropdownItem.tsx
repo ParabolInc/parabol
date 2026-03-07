@@ -7,8 +7,8 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
-import useRouter from '~/hooks/useRouter'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
 import {MenuItem} from '../ui/Menu/MenuItem'
@@ -40,7 +40,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
     `,
     meetingRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this

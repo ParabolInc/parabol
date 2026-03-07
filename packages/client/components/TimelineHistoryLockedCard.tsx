@@ -3,10 +3,10 @@ import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useIsVisible from '../hooks/useIsVisible'
-import useRouter from '../hooks/useRouter'
 import {cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -78,7 +78,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
   const {id: orgId, name: orgName, isPaid, unpaidMessageHTML} = organization ?? {}
 
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
 
   const cardRef = useRef<HTMLDivElement>(null)
   const visible = useIsVisible(cardRef.current, 0.7)

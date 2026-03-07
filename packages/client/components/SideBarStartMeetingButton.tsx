@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import useRouter from '~/hooks/useRouter'
+import {useHistory} from 'react-router'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 
@@ -29,7 +29,7 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
 }))
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
-  const {history} = useRouter()
+  const history = useHistory()
 
   const onClick = () => {
     history.push('/activity-library')

@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {InvitationLinkErrorExpired_massInvitation$key} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import useRouter from '../hooks/useRouter'
 import hasToken from '../utils/hasToken'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -40,7 +40,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
   const {teamName} = massInvitation
   useDocumentTitle(`Token Expired | Invitation Link`, 'Invitation Link')
 
-  const {history} = useRouter()
+  const history = useHistory()
 
   return (
     <InviteDialog>
