@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {LeaveTeamModal_teamMember$key} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -8,7 +9,6 @@ import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useRouter from '../../../../hooks/useRouter'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
 
 const StyledDialogContainer = styled(DialogContainer)({
@@ -35,7 +35,7 @@ const LeaveTeamModal = (props: Props) => {
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {teamMemberId} = teamMember
   const handleClick = () => {
     history.push('/meetings')

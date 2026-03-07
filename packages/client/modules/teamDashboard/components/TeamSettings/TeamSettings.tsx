@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
@@ -70,7 +70,7 @@ const TeamSettings = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef)
   const {viewer} = data
-  const {history} = useRouter()
+  const history = useHistory()
   const {team} = viewer
   const {name: teamName, orgId, teamMembers, tier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')

@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {useHistory} from 'react-router'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -6,7 +7,6 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useRouter from '../../../../hooks/useRouter'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 
 const StyledButton = styled(PrimaryButton)({
@@ -25,7 +25,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 const LeaveOrgModal = (props: Props) => {
   const {orgId, closePortal} = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const handleClick = () => {
     if (submitting) return

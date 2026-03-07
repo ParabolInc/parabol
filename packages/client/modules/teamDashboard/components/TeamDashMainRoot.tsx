@@ -1,17 +1,15 @@
 import {Suspense, useEffect} from 'react'
+import {useParams} from 'react-router'
 import setPreferredTeamId from '~/utils/relay/setPreferredTeamId'
 import teamDashMainQuery, {
   type TeamDashMainQuery
 } from '../../../__generated__/TeamDashMainQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import useRouter from '../../../hooks/useRouter'
 import TeamDashMain from './TeamDashMain/TeamDashMain'
 
 const TeamDashMainRoot = () => {
-  const {match} = useRouter<{teamId: string}>()
-  const {params} = match
-  const {teamId} = params
+  const {teamId} = useParams<{teamId: string}>()
   const atmosphere = useAtmosphere()
 
   useEffect(() => {
