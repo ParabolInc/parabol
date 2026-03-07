@@ -32,6 +32,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // )
     .addPrimaryKeyConstraint('CompanyClusterOrganization_pkey', ['companyClusterId', 'orgId'])
     .execute()
+  await db.schema.alterTable('Team').addColumn('maxTeamLimitAt', 'timestamptz').execute()
 }
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
@@ -39,4 +40,5 @@ export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable('CompanyClusterOrganization').execute()
   await db.schema.dropTable('CompanyClusterDomain').execute()
   await db.schema.dropTable('CompanyCluster').execute()
+  await db.schema.alterTable('Team').dropColumn('maxTeamLimitAt').execute()
 }
