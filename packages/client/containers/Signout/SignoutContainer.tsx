@@ -1,12 +1,12 @@
 import {useEffect} from 'react'
+import {useHistory} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
-import useRouter from '../../hooks/useRouter'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 const SignoutContainer = () => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {onCompleted, onError} = useMutationProps()
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'User Logout')

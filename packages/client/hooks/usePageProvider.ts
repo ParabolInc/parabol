@@ -1,6 +1,7 @@
 import {generateJSON, generateText} from '@tiptap/react'
 import type {History} from 'history'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {useHistory} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -9,7 +10,6 @@ import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {getPageSlug} from '../tiptap/getPageSlug'
 import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
 
 let headerBlockObserver: null | (() => void) = null
 let currentHeaderBlock: Y.XmlElement | null = null
@@ -64,7 +64,7 @@ const updateUrlWithSlug = (
 
 export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter<{meetingId: string}>()
+  const history = useHistory()
   const pageCode = Number(pageId.split(':')[1])
   const prevPageIdRef = useRef<string | undefined>()
   const [isSynced, setIsSynced] = useState(false)

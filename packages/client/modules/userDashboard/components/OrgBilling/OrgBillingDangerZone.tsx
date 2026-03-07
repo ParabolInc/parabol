@@ -2,10 +2,10 @@ import styled from '@emotion/styled'
 import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 import Panel from '../../../../components/Panel/Panel'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 
@@ -46,7 +46,7 @@ const OrgBillingDangerZone = (props: Props) => {
     `,
     organizationRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const {id, isBillingLeader, billingTier} = organization
   if (!isBillingLeader)
     return (
