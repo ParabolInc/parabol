@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {type RouteComponentProps, withRouter} from 'react-router'
+import {useParams} from 'react-router'
 import type {TeamInvitationDialog_verifiedInvitation$key} from '../__generated__/TeamInvitationDialog_verifiedInvitation.graphql'
 import {LocalStorageKey} from '../types/constEnums'
 import {useIsAuthenticated} from './IsAuthenticatedProvider'
@@ -15,12 +15,13 @@ import TeamInvitationGoogleCreateAccount from './TeamInvitationGoogleCreateAccou
 import TeamInvitationGoogleSignin from './TeamInvitationGoogleSignin'
 import TeamInvitationSSO from './TeamInvitationSSO'
 
-interface Props extends RouteComponentProps<{token: string}> {
+interface Props {
   verifiedInvitation: TeamInvitationDialog_verifiedInvitation$key
 }
 
 const TeamInvitationDialog = (props: Props) => {
-  const {verifiedInvitation: verifiedInvitationRef, match} = props
+  const {verifiedInvitation: verifiedInvitationRef} = props
+  const {token: invitationToken} = useParams<{token: string}>()
   const verifiedInvitation = useFragment(
     graphql`
       fragment TeamInvitationDialog_verifiedInvitation on VerifiedInvitationPayload {
@@ -40,9 +41,6 @@ const TeamInvitationDialog = (props: Props) => {
     `,
     verifiedInvitationRef
   )
-  const {params} = match
-  const {token: invitationToken} = params
-
   const isLoggedIn = useIsAuthenticated()
   useEffect(() => {
     window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, invitationToken)
@@ -90,4 +88,4 @@ const TeamInvitationDialog = (props: Props) => {
   )
 }
 
-export default withRouter(TeamInvitationDialog)
+export default TeamInvitationDialog

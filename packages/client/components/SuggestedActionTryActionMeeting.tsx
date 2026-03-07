@@ -1,17 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {type RouteComponentProps, withRouter} from 'react-router'
+import {useHistory} from 'react-router'
 import type {SuggestedActionTryActionMeeting_suggestedAction$key} from '../__generated__/SuggestedActionTryActionMeeting_suggestedAction.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props {
   suggestedAction: SuggestedActionTryActionMeeting_suggestedAction$key
 }
 
 const SuggestedActionTryActionMeeting = (props: Props) => {
+  const history = useHistory()
   const {suggestedAction: suggestedActionRef} = props
   const suggestedAction = useFragment(
     graphql`
@@ -29,7 +30,6 @@ const SuggestedActionTryActionMeeting = (props: Props) => {
   const {name: teamName} = team
 
   const onClick = () => {
-    const {history} = props
     history.push(`/activity-library/category/standup`)
   }
 
@@ -45,4 +45,4 @@ const SuggestedActionTryActionMeeting = (props: Props) => {
   )
 }
 
-export default withRouter(SuggestedActionTryActionMeeting)
+export default SuggestedActionTryActionMeeting

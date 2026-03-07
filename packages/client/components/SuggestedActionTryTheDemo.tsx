@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {type RouteComponentProps, withRouter} from 'react-router'
+import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {SuggestedActionTryTheDemo_suggestedAction$key} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
@@ -10,11 +10,12 @@ import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction$key
 }
 
 const SuggestedActionTryTheDemo = (props: Props) => {
+  const history = useHistory()
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
 
@@ -30,7 +31,6 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   const {id: suggestedActionId} = suggestedAction
 
   const onClick = () => {
-    const {history} = props
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
@@ -50,4 +50,4 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   )
 }
 
-export default withRouter(SuggestedActionTryTheDemo)
+export default SuggestedActionTryTheDemo
