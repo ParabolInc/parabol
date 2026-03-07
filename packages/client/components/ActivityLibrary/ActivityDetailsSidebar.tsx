@@ -3,7 +3,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
 import type {RRule} from 'rrule'
 import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
@@ -14,6 +13,7 @@ import type {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.gra
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import useNavigate from '../../hooks/useNavigate'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
@@ -113,7 +113,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
-  const history = useHistory()
+  const navigate = useNavigate()
 
   // user has no teams
   if (!selectedTeam)
@@ -136,7 +136,7 @@ const ActivityDetailsSidebar = (props: Props) => {
           rrule: rrule?.toString(),
           gcalInput
         },
-        {history, onError, onCompleted}
+        {navigate, onError, onCompleted}
       )
     } else if (type === 'action') {
       const variables = {
@@ -145,7 +145,7 @@ const ActivityDetailsSidebar = (props: Props) => {
       }
 
       StartCheckInMutation(atmosphere, variables, {
-        history,
+        navigate,
         onError,
         onCompleted
       })
@@ -164,13 +164,13 @@ const ActivityDetailsSidebar = (props: Props) => {
                   rrule: rrule?.toString(),
                   gcalInput
                 },
-                {history, onError, onCompleted}
+                {navigate, onError, onCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id, gcalInput},
-                {history, onError, onCompleted}
+                {navigate, onError, onCompleted}
               )
             }
           },

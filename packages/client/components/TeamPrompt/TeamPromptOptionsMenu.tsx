@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import {Flag, Link as MuiLink, OpenInNew, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
+import useNavigate from '../../hooks/useNavigate'
 import {PALETTE} from '../../styles/paletteV3'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
@@ -78,7 +78,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
   const {id: meetingId, meetingSeries, endedAt, team} = meeting
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const isEnded = !!endedAt
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
@@ -161,7 +161,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         onClick={() => {
           menuProps.closePortal()
           if (!hasRecurrenceEnabled) {
-            EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, history})
+            EndTeamPromptMutation(atmosphere, {meetingId}, {onCompleted, onError, navigate})
           } else {
             openEndRecurringMeetingModal()
           }

@@ -2,6 +2,7 @@ import {useState} from 'react'
 import {useHistory} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import useNavigate from '../hooks/useNavigate'
 import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
@@ -23,6 +24,7 @@ interface Props {
 const DeleteTeamDialog = (props: Props) => {
   const atmosphere = useAtmosphere()
   const history = useHistory()
+  const navigate = useNavigate()
   const {isOpen, onClose, teamId, teamName, teamOrgId, onDeleteTeam} = props
 
   const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
@@ -32,7 +34,7 @@ const DeleteTeamDialog = (props: Props) => {
   const handleDeleteTeam = () => {
     if (submitting) return
     submitMutation()
-    ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    ArchiveTeamMutation(atmosphere, {teamId}, {navigate, onError, onCompleted})
     onDeleteTeam(teamId)
     history.push(`/me/organizations/${teamOrgId}/teams`)
   }

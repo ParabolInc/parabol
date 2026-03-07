@@ -17,6 +17,7 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
+import useNavigate from '../../../../hooks/useNavigate'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -184,6 +185,7 @@ const NewTeamForm = (props: Props) => {
   const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
   const history = useHistory()
+  const navigate = useNavigate()
 
   const updateOrgId = (orgId: string) => {
     setOrgId(orgId)
@@ -209,7 +211,7 @@ const NewTeamForm = (props: Props) => {
       }
       const variables = {newTeam, orgName, invitees}
       submitMutation()
-      AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
+      AddOrgMutation(atmosphere, variables, {navigate, onError, onCompleted})
     } else {
       const newTeam = {
         name: teamName,
@@ -217,7 +219,7 @@ const NewTeamForm = (props: Props) => {
         isPublic
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, navigate})
     }
   }
 

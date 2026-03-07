@@ -4,7 +4,7 @@ import type {SetOrgUserRoleMutation as TSetOrgUserRoleMutation} from '../__gener
 import type {SetOrgUserRoleMutation_organization$data} from '../__generated__/SetOrgUserRoleMutation_organization.graphql'
 import type {
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -45,8 +45,8 @@ const mutation = graphql`
 
 export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
   SetOrgUserRoleMutation_organization$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   if (!payload || !payload.organization || !payload.notificationsAdded?.length) return
   const {id: orgId, name: orgName} = payload.organization
   atmosphere.eventEmitter.emit('addSnackbar', {
@@ -56,7 +56,7 @@ export const setOrgUserRoleAddedOrganizationOnNext: OnNextHandler<
     action: {
       label: 'Check it out!',
       callback: () => {
-        history && history.push(`/me/organizations/${orgId}/members`)
+        navigate?.(`/me/organizations/${orgId}/members`)
       }
     }
   })
