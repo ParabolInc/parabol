@@ -1,8 +1,8 @@
 import {useEffect} from 'react'
+import {useHistory} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
@@ -22,7 +22,7 @@ const TeamInvitationSSO = (props: Props) => {
   const {ssoURL} = props
   const {onCompleted, submitMutation, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   useEffect(() => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!

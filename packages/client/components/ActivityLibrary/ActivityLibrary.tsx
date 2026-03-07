@@ -8,7 +8,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment
 } from 'react-relay'
-import {Redirect} from 'react-router'
+import {Redirect, useParams} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import type {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
@@ -17,7 +17,6 @@ import type {ActivityLibraryTemplateSearch_query$key} from '~/__generated__/Acti
 import type {ActivityLibraryTemplateSearchRefetchQuery} from '~/__generated__/ActivityLibraryTemplateSearchRefetchQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
-import useRouter from '../../hooks/useRouter'
 import useSearchFilter from '../../hooks/useSearchFilter'
 import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 import {cn} from '../../ui/cn'
@@ -281,10 +280,7 @@ export const ActivityLibrary = (props: Props) => {
     }
   }, [debouncedSearchQuery])
 
-  const {match} = useRouter<{categoryId?: string}>()
-  const {
-    params: {categoryId}
-  } = match
+  const {categoryId} = useParams<{categoryId?: string}>()
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {

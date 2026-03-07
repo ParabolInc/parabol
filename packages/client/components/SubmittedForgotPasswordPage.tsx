@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import useRouter from '../hooks/useRouter'
+import {useLocation, useParams} from 'react-router'
 import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
@@ -56,11 +56,11 @@ interface Props {
 
 const SubmittedForgotPasswordPage = (props: Props) => {
   const {goToPage} = props
-  const {match, location} = useRouter<{token: string}>()
-  const params = new URLSearchParams(location.search)
-  const forgotPasswordResType = params.get('type') || ForgotPasswordResType.SUCCESS
-  const email = params.get('email')
-  const {token} = match.params
+  const {token} = useParams<{token: string}>()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const forgotPasswordResType = searchParams.get('type') || ForgotPasswordResType.SUCCESS
+  const email = searchParams.get('email')
   const contactSupportCopy = (
     <>
       <a

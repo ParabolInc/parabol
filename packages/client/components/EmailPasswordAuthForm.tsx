@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import {useHistory, useLocation} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
@@ -96,7 +96,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const isSingleTenantSSO =
     isSSOAuthEnabled && !isGoogleAuthEnabled && !isMicrosoftAuthEnabled && !isInternalAuthEnabled
   const {getOffsetTop, isPrimary, isSignin, invitationToken, email, goToPage} = props
-  const {location} = useRouter()
+  const location = useLocation()
   const params = new URLSearchParams(location.search)
   const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
   const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
@@ -106,7 +106,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [ssoDomain, setSSODomain] = useState<string>()
   const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
       getDefault: () => email,

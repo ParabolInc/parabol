@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import useRouter from '../hooks/useRouter'
+import {useHistory} from 'react-router'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
@@ -8,7 +8,7 @@ import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
   const [error, setError] = useState('')
-  const {history} = useRouter()
+  const history = useHistory()
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const userId = params.get('userId')

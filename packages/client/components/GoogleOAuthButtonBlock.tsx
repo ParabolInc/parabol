@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {useHistory, useLocation} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import logo from '../styles/theme/images/graphics/google.svg'
 import {cn} from '../ui/cn'
 import GoogleClientManager from '../utils/GoogleClientManager'
@@ -33,7 +33,8 @@ const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint, getOffsetTop} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history, location} = useRouter()
+  const history = useHistory()
+  const location = useLocation()
   const label = isCreate ? 'Sign up with Google' : 'Sign in with Google'
   const openOAuth = () => {
     const mutationProps = {onError, onCompleted, submitMutation, submitting}

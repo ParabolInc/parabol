@@ -1,15 +1,14 @@
 import {Suspense, useEffect} from 'react'
+import {useHistory, useParams} from 'react-router'
 import meetingSelectorQuery, {
   type MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 import MeetingSelector from './MeetingSelector'
 
 const MeetingRoot = () => {
-  const {history, match} = useRouter<{meetingId: string}>()
-  const {params} = match
-  const {meetingId} = params
+  const history = useHistory()
+  const {meetingId} = useParams<{meetingId: string}>()
   useEffect(() => {
     if (!meetingId) {
       history.replace('/meetings')

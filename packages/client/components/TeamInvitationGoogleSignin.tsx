@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useParams} from 'react-router'
 import type {TeamInvitationGoogleSignin_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import useRouter from '../hooks/useRouter'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
@@ -21,9 +21,7 @@ const TeamName = styled('span')({
 })
 
 const TeamInvitationGoogleSignin = (props: Props) => {
-  const {match} = useRouter<{token: string}>()
-  const {params} = match
-  const {token: invitationToken} = params
+  const {token: invitationToken} = useParams<{token: string}>()
   const {verifiedInvitation: verifiedInvitationRef} = props
   const verifiedInvitation = useFragment(
     graphql`

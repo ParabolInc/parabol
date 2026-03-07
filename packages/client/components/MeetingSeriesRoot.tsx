@@ -1,16 +1,13 @@
 import {Suspense} from 'react'
-import {Redirect} from 'react-router'
+import {Redirect, useParams} from 'react-router'
 import meetingSeriesRedirectorQuery, {
   type MeetingSeriesRedirectorQuery
 } from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 
 const MeetingRoot = () => {
-  const {match} = useRouter<{meetingId: string}>()
-  const {params} = match
-  const {meetingId} = params
+  const {meetingId} = useParams<{meetingId: string}>()
   const queryRef = useQueryLoaderNow<MeetingSeriesRedirectorQuery>(meetingSeriesRedirectorQuery, {
     meetingId
   })

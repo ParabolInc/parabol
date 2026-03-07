@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import useRouter from '~/hooks/useRouter'
+import {useHistory} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
@@ -53,7 +53,7 @@ const query = graphql`
 const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onTeamAdded} = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
 
   const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
 
