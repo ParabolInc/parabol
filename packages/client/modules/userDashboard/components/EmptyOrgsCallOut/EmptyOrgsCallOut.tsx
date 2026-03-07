@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {useHistory} from 'react-router'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
-import useRouter from '../../../../hooks/useRouter'
 
 const Body = styled('div')({
   padding: '32px',
@@ -25,7 +25,7 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 const EmptyOrgsCallOut = () => {
-  const {history} = useRouter()
+  const history = useHistory()
   const gotoNewTeam = () => {
     history.push('/newteam')
   }

@@ -1,18 +1,15 @@
 import {Suspense} from 'react'
+import {useParams} from 'react-router'
 import orgTeamMembersQuery, {
   type OrgTeamMembersQuery
 } from '~/__generated__/OrgTeamMembersQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
-import useRouter from '../../../../hooks/useRouter'
 import {LoaderSize} from '../../../../types/constEnums'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import {OrgTeamMembers} from './OrgTeamMembers'
 
 const OrgTeamMembersRoot = () => {
-  const {match} = useRouter<{teamId: string}>()
-  const {
-    params: {teamId}
-  } = match
+  const {teamId} = useParams<{teamId: string}>()
   const queryRef = useQueryLoaderNow<OrgTeamMembersQuery>(orgTeamMembersQuery, {
     teamId
   })

@@ -3,11 +3,11 @@ import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {Layout} from '~/types/constEnums'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import FlatButton from '../../../../components/FlatButton'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 
@@ -57,7 +57,7 @@ const SettingsHeader = styled('div')({
 })
 
 const Team = (props: Props) => {
-  const {history} = useRouter()
+  const history = useHistory()
   const {children, isSettings, team: teamRef} = props
   const team = useFragment(
     graphql`

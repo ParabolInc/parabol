@@ -426,11 +426,23 @@ Replaced the custom `useRouter` hook with standard React Router v5 hooks (`useHi
 
 ---
 
-### PR 13 — Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps`
+### PR 13 — Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` — DONE
 
-**~500 lines changed | Risk: LOW**
+**46 files changed, 109 insertions, 153 deletions | Risk: LOW**
 
-Complete the `useRouter` replacement in remaining files, delete the custom hook, and remove any remaining `RouteComponentProps` usages.
+Completed the `useRouter` replacement in all remaining files (modules/, hooks/, containers/, utils/), deleted the custom `useRouter` hook, and removed all `RouteComponentProps` usages from the codebase. This is pre-work that runs on v5.
+
+**Breakdown:**
+
+| Category | Files | Details |
+|---|---|---|
+| `{history}` only | 28 | modules/, hooks/, containers/ — `useHistory()` |
+| `{match}` (params) | 5 | `useParams<T>()` |
+| `{history, location}` | 2 | `useHistory()` + `useLocation()` |
+| `{location}` only | 1 | `useLocation()` |
+| `{history, match}` / `{location, match}` with `match.path`/`match.url` | 3 | `useRouteMatch()` + other hooks |
+| `RouteComponentProps` removal | 6 | TeamInvitationRoot, InvitationLinkRoot, VerifyEmail, SetNewPassword, OrganizationRoot, UserDashMain |
+| Hook deletion | 1 | `hooks/useRouter.ts` deleted |
 
 ---
 
@@ -524,7 +536,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 10 | Version Bump | Verify email SSR | ~60 | LOW | **DONE** |
 | 11 | Router Pre-work | Remove `withRouter` HOC → use hooks directly | ~250 | LOW | **DONE** |
 | 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~300 | LOW | **DONE** |
-| 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~500 | LOW | |
+| 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~260 | LOW | **DONE** |
 | 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~500 | MEDIUM | |
 | 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |
 | 16 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |

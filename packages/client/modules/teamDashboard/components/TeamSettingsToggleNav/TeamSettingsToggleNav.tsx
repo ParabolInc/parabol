@@ -1,5 +1,5 @@
+import {useHistory} from 'react-router'
 import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
-import useRouter from '../../../../hooks/useRouter'
 
 interface Props {
   activeKey: string
@@ -8,7 +8,7 @@ interface Props {
 
 const TeamSettingsToggleNav = (props: Props) => {
   const {activeKey, teamId} = props
-  const {history} = useRouter()
+  const history = useHistory()
   const makeOnClick = (area = '') => {
     return area === activeKey
       ? undefined
