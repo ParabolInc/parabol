@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {type RouteComponentProps, withRouter} from 'react-router-dom'
+import {useHistory} from 'react-router'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import GiftSVG from './GiftSVG'
@@ -22,8 +22,8 @@ const Label = styled('div')({
   marginLeft: 8
 })
 
-const DemoCreateAccountButton = (props: RouteComponentProps) => {
-  const {history} = props
+const DemoCreateAccountButton = () => {
+  const history = useHistory()
   const handleClick = () => history.push('/create-account?from=demo')
   const isBreakpoint = useBreakpoint(480)
   return (
@@ -34,4 +34,4 @@ const DemoCreateAccountButton = (props: RouteComponentProps) => {
   )
 }
 
-export default withRouter(DemoCreateAccountButton)
+export default DemoCreateAccountButton

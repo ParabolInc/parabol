@@ -357,7 +357,7 @@ createRoot(container).render(<Root />)
 
 ### Overview
 
-108 files use React Router v5 APIs. The migration is broken into 6 PRs organized by API pattern.
+108 files use React Router v5 APIs. The migration strategy is to do pre-work on v5 to eliminate indirect/wrapper APIs, consolidating to standard v5 hooks. Then flip to v6 in a single ~900-line PR. No compatibility shims — every file ends up using native v6 APIs.
 
 **Key API changes:**
 | v5 | v6 | Files affected |
@@ -372,265 +372,86 @@ createRoot(container).render(<Root />)
 | `exact` prop | Default in v6 (remove) | 6 |
 | Custom `useRouter()` hook | Standard v6 hooks | Transitive |
 
----
+### Pre-work eliminates these APIs while on v5:
+- **PR 11:** `withRouter` (9 files) + 8 `RouteComponentProps` usages
+- **PR 12-13:** `useRouter` custom hook (100 files) + 6 remaining `RouteComponentProps`
+- **PR 14:** `RouterProps['history']` in mutation/subscription infrastructure (~35 files)
 
-### PR 11 — Upgrade `react-router-dom` to v6, convert core route definitions
-
-**~500 lines changed | Risk: HIGH**
-
-This is the atomic router switch. All top-level route definitions must be converted together.
-
-**Changes:**
-
-1. Update `package.json`:
-   - `react-router` → `^6.x`
-   - `react-router-dom` → `^6.x`
-   - Remove `@types/react-router`, `@types/react-router-dom` (types are bundled in v6)
-
-2. Convert `Root.tsx`:
-   - Update `BrowserRouter` import path (same API, different internals)
-
-3. Convert `components/Action/Action.tsx`:
-   - `Switch` → `Routes`
-   - All `<Route exact path="/" render={(p) => <X {...p} />} />` → `<Route path="/" element={<X />} />`
-   - All `<Route path="/x" component={X} />` → `<Route path="/x" element={<X />} />`
-   - `<Redirect to="/x" />` → `<Navigate to="/x" replace />`
-   - Remove all `exact` props (v6 routes are exact by default; use trailing `/*` for prefix matching)
-
-4. Convert `components/PrivateRoutes.tsx`:
-   - Same `Switch` → `Routes` conversion
-   - Update `backgroundLocation` pattern for v6 `location` prop on `<Routes>`
-   - `<Redirect>` → `<Navigate>`
-   - Routes that had `component` prop → `element` prop
-
-**Testing:** Every route in the app must be reachable. Test:
-- Sign in / create account flows
-- Dashboard navigation
-- Meeting entry and phase navigation
-- Admin routes
-- Invitation flows
-- 404 handling
+### After pre-work, only standard v5 APIs remain:
+- `useHistory()` — ~60 component files (direct navigation)
+- `useLocation()` — unchanged in v6
+- `useParams()` — unchanged in v6
+- `useRouteMatch()` — ~5 files
+- `Switch`/`Route`/`Redirect` — ~16 files
+- `matchPath` — ~10 files
 
 ---
 
-### PR 12 — Convert nested route trees
+### PR 11 — Remove `withRouter` HOC → use hooks directly — DONE
 
-**~400 lines changed | Risk: MEDIUM**
+**~250 lines changed | Risk: LOW**
 
-Convert all nested `Switch` components to `Routes` in secondary routing files.
+Removed all 9 `withRouter` usages from the codebase and replaced with direct hook calls (`useHistory`, `useParams`). Also removed `RouteComponentProps` from all 8 files that used it (DashboardRoot didn't use it). This is pre-work that runs on v5.
 
-**Files:**
-| File | Routes defined |
+**Files changed:**
+
+| File | Change |
 |---|---|
-| `components/Dashboard.tsx` | `/meetings`, `/me`, `/team/:teamId`, `/pages`, `/pages/:pageSlug`, etc. |
-| `modules/userDashboard/components/UserDashboard/UserDashboard.tsx` | `/me/profile`, `/me/organizations`, `/me/organizations/:orgId` |
-| `modules/teamDashboard/containers/Team/TeamContainer.tsx` | `/team/:teamId/settings`, `/team/:teamId/archive` |
-| `modules/userDashboard/components/OrgBilling/Organization.tsx` | Billing sub-routes |
-| `modules/userDashboard/components/UserDashMain.tsx` | User dashboard sub-routes |
-| `modules/teamDashboard/components/TeamDashMain/TeamDashMain.tsx` | Team dashboard sub-routes |
-| `components/ActivityLibrary/ActivityLibraryRoutes.tsx` | Activity library sub-routes |
-
-**Pattern:** Each file follows the same mechanical conversion:
-```tsx
-// Before (v5)
-<Switch>
-  <Route exact path="/me/profile" component={UserProfileRoot} />
-  <Route path="/me/organizations/:orgId" component={OrganizationRoot} />
-</Switch>
-
-// After (v6)
-<Routes>
-  <Route path="/me/profile" element={<UserProfileRoot />} />
-  <Route path="/me/organizations/:orgId" element={<OrganizationRoot />} />
-</Routes>
-```
-
-Note: Parent routes that contain nested `<Routes>` must use `/*` suffix in their path (e.g., `path="/me/*"`).
+| `components/DashboardRoot.tsx` | Removed no-op `withRouter` wrapper |
+| `components/SuggestedActionCreateNewTeam.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `components/SuggestedActionTryTheDemo.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `components/SuggestedActionTryRetroMeeting.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `components/SuggestedActionTryActionMeeting.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `components/TeamInvitationDialog.tsx` | `withRouter`/`RouteComponentProps` → `useParams` hook |
+| `components/DemoCreateAccountButton.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `components/DemoCreateAccountPrimaryButton.tsx` | `withRouter`/`RouteComponentProps` → `useHistory` hook |
+| `modules/userDashboard/components/UserProfileRoot.tsx` | `withRouter`/`RouteComponentProps` → `useParams` hook |
 
 ---
 
-### PR 13 — Replace `useRouter` custom hook + migrate `useHistory` batch 1
+### PR 12 — Replace custom `useRouter` hook — batch 1 (components/)
+
+**~500 lines changed | Risk: LOW**
+
+Replace the custom `useRouter` hook with standard React Router v5 hooks (`useHistory`, `useLocation`, `useParams`) in the first batch of files (components/ directory).
+
+---
+
+### PR 13 — Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps`
+
+**~500 lines changed | Risk: LOW**
+
+Complete the `useRouter` replacement in remaining files, delete the custom hook, and remove any remaining `RouteComponentProps` usages.
+
+---
+
+### PR 14 — Convert navigation infrastructure from `history` object to `navigate` function
 
 **~500 lines changed | Risk: MEDIUM**
 
-The custom `useRouter` hook (`packages/client/hooks/useRouter.ts`) directly accesses React Router v5's `__RouterContext`, which doesn't exist in v6. Replace it with v6 hooks and migrate the first batch of `useHistory` usages.
-
-**Changes:**
-
-1. Rewrite `hooks/useRouter.ts` to provide a compatibility shim using v6 hooks:
-   ```tsx
-   // New implementation using v6 APIs
-   import {useNavigate, useLocation, useParams} from 'react-router-dom'
-
-   const useRouter = <T extends Record<string, string> = Record<string, string>>() => {
-     const navigate = useNavigate()
-     const location = useLocation()
-     const params = useParams<T>()
-     return {navigate, location, params}
-   }
-   ```
-   - Audit all call sites that use `useRouter()` for `.history`, `.match`, `.location` and update to new return shape
-
-2. Migrate first 12 files from `useHistory()` → `useNavigate()`:
-   ```tsx
-   // Before
-   const history = useHistory()
-   history.push('/path')
-   history.replace('/path')
-
-   // After
-   const navigate = useNavigate()
-   navigate('/path')
-   navigate('/path', {replace: true})
-   ```
-
-**Files (batch 1):**
-```
-hooks/useRouter.ts (rewrite)
-modules/search/useSearchListNavigation.ts
-modules/pages/RequestPageAccess.tsx
-components/DashNavList/LeftNavPrivatePagesSection.tsx
-components/DashNavList/LeftNavTeamLink.tsx
-components/DashNavList/PageActions.tsx
-modules/userDashboard/components/OrgIntegrations/OrgIntegrations.tsx
-modules/pages/PageNoAccess.tsx
-modules/pages/ArchivedPages.tsx
-modules/pages/PageDeletedHeader.tsx
-components/DashNavList/LeftNavTeamsSection.tsx
-modules/userDashboard/components/Organization/OrgNav.tsx
-```
+Convert mutation/subscription infrastructure that passes `RouterProps['history']` to use a `navigate` function pattern instead. ~35 files affected.
 
 ---
 
-### PR 14 — Migrate `useHistory` batch 2 + `useRouteMatch`
+### PR 15 — Upgrade to react-router v6 — convert ALL remaining v5 APIs
 
-**~400 lines changed | Risk: MEDIUM**
+**~900 lines changed | Risk: HIGH**
 
-Complete the `useHistory` → `useNavigate` migration and convert `useRouteMatch` → `useMatch`.
-
-**`useHistory` batch 2 (11 files):**
-```
-modules/userDashboard/components/OrgTeams/TeaserOrgTeamsRow.tsx
-modules/pages/PageHeaderPublic.tsx
-modules/meeting/components/CustomTemplateUpgradeMsg.tsx
-components/TeamPromptMeeting.tsx
-components/ShareTopicRouterRoot.tsx
-components/ReviewRequestToJoinOrgRoot.tsx
-components/ActivityLibrary/CreateNewActivity/CreateNewActivity.tsx
-components/ActivityLibrary/TeamPickerModal.tsx
-components/ActivityLibrary/ActivityDetails/TemplateDetails.tsx
-components/ActivityLibrary/ActivityDetailsSidebar.tsx
-components/NewMeetingSidebarUpgradeBlock.tsx
-```
-
-**`useRouteMatch` → `useMatch` (7 files):**
-```tsx
-// Before
-const match = useRouteMatch('/team/:teamId')
-match?.params.teamId
-
-// After
-const match = useMatch('/team/:teamId')
-match?.params.teamId
-```
-
-**Files:**
-```
-components/Dashboard/DashSidebar.tsx
-components/Dashboard/LeftDashNavItem.tsx
-components/DashNavList/LeftNavTeamLink.tsx (may already be updated in PR 12)
-modules/userDashboard/components/OrgBilling/Organization.tsx
-components/Dashboard/MobileDashSidebar.tsx
-components/RequestToJoin.tsx
-components/ActivityLibrary/ActivityLibraryRoutes.tsx
-```
-
----
-
-### PR 15 — Remove `withRouter` HOC usage
-
-**~500 lines changed | Risk: MEDIUM**
-
-`withRouter` is removed in React Router v6. Convert all 9 wrapped components to use hooks directly.
-
-**Files and approach:**
-| File | Current pattern | Conversion |
-|---|---|---|
-| `components/DemoCreateAccountButton.tsx` | `withRouter` wraps component | Use `useNavigate()` inline |
-| `components/DemoCreateAccountPrimaryButton.tsx` | `withRouter` wraps component | Use `useNavigate()` inline |
-| `components/SuggestedActionTryRetroMeeting.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
-| `components/SuggestedActionTryActionMeeting.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
-| `components/SuggestedActionTryTheDemo.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
-| `components/SuggestedActionCreateNewTeam.tsx` | `withRouter` for `history.push` | Use `useNavigate()` inline |
-| `components/DashboardRoot.tsx` | `withRouter` for location/history | Use `useLocation()` + `useNavigate()` |
-| `components/TeamInvitationDialog.tsx` | `withRouter` for history | Use `useNavigate()` |
-| `modules/userDashboard/components/UserProfileRoot.tsx` | `withRouter` for history | Use `useNavigate()` |
-
-**Pattern:**
-```tsx
-// Before
-import {withRouter, RouteComponentProps} from 'react-router-dom'
-const MyComponent = ({history}: RouteComponentProps) => {
-  return <button onClick={() => history.push('/path')}>Go</button>
-}
-export default withRouter(MyComponent)
-
-// After
-import {useNavigate} from 'react-router-dom'
-const MyComponent = () => {
-  const navigate = useNavigate()
-  return <button onClick={() => navigate('/path')}>Go</button>
-}
-export default MyComponent
-```
-
----
-
-### PR 16 — Update `Link`/`NavLink` patterns + final router cleanup
-
-**~300 lines changed | Risk: LOW**
-
-Clean up remaining React Router v5 patterns and update Link/NavLink components.
-
-**Changes:**
-
-1. **Link/NavLink updates** (~36 files):
-   - v6 `NavLink` changes `activeClassName`/`activeStyle` to a render function:
-     ```tsx
-     // Before (v5)
-     <NavLink to="/path" activeClassName="active">
-
-     // After (v6)
-     <NavLink to="/path" className={({isActive}) => isActive ? 'active' : ''}>
-     ```
-   - Audit `components/StyledLink.tsx` and update
-
-2. **Remove v5 type packages**:
-   - Remove `@types/react-router` from `devDependencies`
-   - Remove `@types/react-router-dom` from `devDependencies`
-
-3. **Update utility files**:
-   - `utils/getMeetingPathParams.ts`
-   - `utils/getTeamIdFromPathname.ts`
-   - `utils/onMeetingRoute.ts`
-   - `utils/onExOrgRoute.ts`
-   - `utils/onTeamRoute.ts`
-   - `subscriptions/createSubscription.ts`
-   - `subscriptions/subscriptionOnNext.ts`
-   - `mutations/toasts/popInvolvementToast.ts`
-   - `mutations/InviteToTeamMutation.ts`
-   - `mutations/StartDraggingReflectionMutation.ts`
-   - `types/relayMutations.ts`
-
-4. **Update non-component files** that import `History` or `RouteComponentProps` types:
-   - `Atmosphere.ts`
-   - Various mutation files that accept `history` as a parameter
+The flip PR. With all indirect APIs eliminated by PRs 11-14, this PR converts all remaining standard v5 APIs to v6:
+- `react-router`/`react-router-dom` packages → v6
+- `Switch` → `Routes`
+- `<Route component={X}>` / `<Route render={fn}>` → `<Route element={<X />}>`
+- `<Redirect>` → `<Navigate>`
+- `useHistory()` → `useNavigate()`
+- `useRouteMatch()` → `useMatch()`
+- Remove `exact` props (default in v6)
+- Remove `@types/react-router`, `@types/react-router-dom` (types bundled in v6)
 
 ---
 
 ## Phase 4: Polish
 
-### PR 17 — Add `React.StrictMode` wrapper
+### PR 16 — Add `React.StrictMode` wrapper
 
 **~50-200 lines changed | Risk: MEDIUM**
 
@@ -661,7 +482,7 @@ export default function Root() {
 
 ---
 
-### PR 18 — Mattermost plugin React 18 upgrade
+### PR 17 — Mattermost plugin React 18 upgrade
 
 **~300 lines changed | Risk: LOW**
 
@@ -692,16 +513,15 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 8 | Version Bump | Bump `@hello-pangea/dnd` v16 → v18 | ~10 | LOW | **DONE** |
 | 9 | Version Bump | `ReactDOM.render` → `createRoot` | ~15 | LOW | **DONE** |
 | 10 | Version Bump | Verify email SSR | ~60 | LOW | **DONE** |
-| 11 | Router | Upgrade to v6, core route definitions | ~500 | **HIGH** | |
-| 12 | Router | Nested route trees | ~400 | MEDIUM | |
-| 13 | Router | Replace `useRouter` + `useHistory` batch 1 | ~500 | MEDIUM | |
-| 14 | Router | `useHistory` batch 2 + `useRouteMatch` | ~400 | MEDIUM | |
-| 15 | Router | Remove `withRouter` HOC | ~500 | MEDIUM | |
-| 16 | Router | `Link`/`NavLink` + cleanup | ~300 | LOW | |
-| 17 | Polish | Add `React.StrictMode` | ~50-200 | MEDIUM | |
-| 18 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
+| 11 | Router Pre-work | Remove `withRouter` HOC → use hooks directly | ~250 | LOW | **DONE** |
+| 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~500 | LOW | |
+| 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~500 | LOW | |
+| 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~500 | MEDIUM | |
+| 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |
+| 16 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |
+| 17 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
 
-**Total: ~4,500-5,000 lines across 18 PRs**
+**Total: ~4,200-4,500 lines across 17 PRs**
 
 ---
 
@@ -724,19 +544,18 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
        └─ PR 10 (email SSR — depends on PR 7)
             │
             ▼
-       PR 11 ── Router v6 upgrade (depends on PR 7)
+       PR 11 ── Remove withRouter HOC (pre-work, runs on v5)
             │
-            ├─ PR 12 (nested routes — depends on PR 11)
-            ├─ PR 13 (useRouter + useHistory batch 1 — depends on PR 11)
+            ├─ PR 12 (replace useRouter batch 1 — depends on PR 11)
             │    │
-            │    └─ PR 14 (useHistory batch 2 — depends on PR 13)
+            │    └─ PR 13 (replace useRouter batch 2 + delete hook — depends on PR 12)
+            │         │
+            │         └─ PR 14 (convert navigation infrastructure — depends on PR 13)
+            │              │
+            │              └─ PR 15 (v6 flip — depends on PR 14)
             │
-            ├─ PR 15 (withRouter removal — depends on PR 11)
-            └─ PR 16 (Link/NavLink + cleanup — depends on PR 12-15)
-                  │
-                  ▼
-             PR 17 ── StrictMode (depends on all Router PRs)
-             PR 18 ── Mattermost plugin (independent, can be done anytime after PR 7)
+            PR 16 ── StrictMode (depends on PR 15)
+            PR 17 ── Mattermost plugin (independent, can be done anytime after PR 7)
 ```
 
 ---

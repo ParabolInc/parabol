@@ -1,9 +1,9 @@
-import {type RouteComponentProps, withRouter} from 'react-router-dom'
+import {useHistory} from 'react-router'
 import hasToken from '../utils/hasToken'
 import PrimaryButton from './PrimaryButton'
 
-const DemoCreateAccountPrimaryButton = (props: RouteComponentProps) => {
-  const {history} = props
+const DemoCreateAccountPrimaryButton = () => {
+  const history = useHistory()
   const path = hasToken() ? '/meetings' : '/create-account?from=demo'
   const label = hasToken() ? 'My Dashboard' : 'Create Free Account'
   const handleClick = () => history.push(path)
@@ -14,4 +14,4 @@ const DemoCreateAccountPrimaryButton = (props: RouteComponentProps) => {
   )
 }
 
-export default withRouter(DemoCreateAccountPrimaryButton)
+export default DemoCreateAccountPrimaryButton
