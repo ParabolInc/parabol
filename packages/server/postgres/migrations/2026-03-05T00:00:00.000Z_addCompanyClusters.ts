@@ -6,6 +6,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .createTable('CompanyCluster')
     .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('name', 'varchar(255)')
+    .addColumn('maxTeamLimitAt', 'timestamptz')
     .execute()
 
   await db.schema
