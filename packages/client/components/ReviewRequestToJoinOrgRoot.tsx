@@ -1,17 +1,14 @@
 import {Suspense, useCallback, useEffect} from 'react'
-import {useHistory, useLocation} from 'react-router'
+import {useHistory, useLocation, useParams} from 'react-router'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {
   type ReviewRequestToJoinOrgModalQuery
 } from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useModal from '../hooks/useModal'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 
 const ReviewRequestToJoinOrgRoot = () => {
-  const {match} = useRouter<{requestId: string}>()
-  const {params} = match
-  const {requestId} = params
+  const {requestId} = useParams<{requestId: string}>()
   const queryRef = useQueryLoaderNow<ReviewRequestToJoinOrgModalQuery>(
     reviewRequestToJoinOrgModalQuery,
     {requestId},

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
-import useRouter from '../hooks/useRouter'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -35,7 +35,7 @@ const ResponseMentioned = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const atmosphere = useAtmosphere()
   const {meeting, response, type, status} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user

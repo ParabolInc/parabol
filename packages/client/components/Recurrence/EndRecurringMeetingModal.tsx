@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import {RRule} from 'rrule'
 import type {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
-import useRouter from '../../hooks/useRouter'
 import EndCheckInMutation from '../../mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
@@ -76,7 +76,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
   const {meetingType, id: meetingId} = meeting
 
   const {onCompleted, onError} = useMutationProps()
-  const {history} = useRouter()
+  const history = useHistory()
 
   const atmosphere = useAtmosphere()
 

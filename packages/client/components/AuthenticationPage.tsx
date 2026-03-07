@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {useHistory} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import GenericAuthentication, {type AuthPageSlug, type GotoAuthPage} from './GenericAuthentication'
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const AuthenticationPage = (props: Props) => {
-  const {history} = useRouter()
+  const history = useHistory()
   const {page} = props
   const {authObj} = useAtmosphere()
   useCanonical(page)

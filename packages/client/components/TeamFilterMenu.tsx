@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {
   TeamFilterMenu_viewer$data,
   TeamFilterMenu_viewer$key
 } from '~/__generated__/TeamFilterMenu_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const TeamFilterMenu = (props: Props) => {
-  const {history} = useRouter()
+  const history = useHistory()
   const {menuProps, viewer: viewerRef} = props
   const viewer = useFragment(
     graphql`

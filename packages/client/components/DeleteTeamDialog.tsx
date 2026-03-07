@@ -1,7 +1,7 @@
 import {useState} from 'react'
+import {useHistory} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
@@ -22,7 +22,7 @@ interface Props {
 
 const DeleteTeamDialog = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {isOpen, onClose, teamId, teamName, teamOrgId, onDeleteTeam} = props
 
   const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()

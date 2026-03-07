@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {TeamsLimitReminderNotification_notification$key} from '~/__generated__/TeamsLimitReminderNotification_notification.graphql'
-import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {Threshold} from '../types/constEnums'
@@ -31,7 +31,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   useEffect(() => {

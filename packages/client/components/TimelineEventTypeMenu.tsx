@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
+import {useHistory} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useRouter from '~/hooks/useRouter'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import type {MenuProps} from '../hooks/useMenu'
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const TimelineEventTypeMenu = (props: Props) => {
-  const {history} = useRouter()
+  const history = useHistory()
   const {menuProps} = props
   const atmosphere = useAtmosphere()
   const eventTypes = [
