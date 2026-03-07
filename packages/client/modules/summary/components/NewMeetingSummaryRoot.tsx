@@ -1,18 +1,15 @@
 import {Suspense} from 'react'
+import {useParams} from 'react-router'
 import newMeetingSummaryQuery, {
   type NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import useRouter from '../../../hooks/useRouter'
 import {LoaderSize} from '../../../types/constEnums'
 import {Loader} from '../../../utils/relay/renderLoader'
 import NewMeetingSummary from './NewMeetingSummary'
 
 const NewMeetingSummaryRoot = () => {
-  const {match} = useRouter<{urlAction?: 'csv'; meetingId: string}>()
-  const {
-    params: {urlAction, meetingId = 'demoMeeting'}
-  } = match
+  const {urlAction, meetingId = 'demoMeeting'} = useParams<{urlAction?: 'csv'; meetingId: string}>()
   const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {
     meetingId,
     first: 5,

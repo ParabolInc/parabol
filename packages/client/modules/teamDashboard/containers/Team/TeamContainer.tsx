@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense, useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route} from 'react-router'
+import {Route, useHistory, useRouteMatch} from 'react-router'
 import {matchPath, Switch} from 'react-router-dom'
 import ErrorBoundary from '~/components/ErrorBoundary'
 import type {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
-import useRouter from '../../../../hooks/useRouter'
 import Team from '../../components/Team/Team'
 
 const TeamDashMain = lazy(
@@ -45,7 +44,8 @@ const TeamContainer = (props: Props) => {
   )
   const {viewer} = data
   const {team, canAccessTeam} = viewer
-  const {history, match} = useRouter()
+  const history = useHistory()
+  const match = useRouteMatch()
   const {location} = window
   const {pathname} = location
   useEffect(() => {

@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {TeamDashTasksTab_viewer$key} from '~/__generated__/TeamDashTasksTab_viewer.graphql'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useRouter from '../../../../hooks/useRouter'
 import lazyPreload from '../../../../utils/lazyPreload'
 import TeamColumnsContainer from '../../containers/TeamColumns/TeamColumnsContainer'
 
@@ -46,7 +46,7 @@ const TeamDashTasksTab = (props: Props) => {
     viewerRef
   )
 
-  const {history} = useRouter()
+  const history = useHistory()
   const team = viewer.team!
   const {id: teamId, teamMembers, teamMemberFilter} = team
 

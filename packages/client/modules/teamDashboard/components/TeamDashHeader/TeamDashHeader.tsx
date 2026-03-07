@@ -3,14 +3,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router'
+import {useHistory, useLocation} from 'react-router'
 import {NavLink} from 'react-router-dom'
 import DashSectionHeader from '~/components/Dashboard/DashSectionHeader'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import InviteTeamMemberAvatar from '~/components/InviteTeamMemberAvatar'
 import Tab from '~/components/Tab/Tab'
 import Tabs from '~/components/Tabs/Tabs'
-import useRouter from '~/hooks/useRouter'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
@@ -126,7 +125,7 @@ const TeamDashHeader = (props: Props) => {
   } = team
   const {name: orgName, id: orgId} = organization
   const canViewInsights = viewerTeamMember?.isLead && hasInsightsFlag
-  const {history} = useRouter()
+  const history = useHistory()
   const location = useLocation()
 
   const tabs = [

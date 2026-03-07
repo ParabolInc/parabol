@@ -1,8 +1,8 @@
 import {useEffect} from 'react'
+import {useHistory} from 'react-router'
 import {AuthTokenRole} from '../types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
-import useRouter from './useRouter'
 
 interface Options {
   role?: AuthTokenRole
@@ -23,7 +23,7 @@ const unauthenticatedDefault = {
 
 const useAuthRoute = (inOptions: Options = {}) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const options = useDeepEqual(inOptions)
 
   const checkAuth = () => {

@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import useRouter from '../../../../hooks/useRouter'
 
 interface Props {
   organizationRef: OrgUsage_organization$key
@@ -26,7 +26,7 @@ const OrgUsage = (props: Props) => {
 
   const {id: orgId, allTeamsCount, orgUserCount} = organization
   const totalUserCount = orgUserCount.activeUserCount + orgUserCount.inactiveUserCount
-  const {history} = useRouter()
+  const history = useHistory()
 
   return (
     <Panel className='mb-4 max-w-[976px]' label='Usage'>

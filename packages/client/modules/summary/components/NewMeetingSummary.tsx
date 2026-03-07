@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {NewMeetingSummaryQuery} from '../../../__generated__/NewMeetingSummaryQuery.graphql'
 import MeetingLockedOverlay from '../../../components/MeetingLockedOverlay'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
-import useRouter from '../../../hooks/useRouter'
 import useSnacksForNewMeetings from '../../../hooks/useSnacksForNewMeetings'
 import {APP_CORS_OPTIONS} from '../../../types/cors'
 import {MEETING_SUMMARY_LABEL} from '../../../utils/constants'
@@ -48,7 +48,7 @@ const NewMeetingSummary = (props: Props) => {
   const {viewer} = data
   const {meeting: newMeeting, teams} = viewer
   const activeMeetings = teams.flatMap((team) => team.activeMeetings).filter(Boolean)
-  const {history} = useRouter()
+  const history = useHistory()
   useEffect(() => {
     if (!newMeeting) {
       history.replace('/meetings')

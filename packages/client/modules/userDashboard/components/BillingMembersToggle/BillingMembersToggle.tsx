@@ -1,17 +1,15 @@
+import {useHistory, useLocation, useRouteMatch} from 'react-router'
 import {matchPath} from 'react-router-dom'
 import ToggleNav, {type Item} from '../../../../components/ToggleNav/ToggleNav'
-import useRouter from '../../../../hooks/useRouter'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 
 interface Props {
   orgId: string
 }
 const BillingMembersToggle = (props: Props) => {
-  const {
-    history,
-    location: {pathname},
-    match
-  } = useRouter()
+  const history = useHistory()
+  const {pathname} = useLocation()
+  const match = useRouteMatch()
   const {orgId} = props
   const areaMatch = matchPath<{area: string}>(pathname, {
     path: `${match.url}/:area?`
