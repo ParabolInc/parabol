@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {
   NewMeetingPhaseTypeEnum,
   RetroMeetingSidebar_meeting$key
 } from '~/__generated__/RetroMeetingSidebar_meeting.graphql'
-import useRouter from '~/hooks/useRouter'
 import isDemoRoute from '~/utils/isDemoRoute'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
@@ -29,7 +29,7 @@ const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'discuss']
 
 const RetroMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {viewerId} = atmosphere
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(

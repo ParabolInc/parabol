@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ComponentPropsWithoutRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useHistory, useParams} from 'react-router'
 import {Link} from 'react-router-dom'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
@@ -12,7 +12,6 @@ import type {AddPokerTemplateMutation$data} from '../../../__generated__/AddPoke
 import type {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import useRouter from '../../../hooks/useRouter'
 import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
 import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
 import {cn} from '../../../ui/cn'
@@ -125,13 +124,11 @@ export const CreateNewActivity = (props: Props) => {
   const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<CreateNewActivityQuery>(query, queryRef)
 
-  const {match} = useRouter<{categoryId?: string}>()
-  const {params} = match
+  const {categoryId} = useParams<{categoryId?: string}>()
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
-    const categoryId = params.categoryId
-    if (!params.categoryId) return defaultActivity
+    if (!categoryId) return defaultActivity
 
     const selectedActivity = SUPPORTED_CUSTOM_ACTIVITIES.find((activity) =>
       activity.includedCategories.includes(categoryId as CategoryID)
@@ -171,7 +168,7 @@ export const CreateNewActivity = (props: Props) => {
           const templateId = res.addReflectTemplate?.reflectTemplate?.id
           if (templateId) {
             history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: params.categoryId,
+              prevCategory: categoryId,
               edit: true
             })
           }
@@ -196,7 +193,7 @@ export const CreateNewActivity = (props: Props) => {
           const templateId = res.addPokerTemplate?.pokerTemplate?.id
           if (templateId) {
             history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: params.categoryId,
+              prevCategory: categoryId,
               edit: true
             })
           }

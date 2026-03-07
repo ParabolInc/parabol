@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
@@ -45,7 +45,7 @@ const ViewerNotOnTeam = (props: Props) => {
     teamInvitation: {teamInvitation, meetingId, teamId, isOnTeam}
   } = viewer
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const history = useHistory()
   const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
   useEffect(() => {

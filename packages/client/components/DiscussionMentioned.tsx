@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
-import useRouter from '../hooks/useRouter'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
 import anonymousAvatar from '../styles/theme/images/anonymous-avatar.svg'
 import fromStageIdToUrl from '../utils/meetings/fromStageIdToUrl'
@@ -46,7 +46,7 @@ const DiscussionMentioned = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const {meeting, author, comment, discussion} = notification
   const authorPicture = author ? author.picture : anonymousAvatar
   const authorName = author ? author.preferredName : 'Anonymous'

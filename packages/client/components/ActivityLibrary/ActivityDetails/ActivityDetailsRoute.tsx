@@ -1,17 +1,14 @@
 import {Suspense} from 'react'
-import {Redirect} from 'react-router'
+import {Redirect, useParams} from 'react-router'
 import activityDetailsQuery, {
   type ActivityDetailsQuery
 } from '~/__generated__/ActivityDetailsQuery.graphql'
 import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
-import useRouter from '../../../hooks/useRouter'
 import {Loader} from '../../../utils/relay/renderLoader'
 import ActivityDetails from './ActivityDetails'
 
 const ActivityDetailsRoute = () => {
-  const {match} = useRouter<{activityId: string}>()
-  const {params} = match
-  const {activityId} = params
+  const {activityId} = useParams<{activityId: string}>()
 
   const queryRef = useQueryLoaderNow<ActivityDetailsQuery>(activityDetailsQuery, {activityId})
 

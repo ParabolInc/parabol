@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
 import {useRef} from 'react'
+import {useLocation} from 'react-router'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
-import useRouter from '../hooks/useRouter'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {
@@ -69,7 +69,7 @@ const DialogSubTitle = styled('div')({
 const GenericAuthentication = (props: Props) => {
   const {goToPage, invitationToken, page, teamName} = props
   const emailRef = useRef<{email: () => string}>()
-  const {location} = useRouter()
+  const location = useLocation()
   const params = new URLSearchParams(location.search)
   const email = params.get('email')
   const authDialogRef = useRef<HTMLDivElement>(null)

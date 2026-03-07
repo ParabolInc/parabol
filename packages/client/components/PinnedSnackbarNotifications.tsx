@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import type {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import mapPromptToJoinOrgToToast from '../mutations/toasts/mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from '../mutations/toasts/mapRequestToJoinOrgToToast'
@@ -49,7 +49,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     `,
     queryRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const atmosphere = useAtmosphere()
   const {viewer} = data
   const notifications = viewer?.pinnedNotifications || {edges: []}

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useHistory} from 'react-router'
 import type {PromoteToBillingLeader_notification$key} from '~/__generated__/PromoteToBillingLeader_notification.graphql'
-import useRouter from '~/hooks/useRouter'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
@@ -26,7 +26,7 @@ const PromoteToBillingLeader = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const history = useHistory()
   const {organization} = notification
   const {name: orgName, id: orgId, picture: orgPicture} = organization
 
