@@ -1,4 +1,3 @@
-import type {RouterProps} from 'react-router'
 import type {
   commitMutation,
   MutationParameters,
@@ -6,6 +5,11 @@ import type {
   RecordSourceSelectorProxy
 } from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
+
+export type NavigateFn = (
+  to: string | Partial<{pathname: string; search: string; hash: string}>,
+  options?: {replace?: boolean; state?: any}
+) => void
 
 export type CompletedHandler<TResponse = any> = (
   response: TResponse,
@@ -18,7 +22,7 @@ export type ErrorHandler = (error: Error) => void
 export interface LocalHandlers {
   onError?: ErrorHandler
   onCompleted?: CompletedHandler
-  history?: RouterProps['history']
+  navigate?: NavigateFn
 }
 
 export interface BaseLocalHandlers {
@@ -26,12 +30,12 @@ export interface BaseLocalHandlers {
   onCompleted: CompletedHandler
 }
 
-export interface HistoryLocalHandler extends BaseLocalHandlers {
-  history: RouterProps['history']
+export interface NavigateLocalHandler extends BaseLocalHandlers {
+  navigate: NavigateFn
 }
 
-export interface HistoryMaybeLocalHandler {
-  history: RouterProps['history']
+export interface NavigateMaybeLocalHandler {
+  navigate: NavigateFn
   onError?: ErrorHandler
   onCompleted?: CompletedHandler
 }
@@ -53,8 +57,8 @@ export interface OnNextBaseContext {
   atmosphere: Atmosphere
 }
 
-export interface OnNextHistoryContext extends OnNextBaseContext {
-  history: RouterProps['history']
+export interface OnNextNavigateContext extends OnNextBaseContext {
+  navigate: NavigateFn
 }
 
 export type OnNextHandler<TSubResponse, C = OnNextBaseContext> = (

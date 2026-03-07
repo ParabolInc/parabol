@@ -1,15 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
 import type {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import type {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import useNavigate from '../hooks/useNavigate'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import mapPromptToJoinOrgToToast from '../mutations/toasts/mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from '../mutations/toasts/mapRequestToJoinOrgToToast'
 import mapTeamsLimitReminderToToast from '../mutations/toasts/mapTeamsLimitReminderToToast'
-import type {OnNextHistoryContext} from '../types/relayMutations'
+import type {OnNextNavigateContext} from '../types/relayMutations'
 import type {Snack} from './Snackbar'
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const typePicker: Partial<
-  Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
+  Record<NotificationEnum, (notification: any, context: OnNextNavigateContext) => Snack | null>
 > = {
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
@@ -49,7 +49,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
     `,
     queryRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const {viewer} = data
   const notifications = viewer?.pinnedNotifications || {edges: []}
@@ -67,7 +67,7 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
 
       const notificationSnack = specificNotificationToastMapper(node, {
         atmosphere,
-        history
+        navigate
       })
 
       if (!notificationSnack) {

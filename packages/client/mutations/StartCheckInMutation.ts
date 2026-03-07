@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {StartCheckInMutation as TStartCheckInMutation} from '../__generated__/StartCheckInMutation.graphql'
-import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartCheckInMutation_team on StartCheckInSuccess {
@@ -28,10 +28,10 @@ const mutation = graphql`
   }
 `
 
-const StartCheckInMutation: StandardMutation<TStartCheckInMutation, HistoryLocalHandler> = (
+const StartCheckInMutation: StandardMutation<TStartCheckInMutation, NavigateLocalHandler> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted}
+  {navigate, onError, onCompleted}
 ) => {
   return commitMutation<TStartCheckInMutation>(atmosphere, {
     mutation,
@@ -51,7 +51,7 @@ const StartCheckInMutation: StandardMutation<TStartCheckInMutation, HistoryLocal
           message: `Sorry, we couldn't create your Google Calendar event`
         })
       }
-      history.push(`/meet/${meetingId}`)
+      navigate(`/meet/${meetingId}`)
     }
   })
 }

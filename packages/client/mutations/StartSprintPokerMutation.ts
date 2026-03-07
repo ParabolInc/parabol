@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {StartSprintPokerMutation as TStartSprintPokerMutation} from '../__generated__/StartSprintPokerMutation.graphql'
-import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartSprintPokerMutation_team on StartSprintPokerSuccess {
@@ -28,11 +28,10 @@ const mutation = graphql`
   }
 `
 
-const StartSprintPokerMutation: StandardMutation<TStartSprintPokerMutation, HistoryLocalHandler> = (
-  atmosphere,
-  variables,
-  {history, onError, onCompleted}
-) => {
+const StartSprintPokerMutation: StandardMutation<
+  TStartSprintPokerMutation,
+  NavigateLocalHandler
+> = (atmosphere, variables, {navigate, onError, onCompleted}) => {
   return commitMutation<TStartSprintPokerMutation>(atmosphere, {
     mutation,
     variables,
@@ -51,7 +50,7 @@ const StartSprintPokerMutation: StandardMutation<TStartSprintPokerMutation, Hist
           message: `Sorry, we couldn't create your Google Calendar event`
         })
       }
-      history.push(`/meet/${meetingId}`)
+      navigate(`/meet/${meetingId}`)
     }
   })
 }

@@ -6,7 +6,7 @@ import type {InviteToTeamMutation_notification$data} from '../__generated__/Invi
 import type {
   LocalHandlers,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -49,7 +49,7 @@ const mutation = graphql`
 
 const popInvitationReceivedToast = (
   notification: InviteToTeamMutation_notification$data['teamInvitationNotification'] | null,
-  {atmosphere, history}: OnNextHistoryContext
+  {atmosphere, navigate}: OnNextNavigateContext
 ) => {
   if (!notification) return
   const {
@@ -67,7 +67,7 @@ const popInvitationReceivedToast = (
     action: {
       label: 'Accept!',
       callback: () => {
-        AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {history})
+        AcceptTeamInvitationMutation(atmosphere, {invitationToken, notificationId}, {navigate})
       }
     }
   })
@@ -82,8 +82,8 @@ export const inviteToTeamNotificationUpdater: SharedUpdater<
 
 export const inviteToTeamNotificationOnNext: OnNextHandler<
   InviteToTeamMutation_notification$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   const {teamInvitationNotification} = payload
   if (!teamInvitationNotification) return
   const isWaiting = !!matchPath(window.location.pathname, {
@@ -97,12 +97,12 @@ export const inviteToTeamNotificationOnNext: OnNextHandler<
     AcceptTeamInvitationMutation(
       atmosphere,
       {invitationToken, notificationId},
-      {history, meetingId}
+      {navigate, meetingId}
     )
   } else {
     popInvitationReceivedToast(teamInvitationNotification, {
       atmosphere,
-      history
+      navigate
     })
   }
 }

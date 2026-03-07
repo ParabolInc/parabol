@@ -1,12 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
 import {RRule} from 'rrule'
 import type {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
+import useNavigate from '../../hooks/useNavigate'
 import EndCheckInMutation from '../../mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
@@ -14,7 +14,7 @@ import EndTeamPromptMutation from '../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../mutations/UpdateRecurrenceSettingsMutation'
 import type {
   CompletedHandler,
-  HistoryMaybeLocalHandler,
+  NavigateMaybeLocalHandler,
   StandardMutation
 } from '../../types/relayMutations'
 import {cn} from '../../ui/cn'
@@ -26,7 +26,7 @@ export const EndMeetingMutationLookup = {
   action: EndCheckInMutation,
   retrospective: EndRetrospectiveMutation,
   poker: EndSprintPokerMutation
-} satisfies Record<MeetingTypeEnum, StandardMutation<any, HistoryMaybeLocalHandler>>
+} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler>>
 
 interface RadioToggleProps {
   checked: boolean
@@ -76,7 +76,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
   const {meetingType, id: meetingId} = meeting
 
   const {onCompleted, onError} = useMutationProps()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const atmosphere = useAtmosphere()
 
@@ -99,7 +99,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
     EndMeetingMutationLookup[meetingType]?.(
       atmosphere,
       {meetingId},
-      {onCompleted: handleCompleted, onError, history}
+      {onCompleted: handleCompleted, onError, navigate}
     )
   }
 
