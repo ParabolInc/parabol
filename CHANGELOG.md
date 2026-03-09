@@ -7,6 +7,9 @@ This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
 ## [13.0.0](https://github.com/ParabolInc/parabol/compare/v12.10.12...v13.0.0) (2026-03-09)
 
+### DO NOT UPDATE TO THIS VERSION
+
+* the migration is broken, go at least straight to 13.0.1
 
 ### ⚠ BREAKING CHANGES
 
