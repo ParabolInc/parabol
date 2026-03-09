@@ -53,6 +53,12 @@ const BATCH_SIZE = 1000
 // All FK constraints referencing Page(id), derived from the migrations schema.
 // Constraint names follow Postgres convention: {table}_{column}_fkey
 const PAGE_ID_FKS = [
+  // EmbeddingsPages_* tables are created dynamically by the embedder (not via migrations).
+  // Known suffixes as of this migration — existence is checked at runtime below.
+  {table: 'EmbeddingsPages_bge_l_en_1p5', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'EmbeddingsPages_ember_1', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'EmbeddingsPages_qwen3v2', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'EmbeddingsPages_qwen3_600M', column: 'pageId', onDelete: 'cascade' as const},
   // 2025-05-12_RBAC.ts
   {table: 'PageExternalAccess', column: 'pageId', onDelete: 'cascade' as const},
   {table: 'PageUserAccess', column: 'pageId', onDelete: 'cascade' as const},
@@ -97,7 +103,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // Step 1: Temporarily add ON UPDATE CASCADE to all FKs referencing Page.id
   // so that the ID updates in Step 2 propagate automatically.
+  const existingTables = new Set((await db.introspection.getTables()).map((t) => t.name))
   for (const fk of PAGE_ID_FKS) {
+    if (!existingTables.has(fk.table)) continue
     const name = `${fk.table}_${fk.column}_fkey`
     await db.schema.alterTable(fk.table).dropConstraint(name).execute()
     await db.schema
