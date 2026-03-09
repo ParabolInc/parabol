@@ -110,26 +110,19 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // Step 2: Batch-encrypt all Page.ids. FKs cascade automatically.
   // idMap tracks oldId → newId for ancestorIds remapping and yDoc link fixing.
-  const idMap = new Map<number, number>()
-  let lastSeenId = 0
-  for (let i = 0; i < 1e6; i++) {
-    const pages = await db
-      .selectFrom('Page')
-      .select('id')
-      .where('id', '>', lastSeenId)
-      .orderBy('id')
-      .limit(BATCH_SIZE)
-      .execute()
+  // Fetch all IDs upfront so pagination isn't affected by the ID updates themselves.
+  const allPages = await db.selectFrom('Page').select('id').execute()
+  const idMap = new Map(allPages.map((page) => [page.id, oldCipher.encrypt(page.id) | 0]))
 
-    if (pages.length === 0) break
-    lastSeenId = pages.at(-1)!.id
-
+  for (let i = 0; i < allPages.length; i += BATCH_SIZE) {
     await Promise.all(
-      pages.map((page) => {
-        const newId = oldCipher.encrypt(page.id) | 0
-        idMap.set(page.id, newId)
-        return db.updateTable('Page').set({id: newId}).where('id', '=', page.id).execute()
-      })
+      allPages.slice(i, i + BATCH_SIZE).map((page) =>
+        db
+          .updateTable('Page')
+          .set({id: idMap.get(page.id)!})
+          .where('id', '=', page.id)
+          .execute()
+      )
     )
   }
 
