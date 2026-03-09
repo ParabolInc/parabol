@@ -11,7 +11,7 @@ export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: numbe
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
-  const pageCode = pageId >>> 0
+  const pageCode = PageId.code(pageId)
 
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {
@@ -34,7 +34,7 @@ export const updateAllBacklinkedPageLinkTitles = async ({
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
-  const pageCode = pageId >>> 0
+  const pageCode = PageId.code(pageId)
 
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {

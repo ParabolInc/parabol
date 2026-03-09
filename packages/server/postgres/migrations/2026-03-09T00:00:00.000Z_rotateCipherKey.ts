@@ -143,6 +143,20 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
   }
 
+  // Step 2b: Remap ancestorIds (plain integer[], not a FK, so CASCADE doesn't apply)
+  const idMap = new Map<number, number>()
+  for (const oldId of allPageIds) {
+    idMap.set(oldId, oldCipher.encrypt(oldId) | 0)
+  }
+
+  for (const [oldId, newId] of idMap) {
+    await sql`
+      UPDATE "Page"
+      SET "ancestorIds" = array_replace("ancestorIds", ${oldId}, ${newId})
+      WHERE ${oldId} = ANY("ancestorIds")
+    `.execute(db)
+  }
+
   if (!isRotation) {
     console.log(
       'rotateCipherKey: Page.id migrated cleanly to pseudo-random, no link re-encryption needed'

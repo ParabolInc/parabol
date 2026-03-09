@@ -13,7 +13,7 @@ const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) =>
   if (!decodedAfter) return null
   const {codes, maxScore} = decodedAfter as {codes: (number | string)[]; maxScore: number}
   if (!Array.isArray(codes) || codes.length < 1 || !maxScore) return null
-  const afterIds = type === 'page' ? codes.map((code) => Number(code) | 0) : codes
+  const afterIds = type === 'page' ? codes.map((code) => PageId.dbId(Number(code))) : codes
   return {afterIds, maxScore}
 }
 export const search: NonNullable<UserResolvers['search']> = async (

@@ -47,7 +47,7 @@ export const publishSummaryPage = async (
   const documentName = PageId.join(meetingTOCpageId)
   await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
     title,
-    pageCode: meetingSummaryPage.id >>> 0,
+    pageCode: PageId.code(meetingSummaryPage.id),
     isDatabase: false
   })
   const {id: pageId} = meetingSummaryPage

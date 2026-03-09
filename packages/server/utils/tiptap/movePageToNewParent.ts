@@ -50,7 +50,7 @@ export const movePageToNewParent = async (
   }
   if (childPage.parentPageId) {
     const documentName = PageId.join(childPage.parentPageId)
-    const pageCode = pageId >>> 0
+    const pageCode = PageId.code(pageId)
     redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
   }
   const trx = await pg.startTransaction().execute()

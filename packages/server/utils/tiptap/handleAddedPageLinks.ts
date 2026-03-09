@@ -3,6 +3,7 @@ import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import {Logger} from '../Logger'
+import {PageId} from '../PageId'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {movePageToNewParent} from './movePageToNewParent'
@@ -18,7 +19,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
     const childPageCode = node.getAttribute('pageCode')!
     if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
       // if a new PageLink was added to the doc, update the backlinks
-      const childPageId = childPageCode | 0
+      const childPageId = PageId.dbId(childPageCode)
       updateBacklinks(parentPageId, childPageId).catch(Logger.log)
     }
     if (node.getAttribute('canonical') !== true) return
@@ -32,7 +33,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           if (key === 'pageCode') {
             const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute('pageCode')
             const addToPageId =
-              newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? newValue | 0 : null
+              newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? PageId.dbId(newValue) : null
             if (addToPageId) {
               await updateBacklinks(parentPageId, addToPageId)
             }
@@ -58,7 +59,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         }
       }).catch(Logger.error)
       if (!newPage) return
-      const pageCode = newPage.id >>> 0
+      const pageCode = PageId.code(newPage.id)
       node.setAttribute('pageCode', pageCode)
     } else {
       // check for duplicates on the same page
@@ -73,7 +74,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // in either case, move the page link from the old parent to new
         // it could also be a cut+paste, where they cut & deleted the page, and pasted in the same or a new page
         try {
-          await movePageToNewParent(userId, childPageCode | 0, parentPageId)
+          await movePageToNewParent(userId, PageId.dbId(childPageCode), parentPageId)
         } catch (e) {
           Logger.error(e)
           const parent = node.parent

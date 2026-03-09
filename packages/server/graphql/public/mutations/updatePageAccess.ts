@@ -94,7 +94,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const dbPageId = PageId.split(pageId)
-  const pageSlug = dbPageId >>> 0
+  const pageSlug = PageId.code(dbPageId)
   const userRole = await dataLoader
     .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})

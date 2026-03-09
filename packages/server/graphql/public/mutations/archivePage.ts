@@ -19,7 +19,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const dbPageId = PageId.split(pageId)
-  const pageCode = dbPageId >>> 0
+  const pageCode = PageId.code(dbPageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
     throw new GraphQLError('Invalid pageId')

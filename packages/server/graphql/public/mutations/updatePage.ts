@@ -21,7 +21,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const dbPageId = PageId.split(pageId)
-  const pageCode = dbPageId >>> 0
+  const pageCode = PageId.code(dbPageId)
   if (sourceSection === 'private' && targetSection === 'shared') {
     throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }

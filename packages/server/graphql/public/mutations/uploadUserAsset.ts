@@ -50,7 +50,7 @@ export const validateScope = async (
     }
   } else if (scope === 'Page') {
     const pageId = PageId.split(scopeKey)
-    const pageCode = pageId >>> 0
+    const pageCode = PageId.code(pageId)
     scopeCode = `${pageCode}`
     const pageAccess = await dataLoader
       .get('pageAccessByPageIdUserId')
