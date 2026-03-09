@@ -84,10 +84,16 @@ export async function up(db: Kysely<any>): Promise<void> {
   const oldCipher = isRotation ? new FeistelCipher(fnv1aHash(oldSecret.slice(0, 10))) : newCipher
 
   // Change the default from sequential to pseudorandom for future inserts
-  await sql`ALTER TABLE "Page" ALTER COLUMN "id" DROP DEFAULT`.execute(db)
-  await sql`ALTER TABLE "Page" ALTER COLUMN "id" SET DEFAULT (floor(random() * 4294967295 - 2147483648)::integer)`.execute(
-    db
-  )
+  await db.schema
+    .alterTable('Page')
+    .alterColumn('id', (col) => col.dropDefault())
+    .execute()
+  await db.schema
+    .alterTable('Page')
+    .alterColumn('id', (col) =>
+      col.setDefault(sql`floor(random() * 4294967295 - 2147483648)::integer`)
+    )
+    .execute()
 
   // Step 1: Temporarily add ON UPDATE CASCADE to all FKs referencing Page.id
   // so that the ID updates in Step 2 propagate automatically.
@@ -129,11 +135,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   // Step 2b: Remap ancestorIds (plain integer[], not a FK, so CASCADE doesn't apply)
   for (const [oldId, newId] of idMap) {
-    await sql`
-      UPDATE "Page"
-      SET "ancestorIds" = array_replace("ancestorIds", ${oldId}, ${newId})
-      WHERE ${oldId} = ANY("ancestorIds")
-    `.execute(db)
+    await db
+      .updateTable('Page')
+      .set({ancestorIds: sql`array_replace("ancestorIds", ${oldId}, ${newId})`})
+      .where(sql`${oldId} = ANY("ancestorIds")`)
+      .execute()
   }
 
   if (!isRotation) {
