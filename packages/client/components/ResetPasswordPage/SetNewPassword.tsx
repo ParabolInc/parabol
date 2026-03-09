@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
-import {useHistory, useParams} from 'react-router'
+import {useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps from '../../hooks/useMutationProps'
+import useNavigate from '../../hooks/useNavigate'
 import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
 import {passwordStrength} from '../../shared/passwordStrength'
 import {Security} from '../../types/constEnums'
@@ -47,7 +48,7 @@ const validatePassword = (password: string) => {
 }
 
 const SetNewPassword = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {token} = useParams<{token: string}>()
   const atmosphere = useAtmosphere()
   useCanonical('reset-password')
@@ -73,7 +74,7 @@ const SetNewPassword = () => {
     if (passwordRes.error) return
     const {value: newPassword} = passwordRes
     submitMutation()
-    ResetPasswordMutation(atmosphere, {newPassword, token}, {onError, onCompleted, history})
+    ResetPasswordMutation(atmosphere, {newPassword, token}, {onError, onCompleted, navigate})
   }
   return (
     <TeamInvitationWrapper>

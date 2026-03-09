@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import {handleSuccessfulLogin} from '~/utils/handleSuccessfulLogin'
 import type {LoginWithGoogleMutation as TLoginWithGoogleMutation} from '../__generated__/LoginWithGoogleMutation.graphql'
-import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 import {handleAcceptTeamInvitationErrors} from './AcceptTeamInvitationMutation'
 import handleAuthenticationRedirect from './handlers/handleAuthenticationRedirect'
 
@@ -32,10 +32,10 @@ const mutation = graphql`
     }
   }
 `
-const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, HistoryLocalHandler> = (
+const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, NavigateLocalHandler> = (
   atmosphere,
   variables,
-  {onError, onCompleted, history}
+  {onError, onCompleted, navigate}
 ) => {
   return commitMutation<TLoginWithGoogleMutation>(atmosphere, {
     mutation,
@@ -52,7 +52,7 @@ const LoginWithGoogleMutation: StandardMutation<TLoginWithGoogleMutation, Histor
 
         handleAuthenticationRedirect(acceptTeamInvitation, {
           atmosphere,
-          history,
+          navigate,
           redirectPath
         })
       }

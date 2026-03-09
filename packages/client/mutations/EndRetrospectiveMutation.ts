@@ -7,9 +7,9 @@ import onMeetingRoute from '~/utils/onMeetingRoute'
 import type {EndRetrospectiveMutation as TEndRetrospectiveMutation} from '../__generated__/EndRetrospectiveMutation.graphql'
 import {RetroDemo} from '../types/constEnums'
 import type {
-  HistoryMaybeLocalHandler,
+  NavigateMaybeLocalHandler,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -80,26 +80,26 @@ const mutation = graphql`
 
 export const endRetrospectiveTeamOnNext: OnNextHandler<
   EndRetrospectiveMutation_team$data,
-  OnNextHistoryContext
+  OnNextNavigateContext
 > = (payload, context) => {
   const {isKill, meeting} = payload
-  const {atmosphere, history} = context
+  const {atmosphere, navigate} = context
   if (!meeting) return
   const {id: meetingId, teamId, summaryPageId} = meeting
   if (meetingId === RetroDemo.MEETING_ID) {
     if (isKill) {
       window.localStorage.removeItem('retroDemo')
-      history.push('/create-account')
+      navigate('/create-account')
     } else {
-      history.push('/retrospective-demo-summary')
+      navigate('/retrospective-demo-summary')
     }
   } else if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
-      history.push(`/team/${teamId}`)
+      navigate(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      history.push(`/pages/${pageCode}`)
+      navigate(`/pages/${pageCode}`)
     }
   }
 }
@@ -122,8 +122,8 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
 
 const EndRetrospectiveMutation: StandardMutation<
   TEndRetrospectiveMutation,
-  HistoryMaybeLocalHandler
-> = (atmosphere, variables, {onError, onCompleted, history}) => {
+  NavigateMaybeLocalHandler
+> = (atmosphere, variables, {onError, onCompleted, navigate}) => {
   return commitMutation<TEndRetrospectiveMutation>(atmosphere, {
     mutation,
     variables,
@@ -140,7 +140,7 @@ const EndRetrospectiveMutation: StandardMutation<
       }
       endRetrospectiveTeamOnNext(res.endRetrospective as any, {
         atmosphere,
-        history
+        navigate
       })
     },
     onError

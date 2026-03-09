@@ -3,7 +3,6 @@ import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
 import {commitMutation, type Disposable} from 'react-relay'
-import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
   type ConcreteRequest,
@@ -31,6 +30,7 @@ import type {InviteToTeamMutation_notification$data} from './__generated__/Invit
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
+import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
@@ -62,7 +62,7 @@ interface Subscriptions {
 }
 
 export type SubscriptionRequestor = {
-  (atmosphere: Atmosphere, variables: any, router: {history: RouterProps['history']}): Disposable
+  (atmosphere: Atmosphere, variables: any, router: {navigate: NavigateFn}): Disposable
   key: string
 }
 
@@ -341,7 +341,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {history: RouterProps['history']}
+    router: {navigate: NavigateFn}
   ) => {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]
