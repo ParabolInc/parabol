@@ -12,7 +12,7 @@ import {selectDescendantPages} from '../../../postgres/select'
 import type {DB} from '../../../postgres/types/pg'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {DataLoaderWorker} from '../../graphql'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
@@ -93,7 +93,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
+  const pageSlug = PageId.publicIdFromClient(pageId)
+  const dbPageId = await PageId.dbIdFromPublicId(pageSlug)
+  if (!dbPageId) throw new GraphQLError('Page not found')
   const userRole = await dataLoader
     .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})

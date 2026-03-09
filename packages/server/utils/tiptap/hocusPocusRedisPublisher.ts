@@ -6,7 +6,6 @@ import {
 } from '@hocuspocus/server'
 import {unpack} from 'msgpackr'
 import {SubscriptionChannel} from '../../../client/types/constEnums'
-import {CipherId} from '../CipherId'
 import publish from '../publish'
 import type {PublicPageNotificationPayload} from '../publishPageNotification'
 import RedisInstance from '../RedisInstance'
@@ -38,16 +37,18 @@ export class RedisPublisher implements Extension {
   }
 
   private getChannelName(documentName: string) {
-    const [dbId] = CipherId.fromClient(documentName)
-    return `publicPage:${dbId}`
+    const publicId = Number(documentName.split(':')[1])
+    return `publicPage:${publicId}`
   }
   async afterLoadDocument({documentName, document}: afterLoadDocumentPayload) {
-    this.sub.subscribe(this.getChannelName(documentName))
-    this.documentConnections.set(this.getChannelName(documentName), document)
+    const channelName = this.getChannelName(documentName)
+    this.sub.subscribe(channelName)
+    this.documentConnections.set(channelName, document)
   }
 
   async afterUnloadDocument({documentName}: afterUnloadDocumentPayload) {
-    await this.sub.unsubscribe(this.getChannelName(documentName))
-    this.documentConnections.delete(this.getChannelName(documentName))
+    const channelName = this.getChannelName(documentName)
+    await this.sub.unsubscribe(channelName)
+    this.documentConnections.delete(channelName)
   }
 }

@@ -4,7 +4,7 @@ import sleep from 'parabol-client/utils/sleep'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus, redisHocusPocus} from '../../../../hocusPocus'
-import {CipherId} from '../../../../utils/CipherId'
+import getKysely from '../../../../postgres/getKysely'
 import type {InternalContext} from '../../../graphql'
 import {generateMeetingSummaryPage} from './generateMeetingSummaryPage'
 
@@ -30,7 +30,14 @@ export const streamSummaryBlocksToPage = async (
   info: GraphQLResolveInfo
 ) => {
   const contentGenerator = await generateMeetingSummaryPage(meetingId, context, info)
-  const documentName = CipherId.toClient(pageId, 'page')
+  const pg = getKysely()
+  const pageRow = await pg
+    .selectFrom('Page')
+    .select('publicId')
+    .where('id', '=', pageId)
+    .executeTakeFirst()
+  if (!pageRow) return
+  const documentName = `page:${pageRow.publicId}`
   const unlock = await redisHocusPocus.lockDocument(documentName)
   const conn = await hocuspocus.openDirectConnection(documentName, {})
   let lastBlock: XmlElement

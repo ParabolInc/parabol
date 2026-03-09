@@ -3,7 +3,7 @@ import {sql} from 'kysely'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import type {MutationResolvers} from '../resolverTypes'
@@ -18,7 +18,9 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const [dbPageId, pageCode] = CipherId.fromClient(pageId)
+  const publicId = PageId.publicIdFromClient(pageId)
+  const dbPageId = await PageId.dbIdFromPublicId(publicId)
+  if (!dbPageId) throw new GraphQLError('Invalid pageId')
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
     throw new GraphQLError('Invalid pageId')
@@ -34,10 +36,15 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
       .where('id', '=', dbPageId)
       .execute()
-    const documentName = page.parentPageId ? CipherId.toClient(page.parentPageId, 'page') : null
+    const parentPage = page.parentPageId
+      ? await dataLoader.get('pages').load(page.parentPageId)
+      : null
+    const documentName = parentPage ? `page:${parentPage.publicId}` : null
     await Promise.all([
       documentName &&
-        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode}),
+        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {
+          pageCode: publicId
+        }),
       // this will also set deletedAt/deletedBy, but there may be a bug that causes it to fail
       removeAllBacklinkedPageLinkBlocks({pageId: dbPageId})
     ])
@@ -56,10 +63,10 @@ const archivePage: MutationResolvers['archivePage'] = async (
         }
       } else if (parentPage) {
         // add the canonical page link & let the reconciler take care of the rest
-        const documentName = CipherId.toClient(page.parentPageId, 'page')
+        const documentName = `page:${parentPage.publicId}`
         await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
           title: page.title || undefined,
-          pageCode,
+          pageCode: publicId,
           isDatabase: page.isDatabase
         })
       }
@@ -103,7 +110,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
         .execute()
     }
   }
-  const data = {pageId: dbPageId, action}
+  const data = {pageId: dbPageId, publicId, action}
   await publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
   return data
 }

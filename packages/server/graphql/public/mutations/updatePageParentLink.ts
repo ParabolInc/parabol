@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updatePageParentLink: MutationResolvers['updatePageParentLink'] = async (
@@ -9,7 +9,9 @@ const updatePageParentLink: MutationResolvers['updatePageParentLink'] = async (
   {dataLoader}
 ) => {
   const pg = getKysely()
-  const [dbPageId] = CipherId.fromClient(pageId)
+  const publicId = PageId.publicIdFromClient(pageId)
+  const dbPageId = await PageId.dbIdFromPublicId(publicId)
+  if (!dbPageId) throw new GraphQLError('Invalid pageId')
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
   if (!page) throw new GraphQLError('Invalid pageId')

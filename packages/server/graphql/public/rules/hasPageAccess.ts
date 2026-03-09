@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -18,7 +18,9 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
       }
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
-      const dbPageId = dotPath.startsWith('source') ? pageId : CipherId.fromClient(pageId)[0]
+      const dbPageId = dotPath.startsWith('source')
+        ? pageId
+        : await PageId.dbIdFromPublicId(PageId.publicIdFromClient(pageId))
       const userRole = await dataLoader
         .get('pageAccessByPageIdUserId')
         .load({pageId: dbPageId, userId: viewerId})

@@ -8,7 +8,7 @@ import pageAccessRequestEmailCreator from '../../../email/pageAccessRequestEmail
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import isValid from '../../isValid'
 import type {MutationResolvers, PageRoleEnum} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
@@ -22,7 +22,9 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const [dbPageId, pageSlug] = CipherId.fromClient(pageId)
+  const pageSlug = PageId.publicIdFromClient(pageId)
+  const dbPageId = await PageId.dbIdFromPublicId(pageSlug)
+  if (!dbPageId) throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
 
   const [viewer, page, existingRequest, owners] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),

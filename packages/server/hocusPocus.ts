@@ -14,11 +14,11 @@ import {publishToEmbedder} from './graphql/mutations/helpers/publishToEmbedder'
 import getKysely from './postgres/getKysely'
 import type {Pageroleenum} from './postgres/types/pg'
 import {getAuthTokenFromCookie} from './utils/authCookie'
-import {CipherId} from './utils/CipherId'
 import getRedis from './utils/getRedis'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import logError from './utils/logError'
+import {PageId} from './utils/PageId'
 import {publishPageNotification} from './utils/publishPageNotification'
 import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
 import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
@@ -116,18 +116,19 @@ export const hocuspocus = new Hocuspocus({
       }
       return {userId}
     }
-    const [dbId] = CipherId.fromClient(documentName)
-    if (dbId === 0) {
-      const error = new Error(`Invalid document request from client: ${documentName}`)
-      logError(error, {userId, tags: {dbId, documentName}})
-      throw error
-    }
+    const publicIdStr = documentName.split(':')[1] ?? ''
     const pg = getKysely()
     const page = await pg
       .selectFrom('Page')
-      .select('isMeetingTOC')
-      .where('id', '=', dbId)
-      .executeTakeFirstOrThrow()
+      .select(['id', 'isMeetingTOC'])
+      .where('publicId', '=', publicIdStr)
+      .executeTakeFirst()
+    if (!page) {
+      const error = new Error(`Invalid document request from client: ${documentName}`)
+      logError(error, {userId, tags: {publicId: publicIdStr, documentName}})
+      throw error
+    }
+    const dbId = page.id
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()
@@ -164,10 +165,13 @@ export const hocuspocus = new Hocuspocus({
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({documentName}) => {
-        const [dbId, , entity] = CipherId.fromClient(documentName)
+        const [entity, code] = documentName.split(':')
         if (entity === 'meeting') {
           return Buffer.from(encodeStateAsUpdate(new Doc()))
         }
+        const publicId = Number(code)
+        const dbId = await PageId.dbIdFromPublicId(publicId)
+        if (!dbId) return Buffer.from(encodeStateAsUpdate(new Doc()))
         const pg = getKysely()
         const res = await pg
           .selectFrom('Page')
@@ -188,8 +192,11 @@ export const hocuspocus = new Hocuspocus({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [dbId, , entity] = CipherId.fromClient(documentName)
+        const [entity, code] = documentName.split(':')
         if (entity === 'meeting') return
+        const publicId = Number(code)
+        const dbId = await PageId.dbIdFromPublicId(publicId)
+        if (!dbId) return
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const {updatedTitle} = await tracer.trace(

@@ -5,7 +5,6 @@ import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {getTSV} from '../../../embedder/getSupportedLanguages'
 import {inferLanguage} from '../../../embedder/inferLanguage'
-import {CipherId} from '../../utils/CipherId'
 import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
 import getKysely from '../getKysely'
 
@@ -128,6 +127,7 @@ export const getPagesByRRF = async (params: Params) => {
     .selectAll('ChunkMax')
     .innerJoin('Page', 'Page.id', 'ChunkMax.pageId')
     .$narrowType<{pageId: NotNull}>()
+    .select(['Page.publicId'])
     .select((eb) =>
       tsHeadline(eb, tsvLanguage, 'Page.plaintextContent', 'webQuery', {
         StartSel: '<b>',
@@ -148,7 +148,7 @@ export const getPagesByRRF = async (params: Params) => {
         JSON.stringify({
           codes: results
             .filter((r) => r.k_similarity && r.v_similarity)
-            .map((r) => CipherId.encrypt(r.pageId))
+            .map((r) => r.publicId)
             .join(','),
           maxScore: results.at(-1)?.score ?? 1
         })

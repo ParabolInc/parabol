@@ -6,7 +6,6 @@ import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {CipherId} from '../CipherId'
 import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 
@@ -49,9 +48,20 @@ export const movePageToNewParent = async (
     throw new GraphQLError(`Circular reference found. A page cannot be nested in itself`)
   }
   if (childPage.parentPageId) {
-    const documentName = CipherId.toClient(childPage.parentPageId, 'page')
-    const pageCode = CipherId.encrypt(pageId)
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    const [parentRow, childRow] = await Promise.all([
+      pg
+        .selectFrom('Page')
+        .select('publicId')
+        .where('id', '=', childPage.parentPageId)
+        .executeTakeFirst(),
+      pg.selectFrom('Page').select('publicId').where('id', '=', pageId).executeTakeFirst()
+    ])
+    if (parentRow && childRow) {
+      const documentName = `page:${parentRow.publicId}`
+      redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {
+        pageCode: childRow.publicId
+      })
+    }
   }
   const trx = await pg.startTransaction().execute()
 

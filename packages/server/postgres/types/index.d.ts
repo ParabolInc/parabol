@@ -135,7 +135,7 @@ export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussi
 export type Page = ExtractTypeFromQueryBuilderSelect<typeof selectPages> & {
   userSortOrder?: string | null
 }
-export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId'> & {
+export type PagePartial = Pick<Page, 'id' | 'title' | 'teamId' | 'publicId'> & {
   __typename: 'Page' | 'PagePreview'
 }
 export type PagePreview = PagePartial & {

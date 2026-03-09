@@ -3,7 +3,6 @@ import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import {redisHocusPocus} from '../../../../hocusPocus'
 import getKysely from '../../../../postgres/getKysely'
 import {getUserId} from '../../../../utils/authorization'
-import {CipherId} from '../../../../utils/CipherId'
 import {Logger} from '../../../../utils/Logger'
 import {createNewPage} from '../../../../utils/tiptap/createNewPage'
 import type {InternalContext} from '../../../graphql'
@@ -44,12 +43,15 @@ export const publishSummaryPage = async (
       ]
     }
   })
-  const documentName = CipherId.toClient(meetingTOCpageId, 'page')
-  await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
-    title,
-    pageCode: CipherId.encrypt(meetingSummaryPage.id),
-    isDatabase: false
-  })
+  const tocPage = await dataLoader.get('pages').load(meetingTOCpageId)
+  if (tocPage) {
+    const documentName = `page:${tocPage.publicId}`
+    await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
+      title,
+      pageCode: meetingSummaryPage.publicId,
+      isDatabase: false
+    })
+  }
   const {id: pageId} = meetingSummaryPage
   await pg
     .updateTable('NewMeeting')

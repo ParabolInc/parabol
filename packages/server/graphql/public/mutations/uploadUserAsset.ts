@@ -14,8 +14,8 @@ import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
+import {PageId} from '../../../utils/PageId'
 import type {DataLoaderWorker} from '../../graphql'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
@@ -49,11 +49,12 @@ export const validateScope = async (
       return {error: {message: 'scopeKey must match one of your organizations'}}
     }
   } else if (scope === 'Page') {
-    const [pageId, pageCode] = CipherId.fromClient(scopeKey)
-    scopeCode = `${pageCode}`
-    const pageAccess = await dataLoader
-      .get('pageAccessByPageIdUserId')
-      .load({pageId, userId: viewerId})
+    const publicId = PageId.publicIdFromClient(scopeKey)
+    scopeCode = `${publicId}`
+    const dbPageId = await PageId.dbIdFromPublicId(publicId)
+    const pageAccess = dbPageId
+      ? await dataLoader.get('pageAccessByPageIdUserId').load({pageId: dbPageId, userId: viewerId})
+      : null
     if (!pageAccess || pageAccess === 'viewer') {
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }

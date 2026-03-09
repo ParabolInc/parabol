@@ -3,7 +3,7 @@ import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -20,7 +20,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const [dbPageId, pageCode] = CipherId.fromClient(pageId)
+  const publicId = PageId.publicIdFromClient(pageId)
+  const dbPageId = await PageId.dbIdFromPublicId(publicId)
+  if (!dbPageId) throw new GraphQLError('Invalid pageId')
   if (sourceSection === 'private' && targetSection === 'shared') {
     throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }
@@ -111,9 +113,13 @@ const updatePage: MutationResolvers['updatePage'] = async (
   if (page.parentPageId) {
     // if it had a parent, ensure the canonical page link was removed from the old parent.
     // This may get called from the client for faster UI updates, but we call it here for posterity
-    const {parentPageId: oldParentpageId} = page
-    const documentName = CipherId.toClient(oldParentpageId, 'page')
-    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
+    const oldParent = await dataLoader.get('pages').load(page.parentPageId)
+    if (oldParent) {
+      const documentName = `page:${oldParent.publicId}`
+      redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {
+        pageCode: publicId
+      })
+    }
   }
   const data = {pageId: dbPageId}
   const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)

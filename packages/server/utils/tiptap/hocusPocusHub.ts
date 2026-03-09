@@ -1,22 +1,24 @@
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
-import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 
 export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {
   const pg = getKysely()
   const backLinks = await pg
     .selectFrom('PageBacklink')
-    .select('fromPageId')
-    .where('toPageId', '=', pageId)
+    .innerJoin('Page as fromPage', 'fromPage.id', 'PageBacklink.fromPageId')
+    .innerJoin('Page as toPage', 'toPage.id', 'PageBacklink.toPageId')
+    .select(['fromPage.publicId as fromPublicId', 'toPage.publicId as toPublicId'])
+    .where('PageBacklink.toPageId', '=', pageId)
     .execute()
-  const pageCode = CipherId.encrypt(pageId)
 
   await Promise.all(
-    backLinks.map(async ({fromPageId}) => {
-      const documentName = CipherId.toClient(fromPageId, 'page')
-      await redisHocusPocus.handleEvent('removeBacklinkedPageLinkBlocks', documentName, {pageCode})
+    backLinks.map(async ({fromPublicId, toPublicId}) => {
+      const documentName = `page:${fromPublicId}`
+      await redisHocusPocus.handleEvent('removeBacklinkedPageLinkBlocks', documentName, {
+        pageCode: toPublicId
+      })
     })
   )
 }
@@ -31,16 +33,17 @@ export const updateAllBacklinkedPageLinkTitles = async ({
   const pg = getKysely()
   const backLinks = await pg
     .selectFrom('PageBacklink')
-    .select('fromPageId')
-    .where('toPageId', '=', pageId)
+    .innerJoin('Page as fromPage', 'fromPage.id', 'PageBacklink.fromPageId')
+    .innerJoin('Page as toPage', 'toPage.id', 'PageBacklink.toPageId')
+    .select(['fromPage.publicId as fromPublicId', 'toPage.publicId as toPublicId'])
+    .where('PageBacklink.toPageId', '=', pageId)
     .execute()
-  const pageCode = CipherId.encrypt(pageId)
 
   await Promise.all(
-    backLinks.map(async ({fromPageId}) => {
-      const documentName = CipherId.toClient(fromPageId, 'page')
+    backLinks.map(async ({fromPublicId, toPublicId}) => {
+      const documentName = `page:${fromPublicId}`
       await redisHocusPocus.handleEvent('updateBacklinkedPageLinkTitles', documentName, {
-        pageCode,
+        pageCode: toPublicId,
         title
       })
     })
@@ -56,8 +59,10 @@ export const broadcastUserMentionUpdate = async (
   const targetPageIds =
     pageIds ?? (await dataLoader.get('pageAccessByUserId').load(userId)).map((p) => p.pageId)
 
-  targetPageIds.forEach((pageId) => {
-    const documentName = CipherId.toClient(pageId, 'page')
+  const pages = await dataLoader.get('pages').loadMany(targetPageIds)
+  pages.forEach((page) => {
+    if (!page || page instanceof Error) return
+    const documentName = `page:${page.publicId}`
     const payload = {userId, preferredName}
     redisHocusPocus.handleEvent('updateUserMention', documentName, payload, true).catch(Logger.log)
   })

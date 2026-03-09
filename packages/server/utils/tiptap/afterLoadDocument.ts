@@ -1,8 +1,8 @@
 import type {Extension} from '@hocuspocus/server'
 import * as Y from 'yjs'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
-import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {PageId} from '../PageId'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
@@ -13,7 +13,9 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   documentName
 }) => {
   syncPageUserMentionNames(document).catch(Logger.log)
-  const [pageId] = CipherId.fromClient(documentName)
+  const publicId = Number(documentName.split(':')[1])
+  const pageId = await PageId.dbIdFromPublicId(publicId)
+  if (!pageId) return
   const root = document.getXmlFragment('default')
   root.observeDeep((events) => {
     // Ignore any transactions where the page link is "moved" (deleted, then inserted)

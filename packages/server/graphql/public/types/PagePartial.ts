@@ -1,13 +1,12 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {CipherId} from '../../../utils/CipherId'
 import type {ReqResolvers} from './ReqResolvers'
 
 const PagePartial: ReqResolvers<'PagePartial'> = {
   __resolveType: (source) =>
     (source as any).__typename === 'PagePreview' ? 'PagePreview' : 'Page',
-  id: ({id, __typename}) => {
+  id: ({publicId, __typename}) => {
     const prefix = __typename === 'PagePreview' ? 'pagePreview' : 'page'
-    return CipherId.toClient(id, prefix)
+    return `${prefix}:${publicId}`
   },
   team: async ({teamId}, _args, {authToken, dataLoader}) => {
     if (!teamId) return null

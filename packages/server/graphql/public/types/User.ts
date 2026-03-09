@@ -28,12 +28,12 @@ import {
   selectTasks
 } from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
+import {PageId} from '../../../utils/PageId'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -889,7 +889,7 @@ const User: ReqResolvers<'User'> = {
 
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId
-      ? CipherId.fromClient(parentPageId)[0]
+      ? await PageId.dbIdFromPublicId(PageId.publicIdFromClient(parentPageId))
       : parentPageId === null
         ? null
         : undefined

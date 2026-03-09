@@ -2,8 +2,8 @@ import * as Y from 'yjs'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
-import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {PageId} from '../PageId'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
 import {movePageToNewParent} from './movePageToNewParent'
@@ -19,8 +19,10 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
     const childPageCode = node.getAttribute('pageCode')!
     if (childPageCode !== NEW_PAGE_SENTINEL_CODE) {
       // if a new PageLink was added to the doc, update the backlinks
-      const childPageId = CipherId.decrypt(childPageCode)
-      updateBacklinks(parentPageId, childPageId).catch(Logger.log)
+      const childPageId = await PageId.dbIdFromPublicId(Number(childPageCode))
+      if (childPageId) {
+        updateBacklinks(parentPageId, childPageId).catch(Logger.log)
+      }
     }
     if (node.getAttribute('canonical') !== true) return
     if (childPageCode === NEW_PAGE_SENTINEL_CODE) {
@@ -33,7 +35,9 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
           if (key === 'pageCode') {
             const newValue = (e.target as Y.XmlElement<PageLinkBlockAttrs>).getAttribute('pageCode')
             const addToPageId =
-              newValue && newValue !== NEW_PAGE_SENTINEL_CODE ? CipherId.decrypt(newValue) : null
+              newValue && newValue !== NEW_PAGE_SENTINEL_CODE
+                ? await PageId.dbIdFromPublicId(Number(newValue))
+                : null
             if (addToPageId) {
               await updateBacklinks(parentPageId, addToPageId)
             }
@@ -59,8 +63,7 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         }
       }).catch(Logger.error)
       if (!newPage) return
-      const pageCode = CipherId.encrypt(newPage.id)
-      node.setAttribute('pageCode', pageCode)
+      node.setAttribute('pageCode', Number(newPage.publicId))
     } else {
       // check for duplicates on the same page
       const existingNode = getPageLinks(e.target.doc, true).find(
@@ -74,7 +77,10 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
         // in either case, move the page link from the old parent to new
         // it could also be a cut+paste, where they cut & deleted the page, and pasted in the same or a new page
         try {
-          await movePageToNewParent(userId, CipherId.decrypt(childPageCode), parentPageId)
+          const childPageId = await PageId.dbIdFromPublicId(Number(childPageCode))
+          if (childPageId) {
+            await movePageToNewParent(userId, childPageId, parentPageId)
+          }
         } catch (e) {
           Logger.error(e)
           const parent = node.parent

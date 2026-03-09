@@ -22,7 +22,7 @@ import {
   getDimensionNames,
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
-import {CipherId} from '../utils/CipherId'
+import getKysely from '../postgres/getKysely'
 import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
 
 const insightBox = {
@@ -194,8 +194,12 @@ export const makeSummaryEmailV2 = async (
     paddingLeft: '12px',
     paddingRight: '12px'
   }
-  const pageCode = CipherId.encrypt(pageId)
-  const CTAURL = makeAppURL(appOrigin, `/pages/${pageCode}`)
+  const pageRow = await getKysely()
+    .selectFrom('Page')
+    .select('publicId')
+    .where('id', '=', pageId)
+    .executeTakeFirst()
+  const CTAURL = makeAppURL(appOrigin, `/pages/${pageRow?.publicId ?? pageId}`)
   const endLabel = endTime.format('MMM D, YYYY')
   const title = `${meetingName} Summary - ${endLabel}`
   const participantLabel = `${meetingMembers.length} ${plural(meetingMembers.length, 'Participant')}`

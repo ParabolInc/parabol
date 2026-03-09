@@ -3,17 +3,18 @@ import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
 import {getUserId} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
-import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
+import type {UserResolvers} from '../resolverTypes'
 
-const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) => {
+const decodeCursor = (after: string | null | undefined) => {
   if (!after) return null
   const decodedAfter = JSON.parse(atob(after))
   if (!decodedAfter) return null
   const {codes, maxScore} = decodedAfter as {codes: (number | string)[]; maxScore: number}
   if (!Array.isArray(codes) || codes.length < 1 || !maxScore) return null
-  const afterIds = type === 'page' ? codes.map((code) => CipherId.decrypt(Number(code))) : codes
+  // page cursors store publicIds directly — no decryption needed
+  const afterIds = codes.map((code) => Number(code))
   return {afterIds, maxScore}
 }
 export const search: NonNullable<UserResolvers['search']> = async (
@@ -75,17 +76,18 @@ export const search: NonNullable<UserResolvers['search']> = async (
         )
         .orderBy('Page.updatedAt', 'desc')
         .limit(first + 1)
-        .select('Page.id')
+        .select(['Page.id', 'Page.publicId'])
         .execute()
       const edges = results
         .map((page) => ({
           ...noQueryEdge,
           nodeTypeName: 'page' as const,
-          nodeId: page.id
+          nodeId: page.id,
+          publicId: page.publicId
         }))
         .slice(0, first)
       const lastEdge = edges.at(-1)
-      const endCursor = lastEdge ? CipherId.toClient(lastEdge.nodeId, 'page') : undefined
+      const endCursor = lastEdge ? PageId.toClient(lastEdge.publicId, 'page') : undefined
       return {
         pageInfo: {
           hasNextPage: results.length > first,
@@ -138,7 +140,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       query,
       queryVector,
       dateRange,
-      after: decodeCursor(after, type),
+      after: decodeCursor(after),
       alpha,
       k,
       first,
@@ -150,7 +152,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       query,
       queryVector,
       dateRange,
-      after: decodeCursor(after, type),
+      after: decodeCursor(after),
       alpha,
       k,
       first,
