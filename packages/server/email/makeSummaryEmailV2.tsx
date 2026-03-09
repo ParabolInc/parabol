@@ -11,6 +11,7 @@ import {Text} from '@react-email/text'
 import dayjs from 'dayjs'
 import type {GraphQLResolveInfo} from 'graphql'
 import {Fragment} from 'react'
+import {PageId} from '../../client/shared/gqlIds/PageId'
 import {PALETTE} from '../../client/styles/paletteV3'
 import logoImg from '../../client/styles/theme/images/brand/parabol_logo_transparent@1X.png'
 import makeAppURL from '../../client/utils/makeAppURL'
@@ -22,7 +23,6 @@ import {
   getDimensionNames,
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
-import {PageId} from '../shared/gqlIds/PageId'
 import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
 
 const insightBox = {

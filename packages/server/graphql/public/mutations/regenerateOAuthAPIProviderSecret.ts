@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
-import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 

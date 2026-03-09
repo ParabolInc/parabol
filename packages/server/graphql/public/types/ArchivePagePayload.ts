@@ -1,4 +1,4 @@
-import {PageId} from '../../../shared/gqlIds/PageId'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import type {ArchivePageActionEnum, ArchivePagePayloadResolvers} from '../resolverTypes'
 
 export type ArchivePagePayloadSource = {

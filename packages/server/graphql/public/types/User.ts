@@ -8,6 +8,7 @@ import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import sortByTier from 'parabol-client/utils/sortByTier'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {positionBefore} from '../../../../client/shared/sortOrder'
 import {
@@ -27,7 +28,6 @@ import {
   selectPages,
   selectTasks
 } from '../../../postgres/select'
-import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'

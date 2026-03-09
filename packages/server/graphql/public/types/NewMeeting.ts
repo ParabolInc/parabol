@@ -1,6 +1,6 @@
 import MeetingSeriesId from '../../../../client/shared/gqlIds/MeetingSeriesId'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
-import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
 import isMeetingLocked from '../../types/helpers/isMeetingLocked'
 import type {NewMeetingResolvers} from '../resolverTypes'

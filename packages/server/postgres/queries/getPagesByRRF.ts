@@ -1,11 +1,11 @@
 import {GraphQLError} from 'graphql'
 import type {NotNull} from 'kysely'
 import {sql} from 'kysely'
+import {PageId} from '../../../client/shared/gqlIds/PageId'
 import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {getTSV} from '../../../embedder/getSupportedLanguages'
 import {inferLanguage} from '../../../embedder/inferLanguage'
-import {PageId} from '../../shared/gqlIds/PageId'
 import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
 import getKysely from '../getKysely'
 

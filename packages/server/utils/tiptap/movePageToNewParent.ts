@@ -1,12 +1,12 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
+import {PageId} from '../../../client/shared/gqlIds/PageId'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import {pageAccessByUserIdBatchFn} from '../../dataloader/pageAccessByUserIdBatchFn'
 import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {PageId} from '../../shared/gqlIds/PageId'
 import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 

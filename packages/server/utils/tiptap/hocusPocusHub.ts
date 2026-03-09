@@ -1,7 +1,7 @@
+import {PageId} from '../../../client/shared/gqlIds/PageId'
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
-import {PageId} from '../../shared/gqlIds/PageId'
 import {Logger} from '../Logger'
 
 export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {

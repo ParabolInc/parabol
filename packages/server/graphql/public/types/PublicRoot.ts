@@ -1,5 +1,5 @@
 import {GraphQLError} from 'graphql'
-import {PageId} from '../../../shared/gqlIds/PageId'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import type {PublicRootResolvers} from '../resolverTypes'
 
 const PublicRoot: PublicRootResolvers = {

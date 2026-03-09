@@ -3,6 +3,7 @@ import {createHash} from 'crypto'
 import {GraphQLError} from 'graphql'
 import filetypeinfo from 'magic-bytes.js'
 import mime from 'mime-types'
+import {PageId} from '../../../../client/shared/gqlIds/PageId'
 import {
   MAX_FILE_SIZE_FREE,
   MAX_FILE_SIZE_PAID,
@@ -13,7 +14,6 @@ import {
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
-import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
 import type {DataLoaderWorker} from '../../graphql'

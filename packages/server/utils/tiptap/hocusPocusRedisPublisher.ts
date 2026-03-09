@@ -5,8 +5,8 @@ import {
   type Extension
 } from '@hocuspocus/server'
 import {unpack} from 'msgpackr'
+import {PageId} from '../../../client/shared/gqlIds/PageId'
 import {SubscriptionChannel} from '../../../client/types/constEnums'
-import {PageId} from '../../shared/gqlIds/PageId'
 import publish from '../publish'
 import type {PublicPageNotificationPayload} from '../publishPageNotification'
 import RedisInstance from '../RedisInstance'
