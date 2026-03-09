@@ -62,7 +62,7 @@ function fnv1aHash(str: string): number {
   return hash
 }
 
-const secret = process.env.SERVER_SECRET!
+const secret = process.env.PAGE_CIPHER_KEY || process.env.SERVER_SECRET!
 const key = fnv1aHash(secret.slice(0, 10))
 
 export const feistelCipher = new FeistelCipher(key)
