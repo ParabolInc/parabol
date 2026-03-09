@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {mapMentionedToToast_notification$data} from '../../__generated__/mapMentionedToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
-import type {OnNextHistoryContext} from '../../types/relayMutations'
+import type {OnNextNavigateContext} from '../../types/relayMutations'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
@@ -20,7 +20,7 @@ graphql`
 
 const mapMentionedToToast = (
   notification: mapMentionedToToast_notification$data,
-  {atmosphere, history}: OnNextHistoryContext
+  {atmosphere, navigate}: OnNextNavigateContext
 ): Snack | null => {
   if (!notification) return null
   const {
@@ -52,7 +52,7 @@ const mapMentionedToToast = (
   const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
-    history.push(actionUrl)
+    navigate(actionUrl)
   }
 
   return {

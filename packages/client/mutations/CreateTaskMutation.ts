@@ -11,7 +11,7 @@ import JiraProjectId from '../shared/gqlIds/JiraProjectId'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import type {
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   OptionalHandlers,
   SharedUpdater,
   StandardMutation
@@ -139,10 +139,10 @@ export const createTaskTaskUpdater: SharedUpdater<CreateTaskMutation_task$data> 
 
 export const createTaskNotificationOnNext: OnNextHandler<
   CreateTaskMutation_notification$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   if (!payload || !payload.involvementNotification) return
-  popInvolvementToast(payload.involvementNotification, {atmosphere, history})
+  popInvolvementToast(payload.involvementNotification, {atmosphere, navigate})
 }
 
 export const createTaskNotificationUpdater: SharedUpdater<CreateTaskMutation_notification$data> = (

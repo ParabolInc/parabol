@@ -1,13 +1,12 @@
-import type {RouterProps} from 'react-router'
 import type Atmosphere from '../Atmosphere'
-import type {OnNextHandler} from '../types/relayMutations'
+import type {NavigateFn, OnNextHandler} from '../types/relayMutations'
 
 const subscriptionOnNext =
   (
     subscriptionName: string,
     onNextHandlers: Record<string, OnNextHandler<any, any>>,
     atmosphere: Atmosphere,
-    router: {history: RouterProps['history']}
+    router: {navigate: NavigateFn}
   ) =>
   (result: any) => {
     if (!result) return

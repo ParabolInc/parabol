@@ -378,7 +378,7 @@ createRoot(container).render(<Root />)
 - **PR 14:** `RouterProps['history']` in mutation/subscription infrastructure (~35 files)
 
 ### After pre-work, only standard v5 APIs remain:
-- `useHistory()` — ~60 component files (direct navigation)
+- `useHistory()` — ~60 component files (direct navigation) + custom `useNavigate` compat hook
 - `useLocation()` — unchanged in v6
 - `useParams()` — unchanged in v6
 - `useRouteMatch()` — ~5 files
@@ -446,11 +446,37 @@ Completed the `useRouter` replacement in all remaining files (modules/, hooks/, 
 
 ---
 
-### PR 14 — Convert navigation infrastructure from `history` object to `navigate` function
+### PR 14 — Convert navigation infrastructure from `history` object to `navigate` function — DONE
 
-**~500 lines changed | Risk: MEDIUM**
+**~60 files changed, ~400 lines | Risk: MEDIUM**
 
-Convert mutation/subscription infrastructure that passes `RouterProps['history']` to use a `navigate` function pattern instead. ~35 files affected.
+Converted the entire mutation/subscription infrastructure from passing `RouterProps['history']` (an object with `.push()` and `.replace()` methods) to passing a `NavigateFn` (a simple function matching React Router v6's `useNavigate()` signature). This is the key pre-work that makes the v6 flip in PR 15 trivial for the infrastructure layer.
+
+**Foundation changes:**
+
+| File | Change |
+|---|---|
+| `types/relayMutations.ts` | Defined `NavigateFn` type. Renamed `HistoryLocalHandler` → `NavigateLocalHandler`, `HistoryMaybeLocalHandler` → `NavigateMaybeLocalHandler`, `OnNextHistoryContext` → `OnNextNavigateContext`. Updated `LocalHandlers` deprecated type. Removed `import type {RouterProps} from 'react-router'`. |
+| `Atmosphere.ts` | Updated `SubscriptionRequestor` type and `registerQuery` method: `{history: RouterProps['history']}` → `{navigate: NavigateFn}`. Removed `RouterProps` import. |
+| `subscriptions/subscriptionOnNext.ts` | Updated router parameter type. Removed `RouterProps` import. |
+| `subscriptions/createSubscription.ts` | Updated router parameter type. Removed `RouterProps` import. |
+| `hooks/useNavigate.ts` | **New file.** v5-compatible `useNavigate()` hook that wraps `useHistory()` and returns a `NavigateFn`. In PR 15, this file is deleted and imports switch to react-router v6's native `useNavigate`. |
+| `hooks/useSubscription.ts` | Replaced `useHistory`/`useLocation` with `useNavigate`, passing `{navigate}` to subscription infrastructure. |
+| `hooks/useAutoCheckIn.ts` | Same pattern as `useSubscription.ts`. |
+
+**Mutation files updated (26 files):**
+
+All mutations that accepted `history` now accept `navigate`. Usage converted: `history.push(x)` → `navigate(x)`, `history.replace(x)` → `navigate(x, {replace: true})`, `history.push(x, state)` → `navigate(x, {state})`.
+
+Files: `AcceptTeamInvitationMutation`, `AddOrgMutation`, `AddTeamMutation`, `ArchiveOrganizationMutation`, `ArchiveTeamMutation`, `CreateTaskMutation`, `EmailPasswordResetMutation`, `EndCheckInMutation`, `EndRetrospectiveMutation`, `EndSprintPokerMutation`, `EndTeamPromptMutation`, `InviteToTeamMutation`, `LoginWithGoogleMutation`, `LoginWithMicrosoftMutation`, `LoginWithPasswordMutation`, `RemoveOrgUsersMutation`, `RemoveTeamMemberMutation`, `ResetPasswordMutation`, `SetOrgUserRoleMutation`, `SignUpWithPasswordMutation`, `StartCheckInMutation`, `StartRetrospectiveMutation`, `StartSprintPokerMutation`, `StartTeamPromptMutation`, `UpdateTaskMutation`, `VerifyEmailMutation`
+
+**Toast handlers and other handlers (13 files):**
+
+All toast handlers and notification handlers updated: `mapMentionedToToast`, `mapResponseRepliedToToast`, `mapRequestToJoinOrgToToast`, `mapDiscussionMentionedToToast`, `mapTeamsLimitReminderToToast`, `mapResponseMentionedToToast`, `mapPromptToJoinOrgToToast`, `popNotificationToast`, `popInvolvementToast`, `updateNotificationToast`, `handleAuthenticationRedirect`, `NotificationSubscription`, `PinnedSnackbarNotifications`
+
+**Caller components updated (~20 files):**
+
+Components that passed `history` to mutations now use `useNavigate()` and pass `navigate`. OAuth managers (`GoogleClientManager`, `MicrosoftClientManager`) updated parameter type from `RouterProps['history']` to `NavigateFn`.
 
 ---
 
@@ -537,7 +563,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 11 | Router Pre-work | Remove `withRouter` HOC → use hooks directly | ~250 | LOW | **DONE** |
 | 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~300 | LOW | **DONE** |
 | 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~260 | LOW | **DONE** |
-| 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~500 | MEDIUM | |
+| 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~400 | MEDIUM | **DONE** |
 | 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |
 | 16 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |
 | 17 | Polish | Mattermost plugin upgrade | ~300 | LOW | |

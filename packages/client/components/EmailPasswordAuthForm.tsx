@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
-import {useHistory, useLocation} from 'react-router'
+import {useLocation} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
+import useNavigate from '../hooks/useNavigate'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
@@ -108,7 +109,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [ssoDomain, setSSODomain] = useState<string>()
   const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
       getDefault: () => email,
@@ -218,11 +219,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       AcceptTeamInvitationMutation(
         atmosphere,
         {invitationToken},
-        {history, onCompleted, onError, ignoreApproval: true}
+        {navigate, onCompleted, onError, ignoreApproval: true}
       )
     } else {
       const nextUrl = getValidRedirectParam() || '/meetings'
-      history.push(nextUrl)
+      navigate(nextUrl)
     }
     return true
   }
@@ -252,7 +253,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken
         },
-        {onError, onCompleted, history}
+        {onError, onCompleted, navigate}
       )
     } else {
       const pseudoId = await getAnonymousId()
@@ -269,7 +270,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         {
           onError,
           onCompleted,
-          history
+          navigate
         }
       )
     }

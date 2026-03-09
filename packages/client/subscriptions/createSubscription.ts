@@ -1,7 +1,6 @@
-import type {RouterProps} from 'react-router'
 import {ConcreteRequest, GraphQLTaggedNode, OperationType, requestSubscription} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
-import {OnNextHandler, SharedUpdater} from '../types/relayMutations'
+import {NavigateFn, OnNextHandler, SharedUpdater} from '../types/relayMutations'
 import subscriptionOnNext from './subscriptionOnNext'
 import subscriptionUpdater from './subscriptionUpdater'
 
@@ -17,7 +16,7 @@ export const createSubscription = <TSubscription extends OperationType>(
   const namedAndRegisteredSubscription = (
     atmosphere: Atmosphere,
     variables: TSubscription['variables'],
-    router: {history: RouterProps['history']}
+    router: {navigate: NavigateFn}
   ) => {
     const fieldName = atmosphere.registerSubscription(subscription)
     return requestSubscription<TSubscription>(atmosphere, {
