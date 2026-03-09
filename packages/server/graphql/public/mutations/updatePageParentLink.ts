@@ -9,9 +9,7 @@ const updatePageParentLink: MutationResolvers['updatePageParentLink'] = async (
   {dataLoader}
 ) => {
   const pg = getKysely()
-  const publicId = PageId.publicIdFromClient(pageId)
-  const dbPageId = await PageId.dbIdFromPublicId(publicId)
-  if (!dbPageId) throw new GraphQLError('Invalid pageId')
+  const dbPageId = PageId.split(pageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   dataLoader.get('pages').clearAll()
   if (!page) throw new GraphQLError('Invalid pageId')

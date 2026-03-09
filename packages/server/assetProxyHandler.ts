@@ -11,7 +11,6 @@ import getKysely from './postgres/getKysely'
 import {getUserId, isTeamMember} from './utils/authorization'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
-import {PageId} from './utils/PageId'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
 
 let placeholderBuffer: Buffer | undefined
@@ -72,16 +71,12 @@ const checkAccess = async (
     }
   } else if (scope === 'Page') {
     const dataLoader = getNewDataLoader('imageProxyPage')
-    const pageId = await PageId.dbIdFromPublicId(Number(scopeCode))
-    if (pageId) {
-      const pageAccess = await dataLoader
-        .get('pageAccessByPageIdUserId')
-        .load({pageId, userId: viewerId})
-      dataLoader.dispose()
-      if (pageAccess) return true
-    } else {
-      dataLoader.dispose()
-    }
+    const pageId = Number(scopeCode) | 0
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
+    dataLoader.dispose()
+    if (pageAccess) return true
   }
   return false
 }

@@ -4,8 +4,7 @@ import type {PublicRootResolvers} from '../resolverTypes'
 
 const PublicRoot: PublicRootResolvers = {
   page: async (_source, {pageId}, {authToken, dataLoader}) => {
-    const dbId = await PageId.dbIdFromPublicId(PageId.publicIdFromClient(pageId))
-    if (!dbId) throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
+    const dbId = PageId.split(pageId)
     const [page, access] = await Promise.all([
       dataLoader.get('pages').load(dbId),
       dataLoader.get('pageAccessByPageIdUserId').load({pageId: dbId, userId: authToken?.sub ?? ''})

@@ -93,9 +93,8 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const pageSlug = PageId.publicIdFromClient(pageId)
-  const dbPageId = await PageId.dbIdFromPublicId(pageSlug)
-  if (!dbPageId) throw new GraphQLError('Page not found')
+  const dbPageId = PageId.split(pageId)
+  const pageSlug = dbPageId >>> 0
   const userRole = await dataLoader
     .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})

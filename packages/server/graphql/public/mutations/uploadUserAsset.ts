@@ -49,12 +49,12 @@ export const validateScope = async (
       return {error: {message: 'scopeKey must match one of your organizations'}}
     }
   } else if (scope === 'Page') {
-    const publicId = PageId.publicIdFromClient(scopeKey)
-    scopeCode = `${publicId}`
-    const dbPageId = await PageId.dbIdFromPublicId(publicId)
-    const pageAccess = dbPageId
-      ? await dataLoader.get('pageAccessByPageIdUserId').load({pageId: dbPageId, userId: viewerId})
-      : null
+    const pageId = PageId.split(scopeKey)
+    const pageCode = pageId >>> 0
+    scopeCode = `${pageCode}`
+    const pageAccess = await dataLoader
+      .get('pageAccessByPageIdUserId')
+      .load({pageId, userId: viewerId})
     if (!pageAccess || pageAccess === 'viewer') {
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }

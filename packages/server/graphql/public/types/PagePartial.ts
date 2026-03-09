@@ -1,13 +1,11 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
+import {PageId} from '../../../utils/PageId'
 import type {ReqResolvers} from './ReqResolvers'
 
 const PagePartial: ReqResolvers<'PagePartial'> = {
   __resolveType: (source) =>
     (source as any).__typename === 'PagePreview' ? 'PagePreview' : 'Page',
-  id: ({publicId, __typename}) => {
-    const prefix = __typename === 'PagePreview' ? 'pagePreview' : 'page'
-    return `${prefix}:${publicId}`
-  },
+  id: ({id}) => PageId.join(id),
   team: async ({teamId}, _args, {authToken, dataLoader}) => {
     if (!teamId) return null
     const [teamMember, team] = await Promise.all([

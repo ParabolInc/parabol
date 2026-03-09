@@ -889,7 +889,7 @@ const User: ReqResolvers<'User'> = {
 
     const viewerId = getUserId(authToken)
     const dbParentPageId = parentPageId
-      ? await PageId.dbIdFromPublicId(PageId.publicIdFromClient(parentPageId))
+      ? PageId.split(parentPageId)
       : parentPageId === null
         ? null
         : undefined

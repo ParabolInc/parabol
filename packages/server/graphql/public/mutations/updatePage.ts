@@ -20,9 +20,8 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const publicId = PageId.publicIdFromClient(pageId)
-  const dbPageId = await PageId.dbIdFromPublicId(publicId)
-  if (!dbPageId) throw new GraphQLError('Invalid pageId')
+  const dbPageId = PageId.split(pageId)
+  const pageCode = dbPageId >>> 0
   if (sourceSection === 'private' && targetSection === 'shared') {
     throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }
@@ -113,13 +112,9 @@ const updatePage: MutationResolvers['updatePage'] = async (
   if (page.parentPageId) {
     // if it had a parent, ensure the canonical page link was removed from the old parent.
     // This may get called from the client for faster UI updates, but we call it here for posterity
-    const oldParent = await dataLoader.get('pages').load(page.parentPageId)
-    if (oldParent) {
-      const documentName = `page:${oldParent.publicId}`
-      redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {
-        pageCode: publicId
-      })
-    }
+    const {parentPageId: oldParentpageId} = page
+    const documentName = PageId.join(oldParentpageId)
+    redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
   }
   const data = {pageId: dbPageId}
   const access = await dataLoader.get('pageAccessByPageId').load(dbPageId)

@@ -18,9 +18,8 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const publicId = PageId.publicIdFromClient(pageId)
-  const dbPageId = await PageId.dbIdFromPublicId(publicId)
-  if (!dbPageId) throw new GraphQLError('Invalid pageId')
+  const dbPageId = PageId.split(pageId)
+  const pageCode = dbPageId >>> 0
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
     throw new GraphQLError('Invalid pageId')
@@ -36,15 +35,10 @@ const archivePage: MutationResolvers['archivePage'] = async (
       .set({deletedAt: sql`CURRENT_TIMESTAMP`, deletedBy: viewerId})
       .where('id', '=', dbPageId)
       .execute()
-    const parentPage = page.parentPageId
-      ? await dataLoader.get('pages').load(page.parentPageId)
-      : null
-    const documentName = parentPage ? `page:${parentPage.publicId}` : null
+    const documentName = page.parentPageId ? PageId.join(page.parentPageId) : null
     await Promise.all([
       documentName &&
-        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {
-          pageCode: publicId
-        }),
+        redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode}),
       // this will also set deletedAt/deletedBy, but there may be a bug that causes it to fail
       removeAllBacklinkedPageLinkBlocks({pageId: dbPageId})
     ])
@@ -63,10 +57,10 @@ const archivePage: MutationResolvers['archivePage'] = async (
         }
       } else if (parentPage) {
         // add the canonical page link & let the reconciler take care of the rest
-        const documentName = `page:${parentPage.publicId}`
+        const documentName = PageId.join(page.parentPageId)
         await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
           title: page.title || undefined,
-          pageCode: publicId,
+          pageCode,
           isDatabase: page.isDatabase
         })
       }
@@ -110,7 +104,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
         .execute()
     }
   }
-  const data = {pageId: dbPageId, publicId, action}
+  const data = {pageId: dbPageId, action}
   await publishPageNotification(dbPageId, 'ArchivePagePayload', data, subOptions, dataLoader)
   return data
 }

@@ -18,9 +18,7 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
       }
       const {authToken, dataLoader} = context
       const viewerId = getUserId(authToken)
-      const dbPageId = dotPath.startsWith('source')
-        ? pageId
-        : await PageId.dbIdFromPublicId(PageId.publicIdFromClient(pageId))
+      const dbPageId = dotPath.startsWith('source') ? pageId : PageId.split(pageId)
       const userRole = await dataLoader
         .get('pageAccessByPageIdUserId')
         .load({pageId: dbPageId, userId: viewerId})

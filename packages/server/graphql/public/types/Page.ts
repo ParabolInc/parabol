@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {getUserId} from '../../../utils/authorization'
+import {PageId} from '../../../utils/PageId'
 import isValid from '../../isValid'
 import type {ReqResolvers} from './ReqResolvers'
 
@@ -18,21 +19,14 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
       __typename: access ? 'Page' : 'PagePreview'
     }
   },
-  parentPageId: async ({parentPageId}, _args, {dataLoader}) => {
-    if (!parentPageId) return null
-    const parent = await dataLoader.get('pages').load(parentPageId)
-    return parent ? `page:${parent.publicId}` : null
-  },
+  parentPageId: ({parentPageId}) => (parentPageId ? PageId.join(parentPageId) : null),
   userSortOrder: async ({id: pageId, userSortOrder}, _args, {authToken, dataLoader}) => {
     if (userSortOrder) return userSortOrder
     const viewerId = getUserId(authToken)
     const sortOrder = await dataLoader.get('pageUserSortOrder').load({pageId, userId: viewerId})
     return sortOrder || '!'
   },
-  ancestorIds: async ({ancestorIds}, _args, {dataLoader}) => {
-    const pages = await dataLoader.get('pages').loadMany(ancestorIds)
-    return pages.map((p) => (isValid(p) ? `page:${p.publicId}` : null)).filter(Boolean) as string[]
-  },
+  ancestorIds: ({ancestorIds}) => ancestorIds.map((id) => PageId.join(id)),
   ancestors: async ({ancestorIds}, _args, {authToken, dataLoader}) => {
     const accessKeys = ancestorIds.map((pageId) => ({
       pageId,

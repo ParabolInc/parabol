@@ -1,4 +1,4 @@
-import {type Kysely} from 'kysely'
+import {type Kysely, sql} from 'kysely'
 import * as Y from 'yjs'
 import {encodeStateAsUpdate, XmlElement} from 'yjs'
 
@@ -59,14 +59,59 @@ export async function up(db: Kysely<any>): Promise<void> {
   // If no rotation, old === new so both ciphers are identical
   const oldCipher = isRotation ? new FeistelCipher(fnv1aHash(oldSecret.slice(0, 10))) : newCipher
 
-  // Step 1: add publicId column (nullable, bigint to safely hold uint32 cipher output)
-  await db.schema
-    .alterTable('Page')
-    .addColumn('publicId', 'bigint', (col) => col.unique())
-    .execute()
+  // Remove sequence default and set pseudorandom default so new inserts grab a 32-bit integer.
+  await sql`ALTER TABLE "Page" ALTER COLUMN "id" DROP DEFAULT;`.execute(db)
+  await sql`ALTER TABLE "Page" ALTER COLUMN "id" SET DEFAULT (floor(random() * 4294967295 - 2147483648)::integer);`.execute(
+    db
+  )
 
-  // Step 2: populate publicId using old cipher values so existing URLs remain valid.
-  // Load all page IDs into a Set now for link validation later.
+  // Step 1: Temporarily convert foreign keys referring to Page.id to have ON UPDATE CASCADE
+  const fkeysResult = await sql<any>`
+    SELECT
+      conname AS constraint_name,
+      conrelid::regclass::text AS table_name,
+      a.attname AS column_name,
+      confrelid::regclass::text AS foreign_table_name,
+      af.attname AS foreign_column_name,
+      confupdtype AS on_update,
+      confdeltype AS on_delete
+    FROM pg_constraint c
+    JOIN pg_attribute a ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
+    JOIN pg_attribute af ON af.attnum = ANY(c.confkey) AND af.attrelid = c.confrelid
+    WHERE confrelid = '"Page"'::regclass;
+  `.execute(db)
+
+  type FKRow = {
+    constraint_name: string
+    table_name: string
+    column_name: string
+    on_delete: string
+  }
+
+  const fkRows: FKRow[] = fkeysResult.rows
+
+  // Drop and Recreate FKs with ON UPDATE CASCADE
+  for (const fk of fkRows) {
+    await sql`ALTER TABLE ${sql.raw(`"${fk.table_name}"`)} DROP CONSTRAINT ${sql.raw(`"${fk.constraint_name}"`)}`.execute(
+      db
+    )
+
+    let onDeleteClause = ''
+    if (fk.on_delete === 'c') onDeleteClause = 'ON DELETE CASCADE'
+    else if (fk.on_delete === 'n') onDeleteClause = 'ON DELETE SET NULL'
+    else if (fk.on_delete === 'r') onDeleteClause = 'ON DELETE RESTRICT'
+
+    await sql`
+      ALTER TABLE ${sql.raw(`"${fk.table_name}"`)}
+      ADD CONSTRAINT ${sql.raw(`"${fk.constraint_name}"`)}
+      FOREIGN KEY (${sql.raw(`"${fk.column_name}"`)})
+      REFERENCES "Page" ("id")
+      ${sql.raw(onDeleteClause)}
+      ON UPDATE CASCADE
+    `.execute(db)
+  }
+
+  // Step 2: Batch update Page IDs
   const allPageIds = new Set<number>()
   let lastSeenId = 0
   for (let i = 0; i < 1e6; i++) {
@@ -85,31 +130,28 @@ export async function up(db: Kysely<any>): Promise<void> {
       allPageIds.add(page.id)
     }
 
+    // Since FKs are ON UPDATE CASCADE, we can update them safely.
+    // Bitwise OR | 0 casts the uint32 returned by Cipher into a signed 32-bit int.
     await Promise.all(
       pages.map((page) =>
         db
           .updateTable('Page')
-          .set({publicId: oldCipher.encrypt(page.id)})
+          .set({id: oldCipher.encrypt(page.id) | 0})
           .where('id', '=', page.id)
           .execute()
       )
     )
   }
 
-  // Step 3: now that all rows are populated, enforce NOT NULL
-  await db.schema
-    .alterTable('Page')
-    .alterColumn('publicId', (col) => col.setNotNull())
-    .execute()
-
   if (!isRotation) {
-    console.log('rotateCipherKey: publicId column populated, no link re-encryption needed')
+    console.log(
+      'rotateCipherKey: Page.id migrated cleanly to pseudo-random, no link re-encryption needed'
+    )
     return
   }
 
-  // Step 4: fix page links that were already re-encrypted with the new cipher before this migration.
-  // Links encrypted with the old cipher are already equal to publicId, so only new-cipher links need updating.
-  lastSeenId = 0
+  // Step 3: Fix page links that were already re-encrypted with the new cipher before this migration.
+  lastSeenId = -2147483648 // int min
   let totalPages = 0
   let totalUpdated = 0
 
@@ -148,19 +190,12 @@ export async function up(db: Kysely<any>): Promise<void> {
             if (pageCode == null) continue
             const code = Number(pageCode)
 
-            // Old-cipher links are already equal to publicId — nothing to do
-            const oldDbId = oldCipher.decrypt(code)
-            if (allPageIds.has(oldDbId)) continue
+            // Revert new-cipher code back to the old-cipher uint representation
+            const newDecryptDbId = newCipher.decrypt(code)
 
-            // New-cipher link: update to publicId (old cipher value)
-            const newDbId = newCipher.decrypt(code)
-            if (allPageIds.has(newDbId)) {
-              node.setAttribute('pageCode', oldCipher.encrypt(newDbId) as any)
+            if (allPageIds.has(newDecryptDbId)) {
+              node.setAttribute('pageCode', oldCipher.encrypt(newDecryptDbId) as any)
               changed = true
-            } else {
-              console.warn(
-                `rotateCipherKey: page ${page.id} has unresolvable pageCode ${code}, skipping`
-              )
             }
           }
         })
@@ -177,5 +212,6 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await db.schema.alterTable('Page').dropColumn('publicId').execute()
+  // Can not down-migrate page ID mapping successfully without breaking links
+  // unless we iterate and un-cipher. Not required for now.
 }

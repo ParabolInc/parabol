@@ -127,7 +127,6 @@ export const getPagesByRRF = async (params: Params) => {
     .selectAll('ChunkMax')
     .innerJoin('Page', 'Page.id', 'ChunkMax.pageId')
     .$narrowType<{pageId: NotNull}>()
-    .select(['Page.publicId'])
     .select((eb) =>
       tsHeadline(eb, tsvLanguage, 'Page.plaintextContent', 'webQuery', {
         StartSel: '<b>',
@@ -148,7 +147,7 @@ export const getPagesByRRF = async (params: Params) => {
         JSON.stringify({
           codes: results
             .filter((r) => r.k_similarity && r.v_similarity)
-            .map((r) => r.publicId)
+            .map((r) => r.pageId >>> 0)
             .join(','),
           maxScore: results.at(-1)?.score ?? 1
         })

@@ -116,19 +116,18 @@ export const hocuspocus = new Hocuspocus({
       }
       return {userId}
     }
-    const publicIdStr = documentName.split(':')[1] ?? ''
+    const dbId = PageId.split(documentName)
+    if (dbId === 0) {
+      const error = new Error(`Invalid document request from client: ${documentName}`)
+      logError(error, {userId, tags: {dbId, documentName}})
+      throw error
+    }
     const pg = getKysely()
     const page = await pg
       .selectFrom('Page')
-      .select(['id', 'isMeetingTOC'])
-      .where('publicId', '=', publicIdStr)
-      .executeTakeFirst()
-    if (!page) {
-      const error = new Error(`Invalid document request from client: ${documentName}`)
-      logError(error, {userId, tags: {publicId: publicIdStr, documentName}})
-      throw error
-    }
-    const dbId = page.id
+      .select('isMeetingTOC')
+      .where('id', '=', dbId)
+      .executeTakeFirstOrThrow()
     let pageAccess: {role: Pageroleenum} | undefined
     if (userId) {
       pageAccess = await getKysely()
@@ -165,13 +164,11 @@ export const hocuspocus = new Hocuspocus({
     new Database({
       // Return a Promise to retrieve data …
       fetch: async ({documentName}) => {
-        const [entity, code] = documentName.split(':')
+        const [entity] = documentName.split(':')
         if (entity === 'meeting') {
           return Buffer.from(encodeStateAsUpdate(new Doc()))
         }
-        const publicId = Number(code)
-        const dbId = await PageId.dbIdFromPublicId(publicId)
-        if (!dbId) return Buffer.from(encodeStateAsUpdate(new Doc()))
+        const dbId = PageId.split(documentName)
         const pg = getKysely()
         const res = await pg
           .selectFrom('Page')
@@ -192,11 +189,9 @@ export const hocuspocus = new Hocuspocus({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [entity, code] = documentName.split(':')
+        const [entity] = documentName.split(':')
         if (entity === 'meeting') return
-        const publicId = Number(code)
-        const dbId = await PageId.dbIdFromPublicId(publicId)
-        if (!dbId) return
+        const dbId = PageId.split(documentName)
         // TODO: don't transform the document into content. just traverse the yjs doc for speed
         const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
         const {updatedTitle} = await tracer.trace(

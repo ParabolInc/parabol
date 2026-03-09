@@ -2,12 +2,12 @@ import {GraphQLError} from 'graphql'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
-import {CipherId} from '../../../utils/CipherId'
+import {PageId} from '../../../utils/PageId'
 import type {MutationResolvers} from '../resolverTypes'
 
 const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIProviderSecret'] =
   async (_root, args, context) => {
-    const [providerId] = CipherId.fromClient(args.providerId)
+    const providerId = PageId.split(args.providerId)
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
 

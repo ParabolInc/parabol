@@ -33,8 +33,6 @@ export const publishPageNotification = async (
       userIdsToIgnore: userIds
     } as PublicPageNotificationPayload
     const redis = getRedis()
-    const page = await dataLoader.get('pages').load(pageId)
-    const channelId = page?.publicId ?? pageId
-    await redis.publish(`publicPage:${channelId}`, pack(payload))
+    await redis.publish(`publicPage:${pageId}`, pack(payload))
   }
 }
