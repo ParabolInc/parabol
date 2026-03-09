@@ -1,6 +1,9 @@
+import Redis from 'ioredis'
 import {type Kysely} from 'kysely'
+import {pack} from 'msgpackr'
 import * as Y from 'yjs'
 import {encodeStateAsUpdate, XmlElement} from 'yjs'
+import {getRedisOptions} from '../../utils/getRedisOptions'
 
 // Inlined to support two simultaneous cipher instances with different keys
 function fnv1aHash(str: string): number {
@@ -60,6 +63,12 @@ export async function up(db: Kysely<any>): Promise<void> {
   const oldCipher = new FeistelCipher(fnv1aHash(oldSecret.slice(0, 10)))
   const newCipher = new FeistelCipher(fnv1aHash(newSecret.slice(0, 10)))
 
+  const redis = new Redis(process.env.REDIS_URL!, {
+    ...getRedisOptions(),
+    connectionName: '2026-03-09T00:00:00.000Z_rekeyPageLinks'
+  })
+  const SERVER_ID = process.env.SERVER_ID!
+
   let lastSeenId = 0
   let totalPages = 0
   let totalUpdated = 0
@@ -70,6 +79,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .select(['id', 'yDoc'])
       .where('yDoc', 'is not', null)
       .where('id', '>', lastSeenId)
+      .where('deletedAt', 'is', null)
       .orderBy('id')
       .limit(BATCH_SIZE)
       .execute()
@@ -79,10 +89,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     totalPages += pages.length
 
     await Promise.all(
-      pages.map(async (page) => {
-        if (!page.yDoc) return
+      pages.map(async ({id: pageId, yDoc}) => {
+        if (!yDoc) return
         const doc = new Y.Doc()
-        Y.applyUpdate(doc, page.yDoc)
+        Y.applyUpdate(doc, yDoc)
 
         const frag = doc.getXmlFragment('default')
         const walker = frag.createTreeWalker(
@@ -94,9 +104,9 @@ export async function up(db: Kysely<any>): Promise<void> {
         let changed = false
         doc.transact(() => {
           for (const node of pageLinks) {
-            const pageCode = node.getAttribute('pageCode')
-            if (pageCode == null) continue
-            const dbId = oldCipher.decrypt(Number(pageCode))
+            const attrCode = node.getAttribute('pageCode')
+            if (attrCode == null) continue
+            const dbId = oldCipher.decrypt(Number(attrCode))
             node.setAttribute('pageCode', newCipher.encrypt(dbId) as any)
             changed = true
           }
@@ -104,12 +114,46 @@ export async function up(db: Kysely<any>): Promise<void> {
 
         if (!changed) return
         totalUpdated++
-        const newYDoc = Buffer.from(encodeStateAsUpdate(doc))
-        await db.updateTable('Page').set({yDoc: newYDoc}).where('id', '=', page.id).execute()
+
+        const documentName = `page:${newCipher.encrypt(pageId)}`
+
+        // Now that we have a document that has changed, lock it so another server can't open it
+        const proxyTo = await redis.set(
+          `rsaLock:${documentName}`,
+          SERVER_ID,
+          'PX',
+          10_000,
+          'NX',
+          'GET'
+        )
+        if (!proxyTo) {
+          // if no other server has the doc open, just update it in the DB
+          await db
+            .updateTable('Page')
+            .set({yDoc: Buffer.from(encodeStateAsUpdate(doc))})
+            .where('id', '=', pageId)
+            .execute()
+        } else {
+          // if the document is already open, we must send the update to that worker
+          const update = encodeStateAsUpdate(doc, yDoc)
+          const proxyMessage = pack({
+            eventName: 'applyYjsUpdate',
+            documentName,
+            payload: {update},
+            replyTo: `null`,
+            replyId: 0,
+            type: 'customEventStart'
+          })
+          await redis.publish(`rsaMsg:${proxyTo}`, proxyMessage)
+        }
+        // there are a couple race conditions here, since the migration is locking the doc, but not accepting messages for it
+        // can be treated as an edge case & fixed if they refresh
+        await redis.del(`rsaLock:${documentName}`)
       })
     )
   }
 
+  redis.disconnect()
   console.log(`rekeyPageLinks: updated page links in ${totalUpdated} of ${totalPages} pages`)
 }
 
