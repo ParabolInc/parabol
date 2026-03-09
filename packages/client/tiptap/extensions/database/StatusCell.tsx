@@ -16,7 +16,7 @@ const useStatusType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
   const columnValues = useColumnValues(doc, columnId)
 
   const options = useMemo(() => {
-    return Array.from(new Set(columnValues.map((s) => s?.toString().trim()).filter(Boolean))).sort()
+    return Array.from(columnValues).sort()
   }, [columnValues])
 
   return options as string[]

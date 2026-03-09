@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [12.10.12](https://github.com/ParabolInc/parabol/compare/v12.10.11...v12.10.12) (2026-03-09)
+
+
+### Changed
+
+* Improve database performance ([#12775](https://github.com/ParabolInc/parabol/issues/12775)) ([d3d1f86](https://github.com/ParabolInc/parabol/commit/d3d1f8692bab396e63814dabf30653d41bb40132))
+
 ## [12.10.11](https://github.com/ParabolInc/parabol/compare/v12.10.10...v12.10.11) (2026-03-09)
 
 

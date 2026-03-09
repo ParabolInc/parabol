@@ -1,5 +1,5 @@
 import type {Extension} from '@hocuspocus/server'
-import * as Y from 'yjs'
+import {getData, getRowData} from '../../../client/tiptap/extensions/database/data'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
@@ -23,7 +23,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
     })
   })
 
-  const data = document.getMap<Y.Map<any>>('data')
+  const data = getData(document)
   data.observeDeep((events, transaction) => {
     const userId = transaction.origin?.context?.userId ?? undefined
     if (!userId) {
@@ -37,7 +37,7 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
       if (isRowLevel) {
         event.changes.keys.forEach((change, key) => {
           if (change.action === 'add') {
-            const row = data.get(key)
+            const row = getRowData(document, key)
             if (!row) {
               return
             }
@@ -49,15 +49,15 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
       }
       if (isCellLevel) {
         const rowId = event.path[0] as string
-        const row = data.get(rowId)
+        const row = getRowData(document, rowId)
         if (!row) {
           return
         }
-        event.changes.keys.forEach((_change, _key) => {
+        if (event.changes.delta.length > 0) {
           document.transact(() => {
             updateChangedAt(row, 'updated', userId)
           })
-        })
+        }
       }
     })
   })
