@@ -2,8 +2,8 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
 
@@ -13,7 +13,7 @@ const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) =>
   if (!decodedAfter) return null
   const {codes, maxScore} = decodedAfter as {codes: (number | string)[]; maxScore: number}
   if (!Array.isArray(codes) || codes.length < 1 || !maxScore) return null
-  const afterIds = type === 'page' ? codes.map((code) => PageId.dbId(Number(code))) : codes
+  const afterIds = type === 'page' ? codes.map((code) => PageId.fromClient(Number(code))) : codes
   return {afterIds, maxScore}
 }
 export const search: NonNullable<UserResolvers['search']> = async (

@@ -8,10 +8,10 @@ import getFileStoreManager from './fileStorage/getFileStoreManager'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getKysely from './postgres/getKysely'
+import {PageId} from './shared/gqlIds/PageId'
 import {getUserId, isTeamMember} from './utils/authorization'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
-import {PageId} from './utils/PageId'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
 
 let placeholderBuffer: Buffer | undefined
@@ -72,7 +72,7 @@ const checkAccess = async (
     }
   } else if (scope === 'Page') {
     const dataLoader = getNewDataLoader('imageProxyPage')
-    const pageId = PageId.dbId(Number(scopeCode))
+    const pageId = PageId.fromClient(Number(scopeCode))
     const pageAccess = await dataLoader
       .get('pageAccessByPageIdUserId')
       .load({pageId, userId: viewerId})

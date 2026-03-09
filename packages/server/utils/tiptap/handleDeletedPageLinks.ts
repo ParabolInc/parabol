@@ -3,8 +3,8 @@ import * as Y from 'yjs'
 import {getPageLinks} from '../../../client/shared/tiptap/getPageLinks'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
 import getKysely from '../../postgres/getKysely'
+import {PageId} from '../../shared/gqlIds/PageId'
 import {Logger} from '../Logger'
-import {PageId} from '../PageId'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
 import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
 import {updateBacklinks} from './updateBacklinks'
@@ -22,7 +22,7 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
     if (isMoving) return
     const pageCode = getUnsafeDeletedAttribute(node, 'pageCode')
     const isCanonical = getUnsafeDeletedAttribute(node, 'canonical')
-    const pageId = PageId.dbId(pageCode)
+    const pageId = PageId.fromClient(pageCode)
 
     // there could be multiple non-canonicals
     const existingSimilarNode = getPageLinks(e.target.doc, isCanonical).find(

@@ -2,8 +2,8 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {removeAllBacklinkedPageLinkBlocks} from '../../../utils/tiptap/hocusPocusHub'
 import type {MutationResolvers} from '../resolverTypes'
@@ -19,7 +19,7 @@ const archivePage: MutationResolvers['archivePage'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const dbPageId = PageId.split(pageId)
-  const pageCode = PageId.code(dbPageId)
+  const pageCode = PageId.toClient(dbPageId)
   const page = await dataLoader.get('pages').load(dbPageId)
   if (!page) {
     throw new GraphQLError('Invalid pageId')

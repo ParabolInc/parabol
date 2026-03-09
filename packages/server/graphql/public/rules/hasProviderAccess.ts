@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const hasProviderAccess = <T>(dotPath: ResolverDotPath<T>) =>

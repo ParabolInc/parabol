@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import isValid from '../../isValid'
 import type {ReqResolvers} from './ReqResolvers'
 

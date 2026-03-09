@@ -1,8 +1,8 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {Pageroleenum} from '../../../postgres/types/pg'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 

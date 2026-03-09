@@ -13,9 +13,9 @@ import {
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
-import {PageId} from '../../../utils/PageId'
 import type {DataLoaderWorker} from '../../graphql'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
@@ -50,7 +50,7 @@ export const validateScope = async (
     }
   } else if (scope === 'Page') {
     const pageId = PageId.split(scopeKey)
-    const pageCode = PageId.code(pageId)
+    const pageCode = PageId.toClient(pageId)
     scopeCode = `${pageCode}`
     const pageAccess = await dataLoader
       .get('pageAccessByPageIdUserId')

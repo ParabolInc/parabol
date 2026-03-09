@@ -7,8 +7,8 @@ import getMailManager from '../../../email/getMailManager'
 import pageAccessRequestEmailCreator from '../../../email/pageAccessRequestEmailCreator'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import isValid from '../../isValid'
 import type {MutationResolvers, PageRoleEnum} from '../resolverTypes'
 import publishNotification from './helpers/publishNotification'
@@ -23,7 +23,7 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const dbPageId = PageId.split(pageId)
-  const pageSlug = PageId.code(dbPageId)
+  const pageSlug = PageId.toClient(dbPageId)
 
   const [viewer, page, existingRequest, owners] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),

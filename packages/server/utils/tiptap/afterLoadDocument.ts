@@ -1,7 +1,7 @@
 import type {Extension} from '@hocuspocus/server'
 import * as Y from 'yjs'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
-import {PageId} from '../../utils/PageId'
+import {PageId} from '../../shared/gqlIds/PageId'
 import {Logger} from '../Logger'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'

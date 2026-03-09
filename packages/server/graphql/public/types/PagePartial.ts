@@ -1,5 +1,5 @@
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {PageId} from '../../../utils/PageId'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import type {ReqResolvers} from './ReqResolvers'
 
 const PagePartial: ReqResolvers<'PagePartial'> = {

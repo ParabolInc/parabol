@@ -1,7 +1,7 @@
 import {DataLoaderWorker} from '../../graphql/graphql'
 import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
-import {PageId} from '../../utils/PageId'
+import {PageId} from '../../shared/gqlIds/PageId'
 import {Logger} from '../Logger'
 
 export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: number}) => {
@@ -11,7 +11,7 @@ export const removeAllBacklinkedPageLinkBlocks = async ({pageId}: {pageId: numbe
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
-  const pageCode = PageId.code(pageId)
+  const pageCode = PageId.toClient(pageId)
 
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {
@@ -34,7 +34,7 @@ export const updateAllBacklinkedPageLinkTitles = async ({
     .select('fromPageId')
     .where('toPageId', '=', pageId)
     .execute()
-  const pageCode = PageId.code(pageId)
+  const pageCode = PageId.toClient(pageId)
 
   await Promise.all(
     backLinks.map(async ({fromPageId}) => {

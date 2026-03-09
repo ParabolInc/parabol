@@ -5,7 +5,7 @@ import {activeEmbeddingModelId} from '../../../embedder/activeEmbeddingModel'
 import {getEmbeddingsPagesTableName} from '../../../embedder/getEmbeddingsTableName'
 import {getTSV} from '../../../embedder/getSupportedLanguages'
 import {inferLanguage} from '../../../embedder/inferLanguage'
-import {PageId} from '../../utils/PageId'
+import {PageId} from '../../shared/gqlIds/PageId'
 import {cosineSimilarity, RRF, rank, tsHeadline, tsvSimilarity} from '../expressions'
 import getKysely from '../getKysely'
 
@@ -148,7 +148,7 @@ export const getPagesByRRF = async (params: Params) => {
         JSON.stringify({
           codes: results
             .filter((r) => r.k_similarity && r.v_similarity)
-            .map((r) => PageId.code(r.pageId))
+            .map((r) => PageId.toClient(r.pageId))
             .join(','),
           maxScore: results.at(-1)?.score ?? 1
         })

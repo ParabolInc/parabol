@@ -1,8 +1,8 @@
 import {GraphQLError} from 'graphql'
 import {generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import type {MutationResolvers} from '../resolverTypes'
 
 const regenerateOAuthAPIProviderSecret: MutationResolvers['regenerateOAuthAPIProviderSecret'] =

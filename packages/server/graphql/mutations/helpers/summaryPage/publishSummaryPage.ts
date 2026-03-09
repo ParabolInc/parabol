@@ -2,9 +2,9 @@ import type {GraphQLResolveInfo} from 'graphql'
 import {getNewDataLoader} from '../../../../dataloader/getNewDataLoader'
 import {redisHocusPocus} from '../../../../hocusPocus'
 import getKysely from '../../../../postgres/getKysely'
+import {PageId} from '../../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../../utils/authorization'
 import {Logger} from '../../../../utils/Logger'
-import {PageId} from '../../../../utils/PageId'
 import {createNewPage} from '../../../../utils/tiptap/createNewPage'
 import type {InternalContext} from '../../../graphql'
 import {ensureMeetingTOCPage} from './ensureMeetingTOCPage'
@@ -47,7 +47,7 @@ export const publishSummaryPage = async (
   const documentName = PageId.join(meetingTOCpageId)
   await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
     title,
-    pageCode: PageId.code(meetingSummaryPage.id),
+    pageCode: PageId.toClient(meetingSummaryPage.id),
     isDatabase: false
   })
   const {id: pageId} = meetingSummaryPage

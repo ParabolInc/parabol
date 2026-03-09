@@ -22,8 +22,8 @@ import {
   getDimensionNames,
   getPokerRowData
 } from '../graphql/mutations/helpers/summaryPage/getPokerTable'
+import {PageId} from '../shared/gqlIds/PageId'
 import {convertTipTapToMarkdown} from '../utils/convertTipTapToMarkdown'
-import {PageId} from '../utils/PageId'
 
 const insightBox = {
   marginBottom: '20px'
@@ -194,7 +194,7 @@ export const makeSummaryEmailV2 = async (
     paddingLeft: '12px',
     paddingRight: '12px'
   }
-  const pageCode = PageId.code(pageId)
+  const pageCode = PageId.toClient(pageId)
   const CTAURL = makeAppURL(appOrigin, `/pages/${pageCode}`)
   const endLabel = endTime.format('MMM D, YYYY')
   const title = `${meetingName} Summary - ${endLabel}`

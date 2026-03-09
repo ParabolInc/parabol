@@ -2,8 +2,8 @@ import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {redisHocusPocus} from '../../../hocusPocus'
 import getKysely from '../../../postgres/getKysely'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 import {getPageNextSortOrder} from './helpers/getPageNextSortOrder'
@@ -21,7 +21,7 @@ const updatePage: MutationResolvers['updatePage'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
   const dbPageId = PageId.split(pageId)
-  const pageCode = PageId.code(dbPageId)
+  const pageCode = PageId.toClient(dbPageId)
   if (sourceSection === 'private' && targetSection === 'shared') {
     throw new GraphQLError('Private pages cannot be moved direclty to shared')
   }

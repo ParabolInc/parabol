@@ -11,8 +11,8 @@ import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {selectDescendantPages} from '../../../postgres/select'
 import type {DB} from '../../../postgres/types/pg'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
+import {PageId} from '../../../shared/gqlIds/PageId'
 import {getUserId} from '../../../utils/authorization'
-import {PageId} from '../../../utils/PageId'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {DataLoaderWorker} from '../../graphql'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
@@ -94,7 +94,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const dbPageId = PageId.split(pageId)
-  const pageSlug = PageId.code(dbPageId)
+  const pageSlug = PageId.toClient(dbPageId)
   const userRole = await dataLoader
     .get('pageAccessByPageIdUserId')
     .load({pageId: dbPageId, userId: viewerId})

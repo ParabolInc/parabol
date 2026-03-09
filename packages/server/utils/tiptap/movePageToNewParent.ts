@@ -6,7 +6,7 @@ import {redisHocusPocus} from '../../hocusPocus'
 import getKysely from '../../postgres/getKysely'
 import {selectDescendantPages} from '../../postgres/select'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
-import {PageId} from '../../utils/PageId'
+import {PageId} from '../../shared/gqlIds/PageId'
 import {publishPageNotification} from '../publishPageNotification'
 import {validateParentPage} from './validateParentPage'
 
@@ -50,7 +50,7 @@ export const movePageToNewParent = async (
   }
   if (childPage.parentPageId) {
     const documentName = PageId.join(childPage.parentPageId)
-    const pageCode = PageId.code(pageId)
+    const pageCode = PageId.toClient(pageId)
     redisHocusPocus.handleEvent('removeCanonicalPageLinkFromPage', documentName, {pageCode})
   }
   const trx = await pg.startTransaction().execute()

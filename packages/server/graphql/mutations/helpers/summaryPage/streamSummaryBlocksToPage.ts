@@ -4,7 +4,7 @@ import sleep from 'parabol-client/utils/sleep'
 import {AbstractType, XmlElement} from 'yjs'
 import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus, redisHocusPocus} from '../../../../hocusPocus'
-import {PageId} from '../../../../utils/PageId'
+import {PageId} from '../../../../shared/gqlIds/PageId'
 import type {InternalContext} from '../../../graphql'
 import {generateMeetingSummaryPage} from './generateMeetingSummaryPage'
 
