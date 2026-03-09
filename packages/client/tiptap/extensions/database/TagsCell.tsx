@@ -16,7 +16,13 @@ const useTagsType = ({doc, columnId}: {doc: Y.Doc; columnId: ColumnId}) => {
   const columnValues = useColumnValues(doc, columnId)
 
   const options = useMemo(() => {
-    return Array.from(columnValues).sort() as string[]
+    return Array.from(
+      new Set(
+        Array.from(columnValues)
+          .flatMap((value) => value?.split(',').map((s) => s.trim()))
+          .filter(Boolean)
+      )
+    ).sort() as string[]
   }, [columnValues])
 
   return options

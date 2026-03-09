@@ -67,7 +67,7 @@ export const ImportDialog = (props: Props) => {
   const columnMeta = useYMap(getColumnMeta(doc))
   const rows = useYArray(getRows(doc))
 
-  const dataIsEmpty = useMemo(() => !isOpen || isDataEmpty(doc), [isOpen])
+  const dataIsEmpty = useMemo(() => !isOpen || isDataEmpty(doc), [isOpen, rows.length, doc])
 
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []

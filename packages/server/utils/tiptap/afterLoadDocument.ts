@@ -53,11 +53,11 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
         if (!row) {
           return
         }
-        event.changes.keys.forEach((_change, _key) => {
+        if (event.changes.delta.length > 0) {
           document.transact(() => {
             updateChangedAt(row, 'updated', userId)
           })
-        })
+        }
       }
     })
   })

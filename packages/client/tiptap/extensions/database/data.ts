@@ -185,12 +185,8 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
     columns.delete(index, 1)
 
     const data = getDataEntries(doc)
-    for (const [key, row] of data) {
-      if (row.delete) {
-        row.delete(columnId)
-      } else {
-        console.warn('Invalid row data structure, expected Y.Map', key, row)
-      }
+    for (const [_, row] of data) {
+      row.delete(columnId)
     }
   })
 }
