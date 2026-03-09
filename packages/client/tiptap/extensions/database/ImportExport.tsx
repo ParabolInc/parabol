@@ -6,7 +6,7 @@ import {useState} from 'react'
 import * as Y from 'yjs'
 import {toSlug} from '../../../shared/toSlug'
 import {quickHash} from '../../../shared/utils/quickHash'
-import {getColumnMeta, getColumns, getData, getRows} from './data'
+import {getColumnMeta, getColumns, getRowData, getRows} from './data'
 import {ImportDialog} from './ImportDialog'
 
 export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
@@ -21,7 +21,6 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
     const columns = getColumns(doc)
     const rows = getRows(doc)
     const columnMeta = getColumnMeta(doc)
-    const data = getData(doc)
 
     const fields = columns.toArray().map((columnId, index) => {
       const meta = columnMeta.get(columnId)
@@ -31,7 +30,13 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
       }
     })
 
-    const rowRecords = rows.map((rowId) => data.get(rowId)?.toJSON())
+    const rowRecords = rows.map((rowId) =>
+      Object.fromEntries(
+        getRowData(doc, rowId)
+          ?.yarray.toArray()
+          .map(({key, val}) => [key, val]) ?? []
+      )
+    )
 
     const parser = new Parser({
       fields,

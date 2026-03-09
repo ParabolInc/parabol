@@ -12,7 +12,7 @@ import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
-import {getColumnMeta, getColumns, getData, getRows, type RowData} from './data'
+import {getColumnMeta, getColumns, getData, getDataEntries, getRows, type RowDataMap} from './data'
 import {useYArray, useYMap} from './hooks'
 import {getRecordHeaders, importRecords} from './importRecords'
 
@@ -30,22 +30,20 @@ const clearAllData = (doc: Y.Doc) => {
   })
 }
 
-const rowIsEmpty = (row: RowData) => {
-  return row.toArray().every(({key}) => key.startsWith('_'))
+const rowIsEmpty = (row: RowDataMap) => {
+  return row.yarray.toArray().every(({key}) => key.startsWith('_'))
 }
-const useIsDataEmpty = (doc: Y.Doc) => {
-  const rows = useYArray(getRows(doc))
-  const data = useYMap(getData(doc))
+const isDataEmpty = (doc: Y.Doc) => {
+  const rows = getRows(doc)
+  const data = getDataEntries(doc)
 
-  return useMemo(() => {
-    if (rows.length === 0) return true
-    for (const row of data.values()) {
-      if (!rowIsEmpty(row)) {
-        return false
-      }
+  if (rows.length === 0) return true
+  for (const [_, row] of data) {
+    if (!rowIsEmpty(row)) {
+      return false
     }
-    return true
-  }, [data, rows])
+  }
+  return true
 }
 
 type Props = {
@@ -69,7 +67,7 @@ export const ImportDialog = (props: Props) => {
   const columnMeta = useYMap(getColumnMeta(doc))
   const rows = useYArray(getRows(doc))
 
-  const dataIsEmpty = useIsDataEmpty(doc)
+  const dataIsEmpty = useMemo(() => !isOpen || isDataEmpty(doc), [isOpen])
 
   const headers = useMemo(() => {
     if (!records || records.length === 0) return []

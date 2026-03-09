@@ -16,8 +16,13 @@ import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
 export type ColumnId = string
 export type RowId = string
-export type RawCell = {key: string; val: string | null}
-export type RowData = Y.Array<RawCell>
+type CellValue = string | null
+export type RawCell = {key: string; val: CellValue}
+
+// remove after migration of existing databases
+export type LegacyRawData = Y.Map<string>
+export type RowData = Y.Array<RawCell> | LegacyRawData
+export type RowDataMap = YKeyValue<CellValue>
 
 export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
 export type ColumnMeta = {
@@ -58,6 +63,46 @@ export const getColumnMeta = (doc: Y.Doc) => {
 
 export const getData = (doc: Y.Doc) => {
   return doc.getMap<RowData>('data')
+}
+
+const convertRowData = (value: Y.Map<any>): Y.Array<RawCell> => {
+  const cells: RawCell[] = []
+  value.forEach((val, key) => {
+    cells.push({key, val})
+  })
+  return Y.Array.from(cells)
+}
+
+export const getDataEntries = function* (doc: Y.Doc) {
+  const data = getData(doc)
+  for (const [rowId, value] of data) {
+    if (value instanceof Y.Map) {
+      const converted = convertRowData(value)
+      data.set(rowId, converted)
+      yield [rowId, new YKeyValue<CellValue>(converted)] as const
+    } else if (value instanceof Y.Array) {
+      yield [rowId, new YKeyValue<CellValue>(value)] as const
+    } else {
+      throw new Error(`Invalid row data structure for rowId: ${rowId}`)
+    }
+  }
+}
+
+export const getRowData = (doc: Y.Doc, rowId: RowId) => {
+  const data = getData(doc)
+  const row = data.get(rowId)
+  if (!row) {
+    return null
+  }
+  if (row instanceof Y.Map) {
+    const converted = convertRowData(row)
+    data.set(rowId, converted)
+    return new YKeyValue<CellValue>(converted)
+  } else if (row instanceof Y.Array) {
+    return new YKeyValue<CellValue>(row)
+  } else {
+    throw new Error(`Invalid row data structure for rowId: ${rowId}`)
+  }
 }
 
 export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
@@ -118,14 +163,13 @@ export const duplicateColumn = (doc: Y.Doc, columnId: ColumnId) => {
     }
     columnMeta.set(id, {...existingMeta})
 
-    const data = getData(doc)
-    data.forEach((value) => {
-      const row = new YKeyValue(value)
+    const data = getDataEntries(doc)
+    for (const [_, row] of data) {
       const source = row.get(columnId)
       if (source !== undefined) {
         row.set(id, source)
       }
-    })
+    }
 
     const columns = doc.getArray<ColumnId>('columns')
     const index = columns.toArray().indexOf(columnId)
@@ -140,15 +184,14 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
     const index = columns.toArray().indexOf(columnId)
     columns.delete(index, 1)
 
-    const data = getData(doc)
-    data.forEach((value, key) => {
-      const row = new YKeyValue(value)
+    const data = getDataEntries(doc)
+    for (const [key, row] of data) {
       if (row.delete) {
         row.delete(columnId)
       } else {
         console.warn('Invalid row data structure, expected Y.Map', key, row)
       }
-    })
+    }
   })
 }
 

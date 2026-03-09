@@ -1,16 +1,9 @@
 import ms from 'ms'
-import {YKeyValue} from 'y-utility/y-keyvalue'
-import * as Y from 'yjs'
-import {RawCell} from './data'
+import {type RowDataMap} from './data'
 
 const timeStampTolerance = ms('10s')
 
-export const updateChangedAt = (
-  rowArray: Y.Array<RawCell>,
-  event: 'created' | 'updated',
-  userId: string
-) => {
-  const row = new YKeyValue(rowArray)
+export const updateChangedAt = (row: RowDataMap, event: 'created' | 'updated', userId: string) => {
   const now = Date.now()
   let currentAt = row.get(`_${event}At`)
   if (typeof currentAt !== 'number') {
