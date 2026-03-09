@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react'
 import * as Y from 'yjs'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {DATABASE_CELL_MAX_CHARS} from '../../../utils/constants'
-import {ColumnId, ColumnMeta, changeColumn, RowData, RowId} from './data'
+import {ColumnId, ColumnMeta, changeColumn, getDataEntries, getRowData, RowId} from './data'
 import {updateChangedAt} from './utils'
 
 const yMapToMap = <T>(ymap: Y.Map<T>): Map<string, T> => {
@@ -56,8 +56,7 @@ export const useYArray = <T>(yarray: Y.Array<T>) => {
 
 export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
   const {viewerId} = useAtmosphere()
-  const data = doc.getMap<RowData>('data')
-  const row = data.get(rowId)
+  const row = getRowData(doc, rowId)
 
   const [value, setValueState] = useState<string | null>(() => row?.get(columnId) ?? null)
 
@@ -67,16 +66,16 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
       setValueState(cellValue ?? null)
     }
 
-    const observer = (event: Y.YMapEvent<string>) => {
-      if (event.keysChanged.has(columnId)) {
+    const observer = (event: Map<string, unknown>) => {
+      if (event.has(columnId)) {
         updateValue()
       }
     }
     updateValue()
-    row?.observe(observer)
+    row?.on('change', observer)
 
     return () => {
-      row?.unobserve(observer)
+      row?.off('change', observer)
     }
   }, [row, columnId])
 
@@ -102,10 +101,15 @@ export const useCell = (doc: Y.Doc, rowId: RowId, columnId: ColumnId) => {
 }
 
 export const useColumnValues = (doc: Y.Doc, columnId: ColumnId) => {
-  const data = doc.getMap<RowData>('data')
-  return Array.from(data.values())
-    .map((row) => row.get(columnId))
-    .filter(Boolean) as string[]
+  const entries = getDataEntries(doc)
+  const values = new Set<string>()
+  for (const [_, row] of entries) {
+    const value = row.get(columnId)
+    if (value) {
+      values.add(value.toString().trim())
+    }
+  }
+  return values
 }
 
 export const useColumnMeta = (doc: Y.Doc, columnId: ColumnId) => {

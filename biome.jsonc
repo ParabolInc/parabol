@@ -10,6 +10,7 @@
       "!**/build/**",
       "!**/dist/**",
       "!**/dev/**",
+      "!**/.claude/**",
       "!**/scripts/toolbox/**",
       "!**/scripts/codeshift/**",
       "!**/packages/client/__generated__/**",
