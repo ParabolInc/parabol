@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import type {ActionMeetingLastCall_meeting$key} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import useNavigate from '../hooks/useNavigate'
 import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint/AgendaShortcutHint'
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
@@ -59,7 +59,7 @@ const ActionMeetingLastCall = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {submitting, onError, onCompleted, submitMutation} = useMutationProps()
   const {viewerId} = atmosphere
   const {endedAt, facilitator, facilitatorUserId, id: meetingId, phases, showSidebar} = meeting
@@ -75,7 +75,7 @@ const ActionMeetingLastCall = (props: Props) => {
   const endMeeting = () => {
     if (submitting) return
     submitMutation()
-    EndCheckInMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+    EndCheckInMutation(atmosphere, {meetingId}, {navigate, onError, onCompleted})
   }
 
   const getHeadingText = () => {

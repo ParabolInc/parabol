@@ -1,8 +1,8 @@
 import {useEffect} from 'react'
-import {useHistory, useLocation} from 'react-router'
 import type {SubscriptionRequestor} from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'
+import useNavigate from './useNavigate'
 
 const useSubscription = (
   queryKey: string,
@@ -10,10 +10,9 @@ const useSubscription = (
   inVariables: any = {}
 ) => {
   const atmosphere = useAtmosphere()
-  const history = useHistory()
-  const location = useLocation()
+  const navigate = useNavigate()
   const variables = useDeepEqual(inVariables)
-  const router = {history, location}
+  const router = {navigate}
   useEffect(() => {
     if (atmosphere.registerQuery) {
       atmosphere.registerQuery(queryKey, subscription, variables, router).catch(() => {
