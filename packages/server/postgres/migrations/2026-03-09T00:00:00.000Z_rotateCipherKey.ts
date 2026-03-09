@@ -50,6 +50,30 @@ class FeistelCipher {
 
 const BATCH_SIZE = 1000
 
+// All FK constraints referencing Page(id), derived from the migrations schema.
+// Constraint names follow Postgres convention: {table}_{column}_fkey
+const PAGE_ID_FKS = [
+  // 2025-05-12_RBAC.ts
+  {table: 'PageExternalAccess', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'PageUserAccess', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'PageTeamAccess', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'PageOrganizationAccess', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'PageAccess', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'PageUserSortOrder', column: 'pageId', onDelete: 'cascade' as const},
+  {table: 'Page', column: 'parentPageId', onDelete: 'cascade' as const}, // self-referential
+  // 2025-06-18_PageBacklink.ts
+  {table: 'PageBacklink', column: 'fromPageId', onDelete: 'cascade' as const},
+  {table: 'PageBacklink', column: 'toPageId', onDelete: 'cascade' as const},
+  // 2025-07-25_newMeeting-summaryPageId.ts
+  {table: 'NewMeeting', column: 'summaryPageId', onDelete: 'set null' as const},
+  // 2025-09-02_addSharePageNotifications.ts
+  {table: 'Notification', column: 'pageId', onDelete: 'cascade' as const},
+  // 2025-10-30_addPageAccessRequest.ts
+  {table: 'PageAccessRequest', column: 'pageId', onDelete: 'cascade' as const},
+  // 2026-02-20_meetingTOCPage.ts
+  {table: 'Team', column: 'meetingTOCpageId', onDelete: 'set null' as const}
+]
+
 export async function up(db: Kysely<any>): Promise<void> {
   const oldSecret = process.env.OLD_SERVER_SECRET
   const newSecret = process.env.SERVER_SECRET!
@@ -59,63 +83,31 @@ export async function up(db: Kysely<any>): Promise<void> {
   // If no rotation, old === new so both ciphers are identical
   const oldCipher = isRotation ? new FeistelCipher(fnv1aHash(oldSecret.slice(0, 10))) : newCipher
 
-  // Remove sequence default and set pseudorandom default so new inserts grab a 32-bit integer.
-  await sql`ALTER TABLE "Page" ALTER COLUMN "id" DROP DEFAULT;`.execute(db)
-  await sql`ALTER TABLE "Page" ALTER COLUMN "id" SET DEFAULT (floor(random() * 4294967295 - 2147483648)::integer);`.execute(
+  // Change the default from sequential to pseudorandom for future inserts
+  await sql`ALTER TABLE "Page" ALTER COLUMN "id" DROP DEFAULT`.execute(db)
+  await sql`ALTER TABLE "Page" ALTER COLUMN "id" SET DEFAULT (floor(random() * 4294967295 - 2147483648)::integer)`.execute(
     db
   )
 
-  // Step 1: Temporarily convert foreign keys referring to Page.id to have ON UPDATE CASCADE
-  const fkeysResult = await sql<any>`
-    SELECT
-      conname AS constraint_name,
-      conrelid::regclass::text AS table_name,
-      a.attname AS column_name,
-      confrelid::regclass::text AS foreign_table_name,
-      af.attname AS foreign_column_name,
-      confupdtype AS on_update,
-      confdeltype AS on_delete
-    FROM pg_constraint c
-    JOIN pg_attribute a ON a.attnum = ANY(c.conkey) AND a.attrelid = c.conrelid
-    JOIN pg_attribute af ON af.attnum = ANY(c.confkey) AND af.attrelid = c.confrelid
-    WHERE confrelid = '"Page"'::regclass;
-  `.execute(db)
-
-  type FKRow = {
-    constraint_name: string
-    table_name: string
-    column_name: string
-    on_delete: string
+  // Step 1: Temporarily add ON UPDATE CASCADE to all FKs referencing Page.id
+  // so that the ID updates in Step 2 propagate automatically.
+  for (const fk of PAGE_ID_FKS) {
+    const name = `${fk.table}_${fk.column}_fkey`
+    await db.schema.alterTable(fk.table).dropConstraint(name).execute()
+    await db.schema
+      .alterTable(fk.table)
+      .addForeignKeyConstraint(name, [fk.column], 'Page', ['id'])
+      .onDelete(fk.onDelete)
+      .onUpdate('cascade')
+      .execute()
   }
 
-  const fkRows: FKRow[] = fkeysResult.rows
-
-  // Drop and Recreate FKs with ON UPDATE CASCADE
-  for (const fk of fkRows) {
-    await sql`ALTER TABLE ${sql.raw(`"${fk.table_name}"`)} DROP CONSTRAINT ${sql.raw(`"${fk.constraint_name}"`)}`.execute(
-      db
-    )
-
-    let onDeleteClause = ''
-    if (fk.on_delete === 'c') onDeleteClause = 'ON DELETE CASCADE'
-    else if (fk.on_delete === 'n') onDeleteClause = 'ON DELETE SET NULL'
-    else if (fk.on_delete === 'r') onDeleteClause = 'ON DELETE RESTRICT'
-
-    await sql`
-      ALTER TABLE ${sql.raw(`"${fk.table_name}"`)}
-      ADD CONSTRAINT ${sql.raw(`"${fk.constraint_name}"`)}
-      FOREIGN KEY (${sql.raw(`"${fk.column_name}"`)})
-      REFERENCES "Page" ("id")
-      ${sql.raw(onDeleteClause)}
-      ON UPDATE CASCADE
-    `.execute(db)
-  }
-
-  // Step 2: Batch update Page IDs
-  const allPageIds = new Set<number>()
+  // Step 2: Batch-encrypt all Page.ids. FKs cascade automatically.
+  // idMap tracks oldId → newId for ancestorIds remapping and yDoc link fixing.
+  const idMap = new Map<number, number>()
   let lastSeenId = 0
   for (let i = 0; i < 1e6; i++) {
-    const pages: {id: number}[] = await db
+    const pages = await db
       .selectFrom('Page')
       .select('id')
       .where('id', '>', lastSeenId)
@@ -126,29 +118,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     if (pages.length === 0) break
     lastSeenId = pages.at(-1)!.id
 
-    for (const page of pages) {
-      allPageIds.add(page.id)
-    }
-
-    // Since FKs are ON UPDATE CASCADE, we can update them safely.
-    // Bitwise OR | 0 casts the uint32 returned by Cipher into a signed 32-bit int.
     await Promise.all(
-      pages.map((page) =>
-        db
-          .updateTable('Page')
-          .set({id: oldCipher.encrypt(page.id) | 0})
-          .where('id', '=', page.id)
-          .execute()
-      )
+      pages.map((page) => {
+        const newId = oldCipher.encrypt(page.id) | 0
+        idMap.set(page.id, newId)
+        return db.updateTable('Page').set({id: newId}).where('id', '=', page.id).execute()
+      })
     )
   }
 
   // Step 2b: Remap ancestorIds (plain integer[], not a FK, so CASCADE doesn't apply)
-  const idMap = new Map<number, number>()
-  for (const oldId of allPageIds) {
-    idMap.set(oldId, oldCipher.encrypt(oldId) | 0)
-  }
-
   for (const [oldId, newId] of idMap) {
     await sql`
       UPDATE "Page"
@@ -165,22 +144,22 @@ export async function up(db: Kysely<any>): Promise<void> {
   }
 
   // Step 3: Fix page links that were already re-encrypted with the new cipher before this migration.
-  lastSeenId = -2147483648 // int min
+  let scanLastSeenId = -2147483648 // int min
   let totalPages = 0
   let totalUpdated = 0
 
   for (let i = 0; i < 1e6; i++) {
-    const pages: {id: number; yDoc: Buffer | null}[] = await db
+    const pages = await db
       .selectFrom('Page')
       .select(['id', 'yDoc'])
       .where('yDoc', 'is not', null)
-      .where('id', '>', lastSeenId)
+      .where('id', '>', scanLastSeenId)
       .orderBy('id')
       .limit(BATCH_SIZE)
       .execute()
 
     if (pages.length === 0) break
-    lastSeenId = pages.at(-1)!.id
+    scanLastSeenId = pages.at(-1)!.id
     totalPages += pages.length
     console.log(`rotateCipherKey: checking links in batch ${i + 1} (${totalPages} pages so far)`)
 
@@ -205,12 +184,12 @@ export async function up(db: Kysely<any>): Promise<void> {
             const code = Number(pageCode)
 
             // Revert new-cipher code back to the old-cipher uint representation
-            const newDecryptDbId = newCipher.decrypt(code)
+            const oldId = newCipher.decrypt(code)
+            const newId = idMap.get(oldId)
+            if (newId === undefined) continue
 
-            if (allPageIds.has(newDecryptDbId)) {
-              node.setAttribute('pageCode', oldCipher.encrypt(newDecryptDbId) as any)
-              changed = true
-            }
+            node.setAttribute('pageCode', (newId >>> 0) as any)
+            changed = true
           }
         })
 
