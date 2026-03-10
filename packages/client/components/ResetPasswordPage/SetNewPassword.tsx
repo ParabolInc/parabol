@@ -6,6 +6,8 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps from '../../hooks/useMutationProps'
 import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
+import {passwordStrength} from '../../shared/passwordStrength'
+import {Security} from '../../types/constEnums'
 import Legitity from '../../validation/Legitity'
 import AuthenticationDialog from '../AuthenticationDialog'
 import DialogTitle from '../DialogTitle'
@@ -41,8 +43,9 @@ const SubmitButton = styled(PrimaryButton)({
 const validatePassword = (password: string) => {
   return new Legitity(password)
     .required('Please enter a password')
-    .min(6, '6 character minimum')
+    .min(Security.MIN_PASSWORD_LENGTH, `${Security.MIN_PASSWORD_LENGTH} character minimum`)
     .max(1000, `That's a book, not a password`)
+    .test((value) => passwordStrength(value))
 }
 
 const SetNewPassword = (props: Props) => {
