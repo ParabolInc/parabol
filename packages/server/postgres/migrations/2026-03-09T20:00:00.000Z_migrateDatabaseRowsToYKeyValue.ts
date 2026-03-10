@@ -1,7 +1,18 @@
+import Redis from 'ioredis'
 import type {Kysely} from 'kysely'
+import {pack} from 'msgpackr'
 import * as Y from 'yjs'
+import {CipherId} from '../../utils/CipherId'
+import {getRedisOptions} from '../../utils/getRedisOptions'
+
+const SERVER_ID = process.env.SERVER_ID!
 
 export async function up(db: Kysely<any>): Promise<void> {
+  const redis = new Redis(process.env.REDIS_URL!, {
+    ...getRedisOptions(),
+    connectionName: '2026-03-09T00:00:00.000Z_rekeyPageLinks'
+  })
+
   const pages = await db
     .selectFrom('Page')
     .select(['id', 'yDoc'])
@@ -25,7 +36,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     Y.applyUpdate(doc, yDoc)
 
     const data = doc.getMap<any>('data')
-    let modified = false
+    let changed = false
 
     doc.transact(() => {
       data.forEach((row: any, rowId: string) => {
@@ -38,20 +49,42 @@ export async function up(db: Kysely<any>): Promise<void> {
         })
 
         data.set(rowId, Y.Array.from(cells))
-        modified = true
+        changed = true
       })
     })
 
-    if (!modified) {
+    if (!changed) {
       skippedCount++
       continue
     }
 
-    await db
-      .updateTable('Page')
-      .set({yDoc: Buffer.from(Y.encodeStateAsUpdate(doc))})
-      .where('id', '=', pageId)
-      .execute()
+    const documentName = `page:${CipherId.encrypt(pageId)}`
+
+    // Now that we have a document that has changed, lock it so another server can't open it
+    const proxyTo = await redis.set(`rsaLock:${documentName}`, SERVER_ID, 'PX', 10_000, 'NX', 'GET')
+    if (!proxyTo) {
+      // if no other server has the doc open, just update it in the DB
+      await db
+        .updateTable('Page')
+        .set({yDoc: Buffer.from(Y.encodeStateAsUpdate(doc))})
+        .where('id', '=', pageId)
+        .execute()
+    } else {
+      // if the document is already open, we must send the update to that worker
+      const update = Y.encodeStateAsUpdate(doc, yDoc)
+      const proxyMessage = pack({
+        eventName: 'applyYjsUpdate',
+        documentName,
+        payload: {update},
+        replyTo: `null`,
+        replyId: 0,
+        type: 'customEventStart'
+      })
+      await redis.publish(`rsaMsg:${proxyTo}`, proxyMessage)
+    }
+    // there are a couple race conditions here, since the migration is locking the doc, but not accepting messages for it
+    // can be treated as an edge case & fixed if they refresh
+    await redis.del(`rsaLock:${documentName}`)
 
     migratedCount++
   }
