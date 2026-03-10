@@ -37,6 +37,18 @@ const ActivityLibraryRoutes = lazy(
 const ReviewRequestToJoinOrgRoot = lazy(
   () => import(/* webpackChunkName: 'ReviewRequestToJoinOrgRoot' */ './ReviewRequestToJoinOrgRoot')
 )
+const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
+
+const DASHBOARD_PREFIXES = ['/meetings', '/me', '/new-summary', '/newteam', '/team', '/pages']
+
+const DashboardOrNotFound = () => {
+  const {pathname} = useLocation()
+  const isDashboardRoute = DASHBOARD_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
+  )
+  if (!isDashboardRoute) return <NotFound />
+  return <DashboardRoot />
+}
 
 const PrivateRoutes = () => {
   useAuthRoute()
@@ -48,13 +60,13 @@ const PrivateRoutes = () => {
       <Routes location={state?.backgroundLocation || location}>
         <Route path='/activity-library/*' element={<ActivityLibraryRoutes />} />
         <Route path='/new-meeting' element={<Navigate to='/activity-library' replace />} />
-        <Route path='/meet/:meetingId' element={<MeetingRoot />} />
-        <Route path='/meeting-series/:meetingId' element={<MeetingSeriesRoot />} />
+        <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
+        <Route path='/meeting-series/:meetingId/*' element={<MeetingSeriesRoot />} />
         <Route path='/admin/graphql' element={<Graphql />} />
         <Route path='/admin/impersonate' element={<Impersonate />} />
         <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
         <Route path='/signout' element={<Signout />} />
-        <Route path='*' element={<DashboardRoot />} />
+        <Route path='*' element={<DashboardOrNotFound />} />
       </Routes>
       <Routes>
         <Route
