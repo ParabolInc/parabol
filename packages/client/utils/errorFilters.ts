@@ -14,3 +14,7 @@ export const isExtensionError = ({name, stack}: Error) => {
 export const isIgnoredError = (error: Error) => {
   return isNetworkError(error) || isOldBrowserError(error) || isExtensionError(error)
 }
+
+export const isNotSignedInError = ({message}: Error) => {
+  return message.includes('Not signed in')
+}

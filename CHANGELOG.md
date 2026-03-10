@@ -5,6 +5,54 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.0.1](https://github.com/ParabolInc/parabol/compare/v13.0.0...v13.0.1) (2026-03-09)
+
+
+### Fixed
+
+* update page link migration ([#12803](https://github.com/ParabolInc/parabol/issues/12803)) ([7b0c2af](https://github.com/ParabolInc/parabol/commit/7b0c2afd23ef4a907eb541c2c0e67147ac43c18a))
+
+## [13.0.0](https://github.com/ParabolInc/parabol/compare/v12.10.12...v13.0.0) (2026-03-09)
+
+### DO NOT UPDATE TO THIS VERSION
+
+* the migration is broken, go at least straight to 13.0.1
+
+### ⚠ BREAKING CHANGES
+
+* update invalid page links ([#12797](https://github.com/ParabolInc/parabol/issues/12797))
+
+### Fixed
+
+* update invalid page links ([#12797](https://github.com/ParabolInc/parabol/issues/12797)) ([7355bca](https://github.com/ParabolInc/parabol/commit/7355bca8f0f5b8762999908ccd7035294f3a286c))
+
+## [12.10.12](https://github.com/ParabolInc/parabol/compare/v12.10.11...v12.10.12) (2026-03-09)
+
+
+### Changed
+
+* Improve database performance ([#12775](https://github.com/ParabolInc/parabol/issues/12775)) ([d3d1f86](https://github.com/ParabolInc/parabol/commit/d3d1f8692bab396e63814dabf30653d41bb40132))
+
+## [12.10.11](https://github.com/ParabolInc/parabol/compare/v12.10.10...v12.10.11) (2026-03-09)
+
+
+### Fixed
+
+* separate page cipher id environment variable ([#12796](https://github.com/ParabolInc/parabol/issues/12796)) ([3daef57](https://github.com/ParabolInc/parabol/commit/3daef579cae635925fc7f8129e95d36d8198dedf))
+
+
+### Changed
+
+* disable review stats ([#12783](https://github.com/ParabolInc/parabol/issues/12783)) ([8ab8df1](https://github.com/ParabolInc/parabol/commit/8ab8df1c8cf9eddcaf9eebb14446da9f724668e1))
+* virtualize DatabaseView ([#12778](https://github.com/ParabolInc/parabol/issues/12778)) ([76b1465](https://github.com/ParabolInc/parabol/commit/76b14658487bcc3c8784cf05482a23334dbfe386))
+
+## [12.10.10](https://github.com/ParabolInc/parabol/compare/v12.10.9...v12.10.10) (2026-03-06)
+
+
+### Fixed
+
+* sign out on not signed in error ([#12779](https://github.com/ParabolInc/parabol/issues/12779)) ([fd20095](https://github.com/ParabolInc/parabol/commit/fd20095edf2a544d19b1adcddc4f5e9c0fa23748))
+
 ## [12.10.9](https://github.com/ParabolInc/parabol/compare/v12.10.8...v12.10.9) (2026-03-03)
 
 

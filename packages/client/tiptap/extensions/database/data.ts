@@ -1,3 +1,4 @@
+import {YKeyValue} from 'y-utility/y-keyvalue'
 import * as Y from 'yjs'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
@@ -15,7 +16,13 @@ import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 
 export type ColumnId = string
 export type RowId = string
-export type RowData = Y.Map<string>
+type CellValue = string | null
+export type RawCell = {key: string; val: CellValue}
+
+// remove after migration of existing databases
+export type LegacyRawData = Y.Map<string>
+export type RowData = Y.Array<RawCell> | LegacyRawData
+export type RowDataMap = YKeyValue<CellValue>
 
 export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
 export type ColumnMeta = {
@@ -38,7 +45,7 @@ const defaultColumnMeta: ColumnMeta = {
   type: 'text'
 }
 
-const generateId = (_doc: Y.Doc) => {
+export const generateId = (_doc: Y.Doc) => {
   return crypto.randomUUID()
 }
 
@@ -56,6 +63,46 @@ export const getColumnMeta = (doc: Y.Doc) => {
 
 export const getData = (doc: Y.Doc) => {
   return doc.getMap<RowData>('data')
+}
+
+const convertRowData = (value: Y.Map<any>): Y.Array<RawCell> => {
+  const cells: RawCell[] = []
+  value.forEach((val, key) => {
+    cells.push({key, val})
+  })
+  return Y.Array.from(cells)
+}
+
+export const getDataEntries = function* (doc: Y.Doc) {
+  const data = getData(doc)
+  for (const [rowId, value] of data) {
+    if (value instanceof Y.Map) {
+      const converted = convertRowData(value)
+      data.set(rowId, converted)
+      yield [rowId, new YKeyValue<CellValue>(converted)] as const
+    } else if (value instanceof Y.Array) {
+      yield [rowId, new YKeyValue<CellValue>(value)] as const
+    } else {
+      throw new Error(`Invalid row data structure for rowId: ${rowId}`)
+    }
+  }
+}
+
+export const getRowData = (doc: Y.Doc, rowId: RowId) => {
+  const data = getData(doc)
+  const row = data.get(rowId)
+  if (!row) {
+    return null
+  }
+  if (row instanceof Y.Map) {
+    const converted = convertRowData(row)
+    data.set(rowId, converted)
+    return new YKeyValue<CellValue>(converted)
+  } else if (row instanceof Y.Array) {
+    return new YKeyValue<CellValue>(row)
+  } else {
+    throw new Error(`Invalid row data structure for rowId: ${rowId}`)
+  }
 }
 
 export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
@@ -116,13 +163,13 @@ export const duplicateColumn = (doc: Y.Doc, columnId: ColumnId) => {
     }
     columnMeta.set(id, {...existingMeta})
 
-    const data = doc.getMap<RowData>('data')
-    data.forEach((value) => {
-      const source = value.get(columnId)
+    const data = getDataEntries(doc)
+    for (const [_, row] of data) {
+      const source = row.get(columnId)
       if (source !== undefined) {
-        value.set(id, source)
+        row.set(id, source)
       }
-    })
+    }
 
     const columns = doc.getArray<ColumnId>('columns')
     const index = columns.toArray().indexOf(columnId)
@@ -137,14 +184,10 @@ export const deleteColumn = (doc: Y.Doc, columnId: ColumnId) => {
     const index = columns.toArray().indexOf(columnId)
     columns.delete(index, 1)
 
-    const data = doc.getMap<RowData>('data')
-    data.forEach((row, key) => {
-      if (row.delete) {
-        row.delete(columnId)
-      } else {
-        console.warn('Invalid row data structure, expected Y.Map', key, row)
-      }
-    })
+    const data = getDataEntries(doc)
+    for (const [_, row] of data) {
+      row.delete(columnId)
+    }
   })
 }
 
@@ -152,20 +195,20 @@ export const appendRow = (doc: Y.Doc, userId?: string, rowData?: Record<string, 
   const id = generateId(doc)
   doc.transact(() => {
     const rows = doc.getArray<RowId>('rows')
-    const data = doc.getMap<RowData>('data')
-    const row = new Y.Map<any>()
+    const row: {key: string; val: any}[] = []
     if (rowData) {
       Object.entries(rowData).forEach(([columnId, value]: [string, any]) => {
         if (value !== '' && value !== undefined && value !== null) {
-          row.set(columnId, value)
+          row.push({key: columnId, val: value})
         }
       })
     }
     if (userId) {
-      row.set('_createdBy', userId)
-      row.set('_createdAt', Date.now())
+      row.push({key: '_createdBy', val: userId})
+      row.push({key: '_createdAt', val: Date.now()})
     }
-    data.set(id, row)
+    const data = getData(doc)
+    data.set(id, Y.Array.from(row) as any)
     rows.push([id])
   })
   return id
@@ -179,7 +222,7 @@ export const deleteRow = (doc: Y.Doc, rowId: RowId) => {
       rows.delete(index, 1)
     }
 
-    const data = doc.getMap<RowData>('data')
+    const data = getData(doc)
     data.delete(rowId)
   })
 }
