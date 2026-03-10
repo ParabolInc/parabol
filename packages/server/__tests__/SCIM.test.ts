@@ -1328,6 +1328,39 @@ describe('Org membership is reflected in SCIM', () => {
     })
   })
 
+  test('PATCH active=false invalidates the managed user JWT', async () => {
+    const email = faker.internet.userName().toLowerCase() + '@' + domain
+    const {userId, cookie} = await signUpWithEmail(email)
+    const dataLoader = getNewDataLoader('test-loader')
+    await adjustUserCount(userId, orgId, InvoiceItemType.ADD_USER, dataLoader)
+
+    await fetch(`${SCIM_URL}/Users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${bearerToken}`
+      },
+      body: JSON.stringify({
+        schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+        Operations: [
+          {
+            op: 'replace',
+            path: 'active',
+            value: false
+          }
+        ]
+      })
+    })
+
+    // Old cookie should no longer work for authenticated operations
+    const afterResult = await sendPublic({
+      query: `query { viewer { id } }`,
+      cookie
+    })
+    expect(afterResult.errors).toBeDefined()
+    expect(afterResult.errors[0]?.extensions?.code).toBe('UNAUTHORIZED')
+  })
+
   test('PATCH active=false removes external user from org', async () => {
     const email = faker.internet.email().toLowerCase()
     const {userId} = await signUpWithEmail(email)
