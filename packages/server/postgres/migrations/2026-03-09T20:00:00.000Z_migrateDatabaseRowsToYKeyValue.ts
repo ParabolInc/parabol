@@ -90,7 +90,6 @@ export async function up(db: Kysely<any>): Promise<void> {
   }
 
   console.log(`Migration complete: ${migratedCount} migrated, ${skippedCount} skipped`)
-  redis.disconnect()
 }
 
 export async function down(_db: Kysely<any>): Promise<void> {
