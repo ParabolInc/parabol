@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect} from 'react-router'
+import {Navigate} from 'react-router-dom'
 import type {MeetingSeriesRedirectorQuery} from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
 
 interface Props {
@@ -36,7 +36,8 @@ const MeetingSeriesRedirector = (props: Props) => {
 
   if (!canAccessMeeting && !meeting) {
     return (
-      <Redirect
+      <Navigate
+        replace
         to={{
           pathname: `/invitation-required`,
           search: `?redirectTo=${window.location.pathname}&meetingId=${meetingId}`
@@ -51,12 +52,12 @@ const MeetingSeriesRedirector = (props: Props) => {
   } else {
     const {meetingSeries} = meeting
     if (!meetingSeries) {
-      return <Redirect to={`/meet/${meetingId}`} />
+      return <Navigate replace to={`/meet/${meetingId}`} />
     }
     const {mostRecentMeeting} = meetingSeries
     const {id: activeMeetingId} = mostRecentMeeting
 
-    return <Redirect to={`/meet/${activeMeetingId}`} />
+    return <Navigate replace to={`/meet/${activeMeetingId}`} />
   }
 }
 

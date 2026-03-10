@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 
@@ -25,9 +25,9 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 const EmptyOrgsCallOut = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const gotoNewTeam = () => {
-    history.push('/newteam')
+    navigate('/newteam')
   }
 
   return (

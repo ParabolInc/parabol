@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import NotificationAction from '~/components/NotificationAction'
 import type {
   PageAccessGranted_notification$key,
@@ -21,7 +21,7 @@ interface Props {
 
 const PageAccessGranted = (props: Props) => {
   const {notification: notificationRef} = props
-  const history = useHistory()
+  const navigate = useNavigate()
   const notification = useFragment(
     graphql`
       fragment PageAccessGranted_notification on NotifyPageAccessGranted {
@@ -44,7 +44,7 @@ const PageAccessGranted = (props: Props) => {
 
   const goThere = () => {
     const pageSlug = pageId.split(':')[1]
-    history.push(`/pages/${pageSlug}`)
+    navigate(`/pages/${pageSlug}`)
   }
 
   return (

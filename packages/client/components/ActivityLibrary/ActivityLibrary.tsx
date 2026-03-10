@@ -8,8 +8,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment
 } from 'react-relay'
-import {Redirect, useParams} from 'react-router'
-import {Link} from 'react-router-dom'
+import {Link, Navigate, useParams} from 'react-router-dom'
 import type {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import type {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import type {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'
@@ -280,7 +279,7 @@ export const ActivityLibrary = (props: Props) => {
     }
   }, [debouncedSearchQuery])
 
-  const {categoryId} = useParams<{categoryId?: string}>()
+  const {categoryId} = useParams()
 
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
@@ -333,7 +332,7 @@ export const ActivityLibrary = (props: Props) => {
   }, [categoryId, templatesToRender])
 
   if (!categoryId || !availableCategoryIds.includes(categoryId)) {
-    return <Redirect to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} />
+    return <Navigate to={`/activity-library/category/${QUICK_START_CATEGORY_ID}`} replace />
   }
 
   return (

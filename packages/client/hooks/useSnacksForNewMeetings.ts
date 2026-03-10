@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import {readInlineData} from 'relay-runtime'
 import type {useSnacksForNewMeetings_meetings$key} from '~/__generated__/useSnacksForNewMeetings_meetings.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -9,7 +9,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 const useSnacksForNewMeetings = (meetingsRef: readonly useSnacksForNewMeetings_meetings$key[]) => {
   const [dismissedMeetingIds] = useState(() => new Set<string>())
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const meetings = meetingsRef.map((meetingRef) =>
     readInlineData<useSnacksForNewMeetings_meetings$key>(
       graphql`
@@ -56,7 +56,7 @@ const useSnacksForNewMeetings = (meetingsRef: readonly useSnacksForNewMeetings_m
       action: {
         label: 'Join Now',
         callback: () => {
-          history.push(`/meet/${meetingId}`)
+          navigate(`/meet/${meetingId}`)
         }
       }
     })

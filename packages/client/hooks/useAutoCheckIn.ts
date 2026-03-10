@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
+import {useNavigate} from 'react-router-dom'
 import {readInlineData} from 'relay-runtime'
 import type {useAutoCheckIn_meeting$key} from '~/__generated__/useAutoCheckIn_meeting.graphql'
 import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
 import MeetingSubscription from '../subscriptions/MeetingSubscription'
 import useAtmosphere from './useAtmosphere'
-import useNavigate from './useNavigate'
 
 const useAutoCheckIn = (meetingRef: useAutoCheckIn_meeting$key) => {
   const atmosphere = useAtmosphere()

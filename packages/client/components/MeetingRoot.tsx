@@ -1,5 +1,5 @@
 import {Suspense, useEffect} from 'react'
-import {useHistory, useParams} from 'react-router'
+import {useNavigate, useParams} from 'react-router-dom'
 import meetingSelectorQuery, {
   type MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'
@@ -7,14 +7,16 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingSelector from './MeetingSelector'
 
 const MeetingRoot = () => {
-  const history = useHistory()
-  const {meetingId} = useParams<{meetingId: string}>()
+  const navigate = useNavigate()
+  const {meetingId} = useParams()
   useEffect(() => {
     if (!meetingId) {
-      history.replace('/meetings')
+      navigate('/meetings', {replace: true})
     }
   }, [])
-  const queryRef = useQueryLoaderNow<MeetingSelectorQuery>(meetingSelectorQuery, {meetingId})
+  const queryRef = useQueryLoaderNow<MeetingSelectorQuery>(meetingSelectorQuery, {
+    meetingId: meetingId!
+  })
   if (!meetingId) return null
   return (
     <Suspense fallback={''}>

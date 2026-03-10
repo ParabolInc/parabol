@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect} from 'react-router'
+import {Navigate} from 'react-router-dom'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'
@@ -51,7 +51,8 @@ const MeetingSelector = (props: Props) => {
   useConnectedMeetingMembers(meeting ? meetingId : null, true)
   if (!canAccessMeeting && !meeting) {
     return (
-      <Redirect
+      <Navigate
+        replace
         to={{
           pathname: `/invitation-required`,
           search: `?redirectTo=${window.location.pathname}&meetingId=${meetingId}`

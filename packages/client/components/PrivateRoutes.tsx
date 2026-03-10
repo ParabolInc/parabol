@@ -1,6 +1,5 @@
-import type {Location} from 'history'
 import {lazy} from 'react'
-import {Redirect, Route, Switch, useLocation} from 'react-router'
+import {type Location, Navigate, Route, Routes, useLocation} from 'react-router-dom'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 
@@ -19,7 +18,6 @@ const Impersonate = lazy(
 const Signout = lazy(
   () => import(/* webpackChunkName: 'SignoutContainer' */ '../containers/Signout/SignoutContainer')
 )
-const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
 const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
 const MeetingSeriesRoot = lazy(
@@ -43,33 +41,27 @@ const ReviewRequestToJoinOrgRoot = lazy(
 const PrivateRoutes = () => {
   useAuthRoute()
   useNoIndex()
-  const location = useLocation<{backgroundLocation?: Location}>()
-  const state = location.state
+  const location = useLocation()
+  const state = location.state as {backgroundLocation?: Location} | null
   return (
     <>
-      <Switch location={state?.backgroundLocation || location}>
-        <Route path='/activity-library' component={ActivityLibraryRoutes} />
-        <Route
-          path='(/meetings|/me|/new-summary|/newteam|/team|/organization-join-request|/pages)'
-          component={DashboardRoot}
-        />
-        <Route path='/new-meeting'>
-          <Redirect to='/activity-library' />
-        </Route>
-        <Route path='/meet/:meetingId' component={MeetingRoot} />
-        <Route path='/meeting-series/:meetingId' component={MeetingSeriesRoot} />
-        <Route path='/admin/graphql' component={Graphql} />
-        <Route path='/admin/impersonate' component={Impersonate} />
-        <Route path='/invitation-required' component={ViewerNotOnTeamRoot} />
-        <Route path='/signout' component={Signout} />
-        <Route component={NotFound} />
-      </Switch>
-      <Switch>
+      <Routes location={state?.backgroundLocation || location}>
+        <Route path='/activity-library/*' element={<ActivityLibraryRoutes />} />
+        <Route path='/new-meeting' element={<Navigate to='/activity-library' replace />} />
+        <Route path='/meet/:meetingId' element={<MeetingRoot />} />
+        <Route path='/meeting-series/:meetingId' element={<MeetingSeriesRoot />} />
+        <Route path='/admin/graphql' element={<Graphql />} />
+        <Route path='/admin/impersonate' element={<Impersonate />} />
+        <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
+        <Route path='/signout' element={<Signout />} />
+        <Route path='*' element={<DashboardRoot />} />
+      </Routes>
+      <Routes>
         <Route
           path='/organization-join-request/:requestId'
-          component={ReviewRequestToJoinOrgRoot}
+          element={<ReviewRequestToJoinOrgRoot />}
         />
-      </Switch>
+      </Routes>
     </>
   )
 }

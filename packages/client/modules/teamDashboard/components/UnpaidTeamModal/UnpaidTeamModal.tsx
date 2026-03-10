@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {UnpaidTeamModalQuery} from '../../../../__generated__/UnpaidTeamModalQuery.graphql'
 import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
@@ -67,7 +67,7 @@ const UnpaidTeamModal = (props: Props) => {
   const data = usePreloadedQuery<UnpaidTeamModalQuery>(query, queryRef)
   const {viewer} = data
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {viewerId} = atmosphere
   const {team} = viewer
 
@@ -96,7 +96,7 @@ const UnpaidTeamModal = (props: Props) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation
     })
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   if (organization.lockedAt) {

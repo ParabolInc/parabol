@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type * as Y from 'yjs'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -40,7 +40,7 @@ export const PageActions = (props: Props) => {
   )
   const {id: pageId, access, isDatabase} = page
   const {viewer: viewerAccess} = access
-  const history = useHistory()
+  const navigate = useNavigate()
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const canEdit = hasMinPageRole('editor', viewerAccess)
@@ -92,7 +92,7 @@ export const PageActions = (props: Props) => {
           if (key === 'pageCode') {
             pageLinkBlock.unobserve(gotoNewPage)
             const pageCode = pageLinkBlock.getAttribute('pageCode')
-            history.push(`/pages/${pageCode}`)
+            navigate(`/pages/${pageCode}`)
             expandChildren()
           }
         }

@@ -30,10 +30,8 @@ const ActivityGrid = (props: ActivityGridProps) => {
         return (
           <Link
             key={template.id}
-            to={{
-              pathname: `/activity-library/details/${template.id}`,
-              state: {prevCategory: selectedCategory}
-            }}
+            to={`/activity-library/details/${template.id}`}
+            state={{prevCategory: selectedCategory}}
             className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
             <ActivityCard

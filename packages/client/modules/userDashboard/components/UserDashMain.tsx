@@ -1,5 +1,5 @@
 import {lazy, Suspense} from 'react'
-import {Route, Switch, useRouteMatch} from 'react-router'
+import {Route, Routes} from 'react-router-dom'
 import DashContent from '~/components/Dashboard/DashContent'
 import LoadingComponent from '~/components/LoadingComponent/LoadingComponent'
 import StartMeetingFAB from '~/components/StartMeetingFAB'
@@ -17,15 +17,13 @@ const MyDashboardTimelineRoot = lazy(
 )
 
 const UserDashMain = () => {
-  const {url} = useRouteMatch()
-
   return (
     <DashContent>
       <Suspense fallback={<LoadingComponent spinnerSize={LoaderSize.PANEL} />}>
-        <Switch>
-          <Route path={`${url}/tasks`} component={UserTaskViewRoot} />
-          <Route path={url} component={MyDashboardTimelineRoot} />
-        </Switch>
+        <Routes>
+          <Route path='tasks' element={<UserTaskViewRoot />} />
+          <Route path='*' element={<MyDashboardTimelineRoot />} />
+        </Routes>
       </Suspense>
       <StartMeetingFAB />
     </DashContent>

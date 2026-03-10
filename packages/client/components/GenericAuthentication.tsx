@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {useRef} from 'react'
-import {useLocation} from 'react-router'
+import {useLocation} from 'react-router-dom'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'

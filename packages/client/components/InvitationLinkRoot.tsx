@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import invitationLinkQuery, {
   type InvitationLinkQuery
 } from '~/__generated__/InvitationLinkQuery.graphql'
@@ -9,9 +9,9 @@ import InvitationLink from './InvitationLink'
 
 const InvitationLinkRoot = () => {
   useNoIndex()
-  const {token} = useParams<{token: string}>()
+  const {token} = useParams()
   const queryRef = useQueryLoaderNow<InvitationLinkQuery>(invitationLinkQuery, {
-    token
+    token: token!
   })
   return <Suspense fallback={''}>{queryRef && <InvitationLink queryRef={queryRef} />}</Suspense>
 }

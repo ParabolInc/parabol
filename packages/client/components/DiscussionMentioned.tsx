@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import NotificationAction from '~/components/NotificationAction'
 import type {DiscussionMentioned_notification$key} from '../__generated__/DiscussionMentioned_notification.graphql'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
@@ -46,7 +46,7 @@ const DiscussionMentioned = (props: Props) => {
     `,
     notificationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {meeting, author, comment, discussion} = notification
   const authorPicture = author ? author.picture : anonymousAvatar
   const authorName = author ? author.preferredName : 'Anonymous'
@@ -57,9 +57,7 @@ const DiscussionMentioned = (props: Props) => {
   const directUrl = stageId ? fromStageIdToUrl(stageId, meeting) : `/meet/${meetingId}`
 
   const goThere = () => {
-    history.push(
-      response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl
-    )
+    navigate(response ? `${directUrl}?responseId=${encodeURIComponent(response.id)}` : directUrl)
   }
 
   const {editor} = useTipTapCommentEditor(comment.content, {
