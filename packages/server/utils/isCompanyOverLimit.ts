@@ -50,15 +50,36 @@ const isCompanyOverLimit = async (teamId: string, dataLoader: DataLoaderInstance
             .where(({eb, lit}) => eb('UserConnectedOrgIds.depth', '<', lit(3)))
         )
     )
-    .with('UserConnectedOrgs', (qb) =>
+    .with('CompanyConnectedOrgs', (qb) =>
+      // Find all orgs that share the same CompanyCluster as the team's org.
+      // Cco1 locates the cluster for this org; Cco2 expands to all sibling orgs.
+      // Returns empty set if no cluster exists yet (first-time detection).
+      // This is necessary for the case where the user creates a new org & we put that org in a cluster
+      // but we'd otherwise miss associating with the other teams
+      qb
+        .selectFrom('CompanyClusterOrganization as Cco1')
+        .innerJoin(
+          'CompanyClusterOrganization as Cco2',
+          'Cco2.companyClusterId',
+          'Cco1.companyClusterId'
+        )
+        .select('Cco2.orgId')
+        .where('Cco1.orgId', '=', orgId)
+    )
+    .with('ConnectedOrgs', (qb) =>
       qb
         .selectFrom('Organization')
         .select(['id', 'tier', 'activeDomain'])
-        .where('id', 'in', (eb) => eb.selectFrom('UserConnectedOrgIds').select('orgId'))
+        .where((eb) =>
+          eb.or([
+            eb('id', 'in', eb.selectFrom('UserConnectedOrgIds').select('orgId')),
+            eb('id', 'in', eb.selectFrom('CompanyConnectedOrgs').select('orgId'))
+          ])
+        )
     )
     .with('UserAndDomainConnectedOrgs', (qb) =>
       qb
-        .selectFrom('UserConnectedOrgs')
+        .selectFrom('ConnectedOrgs')
         .select(['id', 'tier'])
         .union(
           qb
@@ -66,7 +87,7 @@ const isCompanyOverLimit = async (teamId: string, dataLoader: DataLoaderInstance
             .select(['id', 'tier'])
             .where('activeDomain', 'in', (eb) =>
               eb
-                .selectFrom('UserConnectedOrgs')
+                .selectFrom('ConnectedOrgs')
                 .select('activeDomain')
                 .where('activeDomain', 'is not', null)
             )
