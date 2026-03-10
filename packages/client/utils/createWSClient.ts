@@ -118,14 +118,14 @@ export function createWSClient(atmosphere: Atmosphere) {
           setConnectedStatus(atmosphere, true)
         },
         closed: (event) => {
-          if (!hasConnected) {
-            console.error('Could not connect via WebSocket', event)
-            reject(event)
-          }
           const {code, reason} = event as CloseEvent
           // This code is sent from wsHandler.onConnect on the server
           if (code === 4403) {
             atmosphere.invalidateSession(reason)
+          }
+          if (!hasConnected) {
+            console.error('Could not connect via WebSocket', event)
+            reject(event)
           }
           // non-1000 close codes are abrupt closes
           if (code !== 1000) {

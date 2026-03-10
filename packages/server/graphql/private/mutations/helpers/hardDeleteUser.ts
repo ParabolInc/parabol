@@ -76,6 +76,6 @@ export const hardDeleteUser = async (
 
   await broadcastUserMentionUpdate(userIdToDelete, 'Deleted User', dataLoader, pageIds)
 
-  await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
+  await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()) + 1)
   return {}
 }

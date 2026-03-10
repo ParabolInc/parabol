@@ -4,6 +4,7 @@ import getBlacklistJWTKey from './getBlacklistJWTKey'
 import getRedis from './getRedis'
 import publish from './publish'
 
+// blacklist all tokens issued before iat
 const blacklistJWT = async (userId: string, iat: number, mutatorId?: string) => {
   const key = getBlacklistJWTKey(userId)
   const redis = getRedis()

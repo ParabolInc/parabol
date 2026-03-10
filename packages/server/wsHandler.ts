@@ -104,6 +104,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
           .selectFrom('User')
           .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
           .where('id', '=', viewerId)
+          .where('isRemoved', '=', false)
           .executeTakeFirst()
     ])
     if (!user) return false
@@ -311,6 +312,7 @@ wsHandler.upgrade = async (res, req, context) => {
             .selectFrom('User')
             .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
             .where('id', '=', viewerId)
+            .where('isRemoved', '=', false)
             .executeTakeFirst()
         ])
       : [true, null]
