@@ -22,6 +22,7 @@ const isCompanyOverLimit = async (teamId: string, dataLoader: DataLoaderInstance
   const pg = getKysely()
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
+  console.log({organization})
   if (organization.tier !== 'starter') return null
   const MIN_MEETING_MEMBERS = 1
   const {id: orgId} = organization

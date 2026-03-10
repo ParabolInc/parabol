@@ -598,17 +598,17 @@ type Mutation {
   ): ReassignToCompanyClusterSuccess!
 
   """
-  Set the maxTeamLimitAt on a company cluster. Must be between now and 60 days in the future.
+  Set the maxTeamTrialExpiresAt on a team. Must be between now and 60 days in the future.
   """
-  setCompanyTeamLimitAt(
+  setTeamLimitAt(
     """
-    The ID of any organization belonging to the company cluster
+    The ID of the team
     """
-    orgId: ID!
+    teamId: ID!
 
     """
-    The new date/time limit. Must be in the future and no more than 60 days out.
+    The new trial expiry date/time. Must be in the future and no more than 60 days out.
     """
     maxTeamLimitAt: DateTime!
-  ): SetCompanyTeamLimitAtSuccess!
+  ): SetTeamLimitAtSuccess!
 }

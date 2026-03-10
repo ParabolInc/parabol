@@ -18,7 +18,7 @@
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
           "CompanyCluster": "./types/CompanyCluster#CompanyClusterSource",
           "ReassignToCompanyClusterSuccess": "./types/ReassignToCompanyClusterSuccess#ReassignToCompanyClusterSuccessSource",
-          "SetCompanyTeamLimitAtSuccess": "./types/SetCompanyTeamLimitAtSuccess#SetCompanyTeamLimitAtSuccessSource",
+          "SetTeamLimitAtSuccess": "./types/SetTeamLimitAtSuccess#SetTeamLimitAtSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
