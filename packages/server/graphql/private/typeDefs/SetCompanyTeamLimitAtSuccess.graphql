@@ -1,0 +1,6 @@
+type SetCompanyTeamLimitAtSuccess {
+  """
+  The updated company cluster
+  """
+  companyCluster: CompanyCluster!
+}

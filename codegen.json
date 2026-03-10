@@ -16,6 +16,8 @@
         "contextType": "../graphql#InternalContext",
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
+          "CompanyCluster": "./types/CompanyCluster#CompanyClusterSource",
+          "SetCompanyTeamLimitAtSuccess": "./types/SetCompanyTeamLimitAtSuccess#SetCompanyTeamLimitAtSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",

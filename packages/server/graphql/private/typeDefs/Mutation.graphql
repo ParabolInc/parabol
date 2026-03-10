@@ -575,4 +575,19 @@ type Mutation {
 
   pruneFailedEmbeddingJobs(before: DateTime!): Int
   buildEmbeddings(input: BuildEmbeddingsInput!): Int
+
+  """
+  Set the maxTeamLimitAt on a company cluster. Must be between now and 60 days in the future.
+  """
+  setCompanyTeamLimitAt(
+    """
+    The ID of any organization belonging to the company cluster
+    """
+    orgId: ID!
+
+    """
+    The new date/time limit. Must be in the future and no more than 60 days out.
+    """
+    maxTeamLimitAt: DateTime!
+  ): SetCompanyTeamLimitAtSuccess!
 }
