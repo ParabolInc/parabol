@@ -10,7 +10,7 @@ const SERVER_ID = process.env.SERVER_ID!
 export async function up(db: Kysely<any>): Promise<void> {
   const redis = new Redis(process.env.REDIS_URL!, {
     ...getRedisOptions(),
-    connectionName: '2026-03-09T00:00:00.000Z_rekeyPageLinks'
+    connectionName: '2026-03-09T20:00:00.000Z_migrateDatabaseRowsToYKeyValue'
   })
 
   const pages = await db
@@ -90,6 +90,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   }
 
   console.log(`Migration complete: ${migratedCount} migrated, ${skippedCount} skipped`)
+  redis.disconnect()
 }
 
 export async function down(_db: Kysely<any>): Promise<void> {
