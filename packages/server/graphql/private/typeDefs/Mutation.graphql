@@ -577,6 +577,27 @@ type Mutation {
   buildEmbeddings(input: BuildEmbeddingsInput!): Int
 
   """
+  Move specified orgs and/or domains into a target company cluster (or a newly created one).
+  At least one of orgIds or domains must be provided.
+  """
+  reassignToCompanyCluster(
+    """
+    The organization IDs to move
+    """
+    orgIds: [ID!]
+
+    """
+    The domains to move
+    """
+    domains: [String!]
+
+    """
+    The cluster to move the items into. If null, a new cluster will be created.
+    """
+    targetClusterId: ID
+  ): ReassignToCompanyClusterSuccess!
+
+  """
   Set the maxTeamLimitAt on a company cluster. Must be between now and 60 days in the future.
   """
   setCompanyTeamLimitAt(
