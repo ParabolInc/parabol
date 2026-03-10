@@ -12,6 +12,8 @@ type ParabolGraphQLErrorCodes =
   | 'FORBIDDEN'
   | 'NOT_IMPLEMENTED'
   | 'INVALID_REDIRECT_URI'
+  | 'MAX_TEAM_UPGRADE_REQUIRED'
+  | 'MAX_TEAM_UPGRADE_SUGGESTED'
 
 declare module 'graphql' {
   interface GraphQLErrorExtensions {

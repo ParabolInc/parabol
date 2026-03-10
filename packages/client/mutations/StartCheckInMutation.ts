@@ -16,8 +16,12 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation StartCheckInMutation($teamId: ID!, $gcalInput: CreateGcalEventInput) {
-    startCheckIn(teamId: $teamId, gcalInput: $gcalInput) {
+  mutation StartCheckInMutation(
+    $teamId: ID!
+    $gcalInput: CreateGcalEventInput
+    $ignoreSuggestedUpgrade: Boolean
+  ) {
+    startCheckIn(teamId: $teamId, gcalInput: $gcalInput, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
       ... on ErrorPayload {
         error {
           message
