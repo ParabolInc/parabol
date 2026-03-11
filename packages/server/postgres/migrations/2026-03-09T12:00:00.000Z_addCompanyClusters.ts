@@ -25,11 +25,10 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('companyClusterId', 'integer', (col) =>
       col.notNull().references('CompanyCluster.id').onDelete('cascade')
     )
-    .addColumn('orgId', 'varchar(100)')
     .addColumn('isPrimary', 'boolean', (col) => col.notNull().defaultTo(false))
-    // .addColumn('orgId', 'varchar(100)', (col) =>
-    //   col.notNull().references('Organization.id').onDelete('cascade')
-    // )
+    .addColumn('orgId', 'varchar(100)', (col) =>
+      col.notNull().references('Organization.id').onDelete('cascade')
+    )
     .addPrimaryKeyConstraint('CompanyClusterOrganization_pkey', ['companyClusterId', 'orgId'])
     .execute()
   await db.schema.alterTable('Team').addColumn('maxTeamTrialExpiresAt', 'timestamptz').execute()

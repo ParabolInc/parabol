@@ -24,7 +24,7 @@ const isCompanyOverLimit = async (teamId: string, dataLoader: DataLoaderInstance
   const organization = await dataLoader.get('organizations').loadNonNull(team.orgId)
   console.log({organization})
   if (organization.tier !== 'starter') return null
-  const MIN_MEETING_MEMBERS = 1
+  const MIN_MEETING_MEMBERS = 3
   const {id: orgId} = organization
   const teamsInCompany = await pg
     // Recursive transitive closure with depth limit: starting from the seed org,
@@ -129,7 +129,6 @@ const isCompanyOverLimit = async (teamId: string, dataLoader: DataLoaderInstance
     .execute()
 
   const uniqueTeamIds = [...new Set([teamId, ...teamsInCompany.map((r) => r.teamId)])]
-  console.log({uniqueTeamIds})
   if (uniqueTeamIds.length < 3) return null
   const orgIds = [...new Set(teamsInCompany.map((r) => r.orgId))]
   const companyClusters = await pg
