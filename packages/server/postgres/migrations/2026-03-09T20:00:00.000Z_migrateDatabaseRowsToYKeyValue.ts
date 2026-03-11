@@ -69,6 +69,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .set({yDoc: Buffer.from(Y.encodeStateAsUpdate(doc))})
         .where('id', '=', pageId)
         .execute()
+      await redis.del(`rsaLock:${documentName}`)
     } else {
       // if the document is already open, we must send the update to that worker
       const update = Y.encodeStateAsUpdate(doc, yDoc)
@@ -82,13 +83,10 @@ export async function up(db: Kysely<any>): Promise<void> {
       })
       await redis.publish(`rsaMsg:${proxyTo}`, proxyMessage)
     }
-    // there are a couple race conditions here, since the migration is locking the doc, but not accepting messages for it
-    // can be treated as an edge case & fixed if they refresh
-    await redis.del(`rsaLock:${documentName}`)
-
     migratedCount++
   }
 
+  redis.disconnect()
   console.log(`Migration complete: ${migratedCount} migrated, ${skippedCount} skipped`)
 }
 
