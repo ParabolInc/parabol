@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "12.10.12",
+  "version": "13.1.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -36,8 +36,8 @@
     "prepare": "husky install",
     "relay:build": "node scripts/generateGraphQLArtifacts.js",
     "relay:watch": "node scripts/relayWatch.js",
-    "test:client": "pnpm --filter parabol-client test",
-    "test:server": "pnpm --filter parabol-server test"
+    "test:client": "NODE_TLS_REJECT_UNAUTHORIZED='0' pnpm --filter parabol-client test",
+    "test:server": "NODE_TLS_REJECT_UNAUTHORIZED='0' pnpm --filter parabol-server test"
   },
   "resolutions": {
     "typescript": "^5.9.3",

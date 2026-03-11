@@ -5,6 +5,71 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.1.3](https://github.com/ParabolInc/parabol/compare/v13.1.2...v13.1.3) (2026-03-11)
+
+
+### Fixed
+
+* re-adding meeting series recurrence ([#12821](https://github.com/ParabolInc/parabol/issues/12821)) ([ea2e002](https://github.com/ParabolInc/parabol/commit/ea2e002143ef84d8775e3bd55ad39d5282ac2e0a))
+
+## [13.1.2](https://github.com/ParabolInc/parabol/compare/v13.1.1...v13.1.2) (2026-03-11)
+
+
+### Fixed
+
+* flush indexedDB record on bad page auth ([#12820](https://github.com/ParabolInc/parabol/issues/12820)) ([20e2fef](https://github.com/ParabolInc/parabol/commit/20e2fef54dcd0001249a26ca3f9095cca147a5da))
+
+
+### Changed
+
+* add getVerifiedAuthToken test ([#12816](https://github.com/ParabolInc/parabol/issues/12816)) ([49f00b0](https://github.com/ParabolInc/parabol/commit/49f00b0fc0c573eb0daea0585a735000e49c6f1f))
+
+## [13.1.1](https://github.com/ParabolInc/parabol/compare/v13.1.0...v13.1.1) (2026-03-11)
+
+
+### Fixed
+
+* **SCIM:** adapt `itemsPerPage` to reflect resources length ([#12813](https://github.com/ParabolInc/parabol/issues/12813)) ([d3f0069](https://github.com/ParabolInc/parabol/commit/d3f006989710c342c88625e64c0604c3c93fa1be))
+
+
+### Changed
+
+* delete email verification token on usage ([#12810](https://github.com/ParabolInc/parabol/issues/12810)) ([a1613a1](https://github.com/ParabolInc/parabol/commit/a1613a1119cf4f61c3dbe615510615256358c7a4))
+* increase password requirements ([#12809](https://github.com/ParabolInc/parabol/issues/12809)) ([8907b01](https://github.com/ParabolInc/parabol/commit/8907b01cf54fb31f5362021f799aa075f5b241c7))
+
+## [13.1.0](https://github.com/ParabolInc/parabol/compare/v13.0.1...v13.1.0) (2026-03-11)
+
+
+### Added
+
+* limit on company cluster ([#12806](https://github.com/ParabolInc/parabol/issues/12806)) ([feaa9b3](https://github.com/ParabolInc/parabol/commit/feaa9b31ff062f8eaa28cf19f1182c80c9159373))
+
+
+### Fixed
+
+* blacklistJWT on delete user ([#12807](https://github.com/ParabolInc/parabol/issues/12807)) ([c1d380a](https://github.com/ParabolInc/parabol/commit/c1d380a869ac6a0708e22b69889999bf1314ce99))
+
+## [13.0.1](https://github.com/ParabolInc/parabol/compare/v13.0.0...v13.0.1) (2026-03-09)
+
+
+### Fixed
+
+* update page link migration ([#12803](https://github.com/ParabolInc/parabol/issues/12803)) ([7b0c2af](https://github.com/ParabolInc/parabol/commit/7b0c2afd23ef4a907eb541c2c0e67147ac43c18a))
+
+## [13.0.0](https://github.com/ParabolInc/parabol/compare/v12.10.12...v13.0.0) (2026-03-09)
+
+### DO NOT UPDATE TO THIS VERSION
+
+* the migration is broken, go at least straight to 13.0.1
+
+### ⚠ BREAKING CHANGES
+
+* update invalid page links ([#12797](https://github.com/ParabolInc/parabol/issues/12797))
+
+### Fixed
+
+* update invalid page links ([#12797](https://github.com/ParabolInc/parabol/issues/12797)) ([7355bca](https://github.com/ParabolInc/parabol/commit/7355bca8f0f5b8762999908ccd7035294f3a286c))
+
 ## [12.10.12](https://github.com/ParabolInc/parabol/compare/v12.10.11...v12.10.12) (2026-03-09)
 
 

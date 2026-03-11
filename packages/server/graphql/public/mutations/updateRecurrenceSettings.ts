@@ -158,6 +158,20 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     if (!rrule) {
       await stopMeetingSeries(meetingSeries)
       analytics.recurrenceStopped(viewer, meetingSeries)
+    } else if (meetingSeries.cancelledAt) {
+      // Restart a cancelled series: clear cancelledAt and update recurrenceRule atomically
+      await pg
+        .updateTable('MeetingSeries')
+        .set({cancelledAt: null, recurrenceRule: rrule.toString()})
+        .where('id', '=', meetingSeriesId)
+        .execute()
+      const nextMeetingStartDate = getNextRRuleDate(rrule)
+      await pg
+        .updateTable('NewMeeting')
+        .set({scheduledEndTime: nextMeetingStartDate})
+        .where('id', '=', meetingId)
+        .execute()
+      analytics.recurrenceStarted(viewer, meetingSeries)
     } else {
       await updateMeetingSeries(meetingSeries, rrule, dataLoader)
       analytics.recurrenceStarted(viewer, meetingSeries)
