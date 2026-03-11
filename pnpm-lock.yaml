@@ -553,6 +553,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.2
+        version: 3.13.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       cleave.js:
         specifier: ^1.6.0
         version: 1.6.0
@@ -649,9 +652,6 @@ importers:
       react-transition-group:
         specifier: ^4.3.0
         version: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-virtualized:
-        specifier: ^9.21.1
-        version: 9.22.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       resize-observer-polyfill:
         specifier: ^1.5.0
         version: 1.5.1
@@ -704,9 +704,6 @@ importers:
       '@types/react-swipeable-views':
         specifier: ^0.13.1
         version: 0.13.6
-      '@types/react-virtualized':
-        specifier: ^9.21.20
-        version: 9.22.3
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.16.0
@@ -6255,9 +6252,6 @@ packages:
     peerDependencies:
       '@types/react': ^18.3.0
 
-  '@types/react-virtualized@9.22.3':
-    resolution: {integrity: sha512-UKRWeBIrECaKhE4O//TSFhlgwntMwyiEIOA7WZoVkr52Jahv0dH6YIOorqc358N2V3oKFclsq5XxPmx2PiYB5A==}
-
   '@types/react@18.3.28':
     resolution: {integrity: sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==}
 
@@ -10695,9 +10689,6 @@ packages:
   react-is@19.2.0:
     resolution: {integrity: sha512-x3Ax3kNSMIIkyVYhWPyO09bu0uttcAIoecO/um/rKGQ4EltYWVYtyiGkS/3xMynrbVQdS69Jhlv8FXUEZehlzA==}
 
-  react-lifecycles-compat@3.0.4:
-    resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
-
   react-redux@9.2.0:
     resolution: {integrity: sha512-ROY9fvHhwOD9ySfrF0wmvu//bKCQ6AeZZq1nJNtbDC+kk5DuSuNX/n6YWYF/SYy7bSba4D4FSz8DJeKY/S/r+g==}
     peerDependencies:
@@ -10809,12 +10800,6 @@ packages:
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
-    peerDependencies:
-      react: ^18.3.1
-      react-dom: ^18.3.1
-
-  react-virtualized@9.22.6:
-    resolution: {integrity: sha512-U5j7KuUQt3AaMatlMJ0UJddqSiX+Km0YJxSqbAzIiGw5EmNz0khMyqP2hzgu4+QUtm+QPIrxzUX4raJxmVJnHg==}
     peerDependencies:
       react: ^18.3.1
       react-dom: ^18.3.1
@@ -18969,11 +18954,6 @@ snapshots:
     dependencies:
       '@types/react': 18.3.28
 
-  '@types/react-virtualized@9.22.3':
-    dependencies:
-      '@types/prop-types': 15.7.15
-      '@types/react': 18.3.28
-
   '@types/react@18.3.28':
     dependencies:
       '@types/prop-types': 15.7.15
@@ -23980,8 +23960,6 @@ snapshots:
 
   react-is@19.2.0: {}
 
-  react-lifecycles-compat@3.0.4: {}
-
   react-redux@9.2.0(@types/react@18.3.28)(react@18.3.1)(redux@5.0.1):
     dependencies:
       '@types/use-sync-external-store': 0.0.6
@@ -24118,17 +24096,6 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-
-  react-virtualized@9.22.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@babel/runtime': 7.28.4
-      clsx: 1.2.1
-      dom-helpers: 5.2.1
-      loose-envify: 1.4.0
-      prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-lifecycles-compat: 3.0.4
 
   react@18.3.1:
     dependencies:

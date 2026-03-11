@@ -480,7 +480,7 @@ Components that passed `history` to mutations now use `useNavigate()` and pass `
 
 ---
 
-### ~~PR 15 — Upgrade to react-router v6 — convert ALL remaining v5 APIs~~ DONE
+### PR 15 — Upgrade to react-router v6 — convert ALL remaining v5 APIs – DONE
 
 **~900 lines changed | Risk: HIGH**
 
@@ -498,7 +498,40 @@ The flip PR. With all indirect APIs eliminated by PRs 11-14, this PR converts al
 
 ## Phase 4: Polish
 
-### PR 16 — Add `React.StrictMode` wrapper
+### PR 16 — Migrate task card system from emotion to Tailwind CSS — DONE
+
+**~500 lines changed | Risk: MEDIUM**
+
+Migrated the entire task card component tree from emotion styled-components to Tailwind CSS. This eliminates the cascade conflict where `global.css` gives emotion higher priority than Tailwind (lines 3-6), removes ~25 styled-component definitions across 9 files, and makes cards fully responsive to their layout containers.
+
+Also replaced `react-virtualized` in TeamArchive with `@tanstack/react-virtual` v3 row-based virtualization + Tailwind CSS grid, keeping only visible card rows in the DOM for performant scrolling through large archives.
+
+**Key changes:**
+
+| Category | Files | Change |
+|---|---|---|
+| Shadow utilities | `global.css` | Added `@utility shadow-card`, `shadow-card-hover`, `shadow-card-focus`, `shadow-card-dragging` |
+| Core card | `OutcomeCard.tsx`, `OutcomeCardContainer.tsx` | Replaced `RootCard`, `ContentBlock`, `StatusIndicatorBlock`, `Wrapper` styled components with `cn()` + Tailwind |
+| Card footer | `TaskFooter.tsx` | Replaced `Footer`, `ButtonGroup`, `ButtonSpacer`, `AvatarBlock` |
+| User assignee | `TaskFooterUserAssignee.tsx` | Replaced `AvatarButton`, `Avatar`, `AvatarImage`, `AvatarLabel`, `TooltipToggle`, `StyledIcon` with plain `<button>` + Tailwind |
+| Team assignee | `TaskFooterTeamAssignee.tsx` | Replaced `TooltipToggle`, `ToggleButtonText`, `TeamToggleButton` — kept `CardButton` for behavior |
+| Card message | `OutcomeCardMessage.tsx` | Replaced `Message`, `Inner`, `MessageClose`, `MessageCloseIcon` |
+| Null card | `NullCard.tsx` | Replaced `CardBlock`, `AddingHint` |
+| Draggable wrapper | `DraggableTaskWrapper.tsx` | Replaced `DraggableStyles` |
+| Poll card | `Poll.tsx` | Replaced `PollCard`, `BodyCol` |
+| Team archive | `TeamArchive.tsx` | Replaced `react-virtualized` Grid + emotion with `@tanstack/react-virtual` v3 row virtualizer + Tailwind CSS grid |
+| Column count hook | `useColumnCount.ts` | New hook: uses `ResizeObserver` to detect responsive column count for virtualizer row chunking |
+| Deleted files | `cardRootStyles.ts`, `CreateCardRootStyles.ts` | Removed hardcoded `minWidth: 256` / `maxWidth: 300` that caused mobile overlap |
+| Dependencies | `package.json` | Removed `react-virtualized`, `@types/react-virtualized`; added `@tanstack/react-virtual@^3` |
+
+**Testing results:**
+- `pnpm --filter parabol-client typecheck` — PASS
+- No remaining references to `cardRootStyles` or `CreateCardRootStyles`
+- Cards are now fully fluid (no hardcoded min/max width) — TeamArchive mobile overlap bug is fixed
+
+---
+
+### PR 17 — Add `React.StrictMode` wrapper
 
 **~50-200 lines changed | Risk: MEDIUM**
 
@@ -525,11 +558,10 @@ export default function Root() {
 - Subscription handlers that don't handle double-fire
 - Third-party libraries that don't support StrictMode:
   - **`react-swipeable-views`** (custom fork): deprecated upstream, uses `UNSAFE_componentWillReceiveProps`. Replace with CSS `scroll-snap` or `react-swipeable-views-react-18-fix`. 4 consuming files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`
-  - **`react-virtualized`**: emits `findDOMNode` deprecation warnings in StrictMode. Replace with `@tanstack/react-virtual` — only 1 consuming file (`TeamArchive.tsx`)
 
 ---
 
-### PR 17 — Mattermost plugin React 18 upgrade
+### PR 18 — Mattermost plugin React 18 upgrade
 
 **~300 lines changed | Risk: LOW**
 
@@ -565,10 +597,11 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~260 | LOW | **DONE** |
 | 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~400 | MEDIUM | **DONE** |
 | 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |
-| 16 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |
-| 17 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
+| 16 | Polish | Migrate task card system from emotion to Tailwind CSS | ~500 | MEDIUM | **DONE** |
+| 17 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |
+| 18 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
 
-**Total: ~4,200-4,500 lines across 17 PRs**
+**Total: ~4,700-5,000 lines across 18 PRs**
 
 ---
 
@@ -601,8 +634,9 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
             │              │
             │              └─ PR 15 (v6 flip — depends on PR 14)
             │
-            PR 16 ── StrictMode (depends on PR 15)
-            PR 17 ── Mattermost plugin (independent, can be done anytime after PR 7)
+            PR 16 ── Task card emotion → Tailwind (depends on PR 15)
+            PR 17 ── StrictMode (depends on PR 16)
+            PR 18 ── Mattermost plugin (independent, can be done anytime after PR 7)
 ```
 
 ---
@@ -612,6 +646,7 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
 - **Phase 1 PRs** are independently revertible since they work on React 17.
 - **PR 7 (version bump)** is the point of no return. If issues arise, revert PR 7+8+9+10 together to return to React 17.
 - **Phase 3 (Router)** should not be started until Phase 2 is stable in production. If router issues arise, revert the specific PR — each nested route tree conversion is somewhat independent.
+- **PR 16 (emotion → Tailwind)** can be reverted independently — it only changes styling implementation, not behavior.
 - **PR 17 (StrictMode)** can be reverted trivially since it's a single wrapper component.
 
 ## Testing Checklist
