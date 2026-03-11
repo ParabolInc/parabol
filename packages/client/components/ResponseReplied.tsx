@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import NotificationAction from '~/components/NotificationAction'
 import type {ResponseReplied_notification$key} from '../__generated__/ResponseReplied_notification.graphql'
 import {useTipTapCommentEditor} from '../hooks/useTipTapCommentEditor'
@@ -36,14 +36,14 @@ const ResponseReplied = (props: Props) => {
     `,
     notificationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {meeting, author, comment, response} = notification
   const authorPicture = author ? author.picture : anonymousAvatar
   const authorName = author ? author.preferredName : 'Anonymous'
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
+    navigate(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
   const {editor} = useTipTapCommentEditor(comment.content, {

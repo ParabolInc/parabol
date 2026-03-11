@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import newMeetingSummaryQuery, {
   type NewMeetingSummaryQuery
 } from '../../../__generated__/NewMeetingSummaryQuery.graphql'
@@ -9,7 +9,7 @@ import {Loader} from '../../../utils/relay/renderLoader'
 import NewMeetingSummary from './NewMeetingSummary'
 
 const NewMeetingSummaryRoot = () => {
-  const {urlAction, meetingId = 'demoMeeting'} = useParams<{urlAction?: 'csv'; meetingId: string}>()
+  const {urlAction, meetingId = 'demoMeeting'} = useParams()
   const queryRef = useQueryLoaderNow<NewMeetingSummaryQuery>(newMeetingSummaryQuery, {
     meetingId,
     first: 5,
@@ -17,7 +17,9 @@ const NewMeetingSummaryRoot = () => {
   })
   return (
     <Suspense fallback={<Loader size={LoaderSize.WHOLE_PAGE} />}>
-      {queryRef && <NewMeetingSummary queryRef={queryRef} urlAction={urlAction} />}
+      {queryRef && (
+        <NewMeetingSummary queryRef={queryRef} urlAction={urlAction as 'csv' | undefined} />
+      )}
     </Suspense>
   )
 }

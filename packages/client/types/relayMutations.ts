@@ -1,3 +1,4 @@
+import type {NavigateFunction} from 'react-router-dom'
 import type {
   commitMutation,
   MutationParameters,
@@ -6,10 +7,7 @@ import type {
 } from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 
-export type NavigateFn = (
-  to: string | Partial<{pathname: string; search: string; hash: string}>,
-  options?: {replace?: boolean; state?: any}
-) => void
+export type NavigateFn = NavigateFunction
 
 export type CompletedHandler<TResponse = any> = (
   response: TResponse,

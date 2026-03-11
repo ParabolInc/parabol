@@ -4,10 +4,10 @@
  */
 import styled from '@emotion/styled'
 import type * as React from 'react'
+import {useNavigate} from 'react-router-dom'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import useNavigate from '../hooks/useNavigate'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {AuthenticationError} from '../types/constEnums'

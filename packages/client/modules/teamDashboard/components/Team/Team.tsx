@@ -3,7 +3,7 @@ import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import {Layout} from '~/types/constEnums'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
@@ -57,7 +57,7 @@ const SettingsHeader = styled('div')({
 })
 
 const Team = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {children, isSettings, team: teamRef} = props
   const team = useFragment(
     graphql`
@@ -78,7 +78,7 @@ const Team = (props: Props) => {
   const {lockedAt, isPaid} = organization
 
   const goToTeamDashboard = () => {
-    history.push(`/team/${teamId}/`)
+    navigate(`/team/${teamId}/`)
   }
 
   const isLocked = !isPaid || !!lockedAt

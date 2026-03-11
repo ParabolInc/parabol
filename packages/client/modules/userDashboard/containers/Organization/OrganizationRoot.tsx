@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import organizationQuery, {
   type OrganizationQuery
 } from '../../../../__generated__/OrganizationQuery.graphql'
@@ -8,9 +8,9 @@ import {Loader} from '../../../../utils/relay/renderLoader'
 import Organization from '../../components/OrgBilling/Organization'
 
 const OrganizationRoot = () => {
-  const {orgId} = useParams<{orgId: string}>()
+  const {orgId} = useParams()
   const queryRef = useQueryLoaderNow<OrganizationQuery>(organizationQuery, {
-    orgId
+    orgId: orgId!
   })
   return (
     <Suspense fallback={<Loader />}>{queryRef && <Organization queryRef={queryRef} />}</Suspense>

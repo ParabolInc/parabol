@@ -1,8 +1,7 @@
 import type {SvgIconTypeMap} from '@mui/material'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import {forwardRef, type Ref} from 'react'
-import {useRouteMatch} from 'react-router'
-import {Link} from 'react-router-dom'
+import {Link, useMatch} from 'react-router-dom'
 import {cn} from '../../ui/cn'
 import {LeftNavItem} from '../DashNavList/LeftNavItem'
 
@@ -16,8 +15,8 @@ interface Props {
 
 const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {label, Icon, href, onClick, exact} = props
-  const match = useRouteMatch(href)
-  const isActive = href && !!match && (match?.isExact || !exact)
+  const match = useMatch({path: href || '/', end: !!exact})
+  const isActive = href && !!match
   const LinkWrapper = href ? Link : 'div'
   return (
     <div className='relative rounded-md' ref={ref}>

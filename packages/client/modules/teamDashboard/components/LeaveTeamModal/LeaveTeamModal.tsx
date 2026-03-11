@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {LeaveTeamModal_teamMember$key} from '../../../../__generated__/LeaveTeamModal_teamMember.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -35,10 +35,10 @@ const LeaveTeamModal = (props: Props) => {
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {teamMemberId} = teamMember
   const handleClick = () => {
-    history.push('/meetings')
+    navigate('/meetings')
     closePortal()
     RemoveTeamMemberMutation(atmosphere, {teamMemberId})
   }

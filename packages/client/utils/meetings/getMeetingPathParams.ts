@@ -16,48 +16,39 @@ interface MeetingPathResults {
   stageIdxSlug?: string
 }
 
-interface MeetingParams {
-  meetingId: string
-  phaseSlug?: string
-  stageIdxSlug?: string
-}
-
 const getMeetingPathParams = (): MeetingPathResults => {
   const {location} = window
   const {pathname} = location
-  const matchRes = matchPath<MeetingParams>(pathname, {
-    path: '/meet/:meetingId/:phaseSlug?/:stageIdxSlug?'
-  })
+  const matchRes = matchPath({path: '/meet/:meetingId', end: false}, pathname)
   if (!matchRes) {
-    const demoMatchRes = matchPath<Omit<MeetingParams, 'meetingId'>>(pathname, {
-      path: '/retrospective-demo/:phaseSlug?/:stageIdxSlug?'
-    })
+    const demoMatchRes = matchPath({path: '/retrospective-demo', end: false}, pathname)
     if (!demoMatchRes) return {}
-    const {params} = demoMatchRes
-    const {phaseSlug, stageIdxSlug} = params
+    const remaining = pathname.slice(demoMatchRes.pathname.length).split('/').filter(Boolean)
     return {
       meetingId: RetroDemo.MEETING_ID,
-      phaseSlug,
-      phaseType: findKeyByValue(
-        phaseTypeToSlug,
-        phaseSlug as NewMeetingPhaseTypeEnum
-      ) as NewMeetingPhaseTypeEnum,
-      stageIdx: stageIdxSlug ? Number(stageIdxSlug) - 1 : undefined,
-      stageIdxSlug
+      phaseSlug: remaining[0],
+      phaseType: remaining[0]
+        ? (findKeyByValue(
+            phaseTypeToSlug,
+            remaining[0] as NewMeetingPhaseTypeEnum
+          ) as NewMeetingPhaseTypeEnum)
+        : undefined,
+      stageIdx: remaining[1] ? Number(remaining[1]) - 1 : undefined,
+      stageIdxSlug: remaining[1]
     }
   }
-  const {params} = matchRes
-  const {meetingId, phaseSlug, stageIdxSlug} = params
-
+  const remaining = pathname.slice(matchRes.pathname.length).split('/').filter(Boolean)
   return {
-    meetingId,
-    phaseSlug: phaseSlug,
-    phaseType: findKeyByValue(
-      phaseTypeToSlug,
-      phaseSlug as NewMeetingPhaseTypeEnum
-    ) as NewMeetingPhaseTypeEnum,
-    stageIdx: stageIdxSlug ? Number(stageIdxSlug) - 1 : undefined,
-    stageIdxSlug
+    meetingId: matchRes.params.meetingId!,
+    phaseSlug: remaining[0],
+    phaseType: remaining[0]
+      ? (findKeyByValue(
+          phaseTypeToSlug,
+          remaining[0] as NewMeetingPhaseTypeEnum
+        ) as NewMeetingPhaseTypeEnum)
+      : undefined,
+    stageIdx: remaining[1] ? Number(remaining[1]) - 1 : undefined,
+    stageIdxSlug: remaining[1]
   }
 }
 

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -70,7 +70,7 @@ const TeamSettings = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<TeamSettingsQuery>(query, queryRef)
   const {viewer} = data
-  const history = useHistory()
+  const navigate = useNavigate()
   const {team} = viewer
   const {name: teamName, orgId, teamMembers, tier, billingTier} = team!
   useDocumentTitle(`Team Settings | ${teamName}`, 'Team Settings')
@@ -94,7 +94,7 @@ const TeamSettings = (props: Props) => {
                   ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>
-              <PrimaryButton onClick={() => history.push(`/me/organizations/${orgId}`)}>
+              <PrimaryButton onClick={() => navigate(`/me/organizations/${orgId}`)}>
                 {`Upgrade to ${TierLabel.TEAM} Plan`}
               </PrimaryButton>
             </StyledRow>

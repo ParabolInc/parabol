@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
@@ -104,7 +104,7 @@ const OrganizationRow = (props: Props) => {
     `,
     organizationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {
     id: orgId,
     name,
@@ -116,7 +116,7 @@ const OrganizationRow = (props: Props) => {
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
     closeTooltip()
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = billingTier === 'starter'

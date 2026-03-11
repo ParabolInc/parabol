@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Switch} from 'react-router'
+import {Route, Routes, useParams} from 'react-router-dom'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useNewFeatureSnackbar from '~/hooks/useNewFeatureSnackbar'
 import useSnackNag from '~/hooks/useSnackNag'
@@ -51,6 +51,7 @@ const MakePage = lazy(() => import(/* webpackChunkName: 'MakePage' */ '../module
 const ShareTopicRouterRoot = lazy(
   () => import(/* webpackChunkName: 'ShareTopicRouterRoot' */ './ShareTopicRouterRoot')
 )
+const NotFound = lazy(() => import(/* webpackChunkName: 'NotFound' */ './NotFound/NotFound'))
 
 import {SearchProvider} from '../modules/search/SearchContext'
 import {GlobalSearchDialog} from '../modules/search/SearchDialog'
@@ -107,6 +108,11 @@ const SkipLink = styled('a')({
   }
 })
 
+const RequestToJoinRoute = () => {
+  const {teamId} = useParams()
+  return <RequestToJoinComponent key={teamId} />
+}
+
 const Dashboard = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<DashboardQuery>(
@@ -161,34 +167,26 @@ const Dashboard = (props: Props) => {
             </SwipeableDashSidebar>
           )}
           <DashMain id='main' ref={meetingsDashRef}>
-            <Switch>
+            <Routes>
               <Route
-                path='(/meetings)'
-                render={(routeProps) => (
-                  <MeetingsDash {...routeProps} meetingsDashRef={meetingsDashRef} viewer={viewer} />
-                )}
+                path='/meetings'
+                element={<MeetingsDash meetingsDashRef={meetingsDashRef} viewer={viewer} />}
               />
-              <Route path='/me' component={UserDashboard} />
-              <Route
-                exact
-                path='/team/:teamId/requestToJoin'
-                render={(routeProps) => (
-                  <RequestToJoinComponent key={routeProps.match.params.teamId} {...routeProps} />
-                )}
-              />
-              <Route path='/team/:teamId' component={TeamRoot} />
-              <Route path='/newteam/:defaultOrgId?' component={NewTeam} />
-              <Route
-                path='/pages/:pageSlug'
-                render={(routeProps) => <PageRoot {...routeProps} viewerRef={viewer} />}
-              />
-              <Route path='/pages' component={MakePage} />
+              <Route path='/me/*' element={<UserDashboard />} />
+              <Route path='/team/:teamId/requestToJoin' element={<RequestToJoinRoute />} />
+              <Route path='/team/:teamId/*' element={<TeamRoot />} />
+              <Route path='/newteam/:defaultOrgId' element={<NewTeam />} />
+              <Route path='/newteam' element={<NewTeam />} />
+              <Route path='/pages/:pageSlug' element={<PageRoot viewerRef={viewer} />} />
+              <Route path='/pages' element={<MakePage />} />
               <Route
                 path='/new-summary/:meetingId/share/:stageId'
-                component={ShareTopicRouterRoot}
+                element={<ShareTopicRouterRoot />}
               />
-              <Route path='/new-summary/:meetingId/:urlAction?' component={NewMeetingSummary} />
-            </Switch>
+              <Route path='/new-summary/:meetingId/:urlAction' element={<NewMeetingSummary />} />
+              <Route path='/new-summary/:meetingId' element={<NewMeetingSummary />} />
+              <Route path='*' element={<NotFound />} />
+            </Routes>
           </DashMain>
         </DashPanel>
       </DashLayout>

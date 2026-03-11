@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {TeamsLimitReminderNotification_notification$key} from '~/__generated__/TeamsLimitReminderNotification_notification.graphql'
 import defaultOrgAvatar from '~/styles/theme/images/avatar-organization.svg'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -31,7 +31,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
     `,
     notificationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {orgId, orgName, orgPicture, scheduledLockAt} = notification
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const TeamsLimitReminderNotification = (props: Props) => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'teamsLimitReminderNotification'
     })
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   return (

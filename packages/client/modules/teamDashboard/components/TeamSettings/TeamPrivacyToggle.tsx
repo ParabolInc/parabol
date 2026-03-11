@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {TeamPrivacyToggle_team$key} from '../../../../__generated__/TeamPrivacyToggle_team.graphql'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -33,7 +33,7 @@ const TeamPrivacyToggle = (props: Props) => {
     teamRef
   )
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const {id: teamId, isPublic, name: teamName, tier, orgId} = team
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
@@ -66,7 +66,7 @@ const TeamPrivacyToggle = (props: Props) => {
   }
 
   const handleUpgradeClick = () => {
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'publicTeams',
       orgId

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
@@ -20,19 +20,19 @@ interface Props {
 }
 
 const AuthenticationPage = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {page} = props
   const {authObj} = useAtmosphere()
   useCanonical(page)
   if (authObj) {
     const nextUrl = getValidRedirectParam() || '/meetings'
     // always replace otherwise they could get stuck in a back-button loop
-    setTimeout(() => history.replace(nextUrl))
+    setTimeout(() => navigate(nextUrl, {replace: true}))
     return null
   }
   const goToPage: GotoAuthPage = (page, search?) => {
     const url = search ? `/${page}${search}` : `/${page}`
-    history.push(url)
+    navigate(url)
   }
   return (
     <TeamInvitationWrapper>

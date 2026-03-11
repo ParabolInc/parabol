@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router-dom'
 import type {TeamInvitationNotification_notification$key} from '~/__generated__/TeamInvitationNotification_notification.graphql'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import useNavigate from '../hooks/useNavigate'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import NotificationTemplate from './NotificationTemplate'
 

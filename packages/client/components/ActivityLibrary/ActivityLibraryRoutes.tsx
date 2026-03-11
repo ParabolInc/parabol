@@ -1,5 +1,5 @@
 import {lazy} from 'react'
-import {Route, Switch, useRouteMatch} from 'react-router'
+import {Route, Routes} from 'react-router-dom'
 import useSubscription from '../../hooks/useSubscription'
 import NotificationSubscription from '../../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../../subscriptions/OrganizationSubscription'
@@ -26,14 +26,13 @@ const ActivityLibraryRoutes = () => {
   useSubscription('ActivityLibraryRoutes', TaskSubscription)
   useSubscription('ActivityLibraryRoutes', TeamSubscription)
 
-  const {path} = useRouteMatch()
-
   return (
-    <Switch>
-      <Route path={`${path}/new-activity/:categoryId`} component={CreateNewActivityRoute} />
-      <Route path={`${path}/details/:activityId`} component={ActivityDetailsRoute} />
-      <Route exact path={[path, `${path}/category/:categoryId`]} component={ActivityLibraryRoute} />
-    </Switch>
+    <Routes>
+      <Route path='new-activity/:categoryId' element={<CreateNewActivityRoute />} />
+      <Route path='details/:activityId' element={<ActivityDetailsRoute />} />
+      <Route path='category/:categoryId' element={<ActivityLibraryRoute />} />
+      <Route index element={<ActivityLibraryRoute />} />
+    </Routes>
   )
 }
 
