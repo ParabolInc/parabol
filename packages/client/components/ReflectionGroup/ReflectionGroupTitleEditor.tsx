@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type RefObject, useRef} from 'react'
+import {type RefObject, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {ReflectionGroupTitleEditor_meeting$key} from '../../__generated__/ReflectionGroupTitleEditor_meeting.graphql'
 import type {ReflectionGroupTitleEditor_reflectionGroup$key} from '../../__generated__/ReflectionGroupTitleEditor_reflectionGroup.graphql'
@@ -13,6 +13,7 @@ import ui from '../../styles/ui'
 import {Card} from '../../types/constEnums'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import StyledError from '../StyledError'
+import MarqueeText from './MarqueeText'
 
 interface Props {
   isExpanded: boolean
@@ -49,6 +50,11 @@ const FormBlock = styled('form')({
   display: 'flex',
   flexShrink: 1,
   maxWidth: '100%'
+})
+
+const TitleContainer = styled('div')({
+  position: 'relative',
+  width: 172
 })
 
 // This is gonna turn into slate, no use in spending time fixing it now
@@ -127,6 +133,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   const {id: reflectionGroupId, title} = reflectionGroup
   const dirtyRef = useRef(false)
   const initialTitleRef = useRef(title)
+  const [isEditing, setIsEditing] = useState(false)
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value
@@ -149,6 +156,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
 
   const onSubmit = (e: React.FormEvent<HTMLInputElement | HTMLFormElement>) => {
     e.preventDefault()
+    setIsEditing(false)
     if (submitting || title === initialTitleRef.current || !title) return
     initialTitleRef.current = title
     // validate
@@ -178,19 +186,34 @@ const ReflectionGroupTitleEditor = (props: Props) => {
     <InputWithIconWrap>
       <RootBlock data-cy='group-title-editor'>
         <FormBlock onSubmit={onSubmit}>
-          <NameInput
-            data-cy='group-title-editor-input'
-            isExpanded={isExpanded}
-            onBlur={onSubmit}
-            onChange={onChange}
-            onKeyPress={onKeyPress}
-            placeholder={RETRO_TOPIC_LABEL}
-            readOnly={readOnly}
-            ref={titleInputRef}
-            maxLength={200}
-            type='text'
-            value={title || ''}
-          />
+          <TitleContainer>
+            {!isEditing && (
+              <MarqueeText
+                title={title || ''}
+                isExpanded={isExpanded}
+                readOnly={readOnly}
+                onActivateEdit={() => {
+                  setIsEditing(true)
+                  titleInputRef.current?.select()
+                }}
+              />
+            )}
+            <NameInput
+              data-cy='group-title-editor-input'
+              isExpanded={isExpanded}
+              onBlur={onSubmit}
+              onChange={onChange}
+              onFocus={() => setIsEditing(true)}
+              onKeyPress={onKeyPress}
+              placeholder={RETRO_TOPIC_LABEL}
+              readOnly={readOnly}
+              ref={titleInputRef}
+              maxLength={200}
+              type='text'
+              value={title || ''}
+              style={!isEditing ? {opacity: 0} : undefined}
+            />
+          </TitleContainer>
         </FormBlock>
         {error && <StyledError>{error.message}</StyledError>}
       </RootBlock>
