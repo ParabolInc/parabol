@@ -1,7 +1,6 @@
-import styled from '@emotion/styled'
 import {Children, type ReactNode} from 'react'
-import SwipeableViews from 'react-swipeable-views'
 import {PALETTE} from '../../styles/paletteV3'
+import SwipeablePanel from '../SwipeablePanel'
 
 interface Props {
   activeIdx: number
@@ -11,59 +10,41 @@ interface Props {
   focusedIdx?: number
 }
 
-const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', padding: '0 16px', height: '100%'}
-const slideContainer = {
-  padding: '0 4px'
-}
-
-const StepperDots = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const StepperDot = styled('div')<{isLocal: boolean; isFocused: boolean}>(
-  ({isLocal, isFocused}) => ({
-    backgroundColor: isLocal ? PALETTE.GRAPE_700 : isFocused ? PALETTE.ROSE_500 : PALETTE.SLATE_600,
-    borderRadius: '50%',
-    height: 8,
-    margin: '0 2px',
-    opacity: isLocal ? undefined : isFocused ? undefined : 0.35,
-    width: 8
-  })
-)
-
 const ReflectWrapperMobile = (props: Props) => {
   const {children, activeIdx, setActiveIdx, focusedIdx, disabled} = props
   const childArr = Children.toArray(children)
   return (
     <>
-      <SwipeableViews
-        // ignoreNativeScroll required! repro: swipe on a stack where length === 1. caused by the delete button.
-        ignoreNativeScroll
-        enableMouseEvents
-        disabled={disabled}
+      <SwipeablePanel
         index={activeIdx}
         onChangeIndex={(idx) => setActiveIdx(idx)}
-        containerStyle={containerStyle}
-        style={innerStyle}
-        slideStyle={slideContainer}
+        disabled={disabled}
+        style={{width: '100%', padding: '0 16px', height: '100%'}}
+        slideClassName='px-1'
       >
         {children}
-      </SwipeableViews>
-      <StepperDots>
+      </SwipeablePanel>
+      <div className='flex items-center py-2'>
         {childArr.map((_, idx) => {
+          const isLocal = idx === activeIdx
+          const isFocused = idx === focusedIdx
           return (
-            <StepperDot
+            <div
               key={idx}
-              isLocal={idx === activeIdx}
-              isFocused={idx === focusedIdx}
+              className='mx-0.5 h-2 w-2 cursor-pointer rounded-full'
+              style={{
+                backgroundColor: isLocal
+                  ? PALETTE.GRAPE_700
+                  : isFocused
+                    ? PALETTE.ROSE_500
+                    : PALETTE.SLATE_600,
+                opacity: isLocal ? undefined : isFocused ? undefined : 0.35
+              }}
               onClick={() => setActiveIdx(idx)}
             />
           )
         })}
-      </StepperDots>
+      </div>
     </>
   )
 }
