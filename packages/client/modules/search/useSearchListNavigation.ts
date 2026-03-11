@@ -1,5 +1,5 @@
 import {type Ref, useEffect, useImperativeHandle, useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
 import {ResultsListRefHandler} from './SearchDialogContent'

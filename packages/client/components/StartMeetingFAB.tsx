@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Add as AddIcon} from '@mui/icons-material'
 import {useEffect, useRef, useState} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import {PALETTE} from '~/styles/paletteV3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'

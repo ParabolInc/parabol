@@ -2,7 +2,7 @@
  * Avoid this if you can! Everything should be stored under localStage and localPhase already.
  * Grabbing state from the url is non-deterministic depending on when a component updates!
  */
-import {matchPath} from 'react-router-dom'
+import {matchPath} from 'react-router'
 import type {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
 import {RetroDemo} from '../../types/constEnums'
 import findKeyByValue from '../findKeyByValue'

@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router-dom'
+import {matchPath} from 'react-router'
 import type {TaskInvolves_notification$data} from '../../__generated__/TaskInvolves_notification.graphql'
 import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import {MENTIONEE} from '../../utils/constants'

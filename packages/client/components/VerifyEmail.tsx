@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'

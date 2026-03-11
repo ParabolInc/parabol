@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 import LinkButton from '../../../../components/LinkButton'
 import Panel from '../../../../components/Panel/Panel'

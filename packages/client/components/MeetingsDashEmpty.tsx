@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'

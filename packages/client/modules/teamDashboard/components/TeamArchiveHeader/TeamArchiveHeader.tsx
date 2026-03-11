@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 import {PALETTE} from '../../../../styles/paletteV3'
 

@@ -1,6 +1,6 @@
 import {generateJSON, generateText} from '@tiptap/react'
 import {useEffect, useMemo, useRef, useState} from 'react'
-import {type NavigateFunction, useNavigate} from 'react-router-dom'
+import {type NavigateFunction, useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'

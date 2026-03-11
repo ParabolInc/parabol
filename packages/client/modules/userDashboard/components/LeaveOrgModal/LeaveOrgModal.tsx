@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'

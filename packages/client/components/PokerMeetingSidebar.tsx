@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {
   NewMeetingPhaseTypeEnum,
   PokerMeetingSidebar_meeting$key

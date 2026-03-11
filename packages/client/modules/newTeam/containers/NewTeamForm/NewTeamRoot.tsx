@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router'
 import newTeamQuery, {type NewTeamQuery} from '../../../../__generated__/NewTeamQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import NewTeam from '../../NewTeam'

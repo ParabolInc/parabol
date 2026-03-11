@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {SubscriptionRequestor} from '../Atmosphere'
 import useAtmosphere from './useAtmosphere'
 import useDeepEqual from './useDeepEqual'

@@ -1,5 +1,5 @@
 import {lazy} from 'react'
-import {type Location, Navigate, Route, Routes, useLocation} from 'react-router-dom'
+import {type Location, Navigate, Route, Routes, useLocation} from 'react-router'
 import useAuthRoute from '../hooks/useAuthRoute'
 import useNoIndex from '../hooks/useNoIndex'
 

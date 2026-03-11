@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'

@@ -1,6 +1,6 @@
 import {lazy, memo, Suspense} from 'react'
 import 'react-day-picker/dist/style.css'
-import {Route, Routes} from 'react-router-dom'
+import {Route, Routes} from 'react-router'
 import useServiceWorkerUpdater from '../../hooks/useServiceWorkerUpdater'
 import {LoaderSize} from '../../types/constEnums'
 import {cn} from '../../ui/cn'

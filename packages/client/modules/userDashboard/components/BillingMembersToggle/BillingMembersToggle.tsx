@@ -1,4 +1,4 @@
-import {useLocation, useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router'
 import ToggleNav, {type Item} from '../../../../components/ToggleNav/ToggleNav'
 import {AUTHENTICATION_PAGE, BILLING_PAGE, MEMBERS_PAGE} from '../../../../utils/constants'
 

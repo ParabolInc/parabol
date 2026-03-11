@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import type {ActionMeetingLastCall_meeting$key} from '../__generated__/ActionMeetingLastCall_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

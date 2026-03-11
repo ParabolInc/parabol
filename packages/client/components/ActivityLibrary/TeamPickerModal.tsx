@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'

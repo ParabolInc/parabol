@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router-dom'
+import {matchPath} from 'react-router'
 
 const getTeamIdFromPathname = (pathname = window.location.pathname) => {
   const teamRoute = matchPath({path: '/team/:teamId', end: false}, pathname)
