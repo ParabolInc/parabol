@@ -1645,6 +1645,11 @@ type Mutation {
   Resets the reflection groups to the state they were in before autogrouping
   """
   resetReflectionGroups(meetingId: ID!): ResetReflectionGroupsPayload!
+
+  """
+  Remove a reflection from its group, placing it into its own new group
+  """
+  ungroupReflection(reflectionGroupId: ID, reflectionId: ID): UngroupReflectionPayload!
   revealTeamHealthVotes(meetingId: ID!, stageId: ID!): RevealTeamHealthVotesPayload!
 
   """
