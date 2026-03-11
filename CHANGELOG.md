@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.1.2](https://github.com/ParabolInc/parabol/compare/v13.1.1...v13.1.2) (2026-03-11)
+
+
+### Fixed
+
+* flush indexedDB record on bad page auth ([#12820](https://github.com/ParabolInc/parabol/issues/12820)) ([20e2fef](https://github.com/ParabolInc/parabol/commit/20e2fef54dcd0001249a26ca3f9095cca147a5da))
+
+
+### Changed
+
+* add getVerifiedAuthToken test ([#12816](https://github.com/ParabolInc/parabol/issues/12816)) ([49f00b0](https://github.com/ParabolInc/parabol/commit/49f00b0fc0c573eb0daea0585a735000e49c6f1f))
+
 ## [13.1.1](https://github.com/ParabolInc/parabol/compare/v13.1.0...v13.1.1) (2026-03-11)
 
 
