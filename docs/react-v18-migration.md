@@ -504,7 +504,7 @@ The flip PR. With all indirect APIs eliminated by PRs 11-14, this PR converts al
 
 Migrated the entire task card component tree from emotion styled-components to Tailwind CSS. This eliminates the cascade conflict where `global.css` gives emotion higher priority than Tailwind (lines 3-6), removes ~25 styled-component definitions across 9 files, and makes cards fully responsive to their layout containers.
 
-Also replaced `react-virtualized` in TeamArchive with a CSS grid layout using `useLoadNextOnScrollBottom`, removing the heavyweight virtualization library dependency.
+Also replaced `react-virtualized` in TeamArchive with `@tanstack/react-virtual` v3 row-based virtualization + Tailwind CSS grid, keeping only visible card rows in the DOM for performant scrolling through large archives.
 
 **Key changes:**
 
@@ -519,9 +519,10 @@ Also replaced `react-virtualized` in TeamArchive with a CSS grid layout using `u
 | Null card | `NullCard.tsx` | Replaced `CardBlock`, `AddingHint` |
 | Draggable wrapper | `DraggableTaskWrapper.tsx` | Replaced `DraggableStyles` |
 | Poll card | `Poll.tsx` | Replaced `PollCard`, `BodyCol` |
-| Team archive | `TeamArchive.tsx` | Replaced `react-virtualized` Grid + emotion styled components with CSS grid + Tailwind + `useLoadNextOnScrollBottom` |
+| Team archive | `TeamArchive.tsx` | Replaced `react-virtualized` Grid + emotion with `@tanstack/react-virtual` v3 row virtualizer + Tailwind CSS grid |
+| Column count hook | `useColumnCount.ts` | New hook: uses `ResizeObserver` to detect responsive column count for virtualizer row chunking |
 | Deleted files | `cardRootStyles.ts`, `CreateCardRootStyles.ts` | Removed hardcoded `minWidth: 256` / `maxWidth: 300` that caused mobile overlap |
-| Dependencies | `package.json` | Removed `react-virtualized`, `@types/react-virtualized` |
+| Dependencies | `package.json` | Removed `react-virtualized`, `@types/react-virtualized`; added `@tanstack/react-virtual@^3` |
 
 **Testing results:**
 - `pnpm --filter parabol-client typecheck` — PASS
