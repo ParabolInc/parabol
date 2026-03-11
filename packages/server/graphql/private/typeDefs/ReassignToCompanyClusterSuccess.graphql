@@ -1,0 +1,11 @@
+type ReassignToCompanyClusterSuccess {
+  """
+  The cluster the items were moved into (newly created or existing)
+  """
+  targetCluster: CompanyCluster!
+
+  """
+  Clusters that had items removed — may now be empty
+  """
+  modifiedClusters: [CompanyCluster!]!
+}

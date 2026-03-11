@@ -1,0 +1,16 @@
+extend type User {
+  """
+  The company cluster associated with the given orgId or domain, if one exists
+  """
+  companyCluster(
+    """
+    Look up the cluster by any org belonging to it
+    """
+    orgId: ID
+
+    """
+    Look up the cluster by any domain belonging to it
+    """
+    domain: String
+  ): CompanyCluster
+}

@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import MeetingPoker from '../../../database/types/MeetingPoker'
@@ -9,6 +10,7 @@ import type {PokerMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import getHashAndJSON from '../../../utils/getHashAndJSON'
+import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
@@ -72,7 +74,7 @@ const freezeTemplateAsRef = async (templateId: string, dataLoader: DataLoaderWor
 
 const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   _source,
-  {teamId, name, gcalInput},
+  {teamId, name, gcalInput, ignoreSuggestedUpgrade},
   context
 ) => {
   const {authToken, socketId: mutatorId, dataLoader} = context
@@ -84,11 +86,20 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('Not on team'), {userId: viewerId})
   }
-  const [unpaidError, viewer] = await Promise.all([
+  const [unpaidError, viewer, overLimitError] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
+    dataLoader.get('users').loadNonNull(viewerId),
+    isCompanyOverLimit(teamId, dataLoader)
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (overLimitError) {
+    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
+      const {teamCount, meetingCount, errorCode} = overLimitError
+      throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
+        extensions: {code: errorCode, teamCount, meetingCount}
+      })
+    }
+  }
 
   const meetingType: MeetingTypeEnum = 'poker'
 

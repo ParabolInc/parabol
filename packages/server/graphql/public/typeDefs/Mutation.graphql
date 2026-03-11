@@ -849,6 +849,10 @@ type Mutation {
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput
+    """
+    Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
+    """
+    ignoreSuggestedUpgrade: Boolean
   ): StartSprintPokerPayload!
 
   """
@@ -1758,6 +1762,10 @@ type Mutation {
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput
+    """
+    Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
+    """
+    ignoreSuggestedUpgrade: Boolean
   ): StartCheckInPayload!
 
   """
@@ -1783,6 +1791,10 @@ type Mutation {
     The gcal input if creating a gcal event
     """
     gcalInput: CreateGcalEventInput
+    """
+    Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
+    """
+    ignoreSuggestedUpgrade: Boolean
   ): StartRetrospectivePayload!
 
   """
@@ -1808,6 +1820,10 @@ type Mutation {
     The gcal input if creating a gcal event. If not provided, no gcal event will be created
     """
     gcalInput: CreateGcalEventInput
+    """
+    Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
+    """
+    ignoreSuggestedUpgrade: Boolean
   ): StartTeamPromptPayload!
 
   """
