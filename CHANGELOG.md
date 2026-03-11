@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.2.0](https://github.com/ParabolInc/parabol/compare/v13.1.3...v13.2.0) (2026-03-11)
+
+
+### Added
+
+* Implement server-side validation for document IDs ([#12825](https://github.com/ParabolInc/parabol/issues/12825)) ([24a98dd](https://github.com/ParabolInc/parabol/commit/24a98ddf28d6d1f4941254ed402ffe8ddbfa8c74))
+
 ## [13.1.3](https://github.com/ParabolInc/parabol/compare/v13.1.2...v13.1.3) (2026-03-11)
 
 
