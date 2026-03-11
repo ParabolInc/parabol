@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.1.3](https://github.com/ParabolInc/parabol/compare/v13.1.2...v13.1.3) (2026-03-11)
+
+
+### Fixed
+
+* re-adding meeting series recurrence ([#12821](https://github.com/ParabolInc/parabol/issues/12821)) ([ea2e002](https://github.com/ParabolInc/parabol/commit/ea2e002143ef84d8775e3bd55ad39d5282ac2e0a))
+
 ## [13.1.2](https://github.com/ParabolInc/parabol/compare/v13.1.1...v13.1.2) (2026-03-11)
 
 
