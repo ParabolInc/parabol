@@ -1,3 +1,4 @@
+import {sql} from 'kysely'
 import Organization from '../../../database/types/Organization'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
@@ -19,6 +20,22 @@ export default async function createNewOrg(
     name: orgName,
     activeDomain
   })
+  if (process.env.IS_ENTERPRISE !== 'true') {
+    const pg = getKysely()
+    await pg
+      .insertInto('CompanyClusterOrganization')
+      .columns(['companyClusterId', 'orgId'])
+      .expression((eb) =>
+        eb
+          .selectFrom('OrganizationUser as Ou')
+          .innerJoin('CompanyClusterOrganization as Cco', 'Cco.orgId', 'Ou.orgId')
+          .select(['Cco.companyClusterId', sql<string>`${orgId}::varchar`.as('orgId')])
+          .where('Ou.userId', '=', leaderUserId)
+          .limit(1)
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
   await getKysely()
     .with('Org', (qc) => qc.insertInto('Organization').values({...org, creditCard: null}))
     .with('OrgUserAuditInsert', (qc) =>

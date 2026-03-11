@@ -21,10 +21,24 @@ export default async function createTeamAndLeader(
   newTeam: ValidNewTeam,
   dataLoader: DataLoaderInstance
 ) {
+  const pg = getKysely()
   const {id: userId} = user
   const {id: teamId, orgId, isPublic: requestedIsPublic} = newTeam
-  const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+  const [organization, clusterRow] = await Promise.all([
+    dataLoader.get('organizations').loadNonNull(orgId),
+    pg
+      .selectFrom('CompanyClusterOrganization')
+      .innerJoin(
+        'CompanyCluster',
+        'CompanyCluster.id',
+        'CompanyClusterOrganization.companyClusterId'
+      )
+      .select('CompanyCluster.maxTeamLimitAt')
+      .where('CompanyClusterOrganization.orgId', '=', orgId)
+      .executeTakeFirst()
+  ])
   const {tier} = organization
+  const maxTeamTrialExpiresAt = clusterRow?.maxTeamLimitAt ?? null
 
   const isPublic = tier === 'starter' ? true : requestedIsPublic
 
@@ -41,7 +55,6 @@ export default async function createTeamAndLeader(
     orgId
   })
 
-  const pg = getKysely()
   const suggestedAction = {
     id: generateUID(),
     userId,
@@ -49,9 +62,12 @@ export default async function createTeamAndLeader(
     type: 'inviteYourTeam' as const,
     priority: 2
   }
+
   await Promise.all([
     pg
-      .with('TeamInsert', (qc) => qc.insertInto('Team').values(verifiedTeam))
+      .with('TeamInsert', (qc) =>
+        qc.insertInto('Team').values({...verifiedTeam, maxTeamTrialExpiresAt})
+      )
       .with('TeamMemberInsert', (qc) =>
         qc.insertInto('TeamMember').values({
           id: TeamMemberId.join(teamId, userId),

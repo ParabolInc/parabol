@@ -1,8 +1,10 @@
+import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
+import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -15,7 +17,7 @@ import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
-  {teamId, name, rrule, gcalInput},
+  {teamId, name, rrule, gcalInput, ignoreSuggestedUpgrade},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const pg = getKysely()
@@ -26,17 +28,25 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   if (!isTeamMember(authToken, teamId)) {
     return standardError(new Error('User not on team'), {userId: viewerId})
   }
-  const unpaidError = await isStartMeetingLocked(teamId, dataLoader)
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
   // RESOLUTION
   const meetingType = 'retrospective' as const
-  const [viewer, meetingSettings, meetingCount] = await Promise.all([
+  const [unpaidError, viewer, meetingSettings, meetingCount, overLimitError] = await Promise.all([
+    isStartMeetingLocked(teamId, dataLoader),
     dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('meetingSettingsByType').loadNonNull({teamId, meetingType}),
-    dataLoader.get('meetingCount').load({teamId, meetingType})
+    dataLoader.get('meetingCount').load({teamId, meetingType}),
+    isCompanyOverLimit(teamId, dataLoader)
   ])
-
+  if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
+  if (overLimitError) {
+    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
+      const {teamCount, meetingCount, errorCode} = overLimitError
+      throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
+        extensions: {code: errorCode, teamCount, meetingCount}
+      })
+    }
+  }
   const {
     id: meetingSettingsId,
     totalVotes,

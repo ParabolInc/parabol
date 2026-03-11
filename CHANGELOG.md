@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.1.0](https://github.com/ParabolInc/parabol/compare/v13.0.1...v13.1.0) (2026-03-11)
+
+
+### Added
+
+* limit on company cluster ([#12806](https://github.com/ParabolInc/parabol/issues/12806)) ([feaa9b3](https://github.com/ParabolInc/parabol/commit/feaa9b31ff062f8eaa28cf19f1182c80c9159373))
+
+
+### Fixed
+
+* blacklistJWT on delete user ([#12807](https://github.com/ParabolInc/parabol/issues/12807)) ([c1d380a](https://github.com/ParabolInc/parabol/commit/c1d380a869ac6a0708e22b69889999bf1314ce99))
+
 ## [13.0.1](https://github.com/ParabolInc/parabol/compare/v13.0.0...v13.0.1) (2026-03-09)
 
 

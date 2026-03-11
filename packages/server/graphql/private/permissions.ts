@@ -8,6 +8,9 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   Query: {
     '*': isSuperUser
+  },
+  User: {
+    companyCluster: isSuperUser
   }
 }
 

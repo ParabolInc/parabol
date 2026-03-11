@@ -1,0 +1,18 @@
+"""
+A grouping of organizations detected to belong to the same company
+"""
+type CompanyCluster {
+  id: ID!
+  """
+  The organizations belonging to this cluster
+  """
+  organizations: [Organization!]!
+  """
+  The domains associated with this cluster
+  """
+  domains: [String!]!
+  """
+  The date/time at which the team limit was first detected
+  """
+  maxTeamLimitAt: DateTime
+}
