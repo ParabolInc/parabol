@@ -49,8 +49,8 @@ export const startDraggingReflectionMeetingUpdater: SharedUpdater<
 > = (payload, {atmosphere, store}: UpdaterOptions) => {
   const meetingId = payload.getValue('meetingId')
   const {pathname} = window.location
-  const meetingRoute = matchPath(pathname, {path: `/meet/${meetingId}`})
-  const isDemoRoute = matchPath(pathname, {path: `/retrospective-demo`})
+  const meetingRoute = matchPath({path: `/meet/${meetingId}`, end: false}, pathname)
+  const isDemoRoute = matchPath({path: '/retrospective-demo', end: false}, pathname)
   /*
    * Avoid adding reflectionsInFlight on clients that are not in the meeting because
    * we can't call the endDrag handler to remove them because

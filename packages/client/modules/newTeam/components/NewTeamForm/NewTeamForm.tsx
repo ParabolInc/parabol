@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ChangeEvent, type FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import Checkbox from '../../../../components/Checkbox'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
@@ -17,7 +17,6 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useNavigate from '../../../../hooks/useNavigate'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -184,7 +183,6 @@ const NewTeamForm = (props: Props) => {
 
   const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const history = useHistory()
   const navigate = useNavigate()
 
   const updateOrgId = (orgId: string) => {
@@ -229,7 +227,7 @@ const NewTeamForm = (props: Props) => {
       orgId,
       upgradeTier: 'team'
     })
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

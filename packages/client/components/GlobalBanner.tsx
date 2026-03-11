@@ -16,7 +16,7 @@ const GlobalBanner = (props: Props) => {
   return (
     <div className='h-6 max-h-6 w-full pt-6 print:hidden'>
       {/* Container div creates natural height to push down
-          container wrapping <Switch /> in Action.tsx.
+          container wrapping <Routes /> in Action.tsx.
           Meanwhile the main div here is postion: fixed. */}
       <div
         className={cn(

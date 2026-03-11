@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {SuggestedActionTryRetroMeeting_suggestedAction$key} from '../__generated__/SuggestedActionTryRetroMeeting_suggestedAction.graphql'
 import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const SuggestedActionTryRetroMeeting = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {suggestedAction: suggestedActionRef} = props
   const suggestedAction = useFragment(
     graphql`
@@ -30,7 +30,7 @@ const SuggestedActionTryRetroMeeting = (props: Props) => {
   const {name: teamName} = team
 
   const onClick = () => {
-    history.push(`/activity-library/category/retrospective`)
+    navigate(`/activity-library/category/retrospective`)
   }
 
   return (

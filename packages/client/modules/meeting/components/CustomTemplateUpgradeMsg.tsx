@@ -1,6 +1,6 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import type {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'
 import FloatingActionButton from '../../../components/FloatingActionButton'
@@ -74,7 +74,7 @@ interface Props {
 
 const CustomTempateUpgradeMsg = (props: Props) => {
   const {orgId, meetingType} = props
-  const history = useHistory()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
 
   const handleClick = () => {
@@ -82,7 +82,7 @@ const CustomTempateUpgradeMsg = (props: Props) => {
       upgradeCTALocation: 'createNewTemplate',
       meetingType
     })
-    history.push(`/me/organizations/${orgId}/billing`)
+    navigate(`/me/organizations/${orgId}/billing`)
   }
 
   return (

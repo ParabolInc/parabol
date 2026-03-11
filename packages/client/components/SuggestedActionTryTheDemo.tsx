@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {SuggestedActionTryTheDemo_suggestedAction$key} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const SuggestedActionTryTheDemo = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
 
@@ -34,7 +34,7 @@ const SuggestedActionTryTheDemo = (props: Props) => {
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
-    history.push('/retrospective-demo')
+    navigate('/retrospective-demo')
   }
   return (
     <SuggestedActionCard

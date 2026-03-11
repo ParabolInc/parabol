@@ -1,5 +1,5 @@
 import {useEffect, useRef} from 'react'
-import {useLocation} from 'react-router'
+import {useLocation} from 'react-router-dom'
 import useAtmosphere from './useAtmosphere'
 
 const useServiceWorkerUpdater = () => {

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {OrganizationsQuery} from '../../../../__generated__/OrganizationsQuery.graphql'
 import LinkButton from '../../../../components/LinkButton'
 import Panel from '../../../../components/Panel/Panel'
@@ -32,13 +32,13 @@ const query = graphql`
 `
 
 const Organizations = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {queryRef} = props
   const data = usePreloadedQuery<OrganizationsQuery>(query, queryRef)
   const {viewer} = data
   const {organizations} = viewer
   const gotoNewTeam = () => {
-    history.push('/newteam')
+    navigate('/newteam')
   }
   const addNewOrg = () => (
     <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam} palette='blue'>

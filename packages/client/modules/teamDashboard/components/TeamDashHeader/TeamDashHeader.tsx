@@ -3,8 +3,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory, useLocation} from 'react-router'
-import {NavLink} from 'react-router-dom'
+import {NavLink, useLocation, useNavigate} from 'react-router-dom'
 import DashSectionHeader from '~/components/Dashboard/DashSectionHeader'
 import DashboardAvatars from '~/components/DashboardAvatars/DashboardAvatars'
 import InviteTeamMemberAvatar from '~/components/InviteTeamMemberAvatar'
@@ -125,7 +124,7 @@ const TeamDashHeader = (props: Props) => {
   } = team
   const {name: orgName, id: orgId} = organization
   const canViewInsights = viewerTeamMember?.isLead && hasInsightsFlag
-  const history = useHistory()
+  const navigate = useNavigate()
   const location = useLocation()
 
   const tabs = [
@@ -143,17 +142,17 @@ const TeamDashHeader = (props: Props) => {
       const hasSeenInsights = localStorage.getItem(insightsSeenKey) === 'true'
       if (!hasSeenInsights) {
         localStorage.setItem(insightsSeenKey, 'true')
-        history.push(`/team/${teamId}/insights`)
+        navigate(`/team/${teamId}/insights`)
       }
     }
-  }, [canViewInsights, insightsSeenKey, isLocalStorageAvailable, history, teamId])
+  }, [canViewInsights, insightsSeenKey, isLocalStorageAvailable, navigate, teamId])
 
   const activePath = location.pathname.split('/').pop()
   const activeTab = tabs.find((tab) => tab.path === activePath) ? activePath : 'activity'
   const activeIdx = tabs.findIndex((tab) => tab.path === activeTab)
 
   const handleTabClick = (path: string) => {
-    history.push(`/team/${teamId}/${path}`)
+    navigate(`/team/${teamId}/${path}`)
   }
 
   return (

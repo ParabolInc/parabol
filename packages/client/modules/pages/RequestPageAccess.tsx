@@ -1,6 +1,6 @@
 import LockIcon from '@mui/icons-material/Lock'
 import {useState} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import BasicTextArea from '../../components/InputField/BasicTextArea'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useRequestPageAccessMutation} from '../../mutations/useRequestPageAccessMutation'
@@ -22,11 +22,11 @@ export const RequestPageAccess = (props: Props) => {
   const atmosphere = useAtmosphere()
   const [execute, submitting] = useRequestPageAccessMutation()
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const cancel = () => {
     if (submitting) return
-    history.push('/meetings')
+    navigate('/meetings')
   }
 
   const submit = () => {

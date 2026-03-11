@@ -3,8 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ComponentPropsWithoutRef, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useHistory, useParams} from 'react-router'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
@@ -124,7 +123,7 @@ export const CreateNewActivity = (props: Props) => {
   const atmosphere = useAtmosphere()
   const data = usePreloadedQuery<CreateNewActivityQuery>(query, queryRef)
 
-  const {categoryId} = useParams<{categoryId?: string}>()
+  const {categoryId} = useParams()
 
   const [selectedActivity, setSelectedActivity] = useState(() => {
     const defaultActivity = SUPPORTED_CUSTOM_ACTIVITIES[0]!
@@ -147,7 +146,7 @@ export const CreateNewActivity = (props: Props) => {
     teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
   )
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
-  const history = useHistory()
+  const navigate = useNavigate()
   const freeCustomTemplatesRemaining =
     selectedActivity.type === 'retrospective'
       ? freeCustomRetroTemplatesRemaining
@@ -167,9 +166,8 @@ export const CreateNewActivity = (props: Props) => {
         onCompleted: (res: AddReflectTemplateMutation$data) => {
           const templateId = res.addReflectTemplate?.reflectTemplate?.id
           if (templateId) {
-            history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: categoryId,
-              edit: true
+            navigate(`/activity-library/details/${templateId}`, {
+              state: {prevCategory: categoryId, edit: true}
             })
           }
           onCompleted()
@@ -192,9 +190,8 @@ export const CreateNewActivity = (props: Props) => {
         onCompleted: (res: AddPokerTemplateMutation$data) => {
           const templateId = res.addPokerTemplate?.pokerTemplate?.id
           if (templateId) {
-            history.push(`/activity-library/details/${templateId}`, {
-              prevCategory: categoryId,
-              edit: true
+            navigate(`/activity-library/details/${templateId}`, {
+              state: {prevCategory: categoryId, edit: true}
             })
           }
           onCompleted()
@@ -208,7 +205,7 @@ export const CreateNewActivity = (props: Props) => {
       upgradeCTALocation: 'createNewTemplateAL',
       meetingType: selectedActivity.type
     })
-    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
+    navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
   const createCustomActivityLookup: Record<ActivityType, () => void> = {

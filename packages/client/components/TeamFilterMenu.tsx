@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {
   TeamFilterMenu_viewer$data,
   TeamFilterMenu_viewer$key
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const TeamFilterMenu = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {menuProps, viewer: viewerRef} = props
   const viewer = useFragment(
     graphql`
@@ -88,7 +88,7 @@ const TeamFilterMenu = (props: Props) => {
           key={'teamFilterNULL'}
           label={FilterLabels.ALL_TEAMS}
           onClick={() =>
-            history.push(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
+            navigate(constructFilterQueryParamURL(null, userIds, showArchived, eventTypes))
           }
         />
       )}
@@ -98,7 +98,7 @@ const TeamFilterMenu = (props: Props) => {
           dataCy={`team-filter-${team.id}`}
           label={team.name}
           onClick={() =>
-            history.push(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
+            navigate(constructFilterQueryParamURL([team.id], userIds, showArchived, eventTypes))
           }
         />
       ))}

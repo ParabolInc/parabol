@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import NotificationAction from '~/components/NotificationAction'
 import type {MeetingStageTimeLimitEnd_notification$key} from '../__generated__/MeetingStageTimeLimitEnd_notification.graphql'
 import NotificationTemplate from './NotificationTemplate'
@@ -27,12 +27,12 @@ const MeetingStageTimeLimitEnd = (props: Props) => {
     `,
     notificationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {meeting} = notification
   const {id: meetingId, name: meetingName, team} = meeting
   const {name: teamName} = team
   const goThere = () => {
-    history.push(`/meet/${meetingId}`)
+    navigate(`/meet/${meetingId}`)
   }
 
   return (

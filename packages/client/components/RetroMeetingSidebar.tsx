@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {
   NewMeetingPhaseTypeEnum,
   RetroMeetingSidebar_meeting$key
@@ -29,7 +29,7 @@ const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'discuss']
 
 const RetroMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {viewerId} = atmosphere
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -167,12 +167,12 @@ const RetroMeetingSidebar = (props: Props) => {
             isUnsyncedFacilitatorPhase={false}
             handleClick={() => {
               if (isDemoRoute()) {
-                history.push('/retrospective-demo-summary')
+                navigate('/retrospective-demo-summary')
               } else {
                 const summaryURL = summaryPageId
                   ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
                   : `/new-summary/${meetingId}`
-                history.push(summaryURL)
+                navigate(summaryURL)
               }
             }}
             phaseType='SUMMARY'

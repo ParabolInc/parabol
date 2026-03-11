@@ -1,5 +1,5 @@
 import {Lock} from '@mui/icons-material'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import plural from '../../../../utils/plural'
 
 type Props = {
@@ -9,10 +9,10 @@ type Props = {
 
 const TeaserOrgTeamsRow = (props: Props) => {
   const {hiddenTeamCount, orgId} = props
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleParabolEnterpriseClick = () => {
-    history.push(`/me/organizations/${orgId}/billing`)
+    navigate(`/me/organizations/${orgId}/billing`)
   }
 
   return (

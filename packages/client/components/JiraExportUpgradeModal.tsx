@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
@@ -20,13 +21,13 @@ interface Props {
 const JiraExportUpgradeModal = (props: Props) => {
   const {isOpen, exportCount, isHardBlock, orgId, onClose} = props
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const goToUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'jiraExportLimitModal'
     })
     if (orgId) {
-      history.push(`/me/organizations/${orgId}`)
+      navigate(`/me/organizations/${orgId}`)
     }
     onClose()
   }

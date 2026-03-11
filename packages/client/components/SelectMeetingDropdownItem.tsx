@@ -7,7 +7,7 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
@@ -40,7 +40,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
     `,
     meetingRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {name, team, id: meetingId, meetingType, phases, facilitatorStageId} = meeting
   if (!team) {
     // 95% sure there's a bug in relay causing this
@@ -50,7 +50,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   }
   const {name: teamName} = team
   const gotoMeeting = () => {
-    history.push(`/meet/${meetingId}`)
+    navigate(`/meet/${meetingId}`)
   }
   //FIXME 6062: change to React.ComponentType
   const IconOrSVG = meetingTypeToIcon[meetingType]!
