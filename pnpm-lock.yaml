@@ -553,9 +553,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tanstack/react-virtual':
-        specifier: ^3.13.2
-        version: 3.13.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       cleave.js:
         specifier: ^1.6.0
         version: 1.6.0
@@ -637,6 +634,15 @@ importers:
       react-router-dom:
         specifier: ^6.30.0
         version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-swipeable-views:
+        specifier: https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d
+        version: https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d(react@18.3.1)
+      react-swipeable-views-core:
+        specifier: 0.14.0
+        version: 0.14.0
+      react-swipeable-views-utils:
+        specifier: ^0.14.0
+        version: 0.14.1(react@18.3.1)
       react-textarea-autosize:
         specifier: ^8.5.9
         version: 8.5.9(@types/react@18.3.28)(react@18.3.1)
@@ -692,6 +698,9 @@ importers:
       '@types/mousetrap':
         specifier: ^1.6.2
         version: 1.6.15
+      '@types/react-swipeable-views':
+        specifier: ^0.13.1
+        version: 0.13.6
       '@types/sanitize-html':
         specifier: ^2.11.0
         version: 2.16.0
@@ -6211,6 +6220,9 @@ packages:
   '@types/react-relay@16.0.6':
     resolution: {integrity: sha512-VTntVQJhlwQYNUlbNgGf8RYy7EtQPRZqsD/w2Si0ygZspJXuNlVdRkklWMFN99EMRhHDpqlNHD8i3wIs7QRz9g==}
 
+  '@types/react-swipeable-views@0.13.6':
+    resolution: {integrity: sha512-Pe9TxRRo098Lxi59YQ8KWVuyBOvt9nJK5AtAqGiRsnl+6PXLknuiLhg0+mGuM9Bn+nun+Ed65Kb1Yl171vCdyA==}
+
   '@types/react-transition-group@4.4.12':
     resolution: {integrity: sha512-8TV6R3h2j7a91c+1DXdJi3Syo69zzIZbz7Lg5tORM5LEJG7X/E6a1V3drRyBRZq7/utz7A+c4OgYLiLcYGHG6w==}
     peerDependencies:
@@ -9205,6 +9217,9 @@ packages:
   jwt-decode@2.2.0:
     resolution: {integrity: sha512-86GgN2vzfUu7m9Wcj63iUkuDzFNYFVmjeDm2GzWpUk+opB0pEpMsw6ePCMrhYkumz2C1ihqtZzOMAg7FiXcNoQ==}
 
+  keycode@2.2.1:
+    resolution: {integrity: sha512-Rdgz9Hl9Iv4QKi8b0OlCRQEzp4AgVxyCtz5S/+VIHezDmrDhkp2N2TqBWOLz0/gbeREXOOiI9/4b8BY9uw2vFg==}
+
   keygrip@1.1.0:
     resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
     engines: {node: '>= 0.6'}
@@ -10601,6 +10616,11 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
+  react-event-listener@0.6.7:
+    resolution: {integrity: sha512-DLxxUSjZT5Qg8u+51V0KPKW7FI4zCkbP7fjKNGpaRItjaYgO4WycwoqJDumw+UGGQ0DmmPbQ3RUH8LsqQgHWpQ==}
+    peerDependencies:
+      react: ^18.3.1
+
   react-ga4@1.4.1:
     resolution: {integrity: sha512-ioBMEIxd4ePw4YtaloTUgqhQGqz5ebDdC4slEpLgy2sLx1LuZBC9iYCwDymTXzcntw6K1dHX183ulP32nNdG7w==}
 
@@ -10692,6 +10712,29 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-swipeable-views-core@0.14.0:
+    resolution: {integrity: sha512-0W/e9uPweNEOSPjmYtuKSC/SvKKg1sfo+WtPdnxeLF3t2L82h7jjszuOHz9C23fzkvLfdgkaOmcbAxE9w2GEjA==}
+    engines: {node: '>=6.0.0'}
+
+  react-swipeable-views-core@0.14.1:
+    resolution: {integrity: sha512-0mmRN3OjAn5hPxM/tjL6hJBcnsGBADwMY67NM2PTyANSqKGoHcX0qzsL704jxwUrGcbPedr9/d1VYdQHBb4IAQ==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      react: ^18.3.1
+
+  react-swipeable-views-utils@0.14.1:
+    resolution: {integrity: sha512-eX0Lo5uZ4G9TBTSpROLNYFGGhd1Ja5K19LL8ZHQmm7oBpJBJXIDH2D364aFMrBR9BdlSbZOVxw9eNHElwMFRyg==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      react: ^18.3.1
+
+  react-swipeable-views@https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d:
+    resolution: {tarball: https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d}
+    version: 0.14.0-alpha.0
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      react: ^18.3.1
 
   react-textarea-autosize@8.5.9:
     resolution: {integrity: sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A==}
@@ -11092,6 +11135,9 @@ packages:
   shallow-clone@3.0.1:
     resolution: {integrity: sha512-/6KqX+GVUdqPuPPd2LxDDxzX6CAbjJehAAOKlNpqqUpAqPM6HeL8f+o3a+JsyGjn2lv0WY8UsTgUJjU9Ok55NA==}
     engines: {node: '>=8'}
+
+  shallow-equal@1.2.1:
+    resolution: {integrity: sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA==}
 
   shallow-equals@1.0.0:
     resolution: {integrity: sha512-xd/FKcdmfmMbyYCca3QTVEJtqUOGuajNzvAX6nt8dXILwjAIEkfHc4hI8/JMGApAmb7VeULO0Q30NTxnbH/15g==}
@@ -12002,6 +12048,9 @@ packages:
 
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
+
+  warning@4.0.3:
+    resolution: {integrity: sha512-rpJyN222KWIvHJ/F53XSZv0Zl/accqHR8et1kpaMTD/fLCRxtV8iX8czMzY7sVZupTI3zcUTg8eycS2kNF9l6w==}
 
   watchpack@2.5.1:
     resolution: {integrity: sha512-Zn5uXdcFNIA1+1Ei5McRd+iRzfhENPCe7LeABkJtNulSxjma+l7ltNx55BWZkRlwRnpOgHqxnjyaDgJnNXnqzg==}
@@ -18874,6 +18923,10 @@ snapshots:
       '@types/react': 18.3.28
       '@types/relay-runtime': 18.2.5
 
+  '@types/react-swipeable-views@0.13.6':
+    dependencies:
+      '@types/react': 18.3.28
+
   '@types/react-transition-group@4.4.12(@types/react@18.3.28)':
     dependencies:
       '@types/react': 18.3.28
@@ -22347,6 +22400,8 @@ snapshots:
 
   jwt-decode@2.2.0: {}
 
+  keycode@2.2.1: {}
+
   keygrip@1.1.0:
     dependencies:
       tsscmp: 1.0.6
@@ -23837,6 +23892,13 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
+  react-event-listener@0.6.7(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      prop-types: 15.8.1
+      react: 18.3.1
+      warning: 4.0.3
+
   react-ga4@1.4.1: {}
 
   react-is@16.13.1: {}
@@ -23933,6 +23995,36 @@ snapshots:
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.28
+
+  react-swipeable-views-core@0.14.0:
+    dependencies:
+      '@babel/runtime': 7.28.4
+      warning: 4.0.3
+
+  react-swipeable-views-core@0.14.1(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      react: 18.3.1
+      warning: 4.0.3
+
+  react-swipeable-views-utils@0.14.1(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      keycode: 2.2.1
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-event-listener: 0.6.7(react@18.3.1)
+      react-swipeable-views-core: 0.14.1(react@18.3.1)
+      shallow-equal: 1.2.1
+
+  react-swipeable-views@https://github.com/mattkrick/react-swipeable-views/tarball/4f1d3062d6f8939e9889bc6241bb46aa7bc5332d(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      prop-types: 15.8.1
+      react: 18.3.1
+      react-swipeable-views-core: 0.14.0
+      react-swipeable-views-utils: 0.14.1(react@18.3.1)
+      warning: 4.0.3
 
   react-textarea-autosize@8.5.9(@types/react@18.3.28)(react@18.3.1):
     dependencies:
@@ -24412,6 +24504,8 @@ snapshots:
   shallow-clone@3.0.1:
     dependencies:
       kind-of: 6.0.3
+
+  shallow-equal@1.2.1: {}
 
   shallow-equals@1.0.0: {}
 
@@ -25314,6 +25408,10 @@ snapshots:
   walker@1.0.8:
     dependencies:
       makeerror: 1.0.12
+
+  warning@4.0.3:
+    dependencies:
+      loose-envify: 1.4.0
 
   watchpack@2.5.1:
     dependencies:
