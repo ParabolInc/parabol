@@ -2543,6 +2543,225 @@ describe('Groups', () => {
   })
 })
 
+describe('Pagination', () => {
+  let bearerToken: string
+  const domain = faker.internet.domainName()
+  const PAGE_SIZE = 10
+
+  beforeAll(async () => {
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    bearerToken = await enableSCIM(orgId, cookie)
+  })
+
+  describe('User Pagination', () => {
+    const TOTAL_USERS = 13
+    const createdUserIds: string[] = []
+
+    beforeAll(async () => {
+      // admin is 0
+      for (let i = 1; i < TOTAL_USERS; i++) {
+        const res = await fetch(`${SCIM_URL}/Users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/scim+json',
+            Authorization: `Bearer ${bearerToken}`
+          },
+          body: JSON.stringify({
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:User'],
+            userName: `paguser${i}${faker.internet.userName().toLowerCase()}`,
+            active: true,
+            emails: [
+              {
+                primary: true,
+                type: 'work',
+                value: `paguser${i}${faker.internet.userName().toLowerCase()}@${domain}`
+              }
+            ]
+          })
+        })
+        const data = await res.json()
+        createdUserIds.push(data.id)
+      }
+    })
+
+    test('GET /Users - returns all users with correct totalResults', async () => {
+      const res = await fetch(`${SCIM_URL}/Users`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
+      // 12 created users + 1 admin = 13 total
+      expect(data.totalResults).toBe(TOTAL_USERS)
+      expect(data.Resources).toHaveLength(TOTAL_USERS)
+    })
+
+    test('GET /Users?count=10&startIndex=1 - first page returns 10 users with correct totalResults', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=1`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
+      expect(data.totalResults).toBe(TOTAL_USERS)
+      expect(data.Resources).toHaveLength(PAGE_SIZE)
+    })
+
+    test('GET /Users - users are ordered by creation time across pages', async () => {
+      // Page 1: admin + first 9 created users (indices 0-8)
+      const page1Res = await fetch(`${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=1`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      // Page 2: last 3 created users (indices 9-11)
+      const page2Res = await fetch(
+        `${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=${PAGE_SIZE + 1}`,
+        {
+          method: 'GET',
+          headers: {Authorization: `Bearer ${bearerToken}`}
+        }
+      )
+
+      expect(page1Res.status).toBe(200)
+      expect(page2Res.status).toBe(200)
+
+      const page1 = await page1Res.json()
+      const page2 = await page2Res.json()
+
+      expect(page1.totalResults).toBe(TOTAL_USERS)
+      expect(page2.totalResults).toBe(TOTAL_USERS)
+      expect(page1.Resources).toHaveLength(PAGE_SIZE)
+      // 13 total - 10 on page 1 = 3 on page 2
+      expect(page2.Resources).toHaveLength(TOTAL_USERS - PAGE_SIZE)
+
+      // No overlap between pages
+      const page1Ids = page1.Resources.map((u: any) => u.id) as string[]
+      const page2Ids = page2.Resources.map((u: any) => u.id) as string[]
+      const overlap = page1Ids.filter((id) => page2Ids.includes(id))
+      expect(overlap).toHaveLength(0)
+
+      // Together they cover all users
+      expect([...page1Ids, ...page2Ids]).toHaveLength(TOTAL_USERS)
+
+      // The last 3 users created (in creation order) appear as the last page
+      expect(page2Ids).toEqual(createdUserIds.slice(-(TOTAL_USERS - PAGE_SIZE)))
+    })
+
+    test('GET /Users?count=10&startIndex=100 - startIndex beyond total returns empty Resources', async () => {
+      const res = await fetch(`${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=100`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.totalResults).toBe(TOTAL_USERS)
+      expect((data.Resources ?? []).filter(Boolean)).toHaveLength(0)
+    })
+  })
+
+  describe('Group Pagination', () => {
+    const TOTAL_GROUPS = 13
+    const createdGroupIds: string[] = []
+
+    beforeAll(async () => {
+      // starter group is 0
+      for (let i = 1; i < TOTAL_GROUPS; i++) {
+        const res = await fetch(`${SCIM_URL}/Groups`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/scim+json',
+            Authorization: `Bearer ${bearerToken}`
+          },
+          body: JSON.stringify({
+            schemas: ['urn:ietf:params:scim:schemas:core:2.0:Group'],
+            displayName: `paggroup-${i}-${faker.internet.userName()}`
+          })
+        })
+        const data = await res.json()
+        createdGroupIds.push(data.id)
+      }
+    })
+
+    test('GET /Groups - returns all groups with correct totalResults', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
+      expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect(data.Resources).toHaveLength(TOTAL_GROUPS)
+    })
+
+    test('GET /Groups?count=10&startIndex=1 - first page returns 10 groups with correct totalResults', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=1`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
+      expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect(data.Resources).toHaveLength(PAGE_SIZE)
+    })
+
+    test('GET /Groups - groups are ordered by creation time across pages', async () => {
+      // Page 1: first 10 created groups (indices 0-9)
+      const page1Res = await fetch(`${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=1`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      // Page 2: last 2 created groups (indices 10-11)
+      const page2Res = await fetch(
+        `${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=${PAGE_SIZE + 1}`,
+        {
+          method: 'GET',
+          headers: {Authorization: `Bearer ${bearerToken}`}
+        }
+      )
+
+      expect(page1Res.status).toBe(200)
+      expect(page2Res.status).toBe(200)
+
+      const page1 = await page1Res.json()
+      const page2 = await page2Res.json()
+
+      expect(page1.totalResults).toBe(TOTAL_GROUPS)
+      expect(page2.totalResults).toBe(TOTAL_GROUPS)
+      expect(page1.Resources).toHaveLength(PAGE_SIZE)
+      // 12 total - 10 on page 1 = 2 on page 2
+      expect(page2.Resources).toHaveLength(TOTAL_GROUPS - PAGE_SIZE)
+
+      // No overlap between pages
+      const page1Ids = page1.Resources.map((g: any) => g.id) as string[]
+      const page2Ids = page2.Resources.map((g: any) => g.id) as string[]
+      const overlap = page1Ids.filter((id) => page2Ids.includes(id))
+      expect(overlap).toHaveLength(0)
+
+      // Together they cover all groups
+      expect([...page1Ids, ...page2Ids]).toHaveLength(TOTAL_GROUPS)
+
+      // The last 2 groups created (in creation order) appear as the last page
+      expect(page2Ids).toEqual(createdGroupIds.slice(-(TOTAL_GROUPS - PAGE_SIZE)))
+    })
+
+    test('GET /Groups?count=10&startIndex=100 - startIndex beyond total returns empty Resources', async () => {
+      const res = await fetch(`${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=100`, {
+        method: 'GET',
+        headers: {Authorization: `Bearer ${bearerToken}`}
+      })
+      expect(res.status).toBe(200)
+      const data = await res.json()
+      expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect((data.Resources ?? []).filter(Boolean)).toHaveLength(0)
+    })
+  })
+})
+
 describe('SCIM Bearer Token authentication', () => {
   test('Refreshing creates a new token', async () => {
     const domain = faker.internet.domainName()
