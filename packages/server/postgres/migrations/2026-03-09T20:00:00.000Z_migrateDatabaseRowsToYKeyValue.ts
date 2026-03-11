@@ -55,6 +55,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
     if (!changed) {
       skippedCount++
+      doc.destroy()
       continue
     }
 
@@ -83,6 +84,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       })
       await redis.publish(`rsaMsg:${proxyTo}`, proxyMessage)
     }
+    doc.destroy()
     migratedCount++
   }
 
