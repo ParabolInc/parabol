@@ -6,7 +6,7 @@ import useEventCallback from './useEventCallback'
 interface FieldInputDict {
   [name: string]: {
     getDefault(): any
-    validate?(rawInput: any): Legitity
+    validate?(rawInput: any, otherRawInputs: {[name: string]: any}): Legitity
     normalize?(rawInput: any, previousValue: any): any
   }
 }
@@ -114,7 +114,13 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
   const validate = useEventCallback((name: string, value: any) => {
     const validateField = fieldInputDict[name]!.validate
     if (!validateField) return {error: undefined, value}
-    const res: Legitity = validateField(value)
+    const res: Legitity = validateField(
+      value,
+      Object.keys(state).reduce((obj, name) => {
+        obj[name] = state[name as FieldStateKey<T>].value
+        return obj
+      }, {} as any)
+    )
     dispatch({type: 'setError', name, error: res.error})
     return res
   })

@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import {passwordStrength} from 'parabol-client/shared/passwordStrength'
 import {AuthenticationError, Security} from 'parabol-client/types/constEnums'
 import createEmailVerification from '../../../email/createEmailVerification'
 import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
@@ -63,6 +64,12 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   if (!nickname || !domain) {
     return {error: {message: 'Invalid email'}}
   }
+
+  const weakError = passwordStrength(password, email)
+  if (weakError) {
+    return {error: {message: weakError}}
+  }
+
   const verifiedByInvite = await isValidEmailInvitationToken(email, invitationToken)
   if (!verifiedByInvite) {
     const existingVerification = await pg

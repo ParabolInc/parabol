@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
+import {passwordStrength} from '../../../../client/shared/passwordStrength'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import AuthToken from '../../../database/types/AuthToken'
@@ -41,6 +42,11 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
   if (!user) {
     return standardError(new Error(`User ${email} does not exist for password reset`))
   }
+  const weakError = passwordStrength(newPassword, email)
+  if (weakError) {
+    return {error: {message: weakError}}
+  }
+
   const {id: userId, identities, tms, rol} = user
   const localIdentity = identities.find(
     (identity) => identity.type === AuthIdentityTypeEnum.LOCAL

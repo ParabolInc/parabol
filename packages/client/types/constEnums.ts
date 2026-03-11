@@ -345,7 +345,8 @@ export enum RightSidebar {
 
 export enum Security {
   SALT_ROUNDS = 12,
-  MASS_INVITATION_TOKEN_LENGTH = 12
+  MASS_INVITATION_TOKEN_LENGTH = 12,
+  MIN_PASSWORD_LENGTH = 12
 }
 
 export enum SubscriptionChannel {
