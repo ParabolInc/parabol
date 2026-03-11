@@ -160,6 +160,11 @@ export const registerSCIMHandlers = (app: TemplatedApp, pathPrefix: string = '/s
 
     addHandler(`${endpoint}`, 'get', async (res, {query}, ctx) => {
       const resources = await new Resource(undefined, query).read(ctx)
+      // Set itemsPerPage to the actual number of resources returned on this page as required by Okta.
+      // The spec is not 100% clear on this, see https://github.com/scimmyjs/scimmy/issues/101
+      if (Array.isArray(resources.Resources)) {
+        resources.itemsPerPage = resources.Resources.length
+      }
       res.writeHeader('Content-Type', 'application/scim+json').end(JSON.stringify(resources))
     })
     addHandler(`${endpoint}`, 'post', async (res, {body}, ctx) => {
