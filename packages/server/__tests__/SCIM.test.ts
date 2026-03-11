@@ -2593,8 +2593,8 @@ describe('Pagination', () => {
       expect(res.status).toBe(200)
       const data = await res.json()
       expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
-      // 12 created users + 1 admin = 13 total
       expect(data.totalResults).toBe(TOTAL_USERS)
+      expect(data.itemsPerPage).toBe(TOTAL_USERS)
       expect(data.Resources).toHaveLength(TOTAL_USERS)
     })
 
@@ -2607,16 +2607,15 @@ describe('Pagination', () => {
       const data = await res.json()
       expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
       expect(data.totalResults).toBe(TOTAL_USERS)
+      expect(data.itemsPerPage).toBe(PAGE_SIZE)
       expect(data.Resources).toHaveLength(PAGE_SIZE)
     })
 
     test('GET /Users - users are ordered by creation time across pages', async () => {
-      // Page 1: admin + first 9 created users (indices 0-8)
       const page1Res = await fetch(`${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=1`, {
         method: 'GET',
         headers: {Authorization: `Bearer ${bearerToken}`}
       })
-      // Page 2: last 3 created users (indices 9-11)
       const page2Res = await fetch(
         `${SCIM_URL}/Users?count=${PAGE_SIZE}&startIndex=${PAGE_SIZE + 1}`,
         {
@@ -2633,8 +2632,9 @@ describe('Pagination', () => {
 
       expect(page1.totalResults).toBe(TOTAL_USERS)
       expect(page2.totalResults).toBe(TOTAL_USERS)
+      expect(page1.itemsPerPage).toBe(PAGE_SIZE)
+      expect(page2.itemsPerPage).toBe(TOTAL_USERS - PAGE_SIZE)
       expect(page1.Resources).toHaveLength(PAGE_SIZE)
-      // 13 total - 10 on page 1 = 3 on page 2
       expect(page2.Resources).toHaveLength(TOTAL_USERS - PAGE_SIZE)
 
       // No overlap between pages
@@ -2658,6 +2658,7 @@ describe('Pagination', () => {
       expect(res.status).toBe(200)
       const data = await res.json()
       expect(data.totalResults).toBe(TOTAL_USERS)
+      expect(data.itemsPerPage).toBe(0)
       expect((data.Resources ?? []).filter(Boolean)).toHaveLength(0)
     })
   })
@@ -2694,6 +2695,7 @@ describe('Pagination', () => {
       const data = await res.json()
       expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
       expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect(data.itemsPerPage).toBe(TOTAL_GROUPS)
       expect(data.Resources).toHaveLength(TOTAL_GROUPS)
     })
 
@@ -2706,16 +2708,15 @@ describe('Pagination', () => {
       const data = await res.json()
       expect(data.schemas).toContain('urn:ietf:params:scim:api:messages:2.0:ListResponse')
       expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect(data.itemsPerPage).toBe(PAGE_SIZE)
       expect(data.Resources).toHaveLength(PAGE_SIZE)
     })
 
     test('GET /Groups - groups are ordered by creation time across pages', async () => {
-      // Page 1: first 10 created groups (indices 0-9)
       const page1Res = await fetch(`${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=1`, {
         method: 'GET',
         headers: {Authorization: `Bearer ${bearerToken}`}
       })
-      // Page 2: last 2 created groups (indices 10-11)
       const page2Res = await fetch(
         `${SCIM_URL}/Groups?count=${PAGE_SIZE}&startIndex=${PAGE_SIZE + 1}`,
         {
@@ -2732,8 +2733,9 @@ describe('Pagination', () => {
 
       expect(page1.totalResults).toBe(TOTAL_GROUPS)
       expect(page2.totalResults).toBe(TOTAL_GROUPS)
+      expect(page1.itemsPerPage).toBe(PAGE_SIZE)
+      expect(page2.itemsPerPage).toBe(TOTAL_GROUPS - PAGE_SIZE)
       expect(page1.Resources).toHaveLength(PAGE_SIZE)
-      // 12 total - 10 on page 1 = 2 on page 2
       expect(page2.Resources).toHaveLength(TOTAL_GROUPS - PAGE_SIZE)
 
       // No overlap between pages
@@ -2757,6 +2759,7 @@ describe('Pagination', () => {
       expect(res.status).toBe(200)
       const data = await res.json()
       expect(data.totalResults).toBe(TOTAL_GROUPS)
+      expect(data.itemsPerPage).toBe(0)
       expect((data.Resources ?? []).filter(Boolean)).toHaveLength(0)
     })
   })
