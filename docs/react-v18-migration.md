@@ -480,7 +480,7 @@ Components that passed `history` to mutations now use `useNavigate()` and pass `
 
 ---
 
-### PR 15 — Upgrade to react-router v6 — convert ALL remaining v5 APIs
+### ~~PR 15 — Upgrade to react-router v6 — convert ALL remaining v5 APIs~~ DONE
 
 **~900 lines changed | Risk: HIGH**
 

@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import type {TeamInvitationGoogleCreateAccount_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import {PALETTE} from '../styles/paletteV3'
@@ -48,7 +48,8 @@ const TeamName = styled('span')({
 
 const TeamInvitationGoogleCreateAccount = (props: Props) => {
   const [isEmailFallback, setIsEmailFallback] = useState(false)
-  const {token: invitationToken} = useParams<{token: string}>()
+  const {token} = useParams()
+  const invitationToken = token!
   const {verifiedInvitation: verifiedInvitationRef} = props
   const verifiedInvitation = useFragment(
     graphql`

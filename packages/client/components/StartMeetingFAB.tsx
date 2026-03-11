@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Add as AddIcon} from '@mui/icons-material'
 import {useEffect, useRef, useState} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import {PALETTE} from '~/styles/paletteV3'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
@@ -54,7 +54,7 @@ interface Props {
 const StartMeetingFAB = (props: Props) => {
   const {className} = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const history = useHistory()
+  const navigate = useNavigate()
   const [isExpanded, setIsExpanded] = useState(true)
   const hoverTimerId = useRef<number | undefined>()
   const initTimerId = useRef<number | undefined>()
@@ -87,7 +87,7 @@ const StartMeetingFAB = (props: Props) => {
     }
   }
   const onClick = () => {
-    history.push('/activity-library')
+    navigate('/activity-library')
   }
   // We use the SideBarStartMeetingButton in this case
   if (isDesktop) {

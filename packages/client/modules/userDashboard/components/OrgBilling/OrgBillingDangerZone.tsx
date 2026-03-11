@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 import Panel from '../../../../components/Panel/Panel'
@@ -46,7 +46,7 @@ const OrgBillingDangerZone = (props: Props) => {
     `,
     organizationRef
   )
-  const history = useHistory()
+  const navigate = useNavigate()
   const {id, isBillingLeader, billingTier} = organization
   if (!isBillingLeader)
     return (
@@ -62,7 +62,7 @@ const OrgBillingDangerZone = (props: Props) => {
   const isTeam = billingTier === 'team'
 
   const handleDowngrade = () => {
-    history.push(`/me/organizations/${id}/billing`)
+    navigate(`/me/organizations/${id}/billing`)
   }
 
   return (

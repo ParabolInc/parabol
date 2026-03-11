@@ -1,8 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect, useHistory} from 'react-router'
-import {Link} from 'react-router-dom'
+import {Link, Navigate, useLocation} from 'react-router-dom'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'
@@ -64,11 +63,11 @@ const ActivityDetails = (props: Props) => {
   const data = usePreloadedQuery<ActivityDetailsQuery>(query, queryRef)
   const {viewer} = data
   const {activity, activityLibrarySearch, preferredTeamId, teams} = viewer
-  const history = useHistory<{prevCategory?: string}>()
+  const location = useLocation() as {state?: {prevCategory?: string}}
   const [isEditing, setIsEditing] = useState(false)
 
   if (!activity) {
-    return <Redirect to='/activity-library' />
+    return <Navigate to='/activity-library' replace />
   }
   // biome-ignore lint/correctness/useHookAtTopLevel: legacy
   useEffect(() => {
@@ -81,7 +80,7 @@ const ActivityDetails = (props: Props) => {
   }, [])
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
-  const prevCategory = history.location.state?.prevCategory
+  const prevCategory = location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
   }`

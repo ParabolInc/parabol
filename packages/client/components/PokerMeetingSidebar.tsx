@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {
   NewMeetingPhaseTypeEnum,
   PokerMeetingSidebar_meeting$key
@@ -27,7 +27,7 @@ const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'ESTIMATE']
 
 const PokerMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   const {viewerId} = atmosphere
   const {gotoStageId, handleMenuClick, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -141,7 +141,7 @@ const PokerMeetingSidebar = (props: Props) => {
               const summaryURL = summaryPageId
                 ? `/pages/${GQLID.fromKey(summaryPageId)[0]}`
                 : `/new-summary/${meetingId}`
-              history.push(summaryURL)
+              navigate(summaryURL)
             }}
             phaseType='SUMMARY'
           />

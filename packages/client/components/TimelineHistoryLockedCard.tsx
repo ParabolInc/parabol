@@ -3,7 +3,7 @@ import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useIsVisible from '../hooks/useIsVisible'
@@ -78,7 +78,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
   const {id: orgId, name: orgName, isPaid, unpaidMessageHTML} = organization ?? {}
 
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const cardRef = useRef<HTMLDivElement>(null)
   const visible = useIsVisible(cardRef.current, 0.7)
@@ -98,7 +98,7 @@ const TimelineHistoryLockedCard = (props: Props) => {
       upgradeTier: 'team',
       orgId
     })
-    history.push(`/me/organizations/${orgId}/billing`)
+    navigate(`/me/organizations/${orgId}/billing`)
   }
 
   const title = isPaid === false ? 'Organization Locked' : 'Past Meetings Locked'

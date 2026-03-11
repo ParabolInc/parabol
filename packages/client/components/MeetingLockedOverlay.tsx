@@ -3,7 +3,7 @@ import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense, useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import type {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {modalShadow} from '../styles/elevation'
@@ -109,7 +109,7 @@ const MeetingLockedOverlay = (props: Props) => {
   const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
-  const history = useHistory()
+  const navigate = useNavigate()
   useEffect(() => {
     if (locked) {
       SendClientSideEvent(atmosphere, 'Upgrade CTA Viewed', {
@@ -138,7 +138,7 @@ const MeetingLockedOverlay = (props: Props) => {
       upgradeTier: 'team',
       meetingId
     })
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   if (!locked) return null

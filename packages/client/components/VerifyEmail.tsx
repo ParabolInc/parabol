@@ -1,10 +1,9 @@
 import {useEffect} from 'react'
-import {useParams} from 'react-router'
+import {useNavigate, useParams} from 'react-router-dom'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useNavigate from '../hooks/useNavigate'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
@@ -16,10 +15,7 @@ import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const VerifyEmail = () => {
   const navigate = useNavigate()
-  const {verificationToken, invitationToken} = useParams<{
-    verificationToken: string
-    invitationToken?: string
-  }>()
+  const {verificationToken, invitationToken} = useParams()
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, error, submitMutation} = useMutationProps()
   useCanonical('verify-email')
@@ -28,7 +24,7 @@ const VerifyEmail = () => {
     VerifyEmailMutation(
       atmosphere,
       {
-        verificationToken,
+        verificationToken: verificationToken!,
         invitationToken: invitationToken || '',
         isInvitation: !!invitationToken
       },

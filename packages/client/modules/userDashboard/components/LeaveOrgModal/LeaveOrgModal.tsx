@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {useNavigate} from 'react-router-dom'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
@@ -6,7 +7,6 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useNavigate from '../../../../hooks/useNavigate'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 
 const StyledButton = styled(PrimaryButton)({

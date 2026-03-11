@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router-dom'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const TimelineEventTypeMenu = (props: Props) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const {menuProps} = props
   const atmosphere = useAtmosphere()
   const eventTypes = [
@@ -51,7 +51,7 @@ const TimelineEventTypeMenu = (props: Props) => {
       <MenuItem
         key={'eventTypeFilterNULL'}
         label={<EventTypeFilterMenuItemLabel />}
-        onClick={() => history.push(constructFilterQueryParamURL(teamIds, userIds))}
+        onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds))}
       />
       {eventTypeValues.map((eventType, index) => {
         return (
@@ -59,7 +59,7 @@ const TimelineEventTypeMenu = (props: Props) => {
             key={`eventTypeFilter${eventType}-${index}`}
             label={<EventTypeFilterMenuItemLabel eventType={eventType} />}
             onClick={() =>
-              history.push(constructFilterQueryParamURL(teamIds, userIds, undefined, [eventType]))
+              navigate(constructFilterQueryParamURL(teamIds, userIds, undefined, [eventType]))
             }
           />
         )

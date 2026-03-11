@@ -4,8 +4,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory, useRouteMatch} from 'react-router'
-import {Link} from 'react-router-dom'
+import {Link, useMatch, useNavigate} from 'react-router-dom'
 import type {LeftNavTeamLink_team$key} from '../../__generated__/LeftNavTeamLink_team.graphql'
 import type {PageRoleEnum} from '../../__generated__/NotificationSubscription.graphql'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
@@ -49,13 +48,13 @@ export const LeftNavTeamLink = (props: Props) => {
   const {name: teamName, id: teamId, isDraggingFirstChild, isDraggingLastChild, orgId} = team
   const isDraggingPageFromTheTeam = draggingPageParentSection === teamId
   const isViewerOwnerOrIsReorder = isViewerOwnerOfDraggingPage || isDraggingPageFromTheTeam
-  const match = useRouteMatch(`/team/${teamId}`)
-  const isActive = match ?? false
+  const match = useMatch({path: `/team/${teamId}`, end: false})
+  const isActive = !!match
   const [showChildren, setShowChildren] = useState(false)
   const expandChildPages = () => {
     setShowChildren(!showChildren)
   }
-  const history = useHistory()
+  const navigate = useNavigate()
   const [execute, submitting] = useCreatePageMutation()
   const addChildPage = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -68,7 +67,7 @@ export const LeftNavTeamLink = (props: Props) => {
         const {page} = createPage
         const {id} = page
         const [_, pageCode] = id.split(':')
-        history.push(`/pages/${pageCode}`)
+        navigate(`/pages/${pageCode}`)
         setShowChildren(true)
       }
     })
@@ -124,7 +123,7 @@ export const LeftNavTeamLink = (props: Props) => {
               Icon={ManageAccountsIcon}
               onClick={(e) => {
                 e.preventDefault()
-                history.push(`/me/organizations/${orgId}/teams/${teamId}`)
+                navigate(`/me/organizations/${orgId}/teams/${teamId}`)
               }}
               tooltip='Manage team'
             />

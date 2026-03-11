@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {Redirect, useParams} from 'react-router'
+import {Navigate, useParams} from 'react-router-dom'
 import activityDetailsQuery, {
   type ActivityDetailsQuery
 } from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -8,11 +8,13 @@ import {Loader} from '../../../utils/relay/renderLoader'
 import ActivityDetails from './ActivityDetails'
 
 const ActivityDetailsRoute = () => {
-  const {activityId} = useParams<{activityId: string}>()
+  const {activityId} = useParams()
 
-  const queryRef = useQueryLoaderNow<ActivityDetailsQuery>(activityDetailsQuery, {activityId})
+  const queryRef = useQueryLoaderNow<ActivityDetailsQuery>(activityDetailsQuery, {
+    activityId: activityId!
+  })
 
-  if (!activityId) return <Redirect to='/activity-library' />
+  if (!activityId) return <Navigate to='/activity-library' replace />
 
   return (
     <Suspense fallback={<Loader />}>{queryRef && <ActivityDetails queryRef={queryRef} />}</Suspense>

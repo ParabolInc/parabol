@@ -1,3 +1,4 @@
+import {useNavigate} from 'react-router-dom'
 import type {MeetingTypeEnum} from '~/__generated__/MeetingSelectorQuery.graphql'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
@@ -5,7 +6,6 @@ import EndSprintPokerMutation from '~/mutations/EndSprintPokerMutation'
 import handleHotkey from '../utils/meetings/handleHotkey'
 import useAtmosphere from './useAtmosphere'
 import useHotkey from './useHotkey'
-import useNavigate from './useNavigate'
 
 const useEndMeetingHotkey = (meetingId: string, meetingType: MeetingTypeEnum) => {
   const atmosphere = useAtmosphere()

@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
-import {matchPath} from 'react-router'
+import {matchPath} from 'react-router-dom'
 import type {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import type {InviteToTeamMutation_notification$data} from '../__generated__/InviteToTeamMutation_notification.graphql'
 import type {
@@ -86,9 +86,7 @@ export const inviteToTeamNotificationOnNext: OnNextHandler<
 > = (payload, {atmosphere, navigate}) => {
   const {teamInvitationNotification} = payload
   if (!teamInvitationNotification) return
-  const isWaiting = !!matchPath(window.location.pathname, {
-    path: `/invitation-required`
-  })
+  const isWaiting = !!matchPath('/invitation-required', window.location.pathname)
   if (isWaiting) {
     const search = new URLSearchParams(window.location.search)
     const meetingId = search.get('meetingId')

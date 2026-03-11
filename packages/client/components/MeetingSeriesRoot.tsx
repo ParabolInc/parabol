@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {Redirect, useParams} from 'react-router'
+import {Navigate, useParams} from 'react-router-dom'
 import meetingSeriesRedirectorQuery, {
   type MeetingSeriesRedirectorQuery
 } from '../__generated__/MeetingSeriesRedirectorQuery.graphql'
@@ -7,11 +7,11 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import MeetingSeriesRedirector from './MeetingSeriesRedirector'
 
 const MeetingRoot = () => {
-  const {meetingId} = useParams<{meetingId: string}>()
+  const {meetingId} = useParams()
   const queryRef = useQueryLoaderNow<MeetingSeriesRedirectorQuery>(meetingSeriesRedirectorQuery, {
-    meetingId
+    meetingId: meetingId!
   })
-  if (!meetingId) return <Redirect to='/meetings' />
+  if (!meetingId) return <Navigate to='/meetings' replace />
   return (
     <Suspense fallback={''}>
       {queryRef && <MeetingSeriesRedirector meetingId={meetingId} queryRef={queryRef} />}

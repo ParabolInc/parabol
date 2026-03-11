@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router'
+import {useParams} from 'react-router-dom'
 import userProfileQuery, {
   type UserProfileQuery
 } from '../../../__generated__/UserProfileQuery.graphql'
@@ -9,12 +9,12 @@ import NotificationSubscription from '../../../subscriptions/NotificationSubscri
 import UserProfile from './UserProfile'
 
 const UserProfileRoot = () => {
-  const {teamId} = useParams<{teamId: string}>()
+  const {teamId} = useParams()
   useSubscription('UserProfileRoot', NotificationSubscription)
   const queryRef = useQueryLoaderNow<UserProfileQuery>(userProfileQuery, {})
   return (
     <Suspense fallback={''}>
-      {queryRef && <UserProfile queryRef={queryRef} teamId={teamId} />}
+      {queryRef && <UserProfile queryRef={queryRef} teamId={teamId!} />}
     </Suspense>
   )
 }

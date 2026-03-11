@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
+import {useNavigate} from 'react-router-dom'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useNavigate from '../hooks/useNavigate'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 
 interface Props {
