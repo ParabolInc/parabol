@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.1.1](https://github.com/ParabolInc/parabol/compare/v13.1.0...v13.1.1) (2026-03-11)
+
+
+### Fixed
+
+* **SCIM:** adapt `itemsPerPage` to reflect resources length ([#12813](https://github.com/ParabolInc/parabol/issues/12813)) ([d3f0069](https://github.com/ParabolInc/parabol/commit/d3f006989710c342c88625e64c0604c3c93fa1be))
+
+
+### Changed
+
+* delete email verification token on usage ([#12810](https://github.com/ParabolInc/parabol/issues/12810)) ([a1613a1](https://github.com/ParabolInc/parabol/commit/a1613a1119cf4f61c3dbe615510615256358c7a4))
+* increase password requirements ([#12809](https://github.com/ParabolInc/parabol/issues/12809)) ([8907b01](https://github.com/ParabolInc/parabol/commit/8907b01cf54fb31f5362021f799aa075f5b241c7))
+
 ## [13.1.0](https://github.com/ParabolInc/parabol/compare/v13.0.1...v13.1.0) (2026-03-11)
 
 
