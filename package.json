@@ -36,8 +36,8 @@
     "prepare": "husky install",
     "relay:build": "node scripts/generateGraphQLArtifacts.js",
     "relay:watch": "node scripts/relayWatch.js",
-    "test:client": "pnpm --filter parabol-client test",
-    "test:server": "pnpm --filter parabol-server test"
+    "test:client": "NODE_TLS_REJECT_UNAUTHORIZED='0' pnpm --filter parabol-client test",
+    "test:server": "NODE_TLS_REJECT_UNAUTHORIZED='0' pnpm --filter parabol-server test"
   },
   "resolutions": {
     "typescript": "^5.9.3",
