@@ -70,7 +70,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
   ])
   // blacklist slightly into the future to avoid races
-  await blacklistJWT(userId, toEpochSeconds(new Date()) + 1, context.socketId)
+  await blacklistJWT(userId, toEpochSeconds(new Date()) + 2, context.socketId)
   // wait to ensure all previous tokens are blacklisted
   await sleep(2000)
   context.authToken = new AuthToken({sub: userId, tms, rol})
