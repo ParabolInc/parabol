@@ -9,7 +9,7 @@ interface Config {
    * an array of variables to exclude.
    * Useful for excluding private variables like passwords
    */
-  excludeArgs?: Record<string, string[]>
+  excludeArgs?: Record<string, (string | number | symbol)[]>
   /**
    * A set of operations that do need to be audited
    */

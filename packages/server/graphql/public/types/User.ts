@@ -646,8 +646,23 @@ const User: ReqResolvers<'User'> = {
     if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
     return userOnTeam
   },
-  activity: async (_source, {activityId}, {dataLoader}) => {
+  activity: async (_source, {activityId}, {dataLoader, authToken}) => {
+    const viewerId = getUserId(authToken)
+
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
+    if (authToken.rol !== 'su') {
+      if (activity?.scope === 'TEAM' && !authToken.tms.includes(activity.teamId)) {
+        return null
+      }
+      if (activity?.scope === 'ORGANIZATION') {
+        const organizationUser = await dataLoader
+          .get('organizationUsersByUserIdOrgId')
+          .load({userId: viewerId, orgId: activity.orgId})
+        if (!organizationUser) {
+          return null
+        }
+      }
+    }
     return activity || null
   },
   canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
@@ -864,13 +879,10 @@ const User: ReqResolvers<'User'> = {
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
   },
-  picture: async ({picture}, _args, {dataLoader}) => {
-    return dataLoader.get('fileStoreAsset').load(picture)
-  },
-  rasterPicture: async ({picture}, _args, {dataLoader}) => {
+  rasterPicture: async ({picture}) => {
     const rasterPicture =
       picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture
-    return dataLoader.get('fileStoreAsset').load(rasterPicture)
+    return rasterPicture
   },
   highestTier: async ({id: userId}, _args, {dataLoader}) => {
     const highestTier = await dataLoader.get('highestTierForUserId').load(userId)
