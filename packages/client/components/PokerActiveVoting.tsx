@@ -1,10 +1,11 @@
 import styled from '@emotion/styled'
 import {Check as CheckIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
+import {MAX_FREE_JIRA_EXPORTS} from '~/utils/constants'
 import type {PokerActiveVoting_meeting$key} from '../__generated__/PokerActiveVoting_meeting.graphql'
 import type {PokerActiveVoting_stage$key} from '../__generated__/PokerActiveVoting_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -12,11 +13,13 @@ import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {BezierCurve, PokerCards} from '../types/constEnums'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
+import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import MiniPokerCard from './MiniPokerCard'
 import PokerVotingNoVotes from './PokerVotingNoVotes'
 import PokerVotingRowBase from './PokerVotingRowBase'
 import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
+import {JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY} from './useSetTaskEstimate'
 
 const StyledCheckIcon = styled(CheckIcon)({
   color: PALETTE.JADE_400
@@ -121,13 +124,16 @@ const PokerActiveVoting = (props: Props) => {
           id
           isSpectating
         }
+        team {
+          orgId
+        }
       }
     `,
     meetingRef
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {facilitatorUserId, id: meetingId, meetingMembers} = meeting
+  const {facilitatorUserId, id: meetingId, meetingMembers, team} = meeting
   const {id: stageId, scores} = stage
   const hasVotes = scores.length > 0
   const isFacilitator = viewerId === facilitatorUserId
@@ -139,21 +145,70 @@ const PokerActiveVoting = (props: Props) => {
   const votePercent = scores.length / checkedInCount
   const allVotesIn = scores.length === checkedInCount
   // Show the facilitator a tooltip if nobody has voted yet
-  // Show the participant a tooltip if they haven’t voted yet
+  // Show the participant a tooltip if they haven't voted yet
   // Consider dismissing the tooltip silently if each role has seen their tooltip once
-  // - Show the facilitator a tooltip if nobody has voted yet and the facilitator hasn’t revealed once
-  // - Show the participant a tooltip if they haven’t voted once
+  // - Show the facilitator a tooltip if nobody has voted yet and the facilitator hasn't revealed once
+  // - Show the participant a tooltip if they haven't voted once
   const showTip = Boolean((isFacilitator && !hasVotes) || (!isFacilitator && !viewerHasVoted))
   const tipCopy = isFacilitator
     ? 'Votes are automatically revealed once everyone has voted.'
     : 'Tap a card to vote. Swipe to view each dimension.'
   const showRevealButton = isFacilitator && scores.length > 0
   const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
-  const reveal = () => {
-    if (submitting) return
-    submitMutation()
-    PokerRevealVotesMutation(atmosphere, {meetingId, stageId}, {onError, onCompleted})
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [isHardBlock, setIsHardBlock] = useState(false)
+  const exportCountRef = useRef(MAX_FREE_JIRA_EXPORTS)
+  const tryShowUpgradeModal = (extensions: Record<string, unknown> | null | undefined) => {
+    const code = extensions?.code
+    if (extensions?.exportCount) {
+      exportCountRef.current = extensions.exportCount as number
+    }
+    if (code === 'UPGRADE_REQUIRED') {
+      setIsHardBlock(true)
+      setShowUpgradeModal(true)
+      return true
+    }
+    if (code === 'UPGRADE_SUGGESTED') {
+      sessionStorage.setItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY, 'true')
+      setIsHardBlock(false)
+      setShowUpgradeModal(true)
+      return true
+    }
+    return false
   }
+
+  const reveal = (forceIgnore?: boolean) => {
+    if (submitting) return
+    const hideSuggestion = sessionStorage.getItem(JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY)
+    const ignoreSuggestedUpgrade = forceIgnore || !!hideSuggestion
+    submitMutation()
+    PokerRevealVotesMutation(
+      atmosphere,
+      {meetingId, stageId, ignoreSuggestedUpgrade},
+      {
+        onError: (err) => {
+          const sourceErrors = (err as any)?.source?.errors as
+            | Array<{extensions?: Record<string, unknown>}>
+            | undefined
+          const handled = sourceErrors?.some((e) => tryShowUpgradeModal(e.extensions))
+          if (handled) return
+          onError(err)
+        },
+        onCompleted: (res, errors) => {
+          onCompleted(res, errors)
+          errors?.find((e) => tryShowUpgradeModal(e.extensions))
+        }
+      }
+    )
+  }
+
+  const handleModalClose = () => {
+    setShowUpgradeModal(false)
+    if (!isHardBlock) {
+      reveal(true)
+    }
+  }
+
   const users = scores.map(({user}) => user)
   return (
     <>
@@ -173,7 +228,7 @@ const PokerActiveVoting = (props: Props) => {
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && (
-          <RevealButton disabled={submitting} onClick={reveal} color={PALETTE.SLATE_600}>
+          <RevealButton disabled={submitting} onClick={() => reveal()} color={PALETTE.SLATE_600}>
             <Progress radius={22} thickness={4} stroke={PALETTE.JADE_400} progress={votePercent} />
             <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
               <CheckIcon />
@@ -188,6 +243,13 @@ const PokerActiveVoting = (props: Props) => {
       <BannerWrap showTip={showTip}>
         <StyledTipBanner>{tipCopy}</StyledTipBanner>
       </BannerWrap>
+      <JiraExportUpgradeModal
+        isOpen={showUpgradeModal}
+        exportCount={exportCountRef.current}
+        isHardBlock={isHardBlock}
+        orgId={team.orgId}
+        onClose={handleModalClose}
+      />
     </>
   )
 }

@@ -1061,7 +1061,14 @@ type Mutation {
   """
   Progresses the stage dimension to the reveal & discuss step
   """
-  pokerRevealVotes(meetingId: ID!, stageId: ID!): PokerRevealVotesPayload!
+  pokerRevealVotes(
+    meetingId: ID!
+    stageId: ID!
+    """
+    Set to true to ignore MAX_TEAM_UPGRADE_SUGGESTED
+    """
+    ignoreSuggestedUpgrade: Boolean
+  ): PokerRevealVotesPayload!
 
   """
   Remove all votes, the final vote, and reset the stage

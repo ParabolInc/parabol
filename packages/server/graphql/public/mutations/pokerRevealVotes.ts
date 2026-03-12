@@ -1,5 +1,8 @@
+import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
+import ms from 'ms'
 import {PokerCards, SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 // TODO: EstimateUserScore is from the deprecated /database directory
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
@@ -11,7 +14,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   _source,
-  {meetingId, stageId},
+  {meetingId, stageId, ignoreSuggestedUpgrade},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
@@ -54,9 +57,33 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   if (!stage) {
     return {error: {message: 'Invalid stageId provided'}}
   }
-
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
+  const {scores, serviceTaskId} = stage
+  if (org.tier === 'starter') {
+    const maybeCloudId = serviceTaskId.slice(0, serviceTaskId.indexOf(':'))
+    const pg = getKysely()
+    const jiraExport = await pg
+      .selectFrom('JiraExport')
+      .selectAll()
+      .where('cloudId', '=', maybeCloudId)
+      .executeTakeFirst()
+    if (jiraExport && jiraExport.exportCount >= MAX_FREE_JIRA_EXPORTS) {
+      const {limitReachedAt, exportCount} = jiraExport
+      const yesterday = new Date(Date.now() - ms('1d'))
+      const isHardError = limitReachedAt && limitReachedAt < yesterday
+      const code = isHardError ? 'UPGRADE_REQUIRED' : 'UPGRADE_SUGGESTED'
+      if (isHardError || !ignoreSuggestedUpgrade) {
+        throw new GraphQLError(
+          'Your free Jira export limit has been reached. Please upgrade to continue.',
+          {
+            extensions: {code, exportCount}
+          }
+        )
+      }
+    }
+  }
   // RESOLUTION — add a pass card for everyone present but who didn't vote
-  const {scores} = stage
   meetingMembers.forEach((meetingMember) => {
     const {userId, isSpectating} = meetingMember as PokerMeetingMember
     if (isSpectating) return
