@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.4.0](https://github.com/ParabolInc/parabol/compare/v13.3.1...v13.4.0) (2026-03-12)
+
+
+### Added
+
+* drag handle menu, position normalization ([#12753](https://github.com/ParabolInc/parabol/issues/12753)) ([5f2a361](https://github.com/ParabolInc/parabol/commit/5f2a3612eccb6adeb3e98db77cde7498fcfb0df2))
+
+
+### Fixed
+
+* blacklist all JWT on password reset ([#12834](https://github.com/ParabolInc/parabol/issues/12834)) ([e4954f0](https://github.com/ParabolInc/parabol/commit/e4954f0f7de4cfb74e52c7d2507acc9a7a9d17ef))
+* bump deps ([#12840](https://github.com/ParabolInc/parabol/issues/12840)) ([bcc4e08](https://github.com/ParabolInc/parabol/commit/bcc4e0861ac78eca16d28244b88a6a0287afd98c))
+* check template permissions when querying directly ([#12836](https://github.com/ParabolInc/parabol/issues/12836)) ([4678447](https://github.com/ParabolInc/parabol/commit/467844757a7d989129f56df1c2de44df3498dfdc))
+
 ## [13.3.1](https://github.com/ParabolInc/parabol/compare/v13.3.0...v13.3.1) (2026-03-12)
 
 
