@@ -1,5 +1,6 @@
 {
   "config": {
+    "addInterfaceFieldResolverTypes": true,
     "content": "// biome-ignore-all",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
