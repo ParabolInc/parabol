@@ -20,7 +20,7 @@
     "url": "https://github.com/ParabolInc/parabol/issues"
   },
   "devDependencies": {
-    "@mattermost/types": "^10.10.0",
+    "@mattermost/types": "^11.4.0",
     "@tailwindcss/postcss": "^4.0.3",
     "@types/node": "^16.11.62",
     "@types/react": "^16.9.11",
@@ -35,7 +35,7 @@
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@reduxjs/toolkit": "^2.9.0",
-    "mattermost-redux": "^10.10.0",
+    "mattermost-redux": "^11.4.0",
     "parabol-client": "workspace:*",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
