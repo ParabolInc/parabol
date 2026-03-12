@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.3.1](https://github.com/ParabolInc/parabol/compare/v13.3.0...v13.3.1) (2026-03-12)
+
+
+### Fixed
+
+* blacklist session token on signout ([#12831](https://github.com/ParabolInc/parabol/issues/12831)) ([4059d31](https://github.com/ParabolInc/parabol/commit/4059d3144ff4295882868aad9847b9e8bcd5391b))
+
 ## [13.3.0](https://github.com/ParabolInc/parabol/compare/v13.2.0...v13.3.0) (2026-03-12)
 
 
