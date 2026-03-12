@@ -8,7 +8,7 @@ export const useCheckBlacklist = (): Plugin<ServerContext> => {
       const {contextValue} = args
       const {authToken} = contextValue
       if (!authToken?.sub || !authToken?.iat) return
-      const isBlacklisted = await checkBlacklistJWT(authToken.sub, authToken.iat)
+      const isBlacklisted = await checkBlacklistJWT(authToken)
       if (isBlacklisted) {
         contextValue.authToken = null
       }
