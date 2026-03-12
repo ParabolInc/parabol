@@ -20,5 +20,3 @@ export const blacklistJWTSession = async (jti: string, exp: number) => {
   const expiresIn = exp - toEpochSeconds(new Date())
   await redis.set(key, 1, 'EX', expiresIn)
 }
-
-export default blacklistJWT
