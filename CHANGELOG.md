@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.5.0](https://github.com/ParabolInc/parabol/compare/v13.4.0...v13.5.0) (2026-03-12)
+
+
+### Added
+
+* automate Ironbank PR creation and update ([#12843](https://github.com/ParabolInc/parabol/issues/12843)) ([0cd9af4](https://github.com/ParabolInc/parabol/commit/0cd9af4ed3a737709e0453a41dc0410b169c9729))
+
+
+### Fixed
+
+* ironbank push dupe ([#12845](https://github.com/ParabolInc/parabol/issues/12845)) ([6d38e1a](https://github.com/ParabolInc/parabol/commit/6d38e1ab9d07a0cb2d42a8c2c282dd6c0d44a677))
+
 ## [13.4.0](https://github.com/ParabolInc/parabol/compare/v13.3.1...v13.4.0) (2026-03-12)
 
 
