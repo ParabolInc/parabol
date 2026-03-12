@@ -52,12 +52,15 @@ jobs:
         run: zip -r ${{ github.ref_name }}.zip dist build pnpm-lock.yaml ip-to-server_id
 
       - name: Upload to GCS
-        uses: actions-hub/gcloud@master
         env:
           CLOUDSDK_AUTH_ACCESS_TOKEN: "${{ steps.auth.outputs.access_token }}"
-        with:
-          args: storage cp ${{ github.ref_name }}.zip gs://parabol-ironbank-resources/${{ github.ref_name }}.zip
-          cli: gcloud
+        run: |
+          DEST="gs://parabol-ironbank-resources/${{ github.ref_name }}.zip"
+          if gcloud storage ls "$DEST" > /dev/null 2>&1; then
+            echo "File already exists at $DEST, skipping upload."
+          else
+            gcloud storage cp "${{ github.ref_name }}.zip" "$DEST"
+          fi
 
       - name: USEFUL INFORMATION
         id: useful-info
