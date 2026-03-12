@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type RefObject, useRef, useState} from 'react'
@@ -8,9 +7,7 @@ import type {ReflectionGroupTitleEditor_reflectionGroup$key} from '../../__gener
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import UpdateReflectionGroupTitleMutation from '../../mutations/UpdateReflectionGroupTitleMutation'
-import {PALETTE} from '../../styles/paletteV3'
-import ui from '../../styles/ui'
-import {Card} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {RETRO_TOPIC_LABEL} from '../../utils/constants'
 import StyledError from '../StyledError'
 import MarqueeText from './MarqueeText'
@@ -22,65 +19,6 @@ interface Props {
   meeting: ReflectionGroupTitleEditor_meeting$key
   titleInputRef: RefObject<HTMLInputElement>
 }
-
-const fontSize = Card.FONT_SIZE
-const lineHeight = Card.LINE_HEIGHT
-
-const underlineStyles = {
-  backgroundColor: 'transparent',
-  borderLeftColor: 'transparent !important',
-  borderRightColor: 'transparent !important',
-  borderTopColor: 'transparent !important',
-  boxShadow: 'none !important'
-} as any
-
-const InputWithIconWrap = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const RootBlock = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  flexShrink: 1,
-  maxWidth: '100%'
-})
-
-const FormBlock = styled('form')({
-  display: 'flex',
-  flexShrink: 1,
-  maxWidth: '100%'
-})
-
-const TitleContainer = styled('div')({
-  position: 'relative',
-  width: 172
-})
-
-// This is gonna turn into slate, no use in spending time fixing it now
-const NameInput = styled('input')<{isExpanded: boolean; readOnly: boolean}>(
-  ({isExpanded, readOnly}) => ({
-    ...underlineStyles,
-    ':hover,:focus,:active': {
-      underlineStyles
-    },
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.small,
-    border: 0,
-    boxShadow: 'none',
-    color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_700,
-    cursor: readOnly ? 'default' : 'text',
-    fontSize,
-    fontWeight: 600,
-    lineHeight,
-    padding: 0,
-    // need to use a content editable if we wanna animate this since input el forces width
-    // card width is set at REFLECTION_WIDTH, so this can be a PX, too
-    textAlign: 'left',
-    width: 172,
-    transition: 'all 200ms'
-  })
-)
 
 const getValidationError = (
   title: string | null,
@@ -183,10 +121,10 @@ const ReflectionGroupTitleEditor = (props: Props) => {
   }
 
   return (
-    <InputWithIconWrap>
-      <RootBlock data-cy='group-title-editor'>
-        <FormBlock onSubmit={onSubmit}>
-          <TitleContainer>
+    <div className='flex items-center'>
+      <div className='flex max-w-full shrink flex-col' data-cy='group-title-editor'>
+        <form className='flex max-w-full shrink' onSubmit={onSubmit}>
+          <div className='relative w-[172px]'>
             {!isEditing && (
               <MarqueeText
                 title={title || ''}
@@ -198,9 +136,15 @@ const ReflectionGroupTitleEditor = (props: Props) => {
                 }}
               />
             )}
-            <NameInput
+            <input
               data-cy='group-title-editor-input'
-              isExpanded={isExpanded}
+              className={cn(
+                'm-0 block w-[172px] appearance-none rounded-sm border-0 font-sans outline-0',
+                'px-[.4375rem] py-[.3125rem] text-sm leading-5',
+                'bg-transparent p-0 text-left font-semibold shadow-none transition-all duration-200',
+                isExpanded ? 'text-white' : 'text-slate-700',
+                readOnly ? 'cursor-default' : 'cursor-text'
+              )}
               onBlur={onSubmit}
               onChange={onChange}
               onFocus={() => setIsEditing(true)}
@@ -213,11 +157,11 @@ const ReflectionGroupTitleEditor = (props: Props) => {
               value={title || ''}
               style={!isEditing ? {opacity: 0} : undefined}
             />
-          </TitleContainer>
-        </FormBlock>
+          </div>
+        </form>
         {error && <StyledError>{error.message}</StyledError>}
-      </RootBlock>
-    </InputWithIconWrap>
+      </div>
+    </div>
   )
 }
 

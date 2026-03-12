@@ -1,8 +1,5 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
 import {useEffect, useRef, useState} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
-import {Card} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 
 interface Props {
   title: string
@@ -13,62 +10,6 @@ interface Props {
 
 const CONTAINER_WIDTH = 172
 const SCROLL_SPEED = 25 // px per second
-
-const Container = styled('div')<{isExpanded: boolean; readOnly: boolean}>(
-  ({isExpanded, readOnly}) => ({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: CONTAINER_WIDTH,
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    fontSize: Card.FONT_SIZE,
-    fontWeight: 600,
-    lineHeight: Card.LINE_HEIGHT,
-    color: isExpanded ? '#FFFFFF' : PALETTE.SLATE_700,
-    cursor: readOnly ? 'default' : 'text',
-    // match NameInput's vertical padding from ui.fieldSizeStyles.small
-    padding: '.3125rem 0',
-    zIndex: 1,
-    fontFamily:
-      '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif'
-  })
-)
-
-const EllipsisLayer = styled('div')({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  pointerEvents: 'none',
-  padding: 'inherit',
-  // invisible — just provides the ellipsis visual
-  color: 'inherit'
-})
-
-const InnerText = styled('span')<{
-  isHovered: boolean
-  animationName: string | null
-  animationDuration: string
-}>({
-  display: 'inline-block',
-  whiteSpace: 'nowrap'
-}, ({isHovered, animationName, animationDuration}) => ({
-  ...(isHovered && animationName
-    ? {
-        animationName,
-        animationDuration,
-        animationTimingFunction: 'linear',
-        animationIterationCount: 'infinite'
-      }
-    : {
-        transform: 'translateX(0)'
-      })
-}))
 
 const MarqueeText = (props: Props) => {
   const {title, isExpanded, readOnly, onActivateEdit} = props
@@ -89,17 +30,6 @@ const MarqueeText = (props: Props) => {
 
   const animationDuration = overflowPx > 0 ? `${overflowPx / SCROLL_SPEED}s` : '0s'
 
-  const marqueeKeyframes = overflowPx > 0
-    ? keyframes`
-        0%   { transform: translateX(0) }
-        10%  { transform: translateX(0) }
-        45%  { transform: translateX(-${overflowPx}px) }
-        55%  { transform: translateX(-${overflowPx}px) }
-        90%  { transform: translateX(0) }
-        100% { transform: translateX(0) }
-      `
-    : null
-
   const handleClick = () => {
     if (!readOnly) {
       onActivateEdit()
@@ -107,26 +37,44 @@ const MarqueeText = (props: Props) => {
   }
 
   return (
-    <Container
+    <div
       ref={containerRef}
-      isExpanded={isExpanded}
-      readOnly={readOnly}
+      className={cn(
+        'absolute top-0 left-0 z-1 overflow-hidden whitespace-nowrap font-sans font-semibold text-sm leading-5',
+        'py-[.3125rem]',
+        isExpanded ? 'text-white' : 'text-slate-700',
+        readOnly ? 'cursor-default' : 'cursor-text'
+      )}
+      style={{width: CONTAINER_WIDTH}}
       onMouseEnter={() => isOverflowing && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      <InnerText
+      <span
         ref={textRef}
-        isHovered={isHovered}
-        animationName={marqueeKeyframes ? marqueeKeyframes.toString() : null}
-        animationDuration={animationDuration}
+        className='inline-block whitespace-nowrap'
+        style={
+          isHovered && overflowPx > 0
+            ? ({
+                '--marquee-offset': `-${overflowPx}px`,
+                '--marquee-duration': animationDuration,
+                animation: 'var(--animate-marquee-scroll)'
+              } as React.CSSProperties)
+            : {transform: 'translateX(0)'}
+        }
       >
         {title}
-      </InnerText>
+      </span>
       {isOverflowing && !isHovered && (
-        <EllipsisLayer aria-hidden>{title}</EllipsisLayer>
+        <div
+          className='pointer-events-none absolute inset-0 overflow-hidden text-ellipsis whitespace-nowrap p-inherit text-inherit'
+          style={{padding: 'inherit'}}
+          aria-hidden
+        >
+          {title}
+        </div>
       )}
-    </Container>
+    </div>
   )
 }
 
