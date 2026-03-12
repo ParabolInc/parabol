@@ -1,3 +1,4 @@
+import {useState} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useRouter from '../hooks/useRouter'
 import {Dialog} from '../ui/Dialog/Dialog'
@@ -7,6 +8,7 @@ import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
+import {upgradeTitles} from './StartMeetingUpgradeModal'
 
 interface Props {
   isOpen: boolean
@@ -29,19 +31,21 @@ const JiraExportUpgradeModal = (props: Props) => {
     }
     onClose()
   }
-
+  const [title] = useState(() => {
+    return upgradeTitles[Math.floor(Math.random() * upgradeTitles.length)]!
+  })
   return (
     <Dialog isOpen={isOpen} onClose={isHardBlock ? undefined : onClose}>
       <DialogContent noClose={isHardBlock} className='text-center'>
-        <DialogTitle>{'🎉 Congratulations!'}</DialogTitle>
+        <DialogTitle>{title}</DialogTitle>
         <p className='mt-2 text-slate-700 text-sm leading-5'>
           {isHardBlock ? (
-            'The limit for the free tier has been reached. Upgrade to continue exporting estimates to Jira.'
+            'The limit for the free tier has been reached. Upgrade to continue using Sprint Poker with Jira.'
           ) : (
             <span>
-              {'Your team has exported '}
+              {'Your team has voted on '}
               <span className='font-semibold text-sky-500'>{exportCount}</span>
-              {' issues to Jira! Please upgrade to a higher tier after your meeting.'}
+              {' Jira issues! Please upgrade to a higher tier after your meeting.'}
             </span>
           )}
         </p>
