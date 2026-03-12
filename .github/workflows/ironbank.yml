@@ -60,6 +60,7 @@ jobs:
           cli: gcloud
 
       - name: USEFUL INFORMATION
+        id: useful-info
         run: |
           node_version=$(jq -r -j '.engines.node|ltrimstr("^")' package.json)
           release_filename="${{ github.ref_name }}.zip"
@@ -68,6 +69,48 @@ jobs:
           echo "File location: https://storage.googleapis.com/parabol-ironbank-resources/$release_filename"
           echo "SHA-256: $sha256"
           echo "NodeJS version: $node_version"
+          echo "sha256=$sha256" >> $GITHUB_OUTPUT
+
+      - name: Create Ironbank PR
+        env:
+          REPO1_TOKEN: ${{ secrets.REPO1_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA256: ${{ steps.useful-info.outputs.sha256 }}
+        run: |
+          VERSION="${REF_NAME#v}"
+          BRANCH="feat/${REF_NAME}"
+
+          git clone --branch master "https://oauth2:${REPO1_TOKEN}@repo1.dso.mil/dsop/parabol/parabol.git" ironbank-repo
+          cd ironbank-repo
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git checkout -b "${BRANCH}"
+
+          # Update Dockerfile line 16
+          sed -i "16s|.*|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
+
+          # Update hardening_manifest.yaml
+          sed -i "11s|.*|  - ${VERSION}|" hardening_manifest.yaml
+          sed -i "36s|.*|  - ${VERSION}|" hardening_manifest.yaml
+          sed -i "46s|.*|  filename: ${REF_NAME}.zip|" hardening_manifest.yaml
+          sed -i "47s|.*|  name: parabol-${REF_NAME}|" hardening_manifest.yaml
+          sed -i "50s|.*|  sha256: ${SHA256}|" hardening_manifest.yaml
+
+          git add Dockerfile hardening_manifest.yaml
+          git commit -m "chore: update Ironbank release to ${REF_NAME}"
+          git push "https://oauth2:${REPO1_TOKEN}@repo1.dso.mil/dsop/parabol/parabol.git" "${BRANCH}"
+
+          # Create merge request via GitLab API
+          curl --silent --fail --request POST \
+            --header "PRIVATE-TOKEN: ${REPO1_TOKEN}" \
+            --header "Content-Type: application/json" \
+            "https://repo1.dso.mil/api/v4/projects/dsop%2Fparabol%2Fparabol/merge_requests" \
+            --data "{
+              \"source_branch\": \"${BRANCH}\",
+              \"target_branch\": \"master\",
+              \"title\": \"chore: update Ironbank release to ${REF_NAME}\"
+            }"
 
       - name: Report Status
         if: failure()
