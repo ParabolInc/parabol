@@ -14,10 +14,10 @@ export const blacklistJWT = async (userId: string, iat: number, mutatorId?: stri
 }
 
 // blacklist a single session by jti
-export const blacklistJWTSession = async (jti: string, iat: number) => {
+export const blacklistJWTSession = async (jti: string, exp: number) => {
   const key = getBlacklistJWTSessionKey(jti)
   const redis = getRedis()
-  const expiresIn = iat - toEpochSeconds(new Date()) + Math.floor(Threshold.JWT_LIFESPAN / 1000)
+  const expiresIn = exp - toEpochSeconds(new Date())
   await redis.set(key, 1, 'EX', expiresIn)
 }
 
