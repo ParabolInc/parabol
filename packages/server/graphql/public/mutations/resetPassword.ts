@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
+import sleep from 'parabol-client/utils/sleep'
 import {passwordStrength} from '../../../../client/shared/passwordStrength'
 import {AuthIdentityTypeEnum} from '../../../../client/types/constEnums'
 import type AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
@@ -8,7 +9,8 @@ import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import updateUser from '../../../postgres/queries/updateUser'
 import {setAuthCookie} from '../../../utils/authCookie'
-import blacklistJWT from '../../../utils/blacklistJWT'
+import {blacklistJWT} from '../../../utils/blacklistJWT'
+import {toEpochSeconds} from '../../../utils/epochTime'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -67,9 +69,12 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     updateUser({identities: identities.map((id) => JSON.stringify(id))}, userId),
     pg.deleteFrom('FailedAuthRequest').where('email', '=', email).execute()
   ])
+  // blacklist slightly into the future to avoid races
+  await blacklistJWT(userId, toEpochSeconds(new Date()) + 2, context.socketId)
+  // wait to ensure all previous tokens are blacklisted
+  await sleep(2000)
   context.authToken = new AuthToken({sub: userId, tms, rol})
   setAuthCookie(context, context.authToken)
-  await blacklistJWT(userId, context.authToken.iat, context.socketId)
   return {userId}
 }
 
