@@ -20,13 +20,14 @@ interface Props {
   onStartAnyway?: () => void
 }
 
-const titles = [
+export const upgradeTitles = [
   'Don’t be the bottleneck',
   'Don’t lose the momentum',
   'Don’t slow down your team',
   'Momentum is fragile. Don’t test it',
   'Don’t be the reason the sprint stalls',
-  'Keep your team moving'
+  'Keep your team moving',
+  'You remove blockers all day. Don’t add one'
 ]
 
 const StartMeetingUpgradeModal = (props: Props) => {
@@ -34,7 +35,7 @@ const StartMeetingUpgradeModal = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {history} = useRouter()
   const [title] = useState(() => {
-    return titles[Math.floor(Math.random() * titles.length)]!
+    return upgradeTitles[Math.floor(Math.random() * upgradeTitles.length)]!
   })
   const goToUpgrade = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {

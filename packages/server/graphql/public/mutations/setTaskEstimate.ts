@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-client/types/constEnums'
+import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import appOrigin from '../../../appOrigin'
@@ -101,7 +102,6 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
       const org = await dataLoader.get('organizations').loadNonNull(team.orgId)
       if (org.tier === 'starter') {
         const pg = getKysely()
-        const MAX_FREE_JIRA_EXPORTS = 100
         const result = await pg
           .insertInto('JiraExport')
           .values({cloudId, exportCount: 1})
