@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.3.0](https://github.com/ParabolInc/parabol/compare/v13.2.0...v13.3.0) (2026-03-12)
+
+
+### Added
+
+* Implement free-tier Jira export limits with an upgrade modal ([#12828](https://github.com/ParabolInc/parabol/issues/12828)) ([9ccafca](https://github.com/ParabolInc/parabol/commit/9ccafca0d57e582d97dd72729b442aad3aa64770))
+
 ## [13.2.0](https://github.com/ParabolInc/parabol/compare/v13.1.3...v13.2.0) (2026-03-11)
 
 
