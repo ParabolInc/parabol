@@ -17,6 +17,7 @@ import useMutationProps from '../../hooks/useMutationProps'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
+import UngroupReflectionMutation from '../../mutations/UngroupReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {Breakpoint} from '../../types/constEnums'
@@ -34,7 +35,6 @@ import ReflectionCardRoot from './ReflectionCardRoot'
 import SpotlightButton from './SpotlightButton'
 import SubmitReflectionButton from './SubmitReflectionButton'
 import UngroupButton from './UngroupButton'
-import UngroupReflectionMutation from '../../mutations/UngroupReflectionMutation'
 
 interface Props {
   isClipped?: boolean
