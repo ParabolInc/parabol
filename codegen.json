@@ -242,6 +242,7 @@
           "RenamePokerTemplateDimensionPayload": "./types/RenamePokerTemplateDimensionPayload#RenamePokerTemplateDimensionPayloadSource",
           "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
+          "RepoIntegration": "../queries/helpers/fetchAllRepoIntegrations#RemoteRepoIntegration",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",
