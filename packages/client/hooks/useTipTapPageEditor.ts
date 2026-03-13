@@ -43,7 +43,7 @@ import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 
 const getFileType = (file: File) => {
-  if (file.type.includes('image')) return 'image'
+  if (file.type.startsWith('image/')) return 'image'
   if (file.type.includes('text/csv')) return 'csv'
   if (file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
     return 'xlsx'
@@ -253,27 +253,46 @@ export const useTipTapPageEditor = (
         FileBlock,
         FileHandler.configure({
           onDrop: (currentEditor, files, pos) => {
-            files.forEach(async (file) => {
-              // if they drop an image, treat it like an image, not a binary
-              const targetType = getFileType(file)
-              if (targetType === 'csv' || targetType === 'xlsx') {
-                currentEditor.emit('importDatabase', {file, targetType, pos})
-                return
+            ;(async () => {
+              for (let i = 0; i < files.length; i++) {
+                const file = files[i]!
+                const targetType = getFileType(file)
+                if (targetType === 'csv' || targetType === 'xlsx') {
+                  currentEditor.emit('importDatabase', {file, targetType, pos})
+                  continue
+                }
+                await currentEditor.storage.fileUpload.onUpload(
+                  file,
+                  currentEditor,
+                  targetType,
+                  pos
+                )
               }
-              currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType, pos)
-            })
+            })()
           },
           onPaste: (currentEditor, files, htmlContent) => {
-            files.forEach((file) => {
-              if (!htmlContent) {
+            if (htmlContent) {
+              // Process image files that were provided alongside HTML content.
+              // These typically correspond to data: URI images that parseHTML excludes.
+              ;(async () => {
+                for (const file of files) {
+                  if (getFileType(file) !== 'image') continue
+                  await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
+                }
+              })()
+              return
+            }
+            ;(async () => {
+              for (let i = 0; i < files.length; i++) {
+                const file = files[i]!
                 const targetType = getFileType(file)
                 if (targetType === 'csv' || targetType === 'xlsx') {
                   currentEditor.emit('importDatabase', {file, targetType, pos: undefined})
-                  return
+                  continue
                 }
-                currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
+                await currentEditor.storage.fileUpload.onUpload(file, currentEditor, targetType)
               }
-            })
+            })()
           }
         })
       ],

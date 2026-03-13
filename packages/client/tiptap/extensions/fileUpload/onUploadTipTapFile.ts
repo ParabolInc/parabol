@@ -62,39 +62,42 @@ export const onUploadTipTapFile =
     } else {
       console.error('Unknown target type', targetType)
     }
-    commit({
-      variables: {scope: assetScope, scopeKey},
-      uploadables: {file: file},
-      onCompleted: (res, errors) => {
-        const {uploadUserAsset} = res
-        const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
-        const {state, view} = editor
-        if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorUploadUserAsset',
-            message,
-            autoDismiss: 5
-          })
+    return new Promise<void>((resolve) => {
+      commit({
+        variables: {scope: assetScope, scopeKey},
+        uploadables: {file: file},
+        onCompleted: (res, errors) => {
+          const {uploadUserAsset} = res
+          const message = uploadUserAsset?.error?.message ?? errors?.[0]?.message
+          const {state, view} = editor
+          if (message) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: 'errorUploadUserAsset',
+              message,
+              autoDismiss: 5
+            })
+            state.doc.descendants((node, pos) => {
+              if (node.type.name === nodeType && node.attrs.src === localSrc) {
+                const tr = state.tr.deleteRange(pos, pos + node.nodeSize)
+                view.dispatch(tr)
+                return false
+              }
+              return true
+            })
+            resolve()
+            return
+          }
+          const src = uploadUserAsset!.url!
           state.doc.descendants((node, pos) => {
             if (node.type.name === nodeType && node.attrs.src === localSrc) {
-              const tr = state.tr.deleteRange(pos, pos + node.nodeSize)
+              const tr = state.tr.setNodeAttribute(pos, 'src', src)
               view.dispatch(tr)
               return false
             }
             return true
           })
-          return
+          resolve()
         }
-        const src = uploadUserAsset!.url!
-
-        state.doc.descendants((node, pos) => {
-          if (node.type.name === nodeType && node.attrs.src === localSrc) {
-            const tr = state.tr.setNodeAttribute(pos, 'src', src)
-            view.dispatch(tr)
-            return false
-          }
-          return true
-        })
-      }
+      })
     })
   }
