@@ -56,6 +56,7 @@ interface Props {
   staticReflections: DraggableReflectionCard_staticReflections$key | null
   swipeColumn?: SwipeColumn
   dataCy?: string
+  isExpanded?: boolean
   isSpotlightEntering?: boolean
   showDragHintAnimation?: boolean
 }
@@ -77,6 +78,7 @@ const DraggableReflectionCard = (props: Props) => {
     meeting: meetingRef,
     openSpotlight,
     isDraggable,
+    isExpanded,
     swipeColumn,
     dataCy,
     isSpotlightEntering,
@@ -198,6 +200,8 @@ const DraggableReflectionCard = (props: Props) => {
         isClipped={isClipped}
         meetingRef={meeting}
         openSpotlight={openSpotlight}
+        groupSize={staticReflectionCount}
+        isExpanded={isExpanded}
         showDragHintAnimation={showDragHintAnimation}
       />
     </DragWrapper>

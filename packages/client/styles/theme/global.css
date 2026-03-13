@@ -200,6 +200,28 @@
       mask-position: left;
     }
   }
+
+  --animate-marquee-scroll: marquee-scroll var(--marquee-duration, 3s) linear infinite;
+  @keyframes marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    10% {
+      transform: translateX(0);
+    }
+    45% {
+      transform: translateX(var(--marquee-offset, 0px));
+    }
+    55% {
+      transform: translateX(var(--marquee-offset, 0px));
+    }
+    90% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
 }
 
 :root {

@@ -1,5 +1,5 @@
 /**
- * Renders the UI for the reflection phase of the retrospective meeting
+ * Renders the UI for the group phase of the retrospective meeting
  *
  */
 import styled from '@emotion/styled'
@@ -13,7 +13,6 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
 import useTooltip from '../hooks/useTooltip'
 import AutogroupMutation from '../mutations/AutogroupMutation'
-import ResetReflectionGroupsMutation from '../mutations/ResetReflectionGroupsMutation'
 import {Elevation} from '../styles/elevation'
 import {Threshold} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -63,9 +62,6 @@ const RetroGroupPhase = (props: Props) => {
         autogroupReflectionGroups {
           groupTitle
         }
-        resetReflectionGroups {
-          groupTitle
-        }
         organization {
           tier
           useAI
@@ -86,7 +82,6 @@ const RetroGroupPhase = (props: Props) => {
     showSidebar,
     organization,
     autogroupReflectionGroups,
-    resetReflectionGroups,
     localStage,
     team
   } = meeting
@@ -97,26 +92,32 @@ const RetroGroupPhase = (props: Props) => {
   const {openTooltip, closeTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER
   )
-  const showSuggestGroups = !resetReflectionGroups // resetReflectionGroups only exists after clicking suggest groups and is removed after clicking reset
-  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you'll be able to undo this! ${
+
+  const autogroupStatus: 'loading' | 'error' | 'ready' | null = (() => {
+    if (!useAI || !isGroupPhaseActive) return null
+    if (teamOverLimit) return null
+    if (autogroupReflectionGroups == null) return 'loading'
+    if (autogroupReflectionGroups.length === 0) return 'error'
+    return 'ready'
+  })()
+
+  const tooltipSuggestGroupsText = `Click to group cards by common topics. Don't worry, you can ungroup any card afterwards! ${
     tier === 'starter'
       ? `This is a premium feature that we'll share with you during your first few retros.`
       : ''
   }`
-  const tooltipResetText = `Reset your groups to the way they were before you clicked Suggest Groups`
   const teamOverLimitText = `You have reached the limit. Please upgrade to a paid plan to continue using this feature.`
-  const tooltipText = showSuggestGroups
-    ? teamOverLimit
-      ? teamOverLimitText
-      : tooltipSuggestGroupsText
-    : tooltipResetText
+  const tooltipText = (() => {
+    if (teamOverLimit) return teamOverLimitText
+    if (autogroupStatus === 'loading')
+      return 'AI is analyzing your reflections and suggesting groups. This usually takes a few seconds.'
+    if (autogroupStatus === 'error')
+      return "AI grouping wasn't able to generate suggestions for this retro. You can still group cards manually by dragging them."
+    return tooltipSuggestGroupsText
+  })()
 
   const handleAutoGroupClick = () => {
     AutogroupMutation(atmosphere, {meetingId}, {onError, onCompleted})
-  }
-
-  const handleResetGroupsClick = () => {
-    ResetReflectionGroupsMutation(atmosphere, {meetingId}, {onError, onCompleted})
   }
 
   return (
@@ -133,41 +134,25 @@ const RetroGroupPhase = (props: Props) => {
             <PhaseHeaderDescription>
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
-            {useAI &&
-              (showSuggestGroups ? (
-                <ButtonWrapper>
-                  <StyledButton
-                    disabled={
-                      !autogroupReflectionGroups?.length || !isGroupPhaseActive || teamOverLimit
-                    }
-                    onClick={handleAutoGroupClick}
-                  >
-                    {'Suggest Groups ✨'}
-                  </StyledButton>
-                  <div
-                    onMouseEnter={openTooltip}
-                    onMouseLeave={closeTooltip}
-                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
-                    ref={originRef}
-                  >
-                    <InfoIcon />
-                  </div>
-                </ButtonWrapper>
-              ) : (
-                <ButtonWrapper>
-                  <StyledButton disabled={!isGroupPhaseActive} onClick={handleResetGroupsClick}>
-                    {'Reset Groups'}
-                  </StyledButton>
-                  <div
-                    onMouseEnter={openTooltip}
-                    onMouseLeave={closeTooltip}
-                    className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
-                    ref={originRef}
-                  >
-                    <InfoIcon />
-                  </div>
-                </ButtonWrapper>
-              ))}
+            {useAI && (
+              <ButtonWrapper>
+                <StyledButton
+                  disabled={autogroupStatus !== 'ready'}
+                  waiting={autogroupStatus === 'loading'}
+                  onClick={handleAutoGroupClick}
+                >
+                  {autogroupStatus === 'loading' ? 'AI thinking...' : 'Suggest Groups ✨'}
+                </StyledButton>
+                <div
+                  onMouseEnter={openTooltip}
+                  onMouseLeave={closeTooltip}
+                  className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                  ref={originRef}
+                >
+                  <InfoIcon />
+                </div>
+              </ButtonWrapper>
+            )}
           </MeetingTopBar>
           <PhaseWrapper>
             <StageTimerDisplay meeting={meeting} canUndo={true} />
