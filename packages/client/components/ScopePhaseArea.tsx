@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import SwipeableViews from 'react-swipeable-views'
 import type {ScopePhaseArea_meeting$key} from '~/__generated__/ScopePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
@@ -21,15 +20,13 @@ import ScopePhaseAreaJira from './ScopePhaseAreaJira'
 import ScopePhaseAreaJiraServer from './ScopePhaseAreaJiraServer'
 import ScopePhaseAreaLinear from './ScopePhaseAreaLinear'
 import ScopePhaseAreaParabolScoping from './ScopePhaseAreaParabolScoping'
+import SwipeablePanel from './SwipeablePanel'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
 
 interface Props {
   meeting: ScopePhaseArea_meeting$key
 }
-
-const containerStyle = {height: '100%'}
-const innerStyle = {width: '100%', height: '100%'}
 
 const ScopePhaseArea = (props: Props) => {
   const {meeting: meetingRef} = props
@@ -162,13 +159,6 @@ const ScopePhaseArea = (props: Props) => {
     window.localStorage.setItem('favoriteService', service)
   }
 
-  const onChangeIdx = (idx: number, _fromIdx: number, props: {reason: string}) => {
-    //very buggy behavior, probably linked to the vertical scrolling.
-    // to repro, go from team > org > team > org by clicking tabs & see this this get called for who knows why
-    if (props.reason === 'focus') return
-    selectIdx(idx)
-  }
-
   const gotoParabol = () => {
     setActiveIdx(2)
   }
@@ -195,14 +185,12 @@ const ScopePhaseArea = (props: Props) => {
           </Tabs>
         </div>
       </div>
-      <SwipeableViews
-        enableMouseEvents={false} // disable because this works even if a modal is on top of it
+      <SwipeablePanel
+        disabled
         index={activeIdx}
-        onChangeIndex={onChangeIdx as any}
-        containerStyle={containerStyle}
-        style={innerStyle}
+        onChangeIndex={selectIdx}
+        style={{width: '100%', height: '100%'}}
       >
-        {/* swipeable views won't ignore null children: https://github.com/oliviertassinari/react-swipeable-views/issues/271 */}
         {tabs.map(({label, Component}) => (
           <div className='relative flex h-full flex-col overflow-hidden' key={label}>
             <Component
@@ -212,7 +200,7 @@ const ScopePhaseArea = (props: Props) => {
             />
           </div>
         ))}
-      </SwipeableViews>
+      </SwipeablePanel>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import {useMemo, useRef} from 'react'
+import {useEffect, useMemo, useRef} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import useEventCallback from './useEventCallback'
 import useForceUpdate from './useForceUpdate'
@@ -21,6 +21,7 @@ interface TransitionChild<T = {key: Key}> {
 const useTransition = <T extends {key: Key}>(children: T[]) => {
   const previousTransitionChildrenRef = useRef<TransitionChild<T>[]>([])
   const forceUpdate = useForceUpdate()
+  const pendingKeysRef = useRef<Key[]>([])
 
   const transitionEndFactory = useEventCallback((key: Key) => (e?: React.TransitionEvent) => {
     // animations must live in the outermost element if triggered on onTransitionEnd
@@ -74,7 +75,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     })
   })
 
-  return useMemo(() => {
+  const result = useMemo(() => {
     const currentTChildren = [] as TransitionChild<T>[]
     const filteredPrevTChildren = previousTransitionChildrenRef.current.filter(
       (prevTChild) => prevTChild.status !== TransitionStatus.EXITING
@@ -95,12 +96,8 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
       if (idxInPrev === -1 || idxInPrev !== idxInNext) {
         touched = true
         updatedKeys.push(nextChild.key)
-        // beginTransition(nextChild.key)
       }
     })
-    if (touched) {
-      beginTransition(updatedKeys)
-    }
 
     // add exiting nodes
     filteredPrevTChildren.forEach((prevTChild, i) => {
@@ -119,9 +116,23 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     if (touched) {
       // keep deep equal things the same to reduce render count
       previousTransitionChildrenRef.current = currentTChildren
+      pendingKeysRef.current = updatedKeys
+    } else {
+      pendingKeysRef.current = []
     }
     return previousTransitionChildrenRef.current
   }, [beginTransition, children, previousTransitionChildrenRef.current])
+
+  // Defer the beginTransition side effect to after mount/commit
+  useEffect(() => {
+    const keys = pendingKeysRef.current
+    if (keys.length > 0) {
+      pendingKeysRef.current = []
+      beginTransition(keys)
+    }
+  })
+
+  return result
 }
 
 export default useTransition
