@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {JiraIntegrationResults_search$key} from '../../../__generated__/JiraIntegrationResults_search.graphql'
 import type {JiraIntegrationResultsQuery} from '../../../__generated__/JiraIntegrationResultsQuery.graphql'

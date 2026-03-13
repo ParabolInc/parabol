@@ -1,7 +1,7 @@
 import type {SvgIconTypeMap} from '@mui/material'
 import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import {forwardRef, type Ref} from 'react'
-import {Link, useMatch} from 'react-router-dom'
+import {Link, useMatch} from 'react-router'
 import {cn} from '../../ui/cn'
 import {LeftNavItem} from '../DashNavList/LeftNavItem'
 

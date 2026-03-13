@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Navigate} from 'react-router-dom'
+import {Navigate} from 'react-router'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'

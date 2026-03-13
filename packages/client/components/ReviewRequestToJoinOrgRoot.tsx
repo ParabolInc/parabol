@@ -1,5 +1,5 @@
 import {Suspense, useCallback, useEffect} from 'react'
-import {useLocation, useNavigate, useParams} from 'react-router-dom'
+import {useLocation, useNavigate, useParams} from 'react-router'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {
   type ReviewRequestToJoinOrgModalQuery

@@ -558,7 +558,162 @@ Wrapped the app in `<React.StrictMode>` and replaced StrictMode-incompatible `re
 
 ---
 
-### PR 18 — Mattermost plugin React 18 upgrade
+### PR 18 — Upgrade React Router v6 → v7 — DONE
+
+**~250 lines changed | Risk: LOW-MEDIUM**
+
+React Router v7 is architecturally the same as v6 when used in "declarative mode" (i.e., `<BrowserRouter>` with `<Routes>`/`<Route>` — which is what Parabol uses). The v6-to-v7 upgrade is designed to have **zero breaking changes** if you first enable v7 future flags in v6.x. The main work is enabling future flags, swapping the package, and rewriting imports.
+
+**Background:**
+
+React Router v7 consolidates `react-router` and `react-router-dom` into a single `react-router` package. It offers three modes:
+
+1. **Declarative mode** (what Parabol uses): `<BrowserRouter>`, `<Routes>`, `<Route>`, hooks — identical to v6 with future flags enabled
+2. **Data mode**: `createBrowserRouter` + `<RouterProvider>` with loaders/actions — not used by Parabol
+3. **Framework mode**: Vite plugin, file-based routing, SSR — not applicable
+
+Since Parabol uses declarative mode exclusively (no `createBrowserRouter`, no loaders, no actions), only 2 of the 6 future flags are relevant. The other 4 (`v7_fetcherPersist`, `v7_normalizeFormMethod`, `v7_partialHydration`, `v7_skipActionErrorRevalidation`) only apply to data routers.
+
+**Peer dependency requirements:**
+- React >= 18 (Parabol has 18.3.x)
+- Node.js >= 20 (verify CI/production Node version)
+
+**Step 1 — Enable future flags on `<BrowserRouter>` in `Root.tsx`:**
+
+```tsx
+// packages/client/Root.tsx
+<Router future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+```
+
+| Flag | Effect | Impact on Parabol |
+|---|---|---|
+| `v7_relativeSplatPath` | Changes how relative paths resolve inside splat routes (`path="*"`). Relative links from splat-matched routes now resolve relative to the splat portion, not the parent route. | **Audit required.** Parabol has 14 splat routes (`path='*'` or `path='/*'`). Any `<Link to="relative">` or `navigate('relative')` calls inside components rendered by these routes may need `../` prefixes. Most Parabol navigation uses absolute paths (starting with `/`), so impact is likely minimal. |
+| `v7_startTransition` | Wraps router state updates in `React.startTransition()` instead of `React.useState`. This means route transitions are non-blocking and interruptible. | **Low impact.** Requires that any `React.lazy()` usage is at module scope (not inside components). Parabol already does this correctly — all lazy imports are top-level `const X = React.lazy(...)` declarations. |
+
+**Splat routes to audit** (14 total):
+
+| Route | File | Component rendered |
+|---|---|---|
+| `path='/*'` | `Action.tsx:103` | `PrivateRoutes` |
+| `path='/retrospective-demo/*'` | `Action.tsx:76` | `DemoMeeting` |
+| `path='*'` | `PrivateRoutes.tsx:69` | `DashboardOrNotFound` |
+| `path='/activity-library/*'` | `PrivateRoutes.tsx:61` | `ActivityLibraryRoutes` |
+| `path='/meet/:meetingId/*'` | `PrivateRoutes.tsx:63` | `MeetingRoot` |
+| `path='/meeting-series/:meetingId/*'` | `PrivateRoutes.tsx:64` | `MeetingSeriesRoot` |
+| `path='/me/*'` | `Dashboard.tsx:175` | `UserDashboard` |
+| `path='/team/:teamId/*'` | `Dashboard.tsx:177` | `TeamRoot` |
+| `path='*'` | `Dashboard.tsx:188` | `NotFound` |
+| `path='*'` | `TeamContainer.tsx:70` | `TeamDashMain` |
+| `path='*'` | `TeamDashMain.tsx:60` | `TeamDashActivityTab` |
+| `path='organizations/:orgId/*'` | `UserDashboard.tsx:26` | `Organization` |
+| `path='*'` | `UserDashboard.tsx:27` | `UserDashMain` |
+| `path='*'` | `UserDashMain.tsx:25` | `MyDashboardTimelineRoot` |
+
+For each splat route, verify that any relative `<Link to="...">` or `navigate('...')` calls within the rendered component tree still resolve to the intended path. Absolute paths (starting with `/`) are unaffected. If relative paths break, prefix them with `../` to restore v6 behavior.
+
+**Step 2 — Verify future flags work correctly:**
+
+Deploy with future flags on v6.30.0. Run full test suite and manual smoke tests. This is the safety net — if any splat route behavior changed, it will surface here while still on v6, making it easy to fix.
+
+**Step 3 — Swap packages:**
+
+```bash
+# Remove react-router-dom (consolidated into react-router in v7)
+pnpm --filter parabol-client remove react-router-dom
+
+# Install react-router v7
+pnpm --filter parabol-client add react-router@^7
+```
+
+Note: `react-router@7` has direct dependencies on `cookie@^1.0.1` and `set-cookie-parser@^2.6.0` — these will be installed automatically and are small, server-oriented utilities that don't affect client bundle size (tree-shaken out).
+
+**Step 4 — Rewrite all imports (189 files):**
+
+All imports from `'react-router-dom'` become `'react-router'`:
+
+```bash
+# Mechanical find-and-replace across 189 files:
+find packages/client -type f \( -name '*.ts' -o -name '*.tsx' \) \
+  -exec sed -i '' "s|from 'react-router-dom'|from 'react-router'|g" {} +
+```
+
+Specific import changes:
+
+| Before (v6) | After (v7) |
+|---|---|
+| `import { useNavigate } from 'react-router-dom'` | `import { useNavigate } from 'react-router'` |
+| `import { BrowserRouter } from 'react-router-dom'` | `import { BrowserRouter } from 'react-router'` |
+| `import { Link, Navigate } from 'react-router-dom'` | `import { Link, Navigate } from 'react-router'` |
+| `import { Routes, Route } from 'react-router-dom'` | `import { Routes, Route } from 'react-router'` |
+| `import { useParams, useLocation } from 'react-router-dom'` | `import { useParams, useLocation } from 'react-router'` |
+| `import { useMatch, matchPath } from 'react-router-dom'` | `import { useMatch, matchPath } from 'react-router'` |
+| `import type { NavigateFunction } from 'react-router-dom'` | `import type { NavigateFunction } from 'react-router'` |
+| `import type { Location } from 'react-router-dom'` | `import type { Location } from 'react-router'` |
+
+**Note on `react-router/dom` subpath:** In v7, DOM-specific APIs like `BrowserRouter`, `Link`, `NavLink`, `Form`, and `RouterProvider` can optionally be imported from `'react-router/dom'`. However, they are also re-exported from the main `'react-router'` entry point for backward compatibility. **Use `'react-router'` for all imports** — the subpath import is only required in framework mode or when using `HydratedRouter`.
+
+**Step 5 — Remove future flags:**
+
+After the v7 package is installed, the `future` prop on `<BrowserRouter>` is no longer needed (the flags are now default behavior):
+
+```tsx
+// packages/client/Root.tsx — before
+<Router future={{ v7_relativeSplatPath: true, v7_startTransition: true }}>
+
+// packages/client/Root.tsx — after
+<Router>
+```
+
+**Step 6 — Update custom type aliases:**
+
+Two files reference `NavigateFunction` from `react-router-dom`:
+
+| File | Change |
+|---|---|
+| `types/relayMutations.ts` | `import type {NavigateFunction} from 'react-router-dom'` → `import type {NavigateFunction} from 'react-router'` |
+| `hooks/usePageProvider.ts` | `import {type NavigateFunction, useNavigate} from 'react-router-dom'` → `import {type NavigateFunction, useNavigate} from 'react-router'` |
+
+These are handled by the bulk sed in Step 4, but call them out for verification since they're type-level imports used by the mutation/subscription infrastructure.
+
+**Step 7 — Verify no remaining `react-router-dom` references:**
+
+```bash
+# Should return zero results:
+grep -r "react-router-dom" packages/client/
+grep -r "react-router-dom" packages/types/
+```
+
+**What does NOT change:**
+
+- All v6 component APIs (`Routes`, `Route`, `Link`, `NavLink`, `Navigate`, `Outlet`) — identical in v7
+- All v6 hooks (`useNavigate`, `useLocation`, `useParams`, `useSearchParams`, `useMatch`) — identical in v7
+- `matchPath` utility — identical in v7
+- Route nesting patterns — identical in v7
+- Lazy route loading with `React.lazy` + `Suspense` — identical in v7
+- The `NavigateFn` type alias in `relayMutations.ts` — still wraps `NavigateFunction`, which exists in v7
+
+**What is newly available (optional, not required for this PR):**
+
+- Data router pattern (`createBrowserRouter` + `RouterProvider` + loaders/actions) — available if Parabol wants to adopt it later
+- Type-safe route params via framework mode — not applicable in declarative mode
+- React Server Components integration — not applicable to Parabol's architecture
+- Pre-rendering support — framework mode only
+
+**Testing:**
+
+- [ ] `pnpm --filter parabol-client typecheck` — verify no TypeScript errors
+- [ ] `pnpm --filter parabol-client test` — all Jest tests pass
+- [ ] `pnpm build` — production build succeeds
+- [ ] Playwright E2E tests pass
+- [ ] Manual smoke test: navigate between all major sections (dashboard, meetings, team settings, activity library, user profile, org settings)
+- [ ] Manual smoke test: verify deep links work (direct URL entry to `/meet/:id`, `/team/:id/settings`, `/activity-library/details/:id`)
+- [ ] Manual smoke test: verify back/forward browser navigation
+- [ ] Manual smoke test: verify modal routes with background location (`ReviewRequestToJoinOrg`, etc.)
+- [ ] Verify no console warnings about deprecated APIs
+
+---
+
+### PR 19 — Mattermost plugin React 18 upgrade
 
 **~300 lines changed | Risk: LOW**
 
@@ -596,9 +751,10 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | **DONE** |
 | 16 | Polish | Migrate task card system from emotion to Tailwind CSS | ~500 | MEDIUM | **DONE** |
 | 17 | Polish | Add `React.StrictMode` wrapper | ~700 | MEDIUM | **DONE** |
-| 18 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
+| 18 | Router v7 | Upgrade React Router v6 → v7 | ~250 | LOW-MEDIUM | **DONE** |
+| 19 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
 
-**Total: ~4,700-5,000 lines across 18 PRs**
+**Total: ~4,950-5,250 lines across 19 PRs**
 
 ---
 
@@ -633,7 +789,8 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
             │
             PR 16 ── Task card emotion → Tailwind (depends on PR 15)
             PR 17 ── StrictMode (depends on PR 16)
-            PR 18 ── Mattermost plugin (independent, can be done anytime after PR 7)
+            PR 18 ── React Router v7 upgrade (depends on PR 17)
+            PR 19 ── Mattermost plugin (independent, can be done anytime after PR 7)
 ```
 
 ---
@@ -645,6 +802,7 @@ PR 7 ─── React version bump (depends on ALL Phase 1 PRs)
 - **Phase 3 (Router)** should not be started until Phase 2 is stable in production. If router issues arise, revert the specific PR — each nested route tree conversion is somewhat independent.
 - **PR 16 (emotion → Tailwind)** can be reverted independently — it only changes styling implementation, not behavior.
 - **PR 17 (StrictMode)** can be reverted trivially since it's a single wrapper component.
+- **PR 18 (Router v7)** can be reverted by reinstalling `react-router-dom@^6.30.0` and reverting the import changes. The future flags step (Step 1-2) can be deployed independently on v6 as a safety gate before the package swap.
 
 ## Testing Checklist
 

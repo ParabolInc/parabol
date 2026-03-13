@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {PinnedSnackbarNotifications_query$key} from '~/__generated__/PinnedSnackbarNotifications_query.graphql'
 import type {NotificationEnum} from '../__generated__/popNotificationToast_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

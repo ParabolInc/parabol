@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'

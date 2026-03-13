@@ -1,4 +1,4 @@
-import {matchPath} from 'react-router-dom'
+import {matchPath} from 'react-router'
 
 const onMeetingRoute = (pathname: string, meetingIds: readonly string[]) => {
   for (let i = 0; i < meetingIds.length; i++) {

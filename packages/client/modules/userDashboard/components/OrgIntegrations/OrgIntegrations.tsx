@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'

@@ -1,6 +1,6 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import customTemplate from '../../../../../static/images/illustrations/customTemplate.png'
 import type {MeetingTypeEnum} from '../../../__generated__/TeamInvitationQuery.graphql'
 import FloatingActionButton from '../../../components/FloatingActionButton'

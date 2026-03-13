@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import type {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import ActivityCardFavorite from './ActivityCardFavorite'

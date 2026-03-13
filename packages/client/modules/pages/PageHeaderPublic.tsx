@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
 

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 

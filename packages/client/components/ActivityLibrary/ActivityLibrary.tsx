@@ -8,7 +8,7 @@ import {
   usePreloadedQuery,
   useRefetchableFragment
 } from 'react-relay'
-import {Link, Navigate, useParams} from 'react-router-dom'
+import {Link, Navigate, useParams} from 'react-router'
 import type {ActivityLibrary_template$data} from '~/__generated__/ActivityLibrary_template.graphql'
 import type {ActivityLibrary_templateSearchDocument$data} from '~/__generated__/ActivityLibrary_templateSearchDocument.graphql'
 import type {ActivityLibraryQuery} from '~/__generated__/ActivityLibraryQuery.graphql'

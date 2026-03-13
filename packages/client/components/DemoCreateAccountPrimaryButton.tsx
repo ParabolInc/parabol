@@ -1,4 +1,4 @@
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import hasToken from '../utils/hasToken'
 import PrimaryButton from './PrimaryButton'
 

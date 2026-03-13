@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router'
 import teamInvitationQuery, {
   type TeamInvitationQuery
 } from '~/__generated__/TeamInvitationQuery.graphql'

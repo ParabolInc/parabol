@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {Navigate, useParams} from 'react-router-dom'
+import {Navigate, useParams} from 'react-router'
 import meetingSeriesRedirectorQuery, {
   type MeetingSeriesRedirectorQuery
 } from '../__generated__/MeetingSeriesRedirectorQuery.graphql'

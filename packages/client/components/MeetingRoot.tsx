@@ -1,5 +1,5 @@
 import {Suspense, useEffect} from 'react'
-import {useNavigate, useParams} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router'
 import meetingSelectorQuery, {
   type MeetingSelectorQuery
 } from '../__generated__/MeetingSelectorQuery.graphql'

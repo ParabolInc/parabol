@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {memo, useEffect, useLayoutEffect, useRef} from 'react'
-import {useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router'
 import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'

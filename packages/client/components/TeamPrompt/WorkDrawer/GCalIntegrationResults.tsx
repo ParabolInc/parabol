@@ -1,7 +1,7 @@
 import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
 import type {GCalIntegrationResultsQuery} from '../../../__generated__/GCalIntegrationResultsQuery.graphql'
 import GCalEventCard from './GCalEventCard'

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router'
 import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Flag} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'

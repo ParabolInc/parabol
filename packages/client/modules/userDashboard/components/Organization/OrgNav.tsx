@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {NavigateNext} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 

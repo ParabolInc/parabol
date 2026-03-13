@@ -1,5 +1,5 @@
 import {lazy} from 'react'
-import {Route, Routes} from 'react-router-dom'
+import {Route, Routes} from 'react-router'
 import useSubscription from '../../hooks/useSubscription'
 import NotificationSubscription from '../../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../../subscriptions/OrganizationSubscription'

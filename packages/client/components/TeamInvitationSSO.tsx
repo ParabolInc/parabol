@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
