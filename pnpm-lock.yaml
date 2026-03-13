@@ -553,6 +553,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.2
+        version: 3.13.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       cleave.js:
         specifier: ^1.6.0
         version: 1.6.0
