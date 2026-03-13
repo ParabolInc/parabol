@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {meetingAvatarMediaQueries} from '../styles/meeting'
 import GiftSVG from './GiftSVG'

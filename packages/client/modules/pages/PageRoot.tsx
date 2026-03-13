@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router'
 import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import type {PageEntryQuery} from '../../__generated__/PageEntryQuery.graphql'
 import pageQuery from '../../__generated__/PageEntryQuery.graphql'

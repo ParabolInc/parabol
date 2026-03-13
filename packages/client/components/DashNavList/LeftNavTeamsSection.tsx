@@ -2,7 +2,7 @@ import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pan
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {LeftNavTeamsSection_viewer$key} from '../../__generated__/LeftNavTeamsSection_viewer.graphql'
 import useEventCallback from '../../hooks/useEventCallback'
 import {useUpdateTeamSortOrderMutation} from '../../mutations/useUpdateTeamSortOrderMutation'

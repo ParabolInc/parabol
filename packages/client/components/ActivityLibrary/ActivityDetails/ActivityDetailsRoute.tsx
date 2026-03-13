@@ -1,5 +1,5 @@
 import {Suspense} from 'react'
-import {Navigate, useParams} from 'react-router-dom'
+import {Navigate, useParams} from 'react-router'
 import activityDetailsQuery, {
   type ActivityDetailsQuery
 } from '~/__generated__/ActivityDetailsQuery.graphql'

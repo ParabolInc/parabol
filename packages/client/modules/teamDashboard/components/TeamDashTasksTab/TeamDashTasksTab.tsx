@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {TeamDashTasksTab_viewer$key} from '~/__generated__/TeamDashTasksTab_viewer.graphql'
 import DashFilterToggle from '~/components/DashFilterToggle/DashFilterToggle'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useLocation, useParams} from 'react-router-dom'
+import {useLocation, useParams} from 'react-router'
 import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'

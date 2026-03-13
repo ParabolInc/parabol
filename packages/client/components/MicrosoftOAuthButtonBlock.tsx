@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useLocation, useNavigate} from 'react-router-dom'
+import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import logo from '../styles/theme/images/graphics/microsoft.svg'

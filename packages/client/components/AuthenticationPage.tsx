@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../hooks/useAtmosphere'
 import getValidRedirectParam from '../utils/getValidRedirectParam'

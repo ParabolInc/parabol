@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 

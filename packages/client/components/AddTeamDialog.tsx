@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'

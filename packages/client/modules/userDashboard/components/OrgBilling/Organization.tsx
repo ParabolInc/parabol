@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Navigate, Route, Routes} from 'react-router-dom'
+import {Navigate, Route, Routes} from 'react-router'
 import type {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import {
   AUTHENTICATION_PAGE,

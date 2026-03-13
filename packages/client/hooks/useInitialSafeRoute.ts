@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import type {useInitialSafeRoute_meeting$key} from '~/__generated__/useInitialSafeRoute_meeting.graphql'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'

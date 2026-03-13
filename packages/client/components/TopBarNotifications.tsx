@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {useLocation} from 'react-router-dom'
+import {useLocation} from 'react-router'
 import type {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'

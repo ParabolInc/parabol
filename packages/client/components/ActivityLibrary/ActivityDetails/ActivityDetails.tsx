@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Link, Navigate, useLocation} from 'react-router-dom'
+import {Link, Navigate, useLocation} from 'react-router'
 import type {ActivityDetailsQuery} from '~/__generated__/ActivityDetailsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import EditableTemplateName from '../../../modules/meeting/components/EditableTemplateName'

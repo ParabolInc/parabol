@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useParams} from 'react-router-dom'
+import {useParams} from 'react-router'
 import type {TeamInvitationGoogleSignin_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleSignin_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import DialogContent from './DialogContent'

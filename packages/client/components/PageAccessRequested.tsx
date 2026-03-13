@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {
   PageAccessRequested_notification$key,

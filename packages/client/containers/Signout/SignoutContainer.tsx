@@ -1,5 +1,5 @@
 import {useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import type {StandardHub_viewer$key} from '../../__generated__/StandardHub_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'

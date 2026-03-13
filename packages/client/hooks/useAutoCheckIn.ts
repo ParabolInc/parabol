@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import type {useAutoCheckIn_meeting$key} from '~/__generated__/useAutoCheckIn_meeting.graphql'
 import JoinMeetingMutation from '../mutations/JoinMeetingMutation'
