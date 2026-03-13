@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.5.2](https://github.com/ParabolInc/parabol/compare/v13.5.1...v13.5.2) (2026-03-13)
+
+
+### Fixed
+
+* push to ironbank4 ([#12850](https://github.com/ParabolInc/parabol/issues/12850)) ([5137181](https://github.com/ParabolInc/parabol/commit/5137181d31d91ece1c637a5c4da238b7b7dc907d))
+
 ## [13.5.1](https://github.com/ParabolInc/parabol/compare/v13.5.0...v13.5.1) (2026-03-13)
 
 
