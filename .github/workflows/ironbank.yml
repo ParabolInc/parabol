@@ -112,7 +112,8 @@ jobs:
             --data "{
               \"source_branch\": \"${BRANCH}\",
               \"target_branch\": \"master\",
-              \"title\": \"chore: update Ironbank release to ${REF_NAME}\"
+              \"title\": \"chore: update Ironbank release to ${REF_NAME}\",
+              \"labels\": \"Status::Review\"
             }"
 
       - name: Report Status
