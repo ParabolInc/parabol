@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.1](https://github.com/ParabolInc/parabol/compare/v13.6.0...v13.6.1) (2026-03-13)
+
+
+### Changed
+
+* Update release workflow to checkout from `origin/production` ([#12861](https://github.com/ParabolInc/parabol/issues/12861)) ([884ecde](https://github.com/ParabolInc/parabol/commit/884ecde7d4c5d3622a500f2757aef986aeeb58a2))
+
 ## [13.6.0](https://github.com/ParabolInc/parabol/compare/v13.5.3...v13.6.0) (2026-03-13)
 
 
