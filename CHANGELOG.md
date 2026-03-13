@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.5.3](https://github.com/ParabolInc/parabol/compare/v13.5.2...v13.5.3) (2026-03-13)
+
+
+### Fixed
+
+* remove Mattermost plugin provider if env is not present ([#12853](https://github.com/ParabolInc/parabol/issues/12853)) ([d1d9ea8](https://github.com/ParabolInc/parabol/commit/d1d9ea8903580b671b1d444a23e4dae1958557fd))
+
 ## [13.5.2](https://github.com/ParabolInc/parabol/compare/v13.5.1...v13.5.2) (2026-03-13)
 
 
