@@ -94,11 +94,11 @@ jobs:
           sed -i "16s|.*|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
 
           # Update hardening_manifest.yaml
-          sed -i "11s|.*|  - ${VERSION}|" hardening_manifest.yaml
-          sed -i "36s|.*|  - ${VERSION}|" hardening_manifest.yaml
-          sed -i "46s|.*|  filename: ${REF_NAME}.zip|" hardening_manifest.yaml
-          sed -i "47s|.*|  name: parabol-${REF_NAME}|" hardening_manifest.yaml
-          sed -i "50s|.*|  sha256: ${SHA256}|" hardening_manifest.yaml
+          sed -i "11s|.*|- \"${VERSION}\"|" hardening_manifest.yaml
+          sed -i "36s|.*|  org.opencontainers.image.version: \"${VERSION}\"|" hardening_manifest.yaml
+          sed -i "46s|.*|  - url: \"https://storage.googleapis.com/parabol-ironbank-resources/${REF_NAME}.zip\"|" hardening_manifest.yaml
+          sed -i "47s|.*|    filename: \"${REF_NAME}.zip\"|" hardening_manifest.yaml
+          sed -i "50s|.*|    value: \"${SHA256}\"|" hardening_manifest.yaml
 
           git add Dockerfile hardening_manifest.yaml
           git commit -m "chore: update Ironbank release to ${REF_NAME}"
