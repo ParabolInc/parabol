@@ -43,7 +43,7 @@ import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
 
 const getFileType = (file: File) => {
-  if (file.type.includes('image')) return 'image'
+  if (file.type.startsWith('image/')) return 'image'
   if (file.type.includes('text/csv')) return 'csv'
   if (file.type.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
     return 'xlsx'
@@ -268,15 +268,12 @@ export const useTipTapPageEditor = (
             if (htmlContent) {
               // Process image files that were provided alongside HTML content.
               // These typically correspond to data: URI images that parseHTML excludes.
-              const imageFiles = files.filter((f) => f.type.startsWith('image/'))
-              if (imageFiles.length > 0) {
-                ;(async () => {
-                  for (let i = 0; i < imageFiles.length; i++) {
-                    const file = imageFiles[i]!
-                    await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
-                  }
-                })()
-              }
+              ;(async () => {
+                for (const file of files) {
+                  if (getFileType(file) !== 'image') continue
+                  await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'image')
+                }
+              })()
               return
             }
             ;(async () => {
