@@ -67,11 +67,6 @@ const ScopePhaseArea = (props: Props) => {
                   clientId
                 }
               }
-              jiraServer {
-                sharedProviders {
-                  id
-                }
-              }
               azureDevOps {
                 cloudProvider {
                   id
@@ -95,7 +90,6 @@ const ScopePhaseArea = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const {viewerMeetingMember} = meeting
   const gitlabIntegration = viewerMeetingMember?.teamMember.integrations.gitlab
-  const jiraServerIntegration = viewerMeetingMember?.teamMember.integrations.jiraServer
   const azureDevOpsIntegration = viewerMeetingMember?.teamMember.integrations.azureDevOps
   const linearIntegration = viewerMeetingMember?.teamMember.integrations.linear
   const allowAzureDevOps =
@@ -103,7 +97,7 @@ const ScopePhaseArea = (props: Props) => {
   const isGitLabProviderAvailable = !!(
     gitlabIntegration?.cloudProvider?.clientId || gitlabIntegration?.sharedProviders.length
   )
-  const allowJiraServer = !!jiraServerIntegration?.sharedProviders.length
+  const allowJiraServer = true // always show this for advertising
   const isLinearProviderAvailable = !!linearIntegration?.cloudProvider?.clientId
 
   const baseTabs = [
@@ -120,16 +114,16 @@ const ScopePhaseArea = (props: Props) => {
       Component: ScopePhaseAreaJira
     },
     {
-      icon: <ParabolLogoSVG />,
-      label: 'Parabol',
-      allow: true,
-      Component: ScopePhaseAreaParabolScoping
-    },
-    {
       icon: <JiraServerSVG />,
       label: 'Jira Data Center',
       allow: allowJiraServer,
       Component: ScopePhaseAreaJiraServer
+    },
+    {
+      icon: <ParabolLogoSVG />,
+      label: 'Parabol',
+      allow: true,
+      Component: ScopePhaseAreaParabolScoping
     },
     {
       icon: <GitLabSVG />,

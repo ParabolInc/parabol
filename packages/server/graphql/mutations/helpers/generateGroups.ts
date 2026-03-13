@@ -19,38 +19,33 @@ const generateGroups = async (reflections: RetroReflection[], teamId: string) =>
   const {meetingId} = reflections[0]!
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   if (!(await canAccessAI(team, dataLoader))) return
-  const groupReflectionsInput = reflections.map((reflection) => reflection.plaintextContent)
   const manager = new OpenAIServerManager()
-
-  const themes = await manager.generateThemes(groupReflectionsInput)
-  if (!themes) {
-    Logger.warn('ChatGPT was unable to generate themes')
+  const promptIds = [...new Set(reflections.map((r) => r.promptId))]
+  const prompts = await Promise.all(
+    promptIds.map((id) => dataLoader.get('reflectPrompts').loadNonNull(id))
+  )
+  const promptMap = new Map(prompts.map((p) => [p.id, p.question]))
+  const input = reflections.map((r) => ({
+    id: r.id,
+    text: r.plaintextContent,
+    prompt: promptMap.get(r.promptId) ?? ''
+  }))
+  const result = await manager.groupReflectionsStructured(input)
+  if (!result) {
+    Logger.warn('OpenAI was unable to group the reflections')
+    await getKysely()
+      .updateTable('NewMeeting')
+      .set({autogroupReflectionGroups: JSON.stringify([])})
+      .where('id', '=', meetingId)
+      .execute()
+    const data = {meetingId}
+    publish(SubscriptionChannel.MEETING, meetingId, 'GenerateGroupsSuccess', data, subOptions)
     return
   }
-  const groupedReflections = await manager.groupReflections(groupReflectionsInput, themes)
-
-  if (!groupedReflections) {
-    Logger.warn('ChatGPT was unable to group the reflections')
-    return
-  }
-  const autogroupReflectionGroups: AutogroupReflectionGroupType[] = []
-
-  for (const [groupTitle, reflectionTexts] of Object.entries(groupedReflections)) {
-    const reflectionIds: string[] = []
-
-    for (const reflectionText of reflectionTexts) {
-      const reflection = reflections.find(
-        (r) => r.plaintextContent.trim() === reflectionText.trim()
-      )
-      if (reflection) {
-        reflectionIds.push(reflection.id)
-      }
-    }
-    autogroupReflectionGroups.push({
-      groupTitle,
-      reflectionIds
-    })
-  }
+  const autogroupReflectionGroups: AutogroupReflectionGroupType[] = result.groups.map((g) => ({
+    groupTitle: g.title,
+    reflectionIds: g.reflectionIds
+  }))
 
   await getKysely()
     .updateTable('NewMeeting')

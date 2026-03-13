@@ -5,6 +5,52 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.0](https://github.com/ParabolInc/parabol/compare/v13.5.3...v13.6.0) (2026-03-13)
+
+
+### Added
+
+* Always display Jira Data Center tab for poker ([#12859](https://github.com/ParabolInc/parabol/issues/12859)) ([d4a99ca](https://github.com/ParabolInc/parabol/commit/d4a99ca76961cfba86ac8c218a7e9f814bf13e18))
+* improved AI grouping; ungrouping; title marquee ([#12837](https://github.com/ParabolInc/parabol/issues/12837)) ([c794cb0](https://github.com/ParabolInc/parabol/commit/c794cb0cb0f7622786c0c2269b83ab9bea8edd83))
+
+
+### Fixed
+
+* linear issue titles in meeting summaries ([#12855](https://github.com/ParabolInc/parabol/issues/12855)) ([7cdddeb](https://github.com/ParabolInc/parabol/commit/7cdddeb8d601f0b313aef5ad9601412f007aff14))
+
+## [13.5.3](https://github.com/ParabolInc/parabol/compare/v13.5.2...v13.5.3) (2026-03-13)
+
+
+### Fixed
+
+* remove Mattermost plugin provider if env is not present ([#12853](https://github.com/ParabolInc/parabol/issues/12853)) ([d1d9ea8](https://github.com/ParabolInc/parabol/commit/d1d9ea8903580b671b1d444a23e4dae1958557fd))
+
+## [13.5.2](https://github.com/ParabolInc/parabol/compare/v13.5.1...v13.5.2) (2026-03-13)
+
+
+### Fixed
+
+* push to ironbank4 ([#12850](https://github.com/ParabolInc/parabol/issues/12850)) ([5137181](https://github.com/ParabolInc/parabol/commit/5137181d31d91ece1c637a5c4da238b7b7dc907d))
+
+## [13.5.1](https://github.com/ParabolInc/parabol/compare/v13.5.0...v13.5.1) (2026-03-13)
+
+
+### Fixed
+
+* ironbank push 3 ([#12847](https://github.com/ParabolInc/parabol/issues/12847)) ([ee59040](https://github.com/ParabolInc/parabol/commit/ee590407f9ac67fd19dc8787aabb45d55a1c1eb9))
+
+## [13.5.0](https://github.com/ParabolInc/parabol/compare/v13.4.0...v13.5.0) (2026-03-12)
+
+
+### Added
+
+* automate Ironbank PR creation and update ([#12843](https://github.com/ParabolInc/parabol/issues/12843)) ([0cd9af4](https://github.com/ParabolInc/parabol/commit/0cd9af4ed3a737709e0453a41dc0410b169c9729))
+
+
+### Fixed
+
+* ironbank push dupe ([#12845](https://github.com/ParabolInc/parabol/issues/12845)) ([6d38e1a](https://github.com/ParabolInc/parabol/commit/6d38e1ab9d07a0cb2d42a8c2c282dd6c0d44a677))
+
 ## [13.4.0](https://github.com/ParabolInc/parabol/compare/v13.3.1...v13.4.0) (2026-03-12)
 
 

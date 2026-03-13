@@ -17,6 +17,7 @@ import useMutationProps from '../../hooks/useMutationProps'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
 import RemoveReflectionMutation from '../../mutations/RemoveReflectionMutation'
+import UngroupReflectionMutation from '../../mutations/UngroupReflectionMutation'
 import UpdateReflectionContentMutation from '../../mutations/UpdateReflectionContentMutation'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
 import {Breakpoint} from '../../types/constEnums'
@@ -33,6 +34,7 @@ import ReflectionCardAuthor from './ReflectionCardAuthor'
 import ReflectionCardRoot from './ReflectionCardRoot'
 import SpotlightButton from './SpotlightButton'
 import SubmitReflectionButton from './SubmitReflectionButton'
+import UngroupButton from './UngroupButton'
 
 interface Props {
   isClipped?: boolean
@@ -40,6 +42,8 @@ interface Props {
   meetingRef: ReflectionCard_meeting$key
   openSpotlight?: OpenSpotlight
   stackCount?: number
+  groupSize?: number
+  isExpanded?: boolean
   showReactji?: boolean
   dataCy?: string
   showDragHintAnimation?: boolean
@@ -72,6 +76,8 @@ const ReflectionCard = (props: Props) => {
     isClipped,
     openSpotlight,
     stackCount,
+    groupSize,
+    isExpanded,
     showReactji,
     dataCy,
     showDragHintAnimation
@@ -312,9 +318,20 @@ const ReflectionCard = (props: Props) => {
     RemoveReflectionMutation(atmosphere, {reflectionId}, {meetingId, onError, onCompleted})
   }
 
+  const handleClickUngroup = (e: MouseEvent) => {
+    e.stopPropagation()
+    if (isExpanded) {
+      UngroupReflectionMutation(atmosphere, {reflectionId}, {onError, onCompleted})
+    } else {
+      UngroupReflectionMutation(atmosphere, {reflectionGroupId}, {onError, onCompleted})
+    }
+  }
+
   const enableSpotlight =
     phaseType === 'group' && !isSpotlightOpen && !isComplete && !isDemoRoute() && !isEditing
   const showSpotlight = enableSpotlight && (isHovering || !isDesktop)
+  const enableUngroup = phaseType === 'group' && !isComplete && !isEditing && (groupSize ?? 0) > 1
+  const showUngroupButton = enableUngroup && (isHovering || !isDesktop)
   const showEditButton = !readOnly && isFirstEdit
 
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -375,6 +392,11 @@ const ReflectionCard = (props: Props) => {
       {!readOnly && (
         <DeleteReflectionButton onMouseDown={preventPrematureBlur} onClick={handleDelete} />
       )}
+      <UngroupButton
+        onClick={handleClickUngroup}
+        showUngroupButton={showUngroupButton}
+        label={isExpanded ? 'Remove from group' : 'Ungroup all'}
+      />
       <SpotlightButton onClick={handleClickSpotlight} showSpotlight={showSpotlight} />
     </ReflectionCardRoot>
   )

@@ -32,14 +32,15 @@ export const getCardStackPadding = (count: number) => {
 const Group = styled('div')<{
   staticReflectionCount: number
   isSpotlightSource: boolean
-}>(({staticReflectionCount, isSpotlightSource}) => ({
+  skipTransition: boolean
+}>(({staticReflectionCount, isSpotlightSource, skipTransition}) => ({
   height: 'max-content',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
   paddingBottom: isSpotlightSource
     ? ElementWidth.REFLECTION_CARD_PADDING
     : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
+  transition: skipTransition ? undefined : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
 }))
 
 const ReflectionWrapper = styled('div')<{
@@ -47,7 +48,8 @@ const ReflectionWrapper = styled('div')<{
   isDropping: boolean | null | undefined
   groupCount: number
   isHiddenSpotlightSource: boolean
-}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource}) => {
+  skipTransition: boolean
+}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource, skipTransition}) => {
   const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
   const multiple = Math.max(0, Math.min(staticIdx, 2))
   const scaleX =
@@ -60,7 +62,8 @@ const ReflectionWrapper = styled('div')<{
     left: 0,
     outline: 0,
     transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    transition: isHidden ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+    transition:
+      isHidden || skipTransition ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
     visibility: isHidden ? 'hidden' : undefined,
     zIndex: 3 - multiple
   }
@@ -169,6 +172,11 @@ const ReflectionGroup = (props: Props) => {
         !reflection.isViewerDragging && (!reflection.remoteDrag || reflection.isDropping)
     )
   }, [visibleReflections])
+  const prevCountRef = useRef(staticReflections.length)
+  const skipTransition = staticReflections.length < prevCountRef.current
+  useEffect(() => {
+    prevCountRef.current = staticReflections.length
+  })
   const stackRef = useRef<HTMLDivElement>(null)
   const {setItemsRef, scrollRef, bgRef, modalHeaderRef, portal, portalStatus, collapse, expand} =
     useExpandedReflections(groupRef, stackRef, visibleReflections.length, headerRef)
@@ -253,6 +261,7 @@ const ReflectionGroup = (props: Props) => {
         ref={groupRef}
         staticReflectionCount={staticReflections.length}
         isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
+        skipTransition={skipTransition}
         data-cy={dataCy}
       >
         {showHeader && (
@@ -277,6 +286,7 @@ const ReflectionGroup = (props: Props) => {
                 staticIdx={staticIdx}
                 isDropping={isDropping}
                 isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
+                skipTransition={skipTransition}
               >
                 <DraggableReflectionCard
                   dataCy={`${dataCy}-card-${staticIdx}`}
