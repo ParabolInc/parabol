@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.0](https://github.com/ParabolInc/parabol/compare/v13.5.3...v13.6.0) (2026-03-13)
+
+
+### Added
+
+* Always display Jira Data Center tab for poker ([#12859](https://github.com/ParabolInc/parabol/issues/12859)) ([d4a99ca](https://github.com/ParabolInc/parabol/commit/d4a99ca76961cfba86ac8c218a7e9f814bf13e18))
+* improved AI grouping; ungrouping; title marquee ([#12837](https://github.com/ParabolInc/parabol/issues/12837)) ([c794cb0](https://github.com/ParabolInc/parabol/commit/c794cb0cb0f7622786c0c2269b83ab9bea8edd83))
+
+
+### Fixed
+
+* linear issue titles in meeting summaries ([#12855](https://github.com/ParabolInc/parabol/issues/12855)) ([7cdddeb](https://github.com/ParabolInc/parabol/commit/7cdddeb8d601f0b313aef5ad9601412f007aff14))
+
 ## [13.5.3](https://github.com/ParabolInc/parabol/compare/v13.5.2...v13.5.3) (2026-03-13)
 
 
