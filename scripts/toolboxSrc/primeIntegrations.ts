@@ -1,5 +1,5 @@
-import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import getKysely from '../../packages/server/postgres/getKysely'
+import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
 import {Logger} from '../../packages/server/utils/Logger'
 
 const upsertGlobalIntegrationProvidersFromEnv = async () => {
