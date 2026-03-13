@@ -531,33 +531,30 @@ Also replaced `react-virtualized` in TeamArchive with `@tanstack/react-virtual` 
 
 ---
 
-### PR 17 — Add `React.StrictMode` wrapper
+### PR 17 — Add React.StrictMode wrapper — DONE
 
-**~50-200 lines changed | Risk: MEDIUM**
+**~700 lines changed | Risk: MEDIUM**
 
-Wrap the app in `<React.StrictMode>` to surface bugs from unsafe patterns. StrictMode double-invokes effects and renders in development only.
+Wrapped the app in `<React.StrictMode>` and replaced StrictMode-incompatible `react-swipeable-views`.
 
-**File:** `packages/client/Root.tsx`
-```tsx
-import {StrictMode} from 'react'
+**Changes (actual):**
 
-export default function Root() {
-  return (
-    <StrictMode>
-      <AtmosphereProvider>
-        {/* ... existing tree ... */}
-      </AtmosphereProvider>
-    </StrictMode>
-  )
-}
-```
+1. **New `SwipeablePanel` component** (`packages/client/components/SwipeablePanel.tsx`): Custom controlled horizontal slide panel using CSS `transform: translateX()` with transitions and touch event handling for swipe gestures. Supports `animateHeight` via `ResizeObserver`, `disabled` prop, and velocity-based swipe detection.
 
-**Expected issues to fix:**
-- Any remaining `useEffect` without proper cleanup
-- Any remaining ref mutations in render paths
-- Subscription handlers that don't handle double-fire
-- Third-party libraries that don't support StrictMode:
-  - **`react-swipeable-views`** (custom fork): deprecated upstream, uses `UNSAFE_componentWillReceiveProps`. Replace with CSS `scroll-snap` or `react-swipeable-views-react-18-fix`. 4 consuming files: `ReflectionWrapperMobile.tsx`, `EstimatePhaseArea.tsx`, `StageTimerModal.tsx`, `ScopePhaseArea.tsx`
+2. **Replaced `react-swipeable-views`** in 4 files:
+   - `ReflectionWrapperMobile.tsx` — converted to `SwipeablePanel` + Tailwind classes
+   - `EstimatePhaseArea.tsx` — converted to `SwipeablePanel` + Tailwind classes
+   - `StageTimerModal.tsx` — converted to `SwipeablePanel` with `animateHeight` + Tailwind classes
+   - `ScopePhaseArea.tsx` — converted to `SwipeablePanel` with `disabled` (no swipe, tab-bar only)
+
+3. **Added `<StrictMode>` wrapper** in `Root.tsx`
+
+4. **Updated `packages/client/package.json`**:
+   - Removed: `react-swipeable-views`, `react-swipeable-views-core`, `react-swipeable-views-utils`, `@types/react-swipeable-views`
+
+**Testing results:**
+- `pnpm --filter parabol-client typecheck` — PASS
+- `pnpm --filter parabol-client test` — PASS (18/18)
 
 ---
 
@@ -596,9 +593,9 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 12 | Router Pre-work | Replace custom `useRouter` hook — batch 1 (components/) | ~300 | LOW | **DONE** |
 | 13 | Router Pre-work | Replace custom `useRouter` hook — batch 2 + delete hook + remaining `RouteComponentProps` | ~260 | LOW | **DONE** |
 | 14 | Router Pre-work | Convert navigation infrastructure from `history` object to `navigate` function | ~400 | MEDIUM | **DONE** |
-| 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | |
+| 15 | Router Flip | Upgrade to react-router v6 — convert ALL remaining v5 APIs | ~900 | **HIGH** | **DONE** |
 | 16 | Polish | Migrate task card system from emotion to Tailwind CSS | ~500 | MEDIUM | **DONE** |
-| 17 | Polish | Add `React.StrictMode` wrapper | ~200 | MEDIUM | |
+| 17 | Polish | Add `React.StrictMode` wrapper | ~700 | MEDIUM | **DONE** |
 | 18 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
 
 **Total: ~4,700-5,000 lines across 18 PRs**
