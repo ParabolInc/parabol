@@ -83,6 +83,7 @@ export const getPokerRowData = async (
           case 'azureDevOps':
           case 'github':
           case 'gitlab':
+          case 'linear':
             fieldName = 'title'
             break
           case 'jira':
