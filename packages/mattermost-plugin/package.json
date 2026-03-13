@@ -50,10 +50,6 @@
       "react": "^18.3.1",
       "react-dom": "^18.3.1"
     },
-    "enzyme-adapter-utils": {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1"
-    },
     "react-bootstrap": {
       "react": "^18.3.1",
       "react-dom": "^18.3.1"
