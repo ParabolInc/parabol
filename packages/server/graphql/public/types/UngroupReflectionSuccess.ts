@@ -1,3 +1,4 @@
+import type {RetrospectiveMeeting as RetrospectiveMeetingDB} from '../../../postgres/types/Meeting'
 import type {UngroupReflectionSuccessResolvers} from '../resolverTypes'
 
 export type UngroupReflectionSuccessSource = {
@@ -7,8 +8,7 @@ export type UngroupReflectionSuccessSource = {
 const UngroupReflectionSuccess: UngroupReflectionSuccessResolvers = {
   meeting: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-    if (meeting.meetingType !== 'retrospective') throw new Error('Not a retrospective meeting')
-    return meeting
+    return meeting as RetrospectiveMeetingDB
   }
 }
 

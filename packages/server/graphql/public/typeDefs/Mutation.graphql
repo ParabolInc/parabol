@@ -1649,7 +1649,7 @@ type Mutation {
   """
   Remove a reflection from its group, placing it into its own new group
   """
-  ungroupReflection(reflectionGroupId: ID, reflectionId: ID): UngroupReflectionPayload!
+  ungroupReflection(reflectionGroupId: ID, reflectionId: ID): UngroupReflectionSuccess!
   revealTeamHealthVotes(meetingId: ID!, stageId: ID!): RevealTeamHealthVotesPayload!
 
   """

@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation UngroupReflectionMutation($reflectionGroupId: ID, $reflectionId: ID) {
     ungroupReflection(reflectionGroupId: $reflectionGroupId, reflectionId: $reflectionId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...UngroupReflectionMutation_meeting @relay(mask: false)
     }
   }
