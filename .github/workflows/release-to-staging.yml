@@ -118,8 +118,8 @@ jobs:
           export BODY=$(cat BODY)
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git checkout -b "release/v${{ env.ACTION_VERSION }}"
-          git merge -s ours origin/production --allow-unrelated-histories
+          git checkout -b "release/v${{ env.ACTION_VERSION }}" origin/production
+          git merge origin/master --allow-unrelated-histories -X theirs -m "chore(release): v${{ env.ACTION_VERSION }}"
           git push --set-upstream origin "release/v${{ env.ACTION_VERSION }}"
           gh pr create \
             --assignee ${{ github.actor }} \
