@@ -2,3 +2,17 @@
 . "$(dirname "$0")/_/husky.sh"
 
 pnpm run precommit
+
+# Security review — informational only, never blocks the commit
+if command -v claude > /dev/null 2>&1; then
+  STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$' | grep -v '__generated__' | grep -v 'node_modules')
+  if [ -n "$STAGED_FILES" ]; then
+    echo ""
+    echo "Running security review on staged files..."
+    FILE_LIST=$(echo "$STAGED_FILES" | tr '\n' ' ')
+    claude -p "You are a security reviewer. Review the following staged files for security vulnerabilities including OWASP Top 10, SSRF, IDOR, path traversal, injection attacks, and broken access control. Files: $FILE_LIST. Output a concise list of findings with file path, line number, severity (CRITICAL/HIGH/MEDIUM/LOW), and explanation. If no issues are found, say 'No security issues found'." 2>/dev/null || true
+    echo ""
+  fi
+else
+  echo "Note: Claude Code not found. Skipping security review. Install with: npm install -g @anthropic-ai/claude-code && claude"
+fi
