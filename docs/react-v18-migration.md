@@ -1,6 +1,6 @@
 # React 18 Migration Plan
 
-Incremental migration of Parabol from React 17.0.2 to React 18, including React Router v5 to v6. Each PR targets fewer than 1,000 lines of diff to keep reviews manageable.
+Incremental migration of Parabol from React 17.0.2 to React 18, including React Router v5 to v7. Each PR targets fewer than 1,000 lines of diff to keep reviews manageable.
 
 ## Current State
 
