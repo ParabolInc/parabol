@@ -1,4 +1,5 @@
 import upsertIntegrationProvider from '../../packages/server/postgres/queries/upsertIntegrationProvider'
+import getKysely from '../../packages/server/postgres/getKysely'
 import {Logger} from '../../packages/server/utils/Logger'
 
 const upsertGlobalIntegrationProvidersFromEnv = async () => {
@@ -51,6 +52,17 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl) ||
       (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
   )
+
+  // it's a security risk to have a misconfigured mattermost provider
+  if (!process.env.MATTERMOST_URL || !process.env.MATTERMOST_SECRET) {
+    const pg = getKysely()
+    await pg
+      .deleteFrom('IntegrationProvider')
+      .where('service', '=', 'mattermost')
+      .where('authStrategy', '=', 'sharedSecret')
+      .where('scope', '=', 'global')
+      .execute()
+  }
 
   await Promise.all(
     validProviders.map((provider) => {
