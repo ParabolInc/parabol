@@ -1,9 +1,9 @@
 import {Suspense} from 'react'
+import {useParams} from 'react-router'
 import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import type {PageEntryQuery} from '../../__generated__/PageEntryQuery.graphql'
 import pageQuery from '../../__generated__/PageEntryQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
-import useRouter from '../../hooks/useRouter'
 import {GQLID} from '../../utils/GQLID'
 import {PageEntry} from './PageEntry'
 
@@ -14,14 +14,13 @@ interface Props {
 
 export const PageRoot = (props: Props) => {
   const {viewerRef, isPublic} = props
-  const {match} = useRouter<{pageSlug: string}>()
-  const {params} = match
-  const {pageSlug} = params
-  const pageCodeIdx = pageSlug.lastIndexOf('-')
-  const pageCode = pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1)
+  const {pageSlug} = useParams()
+  const pageCodeIdx = pageSlug ? pageSlug.lastIndexOf('-') : -1
+  const pageCode = !pageSlug ? '' : pageCodeIdx === -1 ? pageSlug : pageSlug.slice(pageCodeIdx + 1)
   const pageId = GQLID.toKey(pageCode, 'page')
 
   const queryRef = useQueryLoaderNow<PageEntryQuery>(pageQuery, {pageId})
+  if (!pageSlug) return null
   return (
     <Suspense fallback={''}>
       {queryRef && (

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect} from 'react'
@@ -6,7 +5,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {OutcomeCard_task$key} from '~/__generated__/OutcomeCard_task.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
-import {PALETTE} from '~/styles/paletteV3'
+import {cn} from '~/ui/cn'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
@@ -14,45 +13,11 @@ import {TipTapEditor} from '../../../../components/TipTapEditor/TipTapEditor'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
-import {cardFocusShadow, cardHoverShadow, cardShadow, Elevation} from '../../../../styles/elevation'
-import cardRootStyles from '../../../../styles/helpers/cardRootStyles'
-import {Card} from '../../../../types/constEnums'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
 import TaskFooter from '../OutcomeCardFooter/TaskFooter'
 import OutcomeCardStatusIndicator from '../OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-
-const RootCard = styled('div')<{
-  isTaskHovered: boolean
-  isTaskFocused: boolean
-  isDragging: boolean
-  isTaskHighlighted: boolean
-}>(({isTaskHovered, isTaskFocused, isDragging, isTaskHighlighted}) => ({
-  ...cardRootStyles,
-  borderTop: 0,
-  outline: isTaskHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none',
-  padding: `${Card.PADDING} 0 0`,
-  transition: `box-shadow 100ms ease-in`,
-  // hover before focus, it matters
-  boxShadow: isDragging
-    ? Elevation.CARD_DRAGGING
-    : isTaskHighlighted
-      ? cardHoverShadow
-      : isTaskFocused
-        ? cardFocusShadow
-        : isTaskHovered
-          ? cardHoverShadow
-          : cardShadow
-}))
-
-const ContentBlock = styled('div')({
-  position: 'relative'
-})
-
-const StatusIndicatorBlock = styled('div')({
-  display: 'flex'
-})
 
 interface Props {
   area: AreaEnum
@@ -159,25 +124,35 @@ const OutcomeCard = memo((props: Props) => {
   }, [!!isDraggingOver, editor, handleCardUpdate])
 
   return (
-    <RootCard
-      isTaskHovered={isTaskHovered}
-      isTaskFocused={isTaskFocused}
-      isDragging={!!isDraggingOver}
-      isTaskHighlighted={!!isHighlighted}
+    <div
+      className={cn(
+        'relative w-full rounded bg-white pt-4 transition-shadow duration-100 ease-in',
+        isDraggingOver
+          ? 'shadow-card-dragging'
+          : isHighlighted
+            ? 'shadow-card-hover'
+            : isTaskFocused
+              ? 'shadow-card-focus'
+              : isTaskHovered
+                ? 'shadow-card-hover'
+                : 'shadow-card',
+        isHighlighted && 'outline-2 outline-sky-300',
+        !isHighlighted && 'outline-none'
+      )}
     >
       <TaskWatermark type={type} />
-      <ContentBlock>
+      <div className='relative'>
         <EditingStatus
           isTaskHovered={isTaskHovered}
           isArchived={isArchived}
           task={task}
           useTaskChild={useTaskChild}
         >
-          <StatusIndicatorBlock title={statusIndicatorTitle}>
+          <div className='flex' title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
             {isPrivate && <OutcomeCardStatusIndicator status='private' />}
             {isArchived && <OutcomeCardStatusIndicator status='archived' />}
-          </StatusIndicatorBlock>
+          </div>
         </EditingStatus>
         <IntegratedTaskContent task={task} />
         {!type && (
@@ -208,8 +183,8 @@ const OutcomeCard = memo((props: Props) => {
           task={task}
           useTaskChild={useTaskChild}
         />
-      </ContentBlock>
-    </RootCard>
+      </div>
+    </div>
   )
 })
 

@@ -6,7 +6,7 @@ export interface PluginRegistry {
   registerReducer(reducer)
   registerChannelHeaderButtonAction(icon: Reast.ReactNode, action: () => void, tooltipText: string)
   registerPostTypeComponent(typeName: string, component: React.ElementType)
-  registerRightHandSidebarComponent(component: React.ReactNode, title: string | JSX.Element)
+  registerRightHandSidebarComponent(component: React.ComponentType, title: string | JSX.Element)
   registerSlashCommandWillBePostedHook(
     hook: (rawMessage: string, contextArgs: ContextArgs) => Promise<{}>
   )

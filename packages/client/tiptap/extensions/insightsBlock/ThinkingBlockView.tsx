@@ -4,13 +4,21 @@ import {getHasPermanentlyUnmounted} from '../getHasPermanentlyUnmounted'
 export const ThinkingBlockView = (props: NodeViewProps) => {
   const {editor, node} = props
   useEffect(() => {
-    if (editor.isEditable) {
-      editor.setEditable(false)
-    }
+    // Defer setEditable to a macrotask so it runs after React's full commit phase.
+    // TipTap calls flushSync internally in setEditable, which can't be nested inside
+    // React's lifecycle. setTimeout (macrotask) guarantees we're outside React's work.
+    const timer = setTimeout(() => {
+      if (editor.isEditable) {
+        editor.setEditable(false)
+      }
+    }, 0)
     return () => {
+      clearTimeout(timer)
       const hasPermanentlyUnmounted = getHasPermanentlyUnmounted(editor, node)
       if (hasPermanentlyUnmounted) {
-        editor.setEditable(true)
+        setTimeout(() => {
+          editor.setEditable(true)
+        }, 0)
       }
     }
   }, [editor])

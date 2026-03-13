@@ -26,7 +26,7 @@ const mutation = graphql`
 const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, LocalHandlers> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted}: LocalHandlers = {}
+  {navigate, onError, onCompleted}: LocalHandlers = {}
 ) => {
   return commitMutation<TEmailPasswordResetMutation>(atmosphere, {
     mutation,
@@ -49,7 +49,7 @@ const EmailPasswordResetMutation: StandardMutation<TEmailPasswordResetMutation, 
         params.set('type', ForgotPasswordResType.SUCCESS)
         params.set('email', email)
       }
-      if (history) history.push(`/forgot-password/submitted?${params}`)
+      if (navigate) navigate(`/forgot-password/submitted?${params}`)
     }
   })
 }

@@ -1,5 +1,5 @@
+import {useNavigate} from 'react-router'
 import ToggleNav from '../../../../components/ToggleNav/ToggleNav'
-import useRouter from '../../../../hooks/useRouter'
 
 interface Props {
   activeKey: string
@@ -8,12 +8,12 @@ interface Props {
 
 const TeamSettingsToggleNav = (props: Props) => {
   const {activeKey, teamId} = props
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const makeOnClick = (area = '') => {
     return area === activeKey
       ? undefined
       : () => {
-          history.push(`/team/${teamId}/settings/${area}`)
+          navigate(`/team/${teamId}/settings/${area}`)
         }
   }
 

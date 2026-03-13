@@ -7,7 +7,7 @@ import {getTagsFromTipTapTask} from '../shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import type {
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   OptionalHandlers,
   SharedUpdater,
   StandardMutation
@@ -57,10 +57,10 @@ const mutation = graphql`
 
 export const updateTaskTaskOnNext: OnNextHandler<
   UpdateTaskMutation_task$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   if (!payload || !payload.addedNotification) return
-  popInvolvementToast(payload.addedNotification, {atmosphere, history})
+  popInvolvementToast(payload.addedNotification, {atmosphere, navigate})
 }
 
 export const updateTaskTaskUpdater: SharedUpdater<UpdateTaskMutation_task$data> = (

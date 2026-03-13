@@ -1,4 +1,3 @@
-import type React from 'react'
 import {themeBackgroundColors} from '../../shared/themeBackgroundColors'
 import {cn} from '../../ui/cn'
 
@@ -37,7 +36,7 @@ const selectColor = (seed: string): string => {
   return themeBackgroundColors[idx]!
 }
 
-export const TeamAvatar: React.FC<TeamAvatarProps> = ({teamName, teamId, className}) => {
+export const TeamAvatar = ({teamName, teamId, className}: TeamAvatarProps) => {
   const initials = getInitials(teamName)
   const backgroundColor = selectColor(teamId)
   return (

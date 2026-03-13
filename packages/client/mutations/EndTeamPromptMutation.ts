@@ -5,9 +5,9 @@ import type {EndTeamPromptMutation_team$data} from '~/__generated__/EndTeamPromp
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import type {EndTeamPromptMutation as TEndTeamPromptMutation} from '../__generated__/EndTeamPromptMutation.graphql'
 import type {
-  HistoryMaybeLocalHandler,
+  NavigateMaybeLocalHandler,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -62,16 +62,16 @@ const mutation = graphql`
 
 export const endTeamPromptTeamOnNext: OnNextHandler<
   EndTeamPromptMutation_team$data,
-  OnNextHistoryContext
+  OnNextNavigateContext
 > = (payload, context) => {
   const {meeting} = payload
-  const {history} = context
+  const {navigate} = context
   if (!meeting) return
   const {id: meetingId, summaryPageId} = meeting
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      history.push(`/pages/${pageCode}`)
+      navigate(`/pages/${pageCode}`)
     }
   }
 }
@@ -85,10 +85,10 @@ export const endTeamPromptTeamUpdater: SharedUpdater<EndTeamPromptMutation_team$
   handleAddTimelineEvent(meeting, timelineEvent, store)
 }
 
-const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, HistoryMaybeLocalHandler> = (
+const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, NavigateMaybeLocalHandler> = (
   atmosphere,
   variables,
-  {onError, onCompleted, history}
+  {onError, onCompleted, navigate}
 ) => {
   return commitMutation<TEndTeamPromptMutation>(atmosphere, {
     mutation,
@@ -105,7 +105,7 @@ const EndTeamPromptMutation: StandardMutation<TEndTeamPromptMutation, HistoryMay
       }
       endTeamPromptTeamOnNext(res.endTeamPrompt as any, {
         atmosphere,
-        history
+        navigate
       })
     },
     onError

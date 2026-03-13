@@ -1,21 +1,20 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {type RouteComponentProps, withRouter} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {SuggestedActionCreateNewTeam_suggestedAction$key} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
 import {PALETTE} from '../styles/paletteV3'
-import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props {
   suggestedAction: SuggestedActionCreateNewTeam_suggestedAction$key
 }
 
 const SuggestedActionCreateNewTeam = (props: Props) => {
+  const navigate = useNavigate()
   const onClick = () => {
-    const {history} = props
-    history.push('/newteam')
+    navigate('/newteam')
   }
 
   const {suggestedAction: suggestedActionRef} = props
@@ -40,4 +39,4 @@ const SuggestedActionCreateNewTeam = (props: Props) => {
   )
 }
 
-export default withMutationProps(withRouter(SuggestedActionCreateNewTeam))
+export default SuggestedActionCreateNewTeam

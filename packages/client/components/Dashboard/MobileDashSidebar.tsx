@@ -14,7 +14,7 @@ import TimelineIcon from '@mui/icons-material/Timeline'
 import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useRouteMatch} from 'react-router'
+import {useMatch} from 'react-router'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import {GlobalBanner, NavSidebar} from '../../types/constEnums'
@@ -97,7 +97,7 @@ const FooterBottom = styled('div')({})
 
 const MobileDashSidebar = (props: Props) => {
   const {handleMenuClick, viewerRef} = props
-  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')
+  const match = useMatch('/me/organizations/:orgId/*')
 
   const viewer = useFragment(
     graphql`
@@ -116,7 +116,7 @@ const MobileDashSidebar = (props: Props) => {
   const {organizations} = viewer
 
   if (match) {
-    const {orgId: orgIdFromParams} = match.params
+    const orgIdFromParams = match.params.orgId!
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (

@@ -34,7 +34,7 @@ import {updateNotificationToastOnNext} from '../mutations/toasts/updateNotificat
 import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
-import type {OnNextHandler, OnNextHistoryContext, SharedUpdater} from '../types/relayMutations'
+import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
 import {createSubscription} from './createSubscription'
 
 graphql`
@@ -200,13 +200,13 @@ const subscription = graphql`
 
 type NextHandler = OnNextHandler<
   TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
-  OnNextHistoryContext
+  OnNextNavigateContext
 >
 
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
   NotificationSubscription_paymentRejected$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   if (!payload) return
   const {paymentRejectedNotification} = payload
   const {organization} = paymentRejectedNotification
@@ -219,7 +219,7 @@ const stripeFailPaymentNotificationOnNext: OnNextHandler<
     action: {
       label: 'Fix it!',
       callback: () => {
-        history!.push(`/me/organizations/${orgId}`)
+        navigate(`/me/organizations/${orgId}`)
       }
     }
   })
@@ -228,8 +228,8 @@ const stripeFailPaymentNotificationOnNext: OnNextHandler<
 // there's a bug in relay compiler that only shows part of the discriminated union
 const meetingStageTimeLimitOnNext: OnNextHandler<
   NotificationSubscription_meetingStageTimeLimitEnd$data,
-  OnNextHistoryContext
-> = (payload: any, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload: any, {atmosphere, navigate}) => {
   if (!payload || payload.__typename !== 'MeetingStageTimeLimitPayload') return
   const {timeLimitNotification} = payload
   const {meeting} = timeLimitNotification
@@ -242,7 +242,7 @@ const meetingStageTimeLimitOnNext: OnNextHandler<
     action: {
       label: 'Go there',
       callback: () => {
-        history!.push(`/meet/${meetingId}`)
+        navigate(`/meet/${meetingId}`)
       }
     }
   })
@@ -270,7 +270,7 @@ const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<
   InvalidateSessionsMutation_notification$data,
-  OnNextHistoryContext
+  OnNextNavigateContext
 > = (_payload, {atmosphere}) => {
   atmosphere.invalidateSession('You’ve been logged out from another device')
 }

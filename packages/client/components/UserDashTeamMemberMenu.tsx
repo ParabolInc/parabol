@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useRouter from '~/hooks/useRouter'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
@@ -24,7 +24,7 @@ interface Props {
 }
 
 const UserDashTeamMemberMenu = (props: Props) => {
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {menuProps, viewer: viewerRef} = props
 
   const viewer = useFragment(
@@ -107,7 +107,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
         <MenuItem
           key={'teamMemberFilterNULL'}
           label={FilterLabels.ALL_TEAM_MEMBERS}
-          onClick={() => history.push(constructFilterQueryParamURL(teamIds, null, showArchived))}
+          onClick={() => navigate(constructFilterQueryParamURL(teamIds, null, showArchived))}
         />
       )}
       {matchedFilteredTeamMembers.map((teamMember) => (
@@ -116,7 +116,7 @@ const UserDashTeamMemberMenu = (props: Props) => {
           dataCy={`team-member-filter-${teamMember.userId}`}
           label={teamMember.preferredName}
           onClick={() =>
-            history.push(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
+            navigate(constructFilterQueryParamURL(teamIds, [teamMember.userId], showArchived))
           }
         />
       ))}

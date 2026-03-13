@@ -1,9 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment} from 'react'
 import {useFragment} from 'react-relay'
 import type {AreaEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import {TaskJiraFieldsContent} from '~/components/TaskJiraFieldsContent'
+import {cn} from '~/ui/cn'
 import type {TaskFooter_task$key} from '../../../../__generated__/TaskFooter_task.graphql'
 import CardButton from '../../../../components/CardButton'
 import IconLabel from '../../../../components/IconLabel'
@@ -11,7 +11,6 @@ import {TaskMoreOptionsMenu} from '../../../../components/TaskMoreOptionsMenu'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
-import {Card} from '../../../../types/constEnums'
 import type {CompletedHandler} from '../../../../types/relayMutations'
 import {USER_DASH} from '../../../../utils/constants'
 import isTaskArchived from '../../../../utils/isTaskArchived'
@@ -21,33 +20,6 @@ import {TaskTagContent} from '../OutcomeCardStatusMenu/TaskTagContent'
 import TaskFooterIntegrateToggle from './TaskFooterIntegrateToggle'
 import TaskFooterTeamAssignee from './TaskFooterTeamAssignee'
 import TaskFooterUserAssignee from './TaskFooterUserAssignee'
-
-const Footer = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  maxWidth: '100%',
-  padding: `8px ${Card.PADDING} ${Card.PADDING}`
-})
-
-const ButtonGroup = styled('div')<{cardIsActive: boolean}>(({cardIsActive}) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  opacity: cardIsActive ? 1 : 0
-}))
-
-// ButtonSpacer helps truncated names (…) be consistent
-const ButtonSpacer = styled('div')({
-  display: 'inline-block',
-  height: 24,
-  verticalAlign: 'middle',
-  width: 24
-})
-
-const AvatarBlock = styled('div')({
-  flex: 1,
-  height: 24,
-  minWidth: 0
-})
 
 interface Props {
   area: AreaEnum
@@ -110,8 +82,8 @@ const TaskFooter = (props: Props) => {
   const canAssignTeam = !isArchived
   return (
     <Fragment>
-      <Footer>
-        <AvatarBlock>
+      <div className='flex max-w-full justify-between px-4 pt-2 pb-4'>
+        <div className='h-6 min-w-0 flex-1'>
           {showTeam ? (
             <TaskFooterTeamAssignee
               canAssign={canAssignTeam}
@@ -126,10 +98,10 @@ const TaskFooter = (props: Props) => {
               useTaskChild={useTaskChild}
             />
           )}
-        </AvatarBlock>
-        <ButtonGroup cardIsActive={cardIsActive}>
+        </div>
+        <div className={cn('flex justify-end', cardIsActive ? 'opacity-100' : 'opacity-0')}>
           {integration || isArchived || !userId ? (
-            <ButtonSpacer />
+            <div className='inline-block h-6 w-6 align-middle' />
           ) : (
             <TaskFooterIntegrateToggle
               mutationProps={mutationProps}
@@ -158,8 +130,8 @@ const TaskFooter = (props: Props) => {
               }
             />
           )}
-        </ButtonGroup>
-      </Footer>
+        </div>
+      </div>
       {error && <OutcomeCardMessage onClose={handleCompleted} message={error} />}
     </Fragment>
   )
