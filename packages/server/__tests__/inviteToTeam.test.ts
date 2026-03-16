@@ -358,3 +358,108 @@ test('Accepted invite token cannot be reused after leaving the team', async () =
     }
   })
 })
+
+test('Pending invites are invalidated when user is removed from org', async () => {
+  const [user1, user2] = await Promise.all([signUp(), signUp()])
+  const {cookie: user1Cookie, teamId: team1Id, orgId} = user1
+  const {cookie: user2Cookie, userId: user2Id, email: user2Email} = user2
+
+  // user1 invites user2 to team1 — user2 accepts and joins org1
+  await sendPublic({
+    query: `
+      mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {
+        inviteToTeam(teamId: $teamId, invitees: $invitees) {
+          invitees
+        }
+      }
+    `,
+    variables: {teamId: team1Id, invitees: [user2Email]},
+    cookie: user1Cookie
+  })
+
+  const pg = getKysely()
+  const {token: firstToken} = await pg
+    .selectFrom('TeamInvitation')
+    .select('token')
+    .where('email', '=', user2Email)
+    .where('teamId', '=', team1Id)
+    .executeTakeFirstOrThrow()
+
+  await sendPublic({
+    query: `
+      mutation AcceptTeamInvitation($invitationToken: ID!) {
+        acceptTeamInvitation(invitationToken: $invitationToken) {
+          error { message }
+          team { id }
+        }
+      }
+    `,
+    variables: {invitationToken: firstToken},
+    cookie: user2Cookie
+  })
+
+  // user2 is now in org1. user1 creates a second team and invites user2 in one call —
+  // inviteToTeamHelper runs inside addTeam after tms is mutated, so the auth check is satisfied
+  const addTeamResult = await sendPublic({
+    query: `
+      mutation AddTeam($newTeam: NewTeamInput!, $invitees: [Email!]) {
+        addTeam(newTeam: $newTeam, invitees: $invitees) {
+          error { message }
+          team { id }
+        }
+      }
+    `,
+    variables: {newTeam: {name: 'Team 2', orgId, isPublic: false}, invitees: [user2Email]},
+    cookie: user1Cookie
+  })
+
+  const team2Id = addTeamResult.data.addTeam.team.id
+
+  const {token: pendingToken} = await pg
+    .selectFrom('TeamInvitation')
+    .select('token')
+    .where('email', '=', user2Email)
+    .where('teamId', '=', team2Id)
+    .executeTakeFirstOrThrow()
+
+  // user1 (billing leader) removes user2 from org1
+  await sendPublic({
+    query: `
+      mutation RemoveOrgUsers($userIds: [ID!]!, $orgId: ID!) {
+        removeOrgUsers(userIds: $userIds, orgId: $orgId) {
+          ... on RemoveOrgUsersSuccess {
+            removedUserIds
+          }
+          ... on ErrorPayload {
+            error { message }
+          }
+        }
+      }
+    `,
+    variables: {userIds: [user2Id], orgId},
+    cookie: user1Cookie
+  })
+
+  // user2 tries to accept the still-pending invite for team2 — should fail because it was expired on removal
+  const reAcceptResult = await sendPublic({
+    query: `
+      mutation AcceptTeamInvitation($invitationToken: ID!) {
+        acceptTeamInvitation(invitationToken: $invitationToken) {
+          error { message }
+          team { id }
+        }
+      }
+    `,
+    variables: {invitationToken: pendingToken},
+    cookie: user2Cookie
+  })
+
+  expect(reAcceptResult).toMatchObject({
+    data: {
+      acceptTeamInvitation: {
+        error: {message: 'expired'},
+        team: null
+      }
+    }
+  })
+})
