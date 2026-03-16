@@ -10,8 +10,9 @@ import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
+import {passwordStrength} from '../shared/passwordStrength'
 import {PALETTE} from '../styles/paletteV3'
-import {LocalStorageKey} from '../types/constEnums'
+import {LocalStorageKey, Security} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAnonymousId from '../utils/getAnonymousId'
@@ -81,11 +82,12 @@ const validateEmail = (email: string) => {
     .matches(emailRegex, 'Please enter a valid email address')
 }
 
-const validatePassword = (password: string) => {
+const validatePassword = (password: string, {email}: {email: string}) => {
   return new Legitity(password)
     .required('Please enter a password')
-    .min(6, '6 character minimum')
+    .min(Security.MIN_PASSWORD_LENGTH, `${Security.MIN_PASSWORD_LENGTH} character minimum`)
     .max(1000, `That's a book, not a password`)
+    .test((value) => passwordStrength(value, email))
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {

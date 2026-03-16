@@ -28,8 +28,15 @@ const mutation = graphql`
     $name: String
     $rrule: RRule
     $gcalInput: CreateGcalEventInput
+    $ignoreSuggestedUpgrade: Boolean
   ) {
-    startRetrospective(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
+    startRetrospective(
+      teamId: $teamId
+      name: $name
+      rrule: $rrule
+      gcalInput: $gcalInput
+      ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
+    ) {
       ... on ErrorPayload {
         error {
           message
@@ -51,6 +58,7 @@ const StartRetrospectiveMutation: StandardMutation<
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startRetrospective} = res
+      if (!startRetrospective) return
       const {meeting, hasGcalError} = startRetrospective
       if (!meeting) return
       const {id: meetingId} = meeting

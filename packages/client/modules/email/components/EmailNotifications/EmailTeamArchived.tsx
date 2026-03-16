@@ -27,11 +27,14 @@ const EmailTeamArchived = (props: Props) => {
   )
   const {archivor, team} = notification
   const {name: teamName} = team
-  const {preferredName: archivorName, rasterPicture: archivorPicture} = archivor
+  const {preferredName: archivorName, rasterPicture: archivorPicture} = archivor ?? {}
+  const message = archivorName
+    ? `${archivorName} archived the team ${teamName}`
+    : `The team ${teamName} was archived`
   return (
     <EmailNotificationTemplate
       avatar={archivorPicture}
-      message={`${archivorName} archived the team ${teamName}`}
+      message={message}
       notificationRef={notification}
     />
   )

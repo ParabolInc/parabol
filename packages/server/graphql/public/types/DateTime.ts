@@ -8,7 +8,9 @@ function parseDate(value: string) {
     throw new Error(`Invalid date: ${value}`)
   }
   if (value !== result.toJSON()) {
-    throw new Error(`Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ: ${value}`)
+    if (!result.toJSON().startsWith(value)) {
+      throw new Error(`Invalid date format, only accepts: YYYY-MM-DDTHH:MM:SS.SSSZ: ${value}`)
+    }
   }
   return result
 }

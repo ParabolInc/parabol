@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.0.0",
+  "version": "13.6.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -71,6 +71,9 @@
     "@smithy/util-retry": "^4.0.2",
     "@whatwg-node/cookie-store": "^0.2.3",
     "@whatwg-node/server-plugin-cookies": "^1.0.5",
+    "@zxcvbn-ts/core": "^3.0.4",
+    "@zxcvbn-ts/language-common": "^3.0.4",
+    "@zxcvbn-ts/language-en": "^3.0.2",
     "adaptivecards": "2.10.0",
     "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",

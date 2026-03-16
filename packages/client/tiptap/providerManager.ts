@@ -40,6 +40,12 @@ class ProviderManager {
       // can remove after debugging server websocket auth on hocuspocus
       token: window.document.cookie,
       onAuthenticationFailed: ({reason}) => {
+        console.log('fail', reason)
+        if (reason === 'InvalidDocument') {
+          // The documentName they passed in cannot exist (DBID out of bounds)
+          window.indexedDB.deleteDatabase(documentName)
+          window.location.href = '/'
+        }
         if (reason === 'Unauthenticated') {
           this.atmosphere?.invalidateSession(reason)
         }

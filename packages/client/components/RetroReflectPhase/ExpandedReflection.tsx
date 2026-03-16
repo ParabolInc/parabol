@@ -69,6 +69,7 @@ const ExpandedReflection = (props: Props) => {
     >
       <DraggableReflectionCard
         isDraggable
+        isExpanded
         meeting={meeting}
         openSpotlight={openSpotlight}
         reflection={reflection}

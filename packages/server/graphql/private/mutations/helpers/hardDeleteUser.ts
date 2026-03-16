@@ -1,7 +1,7 @@
 import {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import getKysely from '../../../../postgres/getKysely'
 import {analytics} from '../../../../utils/analytics/analytics'
-import blacklistJWT from '../../../../utils/blacklistJWT'
+import {blacklistJWT} from '../../../../utils/blacklistJWT'
 import {toEpochSeconds} from '../../../../utils/epochTime'
 import {broadcastUserMentionUpdate} from '../../../../utils/tiptap/hocusPocusHub'
 import {DataLoaderWorker} from '../../../graphql'
@@ -76,6 +76,6 @@ export const hardDeleteUser = async (
 
   await broadcastUserMentionUpdate(userIdToDelete, 'Deleted User', dataLoader, pageIds)
 
-  await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()))
+  await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()) + 1)
   return {}
 }

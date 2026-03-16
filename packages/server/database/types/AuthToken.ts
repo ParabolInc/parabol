@@ -1,3 +1,4 @@
+import {randomUUID} from 'crypto'
 import {Threshold} from 'parabol-client/types/constEnums'
 import makeAppURL from '../../../client/utils/makeAppURL'
 import appOrigin from '../../appOrigin'
@@ -24,7 +25,7 @@ export default class AuthToken {
   iss: string
   exp: number
   aud: string
-  jti?: string
+  jti: string
   constructor(input: Input) {
     const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
     const now = new Date()
@@ -36,7 +37,7 @@ export default class AuthToken {
     this.exp = toEpochSeconds(now.getTime() + (lifespan_ms ?? Threshold.JWT_LIFESPAN))
     this.rol = rol ?? null
     this.scope = scope
-    this.jti = jti
+    this.jti = jti ?? randomUUID()
 
     if (bet) {
       this.bet = bet

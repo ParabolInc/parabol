@@ -1,5 +1,6 @@
 {
   "config": {
+    "addInterfaceFieldResolverTypes": true,
     "content": "// biome-ignore-all",
     "defaultScalarType": "string",
     "enumsAsTypes": true,
@@ -16,6 +17,9 @@
         "contextType": "../graphql#InternalContext",
         "mappers": {
           "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
+          "CompanyCluster": "./types/CompanyCluster#CompanyClusterSource",
+          "ReassignToCompanyClusterSuccess": "./types/ReassignToCompanyClusterSuccess#ReassignToCompanyClusterSuccessSource",
+          "SetTeamLimitAtSuccess": "./types/SetTeamLimitAtSuccess#SetTeamLimitAtSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
@@ -238,6 +242,7 @@
           "RenamePokerTemplateDimensionPayload": "./types/RenamePokerTemplateDimensionPayload#RenamePokerTemplateDimensionPayloadSource",
           "RenameReflectTemplatePromptPayload": "./types/RenameReflectTemplatePromptPayload#RenameReflectTemplatePromptPayloadSource",
           "ResetReflectionGroupsSuccess": "./types/ResetReflectionGroupsSuccess#ResetReflectionGroupsSuccessSource",
+          "RepoIntegration": "../queries/helpers/fetchAllRepoIntegrations#RemoteRepoIntegration",
           "RetroDiscussStage": "./types/RetroDiscussStage#DiscussStageSource",
           "RetroReflection": "../../postgres/types/index#RetroReflection as RetroReflectionDB",
           "RetroReflectionGroup": "./types/RetroReflectionGroup#RetroReflectionGroupSource",
@@ -318,6 +323,7 @@
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
+          "UngroupReflectionSuccess": "./types/UngroupReflectionSuccess#UngroupReflectionSuccessSource",
           "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",
           "User": "../../postgres/types/index#User as UserDB",

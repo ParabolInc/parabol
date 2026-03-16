@@ -3,6 +3,8 @@ import removeFromOrg from '../graphql/mutations/helpers/removeFromOrg'
 import softDeleteUserHelper from '../graphql/mutations/helpers/softDeleteUser'
 import getKysely from '../postgres/getKysely'
 import {analytics} from '../utils/analytics/analytics'
+import {blacklistJWT} from '../utils/blacklistJWT'
+import {toEpochSeconds} from '../utils/epochTime'
 import {SCIMContext} from './SCIMContext'
 import {getUserCategory} from './UserCategory'
 
@@ -40,15 +42,18 @@ export const softDeleteUser = async ({
     await softDeleteUserHelper(userId, dataLoader)
     const reasonRemoved = 'Deleted via SCIM'
     const pg = getKysely()
-    const deletedUser = await pg
-      .updateTable('User')
-      .set({
-        isRemoved: true,
-        reasonRemoved
-      })
-      .where('id', '=', userId)
-      .returningAll()
-      .executeTakeFirst()
+    const [deletedUser] = await Promise.all([
+      pg
+        .updateTable('User')
+        .set({
+          isRemoved: true,
+          reasonRemoved
+        })
+        .where('id', '=', userId)
+        .returningAll()
+        .executeTakeFirst(),
+      blacklistJWT(userId, toEpochSeconds(new Date()) + 1)
+    ])
 
     analytics.accountRemoved(user, reasonRemoved)
 

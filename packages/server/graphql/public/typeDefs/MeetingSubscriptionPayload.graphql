@@ -21,6 +21,7 @@ type MeetingSubscriptionPayload {
   RemoveReflectionPayload: RemoveReflectionPayload
   ResetReflectionGroupsSuccess: ResetReflectionGroupsSuccess
   ResetRetroMeetingToGroupStagePayload: ResetRetroMeetingToGroupStagePayload
+  UngroupReflectionSuccess: UngroupReflectionSuccess
   RevealTeamHealthVotesSuccess: RevealTeamHealthVotesSuccess
   SetMeetingMusicSuccess: SetMeetingMusicSuccess
   SetPhaseFocusPayload: SetPhaseFocusPayload

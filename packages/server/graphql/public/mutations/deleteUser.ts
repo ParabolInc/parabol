@@ -5,6 +5,8 @@ import updateUser from '../../../postgres/queries/updateUser'
 import {analytics} from '../../../utils/analytics/analytics'
 import {unsetAuthCookie} from '../../../utils/authCookie'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
+import {blacklistJWT} from '../../../utils/blacklistJWT'
+import {toEpochSeconds} from '../../../utils/epochTime'
 import {broadcastUserMentionUpdate} from '../../../utils/tiptap/hocusPocusHub'
 import softDeleteUser from '../../mutations/helpers/softDeleteUser'
 import type {MutationResolvers} from '../resolverTypes'
@@ -62,6 +64,8 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   await broadcastUserMentionUpdate(userIdToDelete, 'Deactivated User', dataLoader, pageIds)
 
   analytics.accountRemoved(user, validReason)
+
+  await blacklistJWT(userIdToDelete, toEpochSeconds(new Date()) + 1)
 
   if (userId === viewerId) {
     unsetAuthCookie(context)

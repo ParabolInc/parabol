@@ -26,10 +26,6 @@ const Organization: OrganizationResolvers = {
   featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName})
   },
-  picture: async ({picture}, _args, {dataLoader}) => {
-    if (!picture) return null
-    return dataLoader.get('fileStoreAsset').load(picture)
-  },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})
   },

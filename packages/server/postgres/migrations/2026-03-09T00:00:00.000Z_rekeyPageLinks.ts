@@ -63,6 +63,20 @@ export async function up(db: Kysely<any>): Promise<void> {
   const oldCipher = new FeistelCipher(fnv1aHash(oldSecret.slice(0, 10)))
   const newCipher = new FeistelCipher(fnv1aHash(newSecret.slice(0, 10)))
 
+  // Precompute cipher mappings for all pages so we can handle three cases:
+  // 1. pageCode encrypted with oldCipher → re-encrypt with newCipher
+  // 2. pageCode already encrypted with newCipher → skip (idempotent)
+  // 3. pageCode is an orphan (linked page deleted) → skip
+  const allPageIds = await db
+    .selectFrom('Page')
+    .select('id')
+    .where('deletedAt', 'is', null)
+    .execute()
+  const oldToNew = new Map<number, number>()
+  for (const {id} of allPageIds) {
+    oldToNew.set(oldCipher.encrypt(id), newCipher.encrypt(id))
+  }
+
   const redis = new Redis(process.env.REDIS_URL!, {
     ...getRedisOptions(),
     connectionName: '2026-03-09T00:00:00.000Z_rekeyPageLinks'
@@ -106,8 +120,10 @@ export async function up(db: Kysely<any>): Promise<void> {
           for (const node of pageLinks) {
             const attrCode = node.getAttribute('pageCode')
             if (attrCode == null) continue
-            const dbId = oldCipher.decrypt(Number(attrCode))
-            node.setAttribute('pageCode', newCipher.encrypt(dbId) as any)
+            const newCode = oldToNew.get(Number(attrCode))
+            // newCode is undefined if already encrypted with newCipher or an orphan link
+            if (newCode === undefined) continue
+            node.setAttribute('pageCode', newCode as any)
             changed = true
           }
         })

@@ -72,12 +72,15 @@ const FooPayload: FooPayloadResolvers = {
 }
 ```
 
-### IMPORTANT: Always include `{error: {message: string}}` in Payload source types
-Every `*Payload` source type (the non-Success union variant) **must** include `| {error: {message: string}}` in its union, because the mutation resolver can return `standardError(...)` or `{error: {...}}` on failure. This applies to any type whose SDL name ends in `Payload` (as opposed to `Success` types, which are the guaranteed-success branch of a discriminated union and do not need the error case).
+### Date arithmetic: use the `ms` package
+When computing future/past dates, use `ms` from the `ms` package instead of manual millisecond math:
+```ts
+import ms from 'ms'
+const maxAllowed = new Date(Date.now() + ms('60d'))
+```
 
-All field resolvers in a Payload type must guard with `if ('error' in source) return null` before accessing success-branch fields.
-
-`*Success` types (e.g. `JoinMeetingSuccess`, `FlagReadyToAdvanceSuccess`) do **not** need the error case — they are always the success branch.
+### Mutation return types: always use `*Success` directly — union Payloads are deprecated
+Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtSuccess!`). The `union *Payload = ErrorPayload | *Success` pattern is **deprecated** — do not use it for new mutations. On errors, throw a `GraphQLError` instead of returning an error object.
 
 ---
 

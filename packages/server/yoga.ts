@@ -18,6 +18,7 @@ import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import {useAuditLogs} from './utils/useAuditLogs'
+import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {useOAuthScopeValidation} from './utils/useOAuthScopeValidation'
@@ -203,6 +204,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
       extractPersistedOperationId,
       getPersistedOperation
     }),
+    useCheckBlacklist(),
     usePrivateSchemaForSuperUser,
     // TODO: more logic will need to be added in order to validate that a
     //       non-superuser has not only the correct scopes, but also sufficient

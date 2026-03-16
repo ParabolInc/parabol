@@ -17,6 +17,7 @@ import useMutationProps from '../../hooks/useMutationProps'
 import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
+import type {CompletedHandler} from '../../types/relayMutations'
 import {cn} from '../../ui/cn'
 import sortByTier from '../../utils/sortByTier'
 import FlatPrimaryButton from '../FlatPrimaryButton'
@@ -25,6 +26,7 @@ import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonym
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
+import StartMeetingUpgradeModal from '../StartMeetingUpgradeModal'
 import StyledError from '../StyledError'
 import StyledLink from '../StyledLink'
 import ScheduleMeetingButton from './ScheduleMeetingButton'
@@ -36,9 +38,24 @@ interface Props {
   preferredTeamId: string | null | undefined
 }
 
+type UpgradeModalState = {
+  isHardBlock: boolean
+  teamCount: number
+  meetingCount: number
+}
+
+type PendingStartArgs = {
+  name?: string
+  rrule?: RRule
+  gcalInput?: CreateGcalEventInput
+}
+
 const ActivityDetailsSidebar = (props: Props) => {
   const {selectedTemplateRef, teamsRef, type, preferredTeamId} = props
   const [isMinimized, setIsMinimized] = useState(false)
+  const [upgradeModalState, setUpgradeModalState] = useState<UpgradeModalState | null>(null)
+  const pendingStartArgs = useRef<PendingStartArgs>({})
+
   const selectedTemplate = useFragment(
     graphql`
       fragment ActivityDetailsSidebar_template on MeetingTemplate {
@@ -124,9 +141,47 @@ const ActivityDetailsSidebar = (props: Props) => {
       </div>
     )
 
-  const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
+  const tryShowUpgradeModal = (extensions: Record<string, unknown> | null | undefined) => {
+    const code = extensions?.code
+    if (code !== 'MAX_TEAM_UPGRADE_REQUIRED' && code !== 'MAX_TEAM_UPGRADE_SUGGESTED') return false
+    setUpgradeModalState({
+      isHardBlock: code === 'MAX_TEAM_UPGRADE_REQUIRED',
+      teamCount: (extensions?.teamCount as number) ?? 0,
+      meetingCount: (extensions?.meetingCount as number) ?? 0
+    })
+    return true
+  }
+
+  const makeUpgradeAwareOnCompleted =
+    (innerOnCompleted: CompletedHandler): CompletedHandler =>
+    (res, errors) => {
+      innerOnCompleted(res, errors)
+      errors?.find((e) => tryShowUpgradeModal(e.extensions))
+    }
+
+  const makeUpgradeAwareOnError =
+    (innerOnError: typeof onError): typeof onError =>
+    (error) => {
+      const sourceErrors = (error as any)?.source?.errors as
+        | Array<{
+            extensions?: Record<string, unknown>
+          }>
+        | undefined
+      const handled = sourceErrors?.some((e) => tryShowUpgradeModal(e.extensions))
+      if (handled) return
+      innerOnError(error)
+    }
+
+  const startActivity = (
+    name?: string,
+    rrule?: RRule,
+    gcalInput?: CreateGcalEventInput,
+    ignoreSuggestedUpgrade?: boolean
+  ) => {
     if (submitting) return
     submitMutation()
+    const upgradeAwareOnCompleted = makeUpgradeAwareOnCompleted(onCompleted)
+    const upgradeAwareOnError = makeUpgradeAwareOnError(onError)
     if (type === 'teamPrompt') {
       StartTeamPromptMutation(
         atmosphere,
@@ -134,21 +189,17 @@ const ActivityDetailsSidebar = (props: Props) => {
           teamId: selectedTeam.id,
           name,
           rrule: rrule?.toString(),
-          gcalInput
+          gcalInput,
+          ignoreSuggestedUpgrade
         },
-        {history, onError, onCompleted}
+        {history, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
       )
     } else if (type === 'action') {
-      const variables = {
-        teamId: selectedTeam.id,
-        gcalInput
-      }
-
-      StartCheckInMutation(atmosphere, variables, {
-        history,
-        onError,
-        onCompleted
-      })
+      StartCheckInMutation(
+        atmosphere,
+        {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
+        {history, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
+      )
     } else {
       SelectTemplateMutation(
         atmosphere,
@@ -162,15 +213,16 @@ const ActivityDetailsSidebar = (props: Props) => {
                   teamId: selectedTeam.id,
                   name,
                   rrule: rrule?.toString(),
-                  gcalInput
+                  gcalInput,
+                  ignoreSuggestedUpgrade
                 },
-                {history, onError, onCompleted}
+                {history, onError, onCompleted: upgradeAwareOnCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
-                {teamId: selectedTeam.id, gcalInput},
-                {history, onError, onCompleted}
+                {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
+                {history, onError, onCompleted: upgradeAwareOnCompleted}
               )
             }
           },
@@ -178,6 +230,17 @@ const ActivityDetailsSidebar = (props: Props) => {
         }
       )
     }
+  }
+
+  const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
+    pendingStartArgs.current = {name, rrule, gcalInput}
+    startActivity(name, rrule, gcalInput)
+  }
+
+  const handleStartAnyway = () => {
+    setUpgradeModalState(null)
+    const {name, rrule, gcalInput} = pendingStartArgs.current
+    startActivity(name, rrule, gcalInput, true)
   }
 
   const handleShareToOrg =
@@ -272,6 +335,17 @@ const ActivityDetailsSidebar = (props: Props) => {
           </FlatPrimaryButton>
         </div>
       </div>
+      {upgradeModalState && (
+        <StartMeetingUpgradeModal
+          isOpen={true}
+          isHardBlock={upgradeModalState.isHardBlock}
+          teamCount={upgradeModalState.teamCount}
+          meetingCount={upgradeModalState.meetingCount}
+          orgId={selectedTeam.orgId}
+          onClose={() => setUpgradeModalState(null)}
+          onStartAnyway={upgradeModalState.isHardBlock ? undefined : handleStartAnyway}
+        />
+      )}
     </>
   )
 }

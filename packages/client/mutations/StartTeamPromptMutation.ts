@@ -22,8 +22,15 @@ const mutation = graphql`
     $name: String
     $rrule: RRule
     $gcalInput: CreateGcalEventInput
+    $ignoreSuggestedUpgrade: Boolean
   ) {
-    startTeamPrompt(teamId: $teamId, name: $name, rrule: $rrule, gcalInput: $gcalInput) {
+    startTeamPrompt(
+      teamId: $teamId
+      name: $name
+      rrule: $rrule
+      gcalInput: $gcalInput
+      ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade
+    ) {
       ... on ErrorPayload {
         error {
           message

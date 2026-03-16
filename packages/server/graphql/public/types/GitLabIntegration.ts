@@ -143,7 +143,7 @@ const GitLabIntegration: GitLabIntegrationResolvers = {
     const stringifiedEndCursor = JSON.stringify(endCursor)
     return {
       error: errors[0],
-      edges: projectsIssues,
+      edges: projectsIssues as any,
       pageInfo: {
         startCursor: firstEdge && firstEdge.cursor,
         endCursor: stringifiedEndCursor,
