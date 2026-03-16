@@ -137,6 +137,66 @@ test('Team invite to an email acts as email verification', async () => {
   })
 })
 
+test('Existing user cannot accept a team invitation sent to a different email', async () => {
+  const [user1, user2] = await Promise.all([signUp(), signUp()])
+  const {cookie: user1Cookie, teamId} = user1
+  const {cookie: user2Cookie} = user2
+
+  const invitedEmail = faker.internet.email().toLowerCase()
+
+  await sendPublic({
+    query: `
+      mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {
+        inviteToTeam(teamId: $teamId, invitees: $invitees) {
+          error {
+            title
+            message
+          }
+          invitees
+        }
+      }
+    `,
+    variables: {teamId, invitees: [invitedEmail]},
+    cookie: user1Cookie
+  })
+
+  const pg = getKysely()
+  const {token} = await pg
+    .selectFrom('TeamInvitation')
+    .select('token')
+    .where('email', '=', invitedEmail)
+    .where('teamId', '=', teamId)
+    .executeTakeFirstOrThrow()
+
+  const acceptResult = await sendPublic({
+    query: `
+      mutation AcceptTeamInvitation($invitationToken: ID!) {
+        acceptTeamInvitation(invitationToken: $invitationToken) {
+          error {
+            message
+          }
+          team {
+            id
+          }
+        }
+      }
+    `,
+    variables: {invitationToken: token},
+    cookie: user2Cookie
+  })
+
+  expect(acceptResult).toMatchObject({
+    data: {
+      acceptTeamInvitation: {
+        error: {
+          message: 'notFound'
+        },
+        team: null
+      }
+    }
+  })
+})
+
 test('Team invite to an email acts as email verification only if the email matches', async () => {
   const user1 = await signUp()
   const {cookie, teamId} = user1
