@@ -264,3 +264,97 @@ test('Team invite to an email acts as email verification only if the email match
     }
   })
 })
+
+test('Accepted invite token cannot be reused after leaving the team', async () => {
+  const [user1, user2] = await Promise.all([signUp(), signUp()])
+  const {cookie: user1Cookie, teamId} = user1
+  const {cookie: user2Cookie, userId: user2Id, email: user2Email} = user2
+
+  // User1 invites user2 to their team
+  await sendPublic({
+    query: `
+      mutation InviteToTeam($teamId: ID!, $invitees: [Email!]!) {
+        inviteToTeam(teamId: $teamId, invitees: $invitees) {
+          error {
+            title
+            message
+          }
+          invitees
+        }
+      }
+    `,
+    variables: {teamId, invitees: [user2Email]},
+    cookie: user1Cookie
+  })
+
+  const pg = getKysely()
+  const {token} = await pg
+    .selectFrom('TeamInvitation')
+    .select('token')
+    .where('email', '=', user2Email)
+    .where('teamId', '=', teamId)
+    .executeTakeFirstOrThrow()
+
+  const ACCEPT_TEAM_INVITATION_MUTATION = `
+    mutation AcceptTeamInvitation($invitationToken: ID!) {
+      acceptTeamInvitation(invitationToken: $invitationToken) {
+        error {
+          message
+        }
+        team {
+          id
+        }
+      }
+    }
+  `
+
+  // User2 accepts the invite and joins the team
+  const acceptResult = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION_MUTATION,
+    variables: {invitationToken: token},
+    cookie: user2Cookie
+  })
+
+  expect(acceptResult).toMatchObject({
+    data: {
+      acceptTeamInvitation: {
+        error: null,
+        team: {id: teamId}
+      }
+    }
+  })
+
+  // User2 leaves the team
+  const teamMemberId = `${user2Id}::${teamId}`
+  await sendPublic({
+    query: `
+      mutation RemoveTeamMember($teamMemberId: ID!) {
+        removeTeamMember(teamMemberId: $teamMemberId) {
+          error {
+            message
+          }
+        }
+      }
+    `,
+    variables: {teamMemberId},
+    cookie: user2Cookie
+  })
+
+  // User2 tries to accept the same invite token again — should fail
+  const reAcceptResult = await sendPublic({
+    query: ACCEPT_TEAM_INVITATION_MUTATION,
+    variables: {invitationToken: token},
+    cookie: user2Cookie
+  })
+
+  expect(reAcceptResult).toMatchObject({
+    data: {
+      acceptTeamInvitation: {
+        error: {
+          message: 'accepted'
+        },
+        team: null
+      }
+    }
+  })
+})
