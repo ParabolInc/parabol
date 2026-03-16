@@ -39,18 +39,15 @@ export async function up(db: Kysely<any>): Promise<void> {
     let changed = false
 
     doc.transact(() => {
-      data.forEach((row: any, rowId: string) => {
-        if (!(row instanceof Y.Map)) return // Already new format, skip
-
-        // Convert Y.Map<ColumnId, string> → Y.Array<{key, val}>
+      for (const [rowId, row] of data) {
+        if (!(row instanceof Y.Map)) continue // Already new format, skip
         const cells: {key: string; val: string | null}[] = []
-        row.forEach((val: string, key: string) => {
+        ;(row as Y.Map<string>).forEach((val, key) => {
           cells.push({key, val: val ?? null})
         })
-
         data.set(rowId, Y.Array.from(cells))
         changed = true
-      })
+      }
     })
 
     if (!changed) {
