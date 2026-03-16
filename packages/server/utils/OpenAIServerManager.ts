@@ -8,6 +8,19 @@ type InsightResponse = {
   challenges: string[]
 }
 
+type GroupReflectionsInput = {
+  id: string
+  text: string
+  prompt: string
+}
+
+type GroupReflectionsResult = {
+  groups: {
+    title: string
+    reflectionIds: string[]
+  }[]
+}
+
 class OpenAIServerManager {
   openAIApi
   constructor() {
@@ -19,6 +32,79 @@ class OpenAIServerManager {
       apiKey: process.env.OPEN_AI_API_KEY,
       organization: process.env.OPEN_AI_ORG_ID
     })
+  }
+
+  async groupReflectionsStructured(
+    reflections: GroupReflectionsInput[]
+  ): Promise<GroupReflectionsResult | null> {
+    if (!this.openAIApi) return null
+    if (reflections.length === 0) return null
+
+    const min = Math.max(1, Math.floor(reflections.length / 6))
+    const max = Math.ceil(reflections.length / 3)
+
+    const prompt = `You are an expert facilitator for agile team retrospective meetings. In a retrospective, team members write reflections about their recent work, then group them into themes for focused discussion. Your job is to group reflections in the way that will lead to the most productive team conversations.
+
+Each reflection was written in response to a specific prompt (shown in parentheses). Reflections from different prompts CAN be grouped together when they share a common actionable theme — the prompt category is context, not a hard boundary.
+
+Here are the reflections:
+${reflections.map((r) => `[${r.id}] (${r.prompt}): ${r.text}`).join('\n')}
+
+Group these reflections to maximize the value of team discussion. Rules:
+- Optimize for actionable conversations: group reflections that, when discussed together, will help the team identify root causes, recognize patterns, or decide on concrete improvements
+- Prefer groups that surface tensions or connections the team might not notice on their own (e.g. group a frustration with a related success to spark deeper insight)
+- Each reflection must belong to exactly one group
+- Aim for ${min} to ${max} groups, but adjust if the reflections naturally cluster differently
+- Reflections that don't clearly relate to others should remain in their own single-reflection group
+- Group titles should be 2-5 words, action-oriented, and describe what the team should discuss (e.g. "Speed Up Code Reviews" not "Code Reviews", "Celebrate Ship Velocity" not "Shipping")
+- Titles must be distinct from each other
+
+Return JSON: { "groups": [{ "title": "...", "reflectionIds": ["id1", "id2"] }] }`
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-5-mini',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        response_format: {type: 'json_object'}
+      })
+
+      const content = response.choices[0]?.message?.content
+      if (!content) return null
+
+      let parsed: GroupReflectionsResult
+      try {
+        parsed = JSON.parse(content)
+      } catch {
+        logError(new Error('Failed to parse groupReflectionsStructured JSON response'))
+        return null
+      }
+
+      if (!parsed.groups || !Array.isArray(parsed.groups)) return null
+
+      // Validate every input ID appears exactly once
+      const inputIds = new Set(reflections.map((r) => r.id))
+      const outputIds = new Set<string>()
+      for (const group of parsed.groups) {
+        if (!group.title || !Array.isArray(group.reflectionIds)) return null
+        for (const id of group.reflectionIds) {
+          if (!inputIds.has(id) || outputIds.has(id)) return null
+          outputIds.add(id)
+        }
+      }
+      if (outputIds.size !== inputIds.size) return null
+
+      return parsed
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to groupReflectionsStructured')
+      logError(error)
+      return null
+    }
   }
 
   async getStandupSummary(
@@ -112,106 +198,6 @@ class OpenAIServerManager {
           ? e
           : new Error(`OpenAI failed to generate a question for the topic ${topic}`)
       logError(error)
-      return null
-    }
-  }
-
-  async generateThemes(reflectionsText: string[]) {
-    if (!this.openAIApi) return null
-    const suggestedThemeCountMin = Math.floor(reflectionsText.length / 5)
-    const suggestedThemeCountMax = Math.floor(reflectionsText.length / 3)
-    // Specify the approximate number of themes as it will often create too many themes otherwise
-    const prompt = `Create a short list of common themes given the following reflections: ${reflectionsText.join(
-      ', '
-    )}. Each theme should be no longer than a few words. There should be roughly ${suggestedThemeCountMin} to ${suggestedThemeCountMax} themes. Return the themes as a comma-separated list.`
-
-    try {
-      const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      })
-      const themes = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      return themes.split(', ')
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error('OpenAI failed to generate themes')
-      logError(error)
-      return null
-    }
-  }
-
-  async groupReflections(reflectionsText: string[], themes: string[]) {
-    if (!this.openAIApi) return null
-
-    const getThemeForReflection = async (
-      reflection: string,
-      retry = false
-    ): Promise<string | null> => {
-      const prompt = `Given the themes ${themes.join(
-        ', '
-      )}, and the following reflection: "${reflection}", classify the reflection into the theme it fits in best. The reflection can only be added to one theme. Do not edit the reflection text. Your output should just be the theme name, and must be one of the themes I've provided.`
-
-      const response = await this.openAIApi!.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0
-      })
-
-      const theme = (response.choices[0]?.message?.content?.trim() as string) ?? null
-      if (!theme || !themes.includes(theme)) {
-        if (!retry) {
-          return getThemeForReflection(reflection, true)
-        } else {
-          logError(
-            new Error(
-              `Couldn't find a suitable theme for reflection: "${reflection}" from the following themes: ${themes.join(
-                ', '
-              )}`
-            )
-          )
-          return null
-        }
-      }
-      return theme
-    }
-
-    try {
-      const themesByReflections = await Promise.all(
-        reflectionsText.map((reflection) => getThemeForReflection(reflection))
-      )
-
-      const groupedReflections = themes.reduce<{[key: string]: string[]}>((acc, theme) => {
-        acc[theme] = []
-        return acc
-      }, {})
-
-      themesByReflections.forEach((theme, index) => {
-        const reflection = reflectionsText[index]
-        if (theme && reflection) {
-          groupedReflections[theme]?.push(reflection)
-        }
-      })
-
-      return groupedReflections
-    } catch (error) {
-      const e = error instanceof Error ? error : new Error('OpenAI failed to group reflections')
-      logError(e)
       return null
     }
   }

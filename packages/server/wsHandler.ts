@@ -86,9 +86,9 @@ export const wsHandler = makeBehavior<{token?: string}>({
       const token = connectionParams?.token
       if (typeof token === 'string') {
         authToken = getVerifiedAuthToken(token)
-        const {sub: viewerId, iat} = authToken
+        const {sub: viewerId} = authToken
         if (!viewerId) return false
-        const isBlacklistedJWT = await checkBlacklistJWT(viewerId, iat)
+        const isBlacklistedJWT = await checkBlacklistJWT(authToken)
         if (isBlacklistedJWT) return false
       }
     }
@@ -304,10 +304,10 @@ wsHandler.upgrade = async (res, req, context) => {
   let freshToken: AuthToken | null = null
   if (typeof token === 'string') {
     const authToken = getVerifiedAuthToken(token)
-    const {sub: viewerId, iat} = authToken
+    const {sub: viewerId} = authToken
     const [isBlacklistedJWT, user] = viewerId
       ? await Promise.all([
-          checkBlacklistJWT(viewerId, iat),
+          checkBlacklistJWT(authToken),
           getKysely()
             .selectFrom('User')
             .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])

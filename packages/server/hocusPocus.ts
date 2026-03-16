@@ -117,8 +117,9 @@ export const hocuspocus = new Hocuspocus({
       return {userId}
     }
     const [dbId] = CipherId.fromClient(documentName)
-    if (dbId === 0) {
+    if (dbId < 1 || dbId > 2 ** 31 - 1) {
       const error = new Error(`Invalid document request from client: ${documentName}`)
+      ;(error as any).reason = 'InvalidDocument'
       logError(error, {userId, tags: {dbId, documentName}})
       throw error
     }

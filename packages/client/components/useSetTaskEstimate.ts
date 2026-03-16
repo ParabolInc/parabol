@@ -9,7 +9,7 @@ import SetTaskEstimateMutation from '../mutations/SetTaskEstimateMutation'
 import type {CompletedHandler} from '../types/relayMutations'
 import {MAX_FREE_JIRA_EXPORTS} from '../utils/constants'
 
-const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
+export const JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY = 'jiraExportUpgradeModalDismissed'
 
 const useSetTaskEstimate = () => {
   const {submitMutation, submitting, error, onError, onCompleted} = useMutationProps()

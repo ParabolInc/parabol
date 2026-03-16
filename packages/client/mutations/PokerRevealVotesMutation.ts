@@ -16,8 +16,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation PokerRevealVotesMutation($meetingId: ID!, $stageId: ID!) {
-    pokerRevealVotes(meetingId: $meetingId, stageId: $stageId) {
+  mutation PokerRevealVotesMutation($meetingId: ID!, $stageId: ID!, $ignoreSuggestedUpgrade: Boolean) {
+    pokerRevealVotes(meetingId: $meetingId, stageId: $stageId, ignoreSuggestedUpgrade: $ignoreSuggestedUpgrade) {
       ... on ErrorPayload {
         error {
           message

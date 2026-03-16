@@ -2,8 +2,6 @@ import DataLoader from 'dataloader'
 import {type SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
 import type MeetingTemplate from '../database/types/MeetingTemplate'
-import type {PartialPath} from '../fileStorage/FileStoreManager'
-import getFileStoreManager from '../fileStorage/getFileStoreManager'
 import isValid from '../graphql/isValid'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
 import type {SAMLSource} from '../graphql/public/types/SAML'
@@ -759,36 +757,6 @@ export const favoriteTemplateIds = (parent: RootDataLoader, dependsOn: RegisterD
     }
   )
 }
-
-// This should be removed once we've migrated the DB hyperlinks to using the asset proxy URLs
-export const fileStoreAsset = (parent: RootDataLoader) => {
-  return new DataLoader<string, string, string>(
-    async (urls) => {
-      // Our cloud saas has a public file store, so no need to make a presigned url
-      if (process.env.IS_ENTERPRISE !== 'true') return urls
-      const manager = getFileStoreManager()
-      const {baseUrl} = manager
-      const presignedUrls = await Promise.all(
-        urls.map(async (url) => {
-          // if the image is not hosted by us, ignore it
-          if (!url.startsWith(baseUrl)) return url
-          try {
-            const partialPath = url.slice(baseUrl.length)
-            return await manager.presignUrl(partialPath as PartialPath)
-          } catch (e) {
-            Logger.log('Unable to presign url', url, e)
-            return url
-          }
-        })
-      )
-      return presignedUrls
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
 export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
   dependsOn('newMeetings')
   return new DataLoader<{teamId: string; meetingType: MeetingTypeEnum}, number, string>(

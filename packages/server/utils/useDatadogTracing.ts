@@ -30,7 +30,7 @@ interface Config {
    * an array of variables to exclude.
    * Useful for excluding private variables like passwords
    */
-  excludeArgs?: Record<string, string[]>
+  excludeArgs?: Record<string, (string | number | symbol)[]>
   /**
    * Whether to collapse list items into a single element. (i.e. single
    * `users.*.name` span instead of `users.0.name`, `users.1.name`, etc)

@@ -12,9 +12,6 @@ const MeetingTemplate: MeetingTemplateResolvers = {
   team: async ({teamId}, _args, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
-  illustrationUrl: async ({illustrationUrl}, _args, {dataLoader}) => {
-    return dataLoader.get('fileStoreAsset').load(illustrationUrl)
-  },
   viewerLowestScope: async ({teamId, orgId}, _args, {authToken, dataLoader}) => {
     if (teamId === 'aGhostTeam') return 'PUBLIC'
     const viewerId = getUserId(authToken)

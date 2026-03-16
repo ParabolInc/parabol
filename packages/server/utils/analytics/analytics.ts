@@ -185,6 +185,7 @@ export type AnalyticsEvent =
   | 'Suggested Groups Generated'
   | 'Suggest Groups Clicked'
   | 'Reset Groups Clicked'
+  | 'Resolve Autogroup Suggestions'
   // Conversion Tracking
   | 'Conversion Modal Pay Later Clicked'
   | 'Icebreaker Modified'

@@ -5,6 +5,94 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.1](https://github.com/ParabolInc/parabol/compare/v13.6.0...v13.6.1) (2026-03-13)
+
+
+### Changed
+
+* Update release workflow to checkout from `origin/production` ([#12861](https://github.com/ParabolInc/parabol/issues/12861)) ([884ecde](https://github.com/ParabolInc/parabol/commit/884ecde7d4c5d3622a500f2757aef986aeeb58a2))
+
+## [13.6.0](https://github.com/ParabolInc/parabol/compare/v13.5.3...v13.6.0) (2026-03-13)
+
+
+### Added
+
+* Always display Jira Data Center tab for poker ([#12859](https://github.com/ParabolInc/parabol/issues/12859)) ([d4a99ca](https://github.com/ParabolInc/parabol/commit/d4a99ca76961cfba86ac8c218a7e9f814bf13e18))
+* improved AI grouping; ungrouping; title marquee ([#12837](https://github.com/ParabolInc/parabol/issues/12837)) ([c794cb0](https://github.com/ParabolInc/parabol/commit/c794cb0cb0f7622786c0c2269b83ab9bea8edd83))
+
+
+### Fixed
+
+* linear issue titles in meeting summaries ([#12855](https://github.com/ParabolInc/parabol/issues/12855)) ([7cdddeb](https://github.com/ParabolInc/parabol/commit/7cdddeb8d601f0b313aef5ad9601412f007aff14))
+
+## [13.5.3](https://github.com/ParabolInc/parabol/compare/v13.5.2...v13.5.3) (2026-03-13)
+
+
+### Fixed
+
+* remove Mattermost plugin provider if env is not present ([#12853](https://github.com/ParabolInc/parabol/issues/12853)) ([d1d9ea8](https://github.com/ParabolInc/parabol/commit/d1d9ea8903580b671b1d444a23e4dae1958557fd))
+
+## [13.5.2](https://github.com/ParabolInc/parabol/compare/v13.5.1...v13.5.2) (2026-03-13)
+
+
+### Fixed
+
+* push to ironbank4 ([#12850](https://github.com/ParabolInc/parabol/issues/12850)) ([5137181](https://github.com/ParabolInc/parabol/commit/5137181d31d91ece1c637a5c4da238b7b7dc907d))
+
+## [13.5.1](https://github.com/ParabolInc/parabol/compare/v13.5.0...v13.5.1) (2026-03-13)
+
+
+### Fixed
+
+* ironbank push 3 ([#12847](https://github.com/ParabolInc/parabol/issues/12847)) ([ee59040](https://github.com/ParabolInc/parabol/commit/ee590407f9ac67fd19dc8787aabb45d55a1c1eb9))
+
+## [13.5.0](https://github.com/ParabolInc/parabol/compare/v13.4.0...v13.5.0) (2026-03-12)
+
+
+### Added
+
+* automate Ironbank PR creation and update ([#12843](https://github.com/ParabolInc/parabol/issues/12843)) ([0cd9af4](https://github.com/ParabolInc/parabol/commit/0cd9af4ed3a737709e0453a41dc0410b169c9729))
+
+
+### Fixed
+
+* ironbank push dupe ([#12845](https://github.com/ParabolInc/parabol/issues/12845)) ([6d38e1a](https://github.com/ParabolInc/parabol/commit/6d38e1ab9d07a0cb2d42a8c2c282dd6c0d44a677))
+
+## [13.4.0](https://github.com/ParabolInc/parabol/compare/v13.3.1...v13.4.0) (2026-03-12)
+
+
+### Added
+
+* drag handle menu, position normalization ([#12753](https://github.com/ParabolInc/parabol/issues/12753)) ([5f2a361](https://github.com/ParabolInc/parabol/commit/5f2a3612eccb6adeb3e98db77cde7498fcfb0df2))
+
+
+### Fixed
+
+* blacklist all JWT on password reset ([#12834](https://github.com/ParabolInc/parabol/issues/12834)) ([e4954f0](https://github.com/ParabolInc/parabol/commit/e4954f0f7de4cfb74e52c7d2507acc9a7a9d17ef))
+* bump deps ([#12840](https://github.com/ParabolInc/parabol/issues/12840)) ([bcc4e08](https://github.com/ParabolInc/parabol/commit/bcc4e0861ac78eca16d28244b88a6a0287afd98c))
+* check template permissions when querying directly ([#12836](https://github.com/ParabolInc/parabol/issues/12836)) ([4678447](https://github.com/ParabolInc/parabol/commit/467844757a7d989129f56df1c2de44df3498dfdc))
+
+## [13.3.1](https://github.com/ParabolInc/parabol/compare/v13.3.0...v13.3.1) (2026-03-12)
+
+
+### Fixed
+
+* blacklist session token on signout ([#12831](https://github.com/ParabolInc/parabol/issues/12831)) ([4059d31](https://github.com/ParabolInc/parabol/commit/4059d3144ff4295882868aad9847b9e8bcd5391b))
+
+## [13.3.0](https://github.com/ParabolInc/parabol/compare/v13.2.0...v13.3.0) (2026-03-12)
+
+
+### Added
+
+* Implement free-tier Jira export limits with an upgrade modal ([#12828](https://github.com/ParabolInc/parabol/issues/12828)) ([9ccafca](https://github.com/ParabolInc/parabol/commit/9ccafca0d57e582d97dd72729b442aad3aa64770))
+
+## [13.2.0](https://github.com/ParabolInc/parabol/compare/v13.1.3...v13.2.0) (2026-03-11)
+
+
+### Added
+
+* Implement server-side validation for document IDs ([#12825](https://github.com/ParabolInc/parabol/issues/12825)) ([24a98dd](https://github.com/ParabolInc/parabol/commit/24a98ddf28d6d1f4941254ed402ffe8ddbfa8c74))
+
 ## [13.1.3](https://github.com/ParabolInc/parabol/compare/v13.1.2...v13.1.3) (2026-03-11)
 
 
