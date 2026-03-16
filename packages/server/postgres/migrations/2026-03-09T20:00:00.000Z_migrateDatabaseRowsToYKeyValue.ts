@@ -8,11 +8,6 @@ import {getRedisOptions} from '../../utils/getRedisOptions'
 const SERVER_ID = process.env.SERVER_ID!
 
 export async function up(db: Kysely<any>): Promise<void> {
-  const redis = new Redis(process.env.REDIS_URL!, {
-    ...getRedisOptions(),
-    connectionName: '2026-03-09T20:00:00.000Z_migrateDatabaseRowsToYKeyValue'
-  })
-
   const pages = await db
     .selectFrom('Page')
     .select(['id', 'yDoc'])
@@ -22,6 +17,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 
   console.log(`Found ${pages.length} database pages to migrate`)
   if (pages.length === 0) return
+
+  const redis = new Redis(process.env.REDIS_URL!, {
+    ...getRedisOptions(),
+    connectionName: '2026-03-09T20:00:00.000Z_migrateDatabaseRowsToYKeyValue'
+  })
 
   let migratedCount = 0
   let skippedCount = 0
