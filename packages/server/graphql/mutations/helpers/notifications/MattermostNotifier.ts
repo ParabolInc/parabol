@@ -33,20 +33,21 @@ const notifyMattermost = async (
     serverBaseUrl: string | null
     sharedSecret: string | null
     channelId: string | null
+    bearerToken?: string
   },
   user: User,
   teamId: string,
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
-  const {webhookUrl, serverBaseUrl, sharedSecret, channelId} = channel
+  const {webhookUrl, serverBaseUrl, sharedSecret, channelId, bearerToken} = channel
   const notifyUrl = serverBaseUrl
     ? `${serverBaseUrl.replace(/\/+$/, '')}/plugins/co.parabol.action/notify/${channelId}`
     : webhookUrl
   if (!notifyUrl) {
     return 'success'
   }
-  const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined)
+  const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined, bearerToken)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
     logError(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
@@ -113,6 +114,7 @@ type MattermostNotificationAuth = {
   serverBaseUrl: string | null
   sharedSecret: string | null
   channelId: string | null
+  bearerToken?: string
 }
 
 const makeTeamPromptStartMeetingNotification = (
@@ -385,25 +387,50 @@ async function getMattermostPluginNotificationHelpers(
   const [mattermostProvider] = await dataLoader
     .get('sharedIntegrationProviders')
     .load({service: 'mattermost', orgIds: [], teamIds: []})
-  if (mattermostProvider && mattermostProvider.authStrategy === 'sharedSecret') {
-    const {id: providerId, serverBaseUrl, sharedSecret} = mattermostProvider
-    const settings = await dataLoader
-      .get('teamNotificationSettingsByProviderIdAndTeamId')
-      .load({providerId, teamId})
-    return settings
-      .filter(({events, channelId}) => channelId && events.includes(event))
-      .map(({channelId}) =>
-        MattermostNotificationHelper({
-          userId,
-          teamId,
-          serverBaseUrl,
-          sharedSecret,
-          webhookUrl: null,
-          channelId
-        })
-      )
-  }
-  return []
+  if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') return []
+
+  const {id: providerId, serverBaseUrl} = mattermostProvider
+
+  // Get all per-channel auth records for this team. Each record's accessToken is a JSON
+  // payload {"channelId": "...", "token": "..."} written by linkMattermostChannel.
+  const auths = await dataLoader
+    .get('teamMemberIntegrationAuthsByTeamIdAndService')
+    .load({service: 'mattermost', teamId})
+
+  if (auths.length === 0) return []
+
+  // Get notification settings to check which events are enabled per channel
+  const settings = await dataLoader
+    .get('teamNotificationSettingsByProviderIdAndTeamId')
+    .load({providerId, teamId})
+
+  return auths.flatMap((auth) => {
+    if (!auth.accessToken) return []
+    let parsed: {channelId?: string; token?: string}
+    try {
+      parsed = JSON.parse(auth.accessToken)
+    } catch {
+      return []
+    }
+    const {channelId, token: bearerToken} = parsed
+    if (!channelId || !bearerToken) return []
+
+    // Find the notification settings entry for this channel
+    const channelSettings = settings.find(
+      (s) => s.channelId === channelId && s.events.includes(event)
+    )
+    if (!channelSettings) return []
+
+    return MattermostNotificationHelper({
+      userId,
+      teamId,
+      serverBaseUrl,
+      sharedSecret: null,
+      webhookUrl: null,
+      channelId,
+      bearerToken
+    })
+  })
 }
 
 async function getMattermostWebhookNotificationHelpers(

@@ -37,7 +37,10 @@ export const useOAuthScopeValidation = (): Plugin<ServerContext & UserContext> =
       const scopes = authToken.scope || []
       const requiredScope = operationType === 'mutation' ? 'graphql:mutation' : 'graphql:query'
 
-      if (!scopes.includes(requiredScope)) {
+      // 'graphql:persisted' grants access to both queries and mutations, but only for
+      // precompiled (persisted) operations — arbitrary query strings are blocked upstream
+      // by the usePersistedOperations plugin in yoga.ts
+      if (!scopes.includes(requiredScope) && !scopes.includes('graphql:persisted')) {
         throw new GraphQLError(
           `Insufficient scope. The '${requiredScope}' scope is required to execute ${operationType} operations.`,
           {

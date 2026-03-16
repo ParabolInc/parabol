@@ -19,12 +19,14 @@ export interface MattermostApiResponse {
 abstract class MattermostManager {
   webhookUrl: string
   secret?: string
+  bearerToken?: string
   abstract fetch: typeof fetch
   headers: any
 
-  constructor(webhookUrl: string, secret?: string) {
+  constructor(webhookUrl: string, secret?: string, bearerToken?: string) {
     this.webhookUrl = webhookUrl
     this.secret = secret
+    this.bearerToken = bearerToken
   }
 
   // See: https://developers.mattermost.com/integrate/incoming-webhooks/
@@ -43,7 +45,13 @@ abstract class MattermostManager {
       'Content-Digest': 'SHA-256=' + digest
     } as Record<string, string>
 
-    if (this.secret) {
+    if (this.bearerToken) {
+      // New auth: send the Go plugin-issued channel token as a Bearer credential.
+      // The Go plugin verifies it with its own ParabolToken (never shared with Parabol).
+      headers['Authorization'] = `Bearer ${this.bearerToken}`
+    } else if (this.secret) {
+      // Legacy auth: HTTP Message Signatures (RFC 9421) with HMAC-SHA256.
+      // Kept for backward compatibility with webhook-based Mattermost integrations.
       const key = createSigner(this.secret, 'hmac-sha256', 'foo')
       const signedRequest = await httpbis.signMessage(
         {
@@ -111,8 +119,8 @@ abstract class MattermostManager {
 
 class MattermostServerManager extends MattermostManager {
   fetch = fetch
-  constructor(webhookUrl: string, secret?: string) {
-    super(webhookUrl, secret)
+  constructor(webhookUrl: string, secret?: string, bearerToken?: string) {
+    super(webhookUrl, secret, bearerToken)
   }
 }
 

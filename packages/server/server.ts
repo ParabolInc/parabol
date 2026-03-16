@@ -9,7 +9,7 @@ import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import ICSHandler from './ICSHandler'
-import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
+import mattermostOAuthCallbackHandler from './integrations/mattermost/mattermostOAuthCallbackHandler'
 import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
@@ -45,7 +45,7 @@ if (ENABLE_METRICS) {
 
 const ENABLE_STATIC_FILE_HANDLER = !__PRODUCTION__ || process.env.FILE_STORE_PROVIDER === 'local'
 const ENABLE_MATTERMOST_FILE_HANDLER =
-  !__PRODUCTION__ || (process.env.MATTERMOST_SECRET && process.env.MATTERMOST_URL)
+  !__PRODUCTION__ || (process.env.MATTERMOST_OAUTH_CLIENT_ID && process.env.MATTERMOST_URL)
 
 process.on('SIGTERM', async (signal) => {
   Logger.log(
@@ -71,7 +71,7 @@ const app = uws
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
-  .post('/mattermost', mattermostWebhookHandler)
+  .get('/mattermost/callback', mattermostOAuthCallbackHandler)
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)

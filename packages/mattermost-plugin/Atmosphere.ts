@@ -56,20 +56,46 @@ const fetchGraphQL = (state: State) => (params: RequestParameters, variables: Va
   })
 }
 
-const login = (state: State) => async () => {
+const login = (state: State) => async (): Promise<boolean> => {
   const {serverUrl, store} = state
-  const response = await fetch(
-    serverUrl + '/login',
-    Client4.getOptions({
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-  )
-  const body = await response.json()
-  store.dispatch(onLogin(body.authToken))
-  return !!body.authToken
+  // Encode a random nonce and the current origin into the OAuth state parameter.
+  // The nonce is validated when the callback page postMessages back the token,
+  // preventing cross-site request forgery.
+  const nonce = Math.random().toString(36).slice(2)
+  const encodedState = btoa(JSON.stringify({nonce, origin: window.location.origin}))
+  const authUrl = `${serverUrl}/auth?state=${encodeURIComponent(encodedState)}`
+
+  // The Go plugin backend handles /auth by redirecting to Parabol's OAuth authorize
+  // page. After the user logs in, Parabol redirects to /mattermost/callback which
+  // postMessages {authToken, nonce} back to this opener window.
+  const popup = window.open(authUrl, 'parabol-oauth', 'width=600,height=700,noopener=no')
+  if (!popup) return false
+
+  return new Promise<boolean>((resolve) => {
+    const timer = setTimeout(
+      () => {
+        cleanup()
+        resolve(false)
+      },
+      5 * 60 * 1000
+    )
+
+    const handler = (event: MessageEvent) => {
+      const {authToken, nonce: receivedNonce} = event.data ?? {}
+      if (!authToken || receivedNonce !== nonce) return
+      cleanup()
+      store.dispatch(onLogin(authToken))
+      popup.close()
+      resolve(true)
+    }
+
+    const cleanup = () => {
+      clearTimeout(timer)
+      window.removeEventListener('message', handler)
+    }
+
+    window.addEventListener('message', handler)
+  })
 }
 
 const relayFieldLogger: RelayFieldLogger = (event) => {
