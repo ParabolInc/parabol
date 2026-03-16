@@ -57,6 +57,17 @@ const removeFromOrg = async (
       .executeTakeFirstOrThrow(),
     dataLoader.get('users').loadNonNull(userId)
   ])
+
+  // Expire any pending invitations for this user across all teams in the org
+  if (orgTeamIds.length > 0) {
+    await pg
+      .updateTable('TeamInvitation')
+      .set({expiresAt: sql`CURRENT_TIMESTAMP`})
+      .where('email', '=', user.email)
+      .where('teamId', 'in', orgTeamIds)
+      .where('acceptedAt', 'is', null)
+      .execute()
+  }
   dataLoader.clearAll('organizationUsers')
   // need to make sure the org doc is updated before adjusting this
   const {role} = organizationUser
