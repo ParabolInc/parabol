@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.2](https://github.com/ParabolInc/parabol/compare/v13.6.1...v13.6.2) (2026-03-16)
+
+
+### Fixed
+
+* **SCIM:** team archivor can be null ([#12868](https://github.com/ParabolInc/parabol/issues/12868)) ([ea9717d](https://github.com/ParabolInc/parabol/commit/ea9717d96bbdf15b55913f8b03b3da2c5e00b1e3))
+
 ## [13.6.1](https://github.com/ParabolInc/parabol/compare/v13.6.0...v13.6.1) (2026-03-13)
 
 
