@@ -1,6 +1,6 @@
 # React 18 Migration Plan
 
-Incremental migration of Parabol from React 17.0.2 to React 18, including React Router v5 to v6. Each PR targets fewer than 1,000 lines of diff to keep reviews manageable.
+Incremental migration of Parabol from React 17.0.2 to React 18, including React Router v5 to v7. Each PR targets fewer than 1,000 lines of diff to keep reviews manageable.
 
 ## Current State
 
@@ -713,20 +713,30 @@ grep -r "react-router-dom" packages/types/
 
 ---
 
-### PR 19 — Mattermost plugin React 18 upgrade
+### PR 19 — Mattermost plugin React 18 upgrade — DONE
 
-**~300 lines changed | Risk: LOW**
+**~20 lines changed | Risk: LOW**
 
-The Mattermost plugin is an independent package with its own webpack config and React dependencies. It can be upgraded separately.
+The Mattermost plugin is an independent package with its own webpack config and React dependencies. React was externalized via webpack (the host Mattermost webapp provides React at runtime), so the plugin's `package.json` React version only affects development and type checking.
 
-**Changes:**
-- `packages/mattermost-plugin/package.json`: update `react`, `react-dom` to `^18.2.0`
-- Update overrides/resolutions
-- Fix any TypeScript compilation errors
-- `packages/mattermost-plugin/webpack.config.js`: verify externals config
-- 37 React files, 2.7K LOC — mostly MUI + Redux components
+**Changes (actual):**
 
-**Testing:** Build the Mattermost plugin and test in a Mattermost instance.
+1. **`packages/mattermost-plugin/package.json`**: React 18 deps were already set in PR 7. Removed stale `enzyme-adapter-utils` override (no enzyme usage in plugin).
+
+2. **`packages/mattermost-plugin/webpack.config.js`** and **`prod.webpack.config.js`**: Set `@babel/preset-react` to `runtime: 'automatic'` for correctness. The second babel rule (with `@babel/preset-react` + `@babel/preset-typescript`) processes files after sucrase already handles JSX, making it effectively a no-op, but the runtime should be set correctly for forward-compatibility.
+
+3. **`packages/mattermost-plugin/types/mattermost-webapp/index.d.ts`**: Fixed typo `Reast.ReactNode` → `React.ReactNode` in `registerChannelHeaderButtonAction` type.
+
+**Audit findings (no changes needed):**
+
+- All 37+ React files are functional components with hooks — no class components, no deprecated APIs
+- All `useEffect` calls have proper cleanup or are state-initialization patterns safe under StrictMode
+- `styled-components` v5 (2 files) and `react-bootstrap` (2 files, externalized) are React 18 compatible
+- Webpack externals config verified: `react`, `react-dom`, `redux`, `react-redux`, `prop-types`, `react-bootstrap`, `react-router-dom` all correctly mapped to Mattermost host globals
+
+**Testing results:**
+- `pnpm --filter parabol-mattermost-plugin typecheck` — PASS
+- `pnpm --filter parabol-mattermost-plugin build` — PASS (webpack 5, 12s)
 
 ---
 
@@ -752,7 +762,7 @@ The Mattermost plugin is an independent package with its own webpack config and 
 | 16 | Polish | Migrate task card system from emotion to Tailwind CSS | ~500 | MEDIUM | **DONE** |
 | 17 | Polish | Add `React.StrictMode` wrapper | ~700 | MEDIUM | **DONE** |
 | 18 | Router v7 | Upgrade React Router v6 → v7 | ~250 | LOW-MEDIUM | **DONE** |
-| 19 | Polish | Mattermost plugin upgrade | ~300 | LOW | |
+| 19 | Polish | Mattermost plugin upgrade | ~20 | LOW | **DONE** |
 
 **Total: ~4,950-5,250 lines across 19 PRs**
 
