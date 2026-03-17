@@ -105,41 +105,51 @@ export const ImportDatabaseDialog = (props: Props) => {
 
     const root = doc.getXmlFragment('default')
 
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Timed out waiting for page link to be created'))
-      }, 60000)
+    try {
+      const pageId = await new Promise<string>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Timed out waiting for page link to be created'))
+        }, 30000)
 
-      root.observeDeep((events) => {
-        events.forEach(async (e) => {
-          if (isPageLink(e.target) && e.target.getAttribute('title') === title) {
-            const pageCode = e.target.getAttribute('pageCode')
-            if (pageCode !== -1) {
-              clearTimeout(timeout)
-              const pageId = `page:${pageCode}`
-              const provider = providerManager.register(pageId)
-              const {document: doc} = provider
-
-              importRecords(doc, viewerId, records, {firstRowIsHeader})
-              resolve()
+        root.observeDeep((events) => {
+          events.forEach(async (e) => {
+            if (isPageLink(e.target) && e.target.getAttribute('title') === title) {
+              const pageCode = e.target.getAttribute('pageCode')
+              if (pageCode !== -1) {
+                clearTimeout(timeout)
+                const pageId = `page:${pageCode}`
+                resolve(pageId)
+              }
             }
-          }
+          })
         })
+
+        const databaseNode = schema.nodes.pageLinkBlock!.create({
+          pageCode: -1,
+          title,
+          canonical: true,
+          database: true
+        })
+
+        if (pos !== undefined) {
+          editor.chain().focus().insertContentAt(pos, databaseNode).run()
+        } else {
+          editor.chain().focus().insertContent(databaseNode).run()
+        }
       })
 
-      const databaseNode = schema.nodes.pageLinkBlock!.create({
-        pageCode: -1,
-        title,
-        canonical: true,
-        database: true
-      })
+      const provider = providerManager.register(pageId)
+      const {document: doc} = provider
 
-      if (pos !== undefined) {
-        editor.chain().focus().insertContentAt(pos, databaseNode).run()
-      } else {
-        editor.chain().focus().insertContent(databaseNode).run()
-      }
-    })
+      importRecords(doc, viewerId, records, {firstRowIsHeader})
+    } catch (error) {
+      console.error('Failed to import records', error)
+      atmosphere.eventEmitter.emit('addSnackbar', {
+        key: 'corruptedCSV',
+        message: `Failed to import ${file.name}`,
+        autoDismiss: 5
+      })
+    }
 
     setIsImporting(false)
     setRecords(null)
