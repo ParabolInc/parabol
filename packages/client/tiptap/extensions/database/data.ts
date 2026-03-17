@@ -7,7 +7,7 @@ import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
  * - rows: Array<RowId>
  * - columns: Array<ColumnId>
  * - columnMeta: Map<ColumnId, ColumnMeta>
- * - data: Map<RowId, Map<ColumnId, string>>
+ * - data: Map<RowId, Array<{key: ColumnId, val: string | null}>>
  *
  * Future:
  * - views: Array<ViewId>
@@ -18,10 +18,7 @@ export type ColumnId = string
 export type RowId = string
 type CellValue = string | null
 export type RawCell = {key: string; val: CellValue}
-
-// remove after migration of existing databases
-export type LegacyRawData = Y.Map<string>
-export type RowData = Y.Array<RawCell> | LegacyRawData
+export type RowData = Y.Array<RawCell>
 export type RowDataMap = YKeyValue<CellValue>
 
 export type DataType = 'text' | 'number' | 'check' | 'status' | 'tags'
@@ -65,26 +62,10 @@ export const getData = (doc: Y.Doc) => {
   return doc.getMap<RowData>('data')
 }
 
-const convertRowData = (value: Y.Map<any>): Y.Array<RawCell> => {
-  const cells: RawCell[] = []
-  value.forEach((val, key) => {
-    cells.push({key, val})
-  })
-  return Y.Array.from(cells)
-}
-
 export const getDataEntries = function* (doc: Y.Doc) {
   const data = getData(doc)
   for (const [rowId, value] of data) {
-    if (value instanceof Y.Map) {
-      const converted = convertRowData(value)
-      data.set(rowId, converted)
-      yield [rowId, new YKeyValue<CellValue>(converted)] as const
-    } else if (value instanceof Y.Array) {
-      yield [rowId, new YKeyValue<CellValue>(value)] as const
-    } else {
-      throw new Error(`Invalid row data structure for rowId: ${rowId}`)
-    }
+    yield [rowId, new YKeyValue<CellValue>(value)] as const
   }
 }
 
@@ -94,15 +75,7 @@ export const getRowData = (doc: Y.Doc, rowId: RowId) => {
   if (!row) {
     return null
   }
-  if (row instanceof Y.Map) {
-    const converted = convertRowData(row)
-    data.set(rowId, converted)
-    return new YKeyValue<CellValue>(converted)
-  } else if (row instanceof Y.Array) {
-    return new YKeyValue<CellValue>(row)
-  } else {
-    throw new Error(`Invalid row data structure for rowId: ${rowId}`)
-  }
+  return new YKeyValue<CellValue>(row)
 }
 
 export const changeColumn = (doc: Y.Doc, columnId: ColumnId, newMeta: ColumnMeta) => {
