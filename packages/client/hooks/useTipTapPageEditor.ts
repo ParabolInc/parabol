@@ -38,6 +38,7 @@ import {SlashCommand} from '../tiptap/extensions/slashCommand/SlashCommand'
 import {Table} from '../tiptap/extensions/table/Table'
 import {TableCell} from '../tiptap/extensions/table/TableCell'
 import {TableHeader} from '../tiptap/extensions/table/TableHeader'
+import {MAX_FILE_SIZE_FREE} from '../utils/constants'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import useAtmosphere from './useAtmosphere'
 import {usePageLinkPlaceholder} from './usePageLinkPlaceholder'
@@ -257,6 +258,15 @@ export const useTipTapPageEditor = (
               // if they drop an image, treat it like an image, not a binary
               const targetType = getFileType(file)
               if (targetType === 'csv' || targetType === 'xlsx') {
+                if (file.size > MAX_FILE_SIZE_FREE) {
+                  atmosphere.eventEmitter.emit('addSnackbar', {
+                    key: 'fileTooBIG',
+                    message: `The file is too large to import, embedding it.`,
+                    autoDismiss: 5
+                  })
+                  currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file', pos)
+                  return
+                }
                 currentEditor.emit('importDatabase', {file, targetType, pos})
                 return
               }
@@ -268,6 +278,15 @@ export const useTipTapPageEditor = (
               if (!htmlContent) {
                 const targetType = getFileType(file)
                 if (targetType === 'csv' || targetType === 'xlsx') {
+                  if (file.size > MAX_FILE_SIZE_FREE) {
+                    atmosphere.eventEmitter.emit('addSnackbar', {
+                      key: 'fileTooBIG',
+                      message: `The file is too large to import, embedding it.`,
+                      autoDismiss: 5
+                    })
+                    currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file')
+                    return
+                  }
                   currentEditor.emit('importDatabase', {file, targetType, pos: undefined})
                   return
                 }

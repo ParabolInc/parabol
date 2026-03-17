@@ -30,35 +30,33 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
       return
     }
 
-    events.forEach((event) => {
-      const isRowLevel = event.path.length === 0
-      const isCellLevel = event.path.length === 1
+    document.transact(() => {
+      events.forEach((event) => {
+        const isRowLevel = event.path.length === 0
+        const isCellLevel = event.path.length === 1
 
-      if (isRowLevel) {
-        event.changes.keys.forEach((change, key) => {
-          if (change.action === 'add') {
-            const row = getRowData(document, key)
-            if (!row) {
-              return
-            }
-            document.transact(() => {
+        if (isRowLevel) {
+          event.changes.keys.forEach((change, key) => {
+            if (change.action === 'add') {
+              const row = getRowData(document, key)
+              if (!row) {
+                return
+              }
               updateChangedAt(row, 'created', userId)
-            })
-          }
-        })
-      }
-      if (isCellLevel) {
-        const rowId = event.path[0] as string
-        const row = getRowData(document, rowId)
-        if (!row) {
-          return
-        }
-        if (event.changes.delta.length > 0) {
-          document.transact(() => {
-            updateChangedAt(row, 'updated', userId)
+            }
           })
         }
-      }
+        if (isCellLevel) {
+          const rowId = event.path[0] as string
+          const row = getRowData(document, rowId)
+          if (!row) {
+            return
+          }
+          if (event.changes.delta.length > 0) {
+            updateChangedAt(row, 'updated', userId)
+          }
+        }
+      })
     })
   })
 }
