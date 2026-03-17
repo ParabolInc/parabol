@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.5](https://github.com/ParabolInc/parabol/compare/v13.6.4...v13.6.5) (2026-03-17)
+
+
+### Fixed
+
+* create company cluster after creating org ([#12878](https://github.com/ParabolInc/parabol/issues/12878)) ([677f87e](https://github.com/ParabolInc/parabol/commit/677f87e200aa8e25b0680b04df727542b96a735e))
+
 ## [13.6.4](https://github.com/ParabolInc/parabol/compare/v13.6.3...v13.6.4) (2026-03-17)
 
 
