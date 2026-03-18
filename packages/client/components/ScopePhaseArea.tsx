@@ -189,7 +189,7 @@ const ScopePhaseArea = (props: Props) => {
         disabled
         index={activeIdx}
         onChangeIndex={selectIdx}
-        style={{width: '100%', height: '100%'}}
+        style={{width: '100%', flex: 1, minHeight: 0}}
       >
         {tabs.map(({label, Component}) => (
           <div className='relative flex h-full flex-col overflow-hidden' key={label}>

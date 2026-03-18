@@ -122,6 +122,7 @@ const SwipeablePanel = (props: SwipeablePanelProps) => {
       <div
         style={{
           display: 'flex',
+          height: '100%',
           transform: translateX,
           transition: isDragging ? 'none' : 'transform 300ms ease',
           willChange: 'transform'
@@ -131,7 +132,7 @@ const SwipeablePanel = (props: SwipeablePanelProps) => {
           <div
             data-swipeable-slide
             className={slideClassName}
-            style={{width: '100%', flexShrink: 0}}
+            style={{width: '100%', height: '100%', flexShrink: 0}}
           >
             {child}
           </div>
