@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -15,43 +14,6 @@ import UnderlineInput from './InputField/UnderlineInput'
 import PrimaryButton from './PrimaryButton'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
-import TinyLabel from './TinyLabel'
-
-const Fields = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16
-})
-
-const FieldGroup = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 4
-})
-
-const Label = styled(TinyLabel)({
-  fontSize: 12,
-  fontWeight: 600
-})
-
-const ErrorMsg = styled(StyledError)({
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-})
-
-const ButtonGroup = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-  alignItems: 'flex-start'
-})
-
-const Divider = styled('div')({
-  fontSize: 12,
-  color: '#94a3b8',
-  textAlign: 'center',
-  margin: '4px 0'
-})
 
 interface Identity {
   type: string
@@ -127,11 +89,11 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
   const showDivider = (hasLocal || isSAML) && (hasGoogle || hasMicrosoft)
 
   return (
-    <Fields>
+    <div className='flex flex-col gap-4'>
       {hasLocal && (
         <form onSubmit={handlePasswordSubmit}>
-          <FieldGroup>
-            <Label>Email</Label>
+          <div className='flex flex-col gap-1'>
+            <label className='font-semibold text-[11px] text-slate-600'>Email</label>
             <UnderlineInput
               ariaLabel='Email'
               disabled
@@ -140,9 +102,9 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               onChange={() => {}}
               value={email}
             />
-          </FieldGroup>
-          <FieldGroup style={{marginTop: 8}}>
-            <Label>Password</Label>
+          </div>
+          <div className='mt-2 flex flex-col gap-1'>
+            <label className='font-semibold text-[11px] text-slate-600'>Password</label>
             <UnderlineInput
               ariaLabel='Password'
               autoComplete='current-password'
@@ -154,8 +116,8 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               type='password'
               value={password}
             />
-          </FieldGroup>
-          <div style={{marginTop: 16}}>
+          </div>
+          <div className='mt-4'>
             <PrimaryButton size='medium' disabled={!password}>
               Verify Password
             </PrimaryButton>
@@ -164,8 +126,8 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
       )}
       {isSAML && (
         <div>
-          <FieldGroup>
-            <Label>Email</Label>
+          <div className='flex flex-col gap-1'>
+            <label className='font-semibold text-[11px] text-slate-600'>Email</label>
             <UnderlineInput
               ariaLabel='Email'
               disabled
@@ -174,8 +136,8 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               onChange={() => {}}
               value={email}
             />
-          </FieldGroup>
-          <div style={{marginTop: 16}}>
+          </div>
+          <div className='mt-4'>
             <PrimaryButton
               size='medium'
               onClick={handleSSOReAuth}
@@ -185,11 +147,11 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               Sign in with SSO
             </PrimaryButton>
           </div>
-          {ssoError && <ErrorMsg>{ssoError}</ErrorMsg>}
+          {ssoError && <StyledError className='mt-2 text-[.8125rem]'>{ssoError}</StyledError>}
         </div>
       )}
-      {showDivider && <Divider>or</Divider>}
-      <ButtonGroup>
+      {showDivider && <div className='my-1 text-center text-slate-400 text-xs'>or</div>}
+      <div className='flex flex-col items-start gap-2'>
         {hasGoogle && (
           <div>
             <RaisedButton
@@ -212,7 +174,9 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               <div>Sign in with Google</div>
             </RaisedButton>
             {googleMutationProps.error && !googleMutationProps.submitting && (
-              <ErrorMsg>{googleMutationProps.error.message}</ErrorMsg>
+              <StyledError className='mt-2 text-[.8125rem]'>
+                {googleMutationProps.error.message}
+              </StyledError>
             )}
           </div>
         )}
@@ -238,12 +202,14 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               <div>Sign in with Microsoft</div>
             </RaisedButton>
             {microsoftMutationProps.error && !microsoftMutationProps.submitting && (
-              <ErrorMsg>{microsoftMutationProps.error.message}</ErrorMsg>
+              <StyledError className='mt-2 text-[.8125rem]'>
+                {microsoftMutationProps.error.message}
+              </StyledError>
             )}
           </div>
         )}
-      </ButtonGroup>
-    </Fields>
+      </div>
+    </div>
   )
 }
 
