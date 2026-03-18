@@ -93,7 +93,7 @@ jobs:
           git checkout -b "${BRANCH}"
 
           # Update Dockerfile line 16
-          sed -i "3s|.*|ARG NODE_VERSION=${NODE_VERSION}|" Dockerfile
+          sed -i "3s|.*|ARG BASE_TAG=${NODE_VERSION}|" Dockerfile
           sed -i "16s|.*|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
 
           # Update hardening_manifest.yaml
