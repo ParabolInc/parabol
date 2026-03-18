@@ -265,7 +265,12 @@ export const useTipTapPageEditor = (
                       message: `The file is too large to import, embedding it.`,
                       autoDismiss: 5
                     })
-                    await currentEditor.storage.fileUpload.onUpload(file, currentEditor, 'file', pos)
+                    await currentEditor.storage.fileUpload.onUpload(
+                      file,
+                      currentEditor,
+                      'file',
+                      pos
+                    )
                     continue
                   }
                   currentEditor.emit('importDatabase', {file, targetType, pos})
