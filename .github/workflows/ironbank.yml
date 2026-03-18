@@ -73,12 +73,14 @@ jobs:
           echo "SHA-256: $sha256"
           echo "NodeJS version: $node_version"
           echo "sha256=$sha256" >> $GITHUB_OUTPUT
+          echo "node_version=$node_version" >> $GITHUB_OUTPUT
 
       - name: Create Ironbank PR
         env:
           REPO1_TOKEN: ${{ secrets.REPO1_TOKEN }}
           REF_NAME: ${{ github.ref_name }}
           SHA256: ${{ steps.useful-info.outputs.sha256 }}
+          NODE_VERSION: ${{ steps.useful-info.outputs.node_version }}
         run: |
           VERSION="${REF_NAME#v}"
           BRANCH="feat/${REF_NAME}"
@@ -91,10 +93,12 @@ jobs:
           git checkout -b "${BRANCH}"
 
           # Update Dockerfile line 16
+          sed -i "3s|.*|ARG NODE_VERSION=${NODE_VERSION}|" Dockerfile
           sed -i "16s|.*|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
 
           # Update hardening_manifest.yaml
           sed -i "11s|.*|- \"${VERSION}\"|" hardening_manifest.yaml
+          sed -i "17s|.*|  BASE_TAG: \"${NODE_VERSION}\"|" hardening_manifest.yaml
           sed -i "36s|.*|  org.opencontainers.image.version: \"${VERSION}\"|" hardening_manifest.yaml
           sed -i "46s|.*|  - url: \"https://storage.googleapis.com/parabol-ironbank-resources/${REF_NAME}.zip\"|" hardening_manifest.yaml
           sed -i "47s|.*|    filename: \"${REF_NAME}.zip\"|" hardening_manifest.yaml
@@ -111,7 +115,7 @@ jobs:
             "https://repo1.dso.mil/api/v4/projects/dsop%2Fparabol%2Fparabol/merge_requests" \
             --data "{
               \"source_branch\": \"${BRANCH}\",
-              \"target_branch\": \"master\",
+              \"target_branch\": \"development\",
               \"title\": \"chore: update Ironbank release to ${REF_NAME}\",
               \"labels\": \"Status::Review\"
             }"
