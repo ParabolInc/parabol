@@ -1,9 +1,10 @@
 // This file makes sure that when content gets pasted, the assets get uploaded to the server
-import {useEffect} from 'react'
+import type {Editor} from '@tiptap/core'
+import {useEffect, useReducer, useRef} from 'react'
 import type {AssetScopeEnum} from '../../../__generated__/useEmbedUserAssetMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {useEmbedUserAsset} from '../../../mutations/useEmbedUserAsset'
 import {GQLID} from '../../../utils/GQLID'
+import {clearEmbedEntries, getEmbedStatus, requestEmbed, subscribe} from './embedManager'
 
 const getRelativeSrc = (src: string) => {
   if (src.startsWith('/')) return src
@@ -25,36 +26,33 @@ export const useEmbedNewUserAsset = (
   src: string,
   scopeKey: string,
   assetScope: AssetScopeEnum,
-  updateAttributes: (attrs: any) => void
+  editor: Editor
 ) => {
   const atmosphere = useAtmosphere()
-  const [commit] = useEmbedUserAsset()
   const isHosted = getIsHosted(src, scopeKey, assetScope)
+
+  // Subscribe to embed status changes so React re-renders when status updates
+  // (e.g., when an embed transitions to 'error' after all retries fail).
+  const [, forceRender] = useReducer((c: number) => c + 1, 0)
+  useEffect(() => subscribe(forceRender), [])
+  const embedStatus = getEmbedStatus(src)
+
+  // Clear embed entries when navigating to a different page
+  const prevScopeKeyRef = useRef(scopeKey)
+  useEffect(() => {
+    if (prevScopeKeyRef.current !== scopeKey) {
+      clearEmbedEntries()
+      prevScopeKeyRef.current = scopeKey
+    }
+  }, [scopeKey])
+
   useEffect(() => {
     // blob urls are local and are in the process of being uploaded at this point
-    if (isHosted || !src || src.startsWith('blob:')) return
-    commit({
-      variables: {url: src, scope: assetScope, scopeKey},
-      onCompleted: (res, error) => {
-        const {embedUserAsset} = res
-        if (!embedUserAsset) {
-          // Since this is triggered without user input, we log it silently
-          console.error(error?.[0]?.message)
-          return
-        }
-        const {url} = embedUserAsset
-        const message = embedUserAsset?.error?.message
-        if (message) {
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'errorEmbeddingAsset',
-            message,
-            autoDismiss: 5
-          })
-          return
-        }
-        updateAttributes({src: url})
-      }
-    })
+    if (isHosted || !src || src.startsWith('blob:') || src.startsWith('data:')) return
+    requestEmbed(src, assetScope, scopeKey, atmosphere, editor)
   }, [isHosted, src])
-  return {isHosted}
+
+  const result = isHosted || embedStatus === 'success'
+  const embedError = embedStatus === 'error'
+  return {isHosted: result, embedError}
 }

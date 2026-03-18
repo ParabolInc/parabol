@@ -95,14 +95,15 @@ export const FileBlockView = (props: NodeViewProps) => {
   }
 
   const {scopeKey, assetScope} = editor.extensionStorage.fileUpload
-  const {isHosted} = useEmbedNewUserAsset(src, scopeKey, assetScope, updateAttributes)
+  const {isHosted, embedError} = useEmbedNewUserAsset(src, scopeKey, assetScope, editor)
+  const isLoading = !isHosted && !embedError
 
   return (
     <NodeViewWrapper>
       <div
         contentEditable={false}
         onClick={onClick}
-        data-uploading={isHosted ? undefined : ''}
+        data-uploading={isLoading ? '' : undefined}
         className='m-0 block p-0 data-uploading:animate-shimmer data-uploading:[mask:linear-gradient(-60deg,#000_30%,#0005,#000_70%)_right/350%_100%]'
       >
         <div className='group flex cursor-pointer items-center rounded-sm bg-slate-200 p-2 text-sm transition-colors hover:bg-slate-300 group-[.ProseMirror-selectednode]:bg-slate-300'>
