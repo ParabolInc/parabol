@@ -20,7 +20,7 @@ const CardWrapper = styled('div')<{
   transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
   marginBottom: maybeTabletPlus ? 0 : 16,
   margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
+  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
   userSelect: 'none',
   ':hover': {
     boxShadow: Elevation.CARD_SHADOW_HOVER

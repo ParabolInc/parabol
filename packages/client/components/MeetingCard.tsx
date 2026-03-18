@@ -43,7 +43,7 @@ const CardWrapper = styled('div')<{
   marginBottom: maybeTabletPlus ? 0 : 16,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
+  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
   userSelect: 'none'
 }))
 
