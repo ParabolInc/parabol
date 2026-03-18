@@ -4,7 +4,7 @@ import {useFragment} from 'react-relay'
 import type {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
-import {BezierCurve, Threshold} from '~/types/constEnums'
+import {Threshold} from '~/types/constEnums'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCount from './ReactjiCount'
 
@@ -14,17 +14,6 @@ const Wrapper = styled('div')({
   flexWrap: 'wrap',
   justifyItems: 'center',
   justifyContent: 'start'
-})
-
-// Lightweight exit animation wrapper matching ReactjiCount's Parent collapse styles
-const ExitingReactji = styled('div')({
-  height: 0,
-  maxWidth: 0,
-  opacity: 0,
-  paddingLeft: 0,
-  paddingRight: 0,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none'
 })
 
 interface Props {
@@ -63,8 +52,9 @@ const ReactjiSection = (props: Props) => {
           // Item is exiting and no longer in the Relay store — render a collapsing wrapper
           // instead of ReactjiCount which would call useFragment with a stale reference
           return (
-            <ExitingReactji
+            <div
               key={transChild.child.key}
+              className='h-0 max-w-0 select-none overflow-hidden px-0 opacity-0 transition-all duration-300 ease-[cubic-bezier(0,0,.21,1)]'
               onTransitionEnd={transChild.onTransitionEnd}
             />
           )
