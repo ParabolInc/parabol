@@ -149,6 +149,25 @@ export default class Atmosphere extends Environment {
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
     providerManager.setAtmosphere(this)
+    this.initAuthFromCookie()
+  }
+
+  private initAuthFromCookie() {
+    if (typeof window === 'undefined') return
+    const authToken = getAuthCookie(window)
+    if (!authToken) return
+    try {
+      const authObj = jwtDecode<AuthToken>(authToken)
+      if (!authObj) return
+      const {exp, sub: viewerId, rol} = authObj
+      if (exp < Date.now() / 1000) return
+      this._authObj = authObj
+      if (rol !== 'impersonate') {
+        this.viewerId = viewerId!
+      }
+    } catch {
+      // invalid cookie, leave authObj null
+    }
   }
 
   private async connectWebsocket() {
@@ -177,7 +196,21 @@ export default class Atmosphere extends Environment {
               variables
             })
       })
-      return Observable.from(response.then((data) => data.json()))
+      return Observable.from(
+        response.then(async (res) => {
+          if (!res.ok) {
+            return {data: null, errors: [{message: `HTTP ${res.status}: ${res.statusText}`}]}
+          }
+          try {
+            return await res.json()
+          } catch (e) {
+            return {
+              data: null,
+              errors: [{message: e instanceof Error ? e.message : 'Invalid JSON response'}]
+            }
+          }
+        })
+      )
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
   }
