@@ -5,7 +5,10 @@ import type Atmosphere from '../Atmosphere'
 
 class ProviderManager {
   socket: HocuspocusProviderWebsocket | undefined = undefined
-  providers: Record<string, {count: number; provider: HocuspocusProvider}> = {}
+  providers: Record<
+    string,
+    {count: number; provider: HocuspocusProvider; persistence?: IndexeddbPersistence}
+  > = {}
   atmosphere?: Atmosphere
   setAtmosphere(atmosphere: Atmosphere) {
     this.atmosphere = atmosphere
@@ -52,11 +55,11 @@ class ProviderManager {
       }
     })
     provider.attach()
-    this.providers[documentName] = {count: 1, provider}
-    if (documentName.startsWith('page:') && provider.authorizedScope !== 'readonly') {
-      // this adds support for offline editing
-      new IndexeddbPersistence(documentName, doc)
-    }
+    const persistence =
+      documentName.startsWith('page:') && provider.authorizedScope !== 'readonly'
+        ? new IndexeddbPersistence(documentName, doc) // adds support for offline editing
+        : undefined
+    this.providers[documentName] = {count: 1, provider, persistence}
     return provider
   }
   unregister(documentName: string | undefined, delay = 10000) {
@@ -95,8 +98,17 @@ class ProviderManager {
   }
 
   close() {
-    Object.values(this.providers).forEach((p) => p.provider.destroy())
+    const entries = Object.values(this.providers)
     this.providers = {}
+    entries.forEach((e) => e.provider.destroy())
+    // fire-and-forget: clearData is best-effort before the page redirects
+    void Promise.all(entries.map((e) => e.persistence?.clearData())).then(() => {
+      void indexedDB.databases().then((dbs) => {
+        dbs.forEach(({name}) => {
+          if (name?.startsWith('page:')) indexedDB.deleteDatabase(name)
+        })
+      })
+    })
   }
 }
 
