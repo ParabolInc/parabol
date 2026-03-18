@@ -11,7 +11,7 @@ const NullCard = (props: Props) => {
   return (
     <div
       className={cn(
-        'flex w-full items-center justify-center rounded bg-white p-4 shadow-card',
+        'flex w-full min-w-[256px] max-w-[300px] items-center justify-center rounded bg-white p-4 shadow-card',
         className
       )}
       style={{minHeight: 120}}

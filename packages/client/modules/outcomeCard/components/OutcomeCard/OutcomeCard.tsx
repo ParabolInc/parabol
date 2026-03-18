@@ -126,7 +126,7 @@ const OutcomeCard = memo((props: Props) => {
   return (
     <div
       className={cn(
-        'relative w-full rounded bg-white pt-4 transition-shadow duration-100 ease-in',
+        'relative w-full min-w-[256px] max-w-[300px] rounded bg-white pt-4 transition-shadow duration-100 ease-in',
         isDraggingOver
           ? 'shadow-card-dragging'
           : isHighlighted
@@ -165,7 +165,7 @@ const OutcomeCard = memo((props: Props) => {
             onFocus={() => addTaskChild('root')}
           >
             <TipTapEditor
-              className='px-4'
+              className='min-h-[44px] px-4'
               editor={editor}
               // biome-ignore lint/correctness/useHookAtTopLevel: legacy
               useLinkEditor={() => useTaskChild('editor-link-changer')}
