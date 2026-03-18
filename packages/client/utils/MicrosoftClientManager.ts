@@ -10,8 +10,49 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import MicrosoftManager from './MicrosoftManager'
 import makeHref from './makeHref'
 
+type ReAuthMutationProps = Pick<
+  MenuMutationProps,
+  'onError' | 'onCompleted' | 'submitMutation' | 'submitting'
+>
+
 class MicrosoftClientManager extends MicrosoftManager {
   fetch = window.fetch.bind(window)
+
+  private static startOAuthFlow(
+    uri: string,
+    providerState: string,
+    mutationProps: ReAuthMutationProps,
+    getOffsetTop: (() => number) | undefined,
+    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void
+  ) {
+    const {submitting, onError, submitMutation} = mutationProps
+    submitMutation()
+    const top = getOffsetTop?.() || 56
+    const popup = window.open(
+      uri,
+      'OAuth',
+      getOAuthPopupFeatures({width: AUTH_DIALOG_WIDTH, height: 576, top})
+    )
+    const closeCheckerId = window.setInterval(() => {
+      if (popup && popup.closed) {
+        onError({message: 'Error logging in! Did you close the popup?'})
+        window.clearInterval(closeCheckerId)
+        window.removeEventListener('message', handler)
+      }
+    }, 100)
+    const handler = async (event: MessageEvent) => {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting)
+        return
+      const {code, state} = event.data
+      if (state !== providerState || typeof code !== 'string') return
+      window.clearInterval(closeCheckerId)
+      window.removeEventListener('message', handler)
+      const pseudoId = await getAnonymousId()
+      onCode(code, pseudoId, popup)
+    }
+    window.addEventListener('message', handler)
+  }
+
   static openOAuth(
     atmosphere: Atmosphere,
     mutationProps: MenuMutationProps,
@@ -21,7 +62,7 @@ class MicrosoftClientManager extends MicrosoftManager {
     loginHint?: string,
     getOffsetTop?: () => number
   ) {
-    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const {onError, onCompleted} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const params = new URLSearchParams({
       client_id: window.__ACTION__.microsoft,
@@ -35,59 +76,39 @@ class MicrosoftClientManager extends MicrosoftManager {
     const uri = `https://login.microsoftonline.com/${
       window.__ACTION__.microsoftTenantId
     }/oauth2/v2.0/authorize?${params.toString()}`
-    submitMutation()
-    const top = getOffsetTop?.() || 56
-    const popup = window.open(
+    MicrosoftClientManager.startOAuthFlow(
       uri,
-      'OAuth',
-      getOAuthPopupFeatures({width: AUTH_DIALOG_WIDTH, height: 576, top})
+      providerState,
+      mutationProps,
+      getOffsetTop,
+      (code, pseudoId, popup) => {
+        window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
+        const handleComplete: typeof onCompleted = (...args) => {
+          popup && popup.close()
+          onCompleted(...args)
+        }
+        LoginWithMicrosoftMutation(
+          atmosphere,
+          {
+            code,
+            pseudoId,
+            invitationToken: invitationToken || '',
+            isInvitation: !!invitationToken,
+            params: pageParams
+          },
+          {onError, onCompleted: handleComplete, history}
+        )
+      }
     )
-    const closeCheckerId = window.setInterval(() => {
-      if (popup && popup.closed) {
-        onError({message: 'Error logging in! Did you close the popup?'})
-        window.clearInterval(closeCheckerId)
-        window.removeEventListener('message', handler)
-      }
-    }, 100)
-    const handler = async (event: MessageEvent) => {
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        return
-      }
-      const {code, state} = event.data
-      if (state !== providerState || typeof code !== 'string') return
-      window.clearInterval(closeCheckerId)
-      const pseudoId = await getAnonymousId()
-      window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      const handleComplete: typeof onCompleted = (...args) => {
-        popup && popup.close()
-        onCompleted(...args)
-      }
-      LoginWithMicrosoftMutation(
-        atmosphere,
-        {
-          code,
-          pseudoId,
-          invitationToken: invitationToken || '',
-          isInvitation: !!invitationToken,
-          params: pageParams
-        },
-        {onError, onCompleted: handleComplete, history}
-      )
-      window.removeEventListener('message', handler)
-    }
-    window.addEventListener('message', handler)
   }
 
   static openReAuth(
     atmosphere: Atmosphere,
-    mutationProps: Pick<
-      MenuMutationProps,
-      'onError' | 'onCompleted' | 'submitMutation' | 'submitting'
-    >,
+    mutationProps: ReAuthMutationProps,
     onReAuthSuccess: () => void,
     getOffsetTop?: () => number
   ) {
-    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const {onError, onCompleted} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const params = new URLSearchParams({
       client_id: window.__ACTION__.microsoft,
@@ -100,41 +121,24 @@ class MicrosoftClientManager extends MicrosoftManager {
     const uri = `https://login.microsoftonline.com/${
       window.__ACTION__.microsoftTenantId
     }/oauth2/v2.0/authorize?${params.toString()}`
-    submitMutation()
-    const top = getOffsetTop?.() || 56
-    const popup = window.open(
+    MicrosoftClientManager.startOAuthFlow(
       uri,
-      'OAuth',
-      getOAuthPopupFeatures({width: AUTH_DIALOG_WIDTH, height: 576, top})
+      providerState,
+      mutationProps,
+      getOffsetTop,
+      (code, pseudoId, popup) => {
+        ReAuthWithMicrosoftMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
+          popup && popup.close()
+          if (error) {
+            onError({message: error})
+            onCompleted()
+          } else {
+            onCompleted()
+            onReAuthSuccess()
+          }
+        })
+      }
     )
-    const closeCheckerId = window.setInterval(() => {
-      if (popup && popup.closed) {
-        onError({message: 'Error logging in! Did you close the popup?'})
-        window.clearInterval(closeCheckerId)
-        window.removeEventListener('message', handler)
-      }
-    }, 100)
-    const handler = async (event: MessageEvent) => {
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
-        return
-      }
-      const {code, state} = event.data
-      if (state !== providerState || typeof code !== 'string') return
-      window.clearInterval(closeCheckerId)
-      const pseudoId = await getAnonymousId()
-      window.removeEventListener('message', handler)
-      ReAuthWithMicrosoftMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
-        popup && popup.close()
-        if (error) {
-          onError({message: error})
-          onCompleted()
-        } else {
-          onCompleted()
-          onReAuthSuccess()
-        }
-      })
-    }
-    window.addEventListener('message', handler)
   }
 }
 
