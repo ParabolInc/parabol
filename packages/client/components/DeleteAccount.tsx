@@ -15,7 +15,16 @@ const Hint = styled('div')({
   marginTop: 8
 })
 
-const DeleteAccount = () => {
+interface Identity {
+  type: string
+}
+
+interface Props {
+  email: string
+  identities: readonly Identity[]
+}
+
+const DeleteAccount = ({email, identities}: Props) => {
   const {togglePortal, modalPortal} = useModal()
   return (
     <>
@@ -28,10 +37,10 @@ const DeleteAccount = () => {
           <IconLabel iconLarge icon='remove_circle' label='Delete Account' />
         </LinkButton>
         <Hint>
-          <b>Note</b>: {'This can’t be undone.'}
+          <b>Note</b>: {"This can't be undone."}
         </Hint>
       </div>
-      {modalPortal(<DeleteAccountModal />)}
+      {modalPortal(<DeleteAccountModal email={email} identities={identities} />)}
     </>
   )
 }

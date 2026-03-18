@@ -4,6 +4,7 @@ import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
+import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -56,7 +57,17 @@ const StyledCopy = styled('p')({
   textTransform: 'none'
 })
 
-const DeleteAccountModal = () => {
+interface Identity {
+  type: string
+}
+
+interface Props {
+  email: string
+  identities: readonly Identity[]
+}
+
+const DeleteAccountModal = ({email, identities}: Props) => {
+  const [step, setStep] = useState<'reauth' | 'reason'>('reauth')
   const [reason, setReason] = useState('')
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -78,13 +89,31 @@ const DeleteAccountModal = () => {
     )
   }
 
+  if (step === 'reauth') {
+    return (
+      <StyledDialogContainer>
+        <StyledDialogTitle>Verify your identity</StyledDialogTitle>
+        <StyledDialogContent>
+          <Fields>
+            <StyledCopy>{'Please verify your identity before deleting your account.'}</StyledCopy>
+            <DeleteAccountReAuthStep
+              email={email}
+              identities={identities}
+              onReAuthSuccess={() => setStep('reason')}
+            />
+          </Fields>
+        </StyledDialogContent>
+      </StyledDialogContainer>
+    )
+  }
+
   return (
     <StyledDialogContainer>
       <StyledDialogTitle>How could we do better?</StyledDialogTitle>
       <StyledDialogContent>
         <Fields>
           <StyledCopy>
-            {'We’re on a mission to make every meeting worth the time invested.'}
+            {'We\u2019re on a mission to make every meeting worth the time invested.'}
           </StyledCopy>
           <StyledCopy>{'If there is anything we can do to improve, let us know below.'}</StyledCopy>
           <BasicTextArea
