@@ -24,6 +24,12 @@ const addOrgCoupon: MutationResolvers['addOrgCoupon'] = async (
   if (!coupon.valid) {
     throw new GraphQLError(`Stripe coupon "${couponId}" is no longer valid`)
   }
+  if (!coupon.percent_off) {
+    throw new GraphQLError(`Stripe coupon "${couponId}" must have a percent_off amount`)
+  }
+  if (!coupon.duration_in_months) {
+    throw new GraphQLError(`Stripe coupon "${couponId}" must have a defined duration in months`)
+  }
 
   const pg = getKysely()
   await pg.updateTable('Organization').set({couponId}).where('id', '=', orgId).execute()
