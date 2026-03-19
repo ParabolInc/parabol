@@ -1,6 +1,9 @@
+import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useState} from 'react'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import type {DeleteAccountModal_viewer$key} from '../__generated__/DeleteAccountModal_viewer.graphql'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
 import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
@@ -10,16 +13,19 @@ import DialogTitle from './DialogTitle'
 import BasicTextArea from './InputField/BasicTextArea'
 import PrimaryButton from './PrimaryButton'
 
-interface Identity {
-  type: string
-}
-
 interface Props {
-  email: string
-  identities: readonly Identity[]
+  viewerRef: DeleteAccountModal_viewer$key
 }
 
-const DeleteAccountModal = ({email, identities}: Props) => {
+const DeleteAccountModal = ({viewerRef}: Props) => {
+  const viewer = useFragment(
+    graphql`
+      fragment DeleteAccountModal_viewer on User {
+        ...DeleteAccountReAuthStep_viewer
+      }
+    `,
+    viewerRef
+  )
   const [step, setStep] = useState<'reauth' | 'reason'>('reauth')
   const [reason, setReason] = useState('')
   const atmosphere = useAtmosphere()
@@ -50,11 +56,7 @@ const DeleteAccountModal = ({email, identities}: Props) => {
           <p className='w-full max-w-[240px] pb-4 text-[15px] leading-5'>
             {'Please verify your identity before deleting your account.'}
           </p>
-          <DeleteAccountReAuthStep
-            email={email}
-            identities={identities}
-            onReAuthSuccess={() => setStep('reason')}
-          />
+          <DeleteAccountReAuthStep viewerRef={viewer} onReAuthSuccess={() => setStep('reason')} />
         </DialogContent>
       </DialogContainer>
     )

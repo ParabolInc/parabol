@@ -1,13 +1,16 @@
+import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useState} from 'react'
+import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import type {DeleteAccountReAuthStep_viewer$key} from '../__generated__/DeleteAccountReAuthStep_viewer.graphql'
 import useMutationProps from '../hooks/useMutationProps'
 import ReAuthWithPasswordMutation from '../mutations/ReAuthWithPasswordMutation'
 import logo from '../styles/theme/images/graphics/google.svg'
 import microsoftLogo from '../styles/theme/images/graphics/microsoft.svg'
+import {AuthIdentityTypeEnum} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import GoogleClientManager from '../utils/GoogleClientManager'
-import getSAMLIdP from '../utils/getSAMLIdP'
 import loginSSO from '../utils/loginSSO'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
 import UnderlineInput from './InputField/UnderlineInput'
@@ -15,17 +18,26 @@ import PrimaryButton from './PrimaryButton'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 
-interface Identity {
-  type: string
-}
-
 interface Props {
-  email: string
-  identities: readonly Identity[]
+  viewerRef: DeleteAccountReAuthStep_viewer$key
   onReAuthSuccess: () => void
 }
 
-const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) => {
+const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
+  const viewer = useFragment(
+    graphql`
+      fragment DeleteAccountReAuthStep_viewer on User {
+        email
+        identities {
+          type
+        }
+        samlIdP
+      }
+    `,
+    viewerRef
+  )
+  const {email, identities} = viewer
+  const samlIdP = 'foo'
   const atmosphere = useAtmosphere()
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | undefined>()
@@ -35,10 +47,9 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
   const googleMutationProps = useMutationProps()
   const microsoftMutationProps = useMutationProps()
 
-  const hasLocal = identities.some((i) => i.type === 'LOCAL')
-  const hasGoogle = identities.some((i) => i.type === 'GOOGLE')
-  const hasMicrosoft = identities.some((i) => i.type === 'MICROSOFT')
-  const isSAML = identities.length === 0
+  const hasLocal = identities?.some((i) => i?.type === AuthIdentityTypeEnum.LOCAL)
+  const hasGoogle = identities?.some((i) => i?.type === AuthIdentityTypeEnum.GOOGLE)
+  const hasMicrosoft = identities?.some((i) => i?.type === AuthIdentityTypeEnum.MICROSOFT)
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
@@ -69,15 +80,10 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
   }
 
   const handleSSOReAuth = async () => {
+    if (!samlIdP) return
     setSsoError(undefined)
     setSsoSubmitting(true)
-    const url = await getSAMLIdP(atmosphere, {email})
-    if (!url) {
-      setSsoError('SSO is not configured for this email address')
-      setSsoSubmitting(false)
-      return
-    }
-    const response = await loginSSO(url)
+    const response = await loginSSO(samlIdP)
     setSsoSubmitting(false)
     if ('error' in response) {
       setSsoError(response.error)
@@ -86,7 +92,25 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
     }
   }
 
-  const showDivider = (hasLocal || isSAML) && (hasGoogle || hasMicrosoft)
+  // If the org has SAML configured, all auth goes through SSO
+  if (samlIdP) {
+    return (
+      <div className='flex w-full max-w-[240px] flex-col items-stretch gap-4'>
+        <PrimaryButton
+          size='medium'
+          onClick={handleSSOReAuth}
+          waiting={ssoSubmitting}
+          disabled={ssoSubmitting}
+          className='w-full'
+        >
+          Sign in with SSO
+        </PrimaryButton>
+        {ssoError && <StyledError className='mt-2 text-[.8125rem]'>{ssoError}</StyledError>}
+      </div>
+    )
+  }
+
+  const showDivider = hasLocal && (hasGoogle || hasMicrosoft)
 
   return (
     <div className='flex w-full max-w-[240px] flex-col items-stretch gap-4'>
@@ -110,22 +134,6 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
             Verify Password
           </PrimaryButton>
         </form>
-      )}
-      {isSAML && (
-        <div>
-          <div className='mt-4'>
-            <PrimaryButton
-              size='medium'
-              onClick={handleSSOReAuth}
-              waiting={ssoSubmitting}
-              disabled={ssoSubmitting}
-              className='w-full'
-            >
-              Sign in with SSO
-            </PrimaryButton>
-          </div>
-          {ssoError && <StyledError className='mt-2 text-[.8125rem]'>{ssoError}</StyledError>}
-        </div>
       )}
       {showDivider && <div className='my-1 text-center text-slate-400 text-xs'>or</div>}
       <div className='flex flex-col items-start gap-2'>

@@ -32,7 +32,7 @@ const query = graphql`
     viewer {
       ...PasswordResetLink_viewer
       ...EmailNotifications_viewer
-      email
+      ...DeleteAccount_viewer
       preferredName
       picture
       identities {
@@ -45,7 +45,7 @@ const query = graphql`
 const UserProfile = ({queryRef}: Props) => {
   const data = usePreloadedQuery<UserProfileQuery>(query, queryRef)
   const {viewer} = data
-  const {email, identities} = viewer
+  const {identities} = viewer
   const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
@@ -68,10 +68,7 @@ const UserProfile = ({queryRef}: Props) => {
         </Panel>
         <Panel label='Danger Zone' casing={'capitalize'}>
           <PanelRow>
-            <DeleteAccount
-              email={email}
-              identities={(identities ?? []).filter(Boolean) as {type: string}[]}
-            />
+            <DeleteAccount viewerRef={viewer} />
           </PanelRow>
         </Panel>
       </SettingsBlock>
