@@ -5,6 +5,7 @@ import {
   isUserOrgAdmin
 } from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import {getStripeManager} from '../../../utils/stripe'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
 import getActiveTeamCountByOrgIds from './helpers/getActiveTeamCountByOrgIds'
@@ -132,6 +133,17 @@ const Organization: OrganizationResolvers = {
     }
 
     return provider
+  },
+
+  coupon: async ({couponId}) => {
+    if (!couponId) return null
+    const manager = getStripeManager()
+    const coupon = await manager.retrieveCoupon(couponId)
+    if (coupon instanceof Error) return null
+    return {
+      percentOff: coupon.percent_off ?? 0,
+      durationInMonths: coupon.duration_in_months ?? null
+    }
   }
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe, type StripeCardNumberElement} from '@stripe/stripe-js'
@@ -7,90 +6,8 @@ import {type MutableRefObject, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {PaymentDetails_organization$key} from '../../../../__generated__/PaymentDetails_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import Row from '../../../../components/Row/Row'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {ElementWidth} from '../../../../types/constEnums'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 import BillingForm from './BillingForm'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
-})
-
-const StyledRow = styled(Row)({
-  padding: '12px 16px',
-  display: 'flex',
-  alignItems: 'flex-start',
-  ':nth-of-type(2)': {
-    border: 'none'
-  }
-})
-
-const Plan = styled('div')({
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  padding: '0px 16px 16px 16px',
-  flexWrap: 'wrap',
-  overflow: 'hidden'
-})
-
-const Title = styled('h6')({
-  color: PALETTE.SLATE_800,
-  fontSize: 22,
-  fontWeight: 600,
-  lineHeight: '30px',
-  textTransform: 'capitalize',
-  display: 'flex',
-  margin: 0,
-  width: '100%',
-  padding: '8px 0px 16px 0px'
-})
-
-const Subtitle = styled('div')({
-  color: PALETTE.SLATE_800,
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '30px',
-  textTransform: 'capitalize',
-  display: 'flex',
-  paddingBottom: 8
-})
-
-const Content = styled('div')({
-  width: '100%'
-})
-
-const InputLabel = styled('span')({
-  display: 'block',
-  fontSize: 12,
-  fontWeight: 600,
-  textAlign: 'left',
-  paddingBottom: 4,
-  color: PALETTE.SLATE_600,
-  textTransform: 'uppercase'
-})
-
-const InfoText = styled('span')({
-  display: 'block',
-  fontSize: 12,
-  fontWeight: 600,
-  textAlign: 'left',
-  paddingBottom: 8,
-  color: PALETTE.SLATE_600,
-  textTransform: 'none'
-})
-
-const TotalBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  paddingTop: 16
-})
-
-const ActiveUserBlock = styled('div')({
-  paddingTop: 16
-})
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
@@ -109,48 +26,86 @@ const PaymentDetails = (props: Props) => {
         orgUserCount {
           activeUserCount
         }
+        coupon {
+          percentOff
+          durationInMonths
+        }
       }
     `,
     organizationRef
   )
-  const {id: orgId, orgUserCount} = organization
+  const {id: orgId, orgUserCount, coupon} = organization
   const {activeUserCount} = orgUserCount
   const price = activeUserCount * MONTHLY_PRICE
+  const discountedPrice = coupon ? price * (1 - coupon.percentOff / 100) : null
   const ref = useRef<HTMLDivElement | null>(null)
 
   return (
-    <StyledPanel label='Credit Card'>
-      <StyledRow className={'flex-col-reverse md:flex-row'}>
-        <Plan className={'w-full md:w-1/2'} ref={ref}>
-          <Title>{'Credit Card Details'}</Title>
-          <Content>
+    <Panel label='Credit Card' className='max-w-[976px]'>
+      {/* overflow-hidden, text-center, capitalize, leading-4 promoted from the two column divs below */}
+      <div className='flex w-full flex-col-reverse flex-wrap items-start justify-between overflow-hidden border-slate-300 border-t px-4 py-3 text-center capitalize leading-4 md:flex-row'>
+        <div className='flex w-full flex-wrap px-4 pb-4 md:w-1/2' ref={ref}>
+          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-slate-800 capitalize leading-[30px]'>
+            {'Credit Card Details'}
+          </h6>
+          <div className='w-full'>
             <Elements stripe={stripePromise}>
               <BillingForm cardNumberRef={cardNumberRef} orgId={orgId} />
             </Elements>
-          </Content>
-        </Plan>
-        <Plan className={'w-full md:w-1/2'}>
-          <Title>{'Team Plan Pricing'}</Title>
-          <Content>
-            <InputLabel>{'Billing Cycle'}</InputLabel>
-            <Subtitle>{'Monthly'}</Subtitle>
-            <ActiveUserBlock>
-              <InputLabel>{'Active Users'}</InputLabel>
-              <InfoText>
+          </div>
+        </div>
+        <div className='flex w-full flex-wrap px-4 pb-4 md:w-1/2'>
+          <h6 className='m-0 flex w-full pt-2 pb-4 font-semibold text-[22px] text-slate-800 capitalize leading-[30px]'>
+            {'Team Plan Pricing'}
+          </h6>
+          <div className='w-full'>
+            <span className='block pb-1 text-left font-semibold text-slate-600 text-xs uppercase'>
+              {'Billing Cycle'}
+            </span>
+            <div className='flex pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+              {'Monthly'}
+            </div>
+            <div className='pt-4'>
+              <span className='block pb-1 text-left font-semibold text-slate-600 text-xs uppercase'>
+                {'Active Users'}
+              </span>
+              <span className='block pb-2 text-left font-semibold text-slate-600 text-xs normal-case'>
                 {'Active users are anyone who uses Parabol within a billing period'}
-              </InfoText>
-              <Subtitle>{activeUserCount}</Subtitle>
-            </ActiveUserBlock>
+              </span>
+              <div className='flex pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                {activeUserCount}
+              </div>
+            </div>
             <Divider />
-            <TotalBlock>
-              <Subtitle>{'Total'}</Subtitle>
-              <Subtitle>{`$${price.toFixed(2)}`}</Subtitle>
-            </TotalBlock>
-            <InfoText>{'All prices are in USD'}</InfoText>
-          </Content>
-        </Plan>
-      </StyledRow>
-    </StyledPanel>
+            {coupon ? (
+              <>
+                {/* shared classes promoted from children to each row div */}
+                <div className='flex justify-between pt-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                  <div>{'Price'}</div>
+                  <div>{`$${price.toFixed(2)}`}</div>
+                </div>
+                <div className='flex justify-between font-medium text-base text-forest-700 capitalize leading-[30px]'>
+                  <div>{`Discount (${coupon.percentOff}% off${coupon.durationInMonths ? ` for ${coupon.durationInMonths} months` : ''})`}</div>
+                  <div>{`-$${(price - discountedPrice!).toFixed(2)}`}</div>
+                </div>
+                <div className='flex justify-between pb-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                  <div>{'Total'}</div>
+                  <div>{`$${discountedPrice!.toFixed(2)}`}</div>
+                </div>
+              </>
+            ) : (
+              <div className='flex justify-between py-2 font-semibold text-base text-slate-800 capitalize leading-[30px]'>
+                <div>{'Total'}</div>
+                <div>{`$${price.toFixed(2)}`}</div>
+              </div>
+            )}
+            <span className='block pb-2 text-left font-semibold text-slate-600 text-xs normal-case'>
+              {'All prices are in USD'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Panel>
   )
 }
 
