@@ -8,6 +8,7 @@ import {
   MAX_USER_UPLOAD_BYTES_PAID
 } from '../../../../client/utils/constants'
 import appOrigin from '../../../appOrigin'
+import {checkAccess} from '../../../assetProxyHandler'
 import type {AssetType, PartialPath} from '../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
@@ -50,7 +51,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
     // if we host it, just make a copy of it in the new directory
     const manager = getFileStoreManager()
     const sourcePartialPath = parsedUrl.pathname.slice('/assets/'.length) as PartialPath
-    const [scope, _sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
+    const [scope, sourceScopeCode, assetType, filename] = sourcePartialPath.split('/') as [
       AssetScopeEnum,
       string,
       AssetType,
@@ -64,10 +65,16 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
     ) {
       return {error: {message: 'Invalid asset URL'}}
     }
+    const canAccessSource = await checkAccess(authToken, scope, sourceScopeCode, assetType)
+    if (!canAccessSource) {
+      return {error: {message: 'Access denied to source asset'}}
+    }
     const targetPartialPath = `${scope}/${scopeCode}/${assetType}/${filename}` as PartialPath
     try {
       const [newUrl, localRes] = await Promise.all([
         manager.copyFile(sourcePartialPath, targetPartialPath),
+        // HEAD is safe to follow redirects here: origin is validated to be appOrigin above,
+        // and the /assets endpoint only redirects to presigned S3/GCS or self-hosted URLs.
         fetch(url, {method: 'HEAD'})
       ])
       const {headers} = localRes
