@@ -19,13 +19,25 @@ class MicrosoftClientManager extends MicrosoftManager {
   fetch = window.fetch.bind(window)
 
   private static startOAuthFlow(
-    uri: string,
-    providerState: string,
     mutationProps: ReAuthMutationProps,
     getOffsetTop: (() => number) | undefined,
-    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void
+    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void,
+    loginHint?: string
   ) {
     const {submitting, onError, submitMutation} = mutationProps
+    const providerState = Math.random().toString(36).substring(5)
+    const params = new URLSearchParams({
+      client_id: window.__ACTION__.microsoft,
+      scope: MicrosoftClientManager.SCOPE,
+      redirect_uri: makeHref(`/auth/microsoft`),
+      response_type: 'code',
+      state: providerState,
+      prompt: 'select_account',
+      ...(loginHint !== undefined ? {login_hint: loginHint ?? ''} : {})
+    })
+    const uri = `https://login.microsoftonline.com/${
+      window.__ACTION__.microsoftTenantId
+    }/oauth2/v2.0/authorize?${params.toString()}`
     submitMutation()
     const top = getOffsetTop?.() || 56
     const popup = window.open(
@@ -63,22 +75,7 @@ class MicrosoftClientManager extends MicrosoftManager {
     getOffsetTop?: () => number
   ) {
     const {onError, onCompleted} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
-    const params = new URLSearchParams({
-      client_id: window.__ACTION__.microsoft,
-      scope: MicrosoftClientManager.SCOPE,
-      redirect_uri: makeHref(`/auth/microsoft`),
-      response_type: 'code',
-      state: providerState,
-      prompt: 'select_account',
-      login_hint: loginHint ?? ''
-    })
-    const uri = `https://login.microsoftonline.com/${
-      window.__ACTION__.microsoftTenantId
-    }/oauth2/v2.0/authorize?${params.toString()}`
     MicrosoftClientManager.startOAuthFlow(
-      uri,
-      providerState,
       mutationProps,
       getOffsetTop,
       (code, pseudoId, popup) => {
@@ -98,7 +95,8 @@ class MicrosoftClientManager extends MicrosoftManager {
           },
           {onError, onCompleted: handleComplete, history}
         )
-      }
+      },
+      loginHint
     )
   }
 
@@ -109,36 +107,18 @@ class MicrosoftClientManager extends MicrosoftManager {
     getOffsetTop?: () => number
   ) {
     const {onError, onCompleted} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
-    const params = new URLSearchParams({
-      client_id: window.__ACTION__.microsoft,
-      scope: MicrosoftClientManager.SCOPE,
-      redirect_uri: makeHref(`/auth/microsoft`),
-      response_type: 'code',
-      state: providerState,
-      prompt: 'select_account'
+    MicrosoftClientManager.startOAuthFlow(mutationProps, getOffsetTop, (code, pseudoId, popup) => {
+      ReAuthWithMicrosoftMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
+        popup && popup.close()
+        if (error) {
+          onError({message: error})
+          onCompleted()
+        } else {
+          onCompleted()
+          onReAuthSuccess()
+        }
+      })
     })
-    const uri = `https://login.microsoftonline.com/${
-      window.__ACTION__.microsoftTenantId
-    }/oauth2/v2.0/authorize?${params.toString()}`
-    MicrosoftClientManager.startOAuthFlow(
-      uri,
-      providerState,
-      mutationProps,
-      getOffsetTop,
-      (code, pseudoId, popup) => {
-        ReAuthWithMicrosoftMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
-          popup && popup.close()
-          if (error) {
-            onError({message: error})
-            onCompleted()
-          } else {
-            onCompleted()
-            onReAuthSuccess()
-          }
-        })
-      }
-    )
   }
 }
 

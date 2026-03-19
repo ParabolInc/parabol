@@ -19,13 +19,23 @@ class GoogleClientManager extends GoogleManager {
   fetch = window.fetch.bind(window)
 
   private static startOAuthFlow(
-    uri: string,
-    providerState: string,
     mutationProps: ReAuthMutationProps,
     getOffsetTop: (() => number) | undefined,
-    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void
+    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void,
+    loginHint?: string
   ) {
     const {submitting, onError, submitMutation} = mutationProps
+    const providerState = Math.random().toString(36).substring(5)
+    const params = new URLSearchParams({
+      client_id: window.__ACTION__.google,
+      scope: GoogleClientManager.SCOPE,
+      redirect_uri: makeHref(`/auth/google`),
+      response_type: 'code',
+      state: providerState,
+      prompt: 'select_account',
+      ...(loginHint !== undefined ? {login_hint: loginHint ?? ''} : {})
+    })
+    const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
     submitMutation()
     const top = getOffsetTop?.() || 56
     const popup = window.open(
@@ -63,20 +73,7 @@ class GoogleClientManager extends GoogleManager {
     getOffsetTop?: () => number
   ) {
     const {onError, onCompleted} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
-    const params = new URLSearchParams({
-      client_id: window.__ACTION__.google,
-      scope: GoogleClientManager.SCOPE,
-      redirect_uri: makeHref(`/auth/google`),
-      response_type: 'code',
-      state: providerState,
-      prompt: 'select_account',
-      login_hint: loginHint ?? ''
-    })
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
     GoogleClientManager.startOAuthFlow(
-      uri,
-      providerState,
       mutationProps,
       getOffsetTop,
       (code, pseudoId, popup) => {
@@ -96,7 +93,8 @@ class GoogleClientManager extends GoogleManager {
           },
           {onError, onCompleted: handleComplete, history}
         )
-      }
+      },
+      loginHint
     )
   }
 
@@ -107,34 +105,18 @@ class GoogleClientManager extends GoogleManager {
     getOffsetTop?: () => number
   ) {
     const {onError, onCompleted} = mutationProps
-    const providerState = Math.random().toString(36).substring(5)
-    const params = new URLSearchParams({
-      client_id: window.__ACTION__.google,
-      scope: GoogleClientManager.SCOPE,
-      redirect_uri: makeHref(`/auth/google`),
-      response_type: 'code',
-      state: providerState,
-      prompt: 'select_account'
+    GoogleClientManager.startOAuthFlow(mutationProps, getOffsetTop, (code, pseudoId, popup) => {
+      ReAuthWithGoogleMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
+        popup && popup.close()
+        if (error) {
+          onError({message: error})
+          onCompleted()
+        } else {
+          onCompleted()
+          onReAuthSuccess()
+        }
+      })
     })
-    const uri = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-    GoogleClientManager.startOAuthFlow(
-      uri,
-      providerState,
-      mutationProps,
-      getOffsetTop,
-      (code, pseudoId, popup) => {
-        ReAuthWithGoogleMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
-          popup && popup.close()
-          if (error) {
-            onError({message: error})
-            onCompleted()
-          } else {
-            onCompleted()
-            onReAuthSuccess()
-          }
-        })
-      }
-    )
   }
 }
 
