@@ -44,21 +44,17 @@ const DeleteAccountModal = ({email, identities}: Props) => {
 
   if (step === 'reauth') {
     return (
-      <DialogContainer className='w-[400px]'>
-        <DialogTitle className='min-[864px]:mb-2 min-[864px]:pt-6 min-[864px]:pl-8 min-[864px]:text-2xl min-[864px]:leading-8'>
-          Verify your identity
-        </DialogTitle>
-        <DialogContent className='min-[864px]:flex min-[864px]:items-center min-[864px]:px-8 min-[864px]:pt-4 min-[864px]:pb-8'>
-          <div className='min-[864px]:max-w-[320px]'>
-            <p className='flex items-center pb-4 text-[15px] leading-[21px]'>
-              {'Please verify your identity before deleting your account.'}
-            </p>
-            <DeleteAccountReAuthStep
-              email={email}
-              identities={identities}
-              onReAuthSuccess={() => setStep('reason')}
-            />
-          </div>
+      <DialogContainer className='w-[356px]'>
+        <DialogTitle className='mt-4 flex justify-center'>Verify your identity</DialogTitle>
+        <DialogContent className='flex flex-col items-center'>
+          <p className='w-full max-w-[240px] pb-4 text-[15px] leading-5'>
+            {'Please verify your identity before deleting your account.'}
+          </p>
+          <DeleteAccountReAuthStep
+            email={email}
+            identities={identities}
+            onReAuthSuccess={() => setStep('reason')}
+          />
         </DialogContent>
       </DialogContainer>
     )

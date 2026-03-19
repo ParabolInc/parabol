@@ -89,21 +89,10 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
   const showDivider = (hasLocal || isSAML) && (hasGoogle || hasMicrosoft)
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex w-full max-w-[240px] flex-col items-stretch gap-4'>
       {hasLocal && (
         <form onSubmit={handlePasswordSubmit}>
           <div className='flex flex-col gap-1'>
-            <label className='font-semibold text-[11px] text-slate-600'>Email</label>
-            <UnderlineInput
-              ariaLabel='Email'
-              disabled
-              error={undefined}
-              name='email'
-              onChange={() => {}}
-              value={email}
-            />
-          </div>
-          <div className='mt-2 flex flex-col gap-1'>
             <label className='font-semibold text-[11px] text-slate-600'>Password</label>
             <UnderlineInput
               ariaLabel='Password'
@@ -117,32 +106,20 @@ const DeleteAccountReAuthStep = ({email, identities, onReAuthSuccess}: Props) =>
               value={password}
             />
           </div>
-          <div className='mt-4'>
-            <PrimaryButton size='medium' disabled={!password}>
-              Verify Password
-            </PrimaryButton>
-          </div>
+          <PrimaryButton size='medium' disabled={!password} className='mt-5 w-full'>
+            Verify Password
+          </PrimaryButton>
         </form>
       )}
       {isSAML && (
         <div>
-          <div className='flex flex-col gap-1'>
-            <label className='font-semibold text-[11px] text-slate-600'>Email</label>
-            <UnderlineInput
-              ariaLabel='Email'
-              disabled
-              error={undefined}
-              name='email'
-              onChange={() => {}}
-              value={email}
-            />
-          </div>
           <div className='mt-4'>
             <PrimaryButton
               size='medium'
               onClick={handleSSOReAuth}
               waiting={ssoSubmitting}
               disabled={ssoSubmitting}
+              className='w-full'
             >
               Sign in with SSO
             </PrimaryButton>
