@@ -58,14 +58,14 @@ const TeamDashActivityTab = (props: Props) => {
   )
 
   return (
-    <div className='flex h-full w-full flex-1 flex-col overflow-auto pl-4'>
-      <div className='flex flex-col pl-2'>
+    <div className='flex h-full w-full flex-1 flex-col overflow-auto px-5'>
+      <div className='flex flex-col'>
         <h3 className='mb-0 font-semibold text-base'>Open Meetings</h3>
         {transitioningMeetings.length === 0 && (
           <p className='my-2'>No meetings yet? You've come to the right place!</p>
         )}
       </div>
-      <div className='flex w-full flex-wrap pr-4'>
+      <div className='flex w-full flex-wrap'>
         {transitioningMeetings.length > 0 ? (
           transitioningMeetings.map((meeting) => {
             const {child} = meeting

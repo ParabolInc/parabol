@@ -6,6 +6,7 @@ const useTimeoutWithReset = (duration: number, resetDuration: number = duration)
   const resetTimerRef = useRef<number | undefined>()
   const isMountedRef = useRef(true)
   useEffect(() => {
+    isMountedRef.current = true
     const timer = window.setTimeout(() => {
       setTimedOut(true)
     }, duration)

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import {PageAccessCombobox} from '~/modules/pages/PageAccessCombobox'
 import {useUpdatePageAccessMutation} from '~/mutations/useUpdatePageAccessMutation'
 import type {PageSharingAccessList_page$key} from '../../__generated__/PageSharingAccessList_page.graphql'

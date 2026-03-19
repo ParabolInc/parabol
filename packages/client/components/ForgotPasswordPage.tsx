@@ -4,10 +4,10 @@
  */
 import styled from '@emotion/styled'
 import type * as React from 'react'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
 import {AuthenticationError} from '../types/constEnums'
@@ -95,7 +95,7 @@ const ForgotPasswordPage = (props: Props) => {
       validate: validateEmail
     }
   })
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const {name} = e.target
@@ -117,7 +117,7 @@ const ForgotPasswordPage = (props: Props) => {
       atmosphere,
       {email},
       {
-        history,
+        navigate,
         onCompleted,
         onError
       }

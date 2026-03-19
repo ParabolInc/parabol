@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
-import useRouter from '~/hooks/useRouter'
+import {useNavigate} from 'react-router'
 import AddTeamMutation from '~/mutations/AddTeamMutation'
 import getGraphQLError from '~/utils/relay/getGraphQLError'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
@@ -53,7 +53,7 @@ const query = graphql`
 const AddTeamDialog = (props: Props) => {
   const {isOpen, onClose, queryRef, onTeamAdded} = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const {submitting, onCompleted, onError, error, submitMutation} = useMutationProps()
 
@@ -75,7 +75,7 @@ const AddTeamDialog = (props: Props) => {
       orgId: organization.id,
       upgradeTier: 'team'
     })
-    history.push(`/me/organizations/${organization.id}`)
+    navigate(`/me/organizations/${organization.id}`)
   }
 
   const onSelectedUsersChange = (newUsers: Option[]) => {
@@ -109,7 +109,7 @@ const AddTeamDialog = (props: Props) => {
             onTeamAdded(res.addTeam.team.id)
           }
         },
-        history,
+        navigate,
         showTeamCreatedToast: false
       }
     )

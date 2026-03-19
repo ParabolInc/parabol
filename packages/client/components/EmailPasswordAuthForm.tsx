@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
+import {useLocation, useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
@@ -98,7 +98,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const isSingleTenantSSO =
     isSSOAuthEnabled && !isGoogleAuthEnabled && !isMicrosoftAuthEnabled && !isInternalAuthEnabled
   const {getOffsetTop, isPrimary, isSignin, invitationToken, email, goToPage} = props
-  const {location} = useRouter()
+  const location = useLocation()
   const params = new URLSearchParams(location.search)
   const isSSODefault = isSSOAuthEnabled && Boolean(params.get('sso'))
   const signInWithSSOOnly = isSSOAuthEnabled && !isInternalAuthEnabled
@@ -108,7 +108,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
   const [ssoDomain, setSSODomain] = useState<string>()
   const {submitMutation, onCompleted, submitting, error, onError} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {fields, onChange, setDirtyField, validateField} = useForm({
     email: {
       getDefault: () => email,
@@ -218,11 +218,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       AcceptTeamInvitationMutation(
         atmosphere,
         {invitationToken},
-        {history, onCompleted, onError, ignoreApproval: true}
+        {navigate, onCompleted, onError, ignoreApproval: true}
       )
     } else {
       const nextUrl = getValidRedirectParam() || '/meetings'
-      history.push(nextUrl)
+      navigate(nextUrl)
     }
     return true
   }
@@ -252,7 +252,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           invitationToken: invitationToken || '',
           isInvitation: !!invitationToken
         },
-        {onError, onCompleted, history}
+        {onError, onCompleted, navigate}
       )
     } else {
       const pseudoId = await getAnonymousId()
@@ -269,7 +269,7 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
         {
           onError,
           onCompleted,
-          history
+          navigate
         }
       )
     }

@@ -3,18 +3,16 @@ import {generateText} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import type {ExportToCSVQuery} from 'parabol-client/__generated__/ExportToCSVQuery.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
-import withMutationProps, {
-  type WithMutationProps
-} from 'parabol-client/utils/relay/withMutationProps'
 import {useEffect} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import {serverTipTapExtensions} from '../../../../shared/tiptap/serverTipTapExtensions'
 import {ExternalLinks, PokerCards} from '../../../../types/constEnums'
 import type {CorsOptions} from '../../../../types/cors'
 import AnchorIfEmail from './MeetingSummaryEmail/AnchorIfEmail'
 import type {MeetingSummaryReferrer} from './MeetingSummaryEmail/MeetingSummaryEmail'
 
-interface Props extends WithMutationProps {
+interface Props {
   meetingId: string
   urlAction?: 'csv' | undefined
   emailCSVUrl: string
@@ -179,14 +177,9 @@ const imageStyle = {
 }
 
 const ExportToCSV = (props: Props) => {
-  useEffect(() => {
-    if (props.urlAction === 'csv') {
-      exportToCSV().catch(() => {
-        /*ignore*/
-      })
-    }
-  }, [props.urlAction])
+  const {meetingId, urlAction, emailCSVUrl, referrer, corsOptions} = props
   const atmosphere = useAtmosphere()
+  const {submitMutation, submitting, onCompleted} = useMutationProps()
 
   const handlePokerMeeting = (meeting: Meeting) => {
     const rows = [] as CSVPokerRow[]
@@ -343,7 +336,6 @@ const ExportToCSV = (props: Props) => {
   }
 
   const exportToCSV = async () => {
-    const {meetingId, submitMutation, submitting, onCompleted} = props
     if (submitting) return
     submitMutation()
     const data = await atmosphere.fetchQuery<ExportToCSVQuery>(query, {
@@ -378,7 +370,14 @@ const ExportToCSV = (props: Props) => {
     document.body.removeChild(link)
   }
 
-  const {emailCSVUrl, referrer, corsOptions} = props
+  useEffect(() => {
+    if (urlAction === 'csv') {
+      exportToCSV().catch(() => {
+        /*ignore*/
+      })
+    }
+  }, [urlAction])
+
   return (
     <tr className='print:hidden'>
       <td align='center' style={iconLinkLabel} width='100%'>
@@ -396,4 +395,4 @@ const ExportToCSV = (props: Props) => {
   )
 }
 
-export default withMutationProps(ExportToCSV)
+export default ExportToCSV

@@ -2,7 +2,7 @@ import AddIcon from '@mui/icons-material/Add'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {LeftNavPrivatePagesSection_viewer$key} from '../../__generated__/LeftNavPrivatePagesSection_viewer.graphql'
 import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {useCreatePageMutation} from '../../mutations/useCreatePageMutation'
@@ -55,7 +55,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
   const lastPageId = edges.at(-1)?.node.id
   const canDropIn = draggingPageId && draggingPageId !== lastPageId
   const [execute, submitting] = useCreatePageMutation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const addPrivatePage = (e: React.MouseEvent) => {
     // the parent will toggle show/hide
     e.stopPropagation()
@@ -67,7 +67,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         const {page} = createPage
         const {id} = page
         const [_, pageCode] = id.split(':')
-        history.push(`/pages/${pageCode}`)
+        navigate(`/pages/${pageCode}`)
       }
     })
   }

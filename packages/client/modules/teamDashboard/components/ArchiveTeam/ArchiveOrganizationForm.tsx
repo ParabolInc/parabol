@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {ArchiveOrganizationForm_organization$key} from '~/__generated__/ArchiveOrganizationForm_organization.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
 import useMutationProps from '~/hooks/useMutationProps'
-import useRouter from '~/hooks/useRouter'
 import ArchiveOrganizationMutation from '~/mutations/ArchiveOrganizationMutation'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -21,7 +21,7 @@ const normalize = (str: string | null | undefined) => str && str.toLowerCase().r
 const ArchiveOrganizationForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {handleFormBlur, organization: organizationRef} = props
   const organization = useFragment(
     graphql`
@@ -54,7 +54,7 @@ const ArchiveOrganizationForm = (props: Props) => {
     const {archivedOrganizationName: res} = validateField()
     if (submitting || res.error) return
     submitMutation()
-    ArchiveOrganizationMutation(atmosphere, {orgId}, {history, onError, onCompleted})
+    ArchiveOrganizationMutation(atmosphere, {orgId}, {navigate, onError, onCompleted})
   }
 
   return (

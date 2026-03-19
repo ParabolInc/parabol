@@ -109,7 +109,7 @@
     "oy-vey": "^0.12.1",
     "parabol-client": "workspace:*",
     "pg": "^8.5.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "^18.3.1",
     "rrule-rust": "^2.0.2",
     "samlify": "^2.10.2",
     "sanitize-html": "^2.13.0",

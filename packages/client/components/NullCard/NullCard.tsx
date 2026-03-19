@@ -1,22 +1,5 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
-import {Card} from '../../types/constEnums'
-import CreateCardRootStyles from '../CreateCard/CreateCardRootStyles'
+import {cn} from '~/ui/cn'
 import Ellipsis from '../Ellipsis/Ellipsis'
-
-const CardBlock = styled('div')({
-  ...CreateCardRootStyles,
-  border: 0
-})
-
-const AddingHint = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: Card.FONT_SIZE,
-  textAlign: 'center',
-  overflowWrap: 'break-word',
-  overflow: 'visible',
-  width: '100%'
-})
 
 interface Props {
   className?: string
@@ -26,13 +9,19 @@ interface Props {
 const NullCard = (props: Props) => {
   const {className, preferredName} = props
   return (
-    <CardBlock className={className}>
-      <AddingHint>
+    <div
+      className={cn(
+        'flex w-full min-w-[256px] max-w-[300px] items-center justify-center rounded bg-white p-4 shadow-card',
+        className
+      )}
+      style={{minHeight: 120}}
+    >
+      <div className='w-full overflow-visible break-words text-center text-slate-600 text-sm'>
         {preferredName}
         {' is adding a Task'}
         <Ellipsis />
-      </AddingHint>
-    </CardBlock>
+      </div>
+    </div>
   )
 }
 

@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
-import type {RouteComponentProps} from 'react-router'
+import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
@@ -15,8 +15,6 @@ import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import PasswordInputField from '../PasswordInputField'
 import PrimaryButton from '../PrimaryButton'
 import TeamInvitationWrapper from '../TeamInvitationWrapper'
-
-interface Props extends RouteComponentProps<{token: string}> {}
 
 const Form = styled('form')({
   display: 'flex',
@@ -48,10 +46,9 @@ const validatePassword = (password: string) => {
     .test((value) => passwordStrength(value))
 }
 
-const SetNewPassword = (props: Props) => {
-  const {history, match} = props
-  const {params} = match
-  const {token} = params
+const SetNewPassword = () => {
+  const navigate = useNavigate()
+  const {token} = useParams()
   const atmosphere = useAtmosphere()
   useCanonical('reset-password')
   const {onCompleted, onError, error, submitting, submitMutation} = useMutationProps()
@@ -76,7 +73,11 @@ const SetNewPassword = (props: Props) => {
     if (passwordRes.error) return
     const {value: newPassword} = passwordRes
     submitMutation()
-    ResetPasswordMutation(atmosphere, {newPassword, token}, {onError, onCompleted, history})
+    ResetPasswordMutation(
+      atmosphere,
+      {newPassword, token: token!},
+      {onError, onCompleted, navigate}
+    )
   }
   return (
     <TeamInvitationWrapper>

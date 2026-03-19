@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Routes} from 'react-router'
 import type {TeamDashMainQuery} from '~/__generated__/TeamDashMainQuery.graphql'
 import StartMeetingFAB from '../../../../components/StartMeetingFAB'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
@@ -52,21 +52,13 @@ const TeamDashMain = (props: Props) => {
         <div className='flex w-full justify-start'>
           <TeamTasksHeaderContainer team={team} />
         </div>
-        <Switch>
-          <Route path='/team/:teamId/tasks'>
-            <TeamDashTasksTab viewerRef={viewer} />
-          </Route>
-          <Route path='/team/:teamId/integrations'>
-            <TeamDashIntegrationsTab teamRef={teamId} />
-          </Route>
-          <Route path='/team/:teamId/insights'>
-            <TeamDashInsightsTab teamId={teamId} />
-          </Route>
+        <Routes>
+          <Route path='tasks' element={<TeamDashTasksTab viewerRef={viewer} />} />
+          <Route path='integrations' element={<TeamDashIntegrationsTab teamRef={teamId} />} />
+          <Route path='insights' element={<TeamDashInsightsTab teamId={teamId} />} />
           {/*Fall back to activity view if nothing is specified*/}
-          <Route path='/team/:teamId'>
-            <TeamDashActivityTab teamRef={team} />
-          </Route>
-        </Switch>
+          <Route path='*' element={<TeamDashActivityTab teamRef={team} />} />
+        </Routes>
         <AbsoluteFab />
       </div>
       <TeamDrawer viewer={viewer} />

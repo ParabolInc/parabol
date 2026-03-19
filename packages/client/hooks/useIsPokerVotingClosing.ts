@@ -16,10 +16,14 @@ const useIsPokerVotingClosing = (isVoting: boolean, stageId: string) => {
     wasVotingRef.current = isVoting
     if (!isVoting) {
       setIsClosing(true)
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setIsClosing(false)
       }, 300)
+      return () => {
+        clearTimeout(timer)
+      }
     }
+    return
   }, [stageId, isVoting])
   return isClosing
 }

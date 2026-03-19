@@ -150,13 +150,15 @@ const useForm = <T extends FieldInputDict>(fieldInputDict: T, deps: any[] = []) 
   const setValue = useEventCallback((name: FieldStateKey<T>, value: string) => {
     dispatch({type: 'setValue', name, value})
   })
-  const onChange = useEventCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target
-    const name = e.target.name
-    const normalizedValue = normalize(name, value)
-    setValue(name, normalizedValue)
-    validate(name, normalizedValue)
-  })
+  const onChange = useEventCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const {value} = e.target
+      const name = e.target.name
+      const normalizedValue = normalize(name, value)
+      setValue(name, normalizedValue)
+      validate(name, normalizedValue)
+    }
+  )
 
   return {
     setDirtyField: setDirty,

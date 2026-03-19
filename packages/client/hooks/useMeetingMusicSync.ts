@@ -97,14 +97,14 @@ const useMeetingMusicSync = (meetingId: string) => {
       audioRef.current
         .play()
         .then(() => {
-          audioRef.current!.pause()
+          audioRef.current?.pause()
         })
         .catch(() => {})
 
       audioRef.current.addEventListener('play', () => {
-        if (pendingPlay.current) {
-          audioRef.current!.muted = false
-          audioRef.current!.volume = volume
+        if (pendingPlay.current && audioRef.current) {
+          audioRef.current.muted = false
+          audioRef.current.volume = volume
         }
       })
     }
@@ -122,7 +122,7 @@ const useMeetingMusicSync = (meetingId: string) => {
         const {trackSrc} = pendingPlay.current
         if (currentTrackSrc === trackSrc) {
           audioRef.current.play().then(() => {
-            audioRef.current!.muted = false
+            if (audioRef.current) audioRef.current.muted = false
           })
         }
         pendingPlay.current = null
@@ -160,7 +160,7 @@ const useMeetingMusicSync = (meetingId: string) => {
     audioRef.current
       .play()
       .then(() => {
-        audioRef.current!.muted = false
+        if (audioRef.current) audioRef.current.muted = false
       })
       .catch((err) => {
         if (err.name === 'NotAllowedError') {

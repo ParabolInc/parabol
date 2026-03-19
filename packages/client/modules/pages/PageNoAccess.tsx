@@ -1,5 +1,5 @@
 import LockIcon from '@mui/icons-material/Lock'
-import {useHistory, useLocation} from 'react-router'
+import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
 import {Dialog} from '../../ui/Dialog/Dialog'
@@ -18,7 +18,7 @@ export const PageNoAccess = (props: Props) => {
   const atmosphere = useAtmosphere()
   const isLoggedIn = !!atmosphere.authObj
 
-  const history = useHistory()
+  const navigate = useNavigate()
   const searchParams = new URLSearchParams(useLocation().search)
   const inviteEmail = searchParams.get('email')
 
@@ -51,15 +51,21 @@ export const PageNoAccess = (props: Props) => {
               className='p-3 px-6'
               onClick={() => {
                 if (inviteEmail) {
-                  history.replace({
-                    pathname: '/create-account',
-                    search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&email=${encodeURIComponent(inviteEmail)}`
-                  })
+                  navigate(
+                    {
+                      pathname: '/create-account',
+                      search: `?redirectTo=${encodeURIComponent(window.location.pathname)}&email=${encodeURIComponent(inviteEmail)}`
+                    },
+                    {replace: true}
+                  )
                 } else {
-                  history.replace({
-                    pathname: '/',
-                    search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-                  })
+                  navigate(
+                    {
+                      pathname: '/',
+                      search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+                    },
+                    {replace: true}
+                  )
                 }
               }}
             >

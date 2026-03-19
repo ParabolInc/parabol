@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type {Editor} from '@tiptap/core'
 import graphql from 'babel-plugin-relay/macro'
 import {memo, useEffect, useRef, useState} from 'react'
@@ -8,13 +7,10 @@ import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.
 import useClickAway from '~/hooks/useClickAway'
 import useScrollIntoView from '~/hooks/useScrollIntoVIew'
 import SetTaskHighlightMutation from '~/mutations/SetTaskHighlightMutation'
+import {cn} from '~/ui/cn'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useTaskChildFocus from '../../../../hooks/useTaskChildFocus'
 import OutcomeCard from '../../components/OutcomeCard/OutcomeCard'
-
-const Wrapper = styled('div')({
-  outline: 'none'
-})
 
 interface Props {
   area: AreaEnum
@@ -74,9 +70,9 @@ const OutcomeCardContainer = memo((props: Props) => {
   useScrollIntoView(ref, editor.isEmpty)
   useClickAway(ref, () => setIsTaskHovered(false))
   return (
-    <Wrapper
+    <div
       tabIndex={-1}
-      className={className}
+      className={cn('outline-none', className)}
       onMouseEnter={() => setIsTaskHovered(true)}
       onMouseLeave={() => setIsTaskHovered(false)}
       onMouseOver={() => setIsTaskHovered(true)}
@@ -95,7 +91,7 @@ const OutcomeCardContainer = memo((props: Props) => {
         addTaskChild={addTaskChild}
         removeTaskChild={removeTaskChild}
       />
-    </Wrapper>
+    </div>
   )
 })
 

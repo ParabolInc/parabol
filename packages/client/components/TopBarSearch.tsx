@@ -4,41 +4,28 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {matchPath, type RouteProps} from 'react-router'
+import {type Location, matchPath, useLocation} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useRouter from '~/hooks/useRouter'
 import {useSearchDialog} from '~/modules/search/SearchContext'
 import {Input} from '~/ui/Input/Input'
 import type Atmosphere from '../Atmosphere'
 
-const getShowSearch = (location: NonNullable<RouteProps['location']>) => {
+const getShowSearch = (location: Location) => {
   const {pathname} = location
   return (
     pathname.includes('/me/tasks') ||
-    !!matchPath(pathname, {
-      path: '/team/:teamId',
-      exact: true,
-      strict: false
-    }) ||
-    !!matchPath(pathname, {
-      path: '/team/:teamId/archive',
-      exact: true,
-      strict: false
-    }) ||
-    !!matchPath(pathname, {
-      path: '/meetings',
-      exact: true,
-      strict: false
-    })
+    !!matchPath('/team/:teamId', pathname) ||
+    !!matchPath('/team/:teamId/archive', pathname) ||
+    !!matchPath('/meetings', pathname)
   )
 }
 interface Props {
   viewer: TopBarSearch_viewer$key | null
 }
 
-const Wrapper = styled('div')<{location: NonNullable<RouteProps['location']>}>(({location}) => ({
+const Wrapper = styled('div')<{location: Location}>(({location}) => ({
   alignItems: 'center',
   backgroundColor: 'hsla(0,0%,100%,.125)',
   borderRadius: 4,
@@ -79,7 +66,7 @@ const TopBarSearch = (props: Props) => {
   const dashSearch = viewer?.dashSearch ?? ''
   const inputRef = useRef<HTMLInputElement>(null)
   const atmosphere = useAtmosphere()
-  const {location} = useRouter()
+  const location = useLocation()
   const {openSearch} = useSearchDialog()
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {

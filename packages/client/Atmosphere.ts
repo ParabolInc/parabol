@@ -3,7 +3,6 @@ import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
 import {commitMutation, type Disposable} from 'react-relay'
-import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
   type ConcreteRequest,
@@ -31,6 +30,7 @@ import type {InviteToTeamMutation_notification$data} from './__generated__/Invit
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
+import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
@@ -62,7 +62,7 @@ interface Subscriptions {
 }
 
 export type SubscriptionRequestor = {
-  (atmosphere: Atmosphere, variables: any, router: {history: RouterProps['history']}): Disposable
+  (atmosphere: Atmosphere, variables: any, router: {navigate: NavigateFn}): Disposable
   key: string
 }
 
@@ -149,6 +149,25 @@ export default class Atmosphere extends Environment {
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
     providerManager.setAtmosphere(this)
+    this.initAuthFromCookie()
+  }
+
+  private initAuthFromCookie() {
+    if (typeof window === 'undefined') return
+    const authToken = getAuthCookie(window)
+    if (!authToken) return
+    try {
+      const authObj = jwtDecode<AuthToken>(authToken)
+      if (!authObj) return
+      const {exp, sub: viewerId, rol} = authObj
+      if (exp < Date.now() / 1000) return
+      this._authObj = authObj
+      if (rol !== 'impersonate') {
+        this.viewerId = viewerId!
+      }
+    } catch {
+      // invalid cookie, leave authObj null
+    }
   }
 
   private async connectWebsocket() {
@@ -177,7 +196,21 @@ export default class Atmosphere extends Environment {
               variables
             })
       })
-      return Observable.from(response.then((data) => data.json()))
+      return Observable.from(
+        response.then(async (res) => {
+          if (!res.ok) {
+            return {data: null, errors: [{message: `HTTP ${res.status}: ${res.statusText}`}]}
+          }
+          try {
+            return await res.json()
+          } catch (e) {
+            return {
+              data: null,
+              errors: [{message: e instanceof Error ? e.message : 'Invalid JSON response'}]
+            }
+          }
+        })
+      )
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
   }
@@ -341,7 +374,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {history: RouterProps['history']}
+    router: {navigate: NavigateFn}
   ) => {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]

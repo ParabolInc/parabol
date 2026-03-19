@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {OrgUsage_organization$key} from '../../../../__generated__/OrgUsage_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import useRouter from '../../../../hooks/useRouter'
 
 interface Props {
   organizationRef: OrgUsage_organization$key
@@ -26,7 +26,7 @@ const OrgUsage = (props: Props) => {
 
   const {id: orgId, allTeamsCount, orgUserCount} = organization
   const totalUserCount = orgUserCount.activeUserCount + orgUserCount.inactiveUserCount
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   return (
     <Panel className='mb-4 max-w-[976px]' label='Usage'>
@@ -34,7 +34,7 @@ const OrgUsage = (props: Props) => {
         <a
           onClick={(e) => {
             e.preventDefault()
-            history.push(`/me/organizations/${orgId}/teams`)
+            navigate(`/me/organizations/${orgId}/teams`)
           }}
           className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
@@ -46,7 +46,7 @@ const OrgUsage = (props: Props) => {
         <a
           onClick={(e) => {
             e.preventDefault()
-            history.push(`/me/organizations/${orgId}/members`)
+            navigate(`/me/organizations/${orgId}/members`)
           }}
           className='cursor-pointer text-center text-sky-500 hover:text-sky-600'
         >
