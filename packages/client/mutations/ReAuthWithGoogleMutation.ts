@@ -27,8 +27,6 @@ const ReAuthWithGoogleMutation = (
       const {loginWithGoogle} = res
       if (loginWithGoogle.error) {
         onCompleted(loginWithGoogle.error.message)
-      } else if (loginWithGoogle.userId !== atmosphere.viewerId) {
-        onCompleted('The Google account does not match your current account')
       } else {
         onCompleted()
       }

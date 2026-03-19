@@ -86,8 +86,6 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
     setSsoSubmitting(false)
     if ('error' in response) {
       setSsoError(response.error)
-    } else if (response.ga4Args.userId !== atmosphere.viewerId) {
-      setSsoError('The SSO account does not match your current account')
     } else {
       onReAuthSuccess()
     }

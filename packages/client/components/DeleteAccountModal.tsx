@@ -26,7 +26,7 @@ const DeleteAccountModal = ({viewerRef}: Props) => {
     `,
     viewerRef
   )
-  const [step, setStep] = useState<'reauth' | 'reason'>('reauth')
+  const [step, setStep] = useState<'reason' | 'reauth'>('reason')
   const [reason, setReason] = useState('')
   const atmosphere = useAtmosphere()
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -41,8 +41,12 @@ const DeleteAccountModal = ({viewerRef}: Props) => {
         reason: validReason
       },
       {
-        onCompleted: () => {
-          window.location.href = ExternalLinks.RESOURCES
+        onCompleted: (res) => {
+          if (res?.deleteUser?.error?.message?.includes('re-authenticate')) {
+            setStep('reauth')
+          } else {
+            window.location.href = ExternalLinks.RESOURCES
+          }
         }
       }
     )
@@ -56,7 +60,7 @@ const DeleteAccountModal = ({viewerRef}: Props) => {
           <p className='w-full max-w-[240px] pb-4 text-[15px] leading-5'>
             {'Please verify your identity before deleting your account.'}
           </p>
-          <DeleteAccountReAuthStep viewerRef={viewer} onReAuthSuccess={() => setStep('reason')} />
+          <DeleteAccountReAuthStep viewerRef={viewer} onReAuthSuccess={handleDelete} />
         </DialogContent>
       </DialogContainer>
     )

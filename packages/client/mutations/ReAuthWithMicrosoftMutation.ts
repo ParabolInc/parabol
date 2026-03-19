@@ -27,8 +27,6 @@ const ReAuthWithMicrosoftMutation = (
       const {loginWithMicrosoft} = res
       if (loginWithMicrosoft.error) {
         onCompleted(loginWithMicrosoft.error.message)
-      } else if (loginWithMicrosoft.userId !== atmosphere.viewerId) {
-        onCompleted('The Microsoft account does not match your current account')
       } else {
         onCompleted()
       }
