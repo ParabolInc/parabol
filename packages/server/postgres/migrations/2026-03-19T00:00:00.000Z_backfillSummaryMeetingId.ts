@@ -6,22 +6,10 @@ export async function up(db: Kysely<any>): Promise<void> {
   // the createNewPage call in publishSummaryPage.ts
   await db
     .updateTable('Page')
-    .set({
-      summaryMeetingId: db
-        .selectFrom('NewMeeting')
-        .select('NewMeeting.id')
-        .whereRef('NewMeeting.summaryPageId', '=', 'Page.id')
-        .limit(1)
-    })
+    .from('NewMeeting')
+    .set((eb) => ({summaryMeetingId: eb.ref('NewMeeting.id')}))
+    .whereRef('NewMeeting.summaryPageId', '=', 'Page.id')
     .where('summaryMeetingId', 'is', null)
-    .where(({exists}) =>
-      exists(
-        db
-          .selectFrom('NewMeeting')
-          .select('id')
-          .whereRef('NewMeeting.summaryPageId', '=', 'Page.id')
-      )
-    )
     .execute()
 }
 
