@@ -1,21 +1,23 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {type RouteComponentProps, withRouter} from 'react-router'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import type {SuggestedActionTryTheDemo_suggestedAction$key} from '../__generated__/SuggestedActionTryTheDemo_suggestedAction.graphql'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {PALETTE} from '../styles/paletteV3'
-import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
 
-interface Props extends WithMutationProps, RouteComponentProps<{[x: string]: string | undefined}> {
+interface Props {
   suggestedAction: SuggestedActionTryTheDemo_suggestedAction$key
 }
 
 const SuggestedActionTryTheDemo = (props: Props) => {
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
 
   const {suggestedAction: suggestedActionRef} = props
   const suggestedAction = useFragment(
@@ -29,11 +31,10 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   const {id: suggestedActionId} = suggestedAction
 
   const onClick = () => {
-    const {history, submitting, submitMutation, onError, onCompleted} = props
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
-    history.push('/retrospective-demo')
+    navigate('/retrospective-demo')
   }
   return (
     <SuggestedActionCard
@@ -49,4 +50,4 @@ const SuggestedActionTryTheDemo = (props: Props) => {
   )
 }
 
-export default withMutationProps(withRouter(SuggestedActionTryTheDemo))
+export default SuggestedActionTryTheDemo

@@ -3,6 +3,7 @@ import {useCallback, useEffect, useReducer, useRef} from 'react'
 const useForceUpdate = () => {
   const isMountedRef = useRef(true)
   useEffect(() => {
+    isMountedRef.current = true
     return () => {
       isMountedRef.current = false
     }

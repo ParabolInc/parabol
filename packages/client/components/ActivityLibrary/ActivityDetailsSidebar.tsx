@@ -3,7 +3,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {ActivityDetailsSidebar_teams$key} from '~/__generated__/ActivityDetailsSidebar_teams.graphql'
 import type {ActivityDetailsSidebar_template$key} from '~/__generated__/ActivityDetailsSidebar_template.graphql'
@@ -130,7 +130,7 @@ const ActivityDetailsSidebar = (props: Props) => {
   }
   const mutationProps = useMutationProps()
   const {onError, onCompleted, submitting, submitMutation, error} = mutationProps
-  const history = useHistory()
+  const navigate = useNavigate()
 
   // user has no teams
   if (!selectedTeam)
@@ -192,13 +192,13 @@ const ActivityDetailsSidebar = (props: Props) => {
           gcalInput,
           ignoreSuggestedUpgrade
         },
-        {history, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
+        {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
       )
     } else if (type === 'action') {
       StartCheckInMutation(
         atmosphere,
         {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
-        {history, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
+        {navigate, onError: upgradeAwareOnError, onCompleted: upgradeAwareOnCompleted}
       )
     } else {
       SelectTemplateMutation(
@@ -216,13 +216,13 @@ const ActivityDetailsSidebar = (props: Props) => {
                   gcalInput,
                   ignoreSuggestedUpgrade
                 },
-                {history, onError, onCompleted: upgradeAwareOnCompleted}
+                {navigate, onError, onCompleted: upgradeAwareOnCompleted}
               )
             } else if (type === 'poker') {
               StartSprintPokerMutation(
                 atmosphere,
                 {teamId: selectedTeam.id, gcalInput, ignoreSuggestedUpgrade},
-                {history, onError, onCompleted: upgradeAwareOnCompleted}
+                {navigate, onError, onCompleted: upgradeAwareOnCompleted}
               )
             }
           },

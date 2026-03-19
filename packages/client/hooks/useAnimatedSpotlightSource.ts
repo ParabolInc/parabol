@@ -72,7 +72,7 @@ const useAnimatedSpotlightSource = (
     return () => {
       clearTimeout(transitionTimeout)
       clearTimeout(removeCloneTimeout)
-      clearTimeout(dragInterval)
+      clearInterval(dragInterval)
     }
   }, [portalStatus])
 

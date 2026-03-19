@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useParams} from 'react-router'
 import type {InvitationLinkDialog_massInvitation$key} from '../__generated__/InvitationLinkDialog_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
-import useRouter from '../hooks/useRouter'
 import {LocalStorageKey} from '../types/constEnums'
 import InvitationLinkAuthentication from './InvitationLinkAuthentication'
 import InvitationLinkErrorExpired from './InvitationLinkErrorExpired'
@@ -20,11 +20,11 @@ const InvitationLinkDialog = (props: Props) => {
   const isLoggedIn = useIsAuthenticated()
   // if they log in, then accepting team invite will get triggered via login flow
   const isInitiallyLoggedInRef = useRef(isLoggedIn)
-  const {match} = useRouter<{token: string}>()
-  const {params} = match
-  const {token} = params
+  const {token} = useParams()
   useEffect(() => {
-    window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
+    if (token) {
+      window.localStorage.setItem(LocalStorageKey.INVITATION_TOKEN, token)
+    }
   }, [token])
   const {massInvitation: massInvitationRef} = props
   const massInvitation = useFragment(
@@ -60,9 +60,9 @@ const InvitationLinkDialog = (props: Props) => {
       return <InvitationLinkErrorExpired massInvitation={massInvitation} />
   }
   if (isInitiallyLoggedInRef.current) {
-    return <TeamInvitationAccept invitationToken={token} />
+    return <TeamInvitationAccept invitationToken={token!} />
   }
-  return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token} />
+  return <InvitationLinkAuthentication teamName={teamName!} invitationToken={token!} />
 }
 
 export default InvitationLinkDialog

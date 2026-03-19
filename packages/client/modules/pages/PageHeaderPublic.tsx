@@ -1,9 +1,9 @@
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Button} from '../../ui/Button/Button'
 
 export const PageHeaderPublic = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const login = () => {
     // necessary because the page access may be cached
@@ -13,10 +13,13 @@ export const PageHeaderPublic = () => {
     // Browser 1 changes to Public -> Editor (change is not propagated to user who is not logged in)
     // Browser 2 logs in, gets redirected, still sees Public -> Viewer since it's using the cached query
     atmosphere.close()
-    history.replace({
-      pathname: '/',
-      search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
-    })
+    navigate(
+      {
+        pathname: '/',
+        search: `?redirectTo=${encodeURIComponent(window.location.pathname)}`
+      },
+      {replace: true}
+    )
   }
   return (
     <div className='flex h-10 w-full items-center justify-center bg-grape-500 font-semibold text-white'>

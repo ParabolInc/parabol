@@ -2,15 +2,15 @@ import styled from '@emotion/styled'
 import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '@mui/icons-material'
 import type {ReactNode} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import {DECELERATE, fadeIn} from '../styles/animation'
 import {buttonShadow, cardShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
-import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import PlainButton from './PlainButton/PlainButton'
 import SuggestedActionBackground from './SuggestedActionBackground'
 
-interface Props extends WithMutationProps {
+interface Props {
   backgroundColor: string
   children: ReactNode
   //FIXME 6062: change to React.ComponentType
@@ -62,8 +62,9 @@ const FloatingSealIcon = styled('div')({
 
 const SuggestedActionCard = (props: Props) => {
   const atmosphere = useAtmosphere()
+  const {submitting, submitMutation, onCompleted, onError} = useMutationProps()
   const onCancel = () => {
-    const {submitting, submitMutation, suggestedActionId, onCompleted, onError} = props
+    const {suggestedActionId} = props
     if (submitting) return
     submitMutation()
     DismissSuggestedActionMutation(atmosphere, {suggestedActionId}, {onError, onCompleted})
@@ -92,4 +93,4 @@ const SuggestedActionCard = (props: Props) => {
   )
 }
 
-export default withMutationProps(SuggestedActionCard)
+export default SuggestedActionCard

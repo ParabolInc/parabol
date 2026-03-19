@@ -2,7 +2,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import React, {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate, useClientQuery, useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import type {PageBreadCrumbs_page$key} from '../../__generated__/PageBreadCrumbs_page.graphql'
 import pageDropTargetQuery, {
   type PageDropTargetQuery

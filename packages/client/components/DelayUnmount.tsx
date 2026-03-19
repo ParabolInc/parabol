@@ -1,15 +1,10 @@
-import {Component, type ComponentClass, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode, useEffect, useRef, useState} from 'react'
 import DelayUnmountShrinkAndScale from './DelayUnmountShrinkAndScale'
 
 enum TransitionState {
   Entered,
   Exiting,
   Exited
-}
-
-interface State {
-  exitingChildren: ReactNode
-  transitionState: TransitionState
 }
 
 interface PassthroughProps {
@@ -19,61 +14,52 @@ interface PassthroughProps {
 
 interface Props {
   children: ReactNode
-  Animator?: ComponentClass<PassthroughProps>
+  Animator?: ComponentType<PassthroughProps>
   unmountAfter: number
 }
 
-class DelayUnmount extends Component<Props, State> {
-  exitTimerId: number | undefined
-  state = {
-    exitingChildren: null,
-    transitionState: TransitionState.Entered
+const DelayUnmount = (props: Props) => {
+  const {Animator = DelayUnmountShrinkAndScale, children, unmountAfter} = props
+  const [transitionState, setTransitionState] = useState(
+    children !== null ? TransitionState.Entered : TransitionState.Exited
+  )
+  const exitingChildrenRef = useRef(children)
+  const exitTimerRef = useRef<number | undefined>(undefined)
+
+  // Synchronous state derivation (replaces getDerivedStateFromProps)
+  if (children !== null) {
+    exitingChildrenRef.current = children
+    if (transitionState !== TransitionState.Entered) {
+      setTransitionState(TransitionState.Entered)
+    }
+  } else if (transitionState === TransitionState.Entered) {
+    setTransitionState(TransitionState.Exiting)
   }
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): Partial<State> | null {
-    const {children} = nextProps
-    if (children !== null) {
-      return {
-        exitingChildren: nextProps.children,
-        transitionState: TransitionState.Entered
-      }
-    } else if (prevState.transitionState < TransitionState.Exiting) {
-      return {
-        transitionState: TransitionState.Exiting
+  // Start exit timer when entering Exiting state
+  useEffect(() => {
+    if (transitionState === TransitionState.Exiting) {
+      exitTimerRef.current = window.setTimeout(() => {
+        exitTimerRef.current = undefined
+        setTransitionState(TransitionState.Exited)
+      }, unmountAfter)
+      return () => {
+        if (exitTimerRef.current !== undefined) {
+          clearTimeout(exitTimerRef.current)
+          exitTimerRef.current = undefined
+        }
       }
     }
-    return null
-  }
+    return undefined
+  }, [transitionState, unmountAfter])
 
-  componentDidUpdate(_prevProps: Props, prevState: State) {
-    if (
-      prevState.transitionState !== TransitionState.Exiting &&
-      this.state.transitionState === TransitionState.Exiting
-    ) {
-      this.exitTimerId = window.setTimeout(() => {
-        this.exitTimerId = undefined
-        this.setState({
-          transitionState: TransitionState.Exited
-        })
-      }, this.props.unmountAfter)
-    }
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this.exitTimerId)
-  }
-
-  render() {
-    const {Animator = DelayUnmountShrinkAndScale, children, unmountAfter} = this.props
-    const {exitingChildren, transitionState} = this.state
-    if (transitionState === TransitionState.Exited) return null
-    const isExiting = transitionState === TransitionState.Exiting
-    return (
-      <Animator isExiting={isExiting} duration={unmountAfter}>
-        {isExiting ? exitingChildren : children}
-      </Animator>
-    )
-  }
+  if (transitionState === TransitionState.Exited) return null
+  const isExiting = transitionState === TransitionState.Exiting
+  return (
+    <Animator isExiting={isExiting} duration={unmountAfter}>
+      {isExiting ? exitingChildrenRef.current : children}
+    </Animator>
+  )
 }
 
 export default DelayUnmount

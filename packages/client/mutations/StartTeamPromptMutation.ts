@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import type {StartTeamPromptMutation as TStartTeamPromptMutation} from '../__generated__/StartTeamPromptMutation.graphql'
-import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 graphql`
   fragment StartTeamPromptMutation_team on StartTeamPromptSuccess {
@@ -41,10 +41,10 @@ const mutation = graphql`
   }
 `
 
-const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, HistoryLocalHandler> = (
+const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, NavigateLocalHandler> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted}
+  {navigate, onError, onCompleted}
 ) => {
   return commitMutation<TStartTeamPromptMutation>(atmosphere, {
     mutation,
@@ -63,7 +63,7 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Histor
           message: `Sorry, we couldn't create your Google Calendar event`
         })
       }
-      history.push(`/meet/${meetingId}`)
+      navigate(`/meet/${meetingId}`)
     },
     onError
   })

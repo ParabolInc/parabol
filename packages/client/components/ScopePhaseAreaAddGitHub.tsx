@@ -28,6 +28,7 @@ const StyledLink = styled('span')({
 })
 
 const AddGitHubButton = styled(RaisedButton)({
+  gap: 8,
   whiteSpace: 'pre-wrap'
 })
 interface Props {

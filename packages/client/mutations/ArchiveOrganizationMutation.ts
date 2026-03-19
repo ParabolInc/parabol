@@ -3,9 +3,9 @@ import {commitMutation} from 'react-relay'
 import type {ArchiveOrganizationMutation as TArchiveOrganizationMutation} from '../__generated__/ArchiveOrganizationMutation.graphql'
 import type {ArchiveOrganizationMutation_organization$data} from '../__generated__/ArchiveOrganizationMutation_organization.graphql'
 import type {
-  HistoryLocalHandler,
+  NavigateLocalHandler,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -41,8 +41,8 @@ const mutation = graphql`
 
 const popOrgArchivedToast: OnNextHandler<
   ArchiveOrganizationMutation_organization$data,
-  OnNextHistoryContext
-> = (payload, {history, atmosphere}) => {
+  OnNextNavigateContext
+> = (payload, {navigate, atmosphere}) => {
   if (!payload) return
   const {orgId, teams} = payload
   if (!teams) return
@@ -58,7 +58,7 @@ const popOrgArchivedToast: OnNextHandler<
         autoDismiss: 5,
         message: `${teamName} has been archived.`
       })
-      history && history.push('/meetings')
+      navigate?.('/meetings')
     }
   })
 }
@@ -83,15 +83,15 @@ export const archiveOrganizationOrganizationUpdater: SharedUpdater<
 
 export const archiveOrganizationOrganizationOnNext: OnNextHandler<
   ArchiveOrganizationMutation_organization$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
-  popOrgArchivedToast(payload, {atmosphere, history})
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
+  popOrgArchivedToast(payload, {atmosphere, navigate})
 }
 
 const ArchiveOrganizationMutation: StandardMutation<
   TArchiveOrganizationMutation,
-  HistoryLocalHandler
-> = (atmosphere, variables, {onError, onCompleted, history}) => {
+  NavigateLocalHandler
+> = (atmosphere, variables, {onError, onCompleted, navigate}) => {
   return commitMutation<TArchiveOrganizationMutation>(atmosphere, {
     mutation,
     variables,
@@ -107,9 +107,9 @@ const ArchiveOrganizationMutation: StandardMutation<
       }
       const payload = res.archiveOrganization
       if (payload) {
-        popOrgArchivedToast(payload, {atmosphere, history})
+        popOrgArchivedToast(payload, {atmosphere, navigate})
       }
-      history.replace('/meetings')
+      navigate('/meetings', {replace: true})
     },
     onError
   })

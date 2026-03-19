@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import type {PaymentRejected_notification$key} from '../__generated__/PaymentRejected_notification.graphql'
-import useRouter from '../hooks/useRouter'
 import NotificationTemplate from './NotificationTemplate'
 
 interface Props {
@@ -25,12 +25,12 @@ const PaymentRejected = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {organization} = notification
   const {id: orgId, creditCard} = organization
   const {last4, brand} = creditCard || {last4: '****', brand: 'Unknown'}
   const addBilling = () => {
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
   return (
     <NotificationTemplate

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
+import {useNavigate} from 'react-router'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
-import useRouter from '../../../../hooks/useRouter'
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const RootBlock = styled('div')({
@@ -34,8 +34,8 @@ interface Props {
 
 const TeamArchiveHeader = (props: Props) => {
   const {teamId} = props
-  const {history} = useRouter()
-  const goToTeamDash = () => history.push(`/team/${teamId}/tasks`)
+  const navigate = useNavigate()
+  const goToTeamDash = () => navigate(`/team/${teamId}/tasks`)
   return (
     <RootBlock>
       <HeadingBlock>

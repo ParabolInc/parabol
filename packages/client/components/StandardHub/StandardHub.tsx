@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import useRouter from '~/hooks/useRouter'
+import {useNavigate} from 'react-router'
 import type {StandardHub_viewer$key} from '../../__generated__/StandardHub_viewer.graphql'
 import {PALETTE} from '../../styles/paletteV3'
 import defaultUserAvatar from '../../styles/theme/images/avatar-user.svg'
@@ -70,10 +70,10 @@ const StandardHub = (props: Props) => {
   )
   const {email, picture, preferredName} = viewer || DEFAULT_VIEWER
   const userAvatar = picture || defaultUserAvatar
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const gotoUserSettings = () => {
-    history.push('/me/profile')
+    navigate('/me/profile')
     handleMenuClick()
   }
   return (
