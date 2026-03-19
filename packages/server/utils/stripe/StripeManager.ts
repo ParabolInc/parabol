@@ -143,7 +143,8 @@ export default class StripeManager {
   async createTeamSubscription(
     customerId: string,
     quantity: number,
-    metadata: {orgId: string; userId: string}
+    metadata: {orgId: string; userId: string},
+    couponId?: string
   ) {
     return this.stripe.subscriptions.create({
       // USE THIS FOR TESTING A FAILING PAYMENT
@@ -158,6 +159,7 @@ export default class StripeManager {
       // the `invoice.created` hook will be run once the billing_cycle_anchor is reached with some slack
       // billing_cycle_anchor: toEpochSeconds(Date.now() + ms('2m')),
       metadata,
+      ...(couponId ? {coupon: couponId} : {}),
       items: [
         {
           plan: StripeManager.TEAM_PRICE_APP_ID,
@@ -224,6 +226,14 @@ export default class StripeManager {
 
   async retrieveCharge(chargeId: string) {
     return this.stripe.charges.retrieve(chargeId)
+  }
+
+  async retrieveCoupon(couponId: string): Promise<Stripe.Coupon | Error> {
+    try {
+      return await this.stripe.coupons.retrieve(couponId)
+    } catch (e) {
+      return e as Error
+    }
   }
 
   async retrieveCustomer(customerId: string) {

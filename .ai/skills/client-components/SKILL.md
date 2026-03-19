@@ -4,6 +4,7 @@
 
 - **All new components must use Tailwind CSS** — do not use emotion (`styled`, `css` from `@emotion/styled` / `@emotion/react`).
 - Biome enforces Tailwind class sort order (`lint/nursery/useSortedClasses`). After modifying a file, run `pnpm exec biome check --write <file>` to auto-fix. Do **not** use `pnpm biome check --write` — the `biome` script already includes `check`, so it would expand to `biome check check --write` and fail.
+- **Promote shared classes to the parent.** When two or more sibling elements share the same Tailwind class, move it to their common parent instead of repeating it. Inherited properties (`font-*`, `text-*`, `capitalize`, `leading-*`, `color`) cascade naturally; structural properties (`flex`, `w-*`, `p-*`) usually stay on the element they control.
 
 ## UI primitives (modals, dialogs, popovers, tooltips, menus)
 
