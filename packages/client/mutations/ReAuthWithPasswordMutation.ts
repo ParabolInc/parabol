@@ -9,6 +9,7 @@ const mutation = graphql`
       error {
         message
       }
+      userId
     }
   }
 `
@@ -28,6 +29,8 @@ const ReAuthWithPasswordMutation = (
         onCompleted(loginWithPassword.error.message)
       } else if (errors?.length) {
         onCompleted(errors[0]?.message ?? 'Unknown error')
+      } else if (loginWithPassword.userId !== atmosphere.viewerId) {
+        onCompleted('The account does not match your current account')
       } else {
         onCompleted()
       }
