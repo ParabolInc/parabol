@@ -155,7 +155,8 @@ export const selectOrganizations = () =>
       'lockedAt',
       'useAI',
       'unpaidMessageHTML',
-      'updatedAt'
+      'updatedAt',
+      'couponId'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
