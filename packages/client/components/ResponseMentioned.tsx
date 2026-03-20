@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {ResponseMentioned_notification$key} from '../__generated__/ResponseMentioned_notification.graphql'
-import useRouter from '../hooks/useRouter'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -35,7 +35,7 @@ const ResponseMentioned = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const {meeting, response, type, status} = notification
   const {picture: authorPicture, preferredName: authorName} = response.user
@@ -49,7 +49,7 @@ const ResponseMentioned = (props: Props) => {
 
   const {id: meetingId, name: meetingName} = meeting
   const goThere = () => {
-    history.push(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
+    navigate(`/meet/${meetingId}/responses?responseId=${encodeURIComponent(response.id)}`)
   }
 
   const message = `${authorName} mentioned you in their response in ${meetingName}.`

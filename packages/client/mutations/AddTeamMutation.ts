@@ -3,9 +3,9 @@ import {commitMutation} from 'react-relay'
 import type {AddTeamMutation as TAddTeamMutation} from '../__generated__/AddTeamMutation.graphql'
 import type {AddTeamMutation_notification$data} from '../__generated__/AddTeamMutation_notification.graphql'
 import type {
-  HistoryLocalHandler,
+  NavigateLocalHandler,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -41,8 +41,8 @@ const mutation = graphql`
 
 const popTeamCreatedToast: OnNextHandler<
   AddTeamMutation_notification$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   const {team} = payload
   if (!team) return
   const {id: teamId, name: teamName} = team
@@ -51,7 +51,7 @@ const popTeamCreatedToast: OnNextHandler<
     key: `teamCreated:${teamId}`,
     message: `Team created! Here's your new team dashboard for ${teamName}`
   })
-  history && history.push(`/team/${teamId}`)
+  navigate?.(`/team/${teamId}`)
 }
 
 export const addTeamMutationNotificationUpdater: SharedUpdater<
@@ -64,13 +64,13 @@ export const addTeamMutationNotificationUpdater: SharedUpdater<
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-type ExtendedHistoryLocalHandler = HistoryLocalHandler & {
+type ExtendedNavigateLocalHandler = NavigateLocalHandler & {
   showTeamCreatedToast?: boolean
 }
-const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHandler> = (
+const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedNavigateLocalHandler> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted, showTeamCreatedToast = true}
+  {navigate, onError, onCompleted, showTeamCreatedToast = true}
 ) => {
   return commitMutation<TAddTeamMutation>(atmosphere, {
     mutation,
@@ -86,7 +86,7 @@ const AddTeamMutation: StandardMutation<TAddTeamMutation, ExtendedHistoryLocalHa
       const {addTeam} = res
       if (!error) {
         if (showTeamCreatedToast) {
-          popTeamCreatedToast(addTeam, {atmosphere, history})
+          popTeamCreatedToast(addTeam, {atmosphere, navigate})
         }
       }
     },

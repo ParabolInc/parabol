@@ -5,6 +5,49 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.6.6](https://github.com/ParabolInc/parabol/compare/v13.6.5...v13.6.6) (2026-03-18)
+
+
+### Fixed
+
+* clear pages offline data on logout ([#12881](https://github.com/ParabolInc/parabol/issues/12881)) ([1482c0f](https://github.com/ParabolInc/parabol/commit/1482c0f04b56c7481d2f4dce175d244642d0ae97))
+* nodejs bump ([#12885](https://github.com/ParabolInc/parabol/issues/12885)) ([c843189](https://github.com/ParabolInc/parabol/commit/c843189e7e42bb510d8e52432ec0490ddef9c32c))
+* security bumps ([#12886](https://github.com/ParabolInc/parabol/issues/12886)) ([b6b3743](https://github.com/ParabolInc/parabol/commit/b6b374375e314ff8eac355527ca277c83b0d546e))
+
+## [13.6.5](https://github.com/ParabolInc/parabol/compare/v13.6.4...v13.6.5) (2026-03-17)
+
+
+### Fixed
+
+* create company cluster after creating org ([#12878](https://github.com/ParabolInc/parabol/issues/12878)) ([677f87e](https://github.com/ParabolInc/parabol/commit/677f87e200aa8e25b0680b04df727542b96a735e))
+
+## [13.6.4](https://github.com/ParabolInc/parabol/compare/v13.6.3...v13.6.4) (2026-03-17)
+
+
+### Changed
+
+* Speed up database import ([#12776](https://github.com/ParabolInc/parabol/issues/12776)) ([8189a47](https://github.com/ParabolInc/parabol/commit/8189a476e54bf6a1b8f8f5de0a391f001f7fc113))
+
+## [13.6.3](https://github.com/ParabolInc/parabol/compare/v13.6.2...v13.6.3) (2026-03-16)
+
+
+### Fixed
+
+* invalidate invites on remove from org ([#12873](https://github.com/ParabolInc/parabol/issues/12873)) ([4dee00b](https://github.com/ParabolInc/parabol/commit/4dee00b7702c994f3eaa988eafc248035565d2d0))
+* verify team invite token matches email ([#12872](https://github.com/ParabolInc/parabol/issues/12872)) ([e0de9de](https://github.com/ParabolInc/parabol/commit/e0de9defedba307b56fb97b341bbc845579e5697))
+
+
+### Changed
+
+* finish database row type migration ([#12793](https://github.com/ParabolInc/parabol/issues/12793)) ([f59ddbd](https://github.com/ParabolInc/parabol/commit/f59ddbda09bfd1bb93860db2da8abea717520f9b))
+
+## [13.6.2](https://github.com/ParabolInc/parabol/compare/v13.6.1...v13.6.2) (2026-03-16)
+
+
+### Fixed
+
+* **SCIM:** team archivor can be null ([#12868](https://github.com/ParabolInc/parabol/issues/12868)) ([ea9717d](https://github.com/ParabolInc/parabol/commit/ea9717d96bbdf15b55913f8b03b3da2c5e00b1e3))
+
 ## [13.6.1](https://github.com/ParabolInc/parabol/compare/v13.6.0...v13.6.1) (2026-03-13)
 
 

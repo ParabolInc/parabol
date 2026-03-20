@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {TimelineHeader_viewer$key} from '../__generated__/TimelineHeader_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import useRouter from '../hooks/useRouter'
 import {FilterLabels} from '../types/constEnums'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
 import constructFilterQueryParamURL from '../utils/constructFilterQueryParamURL'
@@ -39,7 +39,7 @@ interface Props {
 
 const TimelineHeader = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {viewerId} = atmosphere
   const {viewerRef} = props
   const viewer = useFragment(
@@ -111,7 +111,7 @@ const TimelineHeader = (props: Props) => {
         <LinkButton
           className='my-1 sidebar-left:my-0 shrink-0 font-semibold text-slate-600 hover:text-slate-700 focus:text-slate-700 active:text-slate-700'
           onClick={() =>
-            history.push(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
+            navigate(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
           }
         >
           <Checkbox

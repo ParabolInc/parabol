@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type Dispatch, type SetStateAction, useEffect} from 'react'
+import {useNavigate} from 'react-router'
 import {readInlineData} from 'relay-runtime'
 import type {useInitialSafeRoute_meeting$key} from '~/__generated__/useInitialSafeRoute_meeting.graphql'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/ActionMeeting_meeting.graphql'
@@ -11,14 +12,13 @@ import getMeetingPathParams from '../utils/meetings/getMeetingPathParams'
 import {phaseTypeToSlug} from '../utils/meetings/lookups'
 import updateLocalStage from '../utils/relay/updateLocalStage'
 import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
 
 const useInitialSafeRoute = (
   setSafeRoute: Dispatch<SetStateAction<boolean>>,
   meetingRef: useInitialSafeRoute_meeting$key
 ) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const meeting = readInlineData(
     graphql`
       fragment useInitialSafeRoute_meeting on NewMeeting @inline {
@@ -66,7 +66,7 @@ const useInitialSafeRoute = (
     if (localStage && !phaseSlug) {
       const {id: localStageId} = localStage
       const nextUrl = fromStageIdToUrl(localStageId, meeting)
-      history.replace(nextUrl)
+      navigate(nextUrl, {replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return
@@ -79,7 +79,7 @@ const useInitialSafeRoute = (
     // typo in url, send to the facilitator
     if (!phase) {
       const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
-      history.replace(nextUrl)
+      navigate(nextUrl, {replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return
@@ -96,7 +96,7 @@ const useInitialSafeRoute = (
           ? '/retrospective-demo/reflect'
           : fromStageIdToUrl(facilitatorStageId, meeting)
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
-      history.replace(nextUrl)
+      navigate(nextUrl, {replace: true})
       setSafeRoute(false)
       return
     }
@@ -106,7 +106,7 @@ const useInitialSafeRoute = (
     if (!canNavigate) {
       // too early to visit meeting or typo, go to facilitator
       const nextUrl = fromStageIdToUrl(facilitatorStageId, meeting)
-      history.replace(nextUrl)
+      navigate(nextUrl, {replace: true})
       updateLocalStage(atmosphere, meeting, facilitatorStageId)
       setSafeRoute(false)
       return

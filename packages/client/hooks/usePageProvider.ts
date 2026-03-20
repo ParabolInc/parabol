@@ -1,6 +1,6 @@
 import {generateJSON, generateText} from '@tiptap/react'
-import type {History} from 'history'
 import {useEffect, useMemo, useRef, useState} from 'react'
+import {type NavigateFunction, useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
 import type * as Y from 'yjs'
 import type Atmosphere from '../Atmosphere'
@@ -9,7 +9,6 @@ import {serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {getPageSlug} from '../tiptap/getPageSlug'
 import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
-import useRouter from './useRouter'
 
 let headerBlockObserver: null | (() => void) = null
 let currentHeaderBlock: Y.XmlElement | null = null
@@ -39,7 +38,7 @@ function observeFirstInnerXmlText(frag: Y.XmlFragment, onChange: (headerBlock: Y
 const updateUrlWithSlug = (
   headerBlock: Y.XmlText,
   pageCode: number,
-  history: History,
+  navigate: NavigateFunction,
   atmosphere: Atmosphere
 ) => {
   const plaintext = generateText(
@@ -58,13 +57,13 @@ const updateUrlWithSlug = (
   const pageCodeIdx = sluggedPageCodeIdx === -1 ? pathname.lastIndexOf('/') : sluggedPageCodeIdx
   const currentRoutePageCode = Number(pathname.slice(pageCodeIdx + 1))
   if (currentRoutePageCode === pageCode) {
-    history.replace(`/pages/${pageSlug}`)
+    navigate(`/pages/${pageSlug}`, {replace: true})
   }
 }
 
 export const usePageProvider = (pageId: string) => {
   const atmosphere = useAtmosphere()
-  const {history} = useRouter<{meetingId: string}>()
+  const navigate = useNavigate()
   const pageCode = Number(pageId.split(':')[1])
   const prevPageIdRef = useRef<string | undefined>()
   const [isSynced, setIsSynced] = useState(false)
@@ -89,7 +88,7 @@ export const usePageProvider = (pageId: string) => {
     frag.observe((event) => {
       if (event.changes.added.size > 0 || event.changes.deleted.size > 0) {
         observeFirstInnerXmlText(frag, (headerBlock) => {
-          updateUrlWithSlug(headerBlock, pageCode, history, atmosphere)
+          updateUrlWithSlug(headerBlock, pageCode, navigate, atmosphere)
         })
       }
     })

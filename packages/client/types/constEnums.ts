@@ -411,9 +411,9 @@ export enum Threshold {
   STARTER_TIER_LOCK_AFTER_DAYS = 30,
   REFRESH_JWT_AFTER = 1296000000, // 15 days
   RESET_PASSWORD_LIFESPAN = 86400000, // 1 day
-  VERIFY_TOKEN_LIFESPAN = 2592000000, // 30 days
   UPCOMING_INVOICE_EMAIL_WARNING = 345600000, // 4 days
-  UPCOMING_INVOICE_TIME_VALID = 120000 // 2 minutes
+  UPCOMING_INVOICE_TIME_VALID = 120000, // 2 minutes
+  REAUTH_WINDOW_SECONDS = 300 // 5 minutes, in seconds to match JWT iat
 }
 
 // Use these values for easier testing of team limits and usage stats

@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import {Settings as SettingsIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import FlatButton from '../../../../components/FlatButton'
@@ -15,7 +16,6 @@ import SecondaryButton from '../../../../components/SecondaryButton'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
-import useRouter from '../../../../hooks/useRouter'
 import useTooltip from '../../../../hooks/useTooltip'
 import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
@@ -104,7 +104,7 @@ const OrganizationRow = (props: Props) => {
     `,
     organizationRef
   )
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {
     id: orgId,
     name,
@@ -116,7 +116,7 @@ const OrganizationRow = (props: Props) => {
   const orgAvatar = picture || defaultOrgAvatar
   const onRowClick = () => {
     closeTooltip()
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
   const totalUsers = activeUserCount + inactiveUserCount
   const showUpgradeCTA = billingTier === 'starter'

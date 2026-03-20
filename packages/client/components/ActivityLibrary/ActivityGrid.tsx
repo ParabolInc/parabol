@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import type {ActivityGrid_user$key} from '../../__generated__/ActivityGrid_user.graphql'
 import {ActivityCard, ActivityCardImage} from './ActivityCard'
 import ActivityCardFavorite from './ActivityCardFavorite'
@@ -30,10 +30,8 @@ const ActivityGrid = (props: ActivityGridProps) => {
         return (
           <Link
             key={template.id}
-            to={{
-              pathname: `/activity-library/details/${template.id}`,
-              state: {prevCategory: selectedCategory}
-            }}
+            to={`/activity-library/details/${template.id}`}
+            state={{prevCategory: selectedCategory}}
             className='flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500'
           >
             <ActivityCard

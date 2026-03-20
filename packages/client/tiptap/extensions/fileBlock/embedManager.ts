@@ -1,0 +1,194 @@
+import type {Editor} from '@tiptap/core'
+import {commitMutation} from 'react-relay'
+import type {
+  AssetScopeEnum,
+  useEmbedUserAssetMutation as TEmbedUserAssetMutation
+} from '../../../__generated__/useEmbedUserAssetMutation.graphql'
+import useEmbedUserAssetMutation from '../../../__generated__/useEmbedUserAssetMutation.graphql'
+import type Atmosphere from '../../../Atmosphere'
+
+type EmbedStatus = 'queued' | 'pending' | 'success' | 'error'
+
+type EmbedEntry = {
+  status: EmbedStatus
+  attempts: number
+  retryTimer?: ReturnType<typeof setTimeout>
+}
+
+// Module-level state (survives component remounts).
+// This is client-side (browser) state — each user has their own instance,
+// so there are no horizontal-scaling concerns.
+const embedEntries = new Map<string, EmbedEntry>()
+let activeCount = 0
+const MAX_CONCURRENT = 3
+const MAX_RETRIES = 3
+const pendingQueue: Array<{
+  src: string
+  execute: () => void
+}> = []
+
+// Subscription mechanism for React integration.
+// Components call subscribe() to be notified when any embed status changes,
+// allowing them to re-render and read the latest status via getEmbedStatus().
+type Listener = () => void
+const listeners = new Set<Listener>()
+
+const notifyListeners = () => {
+  for (const listener of listeners) {
+    listener()
+  }
+}
+
+export const subscribe = (listener: Listener) => {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+const processQueue = () => {
+  while (activeCount < MAX_CONCURRENT && pendingQueue.length > 0) {
+    const next = pendingQueue.shift()!
+    next.execute()
+  }
+}
+
+const scheduleRetryOrFail = (
+  entry: EmbedEntry,
+  src: string,
+  scope: AssetScopeEnum,
+  scopeKey: string,
+  atmosphere: Atmosphere,
+  editor: Editor
+) => {
+  if (entry.attempts < MAX_RETRIES) {
+    const delay = Math.pow(2, entry.attempts) * 1000
+    entry.status = 'queued'
+    notifyListeners()
+    entry.retryTimer = setTimeout(() => {
+      pendingQueue.push({
+        src,
+        execute: () => executeEmbed(src, scope, scopeKey, atmosphere, editor)
+      })
+      processQueue()
+    }, delay)
+  } else {
+    entry.status = 'error'
+    notifyListeners()
+  }
+  processQueue()
+}
+
+const updateMatchingNodes = (editor: Editor, src: string, hostedUrl: string) => {
+  const {state, view} = editor
+  const positions: number[] = []
+  state.doc.descendants((node, pos) => {
+    if (
+      (node.type.name === 'imageBlock' || node.type.name === 'fileBlock') &&
+      node.attrs.src === src
+    ) {
+      positions.push(pos)
+    }
+    return true
+  })
+  if (positions.length > 0) {
+    let tr = state.tr
+    for (const pos of positions) {
+      tr = tr.setNodeAttribute(pos, 'src', hostedUrl)
+    }
+    view.dispatch(tr)
+  }
+}
+
+const executeEmbed = (
+  src: string,
+  scope: AssetScopeEnum,
+  scopeKey: string,
+  atmosphere: Atmosphere,
+  editor: Editor
+) => {
+  const entry = embedEntries.get(src)
+  if (!entry) return
+  entry.status = 'pending'
+  entry.attempts++
+  activeCount++
+  notifyListeners()
+
+  // Using commitMutation (not the useMutation hook) because Yjs collaboration
+  // syncs rebuild ProseMirror node views, unmounting the React components that
+  // host these images. useMutation cancels its subscription on unmount, which
+  // would kill in-flight mutations and cause perpetual shimmer.
+  commitMutation<TEmbedUserAssetMutation>(atmosphere, {
+    mutation: useEmbedUserAssetMutation,
+    variables: {url: src, scope, scopeKey},
+    onCompleted: (res, errors) => {
+      // Guard: clearEmbedEntries may have reset activeCount while in-flight
+      if (activeCount > 0) activeCount--
+      const {embedUserAsset} = res
+      const errorMessage = embedUserAsset?.error?.message ?? errors?.[0]?.message
+
+      if (!embedUserAsset || errorMessage) {
+        scheduleRetryOrFail(entry, src, scope, scopeKey, atmosphere, editor)
+        return
+      }
+
+      const hostedUrl = embedUserAsset.url
+      if (!hostedUrl) {
+        entry.status = 'error'
+        notifyListeners()
+        processQueue()
+        return
+      }
+
+      entry.status = 'success'
+      notifyListeners()
+      updateMatchingNodes(editor, src, hostedUrl)
+      processQueue()
+    },
+    onError: () => {
+      if (activeCount > 0) activeCount--
+      scheduleRetryOrFail(entry, src, scope, scopeKey, atmosphere, editor)
+    }
+  })
+}
+
+export const requestEmbed = (
+  src: string,
+  scope: AssetScopeEnum,
+  scopeKey: string,
+  atmosphere: Atmosphere,
+  editor: Editor
+) => {
+  const existing = embedEntries.get(src)
+  if (existing) return
+
+  const entry: EmbedEntry = {
+    status: 'queued',
+    attempts: 0
+  }
+  embedEntries.set(src, entry)
+
+  if (activeCount < MAX_CONCURRENT) {
+    executeEmbed(src, scope, scopeKey, atmosphere, editor)
+  } else {
+    pendingQueue.push({
+      src,
+      execute: () => executeEmbed(src, scope, scopeKey, atmosphere, editor)
+    })
+  }
+}
+
+/** Clear all entries and pending queue. Call when navigating to a different page. */
+export const clearEmbedEntries = () => {
+  for (const entry of embedEntries.values()) {
+    if (entry.retryTimer) clearTimeout(entry.retryTimer)
+  }
+  embedEntries.clear()
+  pendingQueue.length = 0
+  activeCount = 0
+  notifyListeners()
+}
+
+export const getEmbedStatus = (src: string): EmbedStatus | null => {
+  return embedEntries.get(src)?.status ?? null
+}

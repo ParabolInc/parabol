@@ -3,7 +3,7 @@ import {commitMutation} from 'react-relay'
 import type {AddOrgMutation as TAddOrgMutation} from '../__generated__/AddOrgMutation.graphql'
 import type {AddOrgMutation_notification$data} from '../__generated__/AddOrgMutation_notification.graphql'
 import type {
-  HistoryLocalHandler,
+  NavigateLocalHandler,
   OnNextHandler,
   SharedUpdater,
   StandardMutation
@@ -77,10 +77,10 @@ export const addOrgMutationNotificationUpdater: SharedUpdater<AddOrgMutation_not
   handleRemoveSuggestedActions(removedSuggestedActionId, store)
 }
 
-const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
+const AddOrgMutation: StandardMutation<TAddOrgMutation, NavigateLocalHandler> = (
   atmosphere,
   variables,
-  {history, onError, onCompleted}
+  {navigate, onError, onCompleted}
 ) => {
   return commitMutation<TAddOrgMutation>(atmosphere, {
     mutation,
@@ -99,7 +99,7 @@ const AddOrgMutation: StandardMutation<TAddOrgMutation, HistoryLocalHandler> = (
       if (!error) {
         popOrganizationCreatedToast(addOrg, {atmosphere})
         const teamId = addOrg.team && addOrg.team.id
-        history.push(`/team/${teamId}`)
+        navigate(`/team/${teamId}`)
       }
     },
     onError

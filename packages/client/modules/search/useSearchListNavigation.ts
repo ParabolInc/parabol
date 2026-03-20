@@ -1,5 +1,5 @@
 import {type Ref, useEffect, useImperativeHandle, useState} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
 import {ResultsListRefHandler} from './SearchDialogContent'
@@ -15,7 +15,7 @@ export const useSearchListNavigation = (
   closeSearch: () => void
 ) => {
   const [selectedIndex, setSelectedIndex] = useState(-1)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (selectedIndex === -1) return
@@ -48,7 +48,7 @@ export const useSearchListNavigation = (
         if (e.metaKey || e.ctrlKey) {
           window.open(`/pages/${slug}`, '_blank')
         } else {
-          history.push(`/pages/${slug}`)
+          navigate(`/pages/${slug}`)
         }
         return true
       }

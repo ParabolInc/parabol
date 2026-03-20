@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
-import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
@@ -93,9 +93,9 @@ const DashTopBar = (props: Props) => {
     `,
     queryRef
   )
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const gotoHome = () => {
-    history.push('/meetings')
+    navigate('/meetings')
   }
   return (
     <div className='flex h-14 w-full justify-between bg-grape-700 dashboard-widest:pr-64 print:hidden'>

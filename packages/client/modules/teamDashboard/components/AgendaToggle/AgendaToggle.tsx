@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import {Chat} from '@mui/icons-material'
 import useAtmosphere from '~/hooks/useAtmosphere'
+import useMutationProps from '~/hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
-import type {CompletedHandler, ErrorHandler} from '../../../../types/relayMutations'
-import withMutationProps, {type WithMutationProps} from '../../../../utils/relay/withMutationProps'
 
 const Label = styled('div')({
   fontSize: 12,
@@ -35,15 +34,14 @@ const Wrapper = styled('div')({
   }
 })
 
-interface Props extends WithMutationProps {
-  onCompleted: CompletedHandler
-  onError: ErrorHandler
+interface Props {
   teamId: string
 }
 
 const AgendaToggle = (props: Props) => {
   const atmosphere = useAtmosphere()
-  const {submitMutation, submitting, onError, onCompleted, teamId} = props
+  const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
+  const {teamId} = props
   const toggleHide = () => {
     if (!submitting) {
       submitMutation()
@@ -64,4 +62,4 @@ const AgendaToggle = (props: Props) => {
   )
 }
 
-export default withMutationProps(AgendaToggle)
+export default AgendaToggle

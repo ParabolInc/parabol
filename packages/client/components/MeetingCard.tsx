@@ -3,7 +3,7 @@ import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -43,7 +43,7 @@ const CardWrapper = styled('div')<{
   marginBottom: maybeTabletPlus ? 0 : 16,
   opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
   margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : '100%',
+  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
   userSelect: 'none'
 }))
 

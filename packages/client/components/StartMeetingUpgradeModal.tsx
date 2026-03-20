@@ -1,7 +1,7 @@
 import {useState} from 'react'
+import {useNavigate} from 'react-router'
 import {SALES_EMAIL} from '~/utils/constants'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useRouter from '../hooks/useRouter'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -33,7 +33,7 @@ export const upgradeTitles = [
 const StartMeetingUpgradeModal = (props: Props) => {
   const {isOpen, isHardBlock, teamCount, meetingCount, orgId, onClose, onStartAnyway} = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const [title] = useState(() => {
     return upgradeTitles[Math.floor(Math.random() * upgradeTitles.length)]!
   })
@@ -43,7 +43,7 @@ const StartMeetingUpgradeModal = (props: Props) => {
       title
     })
     if (orgId) {
-      history.push(`/me/organizations/${orgId}`)
+      navigate(`/me/organizations/${orgId}`)
     }
     onClose()
   }

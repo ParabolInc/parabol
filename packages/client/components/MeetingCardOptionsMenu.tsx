@@ -7,9 +7,9 @@ import {
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import useRouter from '~/hooks/useRouter'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import type {MenuProps} from '../hooks/useMenu'
 import {PALETTE} from '../styles/paletteV3'
@@ -89,7 +89,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const hasRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
@@ -174,7 +174,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
               EndMeetingMutationLookup[meetingType]?.(
                 atmosphere,
                 {meetingId},
-                {onError, onCompleted, history}
+                {onError, onCompleted, navigate}
               )
             } else {
               openEndRecurringMeetingModal()

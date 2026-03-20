@@ -165,15 +165,15 @@ const MeetingControlBar = (props: Props) => {
           const {key} = child
           const tranProps = {
             onTransitionEnd,
-            status: isInit ? TransitionStatus.ENTERED : status,
-            key
+            status: isInit ? TransitionStatus.ENTERED : status
           }
           switch (key) {
             case 'music':
-              return <BottomControlBarMusic {...tranProps} meetingId={meetingId} />
+              return <BottomControlBarMusic key={key} {...tranProps} meetingId={meetingId} />
             case 'tips':
               return (
                 <BottomControlBarTips
+                  key={key}
                   {...tranProps}
                   meeting={meeting}
                   cancelConfirm={cancelConfirm}
@@ -183,6 +183,7 @@ const MeetingControlBar = (props: Props) => {
             case 'next':
               return (
                 <BottomControlBarReady
+                  key={key}
                   {...tranProps}
                   isNext={isPoker ? true : isFacilitating}
                   isFacilitating={isFacilitating}
@@ -200,6 +201,7 @@ const MeetingControlBar = (props: Props) => {
             case 'rejoin':
               return (
                 <BottomControlBarRejoin
+                  key={key}
                   {...tranProps}
                   onClick={() => gotoStageId(facilitatorStageId)}
                 />
@@ -207,6 +209,7 @@ const MeetingControlBar = (props: Props) => {
             case 'timer':
               return (
                 <StageTimerControl
+                  key={key}
                   {...tranProps}
                   cancelConfirm={cancelConfirm}
                   defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType] ?? 1}
@@ -216,6 +219,7 @@ const MeetingControlBar = (props: Props) => {
             case 'end':
               return (
                 <EndMeetingButton
+                  key={key}
                   {...tranProps}
                   cancelConfirm={confirmingButton === 'end' ? undefined : cancelConfirm}
                   isConfirming={confirmingButton === 'end'}

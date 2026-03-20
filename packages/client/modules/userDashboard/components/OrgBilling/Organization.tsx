@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Redirect, Route, Switch, useRouteMatch} from 'react-router'
+import {Navigate, Route, Routes} from 'react-router'
 import type {OrganizationQuery} from '../../../../__generated__/OrganizationQuery.graphql'
 import {
   AUTHENTICATION_PAGE,
@@ -62,7 +62,6 @@ const query = graphql`
 const Organization = (props: Props) => {
   const {queryRef} = props
   const {viewer} = usePreloadedQuery<OrganizationQuery>(query, queryRef)
-  const match = useRouteMatch<{orgId: string}>('/me/organizations/:orgId')!
   const {organization} = viewer
   if (!organization) return null
   const {id: orgId} = organization
@@ -70,45 +69,22 @@ const Organization = (props: Props) => {
   return (
     <section className={'px-4 md:px-8'}>
       <OrgNav organizationRef={organization} />
-      <Switch>
+      <Routes>
+        <Route index element={<Navigate to={BILLING_PAGE} replace />} />
         <Route
-          exact
-          path={`${match.url}`}
-          render={() => <Redirect to={`${match.url}/${BILLING_PAGE}`} />}
+          path={BILLING_PAGE}
+          element={<OrgPlansAndBillingRoot organizationRef={organization} />}
         />
+        <Route path={MEMBERS_PAGE} element={<OrgMembers orgId={orgId} />} />
+        <Route path={ORG_SETTINGS_PAGE} element={<OrgDetails organizationRef={organization} />} />
         <Route
-          exact
-          path={`${match.url}/${BILLING_PAGE}`}
-          render={() => <OrgPlansAndBillingRoot organizationRef={organization} />}
+          path={ORG_INTEGRATIONS_PAGE}
+          element={<OrgIntegrations organizationRef={organization} />}
         />
-
-        <Route
-          exact
-          path={`${match.url}/${MEMBERS_PAGE}`}
-          render={(p) => <OrgMembers {...p} orgId={orgId} />}
-        />
-        <Route
-          exact
-          path={`${match.url}/${ORG_SETTINGS_PAGE}`}
-          render={(p) => <OrgDetails {...p} organizationRef={organization} />}
-        />
-        <Route
-          exact
-          path={`${match.url}/${ORG_INTEGRATIONS_PAGE}`}
-          render={(p) => <OrgIntegrations {...p} organizationRef={organization} />}
-        />
-        <Route
-          exact
-          path={`${match.url}/${AUTHENTICATION_PAGE}`}
-          render={(p) => <Authentication {...p} orgId={orgId} />}
-        />
-        <Route
-          exact
-          path={`${match.url}/${TEAMS_PAGE}`}
-          render={() => <OrgTeams organizationRef={organization} />}
-        />
-        <Route exact path={`${match.url}/${TEAMS_PAGE}/:teamId`} component={OrgTeamMembers} />
-      </Switch>
+        <Route path={AUTHENTICATION_PAGE} element={<Authentication orgId={orgId} />} />
+        <Route path={TEAMS_PAGE} element={<OrgTeams organizationRef={organization} />} />
+        <Route path={`${TEAMS_PAGE}/:teamId`} element={<OrgTeamMembers />} />
+      </Routes>
     </section>
   )
 }

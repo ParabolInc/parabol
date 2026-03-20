@@ -49,6 +49,11 @@ type User implements UserPartial {
   identities: [AuthIdentity]
 
   """
+  The SAML identity provider sign-on URL for the user's email domain, if configured
+  """
+  samlIdP: String
+
+  """
   true if the user is not currently being billed for service. removed on every websocket handshake
   """
   inactive: Boolean
