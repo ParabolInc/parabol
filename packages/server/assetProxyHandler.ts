@@ -32,7 +32,7 @@ const servePlaceholderImage = async (res: HttpResponse) => {
     .end(placeholderBuffer)
 }
 
-const checkAccess = async (
+export const checkAccess = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
   scopeCode: string,
