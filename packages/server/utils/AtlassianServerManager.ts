@@ -1,5 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
@@ -180,6 +180,7 @@ export type JiraIssueRaw = JiraIssueBean<
     summary: string
     issuetype: {id: string; iconUrl: string}
     created: string
+    project?: {simplified: boolean}
   },
   Record<JiraFieldId, string>
 >
@@ -556,18 +557,7 @@ class AtlassianServerManager extends AtlassianManager {
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
-    if (issueRes instanceof Error) return issueRes
-    return {
-      ...issueRes,
-      fields: {
-        ...issueRes.fields,
-        descriptionHTML: issueRes.renderedFields.description,
-        cloudId,
-        issueKey,
-        id: JiraIssueId.join(cloudId, issueKey),
-        lastUpdated: issueRes.changelog.histories[0]?.created ?? issueRes.fields.created
-      }
-    }
+    return issueRes
   }
 
   async getIssues(

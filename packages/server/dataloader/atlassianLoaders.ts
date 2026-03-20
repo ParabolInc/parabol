@@ -9,8 +9,7 @@ import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
 import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
 import AtlassianServerManager, {
-  type JiraGetIssueRes,
-  type JiraGQLFields,
+  type JiraIssueRaw,
   type JiraProject
 } from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
@@ -185,13 +184,23 @@ type JiraIssueField = {
   fieldName: string
   fieldType: 'string' | 'number'
 }
-export type JiraIssue = JiraGetIssueRes['fields'] & {
+export type JiraIssue = {
+  cloudId: string
+  issueKey: string
+  id: string
+  description: any
+  descriptionHTML: string
+  summary: string
+  issuetype: {id: string; iconUrl: string}
+  created: string
+  lastUpdated: string
+  project?: {simplified: boolean}
+  extraFields: ReturnType<typeof generateJiraExtraFields>
   issueType: string
   possibleEstimationFields: JiraIssueField[]
-  descriptionHTML: string
+  missingEstimationFieldHint?: JiraIssueMissingEstimationFieldHintEnum
   teamId: string
   userId: string
-  extraFields: ReturnType<typeof generateJiraExtraFields>
 }
 
 export const jiraIssue = (
@@ -209,24 +218,22 @@ export const jiraIssue = (
           const {accessToken} = auth
           const manager = new AtlassianServerManager(accessToken)
 
-          const cacheImagesUpdateEstimates = async (issueRes: JiraGetIssueRes) => {
+          const cacheImagesUpdateEstimates = async (issueRes: JiraIssueRaw) => {
             const {fields} = issueRes
             const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
               cloudId,
-              issueRes.fields.descriptionHTML
+              issueRes.renderedFields.description ?? ''
             )
             downloadAndCacheImages(manager, imageUrlToHash)
             // update our records
             await Promise.all(
               estimates.map((estimate) => {
-                const {jiraFieldId, label, discussionId, name, taskId, userId} = estimate
+                const {label, discussionId, name, taskId, userId} = estimate
+                const jiraFieldId = estimate.jiraFieldId as keyof typeof fields | null
                 if (!jiraFieldId) {
                   return undefined
                 }
-                const freshEstimate = String(fields[jiraFieldId as keyof JiraGQLFields]).slice(
-                  0,
-                  100
-                )
+                const freshEstimate = String(fields[jiraFieldId]).slice(0, 100)
                 if (freshEstimate === label) return undefined
                 // mutate current dataloader
                 estimate.label = freshEstimate
@@ -291,6 +298,10 @@ export const jiraIssue = (
 
             return {
               ...fields,
+              cloudId,
+              issueKey,
+              id: JiraIssueId.join(cloudId, issueKey),
+              lastUpdated: issueRes.changelog.histories[0]?.created ?? fields.created,
               extraFields: generateJiraExtraFields(issueRes),
               issueType: fields.issuetype.id,
               possibleEstimationFields,
@@ -304,10 +315,7 @@ export const jiraIssue = (
           const redisKey = `jira:${cloudId}:${issueKey}:["*all"]["names","schema"]`
           const issueRes = await redisStoreAndNetwork(
             redisKey,
-            () =>
-              manager.getIssue(cloudId, issueKey, ['*all'], ['names', 'schema']) as Promise<
-                JiraGetIssueRes | Error
-              >,
+            () => manager.getIssue(cloudId, issueKey, ['*all'], ['names', 'schema']),
             cacheImagesUpdateEstimates,
             {
               onUpdate: (res) => {
