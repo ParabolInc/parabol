@@ -13,6 +13,7 @@ import type {AssetType, PartialPath} from '../../../fileStorage/FileStoreManager
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import {getUserId} from '../../../utils/authorization'
 import {compressImage} from '../../../utils/compressImage'
+import encodeAuthToken from '../../../utils/encodeAuthToken'
 import {fetchUntrusted} from '../../../utils/fetchUntrusted'
 import {Logger} from '../../../utils/Logger'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
@@ -73,9 +74,10 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
     try {
       const [newUrl, localRes] = await Promise.all([
         manager.copyFile(sourcePartialPath, targetPartialPath),
-        // HEAD is safe to follow redirects here: origin is validated to be appOrigin above,
-        // and the /assets endpoint only redirects to presigned S3/GCS or self-hosted URLs.
-        fetch(url, {method: 'HEAD'})
+        fetch(url, {
+          method: 'HEAD',
+          headers: {Authorization: `Bearer ${encodeAuthToken(authToken)}`}
+        })
       ])
       const {headers} = localRes
       const sizeInBytes = Number(headers.get('content-length')) || 0
