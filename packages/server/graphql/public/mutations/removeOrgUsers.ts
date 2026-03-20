@@ -53,15 +53,27 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     })
   }
 
-  const orgUsers = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .loadMany(userIds.map((userId) => ({userId, orgId})))
-  const nonOrgUsers = userIds.filter((_, idx) => !orgUsers[idx])
+  const allOrgUsers = await dataLoader.get('organizationUsersByOrgId').load(orgId)
+  const nonOrgUsers = userIds.filter(
+    (userId) => !allOrgUsers.some((orgUser) => orgUser.userId === userId)
+  )
   if (nonOrgUsers.length > 0) {
     return standardError(
       new Error(`User(s) ${nonOrgUsers.join(', ')} are not members of the organization ${orgId}`),
       {userId: viewerId}
     )
+  }
+
+  const remainingOrgUsers = allOrgUsers.filter((orgUser) => !userIds.includes(orgUser.userId))
+  if (remainingOrgUsers.length === 0) {
+    return standardError(new Error('Cannot remove all members from an org'))
+  }
+  if (
+    !remainingOrgUsers.some(
+      (orgUser) => orgUser.role && ['BILLING_LEADER', 'ORG_ADMIN'].includes(orgUser.role)
+    )
+  ) {
+    return standardError(new Error('Cannot remove last billing leader'))
   }
 
   const removedUserResults = await Promise.all(

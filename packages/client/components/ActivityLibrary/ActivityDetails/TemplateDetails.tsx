@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useCallback, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useLocation, useNavigate} from 'react-router'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
@@ -145,8 +145,9 @@ export const TemplateDetails = (props: Props) => {
   )
 
   const {teams, preferredTeamId} = viewer
-  const history = useHistory<{prevCategory?: string; edit?: boolean}>()
-  const prevCategory = history.location.state?.prevCategory
+  const navigate = useNavigate()
+  const location = useLocation() as {state?: {prevCategory?: string; edit?: boolean}}
+  const prevCategory = location.state?.prevCategory
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitting, submitMutation} = useMutationProps()
@@ -168,8 +169,9 @@ export const TemplateDetails = (props: Props) => {
       onError,
       onCompleted: () => {
         onCompleted()
-        history.replace(
-          `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`
+        navigate(
+          `/activity-library/category/${prevCategory ?? category ?? QUICK_START_CATEGORY_ID}`,
+          {replace: true}
         )
       }
     }
@@ -199,8 +201,8 @@ export const TemplateDetails = (props: Props) => {
   const description = useTemplateDescription(viewerLowestScope, activity)
 
   useEffect(() => {
-    setIsEditing(!!history.location.state?.edit)
-  }, [history.location.state?.edit, setIsEditing])
+    setIsEditing(!!location.state?.edit)
+  }, [location.state?.edit, setIsEditing])
 
   useEffect(() => setActiveTemplate(atmosphere, teamId, activityId, type), [activity])
 

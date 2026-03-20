@@ -1,0 +1,6 @@
+type AddOrgCouponSuccess {
+  """
+  The updated organization
+  """
+  organization: Organization!
+}

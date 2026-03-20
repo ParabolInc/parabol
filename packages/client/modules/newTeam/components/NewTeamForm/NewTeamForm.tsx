@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ChangeEvent, type FormEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
 import Checkbox from '../../../../components/Checkbox'
 import DashHeaderTitle from '../../../../components/DashHeaderTitle'
@@ -16,7 +17,6 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useRouter from '../../../../hooks/useRouter'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -183,7 +183,7 @@ const NewTeamForm = (props: Props) => {
 
   const {submitting, onError, error, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const updateOrgId = (orgId: string) => {
     setOrgId(orgId)
@@ -209,7 +209,7 @@ const NewTeamForm = (props: Props) => {
       }
       const variables = {newTeam, orgName, invitees}
       submitMutation()
-      AddOrgMutation(atmosphere, variables, {history, onError, onCompleted})
+      AddOrgMutation(atmosphere, variables, {navigate, onError, onCompleted})
     } else {
       const newTeam = {
         name: teamName,
@@ -217,7 +217,7 @@ const NewTeamForm = (props: Props) => {
         isPublic
       }
       submitMutation()
-      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, history})
+      AddTeamMutation(atmosphere, {newTeam, invitees}, {onError, onCompleted, navigate})
     }
   }
 
@@ -227,7 +227,7 @@ const NewTeamForm = (props: Props) => {
       orgId,
       upgradeTier: 'team'
     })
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   const onInvitesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

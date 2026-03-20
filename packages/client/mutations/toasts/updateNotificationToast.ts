@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {updateNotificationToast_notification$data} from '../../__generated__/updateNotificationToast_notification.graphql'
-import type {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
+import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
 graphql`
@@ -14,7 +14,7 @@ graphql`
 
 export const updateNotificationToastOnNext: OnNextHandler<
   updateNotificationToast_notification$data,
-  OnNextHistoryContext
+  OnNextNavigateContext
 > = (payload, {atmosphere}) => {
   const {updatedNotification} = payload
 

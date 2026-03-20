@@ -1,11 +1,4 @@
-import styled from '@emotion/styled'
 import {Draggable, type DraggableProvided, type DraggableStateSnapshot} from '@hello-pangea/dnd'
-
-const DraggableStyles = styled('div')({
-  // sometimes the default blue fuzzies show up around the containing div
-  outline: 'none',
-  padding: `6px 12px`
-})
 
 interface Props {
   draggableId: string
@@ -21,13 +14,14 @@ const DraggableTaskWrapper = (props: Props) => {
   return (
     <Draggable draggableId={draggableId} index={index} disableInteractiveElementBlocking={false}>
       {(dragProvided: DraggableProvided, dragSnapshot: DraggableStateSnapshot) => (
-        <DraggableStyles
+        <div
+          className='px-3 py-1.5 outline-none'
           ref={dragProvided.innerRef}
           {...dragProvided.draggableProps}
           {...dragProvided.dragHandleProps}
         >
           {children(dragProvided, dragSnapshot)}
-        </DraggableStyles>
+        </div>
       )}
     </Draggable>
   )

@@ -31,6 +31,7 @@ import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
+import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
@@ -879,6 +880,10 @@ const User: ReqResolvers<'User'> = {
     urlObj.searchParams.append('RelayState', relayState)
     return {url: urlObj.toString()}
   },
+  samlIdP: async ({email}, _args, {dataLoader}) => {
+    return getSAMLURLFromEmail(email, dataLoader)
+  },
+
   rasterPicture: async ({picture}) => {
     const rasterPicture =
       picture && picture.endsWith('.svg') ? picture.slice(0, -3) + 'png' : picture

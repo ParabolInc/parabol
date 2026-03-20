@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useEffect, useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useLocation} from 'react-router'
 import type {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
@@ -125,9 +125,9 @@ const TeamPromptMeeting = (props: Props) => {
   }, [phase])
   const transitioningStages = useTransition(stages)
   const {safeRoute, isDesktop} = useMeeting(meeting)
-  const history = useHistory()
+  const location = useLocation()
   const {isRightDrawerOpen, id: meetingId, localStageId} = meeting
-  const params = new URLSearchParams(history.location.search)
+  const params = new URLSearchParams(location.search)
   const responseId = params.get('responseId')
   useEffect(() => {
     if (!responseId) {

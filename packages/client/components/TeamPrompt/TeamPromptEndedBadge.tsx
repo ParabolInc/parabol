@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useRefreshInterval from '../../hooks/useRefreshInterval'
 import {Breakpoint} from '../../types/constEnums'

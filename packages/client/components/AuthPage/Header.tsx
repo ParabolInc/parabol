@@ -3,7 +3,7 @@
  *
  */
 import styled from '@emotion/styled'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import {PALETTE} from '../../styles/paletteV3'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import {AppBar} from '../../types/constEnums'

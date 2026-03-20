@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import {memo, useEffect, useLayoutEffect, useRef} from 'react'
+import {useLocation} from 'react-router'
 import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'
 import usePortal from '../hooks/usePortal'
-import useRouter from '../hooks/useRouter'
 import useTransition from '../hooks/useTransition'
 import {Breakpoint, NavSidebar, ZIndex} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
@@ -60,7 +60,7 @@ const Snackbar = memo(() => {
     id: 'snackbar',
     noClose: true
   })
-  const {location} = useRouter()
+  const location = useLocation()
   const hasSidebar =
     location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)

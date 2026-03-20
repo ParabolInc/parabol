@@ -6,7 +6,7 @@ import StorageIcon from '@mui/icons-material/Storage'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useClientQuery} from 'react-relay'
-import {Link} from 'react-router-dom'
+import {Link} from 'react-router'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'

@@ -1,29 +1,26 @@
 import {Suspense, useCallback, useEffect} from 'react'
-import {useHistory, useLocation} from 'react-router'
+import {useLocation, useNavigate, useParams} from 'react-router'
 import ReviewRequestToJoinOrgModal from '~/components/ReviewRequestToJoinOrgModal'
 import reviewRequestToJoinOrgModalQuery, {
   type ReviewRequestToJoinOrgModalQuery
 } from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useModal from '../hooks/useModal'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-import useRouter from '../hooks/useRouter'
 
 const ReviewRequestToJoinOrgRoot = () => {
-  const {match} = useRouter<{requestId: string}>()
-  const {params} = match
-  const {requestId} = params
+  const {requestId} = useParams()
   const queryRef = useQueryLoaderNow<ReviewRequestToJoinOrgModalQuery>(
     reviewRequestToJoinOrgModalQuery,
-    {requestId},
+    {requestId: requestId!},
     'network-only'
   )
 
-  const location = useLocation<{backgroundLocation?: Location}>()
-  const history = useHistory()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const onClose = useCallback(() => {
-    const state = location.state
-    history.replace(state?.backgroundLocation ?? '/meetings')
+    const state = location.state as {backgroundLocation?: Location} | null
+    navigate(state?.backgroundLocation ?? '/meetings', {replace: true})
   }, [location])
 
   const {openPortal, closePortal, modalPortal} = useModal({

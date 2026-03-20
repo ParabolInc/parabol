@@ -1,10 +1,9 @@
-import type {Location} from 'history'
 import {useMemo} from 'react'
-import useRouter from '~/hooks/useRouter'
+import {type Location, useLocation} from 'react-router'
 import type {TimelineEventEnum} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 
 const useQueryParameterParser = (viewerId: string) => {
-  const {location} = useRouter()
+  const location = useLocation()
   return useMemo(() => parseQueryParams(viewerId, location), [viewerId, location])
 }
 

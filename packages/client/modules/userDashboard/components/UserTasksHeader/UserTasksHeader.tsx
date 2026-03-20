@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {
   UserTasksHeader_viewer$data,
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
 import LinkButton from '~/components/LinkButton'
-import useRouter from '~/hooks/useRouter'
 import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint, FilterLabels} from '~/types/constEnums'
@@ -81,7 +81,7 @@ interface Props {
 }
 
 const UserTasksHeader = (props: Props) => {
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const {viewerRef} = props
@@ -192,9 +192,7 @@ const UserTasksHeader = (props: Props) => {
         )}
 
         <StyledLinkButton
-          onClick={() =>
-            history.push(constructFilterQueryParamURL(teamIds, userIds, !showArchived))
-          }
+          onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
           dataCy='archived-checkbox'
         >
           <StyledCheckbox active={showArchived} />

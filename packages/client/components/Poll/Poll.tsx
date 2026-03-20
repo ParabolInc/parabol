@@ -1,40 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import type {Poll_poll$key} from '~/__generated__/Poll_poll.graphql'
-import {cardShadow, Elevation} from '~/styles/elevation'
-import cardRootStyles from '~/styles/helpers/cardRootStyles'
-import {PALETTE} from '~/styles/paletteV3'
+import {cn} from '~/ui/cn'
 import ThreadedAvatarColumn from '../ThreadedAvatarColumn'
 import ThreadedItemHeaderDescription from '../ThreadedItemHeaderDescription'
 import ThreadedItemWrapper from '../ThreadedItemWrapper'
 import {getPollState} from './PollState'
-
-const BodyCol = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingBottom: 8,
-  width: '100%',
-  marginTop: 10
-})
-
-const PollCard = styled('div')<{
-  isFocused: boolean
-}>(({isFocused}) => ({
-  ...cardRootStyles,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'start',
-  outline: 'none',
-  padding: `0`,
-  overflow: 'hidden',
-  color: PALETTE.SLATE_600,
-  backgroundColor: PALETTE.WHITE,
-  border: `1.5px solid ${isFocused ? PALETTE.SKY_400 : PALETTE.SLATE_400}`,
-  boxShadow: isFocused ? cardShadow : Elevation.Z0,
-  transition: `box-shadow 100ms ease-in`
-}))
 
 interface Props {
   children: React.ReactNode
@@ -67,13 +39,22 @@ const Poll = (props: Props) => {
   return (
     <ThreadedItemWrapper isReply={false}>
       <ThreadedAvatarColumn isReply={false} picture={picture} />
-      <BodyCol>
+      <div className='mt-2.5 flex w-full flex-col pb-2'>
         <ThreadedItemHeaderDescription
           title={preferredName}
           subTitle={isNewPoll ? 'is creating a Poll...' : 'added a Poll'}
         />
-        <PollCard isFocused={isFocused}>{children}</PollCard>
-      </BodyCol>
+        <div
+          className={cn(
+            'flex w-full flex-col justify-start overflow-hidden rounded bg-white text-slate-600 outline-none transition-shadow duration-100 ease-in',
+            isFocused
+              ? 'border-[1.5px] border-sky-400 shadow-card'
+              : 'border-[1.5px] border-slate-400 shadow-none'
+          )}
+        >
+          {children}
+        </div>
+      </div>
     </ThreadedItemWrapper>
   )
 }

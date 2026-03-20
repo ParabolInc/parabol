@@ -30,6 +30,7 @@ const StyledLink = styled('span')({
 })
 
 const AddJiraButton = styled(RaisedButton)({
+  gap: 8,
   whiteSpace: 'pre-wrap'
 })
 interface Props {
