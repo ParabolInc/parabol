@@ -180,7 +180,13 @@ export default class Atmosphere extends Environment {
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
     // DeleteUserMutation is required to unset the cookie
-    const isAuth = request.name.startsWith('Atmosphere') || request.name === 'DeleteUserMutation'
+    // ReAuth mutations are required to set a new auth cookie
+    const isAuth =
+      request.name.startsWith('Atmosphere') ||
+      request.name === 'DeleteUserMutation' ||
+      request.name === 'ReAuthWithGoogleMutation' ||
+      request.name === 'ReAuthWithMicrosoftMutation' ||
+      request.name === 'ReAuthWithPasswordMutation'
     const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
     if (useHTTP) {
       const response = fetch('/graphql', {

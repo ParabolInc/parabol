@@ -32,6 +32,7 @@ const query = graphql`
     viewer {
       ...PasswordResetLink_viewer
       ...EmailNotifications_viewer
+      ...DeleteAccount_viewer
       preferredName
       picture
       identities {
@@ -67,7 +68,7 @@ const UserProfile = ({queryRef}: Props) => {
         </Panel>
         <Panel label='Danger Zone' casing={'capitalize'}>
           <PanelRow>
-            <DeleteAccount />
+            <DeleteAccount viewerRef={viewer} />
           </PanelRow>
         </Panel>
       </SettingsBlock>
