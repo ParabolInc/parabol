@@ -3,7 +3,6 @@ import {decode} from 'jsonwebtoken'
 import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
 import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {RateLimitError} from 'parabol-client/utils/AtlassianManager'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import getKysely from '../postgres/getKysely'
 import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
@@ -16,10 +15,10 @@ import AtlassianServerManager, {
 } from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
-import {getIssue} from '../utils/atlassian/jiraIssues'
 import {generateJiraExtraFields} from '../utils/generateJiraExtraFields'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
+import {redisStoreAndNetwork} from '../utils/redisStoreAndNetwork'
 import type RootDataLoader from './RootDataLoader'
 
 type TeamUserKey = {
@@ -302,27 +301,25 @@ export const jiraIssue = (
             }
           }
 
-          const publishUpdatedIssue = async (issue: JiraGetIssueRes) => {
-            const res = await cacheImagesUpdateEstimates(issue)
-            publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JiraIssue', res)
-          }
-          const issueRes = await getIssue(
-            manager,
-            cloudId,
-            issueKey,
-            publishUpdatedIssue,
-            ['*all'],
-            ['names', 'schema']
+          const redisKey = `jira:${cloudId}:${issueKey}:["*all"]["names","schema"]`
+          const issueRes = await redisStoreAndNetwork(
+            redisKey,
+            () =>
+              manager.getIssue(cloudId, issueKey, ['*all'], ['names', 'schema']) as Promise<
+                JiraGetIssueRes | Error
+              >,
+            cacheImagesUpdateEstimates,
+            {
+              onUpdate: (res) => {
+                publish(SubscriptionChannel.NOTIFICATION, viewerId, 'JiraIssue', res)
+              }
+            }
           )
-          if (issueRes instanceof Error || issueRes instanceof RateLimitError) {
-            logError(issueRes, {
-              userId,
-              tags: {cloudId, issueKey, teamId}
-            })
+          if (issueRes instanceof Error) {
+            logError(issueRes, {userId, tags: {cloudId, issueKey, teamId}})
             return null
           }
-          const res = await cacheImagesUpdateEstimates(issueRes as any)
-          return res
+          return issueRes
         })
       )
       return results.map((result) => (result.status === 'fulfilled' ? result.value : null))
