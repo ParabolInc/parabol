@@ -94,7 +94,7 @@ module.exports = (config) => {
           loader: 'babel-loader',
           exclude: /node_modules/,
           options: {
-            presets: ['@babel/preset-react', '@babel/preset-typescript']
+            presets: [['@babel/preset-react', {runtime: 'automatic'}], '@babel/preset-typescript']
           }
         },
         {

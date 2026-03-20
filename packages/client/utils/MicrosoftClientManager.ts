@@ -1,10 +1,10 @@
-import type {RouterProps} from 'react-router'
 import type Atmosphere from '../Atmosphere'
 import {AUTH_DIALOG_WIDTH} from '../components/AuthenticationDialog'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import LoginWithMicrosoftMutation from '../mutations/LoginWithMicrosoftMutation'
 import ReAuthWithMicrosoftMutation from '../mutations/ReAuthWithMicrosoftMutation'
 import {LocalStorageKey} from '../types/constEnums'
+import type {NavigateFn} from '../types/relayMutations'
 import getAnonymousId from './getAnonymousId'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import MicrosoftManager from './MicrosoftManager'
@@ -68,7 +68,7 @@ class MicrosoftClientManager extends MicrosoftManager {
   static openOAuth(
     atmosphere: Atmosphere,
     mutationProps: MenuMutationProps,
-    history: RouterProps['history'],
+    navigate: NavigateFn,
     pageParams: string,
     invitationToken?: string,
     loginHint?: string,
@@ -93,7 +93,7 @@ class MicrosoftClientManager extends MicrosoftManager {
             isInvitation: !!invitationToken,
             params: pageParams
           },
-          {onError, onCompleted: handleComplete, history}
+          {onError, onCompleted: handleComplete, navigate}
         )
       },
       loginHint

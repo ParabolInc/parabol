@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import useRouter from '../hooks/useRouter'
+import {useNavigate} from 'react-router'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import InviteDialog from './InviteDialog'
@@ -8,7 +8,7 @@ import TeamInvitationMeetingAbstract from './TeamInvitationMeetingAbstract'
 
 const SAMLRedirect = () => {
   const [error, setError] = useState('')
-  const {history} = useRouter()
+  const navigate = useNavigate()
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const userId = params.get('userId')
@@ -31,7 +31,7 @@ const SAMLRedirect = () => {
       if (!userId) {
         setError(error || 'Error logging in')
       } else {
-        history.replace('/meetings')
+        navigate('/meetings', {replace: true})
       }
     }
   }, [])

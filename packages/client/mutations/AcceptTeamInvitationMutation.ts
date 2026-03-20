@@ -6,7 +6,7 @@ import type {AcceptTeamInvitationMutation as TAcceptTeamInvitationMutation} from
 import type {AcceptTeamInvitationMutation_team$data} from '../__generated__/AcceptTeamInvitationMutation_team.graphql'
 import type Atmosphere from '../Atmosphere'
 import type {
-  HistoryMaybeLocalHandler,
+  NavigateMaybeLocalHandler,
   OnNextHandler,
   SharedUpdater,
   StandardMutation
@@ -173,7 +173,7 @@ export const acceptTeamInvitationTeamOnNext: OnNextHandler<
   }
 }
 
-interface LocalHandler extends HistoryMaybeLocalHandler {
+interface LocalHandler extends NavigateMaybeLocalHandler {
   meetingId?: string | null
   ignoreApproval?: boolean
 }
@@ -203,7 +203,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
 > = (
   atmosphere,
   variables,
-  {history, onCompleted, onError, meetingId: locallyRequestedMeetingId, ignoreApproval}
+  {navigate, onCompleted, onError, meetingId: locallyRequestedMeetingId, ignoreApproval}
 ) => {
   return commitMutation<TAcceptTeamInvitationMutation>(atmosphere, {
     mutation,
@@ -229,7 +229,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
         } else if (message === InvitationTokenError.ALREADY_ACCEPTED) {
           handleAuthenticationRedirect(acceptTeamInvitation, {
             atmosphere,
-            history,
+            navigate,
             meetingId: locallyRequestedMeetingId
           })
         } else if (!ignoreApproval) {
@@ -257,7 +257,7 @@ const AcceptTeamInvitationMutation: StandardMutation<
       })
       handleAuthenticationRedirect(acceptTeamInvitation, {
         atmosphere,
-        history,
+        navigate,
         meetingId: locallyRequestedMeetingId
       })
     }

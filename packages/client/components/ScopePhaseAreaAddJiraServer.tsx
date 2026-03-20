@@ -72,7 +72,7 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
 
   return (
     <div className='flex h-full flex-col items-center justify-center'>
-      <RaisedButton className='whitespace-pre-wrap' onClick={openOAuth} size={'medium'}>
+      <RaisedButton className='gap-2 whitespace-pre-wrap' onClick={openOAuth} size={'medium'}>
         <JiraServerSVG />
         Import issues from Jira Data Center
       </RaisedButton>

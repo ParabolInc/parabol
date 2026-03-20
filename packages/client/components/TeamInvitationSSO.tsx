@@ -1,8 +1,8 @@
 import {useEffect} from 'react'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {emitGA4SignUpEvent} from '../utils/handleSuccessfulLogin'
@@ -22,7 +22,7 @@ const TeamInvitationSSO = (props: Props) => {
   const {ssoURL} = props
   const {onCompleted, submitMutation, onError, error} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   useEffect(() => {
     const loginWithSAML = async () => {
       const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)!
@@ -34,7 +34,7 @@ const TeamInvitationSSO = (props: Props) => {
       }
       const {ga4Args} = response
       emitGA4SignUpEvent(ga4Args)
-      AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {history, onCompleted, onError})
+      AcceptTeamInvitationMutation(atmosphere, {invitationToken}, {navigate, onCompleted, onError})
     }
     loginWithSAML().catch(() => {
       /*ignore*/

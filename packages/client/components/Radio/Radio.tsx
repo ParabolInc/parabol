@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
-import {Component} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import ui from '../../styles/ui'
 
@@ -32,17 +31,15 @@ interface Props {
   value: string
 }
 
-class Radio extends Component<Props> {
-  render() {
-    // foce checked to a boolean again because of react bug
-    const {checked, name, onChange, label, value} = this.props
-    return (
-      <Base>
-        <Input name={name} type='radio' checked={!!checked} value={value} onChange={onChange} />
-        <Label>{label}</Label>
-      </Base>
-    )
-  }
+const Radio = (props: Props) => {
+  // force checked to a boolean again because of react bug
+  const {checked, name, onChange, label, value} = props
+  return (
+    <Base>
+      <Input name={name} type='radio' checked={!!checked} value={value} onChange={onChange} />
+      <Label>{label}</Label>
+    </Base>
+  )
 }
 
 export default Radio

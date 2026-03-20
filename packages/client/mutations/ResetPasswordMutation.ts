@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitMutation} from 'react-relay'
 import getValidRedirectParam from '~/utils/getValidRedirectParam'
 import type {ResetPasswordMutation as TResetPasswordMutation} from '../__generated__/ResetPasswordMutation.graphql'
-import type {HistoryLocalHandler, StandardMutation} from '../types/relayMutations'
+import type {NavigateLocalHandler, StandardMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation ResetPasswordMutation($newPassword: String!, $token: ID!) {
@@ -17,10 +17,10 @@ const mutation = graphql`
     }
   }
 `
-const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, HistoryLocalHandler> = (
+const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, NavigateLocalHandler> = (
   atmosphere,
   variables,
-  {onError, onCompleted, history}
+  {onError, onCompleted, navigate}
 ) => {
   return commitMutation<TResetPasswordMutation>(atmosphere, {
     mutation,
@@ -32,7 +32,7 @@ const ResetPasswordMutation: StandardMutation<TResetPasswordMutation, HistoryLoc
       onCompleted(res, errors)
       if (!uiError && !errors) {
         const nextUrl = getValidRedirectParam() || '/meetings'
-        history.push(nextUrl)
+        navigate(nextUrl)
       }
     }
   })

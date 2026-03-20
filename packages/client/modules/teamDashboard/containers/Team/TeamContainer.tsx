@@ -1,11 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, Suspense, useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Route} from 'react-router'
-import {matchPath, Switch} from 'react-router-dom'
+import {matchPath, Route, Routes, useNavigate} from 'react-router'
 import ErrorBoundary from '~/components/ErrorBoundary'
 import type {TeamContainerQuery} from '../../../../__generated__/TeamContainerQuery.graphql'
-import useRouter from '../../../../hooks/useRouter'
 import Team from '../../components/Team/Team'
 
 const TeamDashMain = lazy(
@@ -21,9 +19,6 @@ const ArchivedTasks = lazy(
 interface Props {
   teamId: string
   queryRef: PreloadedQuery<TeamContainerQuery>
-  // not sure if we still need these, but not trying to break stuff during the Relay Refactor
-  location: any
-  match: any
 }
 
 const TeamContainer = (props: Props) => {
@@ -45,42 +40,35 @@ const TeamContainer = (props: Props) => {
   )
   const {viewer} = data
   const {team, canAccessTeam} = viewer
-  const {history, match} = useRouter()
+  const navigate = useNavigate()
   const {location} = window
   const {pathname} = location
   useEffect(() => {
     if (!canAccessTeam) {
-      history.replace({
-        pathname: `/invitation-required`,
-        search: `?redirectTo=${pathname}&teamId=${teamId}`
-      })
+      navigate(
+        {
+          pathname: `/invitation-required`,
+          search: `?redirectTo=${pathname}&teamId=${teamId}`
+        },
+        {replace: true}
+      )
     }
   }, [canAccessTeam])
   if (!team) return null
 
-  const isSettings = Boolean(
-    matchPath(pathname, {
-      path: '/team/:teamId/settings'
-    })
-  )
+  const isSettings = Boolean(matchPath('/team/:teamId/settings', pathname))
   return (
     <ErrorBoundary>
       <Team isSettings={isSettings} team={team}>
         <Suspense fallback={''}>
-          <Switch>
-            {/* TODO: replace match.path with a relative when the time comes: https://github.com/ReactTraining/react-router/pull/4539 */}
+          <Routes>
+            <Route path='settings' element={<TeamSettings teamId={teamId} />} />
             <Route
-              path={`${match.path}/settings`}
-              render={(p) => <TeamSettings {...p} teamId={teamId} />}
+              path='archive'
+              element={<ArchivedTasks team={team} returnToTeamId={teamId} teamIds={[teamId]} />}
             />
-            <Route
-              path={`${match.path}/archive`}
-              render={(p) => (
-                <ArchivedTasks {...p} team={team} returnToTeamId={teamId} teamIds={[teamId]} />
-              )}
-            />
-            <Route path={match.path} component={TeamDashMain} />
-          </Switch>
+            <Route path='*' element={<TeamDashMain />} />
+          </Routes>
         </Suspense>
       </Team>
     </ErrorBoundary>

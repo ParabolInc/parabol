@@ -2,9 +2,10 @@
 
 ## Overview
 
-[Parabol](https://www.parabol.co) is an open-source application for running
-agile meetings such as team retrospectives or Sprint Poker™. You may try
-a single-player demo of Parabol (no login creation required) at: https://parabol.co/retro-demo
+[Parabol](https://www.parabol.co) is an open-source application for knowledge
+management and running structured meetings such as team retrospectives or Sprint Poker™.
+You may try a single-player demo of Parabol (no login creation required) at:
+https://parabol.co/retro-demo
 
 We endeavor to be a
 transparent organization and publish

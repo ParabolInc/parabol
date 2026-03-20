@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import {NavigateNext} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 import {PALETTE} from '../../../../styles/paletteV3'
 
@@ -44,7 +44,7 @@ type Props = {
 
 const OrgNav = (props: Props) => {
   const {organizationRef} = props
-  const history = useHistory()
+  const navigate = useNavigate()
   const organization = useFragment(
     graphql`
       fragment OrgNav_organization on Organization {
@@ -57,11 +57,11 @@ const OrgNav = (props: Props) => {
 
   return (
     <Wrapper>
-      <NavLabel onClick={() => history.push('/meetings')}>Dashboard</NavLabel>
+      <NavLabel onClick={() => navigate('/meetings')}>Dashboard</NavLabel>
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>
-      <NavLabel onClick={() => history.push('/me/organizations')}>Organization</NavLabel>
+      <NavLabel onClick={() => navigate('/me/organizations')}>Organization</NavLabel>
       <StyledIcon>
         <NavigateNextIcon />
       </StyledIcon>

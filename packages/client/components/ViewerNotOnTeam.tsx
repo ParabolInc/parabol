@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {ViewerNotOnTeamQuery} from '../__generated__/ViewerNotOnTeamQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
@@ -45,19 +45,19 @@ const ViewerNotOnTeam = (props: Props) => {
     teamInvitation: {teamInvitation, meetingId, teamId, isOnTeam}
   } = viewer
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {onError, onCompleted} = useMutationProps()
   useDocumentTitle(`Invitation Required`, 'Invitation Required')
   useEffect(() => {
     if (isOnTeam) {
       const redirectTo = getValidRedirectParam() || '/meetings'
-      history.replace(redirectTo)
+      navigate(redirectTo, {replace: true})
     } else if (teamInvitation) {
       // if an invitation already exists, accept it
       AcceptTeamInvitationMutation(
         atmosphere,
         {invitationToken: teamInvitation.token},
-        {history, meetingId}
+        {navigate, meetingId}
       )
     } else if (teamId) {
       PushInvitationMutation(atmosphere, {meetingId, teamId}, {onError, onCompleted})

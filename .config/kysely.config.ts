@@ -4,5 +4,8 @@ import {migrations} from './kyselyMigrations'
 
 export default defineConfig({
   kysely: getKysely(),
-  migrations
+  migrations: {
+    ...migrations,
+    migrationFolder: '../packages/server/postgres/migrations'
+  }
 })
