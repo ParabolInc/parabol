@@ -12,10 +12,10 @@ interface CachedEntry<T> {
   cachedAt: number
 }
 
-const DEFAULT_MAX_AGE = ms('3s')
+const DEFAULT_MAX_AGE = ms('5s')
 const DEFAULT_TTL = ms('1d')
 // Slightly longer than the 20s deadline in fetchWithRetry so it auto-expires on process crash
-const PENDING_TTL_MS = 25_000
+const PENDING_TTL_MS = ms('25s')
 const POLL_INTERVAL_MS = 50
 
 // A sentinel stored in Redis while a fetch is in progress so concurrent requests wait instead of
@@ -47,27 +47,27 @@ async function waitForValue<T>(key: string): Promise<CachedEntry<T> | null> {
   return null
 }
 
-// Background re-fetch: only writes to Redis and calls onUpdate when the raw payload changed.
+// Background re-fetch: always updates cachedAt so the next request knows the data is fresh.
+// Only runs the transform and calls onUpdate when the raw payload actually changed.
 async function refresh<TRaw extends object, TTransformed>(
   key: string,
   thunk: () => Promise<TRaw | Error>,
   transform: (raw: TRaw) => TTransformed | Promise<TTransformed>,
   ttl: number,
-  cachedRawHash: Buffer,
+  cachedEntry: CachedEntry<TTransformed>,
   onUpdate: ((transformed: TTransformed) => void | Promise<void>) | undefined
 ): Promise<void> {
   const raw = await thunk()
   if (raw instanceof Error) return
-  const newHash = hashRaw(raw)
-  if (newHash.equals(cachedRawHash)) return
-  const transformedPayload = await transform(raw)
-  const entry: CachedEntry<TTransformed> = {
-    rawHash: newHash,
-    transformedPayload,
-    cachedAt: Date.now()
-  }
   const redis = getRedis()
-  redis.set(key, pack(entry), 'PX', ttl)
+  const newHash = hashRaw(raw)
+  if (newHash.equals(cachedEntry.rawHash)) {
+    // Data unchanged — just bump cachedAt so the next request won't re-check too soon
+    redis.set(key, pack({...cachedEntry, cachedAt: Date.now()}), 'PX', ttl)
+    return
+  }
+  const transformedPayload = await transform(raw)
+  redis.set(key, pack({rawHash: newHash, transformedPayload, cachedAt: Date.now()}), 'PX', ttl)
   if (onUpdate) await onUpdate(transformedPayload)
 }
 
@@ -129,7 +129,7 @@ export async function redisStoreAndNetwork<TRaw extends object, TTransformed>(
     // Cache hit — unpack the real entry, return immediately, refresh in background if stale
     const entry = unpack(prev) as CachedEntry<TTransformed>
     if (Date.now() - entry.cachedAt > maxAge) {
-      refresh(key, thunk, transform, ttl, entry.rawHash, onUpdate).catch(Logger.error)
+      refresh(key, thunk, transform, ttl, entry, onUpdate).catch(Logger.error)
     }
     return entry.transformedPayload
   }
