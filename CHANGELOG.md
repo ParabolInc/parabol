@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.0](https://github.com/ParabolInc/parabol/compare/v13.6.6...v13.7.0) (2026-03-20)
+
+
+### Added
+
+* coupons for upgrading to team plan ([#12892](https://github.com/ParabolInc/parabol/issues/12892)) ([93a19ee](https://github.com/ParabolInc/parabol/commit/93a19ee3ac6df28b802486eff6227be8a7e4cfa1))
+
+
+### Fixed
+
+* do not remove last billing leader ([#12890](https://github.com/ParabolInc/parabol/issues/12890)) ([76035f4](https://github.com/ParabolInc/parabol/commit/76035f4141e664aabd0d7f42f5346a488d6d79cc))
+* ironbank action 2 ([#12888](https://github.com/ParabolInc/parabol/issues/12888)) ([a641054](https://github.com/ParabolInc/parabol/commit/a6410548dec10b4a3e2b86cb3e55409d31d5c9e4))
+* more robust embedUserAsset URL checks ([#12891](https://github.com/ParabolInc/parabol/issues/12891)) ([111397a](https://github.com/ParabolInc/parabol/commit/111397a45e0f6d4a3985b225513a87cfed1ff8cd))
+* page meetingSummaryId ([#12893](https://github.com/ParabolInc/parabol/issues/12893)) ([ecff1f3](https://github.com/ParabolInc/parabol/commit/ecff1f35a4fbcab87c9d842b6eb3a66c1591b098))
+* paste Pages docs with many images ([#12751](https://github.com/ParabolInc/parabol/issues/12751)) ([9e683c6](https://github.com/ParabolInc/parabol/commit/9e683c69a3e00a9f80a8921a04de3fa287936f58))
+
+
+### Changed
+
+* clean FailedAuthRequest in tests ([#12895](https://github.com/ParabolInc/parabol/issues/12895)) ([e4469db](https://github.com/ParabolInc/parabol/commit/e4469db2c97878aa5c558b8cee59604b11e986ac))
+* confirm auth before deleting user ([#12883](https://github.com/ParabolInc/parabol/issues/12883)) ([2cf0fa0](https://github.com/ParabolInc/parabol/commit/2cf0fa08f251f87da83dc68fe0950415facccd0d))
+* react v18 migration ([#12792](https://github.com/ParabolInc/parabol/issues/12792)) ([4ed231b](https://github.com/ParabolInc/parabol/commit/4ed231be4060f60f952a619e69890c4a25f373cc))
+
 ## [13.6.6](https://github.com/ParabolInc/parabol/compare/v13.6.5...v13.6.6) (2026-03-18)
 
 
