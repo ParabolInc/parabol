@@ -45,8 +45,8 @@ export const getEmbeddingsByRRF = async (params: Params) => {
       qb
         .selectFrom('EmbeddingsMetadata')
         .innerJoin(tableName, 'EmbeddingsMetadata.id', `${tableName}.embeddingsMetadataId`)
-        .where('teamId', 'in', teamIds)
         .where('EmbeddingsMetadata.objectType', '=', type)
+        .where('teamId', 'in', teamIds)
         .$if(!!dateRange, (qb) =>
           qb
             // we don't update discussion topics, so we only use refUpdatedAt
