@@ -1,5 +1,6 @@
 import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
+// import sleep from '../../../../client/utils/sleep'
 import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
@@ -124,9 +125,11 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return viewerId === userId ? accessToken : null
   },
 
-  projects: ({teamId, userId}, _args, {authToken, dataLoader}) => {
+  projects: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) return []
+    // await sleep(5000)
+    // return []
     return dataLoader.get('allJiraProjects').load({teamId, userId})
   },
 

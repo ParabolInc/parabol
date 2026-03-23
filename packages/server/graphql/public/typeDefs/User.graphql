@@ -1,4 +1,5 @@
 directive @stream_HACK on FIELD
+directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
