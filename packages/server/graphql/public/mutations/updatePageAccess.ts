@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import type {ControlledTransaction} from 'kysely'
 import ms from 'ms'
+import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
 import getMailManager from '../../../email/getMailManager'
@@ -13,6 +14,7 @@ import type {DB} from '../../../postgres/types/pg'
 import {updatePageAccessTable} from '../../../postgres/updatePageAccessTable'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import publish from '../../../utils/publish'
 import {publishPageNotification} from '../../../utils/publishPageNotification'
 import {DataLoaderWorker} from '../../graphql'
 import type {MutationResolvers, PageRoleEnum, PageSubjectEnum} from '../resolverTypes'
@@ -104,6 +106,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   if (userRole !== 'owner') {
     // check to see if the page is an orphan
     const userRoles = await dataLoader.get('pageAccessByPageId').load(dbPageId)
+    dataLoader.get('pageAccessByPageId').clear(dbPageId)
     const owner = userRoles.find(({role}) => role === 'owner')
     const isValidOwnerClaim =
       !owner && subjectType === 'user' && subjectId === viewerId && role === 'owner'
@@ -273,6 +276,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
   dataLoader.get('pages').clear(dbPageId)
 
   // notifications
+  let notification: {id: string; userId: string} | undefined
   if (role) {
     let invitationEmail: string | null = null
     let newUser = false
@@ -282,7 +286,7 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       newUser = true
     }
     if (nextSubjectType === 'user') {
-      const [user, notification] = await Promise.all([
+      const [user, newNotification] = await Promise.all([
         dataLoader.get('users').load(nextSubjectId),
         pg
           .insertInto('Notification')
@@ -297,10 +301,10 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
           .returningAll()
           .executeTakeFirst()
       ])
+      notification = newNotification
       if (user?.sendPageInvitationEmail) {
         invitationEmail = user.email
       }
-      publishNotification(notification!, subOptions)
     }
     if (invitationEmail) {
       const viewer = await dataLoader.get('users').loadNonNull(viewerId)
@@ -330,7 +334,26 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
     }
   }
 
-  const data = {pageId: dbPageId}
+  const data = {pageId: dbPageId, userId: nextSubjectId}
+
+  if (!role) {
+    const userIds = [] as string[]
+    if (nextSubjectType === 'user') {
+      userIds.push(nextSubjectId)
+    } else if (nextSubjectType === 'team') {
+      const users = await dataLoader.get('teamMembersByTeamId').load(nextSubjectId)
+      userIds.push(...users.map(({userId}) => userId))
+    } else if (nextSubjectType === 'organization') {
+      const users = await dataLoader.get('organizationUsersByOrgId').load(nextSubjectId)
+      userIds.push(...users.map(({userId}) => userId))
+    }
+    for (const userId of userIds) {
+      publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePageAccessPayload', data, subOptions)
+    }
+  }
+  if (notification) {
+    publishNotification(notification, subOptions)
+  }
   await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
   return data
 }

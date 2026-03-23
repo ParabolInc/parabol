@@ -5,6 +5,16 @@ import type {PageEntryQuery} from '../../__generated__/PageEntryQuery.graphql'
 import Page from './Page'
 import {PageNoAccess} from './PageNoAccess'
 
+graphql`
+  fragment PageEntry_page on Page {
+    id
+    access {
+      viewer
+      public
+    }
+  }
+`
+
 interface Props {
   viewerRef: Page_viewer$key | null
   queryRef: PreloadedQuery<PageEntryQuery>
@@ -20,7 +30,7 @@ export const PageEntry = (props: Props) => {
         public {
           page(pageId: $pageId) {
             ...Page_page
-            id
+            ...PageEntry_page @relay(mask: false)
           }
         }
       }
@@ -29,6 +39,7 @@ export const PageEntry = (props: Props) => {
   )
 
   const {page} = query.public
-  if (!page) return <PageNoAccess pageId={pageId} />
+  const canAccess = page?.access.viewer || page?.access.public
+  if (!canAccess) return <PageNoAccess pageId={pageId} />
   return <Page pageRef={page} viewerRef={viewerRef} isPublic={isPublic} />
 }

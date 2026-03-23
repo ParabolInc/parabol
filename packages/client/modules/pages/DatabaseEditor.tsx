@@ -7,14 +7,13 @@ import {useEditablePage} from './useEditablePage'
 
 interface Props {
   provider: HocuspocusProvider
-  isEditable: boolean
   viewerRef: useTipTapDatabaseEditor_viewer$key | null
 }
 
 export const DatabaseEditor = (props: Props) => {
-  const {provider, isEditable, viewerRef} = props
+  const {provider, viewerRef} = props
   const {editor} = useTipTapDatabaseEditor(provider, {viewerRef})
-  useEditablePage(provider, editor, isEditable)
+  useEditablePage(provider, editor)
   if (!editor) return <div>No editor</div>
   return (
     <>

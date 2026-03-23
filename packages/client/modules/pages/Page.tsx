@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {Page_page$key} from '../../__generated__/Page_page.graphql'
 import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
-import {useIsAuthenticated} from '../../components/IsAuthenticatedProvider'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import {usePageProvider} from '../../hooks/usePageProvider'
 import {cn} from '../../ui/cn'
@@ -37,25 +36,16 @@ export const Page = (props: Props) => {
         id
         title
         ancestorIds
-        access {
-          viewer
-          public
-        }
         isDatabase
       }
     `,
     pageRef
   )
 
-  const {id: pageId, access, isDatabase, title} = page
+  const {id: pageId, isDatabase, title} = page
   const documentTitle = title || 'Untitled'
   useDocumentTitle(`${documentTitle} | Parabol`, documentTitle)
-  const {viewer: viewerAccess, public: publicAccess} = access
   const {provider, synced} = usePageProvider(pageId)
-  const isLoggedIn = useIsAuthenticated()
-  const isViewerEditable = ['owner', 'editor'].includes(viewerAccess || '')
-  const isPublicEditable = ['owner', 'editor'].includes(publicAccess || '') && !isLoggedIn
-  const isEditable = isViewerEditable || isPublicEditable
   // The editor is conditionally loaded only after syncing so the forced schema is not injected before
   // The yjs document loads
   return (
@@ -69,14 +59,9 @@ export const Page = (props: Props) => {
       >
         {synced &&
           (isDatabase ? (
-            <DatabaseEditor viewerRef={viewer} isEditable={isEditable} provider={provider} />
+            <DatabaseEditor viewerRef={viewer} provider={provider} />
           ) : (
-            <PageEditor
-              viewerRef={viewer}
-              isEditable={isEditable}
-              provider={provider}
-              pageId={pageId}
-            />
+            <PageEditor viewerRef={viewer} provider={provider} pageId={pageId} />
           ))}
       </div>
     </div>

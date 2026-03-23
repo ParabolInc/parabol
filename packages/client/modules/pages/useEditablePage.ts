@@ -1,17 +1,25 @@
 import type {HocuspocusProvider} from '@hocuspocus/provider'
 import type {Editor} from '@tiptap/core'
-import {useEffect} from 'react'
+import {useEffect, useState} from 'react'
 
-export const useEditablePage = (
-  provider: HocuspocusProvider,
-  editor: Editor,
-  isEditable: boolean
-) => {
+export const useEditablePage = (provider: HocuspocusProvider, editor: Editor) => {
+  const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
+
   useEffect(() => {
-    const isAuthorizedToEdit = provider.authorizedScope !== 'readonly'
-    const nextEditable = isAuthorizedToEdit ? isEditable : false
-    if (isEditable !== nextEditable) {
-      editor?.setEditable(nextEditable)
+    const handler = ({scope}: {scope: string}) => setAuthorizedScope(scope)
+    provider.on('authenticated', handler)
+    return () => {
+      provider.off('authenticated', handler)
     }
-  }, [editor, isEditable, provider.authorizedScope])
+  }, [provider])
+
+  const isEditable = authorizedScope !== 'readonly'
+
+  useEffect(() => {
+    if (editor.isEditable !== isEditable) {
+      editor.setEditable(isEditable)
+    }
+  }, [editor, isEditable])
+
+  return isEditable
 }

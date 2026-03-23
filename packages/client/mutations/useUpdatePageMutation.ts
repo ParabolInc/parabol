@@ -25,7 +25,7 @@ graphql`
       title
       ...LeftNavPageLink_page
       ...Page_page
-
+      ...PageEntry_page
     }
   }
 `
