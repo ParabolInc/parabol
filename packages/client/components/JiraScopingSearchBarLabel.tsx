@@ -1,18 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
+import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraScopingSearchBarLabel_integration$key} from '../__generated__/JiraScopingSearchBarLabel_integration.graphql'
 import type {JiraScopingSearchBarLabel_meeting$key} from '../__generated__/JiraScopingSearchBarLabel_meeting.graphql'
 import ScopingSearchBar from './ScopingSearchBar'
 
-interface Props {
-  children: ReactNode
+interface LabelProps {
   integrationRef: JiraScopingSearchBarLabel_integration$key
   meetingRef: JiraScopingSearchBarLabel_meeting$key
 }
 
-export const JiraScopingSearchBarLabel = (props: Props) => {
-  const {children, integrationRef, meetingRef} = props
+const JiraScopingSearchBarCurrentFilters = (props: LabelProps) => {
+  const {integrationRef, meetingRef} = props
   const meeting = useFragment(
     graphql`
   fragment JiraScopingSearchBarLabel_meeting on PokerMeeting {
@@ -47,5 +47,29 @@ export const JiraScopingSearchBarLabel = (props: Props) => {
     : queryString
       ? 'None'
       : 'Viewed in the last 30 days'
-  return <ScopingSearchBar currentFilters={currentFilters}>{children}</ScopingSearchBar>
+  return <>{currentFilters}</>
+}
+
+interface Props {
+  children: ReactNode
+  integrationRef: JiraScopingSearchBarLabel_integration$key
+  meetingRef: JiraScopingSearchBarLabel_meeting$key
+}
+
+export const JiraScopingSearchBarLabel = (props: Props) => {
+  const {children, integrationRef, meetingRef} = props
+  return (
+    <ScopingSearchBar
+      currentFilters={
+        <Suspense fallback={null}>
+          <JiraScopingSearchBarCurrentFilters
+            integrationRef={integrationRef}
+            meetingRef={meetingRef}
+          />
+        </Suspense>
+      }
+    >
+      {children}
+    </ScopingSearchBar>
+  )
 }

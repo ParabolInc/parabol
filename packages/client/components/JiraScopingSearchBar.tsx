@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraScopingSearchBar_meeting$key} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
 import {JiraScopingSearchBarLabel} from './JiraScopingSearchBarLabel'
@@ -40,13 +39,11 @@ const JiraScopingSearchBar = (props: Props) => {
   const {viewerMeetingMember} = meeting
   const integration = viewerMeetingMember?.teamMember.integrations.atlassian
   return (
-    <Suspense fallback={''}>
-      <JiraScopingSearchBarLabel meetingRef={meeting} integrationRef={integration!}>
-        <JiraScopingSearchHistoryToggle meetingRef={meeting} />
-        <JiraScopingSearchInput meetingRef={meeting} />
-        <JiraScopingSearchFilterToggle meetingRef={meeting} />
-      </JiraScopingSearchBarLabel>
-    </Suspense>
+    <JiraScopingSearchBarLabel meetingRef={meeting} integrationRef={integration!}>
+      <JiraScopingSearchHistoryToggle meetingRef={meeting} />
+      <JiraScopingSearchInput meetingRef={meeting} />
+      <JiraScopingSearchFilterToggle meetingRef={meeting} />
+    </JiraScopingSearchBarLabel>
   )
 }
 

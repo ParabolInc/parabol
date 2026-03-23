@@ -2,7 +2,7 @@ import type {ReactNode} from 'react'
 
 interface Props {
   children: ReactNode
-  currentFilters?: string
+  currentFilters?: ReactNode
 }
 
 const ScopingSearchBar = (props: Props) => {
