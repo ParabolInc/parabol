@@ -7,6 +7,7 @@ minimumReleaseAgeExclude:
   - fast-xml-parser
   - fast-xml-builder
   - path-expression-matcher
+  - strnum
 onlyBuiltDependencies:
   - '@datadog/native-appsec'
   - '@datadog/native-iast-taint-tracking'

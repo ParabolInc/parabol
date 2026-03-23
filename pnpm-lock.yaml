@@ -23,7 +23,7 @@ overrides:
   git-url-parse: 12.0.0
   fbjs: ^3.0.0
   parse-url: ^8.1.0
-  fast-xml-parser: ^5.5.6
+  fast-xml-parser: ^5.5.7
   recursive-readdir: ^2.2.3
   axios: ^1.7.8
   redux-offline: enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df
@@ -142,8 +142,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       fast-xml-parser:
-        specifier: ^5.5.6
-        version: 5.5.6
+        specifier: ^5.5.7
+        version: 5.5.9
       graphql-ws:
         specifier: ^6.0.4
         version: 6.0.6(graphql@16.13.1)(ws@8.18.0)
@@ -151,8 +151,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       kysely:
-        specifier: ^0.28.11
-        version: 0.28.12
+        specifier: ^0.28.14
+        version: 0.28.14
       magic-bytes.js:
         specifier: ^1.13.0
         version: 1.13.0
@@ -354,10 +354,10 @@ importers:
         version: 0.5.7
       kysely-codegen:
         specifier: ^0.20.0
-        version: 0.20.0(kysely@0.28.12)(pg@8.16.3)(typescript@5.9.3)
+        version: 0.20.0(kysely@0.28.14)(pg@8.16.3)(typescript@5.9.3)
       kysely-ctl:
         specifier: ^0.19.0
-        version: 0.19.0(kysely@0.28.12)(typescript@5.9.3)
+        version: 0.19.0(kysely@0.28.14)(typescript@5.9.3)
       lint-staged:
         specifier: ^10.1.7
         version: 10.5.4
@@ -488,7 +488,7 @@ importers:
         specifier: 0.4.1
         version: 0.4.1(tslib@2.8.1)
       '@mui/base':
-        specifier: ^5.0.0-beta.68
+        specifier: ^5.0.0-beta.70
         version: 5.0.0-beta.70(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/icons-material':
         specifier: ^6.3.1
@@ -818,11 +818,11 @@ importers:
         specifier: 3.565.0
         version: 3.565.0
       '@dicebear/core':
-        specifier: ^8.0.1
-        version: 8.0.2(sharp@0.34.3)
+        specifier: 8.0.2
+        version: 8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3)
       '@dicebear/initials':
-        specifier: ^8.0.1
-        version: 8.0.2(@dicebear/core@8.0.2(sharp@0.34.3))
+        specifier: 8.0.2
+        version: 8.0.2(@dicebear/core@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3))
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -4955,6 +4955,86 @@ packages:
   '@repeaterjs/repeater@3.0.6':
     resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
 
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    resolution: {integrity: sha512-FrJibrAk6v29eabIPgcTUMPXiEz8ssrAk7TXxsiZzww9UTQ1Z5KAbFJs+Z0Ez+VZTYgnE5IQJqBcoSiMebtPHA==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [android]
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    resolution: {integrity: sha512-VcOKezEhm2VqzXpcIJoITuvUS/fcjIw5NA/w3tjzWyzmvoCdd+QXIqy3FBGulWdClvp4g+IfUemigrkLThSjAQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    resolution: {integrity: sha512-nmok2LnAd6nLUKI16aEB9ydMC6Lidiiq2m1nEBDR1LaaP7FGs4AJ90qDraxX+CWlVuRlvNjyYJTNv8qFjtL9+A==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    resolution: {integrity: sha512-GInyZLjgWDfsVT6+SHxQVRwNzV0AuA1uqGsOAW+0th56J7Nh6bHHKXHBWzUrihxMetcFDmQMAX1tZ1fZDYSRsw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    resolution: {integrity: sha512-YIV3u/R9zJbpqTTNwTZM5/ocWetDKGsro0SWp70eGEM9eV2MerWyBRZnQIgzU3YBnSBQ1RcxRZvY/UxwESfZIw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    resolution: {integrity: sha512-zc2BlJSim7YR4FZDQ8OUoJg5holYzdiYMeobb9pJuGDidGL9KZUv7SbiD4E8oZogtYY42UZEap7dqkkYuA91pg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    resolution: {integrity: sha512-3h3dLPWNgSsD4lQBJPb4f+kvdOSJHa5PjTYVsWHxLUzH4IFTJUAnmuWpw4KqyQ3NA5QCyhw4TWgxk3jRkQxEKg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    resolution: {integrity: sha512-IVUe+ckIerA7xMZ50duAZzwf1U7khQe2E0QpUxu5MBJNao5RqC0zwV/Zm965vw6D3gGFUl7j4m+oJjubBVoftw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    resolution: {integrity: sha512-UOf83vqTzoYQO9SZ0fPl2ZIFtNIz/Rr/y+7X8XRX1ZnBYsQ/tTb+cj9TE+KHOdmlTFBxhYzVkP2lRByCzqi4jQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    resolution: {integrity: sha512-7C/RSgCa+7vqZ7qAbItfiaAWhyRSoD4l4BQAbVDqRRsRgY+S+hgS3in0Rxr7IorKUpGE69X48q6/nOAuTJQxeQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    resolution: {integrity: sha512-har4aPAlvjnLcil40AC77YDIk6loMawuJwFINEM7n0pZviwMkMvjb2W5ZirsNOZY4aDbo5tLx0wNMREp5Brk+w==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    resolution: {integrity: sha512-ZXtYhtUr5SSaBrUDq7DiyjOFJqBVL/dOBN7N/qmi/pO0IgiWW/f/ue3nbvu9joWE5aAKDoIzy/CxsY0suwGosQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@resvg/resvg-js@2.6.2':
+    resolution: {integrity: sha512-xBaJish5OeGmniDj9cW5PRa/PtmuVU3ziqrbr5xJj901ZDN4TosrVaNZpEiLZAxdfnhAe7uQ7QFWfjPe9d9K2Q==}
+    engines: {node: '>= 10'}
+
   '@rollup/plugin-babel@5.3.1':
     resolution: {integrity: sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==}
     engines: {node: '>= 10.0.0'}
@@ -7998,8 +8078,8 @@ packages:
   fast-xml-builder@1.1.4:
     resolution: {integrity: sha512-f2jhpN4Eccy0/Uz9csxh3Nu6q4ErKxf0XIsasomfOihuSUa3/xw6w8dnOtCDgEItQFJG8KyXPzQXzcODDrrbOg==}
 
-  fast-xml-parser@5.5.6:
-    resolution: {integrity: sha512-3+fdZyBRVg29n4rXP0joHthhcHdPUHaIC16cuyyd1iLsuaO6Vea36MPrxgAzbZna8lhvZeRL8Bc9GP56/J9xEw==}
+  fast-xml-parser@5.5.9:
+    resolution: {integrity: sha512-jldvxr1MC6rtiZKgrFnDSvT8xuH+eJqxqOBThUVjYrxssYTo1avZLGql5l0a0BAERR01CadYzZ83kVEkbyDg+g==}
     hasBin: true
 
   fastest-levenshtein@1.0.16:
@@ -9341,8 +9421,8 @@ packages:
       kysely-prisma-postgres:
         optional: true
 
-  kysely@0.28.12:
-    resolution: {integrity: sha512-kWiueDWXhbCchgiotwXkwdxZE/6h56IHAeFWg4euUfW0YsmO9sxbAxzx1KLLv2lox15EfuuxHQvgJ1qIfZuHGw==}
+  kysely@0.28.14:
+    resolution: {integrity: sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==}
     engines: {node: '>=20.0.0'}
 
   launch-editor@2.12.0:
@@ -10237,8 +10317,8 @@ packages:
     resolution: {integrity: sha512-RjhtfwJOxzcFmNOi6ltcbcu4Iu+FL3zEj83dk4kAS+fVpTxXLO1b38RvJgT/0QwvV/L3aY9TAnyv0EOqW4GoMQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  path-expression-matcher@1.1.3:
-    resolution: {integrity: sha512-qdVgY8KXmVdJZRSS1JdEPOKPdTiEK/pi0RkcT2sw1RhXxohdujUlJFPuS1TSkevZ9vzd3ZlL7ULl1MHGTApKzQ==}
+  path-expression-matcher@1.2.0:
+    resolution: {integrity: sha512-DwmPWeFn+tq7TiyJ2CxezCAirXjFxvaiD03npak3cRjlP9+OjTmSy1EpIrEbh+l6JgUundniloMLDQ/6VTdhLQ==}
     engines: {node: '>=14.0.0'}
 
   path-extra@1.0.3:
@@ -11443,8 +11523,8 @@ packages:
     resolution: {integrity: sha512-Dn8K+jSoQcXjxCobRI4HXUdHjOXsiF/KszK49fJnkbeCFjZ3EZxLG2JiM/CX+Hcq27NBDtv/Sxhvy+HhTmvyaQ==}
     engines: {node: ^8.1 || >=10.*}
 
-  strnum@2.2.0:
-    resolution: {integrity: sha512-Y7Bj8XyJxnPAORMZj/xltsfo55uOiyHcU2tnAVzHUnSJR/KsEX+9RoDeXEnsXtl/CX4fAcrt64gZ13aGaWPeBg==}
+  strnum@2.2.2:
+    resolution: {integrity: sha512-DnR90I+jtXNSTXWdwrEy9FakW7UX+qUZg28gj5fk2vxxl7uS/3bpI4fjFYVmdK9etptYBPNkpahuQnEwhwECqA==}
 
   structured-headers@1.0.1:
     resolution: {integrity: sha512-QYBxdBtA4Tl5rFPuqmbmdrS9kbtren74RTJTcs0VSQNVV5iRhJD4QlYTLD0+81SBwUQctjEQzjTRI3WG4DzICA==}
@@ -12882,7 +12962,7 @@ snapshots:
       '@smithy/signature-v4': 2.3.0
       '@smithy/smithy-client': 2.5.1
       '@smithy/types': 2.12.0
-      fast-xml-parser: 5.5.6
+      fast-xml-parser: 5.5.9
       tslib: 2.8.1
 
   '@aws-sdk/core@3.935.0':
@@ -13403,7 +13483,7 @@ snapshots:
   '@aws-sdk/xml-builder@3.930.0':
     dependencies:
       '@smithy/types': 4.9.0
-      fast-xml-parser: 5.5.6
+      fast-xml-parser: 5.5.9
       tslib: 2.8.1
 
   '@aws/lambda-invoke-store@0.2.0': {}
@@ -14440,7 +14520,7 @@ snapshots:
       datadog-metrics: 0.9.3
       debug: 4.4.3(supports-color@5.5.0)
       deep-extend: 0.6.0
-      fast-xml-parser: 5.5.6
+      fast-xml-parser: 5.5.9
       form-data: 4.0.5
       glob: 10.5.0
       inquirer: 8.2.7(@types/node@22.19.1)
@@ -14557,7 +14637,7 @@ snapshots:
       axios: 1.13.2
       chalk: 3.0.0
       clipanion: 3.2.1(typanion@3.14.0)
-      fast-xml-parser: 5.5.6
+      fast-xml-parser: 5.5.9
       form-data: 4.0.5
       js-yaml: 4.1.1
       semver: 7.7.3
@@ -14609,25 +14689,26 @@ snapshots:
       module-details-from-path: 1.0.4
       node-gyp-build: 4.8.4
 
-  '@dicebear/converter@8.0.2(sharp@0.34.3)':
+  '@dicebear/converter@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3)':
     dependencies:
       '@types/json-schema': 7.0.15
       tmp-promise: 3.0.3
     optionalDependencies:
+      '@resvg/resvg-js': 2.6.2
       sharp: 0.34.3
 
-  '@dicebear/core@8.0.2(sharp@0.34.3)':
+  '@dicebear/core@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3)':
     dependencies:
-      '@dicebear/converter': 8.0.2(sharp@0.34.3)
+      '@dicebear/converter': 8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3)
       '@types/json-schema': 7.0.15
     transitivePeerDependencies:
       - '@resvg/resvg-js'
       - exiftool-vendored
       - sharp
 
-  '@dicebear/initials@8.0.2(@dicebear/core@8.0.2(sharp@0.34.3))':
+  '@dicebear/initials@8.0.2(@dicebear/core@8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3))':
     dependencies:
-      '@dicebear/core': 8.0.2(sharp@0.34.3)
+      '@dicebear/core': 8.0.2(@resvg/resvg-js@2.6.2)(sharp@0.34.3)
 
   '@discoveryjs/json-ext@0.5.7': {}
 
@@ -15657,7 +15738,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.3':
     dependencies:
-      '@emnapi/runtime': 1.7.1
+      '@emnapi/runtime': 1.9.0
     optional: true
 
   '@img/sharp-win32-arm64@0.34.3':
@@ -16375,7 +16456,7 @@ snapshots:
 
   '@mui/base@5.0.0-beta.70(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@babel/runtime': 7.28.4
+      '@babel/runtime': 7.28.6
       '@floating-ui/react-dom': 2.1.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mui/types': 7.2.24(@types/react@18.3.28)
       '@mui/utils': 6.4.9(@types/react@18.3.28)(react@18.3.1)
@@ -17449,6 +17530,58 @@ snapshots:
   '@remirror/core-constants@3.0.0': {}
 
   '@repeaterjs/repeater@3.0.6': {}
+
+  '@resvg/resvg-js-android-arm-eabi@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-android-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-arm64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-darwin-x64@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm-gnueabihf@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-arm64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-gnu@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-linux-x64-musl@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-arm64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-ia32-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js-win32-x64-msvc@2.6.2':
+    optional: true
+
+  '@resvg/resvg-js@2.6.2':
+    optionalDependencies:
+      '@resvg/resvg-js-android-arm-eabi': 2.6.2
+      '@resvg/resvg-js-android-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-arm64': 2.6.2
+      '@resvg/resvg-js-darwin-x64': 2.6.2
+      '@resvg/resvg-js-linux-arm-gnueabihf': 2.6.2
+      '@resvg/resvg-js-linux-arm64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-arm64-musl': 2.6.2
+      '@resvg/resvg-js-linux-x64-gnu': 2.6.2
+      '@resvg/resvg-js-linux-x64-musl': 2.6.2
+      '@resvg/resvg-js-win32-arm64-msvc': 2.6.2
+      '@resvg/resvg-js-win32-ia32-msvc': 2.6.2
+      '@resvg/resvg-js-win32-x64-msvc': 2.6.2
+    optional: true
 
   '@rollup/plugin-babel@5.3.1(@babel/core@7.28.5)(@types/babel__core@7.20.5)(rollup@2.79.2)':
     dependencies:
@@ -20791,13 +20924,13 @@ snapshots:
 
   fast-xml-builder@1.1.4:
     dependencies:
-      path-expression-matcher: 1.1.3
+      path-expression-matcher: 1.2.0
 
-  fast-xml-parser@5.5.6:
+  fast-xml-parser@5.5.9:
     dependencies:
       fast-xml-builder: 1.1.4
-      path-expression-matcher: 1.1.3
-      strnum: 2.2.0
+      path-expression-matcher: 1.2.0
+      strnum: 2.2.2
 
   fastest-levenshtein@1.0.16: {}
 
@@ -22419,14 +22552,14 @@ snapshots:
 
   koalas@1.0.2: {}
 
-  kysely-codegen@0.20.0(kysely@0.28.12)(pg@8.16.3)(typescript@5.9.3):
+  kysely-codegen@0.20.0(kysely@0.28.14)(pg@8.16.3)(typescript@5.9.3):
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.1(typescript@5.9.3)
       diff: 8.0.3
       dotenv: 17.3.1
       dotenv-expand: 12.0.3
-      kysely: 0.28.12
+      kysely: 0.28.14
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
@@ -22436,14 +22569,14 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  kysely-ctl@0.19.0(kysely@0.28.12)(typescript@5.9.3):
+  kysely-ctl@0.19.0(kysely@0.28.14)(typescript@5.9.3):
     dependencies:
       c12: 3.3.3
       citty: 0.1.6
       confbox: 0.2.4
       consola: 3.4.2
       jiti: 2.6.1
-      kysely: 0.28.12
+      kysely: 0.28.14
       nypm: 0.6.5
       ofetch: 1.5.1
       pathe: 2.0.3
@@ -22454,7 +22587,7 @@ snapshots:
       - magicast
       - typescript
 
-  kysely@0.28.12: {}
+  kysely@0.28.14: {}
 
   launch-editor@2.12.0:
     dependencies:
@@ -23352,7 +23485,7 @@ snapshots:
 
   path-exists@5.0.0: {}
 
-  path-expression-matcher@1.1.3: {}
+  path-expression-matcher@1.2.0: {}
 
   path-extra@1.0.3: {}
 
@@ -24805,7 +24938,7 @@ snapshots:
       '@types/node': 22.19.1
       qs: 6.14.1
 
-  strnum@2.2.0: {}
+  strnum@2.2.2: {}
 
   structured-headers@1.0.1: {}
 
