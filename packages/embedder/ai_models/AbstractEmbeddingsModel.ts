@@ -138,10 +138,10 @@ export abstract class AbstractEmbeddingsModel extends AbstractModel {
           .where('language', 'in', this.languages)
           .where(({eb, or}) =>
             or([
-              // for new models, we only grab a year's worth of data
-              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`),
               // meetingTemplates are small & parabol-provided ones are older than a year
-              eb('objectType', '=', 'meetingTemplate')
+              eb('objectType', '=', 'meetingTemplate'),
+              // for new models, we only grab a year's worth of data
+              eb('refUpdatedAt', '>', sql<Date>`NOW() - INTERVAL '1 year'`)
             ])
           )
       )
