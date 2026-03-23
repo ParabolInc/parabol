@@ -1,7 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
+import {Client4} from 'mattermost-redux/client'
 import type {useLinkTeamMutation} from 'parabol-client/__generated__/useLinkTeamMutation.graphql'
 import {useCallback} from 'react'
 import {useMutation} from 'react-relay'
+import useAtmosphere from './useAtmosphere'
 import {useCurrentChannel} from './useCurrentChannel'
 
 graphql`
@@ -13,10 +15,11 @@ graphql`
 
 export const useLinkTeam = () => {
   const currentChannel = useCurrentChannel()
+  const atmosphere = useAtmosphere()
 
   const [mutation, isLoading] = useMutation<useLinkTeamMutation>(graphql`
-    mutation useLinkTeamMutation($teamId: ID!, $channelId: ID!) {
-      linkMattermostChannel(teamId: $teamId, channelId: $channelId) {
+    mutation useLinkTeamMutation($teamId: ID!, $channelId: ID!, $channelToken: String!) {
+      linkMattermostChannel(teamId: $teamId, channelId: $channelId, channelToken: $channelToken) {
         ... on ErrorPayload {
           error {
             message
@@ -35,11 +38,17 @@ export const useLinkTeam = () => {
       if (isLoading) {
         return
       }
+      const linkRes = await fetch(
+        `${atmosphere.state.serverUrl}/link?channelId=${currentChannel.id}`,
+        Client4.getOptions({method: 'GET'})
+      )
+      const {channelToken} = await linkRes.json()
       return new Promise((resolve, reject) =>
         mutation({
           variables: {
             teamId,
-            channelId: currentChannel.id
+            channelId: currentChannel.id,
+            channelToken
           },
           updater: (store) => {
             const payload = store.getRootField('linkMattermostChannel')
@@ -64,7 +73,7 @@ export const useLinkTeam = () => {
         })
       )
     },
-    [currentChannel, mutation, isLoading]
+    [currentChannel, mutation, isLoading, atmosphere]
   )
 
   return [linkTeam, isLoading] as const
