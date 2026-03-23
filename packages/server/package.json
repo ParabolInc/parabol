@@ -41,7 +41,7 @@
     "@aws-sdk/client-s3": "3.537.0",
     "@aws-sdk/s3-request-presigner": "3.565.0",
     "@dicebear/core": "8.0.2",
-    "@dicebear/initials": "8.0.2",
+    "@dicebear/initials": "8.0.3",
     "@emoji-mart/data": "^1.2.1",
     "@envelop/core": "^5.2.3",
     "@envelop/extended-validation": "^7.0.0",
