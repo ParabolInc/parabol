@@ -5,7 +5,7 @@ export interface AtlassianError {
   message: string
 }
 
-interface JiraNoAccessError {
+export interface JiraNoAccessError {
   errorMessages: ['The app is not installed on this instance.']
 }
 
@@ -15,7 +15,7 @@ interface JiraFieldError {
   }
 }
 
-interface JiraGetError {
+export interface JiraGetError {
   timestamp: string
   status: number
   error: string

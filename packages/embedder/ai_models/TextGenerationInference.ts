@@ -1,10 +1,10 @@
+import fetchWithRetry from '../../server/utils/fetchWithRetry'
 import {Logger} from '../../server/utils/Logger'
 import {
   AbstractGenerationModel,
   type GenerationModelParams,
   type GenerationOptions
 } from './AbstractGenerationModel'
-import fetchWithRetry from './helpers/fetchWithRetry'
 
 const MAX_REQUEST_TIME_S = 3 * 60
 
