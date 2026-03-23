@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.1](https://github.com/ParabolInc/parabol/compare/v13.7.0...v13.7.1) (2026-03-23)
+
+
+### Fixed
+
+* Batch Jira Issue fetching ([#12897](https://github.com/ParabolInc/parabol/issues/12897)) ([71611fd](https://github.com/ParabolInc/parabol/commit/71611fdd98b5fbc0059915a478e23a5fc6540d21))
+* embeddings metadata index types ([#12907](https://github.com/ParabolInc/parabol/issues/12907)) ([6a12a2f](https://github.com/ParabolInc/parabol/commit/6a12a2f47980d9231eebb84cf1b846c4e20e1859))
+* patch version bumps ([#12904](https://github.com/ParabolInc/parabol/issues/12904)) ([9e51f55](https://github.com/ParabolInc/parabol/commit/9e51f550fe4ac92fdf026098dbcb4a7ff0dbeefc))
+* remove jiraDimensionFields column from the Team table ([#12908](https://github.com/ParabolInc/parabol/issues/12908)) ([7c4c3dd](https://github.com/ParabolInc/parabol/commit/7c4c3ddbb756fce2b4ce0fbf0ebd7a8a9386a7a9))
+
 ## [13.7.0](https://github.com/ParabolInc/parabol/compare/v13.6.6...v13.7.0) (2026-03-20)
 
 
