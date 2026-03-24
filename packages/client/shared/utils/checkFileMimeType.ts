@@ -1,10 +1,5 @@
 import {filetypeinfo} from 'magic-bytes.js'
 
-/**
- * Returns true if the bytes contain an SVG document.
- * Skips <?xml …?> and <!DOCTYPE …> preambles, then checks that the first real
- * opening tag is <svg (case-insensitive).
- */
 const isSvgContent = (bytes: Uint8Array): boolean => {
   const text = new TextDecoder().decode(bytes)
   // Strip processing instructions (<?...?>) and DOCTYPE declarations (<!...>)
@@ -16,12 +11,7 @@ const isSvgContent = (bytes: Uint8Array): boolean => {
 }
 
 /**
- * Checks that the file bytes match the declared MIME type.
- * Returns an error message if they do not, or undefined if the check passes.
- *
- * Special cases:
- * - text/* subtypes cannot be distinguished from magic bytes → accept any text/plain match
- * - image/svg+xml detected as xml by magic-bytes → verify first real tag is <svg
+ * Returns an error message if declaredMime does not match detected mime
  */
 export const checkFileMimeType = (bytes: Uint8Array, declaredMime: string): string | undefined => {
   const info = filetypeinfo(bytes)
