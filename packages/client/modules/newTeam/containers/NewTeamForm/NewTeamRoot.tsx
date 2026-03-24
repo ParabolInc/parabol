@@ -1,17 +1,15 @@
 import {Suspense} from 'react'
+import {useParams} from 'react-router'
 import newTeamQuery, {type NewTeamQuery} from '../../../../__generated__/NewTeamQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
-import useRouter from '../../../../hooks/useRouter'
 import NewTeam from '../../NewTeam'
 
 const NewTeamRoot = () => {
-  const {match} = useRouter<{defaultOrgId: string}>()
-  const {params} = match
-  const {defaultOrgId} = params
+  const {defaultOrgId} = useParams()
   const queryRef = useQueryLoaderNow<NewTeamQuery>(newTeamQuery)
   return (
     <Suspense fallback={''}>
-      {queryRef && <NewTeam queryRef={queryRef} defaultOrgId={defaultOrgId} />}
+      {queryRef && <NewTeam queryRef={queryRef} defaultOrgId={defaultOrgId!} />}
     </Suspense>
   )
 }

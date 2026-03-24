@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import logo from '../styles/theme/images/graphics/microsoft.svg'
 import {cn} from '../ui/cn'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
@@ -33,14 +33,15 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint, getOffsetTop} = props
   const {onError, error, submitting, onCompleted, submitMutation} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history, location} = useRouter()
+  const navigate = useNavigate()
+  const location = useLocation()
   const label = isCreate ? 'Sign up with Microsoft' : 'Sign in with Microsoft'
   const openOAuth = () => {
     const mutationProps = {onError, onCompleted, submitMutation, submitting}
     MicrosoftClientManager.openOAuth(
       atmosphere,
       mutationProps,
-      history,
+      navigate,
       location.search,
       invitationToken,
       loginHint,

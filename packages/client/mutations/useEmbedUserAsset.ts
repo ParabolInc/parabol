@@ -3,7 +3,7 @@ import {type UseMutationConfig, useMutation} from 'react-relay'
 import type {useEmbedUserAssetMutation as TuseEmbedUserAssetMutation} from '../__generated__/useEmbedUserAssetMutation.graphql'
 
 const mutation = graphql`
-  mutation useEmbedUserAssetMutation($url: String!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
+  mutation useEmbedUserAssetMutation($url: URL!, $scope: AssetScopeEnum!, $scopeKey: ID!) {
     embedUserAsset(url: $url, scope: $scope, scopeKey: $scopeKey) {
       ... on ErrorPayload {
         error {

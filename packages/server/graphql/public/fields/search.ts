@@ -98,8 +98,8 @@ export const search: NonNullable<UserResolvers['search']> = async (
     }
     const results = await pg
       .selectFrom('EmbeddingsMetadata')
-      .$if(!!metadataTeamIds, (qb) => qb.where('teamId', 'in', metadataTeamIds!))
       .where('EmbeddingsMetadata.objectType', '=', type)
+      .$if(!!metadataTeamIds, (qb) => qb.where('teamId', 'in', metadataTeamIds!))
       .$if(!!dateRange, (qb) =>
         qb
           // we don't update discussion topics, so we only use refUpdatedAt

@@ -1,9 +1,12 @@
 import {fetch} from '@whatwg-node/fetch'
-import JiraIssueId from 'parabol-client/shared/gqlIds/JiraIssueId'
+
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
   type AtlassianError,
+  isJiraNoAccessError,
+  type JiraGetError,
+  type JiraNoAccessError,
   RateLimitError
 } from 'parabol-client/utils/AtlassianManager'
 import composeJQL from 'parabol-client/utils/composeJQL'
@@ -13,6 +16,7 @@ import type {
   OAuth2AuthorizationParams,
   OAuth2RefreshAuthorizationParams
 } from '../integrations/OAuth2Manager'
+import fetchWithRetry from './fetchWithRetry'
 import {generateJiraExtraFields} from './generateJiraExtraFields'
 import {Logger} from './Logger'
 import {makeOAuth2Redirect} from './makeOAuth2Redirect'
@@ -176,6 +180,7 @@ export type JiraIssueRaw = JiraIssueBean<
     summary: string
     issuetype: {id: string; iconUrl: string}
     created: string
+    project?: {simplified: boolean}
   },
   Record<JiraFieldId, string>
 >
@@ -304,6 +309,37 @@ export type JiraScreensResponse = JiraPageBean<JiraScreen>
 
 class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
+
+  protected override readonly get = async <T extends object>(url: string) => {
+    const deadline = new Date(Date.now() + 20_000)
+    try {
+      const res = await fetchWithRetry(url, {
+        headers: this.headers,
+        deadline
+      })
+      const {headers} = res
+      const contentType = headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        await res.arrayBuffer().catch(() => {})
+        return new Error('Received non-JSON Atlassian Response')
+      }
+      const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
+      if ('message' in json) {
+        if (json.message === 'No message available' && 'error' in json) {
+          return new Error((json as JiraGetError).error)
+        }
+        return new Error(json.message)
+      }
+      if (isJiraNoAccessError(json)) {
+        return new Error(json.errorMessages[0])
+      }
+      return json as T
+    } catch (error) {
+      if (error instanceof Error) return error
+      return new Error('Atlassian is down')
+    }
+  }
+
   static async init(code: string) {
     return AtlassianServerManager.fetchToken({
       grant_type: 'authorization_code',
@@ -521,18 +557,7 @@ class AtlassianServerManager extends AtlassianManager {
     const issueRes = await this.get<JiraIssueRaw>(
       `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}?fields=${reqFields}&expand=${expand}`
     )
-    if (issueRes instanceof Error || issueRes instanceof RateLimitError) return issueRes
-    return {
-      ...issueRes,
-      fields: {
-        ...issueRes.fields,
-        descriptionHTML: issueRes.renderedFields.description,
-        cloudId,
-        issueKey,
-        id: JiraIssueId.join(cloudId, issueKey),
-        lastUpdated: issueRes.changelog.histories[0]?.created ?? issueRes.fields.created
-      }
-    }
+    return issueRes
   }
 
   async getIssues(

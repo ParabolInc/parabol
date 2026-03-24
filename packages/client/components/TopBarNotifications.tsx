@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {useLocation} from 'react-router'
 import type {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
-import useRouter from '../hooks/useRouter'
 import TopBarIcon from './TopBarIcon'
 
 const NotificationDropdown = lazyPreload(
@@ -52,7 +52,7 @@ const TopBarNotifications = ({queryRef}: Props) => {
       id: 'topBarNotificationsMenu'
     }
   )
-  const {location} = useRouter()
+  const location = useLocation()
   useEffect(() => {
     const parsed = new URLSearchParams(location.search)
     if (parsed.get('openNotifs')) {

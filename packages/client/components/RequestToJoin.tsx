@@ -1,6 +1,6 @@
 import {Lock, MailOutline} from '@mui/icons-material'
 import {useState} from 'react'
-import {useRouteMatch} from 'react-router'
+import {useMatch} from 'react-router'
 import type {PushInvitationMutation$data} from '../__generated__/PushInvitationMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -10,8 +10,8 @@ import PrimaryButton from './PrimaryButton'
 
 const RequestToJoinComponent = () => {
   const atmosphere = useAtmosphere()
-  const match = useRouteMatch<{teamId: string}>('/team/:teamId')
-  const teamId = match?.params.teamId
+  const match = useMatch('/team/:teamId/*')
+  const teamId = match?.params?.teamId
   const [isRequestSent, setIsRequestSent] = useState(false)
   const {onError, onCompleted, error} = useMutationProps()
 

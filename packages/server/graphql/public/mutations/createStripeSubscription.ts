@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -45,10 +46,21 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
     customer = maybeCustomer
   }
 
-  const subscription = await manager.createTeamSubscription(customer.id, orgUsersCount, {
-    orgId,
-    userId: viewerId
-  })
+  const {couponId} = organization
+  const subscription = await manager.createTeamSubscription(
+    customer.id,
+    orgUsersCount,
+    {orgId, userId: viewerId},
+    couponId ?? undefined
+  )
+
+  // Clear the coupon from the org now that it has been applied to the Stripe subscription.
+  // Do this regardless of whether payment confirmation succeeds — the coupon is already
+  // committed to the subscription in Stripe.
+  if (couponId) {
+    const pg = getKysely()
+    await pg.updateTable('Organization').set({couponId: null}).where('id', '=', orgId).execute()
+  }
 
   const latestInvoice = subscription.latest_invoice as Stripe.Invoice
   const paymentIntent = latestInvoice.payment_intent as Stripe.PaymentIntent

@@ -5,9 +5,9 @@ import type {EndSprintPokerMutation_team$data} from '~/__generated__/EndSprintPo
 import onMeetingRoute from '~/utils/onMeetingRoute'
 import type {EndSprintPokerMutation as TEndSprintPokerMutation} from '../__generated__/EndSprintPokerMutation.graphql'
 import type {
-  HistoryMaybeLocalHandler,
+  NavigateMaybeLocalHandler,
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   StandardMutation
 } from '../types/relayMutations'
@@ -71,19 +71,19 @@ const mutation = graphql`
 
 export const endSprintPokerTeamOnNext: OnNextHandler<
   EndSprintPokerMutation_team$data,
-  OnNextHistoryContext
+  OnNextNavigateContext
 > = (payload, context) => {
   const {isKill, meeting} = payload
-  const {atmosphere, history} = context
+  const {atmosphere, navigate} = context
   if (!meeting) return
   const {id: meetingId, teamId, summaryPageId} = meeting
   if (onMeetingRoute(window.location.pathname, [meetingId])) {
     if (isKill) {
-      history.push(`/team/${teamId}`)
+      navigate(`/team/${teamId}`)
       popEndMeetingToast(atmosphere, meetingId)
     } else if (summaryPageId) {
       const pageCode = GQLID.fromKey(summaryPageId)[0]
-      history.push(`/pages/${pageCode}`)
+      navigate(`/pages/${pageCode}`)
     }
   }
 }
@@ -102,8 +102,8 @@ export const endSprintPokerTeamUpdater: SharedUpdater<EndSprintPokerMutation_tea
 
 const EndSprintPokerMutation: StandardMutation<
   TEndSprintPokerMutation,
-  HistoryMaybeLocalHandler
-> = (atmosphere, variables, {onError, onCompleted, history}) => {
+  NavigateMaybeLocalHandler
+> = (atmosphere, variables, {onError, onCompleted, navigate}) => {
   return commitMutation<TEndSprintPokerMutation>(atmosphere, {
     mutation,
     variables,
@@ -119,7 +119,7 @@ const EndSprintPokerMutation: StandardMutation<
       }
       endSprintPokerTeamOnNext(res.endSprintPoker as any, {
         atmosphere,
-        history
+        navigate
       })
     },
     onError

@@ -2,7 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {AddReflectTemplateMutation$data} from '~/__generated__/AddReflectTemplateMutation.graphql'
 import type {TeamPickerModal_teams$key} from '~/__generated__/TeamPickerModal_teams.graphql'
 import type {MeetingTypeEnum} from '~/__generated__/TemplateDetails_activity.graphql'
@@ -58,7 +58,7 @@ const TeamPickerModal = (props: Props) => {
     onCompleted()
   }, [selectedTeam?.id])
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   // user has no teams
   if (!selectedTeam) return null
@@ -79,9 +79,8 @@ const TeamPickerModal = (props: Props) => {
             closeModal()
             const templateId = res.addReflectTemplate?.reflectTemplate?.id
             if (templateId) {
-              history.push(`/activity-library/details/${templateId}`, {
-                prevCategory: category,
-                edit: true
+              navigate(`/activity-library/details/${templateId}`, {
+                state: {prevCategory: category, edit: true}
               })
             }
             onCompleted()
@@ -99,9 +98,8 @@ const TeamPickerModal = (props: Props) => {
             closeModal()
             const templateId = res.addPokerTemplate?.pokerTemplate?.id
             if (templateId) {
-              history.push(`/activity-library/details/${templateId}`, {
-                prevCategory: category,
-                edit: true
+              navigate(`/activity-library/details/${templateId}`, {
+                state: {prevCategory: category, edit: true}
               })
             }
             onCompleted()
@@ -116,7 +114,7 @@ const TeamPickerModal = (props: Props) => {
       upgradeCTALocation: 'cloneTemplateAL',
       meetingType: type
     })
-    history.push(`/me/organizations/${selectedTeam.orgId}/billing`)
+    navigate(`/me/organizations/${selectedTeam.orgId}/billing`)
   }
 
   return (

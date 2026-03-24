@@ -6,7 +6,6 @@ import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import type {
   GitHubSearchQuery,
-  JiraDimensionField,
   JiraSearchQuery,
   ReactjiDB,
   TaskTag,
@@ -103,13 +102,8 @@ export const selectSuggestedAction = () => {
 }
 
 export const selectTeams = () => {
-  const query = getKysely()
-    .selectFrom('Team')
-    .selectAll()
-    .select(({fn}) => [
-      fn<JiraDimensionField[]>('to_json', ['jiraDimensionFields']).as('jiraDimensionFields')
-    ])
-  return query as AssertedQuery<typeof query, {jiraDimensionFields: JiraDimensionField[]}>
+  const query = getKysely().selectFrom('Team').selectAll()
+  return query
 }
 
 export const selectRetroReflections = () =>
@@ -155,7 +149,8 @@ export const selectOrganizations = () =>
       'lockedAt',
       'useAI',
       'unpaidMessageHTML',
-      'updatedAt'
+      'updatedAt',
+      'couponId'
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 

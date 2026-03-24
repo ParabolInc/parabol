@@ -5,9 +5,9 @@ import type {
   NotificationEnum,
   NotificationPicker_notification$key
 } from '~/__generated__/NotificationPicker_notification.graphql'
-import lazyPreload, {type LazyExoticPreload} from '~/utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 
-const typePicker: Record<NotificationEnum, LazyExoticPreload<any>> = {
+const typePicker: Record<NotificationEnum, LazyPreloadedComponent> = {
   DISCUSSION_MENTIONED: lazyPreload(
     () => import(/* webpackChunkName: 'DiscussionMentioned' */ './DiscussionMentioned')
   ),
@@ -96,7 +96,7 @@ const NotificationPicker = (props: Props) => {
     notificationRef
   )
   const {type} = notification
-  const SpecificNotification = typePicker[type]
+  const SpecificNotification = typePicker[type]!
   return (
     <Suspense fallback={''}>
       <SpecificNotification notification={notification} />

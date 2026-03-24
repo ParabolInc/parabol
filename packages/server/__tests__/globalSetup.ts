@@ -8,6 +8,7 @@ async function setup() {
   const pg = getKysely()
   await sql`
     TRUNCATE TABLE "PasswordResetRequest";
+    TRUNCATE TABLE "FailedAuthRequest";
     ALTER TABLE "NewMeeting" DISABLE TRIGGER "check_meeting_overlap";
   `.execute(pg)
 }

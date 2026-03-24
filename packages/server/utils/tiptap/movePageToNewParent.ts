@@ -20,7 +20,10 @@ export const movePageToNewParent = async (
     .selectFrom('Page')
     .select(['parentPageId', 'deletedAt', 'isMeetingTOC'])
     .where('id', '=', pageId)
-    .executeTakeFirstOrThrow()
+    .executeTakeFirst()
+  if (!childPage) {
+    throw new Error('Child page not found')
+  }
   if (childPage.parentPageId === parentPageId) {
     // the child page will already have the correct parent if we created a PageLink on the parent doc
     if (!childPage.deletedAt) return
@@ -241,7 +244,10 @@ export const movePageToNewParent = async (
     // since all children will have identical access, no need to query descendants
     .where('pageId', '=', pageId)
     .where('userId', '=', viewerId)
-    .executeTakeFirstOrThrow()
+    .executeTakeFirst()
+  if (!strongestRole) {
+    throw new Error('Strongest role not found')
+  }
 
   if (strongestRole.role !== 'owner') {
     // make sure the viewer stays an owner no matter what so they can undo the action

@@ -124,7 +124,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return viewerId === userId ? accessToken : null
   },
 
-  projects: ({teamId, userId}, _args, {authToken, dataLoader}) => {
+  projects: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     if (viewerId !== userId) return []
     return dataLoader.get('allJiraProjects').load({teamId, userId})

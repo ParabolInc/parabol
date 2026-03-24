@@ -12,10 +12,9 @@ import {PALETTE} from '../styles/paletteV3'
 import type {CompletedHandler} from '../types/relayMutations'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
-import withMutationProps, {type WithMutationProps} from '../utils/relay/withMutationProps'
 import FlatButton from './FlatButton'
 
-interface Props extends WithMutationProps {
+interface Props {
   isExpanded: boolean
   meeting: ReflectionGroupVoting_meeting$key
   reflectionGroup: ReflectionGroupVoting_reflectionGroup$key
@@ -183,4 +182,4 @@ const ReflectionGroupVoting = (props: Props) => {
   )
 }
 
-export default withMutationProps(ReflectionGroupVoting)
+export default ReflectionGroupVoting
