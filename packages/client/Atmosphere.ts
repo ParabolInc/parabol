@@ -192,7 +192,7 @@ export default class Atmosphere extends Environment {
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
-          accept: 'application/json',
+          accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
@@ -202,21 +202,68 @@ export default class Atmosphere extends Environment {
               variables
             })
       })
-      return Observable.from(
-        response.then(async (res) => {
-          if (!res.ok) {
-            return {data: null, errors: [{message: `HTTP ${res.status}: ${res.statusText}`}]}
-          }
-          try {
-            return await res.json()
-          } catch (e) {
-            return {
-              data: null,
-              errors: [{message: e instanceof Error ? e.message : 'Invalid JSON response'}]
+      return Observable.create<GraphQLResponse>((sink) => {
+        response
+          .then(async (res) => {
+            if (!res.ok) {
+              sink.error(new Error(`HTTP ${res.status}: ${res.statusText}`))
+              return
             }
-          }
-        })
-      )
+            const contentType = res.headers.get('content-type') ?? ''
+            if (contentType.includes('multipart/mixed')) {
+              const boundary = contentType.match(/boundary="?([^";]+)"?/)?.[1] ?? '-'
+              const delimiter = `--${boundary}`
+              const reader = res.body!.getReader()
+              const decoder = new TextDecoder()
+              let buffer = ''
+              try {
+                while (true) {
+                  const {done, value} = await reader.read()
+                  if (done) break
+                  buffer += decoder.decode(value, {stream: true})
+                  const parts = buffer.split(delimiter)
+                  buffer = parts.pop() ?? ''
+                  for (const part of parts) {
+                    if (!part.trim() || part.trim() === '--') continue
+                    const sepIdx = part.indexOf('\r\n\r\n')
+                    if (sepIdx === -1) continue
+                    const body = part.slice(sepIdx + 4).trim()
+                    if (!body) continue
+                    try {
+                      const parsed = JSON.parse(body)
+                      if (Array.isArray(parsed.incremental)) {
+                        for (const item of parsed.incremental) {
+                          sink.next({...item, hasNext: parsed.hasNext})
+                        }
+                      } else {
+                        sink.next(parsed)
+                      }
+                      if (!parsed.hasNext) {
+                        sink.complete()
+                        return
+                      }
+                    } catch {
+                      // skip malformed parts
+                    }
+                  }
+                }
+              } finally {
+                reader.releaseLock()
+              }
+              sink.complete()
+            } else {
+              try {
+                sink.next(await res.json())
+                sink.complete()
+              } catch (e) {
+                sink.error(e instanceof Error ? e : new Error('Invalid JSON response'))
+              }
+            }
+          })
+          .catch((e: unknown) => {
+            sink.error(e instanceof Error ? e : new Error(String(e)))
+          })
+      })
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
   }

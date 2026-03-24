@@ -129,8 +129,8 @@ export const wsHandler = makeBehavior<{token?: string}>({
     }
     return {version: __APP_VERSION__}
   },
-  async onNext(context, id, _payload, {contextValue}, result) {
-    const isSubscription = !!context.subscriptions[id]
+  async onNext(context, _id, payload, {contextValue}, result) {
+    const isSubscription = (payload as any).docId.startsWith('s')
     if (!isSubscription) return result
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as

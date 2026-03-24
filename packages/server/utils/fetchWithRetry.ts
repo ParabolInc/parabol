@@ -1,5 +1,5 @@
 import {fetch} from '@whatwg-node/fetch'
-import {Logger} from '../../../server/utils/Logger'
+import {Logger} from './Logger'
 
 interface FetchWithRetryOptions extends RequestInit {
   deadline: Date // Deadline for the request to complete

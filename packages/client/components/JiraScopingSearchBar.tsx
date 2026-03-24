@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {JiraScopingSearchBar_meeting$key} from '../__generated__/JiraScopingSearchBar_meeting.graphql'
+import {JiraScopingSearchBarLabel} from './JiraScopingSearchBarLabel'
 import JiraScopingSearchFilterToggle from './JiraScopingSearchFilterToggle'
 import JiraScopingSearchHistoryToggle from './JiraScopingSearchHistoryToggle'
 import JiraScopingSearchInput from './JiraScopingSearchInput'
-import ScopingSearchBar from './ScopingSearchBar'
 
 interface Props {
   meetingRef: JiraScopingSearchBar_meeting$key
@@ -19,21 +19,14 @@ const JiraScopingSearchBar = (props: Props) => {
         ...JiraScopingSearchFilterToggle_meeting
         ...JiraScopingSearchHistoryToggle_meeting
         ...JiraScopingSearchInput_meeting
+        ...JiraScopingSearchBarLabel_meeting
         id
         teamId
-        jiraSearchQuery {
-          queryString
-          projectKeyFilters
-          isJQL
-        }
         viewerMeetingMember {
           teamMember {
             integrations {
               atlassian {
-                projects {
-                  id
-                  name
-                }
+                ...JiraScopingSearchBarLabel_integration @defer
               }
             }
           }
@@ -43,27 +36,14 @@ const JiraScopingSearchBar = (props: Props) => {
     meetingRef
   )
 
-  const {jiraSearchQuery, viewerMeetingMember} = meeting
-  const {queryString, projectKeyFilters} = jiraSearchQuery
-  const projects = viewerMeetingMember?.teamMember.integrations.atlassian?.projects
-
-  const selectedProjectsPaths = [] as string[]
-  projectKeyFilters?.forEach((projectId) => {
-    const selectedProjectPath = projects?.find((project) => project.id === projectId)?.name
-    if (selectedProjectPath) selectedProjectsPaths.push(selectedProjectPath)
-  })
-  const currentFilters = selectedProjectsPaths.length
-    ? selectedProjectsPaths.join(', ')
-    : queryString
-      ? 'None'
-      : 'Viewed in the last 30 days'
-
+  const {viewerMeetingMember} = meeting
+  const integration = viewerMeetingMember?.teamMember.integrations.atlassian
   return (
-    <ScopingSearchBar currentFilters={currentFilters}>
+    <JiraScopingSearchBarLabel meetingRef={meeting} integrationRef={integration!}>
       <JiraScopingSearchHistoryToggle meetingRef={meeting} />
       <JiraScopingSearchInput meetingRef={meeting} />
       <JiraScopingSearchFilterToggle meetingRef={meeting} />
-    </ScopingSearchBar>
+    </JiraScopingSearchBarLabel>
   )
 }
 
