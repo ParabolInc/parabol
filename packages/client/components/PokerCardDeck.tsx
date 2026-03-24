@@ -142,6 +142,10 @@ const PokerCardDeck = (props: Props) => {
   useEffect(() => {
     document.addEventListener('touchstart', handleDocumentClick as any)
     document.addEventListener('click', handleDocumentClick)
+    return () => {
+      document.removeEventListener('touchstart', handleDocumentClick as any)
+      document.removeEventListener('click', handleDocumentClick)
+    }
   }, [])
 
   useEffect(() => {

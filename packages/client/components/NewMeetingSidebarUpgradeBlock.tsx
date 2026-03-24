@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {useEffect, useState} from 'react'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {PALETTE} from '../styles/paletteV3'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -66,7 +66,7 @@ interface Props {
 
 const NewMeetingSidebarUpgradeBlock = (props: Props) => {
   const {onClick, orgId, meetingId} = props
-  const history = useHistory()
+  const navigate = useNavigate()
   const [closed, setClosed] = useState(false)
   const atmosphere = useAtmosphere()
 
@@ -77,7 +77,7 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
       meetingId
     })
     onClick?.()
-    history.push(`/me/organizations/${orgId}`)
+    navigate(`/me/organizations/${orgId}`)
   }
 
   const handleClose = () => {

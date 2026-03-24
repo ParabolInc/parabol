@@ -2,12 +2,12 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {ArchiveTeamForm_team$key} from '~/__generated__/ArchiveTeamForm_team.graphql'
 import SecondaryButton from '~/components/SecondaryButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
 import useMutationProps from '~/hooks/useMutationProps'
-import useRouter from '~/hooks/useRouter'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import PrimaryButton from '../../../../components/PrimaryButton'
@@ -33,7 +33,7 @@ const normalize = (str: string | undefined | null) => str && str.toLowerCase().r
 const ArchiveTeamForm = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {handleCancel, team: teamRef} = props
   const team = useFragment(
     graphql`
@@ -66,7 +66,7 @@ const ArchiveTeamForm = (props: Props) => {
     const {archivedTeamName: res} = validateField()
     if (submitting || res?.error) return
     submitMutation()
-    ArchiveTeamMutation(atmosphere, {teamId}, {history, onError, onCompleted})
+    ArchiveTeamMutation(atmosphere, {teamId}, {navigate, onError, onCompleted})
   }
 
   return (

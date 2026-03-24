@@ -20,22 +20,6 @@ export default async function createNewOrg(
     name: orgName,
     activeDomain
   })
-  if (process.env.IS_ENTERPRISE !== 'true') {
-    const pg = getKysely()
-    await pg
-      .insertInto('CompanyClusterOrganization')
-      .columns(['companyClusterId', 'orgId'])
-      .expression((eb) =>
-        eb
-          .selectFrom('OrganizationUser as Ou')
-          .innerJoin('CompanyClusterOrganization as Cco', 'Cco.orgId', 'Ou.orgId')
-          .select(['Cco.companyClusterId', sql<string>`${orgId}::varchar`.as('orgId')])
-          .where('Ou.userId', '=', leaderUserId)
-          .limit(1)
-      )
-      .onConflict((oc) => oc.doNothing())
-      .execute()
-  }
   await getKysely()
     .with('Org', (qc) => qc.insertInto('Organization').values({...org, creditCard: null}))
     .with('OrgUserAuditInsert', (qc) =>
@@ -54,4 +38,20 @@ export default async function createNewOrg(
       role: 'BILLING_LEADER'
     })
     .execute()
+  if (process.env.IS_ENTERPRISE !== 'true') {
+    const pg = getKysely()
+    await pg
+      .insertInto('CompanyClusterOrganization')
+      .columns(['companyClusterId', 'orgId'])
+      .expression((eb) =>
+        eb
+          .selectFrom('OrganizationUser as Ou')
+          .innerJoin('CompanyClusterOrganization as Cco', 'Cco.orgId', 'Ou.orgId')
+          .select(['Cco.companyClusterId', sql<string>`${orgId}::varchar`.as('orgId')])
+          .where('Ou.userId', '=', leaderUserId)
+          .limit(1)
+      )
+      .onConflict((oc) => oc.doNothing())
+      .execute()
+  }
 }

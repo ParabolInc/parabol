@@ -8,7 +8,7 @@ import useMenu from '~/hooks/useMenu'
 import useTimeout from '~/hooks/useTimeout'
 import type {TransitionStatus} from '~/hooks/useTransition'
 import type LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
-import lazyPreload, {type LazyExoticPreload} from '~/utils/lazyPreload'
+import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isDemoRoute from '../utils/isDemoRoute'
@@ -84,7 +84,7 @@ const EstimateHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'EstimateHelpMenu' */ './MeetingHelp/EstimateHelpMenu')
 )
 
-const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
+const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: DemoReflectHelpMenu,
   reflect: DemoReflectHelpMenu,
   group: DemoGroupHelpMenu,
@@ -92,7 +92,7 @@ const demoHelps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>
   discuss: DemoDiscussHelpMenu
 }
 
-const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyExoticPreload<any>>> = {
+const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = {
   checkin: CheckInHelpMenu,
   TEAM_HEALTH: TeamHealthHelpMenu,
   reflect: ReflectHelpMenu,

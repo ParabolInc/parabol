@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import {Flag} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
+import {useNavigate} from 'react-router'
 import type {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
@@ -8,7 +9,6 @@ import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import useTooltip from '../hooks/useTooltip'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
 import {ElementWidth, Times} from '../types/constEnums'
@@ -47,7 +47,7 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
     onTransitionEnd
   } = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const {openTooltip, tooltipPortal, originRef} = useTooltip<HTMLDivElement>(
     MenuPosition.UPPER_CENTER,
@@ -62,11 +62,11 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
       setConfirmingButton('')
       submitMutation()
       if (meetingType === 'poker') {
-        EndSprintPokerMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+        EndSprintPokerMutation(atmosphere, {meetingId}, {navigate, onError, onCompleted})
       } else if (meetingType === 'action') {
-        EndCheckInMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+        EndCheckInMutation(atmosphere, {meetingId}, {navigate, onError, onCompleted})
       } else {
-        EndRetrospectiveMutation(atmosphere, {meetingId}, {history, onError, onCompleted})
+        EndRetrospectiveMutation(atmosphere, {meetingId}, {navigate, onError, onCompleted})
       }
     } else {
       setConfirmingButton('end')

@@ -1,5 +1,4 @@
 import {Suspense} from 'react'
-import {withRouter} from 'react-router-dom'
 import dashboardQuery, {type DashboardQuery} from '../__generated__/DashboardQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import useSubscription from '../hooks/useSubscription'
@@ -24,4 +23,4 @@ const DashboardRoot = () => {
   return <Suspense fallback={''}>{queryRef && <Dashboard queryRef={queryRef} />}</Suspense>
 }
 
-export default withRouter(DashboardRoot)
+export default DashboardRoot

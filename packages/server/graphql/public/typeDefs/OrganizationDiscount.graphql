@@ -1,0 +1,14 @@
+"""
+A discount coupon assigned to an organization to be applied on upgrade
+"""
+type OrganizationDiscount {
+  """
+  Percentage off the subscription price (e.g. 50 for 50% off)
+  """
+  percentOff: Float!
+
+  """
+  Number of months the discount applies. Null means it lasts forever.
+  """
+  durationInMonths: Int
+}

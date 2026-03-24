@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Component} from 'react'
+import {useEffect} from 'react'
 import DialogContainer from './DialogContainer'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -23,38 +23,34 @@ const LI = styled('li')({
   lineHeight: '1.5rem'
 })
 
-class AddTeamMemberModalSuccess extends Component<Props> {
-  exitTimeoutId: number | undefined
+const AddTeamMemberModalSuccess = (props: Props) => {
+  const {closePortal, successfulInvitations} = props
 
-  componentDidMount() {
-    this.exitTimeoutId = window.setTimeout(() => {
-      this.props.closePortal()
+  useEffect(() => {
+    const exitTimeoutId = window.setTimeout(() => {
+      closePortal()
     }, 5000)
-  }
+    return () => {
+      clearTimeout(exitTimeoutId)
+    }
+  }, [closePortal])
 
-  componentWillUnmount() {
-    clearTimeout(this.exitTimeoutId)
-  }
-
-  render() {
-    const {successfulInvitations} = this.props
-    return (
-      <StyledDialogContainer>
-        <DialogTitle>Success!</DialogTitle>
-        <DialogContent>
-          <span>An invitation has been sent to</span>
-          {successfulInvitations.length === 1 ? <span> {successfulInvitations[0]}.</span> : ':'}
-          {successfulInvitations.length > 1 && (
-            <UL>
-              {successfulInvitations.map((email) => {
-                return <LI key={email}>{email}</LI>
-              })}
-            </UL>
-          )}
-        </DialogContent>
-      </StyledDialogContainer>
-    )
-  }
+  return (
+    <StyledDialogContainer>
+      <DialogTitle>Success!</DialogTitle>
+      <DialogContent>
+        <span>An invitation has been sent to</span>
+        {successfulInvitations.length === 1 ? <span> {successfulInvitations[0]}.</span> : ':'}
+        {successfulInvitations.length > 1 && (
+          <UL>
+            {successfulInvitations.map((email) => {
+              return <LI key={email}>{email}</LI>
+            })}
+          </UL>
+        )}
+      </DialogContent>
+    </StyledDialogContainer>
+  )
 }
 
 export default AddTeamMemberModalSuccess

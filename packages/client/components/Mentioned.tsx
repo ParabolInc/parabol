@@ -1,11 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
 import type {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
-import useRouter from '../hooks/useRouter'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import NotificationTemplate from './NotificationTemplate'
 import {useTipTapContext} from './TipTapProvider'
@@ -35,7 +35,7 @@ const Mentioned = (props: Props) => {
     `,
     notificationRef
   )
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const atmosphere = useAtmosphere()
   const {generateHTML} = useTipTapContext()
   const {
@@ -76,7 +76,7 @@ const Mentioned = (props: Props) => {
   const message = `${authorName} mentioned you in ${locationType} in ${meetingName}`
 
   const goThere = () => {
-    history.push(actionUrl)
+    navigate(actionUrl)
   }
 
   const htmlContent = previewContent ? generateHTML(JSON.parse(previewContent)) : ''

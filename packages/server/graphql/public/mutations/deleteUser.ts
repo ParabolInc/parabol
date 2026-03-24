@@ -1,3 +1,4 @@
+import {Threshold} from 'parabol-client/types/constEnums'
 import {USER_REASON_REMOVED_LIMIT} from '../../../postgres/constants'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
 import {getUserById} from '../../../postgres/queries/getUsersByIds'
@@ -49,6 +50,10 @@ const deleteUser: MutationResolvers['deleteUser'] = async (
   if (!su) {
     if (!user || userId !== viewerId) {
       return {error: {message: 'Cannot delete someone else'}}
+    }
+    const now = toEpochSeconds(new Date())
+    if (now - authToken.iat > Threshold.REAUTH_WINDOW_SECONDS) {
+      return {error: {message: 'Please re-authenticate before deleting your account'}}
     }
   } else if (!user) {
     return {error: {message: 'User not found'}}

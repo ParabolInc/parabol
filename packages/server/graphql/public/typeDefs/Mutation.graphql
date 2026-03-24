@@ -2111,7 +2111,7 @@ type Mutation {
     """
     the asset URL
     """
-    url: String!
+    url: URL!
     """
     the scope of who can access the file, either user or page
     """

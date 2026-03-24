@@ -1,48 +1,4 @@
-import styled from '@emotion/styled'
 import {Close as CloseIcon} from '@mui/icons-material'
-import {PALETTE} from '../../../../styles/paletteV3'
-
-const Message = styled('div')({
-  padding: '0 16px 16px'
-})
-
-const textShadow = '0 1px rgba(0, 0, 0, .15)'
-const Inner = styled('div')<{canClose: boolean}>(({canClose}) => ({
-  backgroundColor: PALETTE.TOMATO_500,
-  borderRadius: 2,
-  color: '#FFFFFF',
-  display: 'block',
-  fontWeight: 600,
-  fontSize: 13,
-  lineHeight: '18px',
-  padding: 15,
-  position: 'relative',
-  textShadow,
-  paddingRight: canClose ? 22 : undefined
-}))
-
-const MessageClose = styled('div')({
-  cursor: 'pointer',
-  fontSize: 0,
-  outline: 'none',
-  padding: 4,
-  position: 'absolute',
-  right: 0,
-  textShadow,
-  top: 0,
-  ':hover,:focus': {
-    opacity: 0.5
-  }
-})
-
-const MessageCloseIcon = styled('div')({
-  color: '#FFFFFF',
-  svg: {
-    fontSize: 18
-  },
-  height: 18,
-  width: 18
-})
 
 interface Props {
   onClose: (...args: any[]) => void
@@ -52,18 +8,20 @@ interface Props {
 const OutcomeCardMessage = (props: Props) => {
   const {onClose, message} = props
   return (
-    <Message>
-      <Inner canClose={!!onClose}>
+    <div className='px-4 pb-4'>
+      <div className='relative block rounded-sm bg-tomato-500 p-[15px] pr-[22px] font-semibold text-[13px] text-white leading-[18px] [text-shadow:0_1px_rgba(0,0,0,.15)]'>
         {message}
-        {onClose && (
-          <MessageClose onClick={onClose} tabIndex={0}>
-            <MessageCloseIcon>
-              <CloseIcon />
-            </MessageCloseIcon>
-          </MessageClose>
-        )}
-      </Inner>
-    </Message>
+        <div
+          className='absolute top-0 right-0 cursor-pointer p-1 text-[0px] outline-none [text-shadow:0_1px_rgba(0,0,0,.15)] hover:opacity-50 focus:opacity-50'
+          onClick={onClose}
+          tabIndex={0}
+        >
+          <div className='h-[18px] w-[18px] text-white [&_svg]:text-[18px]'>
+            <CloseIcon />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

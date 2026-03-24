@@ -5,6 +5,55 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.1](https://github.com/ParabolInc/parabol/compare/v13.7.0...v13.7.1) (2026-03-23)
+
+
+### Fixed
+
+* Batch Jira Issue fetching ([#12897](https://github.com/ParabolInc/parabol/issues/12897)) ([71611fd](https://github.com/ParabolInc/parabol/commit/71611fdd98b5fbc0059915a478e23a5fc6540d21))
+* embeddings metadata index types ([#12907](https://github.com/ParabolInc/parabol/issues/12907)) ([6a12a2f](https://github.com/ParabolInc/parabol/commit/6a12a2f47980d9231eebb84cf1b846c4e20e1859))
+* patch version bumps ([#12904](https://github.com/ParabolInc/parabol/issues/12904)) ([9e51f55](https://github.com/ParabolInc/parabol/commit/9e51f550fe4ac92fdf026098dbcb4a7ff0dbeefc))
+* remove jiraDimensionFields column from the Team table ([#12908](https://github.com/ParabolInc/parabol/issues/12908)) ([7c4c3dd](https://github.com/ParabolInc/parabol/commit/7c4c3ddbb756fce2b4ce0fbf0ebd7a8a9386a7a9))
+
+## [13.7.0](https://github.com/ParabolInc/parabol/compare/v13.6.6...v13.7.0) (2026-03-20)
+
+
+### Added
+
+* coupons for upgrading to team plan ([#12892](https://github.com/ParabolInc/parabol/issues/12892)) ([93a19ee](https://github.com/ParabolInc/parabol/commit/93a19ee3ac6df28b802486eff6227be8a7e4cfa1))
+
+
+### Fixed
+
+* do not remove last billing leader ([#12890](https://github.com/ParabolInc/parabol/issues/12890)) ([76035f4](https://github.com/ParabolInc/parabol/commit/76035f4141e664aabd0d7f42f5346a488d6d79cc))
+* ironbank action 2 ([#12888](https://github.com/ParabolInc/parabol/issues/12888)) ([a641054](https://github.com/ParabolInc/parabol/commit/a6410548dec10b4a3e2b86cb3e55409d31d5c9e4))
+* more robust embedUserAsset URL checks ([#12891](https://github.com/ParabolInc/parabol/issues/12891)) ([111397a](https://github.com/ParabolInc/parabol/commit/111397a45e0f6d4a3985b225513a87cfed1ff8cd))
+* page meetingSummaryId ([#12893](https://github.com/ParabolInc/parabol/issues/12893)) ([ecff1f3](https://github.com/ParabolInc/parabol/commit/ecff1f35a4fbcab87c9d842b6eb3a66c1591b098))
+* paste Pages docs with many images ([#12751](https://github.com/ParabolInc/parabol/issues/12751)) ([9e683c6](https://github.com/ParabolInc/parabol/commit/9e683c69a3e00a9f80a8921a04de3fa287936f58))
+
+
+### Changed
+
+* clean FailedAuthRequest in tests ([#12895](https://github.com/ParabolInc/parabol/issues/12895)) ([e4469db](https://github.com/ParabolInc/parabol/commit/e4469db2c97878aa5c558b8cee59604b11e986ac))
+* confirm auth before deleting user ([#12883](https://github.com/ParabolInc/parabol/issues/12883)) ([2cf0fa0](https://github.com/ParabolInc/parabol/commit/2cf0fa08f251f87da83dc68fe0950415facccd0d))
+* react v18 migration ([#12792](https://github.com/ParabolInc/parabol/issues/12792)) ([4ed231b](https://github.com/ParabolInc/parabol/commit/4ed231be4060f60f952a619e69890c4a25f373cc))
+
+## [13.6.6](https://github.com/ParabolInc/parabol/compare/v13.6.5...v13.6.6) (2026-03-18)
+
+
+### Fixed
+
+* clear pages offline data on logout ([#12881](https://github.com/ParabolInc/parabol/issues/12881)) ([1482c0f](https://github.com/ParabolInc/parabol/commit/1482c0f04b56c7481d2f4dce175d244642d0ae97))
+* nodejs bump ([#12885](https://github.com/ParabolInc/parabol/issues/12885)) ([c843189](https://github.com/ParabolInc/parabol/commit/c843189e7e42bb510d8e52432ec0490ddef9c32c))
+* security bumps ([#12886](https://github.com/ParabolInc/parabol/issues/12886)) ([b6b3743](https://github.com/ParabolInc/parabol/commit/b6b374375e314ff8eac355527ca277c83b0d546e))
+
+## [13.6.5](https://github.com/ParabolInc/parabol/compare/v13.6.4...v13.6.5) (2026-03-17)
+
+
+### Fixed
+
+* create company cluster after creating org ([#12878](https://github.com/ParabolInc/parabol/issues/12878)) ([677f87e](https://github.com/ParabolInc/parabol/commit/677f87e200aa8e25b0680b04df727542b96a735e))
+
 ## [13.6.4](https://github.com/ParabolInc/parabol/compare/v13.6.3...v13.6.4) (2026-03-17)
 
 

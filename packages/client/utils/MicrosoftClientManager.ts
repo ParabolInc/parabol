@@ -1,26 +1,30 @@
-import type {RouterProps} from 'react-router'
 import type Atmosphere from '../Atmosphere'
 import {AUTH_DIALOG_WIDTH} from '../components/AuthenticationDialog'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import LoginWithMicrosoftMutation from '../mutations/LoginWithMicrosoftMutation'
+import ReAuthWithMicrosoftMutation from '../mutations/ReAuthWithMicrosoftMutation'
 import {LocalStorageKey} from '../types/constEnums'
+import type {NavigateFn} from '../types/relayMutations'
 import getAnonymousId from './getAnonymousId'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import MicrosoftManager from './MicrosoftManager'
 import makeHref from './makeHref'
 
+type ReAuthMutationProps = Pick<
+  MenuMutationProps,
+  'onError' | 'onCompleted' | 'submitMutation' | 'submitting'
+>
+
 class MicrosoftClientManager extends MicrosoftManager {
   fetch = window.fetch.bind(window)
-  static openOAuth(
-    atmosphere: Atmosphere,
-    mutationProps: MenuMutationProps,
-    history: RouterProps['history'],
-    pageParams: string,
-    invitationToken?: string,
-    loginHint?: string,
-    getOffsetTop?: () => number
+
+  private static startOAuthFlow(
+    mutationProps: ReAuthMutationProps,
+    getOffsetTop: (() => number) | undefined,
+    onCode: (code: string, pseudoId: string | undefined, popup: Window | null) => void,
+    loginHint?: string
   ) {
-    const {submitting, onError, onCompleted, submitMutation} = mutationProps
+    const {submitting, onError, submitMutation} = mutationProps
     const providerState = Math.random().toString(36).substring(5)
     const params = new URLSearchParams({
       client_id: window.__ACTION__.microsoft,
@@ -29,7 +33,7 @@ class MicrosoftClientManager extends MicrosoftManager {
       response_type: 'code',
       state: providerState,
       prompt: 'select_account',
-      login_hint: loginHint ?? ''
+      ...(loginHint !== undefined ? {login_hint: loginHint ?? ''} : {})
     })
     const uri = `https://login.microsoftonline.com/${
       window.__ACTION__.microsoftTenantId
@@ -49,32 +53,72 @@ class MicrosoftClientManager extends MicrosoftManager {
       }
     }, 100)
     const handler = async (event: MessageEvent) => {
-      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting) {
+      if (typeof event.data !== 'object' || event.origin !== window.location.origin || submitting)
         return
-      }
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
-      const pseudoId = await getAnonymousId()
-      window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
-      const handleComplete: typeof onCompleted = (...args) => {
-        popup && popup.close()
-        onCompleted(...args)
-      }
-      LoginWithMicrosoftMutation(
-        atmosphere,
-        {
-          code,
-          pseudoId,
-          invitationToken: invitationToken || '',
-          isInvitation: !!invitationToken,
-          params: pageParams
-        },
-        {onError, onCompleted: handleComplete, history}
-      )
       window.removeEventListener('message', handler)
+      const pseudoId = await getAnonymousId()
+      onCode(code, pseudoId, popup)
     }
     window.addEventListener('message', handler)
+  }
+
+  static openOAuth(
+    atmosphere: Atmosphere,
+    mutationProps: MenuMutationProps,
+    navigate: NavigateFn,
+    pageParams: string,
+    invitationToken?: string,
+    loginHint?: string,
+    getOffsetTop?: () => number
+  ) {
+    const {onError, onCompleted} = mutationProps
+    MicrosoftClientManager.startOAuthFlow(
+      mutationProps,
+      getOffsetTop,
+      (code, pseudoId, popup) => {
+        window.localStorage.removeItem(LocalStorageKey.INVITATION_TOKEN)
+        const handleComplete: typeof onCompleted = (...args) => {
+          popup && popup.close()
+          onCompleted(...args)
+        }
+        LoginWithMicrosoftMutation(
+          atmosphere,
+          {
+            code,
+            pseudoId,
+            invitationToken: invitationToken || '',
+            isInvitation: !!invitationToken,
+            params: pageParams
+          },
+          {onError, onCompleted: handleComplete, navigate}
+        )
+      },
+      loginHint
+    )
+  }
+
+  static openReAuth(
+    atmosphere: Atmosphere,
+    mutationProps: ReAuthMutationProps,
+    onReAuthSuccess: () => void,
+    getOffsetTop?: () => number
+  ) {
+    const {onError, onCompleted} = mutationProps
+    MicrosoftClientManager.startOAuthFlow(mutationProps, getOffsetTop, (code, pseudoId, popup) => {
+      ReAuthWithMicrosoftMutation(atmosphere, {code, pseudoId, params: ''}, (error) => {
+        popup && popup.close()
+        if (error) {
+          onError({message: error})
+          onCompleted()
+        } else {
+          onCompleted()
+          onReAuthSuccess()
+        }
+      })
+    })
   }
 }
 
