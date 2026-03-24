@@ -3,7 +3,6 @@ import EventEmitter from 'eventemitter3'
 import type {Client} from 'graphql-ws'
 import jwtDecode from 'jwt-decode'
 import {commitMutation, type Disposable} from 'react-relay'
-import type {RouterProps} from 'react-router'
 import {
   type CacheConfig,
   type ConcreteRequest,
@@ -31,6 +30,7 @@ import type {InviteToTeamMutation_notification$data} from './__generated__/Invit
 import type {Snack, SnackbarRemoveFn} from './components/Snackbar'
 import {providerManager} from './tiptap/providerManager'
 import {AuthToken} from './types/AuthToken'
+import type {NavigateFn} from './types/relayMutations'
 import {getAuthCookie, onAuthCookieChange} from './utils/authCookie'
 import {createWSClient} from './utils/createWSClient'
 import handlerProvider from './utils/relay/handlerProvider'
@@ -62,7 +62,7 @@ interface Subscriptions {
 }
 
 export type SubscriptionRequestor = {
-  (atmosphere: Atmosphere, variables: any, router: {history: RouterProps['history']}): Disposable
+  (atmosphere: Atmosphere, variables: any, router: {navigate: NavigateFn}): Disposable
   key: string
 }
 
@@ -149,6 +149,25 @@ export default class Atmosphere extends Environment {
     })
     this._network = Network.create(this.fetchFunction, this.fetchOrSubscribe) as any
     providerManager.setAtmosphere(this)
+    this.initAuthFromCookie()
+  }
+
+  private initAuthFromCookie() {
+    if (typeof window === 'undefined') return
+    const authToken = getAuthCookie(window)
+    if (!authToken) return
+    try {
+      const authObj = jwtDecode<AuthToken>(authToken)
+      if (!authObj) return
+      const {exp, sub: viewerId, rol} = authObj
+      if (exp < Date.now() / 1000) return
+      this._authObj = authObj
+      if (rol !== 'impersonate') {
+        this.viewerId = viewerId!
+      }
+    } catch {
+      // invalid cookie, leave authObj null
+    }
   }
 
   private async connectWebsocket() {
@@ -161,13 +180,19 @@ export default class Atmosphere extends Environment {
 
   fetchFunction: FetchFunction = (request, variables, cacheConfig, uploadables) => {
     // DeleteUserMutation is required to unset the cookie
-    const isAuth = request.name.startsWith('Atmosphere') || request.name === 'DeleteUserMutation'
+    // ReAuth mutations are required to set a new auth cookie
+    const isAuth =
+      request.name.startsWith('Atmosphere') ||
+      request.name === 'DeleteUserMutation' ||
+      request.name === 'ReAuthWithGoogleMutation' ||
+      request.name === 'ReAuthWithMicrosoftMutation' ||
+      request.name === 'ReAuthWithPasswordMutation'
     const useHTTP = !!uploadables || !this.authObj || !this.subscriptionClient || isAuth
     if (useHTTP) {
       const response = fetch('/graphql', {
         method: 'POST',
         headers: {
-          accept: 'application/json',
+          accept: 'application/json;text/event-stream; charset=utf-8, multipart/mixed',
           ...(!uploadables && {['content-type']: 'application/json'})
         },
         body: uploadables
@@ -177,7 +202,68 @@ export default class Atmosphere extends Environment {
               variables
             })
       })
-      return Observable.from(response.then((data) => data.json()))
+      return Observable.create<GraphQLResponse>((sink) => {
+        response
+          .then(async (res) => {
+            if (!res.ok) {
+              sink.error(new Error(`HTTP ${res.status}: ${res.statusText}`))
+              return
+            }
+            const contentType = res.headers.get('content-type') ?? ''
+            if (contentType.includes('multipart/mixed')) {
+              const boundary = contentType.match(/boundary="?([^";]+)"?/)?.[1] ?? '-'
+              const delimiter = `--${boundary}`
+              const reader = res.body!.getReader()
+              const decoder = new TextDecoder()
+              let buffer = ''
+              try {
+                while (true) {
+                  const {done, value} = await reader.read()
+                  if (done) break
+                  buffer += decoder.decode(value, {stream: true})
+                  const parts = buffer.split(delimiter)
+                  buffer = parts.pop() ?? ''
+                  for (const part of parts) {
+                    if (!part.trim() || part.trim() === '--') continue
+                    const sepIdx = part.indexOf('\r\n\r\n')
+                    if (sepIdx === -1) continue
+                    const body = part.slice(sepIdx + 4).trim()
+                    if (!body) continue
+                    try {
+                      const parsed = JSON.parse(body)
+                      if (Array.isArray(parsed.incremental)) {
+                        for (const item of parsed.incremental) {
+                          sink.next({...item, hasNext: parsed.hasNext})
+                        }
+                      } else {
+                        sink.next(parsed)
+                      }
+                      if (!parsed.hasNext) {
+                        sink.complete()
+                        return
+                      }
+                    } catch {
+                      // skip malformed parts
+                    }
+                  }
+                }
+              } finally {
+                reader.releaseLock()
+              }
+              sink.complete()
+            } else {
+              try {
+                sink.next(await res.json())
+                sink.complete()
+              } catch (e) {
+                sink.error(e instanceof Error ? e : new Error('Invalid JSON response'))
+              }
+            }
+          })
+          .catch((e: unknown) => {
+            sink.error(e instanceof Error ? e : new Error(String(e)))
+          })
+      })
     }
     return this.fetchOrSubscribe(request, variables, cacheConfig)
   }
@@ -341,7 +427,7 @@ export default class Atmosphere extends Environment {
     queryKey: string,
     subscription: SubscriptionRequestor,
     variables: Variables,
-    router: {history: RouterProps['history']}
+    router: {navigate: NavigateFn}
   ) => {
     window.clearTimeout(this.queryTimeouts[queryKey])
     delete this.queryTimeouts[queryKey]

@@ -1,4 +1,5 @@
 directive @stream_HACK on FIELD
+directive @defer on FRAGMENT_SPREAD
 """
 The user account profile
 """
@@ -47,6 +48,11 @@ type User implements UserPartial {
         More than one will exists in case accounts are linked
   """
   identities: [AuthIdentity]
+
+  """
+  The SAML identity provider sign-on URL for the user's email domain, if configured
+  """
+  samlIdP: String
 
   """
   true if the user is not currently being billed for service. removed on every websocket handshake

@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {mapRequestToJoinOrgToToast_notification$data} from '../../__generated__/mapRequestToJoinOrgToToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
-import type {OnNextHistoryContext} from '../../types/relayMutations'
+import type {OnNextNavigateContext} from '../../types/relayMutations'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import makeNotificationToastKey from './makeNotificationToastKey'
 
@@ -17,7 +17,7 @@ graphql`
 
 const mapRequestToJoinOrgToToast = (
   notification: mapRequestToJoinOrgToToast_notification$data,
-  {atmosphere, history}: OnNextHistoryContext
+  {atmosphere, navigate}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, email, domainJoinRequestId} = notification
 
@@ -34,8 +34,8 @@ const mapRequestToJoinOrgToToast = (
     action: {
       label: 'Review',
       callback: () => {
-        history.push(`/organization-join-request/${domainJoinRequestId}`, {
-          backgroundLocation: history.location
+        navigate(`/organization-join-request/${domainJoinRequestId}`, {
+          state: {backgroundLocation: window.location}
         })
       }
     },

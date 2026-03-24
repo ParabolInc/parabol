@@ -485,6 +485,22 @@ type Mutation {
   ): SetIsFreeMeetingTemplatePayload!
 
   """
+  Assign a Stripe coupon to an organization, to be applied automatically when they upgrade.
+  The coupon must already exist in Stripe. It will be cleared from the org after use.
+  """
+  addOrgCoupon(
+    """
+    The ID of the organization
+    """
+    orgId: ID!
+
+    """
+    The Stripe coupon ID (e.g. "50PCT_6MO"). Must exist and be valid in Stripe.
+    """
+    couponId: ID!
+  ): AddOrgCouponSuccess!
+
+  """
   Starts a free trial for the org iff the org is on a free tier.
   """
   startTrial(

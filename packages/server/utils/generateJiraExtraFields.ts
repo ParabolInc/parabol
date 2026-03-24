@@ -1,5 +1,5 @@
 import isValid from '../graphql/isValid'
-import type {JiraGetIssueRes, JiraIssueRaw} from './AtlassianServerManager'
+import type {JiraIssueRaw} from './AtlassianServerManager'
 
 const fieldSchemaTypes = {
   'com.atlassian.jira.plugin.system.customfieldtypes:textarea': 'html'
@@ -15,7 +15,7 @@ const getFieldType = (schemaEntry: JiraIssueRaw['schema'][string]) => {
   return schemaEntry.type === 'number' ? 'number' : 'string'
 }
 
-export const generateJiraExtraFields = (issue: JiraGetIssueRes) => {
+export const generateJiraExtraFields = (issue: JiraIssueRaw) => {
   const {names, schema, fields, renderedFields} = issue
   if (!names || !schema || !fields || !renderedFields) return []
   return (

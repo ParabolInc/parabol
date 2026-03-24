@@ -31,6 +31,7 @@ export const publishSummaryPage = async (
   const meetingSummaryPage = await createNewPage({
     parentPageId: meetingTOCpageId,
     userId,
+    summaryMeetingId: meetingId,
     content: {
       type: 'doc',
       content: [

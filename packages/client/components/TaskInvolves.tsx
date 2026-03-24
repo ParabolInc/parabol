@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import {cardShadow} from '~/styles/elevation'
 import type {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import useRouter from '../hooks/useRouter'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
 import SetNotificationStatusMutation from '../mutations/SetNotificationStatusMutation'
 import {plaintextToTipTap} from '../shared/tiptap/plaintextToTipTap'
@@ -109,7 +109,7 @@ const TaskInvolves = (props: Props) => {
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
   const {editor} = useTipTapTaskEditor(content, {readOnly: true})
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const gotoBoard = () => {
     if (submitting) return
@@ -120,7 +120,7 @@ const TaskInvolves = (props: Props) => {
       {onError, onCompleted}
     )
     const archiveSuffix = tags.includes('archived') ? '/archive' : ''
-    history.push(`/team/${teamId}${archiveSuffix}`)
+    navigate(`/team/${teamId}${archiveSuffix}`)
   }
   const preposition = involvement === MENTIONEE ? ' in' : ''
   if (!editor) return null

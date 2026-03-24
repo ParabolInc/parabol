@@ -4,7 +4,7 @@ import type {
   popNotificationToast_notification$data
 } from '../../__generated__/popNotificationToast_notification.graphql'
 import type {Snack} from '../../components/Snackbar'
-import type {OnNextHandler, OnNextHistoryContext} from '../../types/relayMutations'
+import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutations'
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapMentionedToToast from './mapMentionedToToast'
@@ -15,7 +15,7 @@ import mapResponseRepliedToToast from './mapResponseRepliedToToast'
 import mapTeamsLimitReminderToToast from './mapTeamsLimitReminderToToast'
 
 const typePicker: Partial<
-  Record<NotificationEnum, (notification: any, context: OnNextHistoryContext) => Snack | null>
+  Record<NotificationEnum, (notification: any, context: OnNextNavigateContext) => Snack | null>
 > = {
   DISCUSSION_MENTIONED: mapDiscussionMentionedToToast,
   RESPONSE_MENTIONED: mapResponseMentionedToToast,
@@ -44,8 +44,8 @@ graphql`
 
 export const popNotificationToastOnNext: OnNextHandler<
   popNotificationToast_notification$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   const {addedNotification} = payload
   const {type} = addedNotification
   const specificNotificationToastMapper = typePicker[type]
@@ -55,7 +55,7 @@ export const popNotificationToastOnNext: OnNextHandler<
 
   const notificationSnack = specificNotificationToastMapper(addedNotification, {
     atmosphere,
-    history
+    navigate
   })
 
   if (!notificationSnack) {

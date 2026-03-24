@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import {useHistory} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {OrgIntegrations_organization$key} from '../../../../__generated__/OrgIntegrations_organization.graphql'
 import {Loader} from '../../../../utils/relay/renderLoader'
 import GitLabProviders from './GitLabProviders'
@@ -36,7 +36,7 @@ const OrgIntegrations = (props: Props) => {
   )
 
   const {id: orgId, viewerOrganizationUser, organizationUsers} = organization
-  const history = useHistory()
+  const navigate = useNavigate()
   const isOrgAdmin = viewerOrganizationUser?.role === 'ORG_ADMIN'
 
   const orgUsers = organizationUsers?.edges.map((edge) => edge.node)
@@ -70,7 +70,7 @@ const OrgIntegrations = (props: Props) => {
                 <>
                   {` View yours `}
                   <button
-                    onClick={() => history.push(`/me/organizations/${orgId}/billing`)}
+                    onClick={() => navigate(`/me/organizations/${orgId}/billing`)}
                     className='cursor-pointer bg-transparent p-0 font-bold text-sky-500 hover:text-sky-600'
                   >
                     here

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {TeamInvitationNotification_notification$key} from '~/__generated__/TeamInvitationNotification_notification.graphql'
 import NotificationAction from '~/components/NotificationAction'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
-import useRouter from '~/hooks/useRouter'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import NotificationTemplate from './NotificationTemplate'
 
@@ -35,7 +35,7 @@ const TeamInvitationNotification = (props: Props) => {
   )
   const {submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {id: notificationId, invitation, team} = notification
   const {name: teamName} = team
   const {token, inviter} = invitation
@@ -45,7 +45,7 @@ const TeamInvitationNotification = (props: Props) => {
     AcceptTeamInvitationMutation(
       atmosphere,
       {notificationId, invitationToken: token},
-      {history, onError, onCompleted}
+      {navigate, onError, onCompleted}
     )
   }
 

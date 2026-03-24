@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import useRouter from '~/hooks/useRouter'
+import {useNavigate} from 'react-router'
 import {BezierCurve} from '../types/constEnums'
 import FlatPrimaryButton from './FlatPrimaryButton'
 
@@ -29,10 +29,10 @@ const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
 }))
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
-  const {history} = useRouter()
+  const navigate = useNavigate()
 
   const onClick = () => {
-    history.push('/activity-library')
+    navigate('/activity-library')
   }
   return (
     <div className='px-3'>

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {useNavigate} from 'react-router'
 import type {RemoveFromOrgModal_organizationUsers$key} from '../../../../__generated__/RemoveFromOrgModal_organizationUsers.graphql'
 import DialogContainer from '../../../../components/DialogContainer'
 import DialogContent from '../../../../components/DialogContent'
@@ -9,7 +10,6 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
-import useRouter from '../../../../hooks/useRouter'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
 import plural from '../../../../utils/plural'
 
@@ -43,7 +43,7 @@ const organizationUsersFragment = graphql`
 const RemoveFromOrgModal = (props: Props) => {
   const {orgId, userIds, organizationUsers, closePortal, onSuccess} = props
   const atmosphere = useAtmosphere()
-  const {history} = useRouter()
+  const navigate = useNavigate()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const {viewerId} = atmosphere
 
@@ -88,7 +88,7 @@ const RemoveFromOrgModal = (props: Props) => {
       atmosphere,
       {orgId, userIds: removableUserIds},
       {
-        history,
+        navigate,
         onError,
         onCompleted: () => {
           onCompleted()

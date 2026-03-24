@@ -26,11 +26,13 @@ const ExpandedReflection = (props: Props) => {
   const {id: reflectionId} = reflection
   const staticIdx = staticReflections.indexOf(reflection)
   const atmosphere = useAtmosphere()
+  const watchForClickRef = useRef<((e: MouseEvent) => void) | null>(null)
   const setIsEditing = (reflectionId: string) => () => {
     const watchForClick = (e: MouseEvent) => {
       const isClickOnCard = e.composedPath().find((el) => el === cardRef.current)
       if (!isClickOnCard) {
         document.removeEventListener('click', watchForClick)
+        watchForClickRef.current = null
         commitLocalUpdate(atmosphere, (store) => {
           const reflection = store.get(reflectionId)
           if (!reflection) return
@@ -38,6 +40,10 @@ const ExpandedReflection = (props: Props) => {
         })
       }
     }
+    if (watchForClickRef.current) {
+      document.removeEventListener('click', watchForClickRef.current)
+    }
+    watchForClickRef.current = watchForClick
     document.addEventListener('click', watchForClick)
     commitLocalUpdate(atmosphere, (store) => {
       const reflection = store.get(reflectionId)
@@ -52,6 +58,10 @@ const ExpandedReflection = (props: Props) => {
   }
   useEffect(() => {
     return () => {
+      if (watchForClickRef.current) {
+        document.removeEventListener('click', watchForClickRef.current)
+        watchForClickRef.current = null
+      }
       commitLocalUpdate(atmosphere, (store) => {
         const reflection = store.get(reflectionId)
         if (!reflection) return

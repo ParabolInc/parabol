@@ -257,7 +257,7 @@ const ReflectionCard = (props: Props) => {
     if (isTempId(reflectionId) || readOnly) return
     // Creating a reflection in the group phase is different than in reflect phase. We're creating an empty reflection and start editing it.
     // For the user however we want to have a consistent behaviour with the reflect phase. This means when they blur without editing, we don't want to submit the reflection.
-    if (isFirstEdit) return
+    if (isFirstEdit && editor?.isEmpty) return
     const newFocusedElement = e.relatedTarget as Node
     // don't trigger a blur if a button inside the element is clicked
     if (e.currentTarget.contains(newFocusedElement)) return

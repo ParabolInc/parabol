@@ -6,7 +6,7 @@ import type {RemoveTeamMemberMutation_task$data} from '../__generated__/RemoveTe
 import type {RemoveTeamMemberMutation_team$data} from '../__generated__/RemoveTeamMemberMutation_team.graphql'
 import type {
   OnNextHandler,
-  OnNextHistoryContext,
+  OnNextNavigateContext,
   SharedUpdater,
   SimpleMutation
 } from '../types/relayMutations'
@@ -110,8 +110,8 @@ const mutation = graphql`
 
 export const removeTeamMemberNotificationOnNext: OnNextHandler<
   RemoveTeamMemberMutation_notification$data,
-  OnNextHistoryContext
-> = (payload, {atmosphere, history}) => {
+  OnNextNavigateContext
+> = (payload, {atmosphere, navigate}) => {
   if (!payload) return
   const {kickOutNotification} = payload
   if (!kickOutNotification) return
@@ -141,7 +141,7 @@ export const removeTeamMemberNotificationOnNext: OnNextHandler<
     onTeamRoute(window.location.pathname, teamId) ||
     onMeetingRoute(window.location.pathname, meetingIds)
   ) {
-    history.push('/meetings')
+    navigate('/meetings')
   }
 }
 
