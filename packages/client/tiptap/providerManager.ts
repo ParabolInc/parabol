@@ -45,7 +45,11 @@ class ProviderManager {
       onAuthenticationFailed: ({reason}) => {
         console.log('fail', reason)
         if (reason === 'Unauthorized') {
-          window.indexedDB.deleteDatabase(documentName)
+          const entry = this.providers[documentName]
+          if (entry) {
+            entry.persistence?.destroy()
+            entry.persistence = undefined
+          }
         }
         if (reason === 'InvalidDocument') {
           // The documentName they passed in cannot exist (DBID out of bounds)
