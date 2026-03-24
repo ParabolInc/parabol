@@ -31,6 +31,7 @@ export const checkFileMimeType = (bytes: Uint8Array, declaredMime: string): stri
   if (declaredMime.startsWith('text/')) {
     isMatch = info.some((i) => i.mime?.startsWith('text/plain'))
   } else if (declaredMime === 'image/svg+xml') {
+    // svgs are often detected as xml, see https://github.com/LarsKoelpin/magic-bytes/issues/70
     isMatch =
       info.some((i) => i.mime === 'image/svg+xml') ||
       (info.some((i) => i.mime?.includes('xml')) && isSvgContent(bytes))
