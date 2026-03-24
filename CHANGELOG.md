@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.2](https://github.com/ParabolInc/parabol/compare/v13.7.1...v13.7.2) (2026-03-24)
+
+
+### Fixed
+
+* Remove duplicate `transfer-encoding` headers from Yoga responses. ([#12913](https://github.com/ParabolInc/parabol/issues/12913)) ([3f55242](https://github.com/ParabolInc/parabol/commit/3f55242186a882940f2c56a4be6803452c051006))
+
 ## [13.7.1](https://github.com/ParabolInc/parabol/compare/v13.7.0...v13.7.1) (2026-03-23)
 
 
