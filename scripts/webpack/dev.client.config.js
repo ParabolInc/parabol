@@ -148,7 +148,7 @@ module.exports = {
             : process.env.TENOR_SECRET
               ? 'tenor'
               : '',
-        HUBSPOT_ERROR_FORM_URL: process.env.HUBSPOT_ERROR_FORM_URL
+        GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL
       })
     }),
     new ReactRefreshWebpackPlugin(),
