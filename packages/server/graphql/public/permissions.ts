@@ -103,7 +103,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
-    uploadIdPMetadata: isViewerOnOrg<'Mutation.uploadIdPMetadata'>('args.orgId'),
+    uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100})
   },
   Query: {
@@ -123,7 +123,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   Organization: {
     oauthAPIProvider: hasProviderAccess<'Organization.oauthAPIProvider'>('args.providerId'),
     saml: and(
-      isViewerBillingLeader<'Organization.saml'>('source.id'),
+      isViewerOnOrg<'Organization.saml'>('source.id'),
       isOrgTier<'Organization.saml'>('source.id', 'enterprise')
     )
   },
