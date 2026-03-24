@@ -336,25 +336,25 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
 
   const data = {pageId: dbPageId, userId: nextSubjectId}
 
+  const lockedOutUserIds = [] as string[]
   if (!role) {
-    const userIds = [] as string[]
     if (nextSubjectType === 'user') {
-      userIds.push(nextSubjectId)
+      lockedOutUserIds.push(nextSubjectId)
     } else if (nextSubjectType === 'team') {
       const users = await dataLoader.get('teamMembersByTeamId').load(nextSubjectId)
-      userIds.push(...users.map(({userId}) => userId))
+      lockedOutUserIds.push(...users.map(({userId}) => userId))
     } else if (nextSubjectType === 'organization') {
       const users = await dataLoader.get('organizationUsersByOrgId').load(nextSubjectId)
-      userIds.push(...users.map(({userId}) => userId))
-    }
-    for (const userId of userIds) {
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePageAccessPayload', data, subOptions)
+      lockedOutUserIds.push(...users.map(({userId}) => userId))
     }
   }
+  await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
   if (notification) {
     publishNotification(notification, subOptions)
   }
-  await publishPageNotification(dbPageId, 'UpdatePageAccessPayload', data, subOptions, dataLoader)
+  for (const userId of lockedOutUserIds) {
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'UpdatePageAccessPayload', data, subOptions)
+  }
   return data
 }
 
