@@ -137,13 +137,14 @@ interface PinnedResponse {
 function pinnedRequest(
   url: URL,
   agent: http.Agent | https.Agent,
-  signal: AbortSignal
+  signal: AbortSignal,
+  extraHeaders?: Record<string, string>
 ): Promise<PinnedResponse> {
   const mod = url.protocol === 'https:' ? https : http
   return new Promise((resolve, reject) => {
     const req = mod.request(
       url,
-      {agent, method: 'GET', headers: {'User-Agent': USER_AGENT}, signal},
+      {agent, method: 'GET', headers: {'User-Agent': USER_AGENT, ...extraHeaders}, signal},
       (res) => resolve({status: res.statusCode!, headers: res.headers, body: res})
     )
     req.on('error', reject)
@@ -151,106 +152,139 @@ function pinnedRequest(
   })
 }
 
-export const fetchUntrusted = async (input: string, maxSize: number) => {
+export const fetchUntrusted = async (
+  input: string,
+  maxSize: number,
+  options?: {headers?: Record<string, string>; maxRedirects?: number}
+) => {
   try {
     // 1. Validate URL (outside lock — synchronous, instant)
-    let url: URL
+    let currentUrl: URL
     try {
-      url = new URL(input)
+      currentUrl = new URL(input)
     } catch {
       throw new Error('Invalid URL')
     }
 
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    if (currentUrl.protocol !== 'http:' && currentUrl.protocol !== 'https:') {
       throw new Error('Only http/https allowed')
     }
 
-    // 2. Resolve DNS and validate IPs are public (outside lock — doesn't hit the HTTP server).
-    //    Resolved addresses are pinned to the agent to prevent DNS rebinding.
-    const addresses = await resolveAndValidateHostname(url.hostname)
-    const agent = createPinnedAgent(url.protocol, addresses)
+    let currentHeaders = options?.headers
+    let redirectsLeft = options?.maxRedirects ?? 0
 
-    // 3. Serialize per-domain: same-host requests queue, different hosts run concurrently.
-    //    Timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
-    return await withDomainLimit(url.hostname, async () => {
-      let controller = new AbortController()
-      let fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
+    while (true) {
+      // 2. Resolve DNS and validate IPs are public (outside lock — doesn't hit the HTTP server).
+      //    Resolved addresses are pinned to the agent to prevent DNS rebinding.
+      const addresses = await resolveAndValidateHostname(currentUrl.hostname)
+      const agent = createPinnedAgent(currentUrl.protocol, addresses)
 
-      try {
-        // 4. Request with pinned DNS (with retry for 429 rate-limiting)
-        let response = await pinnedRequest(url, agent, controller.signal)
+      // 3. Serialize per-domain: same-host requests queue, different hosts run concurrently.
+      //    Timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
+      const outcome = await withDomainLimit(currentUrl.hostname, async () => {
+        let controller = new AbortController()
+        let fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
 
-        for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
+        try {
+          // 4. Request with pinned DNS (with retry for 429 rate-limiting)
+          let response = await pinnedRequest(currentUrl, agent, controller.signal, currentHeaders)
+
+          for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
+            clearTimeout(fetchTimeout)
+            response.body.destroy()
+            const retryAfter = response.headers['retry-after'] ?? null
+            const delay = getRetryDelayMs(
+              Array.isArray(retryAfter) ? retryAfter[0]! : retryAfter,
+              attempt
+            )
+            await new Promise((resolve) => setTimeout(resolve, delay))
+            controller = new AbortController()
+            fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
+            response = await pinnedRequest(currentUrl, agent, controller.signal, currentHeaders)
+          }
+
+          if (response.status >= 300 && response.status < 400) {
+            const location = Array.isArray(response.headers.location)
+              ? response.headers.location[0]
+              : response.headers.location
+            response.body.destroy()
+            // Return a sentinel so we can release the domain lock before re-resolving
+            return {redirect: location ?? null}
+          }
+
+          if (response.status < 200 || response.status >= 300) {
+            response.body.destroy()
+            throw new Error(`HTTP error: ${response.status}`)
+          }
+
+          // 5. Content-Type validation
+          const contentType = response.headers['content-type']
+          if (!contentType) {
+            response.body.destroy()
+            throw new Error('Missing Content-Type')
+          }
+
+          const normalized = contentType.split(';')[0]!.trim().toLowerCase()
+
+          // 6. Enforce max size (pre-check if possible)
+          const contentLength = response.headers['content-length']
+          if (contentLength) {
+            const declared = parseInt(contentLength, 10)
+            if (!isNaN(declared) && declared > maxSize) {
+              response.body.destroy()
+              throw new Error('File too large')
+            }
+          }
+
+          // 7. Stream with hard cap
+          const chunks: Buffer[] = []
+          let total = 0
+
+          for await (const chunk of response.body) {
+            const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array)
+            total += buf.byteLength
+            if (total > maxSize) {
+              response.body.destroy()
+              throw new Error('File exceeds max size')
+            }
+            chunks.push(buf)
+          }
+
           clearTimeout(fetchTimeout)
-          response.body.destroy()
-          const retryAfter = response.headers['retry-after'] ?? null
-          const delay = getRetryDelayMs(
-            Array.isArray(retryAfter) ? retryAfter[0]! : retryAfter,
-            attempt
-          )
-          await new Promise((resolve) => setTimeout(resolve, delay))
-          controller = new AbortController()
-          fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
-          response = await pinnedRequest(url, agent, controller.signal)
-        }
 
-        if (response.status >= 300 && response.status < 400) {
-          response.body.destroy()
+          return {
+            buffer: Buffer.concat(chunks) as Buffer<ArrayBufferLike>,
+            contentType: normalized,
+            size: total
+          }
+        } catch (e) {
+          clearTimeout(fetchTimeout)
+          throw e
+        } finally {
+          agent.destroy()
+        }
+      })
+
+      if ('redirect' in outcome) {
+        if (redirectsLeft <= 0 || !outcome.redirect) {
           throw new Error('Redirects not allowed')
         }
-
-        if (response.status < 200 || response.status >= 300) {
-          response.body.destroy()
-          throw new Error(`HTTP error: ${response.status}`)
+        const redirectUrl = new URL(outcome.redirect, currentUrl)
+        if (redirectUrl.protocol !== 'http:' && redirectUrl.protocol !== 'https:') {
+          throw new Error('Only http/https allowed')
         }
-
-        // 5. Content-Type validation
-        const contentType = response.headers['content-type']
-        if (!contentType) {
-          response.body.destroy()
-          throw new Error('Missing Content-Type')
+        // Strip Authorization on cross-origin redirects to avoid leaking credentials
+        if (redirectUrl.hostname !== currentUrl.hostname && currentHeaders?.Authorization) {
+          const {Authorization: _dropped, ...rest} = currentHeaders
+          currentHeaders = Object.keys(rest).length > 0 ? rest : undefined
         }
-
-        const normalized = contentType.split(';')[0]!.trim().toLowerCase()
-
-        // 6. Enforce max size (pre-check if possible)
-        const contentLength = response.headers['content-length']
-        if (contentLength) {
-          const declared = parseInt(contentLength, 10)
-          if (!isNaN(declared) && declared > maxSize) {
-            response.body.destroy()
-            throw new Error('File too large')
-          }
-        }
-
-        // 7. Stream with hard cap
-        const chunks: Buffer[] = []
-        let total = 0
-
-        for await (const chunk of response.body) {
-          const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array)
-          total += buf.byteLength
-          if (total > maxSize) {
-            response.body.destroy()
-            throw new Error('File exceeds max size')
-          }
-          chunks.push(buf)
-        }
-
-        clearTimeout(fetchTimeout)
-
-        return {
-          buffer: Buffer.concat(chunks) as Buffer<ArrayBufferLike>,
-          contentType: normalized,
-          size: total
-        }
-      } catch (e) {
-        clearTimeout(fetchTimeout)
-        throw e
-      } finally {
-        agent.destroy()
+        currentUrl = redirectUrl
+        redirectsLeft--
+        continue
       }
-    })
+
+      return outcome
+    }
   } catch {
     return null
   }

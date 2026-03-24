@@ -3,10 +3,13 @@ import crypto from 'crypto'
 import ms from 'ms'
 import {parse} from 'node-html-parser'
 import type AtlassianServerManager from '../AtlassianServerManager'
+import {fetchUntrusted} from '../fetchUntrusted'
 import getRedis from '../getRedis'
+import {Logger} from '../Logger'
 
 export const NO_IMAGE_BUFFER = Buffer.from('X')
 export const IMAGE_TTL_MS = ms('2h')
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 
 const serverSecret = process.env.SERVER_SECRET
 if (!serverSecret) {
@@ -22,7 +25,6 @@ if (!serverSecret) {
  */
 export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
   const imageUrlToHash = {} as Record<string, string>
-  const projectBaseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`
   if (!descriptionHTML) return {updatedDescription: descriptionHTML, imageUrlToHash}
 
   const root = parse(descriptionHTML)
@@ -31,9 +33,15 @@ export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) =>
     const imageUrl = img.getAttribute('src')
     if (!imageUrl) return
 
-    const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
-    const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
-    imageUrlToHash[absoluteImageUrl] = hashedImageUrl
+    // OAuth 2.0 Bearer tokens only work via the Atlassian API gateway, not direct instance URLs.
+    // Convert https://{instance}.atlassian.net/rest/... to https://api.atlassian.com/ex/jira/{cloudId}/rest/...
+    const fetchUrl = imageUrl.replace(
+      /^https:\/\/[^.]+\.atlassian\.net\/(rest\/)/,
+      `https://api.atlassian.com/ex/jira/${cloudId}/$1`
+    )
+
+    const hashedImageUrl = createImageUrlHash(fetchUrl)
+    imageUrlToHash[fetchUrl] = hashedImageUrl
 
     img.setAttribute('src', createParabolImageUrl(hashedImageUrl))
   })
@@ -66,13 +74,21 @@ export const downloadAndCacheImage = async (
     .hset(imageKey, {imageBuffer: NO_IMAGE_BUFFER, contentType: 'image/png'})
     .pexpire(imageKey, IMAGE_TTL_MS)
     .exec()
-  const imageResponse = await manager.getImage(imageUrl)
-  if (!imageResponse?.contentType) {
+  const result = await fetchUntrusted(imageUrl, MAX_IMAGE_SIZE, {
+    headers: {Authorization: `Bearer ${manager.accessToken}`},
+    maxRedirects: 3
+  })
+  if (!result) {
+    Logger.log(`Jira Image Download fail: ${imageUrl}`)
     await redis.del(imageKey)
     return
   }
 
-  return redis.multi().hset(imageKey, imageResponse).pexpire(imageKey, IMAGE_TTL_MS).exec()
+  return redis
+    .multi()
+    .hset(imageKey, {imageBuffer: result.buffer, contentType: result.contentType})
+    .pexpire(imageKey, IMAGE_TTL_MS)
+    .exec()
 }
 
 export const createParabolImageUrl = (hashedImageUrl: string) => {
