@@ -1,8 +1,11 @@
+import DataLoader from 'dataloader'
 import type dnsSync from 'dns'
 import dns from 'dns/promises'
 import http from 'http'
 import https from 'https'
 import net from 'net'
+import {BoundedCache} from './BoundedCache'
+import {Logger} from './Logger'
 
 const TIMEOUT_MS = 15_000
 const MAX_429_RETRIES = 1
@@ -77,11 +80,11 @@ function isPrivateIP(ip: string): boolean {
 
 // Resolve and validate hostname, returning the validated addresses.
 // Addresses are reused for the actual request to prevent DNS rebinding.
-async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
-  // Use dns.resolve4/resolve6 instead of dns.lookup.
-  // dns.lookup uses the libuv thread pool (default 4 threads), which
-  // becomes a bottleneck under concurrent fetches. dns.resolve uses
-  // c-ares which is fully async and doesn't consume thread pool threads.
+// Use dns.resolve4/resolve6 instead of dns.lookup.
+// dns.lookup uses the libuv thread pool (default 4 threads), which
+// becomes a bottleneck under concurrent fetches. dns.resolve uses
+// c-ares which is fully async and doesn't consume thread pool threads.
+async function doResolveAndValidate(hostname: string): Promise<string[]> {
   const results = await Promise.allSettled([dns.resolve4(hostname), dns.resolve6(hostname)])
 
   const addresses: string[] = []
@@ -92,7 +95,7 @@ async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
   }
 
   if (addresses.length === 0) {
-    throw new Error('DNS resolution failed')
+    throw new Error(`DNS resolution failed: ${hostname}`)
   }
 
   for (const address of addresses) {
@@ -102,6 +105,23 @@ async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
   }
 
   return addresses
+}
+
+// Deduplicates concurrent DNS lookups for the same hostname.
+// If many image fetches fire at once for the same host, only one DNS call is made.
+const dnsLoader = new DataLoader<string, string[]>(
+  (hostnames) => {
+    return Promise.all(
+      hostnames.map((h) =>
+        doResolveAndValidate(h).catch((e) => (e instanceof Error ? e : new Error(String(e))))
+      )
+    )
+  },
+  {cacheMap: new BoundedCache(50)}
+)
+
+async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
+  return dnsLoader.load(hostname)
 }
 
 // Create an HTTP(S) agent that pins DNS to pre-validated addresses,
@@ -184,7 +204,6 @@ export const fetchUntrusted = async (
       const outcome = await withDomainLimit(currentUrl.hostname, async () => {
         let controller = new AbortController()
         let fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
-
         try {
           // 4. Request with pinned DNS (with retry for 429 rate-limiting)
           let response = await pinnedRequest(currentUrl, agent, controller.signal, currentHeaders)
@@ -285,7 +304,8 @@ export const fetchUntrusted = async (
 
       return outcome
     }
-  } catch {
+  } catch (e) {
+    Logger.log(e)
     return null
   }
 }

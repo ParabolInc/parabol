@@ -5,7 +5,7 @@ import type {AssetScopeEnum} from '../graphql/public/resolverTypes'
 
 export type FileAssetDir = 'store' | 'build'
 
-export type AssetType = 'assets' | 'picture' | 'metadata' | 'template'
+export type AssetType = 'assets' | 'atlassian' | 'picture' | 'metadata' | 'template'
 export type PartialPath =
   | `${AssetScopeEnum}/${string}/${AssetType}/${string}.${string}`
   | `Organization/${string}/idpMetadata.xml`
