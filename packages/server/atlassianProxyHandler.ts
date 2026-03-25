@@ -37,12 +37,15 @@ export const atlassianProxyHandler = async (
       return
     }
     const contentType = atlassianRes.headers.get('content-type') || 'application/octet-stream'
+    const cacheControl = atlassianRes.headers.get('cache-control')
+    const etag = atlassianRes.headers.get('etag')
     res
       .writeStatus('200')
       .writeHeader('Content-Type', contentType)
       .writeHeader('Vary', 'Authorization, X-Application-Authorization')
-      .writeHeader('Cache-Control', 'no-store, max-age=0')
-      .end(await atlassianRes.arrayBuffer())
+    if (cacheControl) res.writeHeader('Cache-Control', cacheControl)
+    if (etag) res.writeHeader('ETag', etag)
+    res.end(await atlassianRes.arrayBuffer())
   } catch (e) {
     Logger.error('Atlassian proxy error', e)
     await servePlaceholderImage(res)
