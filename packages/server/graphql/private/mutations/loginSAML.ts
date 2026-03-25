@@ -194,16 +194,20 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   if (user instanceof Error) return standardError(user)
 
   if (newMetadata) {
-    // Only org admins may update SAML metadata.
-    // Verify before persisting — the email is already validated against the SAML domains above.
-    if (!orgId || !user) {
-      return standardError(new Error('Only org admins can update SAML metadata'))
-    }
-    const organizationUser = await dataLoader
-      .get('organizationUsersByUserIdOrgId')
-      .load({orgId, userId: user.id})
-    if (organizationUser?.role !== 'ORG_ADMIN') {
-      return standardError(new Error('Only org admins can update SAML metadata'))
+    // Only org admins may set a new SAML metadata URL.
+    // Refreshing an existing URL (auto or manual) is allowed on every login.
+    const isNewURL = newMetadataURL && newMetadataURL !== existingMetadataURL
+    if (isNewURL) {
+      // Verify before persisting — the email is already validated against the SAML domains above.
+      if (!orgId || !user) {
+        return standardError(new Error('Only org admins can update SAML metadata'))
+      }
+      const organizationUser = await dataLoader
+        .get('organizationUsersByUserIdOrgId')
+        .load({orgId, userId: user.id})
+      if (organizationUser?.role !== 'ORG_ADMIN') {
+        return standardError(new Error('Only org admins can update SAML metadata'))
+      }
     }
     // Revalidate metadata & persist to DB
     // Generate the URL to verify the metadata, don't persist it as it needs to be generated fresh
