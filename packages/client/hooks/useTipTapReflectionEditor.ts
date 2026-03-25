@@ -8,6 +8,7 @@ import {useEffect, useRef, useState} from 'react'
 import type Atmosphere from '../Atmosphere'
 import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
+import {useUploadUserAsset} from '../mutations/useUploadUserAsset'
 import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
 import {mentionConfig, serverTipTapExtensions} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
@@ -35,6 +36,7 @@ export const useTipTapReflectionEditor = (
   const {atmosphere, teamId, readOnly, placeholder, onModEnter} = options
   const [contentJSON] = useState(() => JSON.parse(content))
   const placeholderRef = useRef(placeholder)
+  const [commit] = useUploadUserAsset()
   placeholderRef.current = placeholder
   const editor = useEditor(
     {
@@ -59,7 +61,9 @@ export const useTipTapReflectionEditor = (
         Focus,
         FileUpload.configure({
           scopeKey: teamId,
-          assetScope: 'Team'
+          assetScope: 'Team',
+          highestTier: 'starter',
+          commit
         }),
         ImageBlock.configure({
           editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
