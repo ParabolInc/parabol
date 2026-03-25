@@ -15,7 +15,28 @@ interface Props {
   eventId: string
 }
 
-export const ERROR_FEEDBACK_ENABLED = !!window.__ACTION__.HUBSPOT_ERROR_FORM_URL
+const parseFormConfig = () => {
+  const rawUrl = window.__ACTION__.GOOGLE_ERROR_FORM_URL
+  if (!rawUrl) return null
+  try {
+    const parsed = new URL(rawUrl)
+    const emailField = parsed.searchParams.get('_email')
+    const subjectField = parsed.searchParams.get('_subject')
+    const contentField = parsed.searchParams.get('_content')
+    const eventIdField = parsed.searchParams.get('_eventId')
+    if (!emailField || !subjectField || !contentField || !eventIdField) return null
+    parsed.searchParams.delete('_email')
+    parsed.searchParams.delete('_subject')
+    parsed.searchParams.delete('_content')
+    parsed.searchParams.delete('_eventId')
+    return {url: parsed.toString(), emailField, subjectField, contentField, eventIdField}
+  } catch {
+    return null
+  }
+}
+
+const formConfig = parseFormConfig()
+export const ERROR_FEEDBACK_ENABLED = !!formConfig
 
 const INVITE_DIALOG_BREAKPOINT = 864
 const INVITE_DIALOG_MEDIA_QUERY = `@media (min-width: ${INVITE_DIALOG_BREAKPOINT}px)`
@@ -65,46 +86,26 @@ const ReportErrorFeedback = (props: Props) => {
     const nextValue = e.target.value
     setText(nextValue)
   }
-  const url = window.__ACTION__.HUBSPOT_ERROR_FORM_URL
   useEffect(() => {
-    if (!url) {
+    if (!formConfig) {
       closePortal()
     }
-  }, [url, closePortal])
-  if (!url) {
+  }, [closePortal])
+  if (!formConfig) {
     return null
   }
   const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
 
   const onSubmit = () => {
     if (!text) return
-    const body = JSON.stringify({
-      fields: [
-        {
-          name: 'email',
-          value: email || 'errors@parabol.co'
-        },
-        {
-          name: 'TICKET.subject',
-          value: error.message
-        },
-        {
-          name: 'TICKET.content',
-          value: text
-        },
-        {
-          name: 'TICKET.eventid',
-          value: eventId
-        }
-      ]
+    const {url, emailField, subjectField, contentField, eventIdField} = formConfig
+    const body = new URLSearchParams({
+      [emailField]: email || 'errors@parabol.co',
+      [subjectField]: error.message,
+      [contentField]: text,
+      [eventIdField]: eventId
     })
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body
-    })
+    fetch(url, {method: 'POST', mode: 'no-cors', body})
     closePortal()
   }
 

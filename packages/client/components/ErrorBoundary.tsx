@@ -51,7 +51,7 @@ class ErrorBoundary extends Component<Props & {atmosphere: Atmosphere}, State> {
     })
 
     const {componentStack} = errorInfo
-    datadogRum.addError(error, {viewerId, email, componentStack})
+    datadogRum.addError(error, {viewerId, email, componentStack, eventId})
   }
 
   render() {

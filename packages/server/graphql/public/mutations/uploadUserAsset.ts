@@ -1,8 +1,8 @@
 import base64url from 'base64url'
 import {createHash} from 'crypto'
 import {GraphQLError} from 'graphql'
-import filetypeinfo from 'magic-bytes.js'
 import mime from 'mime-types'
+import {checkFileMimeType} from '../../../../client/shared/utils/checkFileMimeType'
 import {
   MAX_FILE_SIZE_FREE,
   MAX_FILE_SIZE_PAID,
@@ -87,15 +87,8 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
       error: {message: `Unable to determine extension for ${contentType}`}
     }
   }
-  const info = filetypeinfo(new Uint8Array(buffer))
-  // text file subtypes cannot be determined from magic bytes, so assume text/plain is correct for any text/*
-  const contentIsCorrectType = file.type.startsWith('text/')
-    ? info.some((i) => i.mime?.startsWith('text/plain'))
-    : info.some((i) => i.mime === file.type)
-  const assumedType = info[0]?.typename
-  if (info.length > 0 && !contentIsCorrectType) {
-    throw new GraphQLError(`Expected ${file.type} but received ${assumedType}`)
-  }
+  const mimeError = checkFileMimeType(new Uint8Array(buffer), contentType)
+  if (mimeError) throw new GraphQLError(mimeError)
   const isImage = file.type.includes('image')
   let fileBuffer = buffer
   let fileExtension = ext
@@ -122,7 +115,7 @@ const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   return {
     url,
     name: file.name || hashName,
-    type: file.type || assumedType || '',
+    type: file.type || '',
     size: fileBuffer.byteLength
   }
 }

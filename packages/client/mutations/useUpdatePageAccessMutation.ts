@@ -7,6 +7,7 @@ graphql`
   fragment useUpdatePageAccessMutation_notification on UpdatePageAccessPayload {
     pageSection
     page {
+      id
       isPrivate
       isParentLinked
       parentPageId
@@ -18,6 +19,8 @@ graphql`
         viewer
         public
       }
+      ...Page_page
+      ...PageEntry_page
       ...PageSharingAccessList_pageAccess @relay(mask: false)
     }
   }

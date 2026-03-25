@@ -1,8 +1,9 @@
-import {Check, Close, RestartAlt} from '@mui/icons-material'
+import {Add, Check, Close, RestartAlt} from '@mui/icons-material'
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
+import {Link} from 'react-router'
 import type {
   OrgAuthenticationSCIM_saml$key,
   SCIMAuthenticationTypeEnum
@@ -23,6 +24,8 @@ import {CopyServiceProviderURL} from './CopyServiceProviderURL'
 
 interface Props {
   samlRef: OrgAuthenticationSCIM_saml$key | null
+  scimEnabled: boolean
+  isOrgAdmin: boolean
 }
 
 const CensoredSecret = (props: {secret: string; label: string; onReset: () => void}) => {
@@ -71,7 +74,7 @@ const CensoredSecret = (props: {secret: string; label: string; onReset: () => vo
 }
 
 const OrgAuthenticationSCIM = (props: Props) => {
-  const {samlRef} = props
+  const {samlRef, scimEnabled, isOrgAdmin} = props
   const saml = useFragment(
     graphql`
       fragment OrgAuthenticationSCIM_saml on SAML {
@@ -106,8 +109,29 @@ const OrgAuthenticationSCIM = (props: Props) => {
   const [nextScimAuthenticationType, setNextScimAuthenticationType] =
     useState<SCIMAuthenticationTypeEnum | null>(saml?.scimAuthenticationType ?? null)
 
-  if (!saml) {
-    return <div className='px-6 pb-3 text-sm'>You must enable SSO before you can use SCIM.</div>
+  if (!saml || !scimEnabled) {
+    return (
+      <div className='px-6 pb-8'>
+        <div className='flex flex-row rounded border border-slate-500 px-2 py-1'>
+          <div className='px-2'>
+            <Add className='h-6 w-6 text-sky-500' />
+          </div>
+          <div className='flex flex-col'>
+            <span className='font-semibold text-base text-slate-700'>Enable SCIM Provisioning</span>
+            <span className='text-slate-700 text-sm'>
+              <a
+                className='font-semibold text-sky-500 text-sm focus:text-sky-500 active:text-sky-500'
+                href={`${ExternalLinks.CONTACT}?subject=Enable SCIM`}
+                title={'Contact customer success to enable SCIM provisioning'}
+              >
+                Contact customer success
+              </a>{' '}
+              to enable SCIM provisioning
+            </span>
+          </div>
+        </div>
+      </div>
+    )
   }
   if (!saml.orgId) {
     return (
@@ -211,41 +235,54 @@ const OrgAuthenticationSCIM = (props: Props) => {
 
   return (
     <>
-      <div className='px-6 pb-3'>
-        <div className='flex font-semibold text-base text-slate-700 leading-6'>
-          Authentication Method
-        </div>
-        <div className='flex gap-8'>
-          <Select
-            onValueChange={onChangeAuthenticationType}
-            value={nextScimAuthenticationType ?? 'disabled'}
-            disabled={submitting}
+      {!isOrgAdmin && (
+        <div className='px-6 pb-3 text-slate-700 text-sm'>
+          <Link
+            className='font-semibold text-sky-500 hover:text-sky-600'
+            to={`/me/organizations/${orgId}/members`}
           >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent position='item-aligned'>
-              <SelectGroup>
-                <SelectItem value={'disabled'}>Disabled</SelectItem>
-                <SelectItem value={'bearerToken'}>Bearer Token</SelectItem>
-                <SelectItem value={'oauthClientCredentials'}>
-                  OAuth 2.0 Client Credentials
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <SecondaryButton
-            disabled={nextScimAuthenticationType === scimAuthenticationType}
-            onClick={() => updateSCIM(nextScimAuthenticationType)}
-          >
-            {!scimAuthenticationType
-              ? 'Enable SCIM'
-              : !nextScimAuthenticationType
-                ? 'Disable SCIM'
-                : 'Change Authentication Method'}
-          </SecondaryButton>
+            Contact an Org Admin
+          </Link>
+          {' to update the settings'}
         </div>
-        <RenderSettings />
+      )}
+      <div className={!isOrgAdmin ? 'pointer-events-none select-none opacity-50' : ''}>
+        <div className='px-6 pb-3'>
+          <div className='flex font-semibold text-base text-slate-700 leading-6'>
+            Authentication Method
+          </div>
+          <div className='flex gap-8'>
+            <Select
+              onValueChange={onChangeAuthenticationType}
+              value={nextScimAuthenticationType ?? 'disabled'}
+              disabled={submitting || !isOrgAdmin}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent position='item-aligned'>
+                <SelectGroup>
+                  <SelectItem value={'disabled'}>Disabled</SelectItem>
+                  <SelectItem value={'bearerToken'}>Bearer Token</SelectItem>
+                  <SelectItem value={'oauthClientCredentials'}>
+                    OAuth 2.0 Client Credentials
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <SecondaryButton
+              disabled={!isOrgAdmin || nextScimAuthenticationType === scimAuthenticationType}
+              onClick={() => updateSCIM(nextScimAuthenticationType)}
+            >
+              {!scimAuthenticationType
+                ? 'Enable SCIM'
+                : !nextScimAuthenticationType
+                  ? 'Disable SCIM'
+                  : 'Change Authentication Method'}
+            </SecondaryButton>
+          </div>
+          <RenderSettings />
+        </div>
       </div>
     </>
   )

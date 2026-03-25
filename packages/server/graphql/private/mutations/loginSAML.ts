@@ -190,9 +190,26 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     }
   }
 
+  const user = await getUserByEmailOrPersistentNameId(email, persistentNameId, domains)
+  if (user instanceof Error) return standardError(user)
+
   if (newMetadata) {
-    // The user is updating their SAML metadata
-    // Revalidate it & persist to DB
+    // Only org admins may set a new SAML metadata URL.
+    // Refreshing an existing URL (auto or manual) is allowed on every login.
+    const isNewURL = newMetadataURL && newMetadataURL !== existingMetadataURL
+    if (isNewURL) {
+      // Verify before persisting — the email is already validated against the SAML domains above.
+      if (!orgId || !user) {
+        return standardError(new Error('Only org admins can update SAML metadata'))
+      }
+      const organizationUser = await dataLoader
+        .get('organizationUsersByUserIdOrgId')
+        .load({orgId, userId: user.id})
+      if (organizationUser?.role !== 'ORG_ADMIN') {
+        return standardError(new Error('Only org admins can update SAML metadata'))
+      }
+    }
+    // Revalidate metadata & persist to DB
     // Generate the URL to verify the metadata, don't persist it as it needs to be generated fresh
     const url = getSignOnURL(metadata, normalizedName)
     if (url instanceof Error) {
@@ -205,8 +222,6 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
       .execute()
   }
 
-  const user = await getUserByEmailOrPersistentNameId(email, persistentNameId, domains)
-  if (user instanceof Error) return standardError(user)
   if (user) {
     if (persistentNameId && !user.persistentNameId) {
       await pg.updateTable('User').set({persistentNameId}).where('id', '=', user.id).execute()
