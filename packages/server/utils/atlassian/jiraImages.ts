@@ -30,7 +30,15 @@ export const downloadAndCacheImage = async (
     /^https:\/\/[^.]+\.atlassian\.net\/(rest\/)/,
     `https://api.atlassian.com/ex/jira/${cloudId}/$1`
   )
-  if (!fetchUrl.startsWith('https://api.atlassian.com')) return null
+  let parsedFetchUrl: URL
+  try {
+    parsedFetchUrl = new URL(fetchUrl)
+  } catch {
+    return null
+  }
+  if (parsedFetchUrl.protocol !== 'https:' || parsedFetchUrl.hostname !== 'api.atlassian.com') {
+    return null
+  }
 
   let res: Response
   try {
