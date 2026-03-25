@@ -150,7 +150,8 @@ export const hocuspocus = new Hocuspocus({
         const error = new Error(
           `Document does not exist or user is not authorized: ${documentName}`
         )
-        logError(error, {userId, extras: {dbId}})
+        Logger.warn(error, {userId, extras: {dbId}})
+        ;(error as any).reason = 'Unauthorized'
         throw error
       }
     }

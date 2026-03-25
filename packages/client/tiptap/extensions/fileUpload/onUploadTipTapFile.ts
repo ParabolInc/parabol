@@ -1,9 +1,9 @@
 import type {Editor} from '@tiptap/core'
-import {filetypeinfo} from 'magic-bytes.js'
 import type {TierEnum} from '../../../__generated__/useTipTapPageEditor_viewer.graphql'
 import type Atmosphere from '../../../Atmosphere'
 import type {useUploadUserAsset} from '../../../mutations/useUploadUserAsset'
 import type {FileUploadTargetType} from '../../../shared/tiptap/extensions/FileUploadBase'
+import {checkFileMimeType} from '../../../shared/utils/checkFileMimeType'
 import {MAX_FILE_SIZE_FREE, MAX_FILE_SIZE_PAID, MAX_IMAGE_SIZE} from '../../../utils/constants'
 import jpgWithoutEXIF from '../../../utils/jpgWithoutEXIF'
 
@@ -34,24 +34,18 @@ export const onUploadTipTapFile =
       file = (await jpgWithoutEXIF(file)) as File
     }
     const bytes = await file.bytes()
-    const info = filetypeinfo(bytes)
     if (file.type !== '') {
-      if (info.length > 0) {
-        const contentIsCorrectType = file.type.startsWith('text/')
-          ? info.some((i) => i.mime?.startsWith('text/plain'))
-          : info.some((i) => i.mime === file.type)
-        if (!contentIsCorrectType) {
-          const assumedType = info[0]?.typename ?? 'Unknown'
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            key: 'fileNotImage',
-            message: `Expected ${file.type} but received ${assumedType}. Is the file extension correct?`,
-            autoDismiss: 5
-          })
-          return
-        }
+      const mimeError = checkFileMimeType(bytes, file.type)
+      if (mimeError) {
+        atmosphere.eventEmitter.emit('addSnackbar', {
+          key: 'fileNotImage',
+          message: mimeError,
+          autoDismiss: 5
+        })
+        return
       }
     }
-    const fileType = file.type ?? info[0]?.mime ?? ''
+    const fileType = file.type ?? ''
     const nodeType = targetType === 'file' ? 'fileBlock' : 'imageBlock'
     const localSrc = URL.createObjectURL(file)
     const {scopeKey, assetScope} = editor.extensionStorage.fileUpload

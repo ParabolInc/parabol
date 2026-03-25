@@ -3,6 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {Link} from 'react-router'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import orgAuthenticationMetadataQuery, {
   type OrgAuthenticationMetadataQuery
@@ -35,10 +36,11 @@ graphql`
 
 interface Props {
   samlRef: OrgAuthenticationMetadata_saml$key | null
+  isOrgAdmin: boolean
 }
 
 const OrgAuthenticationMetadata = (props: Props) => {
-  const {samlRef} = props
+  const {samlRef, isOrgAdmin} = props
   const saml = useFragment(
     graphql`
       fragment OrgAuthenticationMetadata_saml on SAML {
@@ -134,43 +136,68 @@ const OrgAuthenticationMetadata = (props: Props) => {
     })
   }
 
+  const orgId = saml?.orgId
+
   return (
     <>
-      <div className='px-6 pb-3'>
-        <div className='flex font-semibold text-base text-slate-700 leading-6'>Metadata URL</div>
-        <div className={'flex items-center text-slate-700 text-sm'}>
-          Paste the metadata URL from your identity provider
+      {!isOrgAdmin && (
+        <div className='px-6 pb-3 text-slate-700 text-sm'>
+          {orgId ? (
+            <Link
+              className='font-semibold text-sky-500 hover:text-sky-600'
+              to={`/me/organizations/${orgId}/members`}
+            >
+              Contact an Org Admin
+            </Link>
+          ) : (
+            'Contact an Admin'
+          )}
+          {' to update the metadata'}
         </div>
-      </div>
-      <div className='px-6 pb-3'>
-        <BasicInput
-          name='metadataURL'
-          placeholder={`https://idp.example.com/app/sso/saml/metadata`}
-          value={metadataURL}
-          onChange={(e) => setMetadataURL(e.target.value)}
-          error={undefined}
-        />
-        <Button className='px-0' variant='ghost' shape='pill' size='sm' onClick={onUploadClick}>
-          <UploadFileIcon className={'text-xl'} />
-          Click to upload XML File
-        </Button>
-        <input
-          className='hidden'
-          accept='.xml'
-          onChange={uploadXML}
-          type='file'
-          ref={uploadInputRef}
-        />
-      </div>
-      <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
-      <div className='flex justify-end px-6 pb-8'>
-        <SecondaryButton
-          size='medium'
-          onClick={submitMetadataURL}
-          disabled={submitting || isMetadataURLSaved}
-        >
-          Update Metadata
-        </SecondaryButton>
+      )}
+      <div className={!isOrgAdmin ? 'pointer-events-none select-none opacity-50' : ''}>
+        <div className='px-6 pb-3'>
+          <div className='font-semibold text-base text-slate-700 leading-6'>Metadata URL</div>
+          <div className='text-slate-700 text-sm'>
+            Paste the metadata URL from your identity provider
+          </div>
+          <BasicInput
+            name='metadataURL'
+            placeholder={`https://idp.example.com/app/sso/saml/metadata`}
+            value={metadataURL}
+            onChange={(e) => setMetadataURL(e.target.value)}
+            disabled={!isOrgAdmin}
+            error={undefined}
+          />
+          <Button
+            className='px-0'
+            variant='ghost'
+            shape='pill'
+            size='sm'
+            onClick={onUploadClick}
+            disabled={!isOrgAdmin}
+          >
+            <UploadFileIcon className={'text-xl'} />
+            Click to upload XML File
+          </Button>
+          <input
+            className='hidden'
+            accept='.xml'
+            onChange={uploadXML}
+            type='file'
+            ref={uploadInputRef}
+          />
+        </div>
+        <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
+        <div className='flex justify-end px-6 pb-8'>
+          <SecondaryButton
+            size='medium'
+            onClick={submitMetadataURL}
+            disabled={!isOrgAdmin || submitting || isMetadataURLSaved}
+          >
+            Update Metadata
+          </SecondaryButton>
+        </div>
       </div>
     </>
   )

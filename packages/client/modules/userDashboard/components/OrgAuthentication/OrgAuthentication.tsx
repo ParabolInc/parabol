@@ -33,8 +33,9 @@ const OrgAuthentication = (props: Props) => {
               id
             }
             ...OAuthProviderList_organization
+            isOrgAdmin
             showOAuthProvider: featureFlag(featureName: "oauthProvider")
-            showSCIM: featureFlag(featureName: "SCIM")
+            scimEnabled: featureFlag(featureName: "SCIM")
           }
         }
       }
@@ -46,7 +47,7 @@ const OrgAuthentication = (props: Props) => {
   if (!organization) {
     return null
   }
-  const {saml = null, showOAuthProvider, showSCIM} = organization
+  const {saml = null, isOrgAdmin, showOAuthProvider, scimEnabled} = organization
   const disabled = !saml
 
   return (
@@ -56,16 +57,14 @@ const OrgAuthentication = (props: Props) => {
         <OrgAuthenticationSSOFrame samlRef={saml} />
         <div className={disabled ? 'pointer-events-none select-none opacity-40' : ''}>
           <OrgAuthenticationSignOnUrl samlRef={saml} />
-          <OrgAuthenticationMetadata samlRef={saml} />
+          <OrgAuthenticationMetadata samlRef={saml} isOrgAdmin={isOrgAdmin} />
         </div>
       </StyledPanel>
 
-      {showSCIM && (
-        <StyledPanel>
-          <DialogTitle className='px-6 pt-5 pb-6'>SCIM Provisioning</DialogTitle>
-          <OrgAuthenticationSCIM samlRef={saml} />
-        </StyledPanel>
-      )}
+      <StyledPanel>
+        <DialogTitle className='px-6 pt-5 pb-6'>SCIM Provisioning</DialogTitle>
+        <OrgAuthenticationSCIM samlRef={saml} scimEnabled={!!scimEnabled} isOrgAdmin={isOrgAdmin} />
+      </StyledPanel>
 
       {showOAuthProvider && (
         <StyledPanel>

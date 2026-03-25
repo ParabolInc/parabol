@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.3](https://github.com/ParabolInc/parabol/compare/v13.7.2...v13.7.3) (2026-03-25)
+
+
+### Fixed
+
+* allow routine SAML metadata refresh ([#12920](https://github.com/ParabolInc/parabol/issues/12920)) ([4d8b5d9](https://github.com/ParabolInc/parabol/commit/4d8b5d9e82341be3cfb2834cf8778f97a9ef27ef))
+* detect SVGs for Page's image upload ([#12910](https://github.com/ParabolInc/parabol/issues/12910)) ([aa64045](https://github.com/ParabolInc/parabol/commit/aa64045433e09a2015ffa9238be29cc84b358e48))
+* disconnect changed clients on PageAccessPayload ([#12898](https://github.com/ParabolInc/parabol/issues/12898)) ([07414fb](https://github.com/ParabolInc/parabol/commit/07414fb172221432c0b9bebe41a6879ecb9d10f6))
+* set content-disposition: attachment for user assets ([#12911](https://github.com/ParabolInc/parabol/issues/12911)) ([f150b84](https://github.com/ParabolInc/parabol/commit/f150b84d9c9f50fb836635b5f3c6c8a03c6cb73d))
+
+
+### Changed
+
+* Improve SAML and SCIM settings UI ([#12916](https://github.com/ParabolInc/parabol/issues/12916)) ([179ca29](https://github.com/ParabolInc/parabol/commit/179ca29f93dc5a9f3c725d3cd054fe107d1a4fb4))
+* move error feedback to google form ([#12912](https://github.com/ParabolInc/parabol/issues/12912)) ([21460b8](https://github.com/ParabolInc/parabol/commit/21460b8fbfdebf56162e5fd19b65e337d6ccc49e))
+
 ## [13.7.2](https://github.com/ParabolInc/parabol/compare/v13.7.1...v13.7.2) (2026-03-24)
 
 
