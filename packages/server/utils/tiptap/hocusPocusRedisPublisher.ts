@@ -52,8 +52,7 @@ export class RedisPublisher implements Extension {
           const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
           document.connections.forEach(({connection}) => {
             const userId = connection.context.userId as string | undefined
-            if (!userId) return
-            const role = roleByUserId.get(userId)
+            const role = userId ? roleByUserId.get(userId) : undefined
             const newReadOnly = role === 'viewer' || role === 'commenter'
             if (!role || connection.readOnly !== newReadOnly) {
               connection.webSocket.close()
