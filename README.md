@@ -1,4 +1,4 @@
-# Parabol - We're [hiring](https://www.parabol.co/join)!
+# Parabol
 
 ## Overview
 
