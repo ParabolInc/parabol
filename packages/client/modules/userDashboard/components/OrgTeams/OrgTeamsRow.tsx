@@ -51,7 +51,7 @@ const OrgTeamsRow = (props: Props) => {
         <td className='flex items-center p-3'>
           {isLead || isMember || isOrgAdmin ? (
             <Link
-              to={`teams/${teamId}`}
+              to={teamId}
               className='flex items-center font-bold text-gray-700 text-lg hover:text-gray-900'
             >
               {teamNameAndTags}
