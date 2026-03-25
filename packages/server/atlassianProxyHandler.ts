@@ -39,10 +39,7 @@ export const atlassianProxyHandler = async (
     const contentType = atlassianRes.headers.get('content-type') || 'application/octet-stream'
     const cacheControl = atlassianRes.headers.get('cache-control')
     const etag = atlassianRes.headers.get('etag')
-    res
-      .writeStatus('200')
-      .writeHeader('Content-Type', contentType)
-      .writeHeader('Vary', 'Authorization, X-Application-Authorization')
+    res.writeStatus('200').writeHeader('Content-Type', contentType)
     if (cacheControl) res.writeHeader('Cache-Control', cacheControl)
     if (etag) res.writeHeader('ETag', etag)
     res.end(await atlassianRes.arrayBuffer())
