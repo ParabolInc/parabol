@@ -44,6 +44,13 @@ class ProviderManager {
       token: window.document.cookie,
       onAuthenticationFailed: ({reason}) => {
         console.log('fail', reason)
+        if (reason === 'Unauthorized') {
+          const entry = this.providers[documentName]
+          if (entry) {
+            entry.persistence?.destroy()
+            entry.persistence = undefined
+          }
+        }
         if (reason === 'InvalidDocument') {
           // The documentName they passed in cannot exist (DBID out of bounds)
           window.indexedDB.deleteDatabase(documentName)
@@ -55,11 +62,19 @@ class ProviderManager {
       }
     })
     provider.attach()
-    const persistence =
-      documentName.startsWith('page:') && provider.authorizedScope !== 'readonly'
-        ? new IndexeddbPersistence(documentName, doc) // adds support for offline editing
-        : undefined
-    this.providers[documentName] = {count: 1, provider, persistence}
+    this.providers[documentName] = {count: 1, provider}
+    if (documentName.startsWith('page:')) {
+      provider.on('authenticated', ({scope}: {scope: string}) => {
+        const entry = this.providers[documentName]
+        if (!entry) return
+        if (scope === 'readonly') {
+          entry.persistence?.destroy()
+          entry.persistence = undefined
+        } else if (!entry.persistence) {
+          entry.persistence = new IndexeddbPersistence(documentName, doc)
+        }
+      })
+    }
     return provider
   }
   unregister(documentName: string | undefined, delay = 10000) {

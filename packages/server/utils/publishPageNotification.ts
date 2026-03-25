@@ -12,9 +12,9 @@ export type PublicPageNotificationPayload<T extends keyof ResolversTypes = 'Crea
   userIdsToIgnore: string[]
 }
 
-export const publishPageNotification = async (
+export const publishPageNotification = async <T extends keyof ResolversTypes>(
   pageId: number,
-  type: string,
+  type: T,
   data: Record<string, any>,
   subOptions: {mutatorId?: string; operationId?: string},
   dataLoader: DataLoaderInstance
@@ -25,13 +25,13 @@ export const publishPageNotification = async (
   userIds.forEach((userId) => {
     publish(SubscriptionChannel.NOTIFICATION, userId, type, data, subOptions)
   })
-  if (isPubliclyAccessible) {
+  if (isPubliclyAccessible || type === 'UpdatePageAccessPayload') {
     const payload = {
       type,
       data,
       subOptions,
       userIdsToIgnore: userIds
-    } as PublicPageNotificationPayload
+    } as PublicPageNotificationPayload<T>
     const redis = getRedis()
     await redis.publish(`publicPage:${pageId}`, pack(payload))
   }

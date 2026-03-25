@@ -305,6 +305,11 @@ const updatePageAccessNotificationUpdater: SharedUpdater<
   NotificationSubscription$data['notificationSubscription']['UpdatePageAccessPayload']
 > = (payload, context) => {
   handleUpdatePage(payload, context)
+  const page = payload.getLinkedRecord('page')
+  if (!page) return
+  const pageId = page.getValue('id') as string
+  const publicRecord = context.store.getRoot().getLinkedRecord('public')
+  publicRecord?.setLinkedRecord(page, 'page', {pageId})
 }
 
 const updateHandlers = {
