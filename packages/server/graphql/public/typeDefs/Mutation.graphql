@@ -1452,8 +1452,8 @@ type Mutation {
   ): AddTeamMemberIntegrationAuthPayload!
 
   """
-  This mutation is specific to the mattermost global integration provider.
-  It will create a new TeamNotificationSettings object for the team and channel
+  Links a Mattermost channel to a Parabol team, auto-creating a team-scoped
+  IntegrationProvider for notifications if one does not already exist.
   """
   linkMattermostChannel(
     """
@@ -1472,6 +1472,13 @@ type Mutation {
     Bearer token when calling the plugin's /notify endpoint.
     """
     channelToken: String!
+
+    """
+    The base URL of the Mattermost instance (e.g. https://mattermost.example.com).
+    Used to construct the notification endpoint URL for this team's linked channel.
+    A team-scoped IntegrationProvider is automatically upserted with this URL.
+    """
+    mattermostUrl: String!
   ): LinkMattermostChannelPayload!
 
   """

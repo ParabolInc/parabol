@@ -1,5 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Client4} from 'mattermost-redux/client'
+import {getConfig} from 'mattermost-redux/selectors/entities/general'
 import type {useLinkTeamMutation} from 'parabol-client/__generated__/useLinkTeamMutation.graphql'
 import {useCallback} from 'react'
 import {useMutation} from 'react-relay'
@@ -18,8 +19,18 @@ export const useLinkTeam = () => {
   const atmosphere = useAtmosphere()
 
   const [mutation, isLoading] = useMutation<useLinkTeamMutation>(graphql`
-    mutation useLinkTeamMutation($teamId: ID!, $channelId: ID!, $channelToken: String!) {
-      linkMattermostChannel(teamId: $teamId, channelId: $channelId, channelToken: $channelToken) {
+    mutation useLinkTeamMutation(
+      $teamId: ID!
+      $channelId: ID!
+      $channelToken: String!
+      $mattermostUrl: String!
+    ) {
+      linkMattermostChannel(
+        teamId: $teamId
+        channelId: $channelId
+        channelToken: $channelToken
+        mattermostUrl: $mattermostUrl
+      ) {
         ... on ErrorPayload {
           error {
             message
@@ -38,6 +49,7 @@ export const useLinkTeam = () => {
       if (isLoading) {
         return
       }
+      const mattermostUrl = getConfig(atmosphere.state.store.getState()).SiteURL ?? ''
       const linkRes = await fetch(
         `${atmosphere.state.serverUrl}/link?channelId=${currentChannel.id}`,
         Client4.getOptions({method: 'GET'})
@@ -48,7 +60,8 @@ export const useLinkTeam = () => {
           variables: {
             teamId,
             channelId: currentChannel.id,
-            channelToken
+            channelToken,
+            mattermostUrl
           },
           updater: (store) => {
             const payload = store.getRootField('linkMattermostChannel')

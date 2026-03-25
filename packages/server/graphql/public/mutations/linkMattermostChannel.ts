@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
+import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
@@ -8,7 +9,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async (
   _source,
-  {teamId, channelId, channelToken},
+  {teamId, channelId, channelToken, mattermostUrl},
   context
 ) => {
   const {authToken, dataLoader} = context
@@ -22,23 +23,20 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     })
   }
 
-  // VALIDATION
-  // Fetch the team to get its orgId so we can find org-scoped providers.
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const providers = await dataLoader
-    .get('sharedIntegrationProviders')
-    .load({service: 'mattermost', orgIds: [team.orgId], teamIds: []})
-  const sharedSecretProviders = providers.filter((p) => p.authStrategy === 'sharedSecret')
-  // Prefer org-scoped provider (org-specific Mattermost instance) over global (self-hosted default).
-  const mattermostProvider =
-    sharedSecretProviders.find((p) => p.scope === 'org' && p.orgId === team.orgId) ??
-    sharedSecretProviders.find((p) => p.scope === 'global')
-  if (!mattermostProvider) {
-    return {error: {message: 'Mattermost integration not found'}}
-  }
-  const {id: providerId} = mattermostProvider
-
   // RESOLUTION
+  // Auto-upsert a team-scoped IntegrationProvider for this Mattermost instance.
+  // This makes setup zero-config: no admin pre-configuration required.
+  // The sharedSecret (Go plugin's ParabolToken) is never shared with Parabol;
+  // notifications use per-channel Bearer tokens instead.
+  const providerId = await upsertIntegrationProvider({
+    service: 'mattermost',
+    authStrategy: 'sharedSecret',
+    scope: 'team',
+    teamId,
+    orgId: null,
+    serverBaseUrl: mattermostUrl
+  })
+
   // Store the signed channel token in TeamMemberIntegrationAuth as a JSON payload so the
   // notification helper can extract channelId for URL construction and send the token as a
   // Bearer credential to the Go plugin's /notify endpoint.
@@ -57,7 +55,8 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
       accessToken
     })
     .onConflict((oc) =>
-      oc.columns(['teamId', 'userId', 'service', 'providerId']).doUpdateSet({
+      oc.columns(['teamId', 'userId', 'service']).doUpdateSet({
+        providerId,
         accessToken,
         isActive: true,
         updatedAt: new Date()
