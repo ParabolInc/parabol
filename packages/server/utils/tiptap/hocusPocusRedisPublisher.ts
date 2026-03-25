@@ -36,29 +36,45 @@ export class RedisPublisher implements Extension {
       })
 
       if (type === 'UpdatePageAccessPayload') {
+        const [dbId] = CipherId.fromClient(document.name)
+        const pg = getKysely()
+
         const connectedUserIds = [...document.connections.values()]
           .map(({connection}) => connection.context.userId as string | undefined)
           .filter((userId): userId is string => !!userId)
 
-        if (connectedUserIds.length > 0) {
-          const [dbId] = CipherId.fromClient(document.name)
-          const pg = getKysely()
-          const accessRecords = await pg
-            .selectFrom('PageAccess')
-            .select(['userId', 'role'])
-            .where('pageId', '=', dbId)
-            .where('userId', 'in', connectedUserIds)
-            .execute()
-          const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
-          document.connections.forEach(({connection}) => {
-            const userId = connection.context.userId as string | undefined
-            const role = userId ? roleByUserId.get(userId) : undefined
-            const newReadOnly = role === 'viewer' || role === 'commenter'
-            if (!role || connection.readOnly !== newReadOnly) {
-              connection.webSocket.close()
-            }
-          })
-        }
+        const hasPublicUsers = [...document.connections.values()].some(
+          ({connection}) => !connection.context.userId
+        )
+
+        const [accessRecords, publicAccess] = await Promise.all([
+          connectedUserIds.length > 0
+            ? pg
+                .selectFrom('PageAccess')
+                .select(['userId', 'role'])
+                .where('pageId', '=', dbId)
+                .where('userId', 'in', connectedUserIds)
+                .execute()
+            : [],
+          hasPublicUsers
+            ? pg
+                .selectFrom('PageExternalAccess')
+                .select('role')
+                .where('pageId', '=', dbId)
+                .where('email', '=', '*')
+                .executeTakeFirst()
+            : undefined
+        ])
+
+        const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
+        document.connections.forEach(({connection}) => {
+          const userId = connection.context.userId as string | undefined
+          const role = userId ? roleByUserId.get(userId) : publicAccess?.role
+          const newReadOnly = role === 'viewer' || role === 'commenter'
+          if (!role || connection.readOnly !== newReadOnly) {
+            connection.webSocket.close()
+          }
+        })
       }
     })
   }
