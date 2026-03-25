@@ -115,19 +115,49 @@ export default class GCSManager extends FileStoreManager {
     return this.accessToken
   }
 
-  protected async putFile(file: Buffer<ArrayBufferLike>, fullPath: string) {
+  protected async putFile(
+    file: Buffer<ArrayBufferLike>,
+    fullPath: string,
+    options?: {contentDisposition?: string}
+  ) {
+    const {contentDisposition} = options ?? {}
+    const contentType = mime.lookup(fullPath) || 'application/octet-stream'
     const url = new URL(`https://storage.googleapis.com/upload/storage/v1/b/${this.bucket}/o`)
-    url.searchParams.append('uploadType', 'media')
     url.searchParams.append('name', fullPath)
     const accessToken = await this.getAccessToken()
+
+    let body: Buffer | any
+    let uploadContentType: string
+    if (contentDisposition) {
+      // Use multipart upload to set metadata atomically during object creation.
+      // This avoids a separate PATCH request which requires storage.objects.update permission.
+      // https://cloud.google.com/storage/docs/uploading-objects#uploading-an-object-with-metadata
+      // The boundary is a random UUID so it cannot collide with file content.
+      const boundary = crypto.randomUUID()
+      const metadata = JSON.stringify({contentDisposition})
+      body = Buffer.concat([
+        Buffer.from(
+          `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadata}\r\n--${boundary}\r\nContent-Type: ${contentType}\r\n\r\n`
+        ),
+        file as Buffer,
+        Buffer.from(`\r\n--${boundary}--`)
+      ])
+      url.searchParams.append('uploadType', 'multipart')
+      uploadContentType = `multipart/related; boundary="${boundary}"`
+    } else {
+      body = file as any
+      url.searchParams.append('uploadType', 'media')
+      uploadContentType = contentType
+    }
+
     try {
       const r = await fetch(url, {
         method: 'POST',
-        body: file as any,
+        body,
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Accept: 'application/json',
-          'Content-Type': mime.lookup(fullPath) || '',
+          'Content-Type': uploadContentType,
           'User-Agent': 'parabol'
         }
       })
@@ -139,7 +169,7 @@ export default class GCSManager extends FileStoreManager {
       // GCS will cause undici to error randomly with `SocketError: other side closed` `code: 'UND_ERR_SOCKET'`
       if ((e as any).cause?.code === 'UND_ERR_SOCKET') {
         Logger.log('   Retrying GCS Post:', fullPath)
-        await this.putFile(file, fullPath)
+        await this.putFile(file, fullPath, options)
       } else {
         throw e
       }

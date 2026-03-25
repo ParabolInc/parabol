@@ -20,7 +20,8 @@ export default abstract class FileStoreManager {
 
   protected abstract putFile(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,
-    fullPath: string
+    fullPath: string,
+    options?: {contentDisposition?: string}
   ): Promise<void>
   abstract putBuildFile(
     file: ArrayBufferLike | Buffer<ArrayBufferLike>,
@@ -32,7 +33,7 @@ export default abstract class FileStoreManager {
   abstract presignUrl(partialPath: PartialPath, expiresIn?: number): Promise<string>
   async putUserFile(file: ArrayBufferLike | Buffer<ArrayBufferLike>, partialPath: PartialPath) {
     const fullPath = this.prependPath(partialPath)
-    await this.putFile(file, fullPath)
+    await this.putFile(file, fullPath, {contentDisposition: 'attachment'})
     return makeAppURL(appOrigin, `/assets/${partialPath}`)
   }
   async putUserAvatar(

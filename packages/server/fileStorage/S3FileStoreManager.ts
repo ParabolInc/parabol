@@ -90,12 +90,17 @@ export default class S3Manager extends FileStoreManager {
     })
   }
 
-  protected async putFile(file: ArrayBufferLike, fullPath: string) {
+  protected async putFile(
+    file: ArrayBufferLike,
+    fullPath: string,
+    options?: {contentDisposition?: string}
+  ) {
     const s3Params = {
       Body: Buffer.from(file),
       Bucket: this.bucket,
       Key: fullPath,
-      ContentType: mime.lookup(fullPath) || 'application/octet-stream'
+      ContentType: mime.lookup(fullPath) || 'application/octet-stream',
+      ...(options?.contentDisposition && {ContentDisposition: options.contentDisposition})
     }
     await this.s3.send(new PutObjectCommand(s3Params))
   }
