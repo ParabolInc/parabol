@@ -52,10 +52,25 @@ const permissionMap: PermissionMap<Resolvers> = {
     addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
+    addPokerTemplateDimension: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addPokerTemplateScale: isTeamMember<'Mutation.addPokerTemplateScale'>('args.teamId'),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
+    addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
+    addReflectTemplatePrompt: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
+    addTeamMemberIntegrationAuth:
+      isTeamMember<'Mutation.addTeamMemberIntegrationAuth'>('args.teamId'),
+    addTranscriptionBot: isTeamMemberOfMeeting<'Mutation.addTranscriptionBot'>('args.meetingId'),
+    archiveOrganization: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.archiveOrganization'>('args.orgId')
+    ),
     archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    autogroup: isTeamMemberOfMeeting<'Mutation.autogroup'>('args.meetingId'),
+    changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
     createImposterToken: isSuperUser,
+    createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
       'args.orgId',
       'ORG_ADMIN'

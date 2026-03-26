@@ -18,25 +18,25 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] addApprovedOrganizationDomains
 - [x] addOrg
 - [x] addPokerTemplate — extracted `isTeamMember('args.teamId')`
-- [ ] addPokerTemplateDimension
-- [ ] addPokerTemplateScale
-- [ ] addPokerTemplateScaleValue
+- [x] addPokerTemplateDimension — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)` (templateId → teamId lookup); kept template existence check inline
+- [x] addPokerTemplateScale — extracted `isTeamMember('args.teamId')`
+- [ ] addPokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (loaded via `scaleId`); no existing getter for scaleId
 - [x] addReactjiToReactable
-- [ ] addReflectTemplate
-- [ ] addReflectTemplatePrompt
-- [ ] addSlackAuth
+- [x] addReflectTemplate — extracted `isTeamMember('args.teamId')`; secondary template-scope check stays inline
+- [x] addReflectTemplatePrompt — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)`; kept template existence check inline
+- [x] addSlackAuth — extracted `isTeamMember('args.teamId')`
 - [x] addTeam
-- [ ] addTeamMemberIntegrationAuth
-- [ ] addTranscriptionBot
-- [ ] archiveOrganization
+- [x] addTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
+- [x] addTranscriptionBot — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [x] archiveOrganization — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
 - [x] archivePage
-- [ ] archiveTeam
-- [ ] archiveTimelineEvent
-- [ ] autogroup
-- [ ] batchArchiveTasks
-- [ ] changeTaskTeam
+- [ ] archiveTeam — `or(isTeamLead, isSuperUser, isOrgAdmin)` where orgAdmin needs team→orgId resolution; too complex
+- [ ] archiveTimelineEvent — conditional auth (only for meeting events); teamId from event lookup; not extractable
+- [x] autogroup — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] batchArchiveTasks — per-item auth (task owner or team member); no single top-level gatekeeper
+- [x] changeTaskTeam — extracted `isTeamMember('args.teamId')`; secondary check on `oldTeamId` stays inline
 - [x] createImposterToken
-- [ ] createOAuth1AuthorizeUrl
+- [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
 - [x] createOAuthAPIProvider
 - [x] createPage
 - [ ] createPoll

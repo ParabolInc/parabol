@@ -4,7 +4,7 @@ import palettePickerOptions from '../../../../client/styles/palettePickerOptions
 import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -20,17 +20,12 @@ const addReflectTemplatePrompt: MutationResolvers['addReflectTemplatePrompt'] = 
   const template = await dataLoader.get('meetingTemplates').load(templateId)
   const viewerId = getUserId(authToken)
 
-  // AUTH
+  // VALIDATION
   if (!template || !template.isActive) {
     return standardError(new Error('Template not found'), {
       userId: viewerId
     })
   }
-  if (!isTeamMember(authToken, template.teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
-  // VALIDATION
   const {teamId} = template
   const prompts = await dataLoader.get('reflectPromptsByTemplateId').load(templateId)
   const activePrompts = prompts.filter(({removedAt}) => !removedAt)

@@ -1,22 +1,15 @@
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import JiraServerOAuth1Manager from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const createOAuth1AuthorizeUrl: MutationResolvers['createOAuth1AuthorizeUrl'] = async (
   _source,
-  {providerId, teamId},
+  {providerId},
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {
-      userId: viewerId,
-      tags: {teamId}
-    })
-  }
-
   const provider = await dataLoader
     .get('integrationProviders')
     .load(IntegrationProviderId.split(providerId))
