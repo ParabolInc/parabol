@@ -1,6 +1,7 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {fetch} from '@whatwg-node/fetch'
 import imageNotSupportedPlaceholder from '../../static/images/illustrations/imageNotSupportedPlaceholder.png'
+import {atlassianProxyHandler} from './atlassianProxyHandler'
 import type AuthToken from './database/types/AuthToken'
 import {getNewDataLoader} from './dataloader/getNewDataLoader'
 import type {AssetType, PartialPath} from './fileStorage/FileStoreManager'
@@ -83,24 +84,32 @@ export const checkAccess = async (
 }
 
 export const assetProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
-  const partialPath = decodeURIComponent(req.getUrl().slice('/assets'.length + 1))
-  if (!partialPath) {
+  // Parse the raw (non-decoded) path so an encoded Atlassian URL in the filename segment
+  // doesn't get its slashes expanded before we split on '/'.
+  const rawPath = req.getUrl().slice('/assets/'.length)
+  const segmentMatch = rawPath.match(/^([^/]+)\/([^/]+)\/([^/]+)(?:\/(.+))?$/)
+  if (!segmentMatch) {
     res.writeStatus('404').end()
     return
   }
+  const scope = segmentMatch[1] as AssetScopeEnum
+  const scopeCode = segmentMatch[2]!
+  const assetType = segmentMatch[3] as AssetType
+  const rawFilename = segmentMatch[4] ?? ''
+
   const authToken = getReqAuth(req)
-  const [scope, scopeCode, assetType, _filename] = partialPath.split('/') as [
-    AssetScopeEnum,
-    string,
-    AssetType,
-    string
-  ]
   const canAccess = await checkAccess(authToken, scope, scopeCode, assetType)
   if (!canAccess) {
     await servePlaceholderImage(res)
     return
   }
 
+  if (assetType === 'atlassian') {
+    await atlassianProxyHandler(res, authToken, scopeCode, rawFilename, servePlaceholderImage)
+    return
+  }
+
+  const partialPath = decodeURIComponent(rawPath)
   const manager = getFileStoreManager()
   const url = await redisStoreOrNetwork(
     `presignedURL:${partialPath}`,

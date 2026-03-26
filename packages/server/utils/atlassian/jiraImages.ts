@@ -1,84 +1,103 @@
-import base64url from 'base64url'
-import crypto from 'crypto'
-import ms from 'ms'
+import {createHash} from 'crypto'
+import mime from 'mime-types'
 import {parse} from 'node-html-parser'
+import makeAppURL from 'parabol-client/utils/makeAppURL'
+import appOrigin from '../../appOrigin'
+import type {PartialPath} from '../../fileStorage/FileStoreManager'
+import getFileStoreManager from '../../fileStorage/getFileStoreManager'
 import type AtlassianServerManager from '../AtlassianServerManager'
-import getRedis from '../getRedis'
+import fetchWithRetry from '../fetchWithRetry'
+import {Logger} from '../Logger'
 
-export const NO_IMAGE_BUFFER = Buffer.from('X')
-export const IMAGE_TTL_MS = ms('2h')
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 
-const serverSecret = process.env.SERVER_SECRET
-if (!serverSecret) {
-  throw new Error('Missing SERVER_SECRET environment variable!')
+const createImageUrlHash = (imageUrl: string) => {
+  return createHash('sha256').update(imageUrl).digest('base64url')
 }
 
-/**
- * Parses a JIRA issue description and replaces the image urls with Parabol's image urls
- * where the image urls are hashed and look like this: `/jira-attachements/<image-url-hash>`
- * @param {string} cloudId
- * @param {string} descriptionHTML - HTML string of related Jira issue description
- * @returns record of orginal image urls to hashed image urls
- */
-export const updateJiraImageUrls = (cloudId: string, descriptionHTML: string) => {
-  const imageUrlToHash = {} as Record<string, string>
-  const projectBaseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`
-  if (!descriptionHTML) return {updatedDescription: descriptionHTML, imageUrlToHash}
+// The reason we downloadAndCache is because Jira images may only be available to the team lead.
+// We want to make the accessible to the whole team, so using the assetProxyHandler would not work
+// Using the viewer's atlassian auth. If we used the team lead's auth, it would expose ANY asset if they had the URL
+export const downloadAndCacheImage = async (
+  manager: AtlassianServerManager,
+  imageUrl: string,
+  cloudId: string,
+  teamId: string
+): Promise<string | null> => {
+  // OAuth 2.0 Bearer tokens only work via the Atlassian API gateway, not direct instance URLs.
+  // Convert https://{instance}.atlassian.net/rest/... to https://api.atlassian.com/ex/jira/{cloudId}/rest/...
+  const fetchUrl = imageUrl.replace(
+    /^https:\/\/[^.]+\.atlassian\.net\/(rest\/)/,
+    `https://api.atlassian.com/ex/jira/${cloudId}/$1`
+  )
+  let parsedFetchUrl: URL
+  try {
+    parsedFetchUrl = new URL(fetchUrl)
+  } catch {
+    return null
+  }
+  if (parsedFetchUrl.protocol !== 'https:' || parsedFetchUrl.hostname !== 'api.atlassian.com') {
+    return null
+  }
+
+  let res: Response
+  try {
+    res = await fetchWithRetry(fetchUrl, {
+      headers: {Authorization: `Bearer ${manager.accessToken}`},
+      deadline: new Date(Date.now() + 20_000)
+    })
+  } catch (e) {
+    Logger.log(`Jira Image Download fail: ${fetchUrl}`, e)
+    return null
+  }
+  if (!res.ok) {
+    Logger.log(`Jira Image Download fail: ${fetchUrl} (${res.status})`)
+    return null
+  }
+
+  const contentType = res.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
+  const ext = contentType ? mime.extension(contentType) : null
+  if (!ext) return null
+
+  const hash = createImageUrlHash(fetchUrl)
+  const partialPath = `Team/${teamId}/assets/${hash}.${ext}` as PartialPath
+
+  const fileStoreManager = getFileStoreManager()
+  const exists = await fileStoreManager.checkExists(partialPath)
+  if (exists) {
+    return makeAppURL(appOrigin, `/assets/${partialPath}`)
+  }
+
+  const buffer = Buffer.from(await res.arrayBuffer())
+  if (buffer.byteLength > MAX_IMAGE_SIZE) {
+    Logger.log(`Jira Image too large: ${fetchUrl}`)
+    return null
+  }
+
+  return fileStoreManager.putUserFile(buffer, partialPath)
+}
+
+export const processJiraImages = async (
+  manager: AtlassianServerManager,
+  cloudId: string,
+  teamId: string,
+  descriptionHTML: string
+): Promise<string> => {
+  if (!descriptionHTML) return descriptionHTML
 
   const root = parse(descriptionHTML)
   const imgTags = root.getElementsByTagName('img')
-  imgTags.forEach((img) => {
-    const imageUrl = img.getAttribute('src')
-    if (!imageUrl) return
+  if (imgTags.length === 0) return descriptionHTML
 
-    const absoluteImageUrl = `${projectBaseUrl}${imageUrl}`
-    const hashedImageUrl = createImageUrlHash(absoluteImageUrl)
-    imageUrlToHash[absoluteImageUrl] = hashedImageUrl
+  await Promise.all(
+    imgTags.map(async (img) => {
+      const imageUrl = img.getAttribute('src')
+      if (!imageUrl) return
 
-    img.setAttribute('src', createParabolImageUrl(hashedImageUrl))
-  })
-  return {updatedDescription: root.toString(), imageUrlToHash}
-}
-
-export const downloadAndCacheImages = async (
-  manager: AtlassianServerManager,
-  imageUrlToHash: Record<string, string>
-) => {
-  return Promise.all(
-    Object.entries(imageUrlToHash).map(([imageUrl, hash]) =>
-      downloadAndCacheImage(manager, hash, imageUrl)
-    )
+      const hostedUrl = await downloadAndCacheImage(manager, imageUrl, cloudId, teamId)
+      if (hostedUrl) img.setAttribute('src', hostedUrl)
+    })
   )
-}
 
-export const downloadAndCacheImage = async (
-  manager: AtlassianServerManager,
-  imageUrlHash: string,
-  imageUrl: string
-) => {
-  const imageKey = `jira-image:${imageUrlHash}`
-  const redis = getRedis()
-  const isImageAlreadyCached = await redis.exists(imageKey)
-  if (isImageAlreadyCached) return
-
-  await redis
-    .multi()
-    .hset(imageKey, {imageBuffer: NO_IMAGE_BUFFER, contentType: 'image/png'})
-    .pexpire(imageKey, IMAGE_TTL_MS)
-    .exec()
-  const imageResponse = await manager.getImage(imageUrl)
-  if (!imageResponse?.contentType) {
-    await redis.del(imageKey)
-    return
-  }
-
-  return redis.multi().hset(imageKey, imageResponse).pexpire(imageKey, IMAGE_TTL_MS).exec()
-}
-
-export const createParabolImageUrl = (hashedImageUrl: string) => {
-  return `/jira-attachments/${hashedImageUrl}`
-}
-
-export const createImageUrlHash = (imageUrl: string) => {
-  return base64url.encode(crypto.createHmac('sha256', serverSecret).update(imageUrl).digest())
+  return root.toString()
 }
