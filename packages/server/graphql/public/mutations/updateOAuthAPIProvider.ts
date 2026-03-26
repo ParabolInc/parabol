@@ -26,6 +26,14 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     throw new GraphQLError('Provider not found')
   }
 
+  // System-level providers (orgId = null, e.g. the Mattermost plugin) are not
+  // user-managed — they are configured via environment variables only.
+  if (!provider.orgId) {
+    throw new GraphQLError('Not authorized to manage system providers', {
+      extensions: {code: 'FORBIDDEN'}
+    })
+  }
+
   if (scopes && scopes.length === 0) {
     throw new GraphQLError('Must select at least one scope')
   }

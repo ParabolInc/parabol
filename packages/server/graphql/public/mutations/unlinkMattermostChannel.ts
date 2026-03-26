@@ -21,27 +21,45 @@ const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = as
     })
   }
 
-  // VALIDATION
-  const [mattermostProvider] = await dataLoader
-    .get('sharedIntegrationProviders')
-    .load({service: 'mattermost', orgIds: [], teamIds: []})
-  if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') {
-    return {error: {message: 'Mattermost integration not found'}}
-  }
-  const {id: providerId} = mattermostProvider
-
   // RESOLUTION
+  // Look up the channel's notification settings first to find which provider it belongs to.
+  // A channel may be linked to either a global or an org-scoped Mattermost provider — we
+  // discover the providerId from the existing record rather than guessing.
   const teamNotificationSettings = await pg
     .deleteFrom('TeamNotificationSettings')
-    .where('providerId', '=', providerId)
-    .where('teamId', '=', teamId)
-    .where('channelId', '=', channelId)
-    .returning('id')
+    .using('IntegrationProvider')
+    .whereRef('TeamNotificationSettings.providerId', '=', 'IntegrationProvider.id')
+    .where('IntegrationProvider.service', '=', 'mattermost')
+    .where('TeamNotificationSettings.teamId', '=', teamId)
+    .where('TeamNotificationSettings.channelId', '=', channelId)
+    .returning(['TeamNotificationSettings.id', 'TeamNotificationSettings.providerId'])
     .executeTakeFirst()
 
   if (!teamNotificationSettings) {
     return {error: {message: 'Channel not found'}}
   }
+  const {providerId} = teamNotificationSettings
+
+  // Remove the TeamMemberIntegrationAuth whose accessToken JSON references this channelId.
+  // We cast to jsonb for the extraction since accessToken is stored as text.
+  await pg
+    .deleteFrom('TeamMemberIntegrationAuth')
+    .where('service', '=', 'mattermost')
+    .where('providerId', '=', providerId)
+    .where('teamId', '=', teamId)
+    .where('userId', '=', viewerId)
+    .where(
+      (eb) =>
+        eb(
+          eb.fn<string>('jsonb_extract_path_text', [
+            eb.cast(eb.ref('accessToken'), 'jsonb'),
+            eb.val('channelId')
+          ]),
+          '=',
+          channelId
+        )
+    )
+    .execute()
 
   const settings = await dataLoader
     .get('teamNotificationSettingsByProviderIdAndTeamId')

@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
+import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
@@ -8,7 +9,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async (
   _source,
-  {teamId, channelId},
+  {teamId, channelId, channelToken, mattermostUrl},
   context
 ) => {
   const {authToken, dataLoader} = context
@@ -22,18 +23,47 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
     })
   }
 
-  // VALIDATION
-  const [mattermostProvider] = await dataLoader
-    .get('sharedIntegrationProviders')
-    .load({service: 'mattermost', orgIds: [], teamIds: []})
-  if (!mattermostProvider || mattermostProvider.authStrategy !== 'sharedSecret') {
-    return {error: {message: 'Mattermost integration not found'}}
-  }
-  const {id: providerId} = mattermostProvider
-
-  // TODO: we could verify the channel exists in Mattermost here
-
   // RESOLUTION
+  // Auto-upsert a team-scoped IntegrationProvider for this Mattermost instance.
+  // This makes setup zero-config: no admin pre-configuration required.
+  // The sharedSecret (Go plugin's ParabolToken) is never shared with Parabol;
+  // notifications use per-channel Bearer tokens instead.
+  const providerId = await upsertIntegrationProvider({
+    service: 'mattermost',
+    authStrategy: 'sharedSecret',
+    scope: 'team',
+    teamId,
+    orgId: null,
+    serverBaseUrl: mattermostUrl
+  })
+
+  // Store the signed channel token in TeamMemberIntegrationAuth as a JSON payload so the
+  // notification helper can extract channelId for URL construction and send the token as a
+  // Bearer credential to the Go plugin's /notify endpoint.
+  // The Go plugin verifies this token with its own ParabolToken (never shared with Parabol).
+  // Format: {"channelId": "<id>", "token": "<hmac-hex>"}
+  const accessToken = JSON.stringify({channelId, token: channelToken})
+
+  await pg
+    .insertInto('TeamMemberIntegrationAuth')
+    .values({
+      service: 'mattermost',
+      providerId,
+      teamId,
+      userId: viewerId,
+      isActive: true,
+      accessToken
+    })
+    .onConflict((oc) =>
+      oc.columns(['teamId', 'userId', 'service']).doUpdateSet({
+        providerId,
+        accessToken,
+        isActive: true,
+        updatedAt: new Date()
+      })
+    )
+    .execute()
+
   const teamNotificationSettings = await pg
     .insertInto('TeamNotificationSettings')
     .columns(['providerId', 'teamId', 'events', 'channelId'])

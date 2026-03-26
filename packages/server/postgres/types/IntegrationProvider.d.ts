@@ -35,7 +35,8 @@ export interface IntegrationProviderMattermostPlugin extends IntegrationProvider
   service: 'mattermost'
   authStrategy: 'sharedSecret'
   serverBaseUrl: string
-  sharedSecret: string
+  /** The Go plugin's ParabolToken is never shared with Parabol; notifications use per-channel Bearer tokens. */
+  sharedSecret: string | null
 }
 
 export interface IntegrationProviderMattermostWebhook
