@@ -41,6 +41,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
+    addAtlassianAuth: isTeamMember<'Mutation.addAtlassianAuth'>('args.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(
@@ -48,7 +49,9 @@ const permissionMap: PermissionMap<Resolvers> = {
         isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
       )
     ),
+    addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
