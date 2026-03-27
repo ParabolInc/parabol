@@ -41,6 +41,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     // don't check isAuthenticated for acceptTeamInvitation here because there are special cases handled in the resolver
     acceptTeamInvitation: rateLimit({perMinute: 50, perHour: 100}),
     addAgendaItem: isTeamMember<'Mutation.addAgendaItem'>('args.newAgendaItem.teamId'),
+    addAtlassianAuth: isTeamMember<'Mutation.addAtlassianAuth'>('args.teamId'),
     addApprovedOrganizationDomains: or(
       isSuperUser,
       and(
@@ -48,11 +49,28 @@ const permissionMap: PermissionMap<Resolvers> = {
         isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
       )
     ),
+    addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
+    addPokerTemplateDimension: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addPokerTemplateScale: isTeamMember<'Mutation.addPokerTemplateScale'>('args.teamId'),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
+    addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
+    addReflectTemplatePrompt: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
+    addTeamMemberIntegrationAuth:
+      isTeamMember<'Mutation.addTeamMemberIntegrationAuth'>('args.teamId'),
+    addTranscriptionBot: isTeamMemberOfMeeting<'Mutation.addTranscriptionBot'>('args.meetingId'),
+    archiveOrganization: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.archiveOrganization'>('args.orgId')
+    ),
     archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    autogroup: isTeamMemberOfMeeting<'Mutation.autogroup'>('args.meetingId'),
+    changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
     createImposterToken: isSuperUser,
+    createOAuth1AuthorizeUrl: isTeamMember<'Mutation.createOAuth1AuthorizeUrl'>('args.teamId'),
     createOAuthAPIProvider: hasOrgRole<'Mutation.createOAuthAPIProvider'>(
       'args.orgId',
       'ORG_ADMIN'

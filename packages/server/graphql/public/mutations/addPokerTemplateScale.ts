@@ -4,7 +4,7 @@ import {PALETTE} from '../../../../client/styles/paletteV3'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -18,11 +18,6 @@ export const addPokerTemplateScale: MutationResolvers['addPokerTemplateScale'] =
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
-
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
 
   // VALIDATION
   const [activeScales, viewer] = await Promise.all([

@@ -1,7 +1,7 @@
 import upsertGitHubAuth from '../../../postgres/queries/upsertGitHubAuth'
 import type {GetProfileQuery} from '../../../types/githubTypes'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import GitHubServerManager from '../../../utils/GitHubServerManager'
 import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getProfile from '../../../utils/githubQueries/getProfile.graphql'
@@ -17,13 +17,6 @@ const addGitHubAuth: MutationResolvers['addGitHubAuth'] = async (
 ) => {
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
-
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {
-      userId: viewerId
-    })
-  }
 
   // RESOLUTION
   const [oAuth2Response, viewer] = await Promise.all([
