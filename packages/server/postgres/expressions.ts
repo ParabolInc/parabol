@@ -29,19 +29,28 @@ export function tsvSimilarity<DB, TB extends keyof DB>(
   return sql<number>`ts_rank_cd(${eb.ref(column)}, ${eb.ref(webQuery)}, 8)`
 }
 
-interface PGHeadlineOptions {
-  StartSel: string
-  StopSel: string
+// Only string literals are accepted to prevent SQL injection via ts_headline options concatenation
+type StringLiteral<T extends string> = string extends T ? never : T
+
+interface PGHeadlineOptions<TStart extends string, TStop extends string, TDelim extends string> {
+  StartSel: StringLiteral<TStart>
+  StopSel: StringLiteral<TStop>
   MaxWords: number
   MaxFragments: number
-  FragmentDelimiter: string
+  FragmentDelimiter: StringLiteral<TDelim>
 }
-export const tsHeadline = <DB, TB extends keyof DB>(
+export const tsHeadline = <
+  DB,
+  TB extends keyof DB,
+  TStart extends string,
+  TStop extends string,
+  TDelim extends string
+>(
   eb: ExpressionBuilder<DB, TB>,
   language: TSVLanguage,
   embedTextColumn: StringReference<DB, TB>,
   webQuery: StringReference<DB, TB>,
-  options: PGHeadlineOptions
+  options: PGHeadlineOptions<TStart, TStop, TDelim>
 ) => {
   const optionStr = Object.entries(options)
     .map(([key, val]) => `${key}=${val}`)
