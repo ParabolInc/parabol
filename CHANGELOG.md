@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.7](https://github.com/ParabolInc/parabol/compare/v13.7.6...v13.7.7) (2026-03-27)
+
+
+### Fixed
+
+* sanitize external HTML for tasks ([#12938](https://github.com/ParabolInc/parabol/issues/12938)) ([967756c](https://github.com/ParabolInc/parabol/commit/967756ce9aaa8f56af843576f214166434c3b694))
+* selfHostedHandler path prefix ([#12939](https://github.com/ParabolInc/parabol/issues/12939)) ([cfae060](https://github.com/ParabolInc/parabol/commit/cfae060da6d231954ed723dc354e1016a17bb1e8))
+
+
+### Changed
+
+* stricter tsHeadline types ([#12942](https://github.com/ParabolInc/parabol/issues/12942)) ([e13ba0b](https://github.com/ParabolInc/parabol/commit/e13ba0bb0809cd6bcbaed923ed7a68b0d16ff0b5))
+
 ## [13.7.6](https://github.com/ParabolInc/parabol/compare/v13.7.5...v13.7.6) (2026-03-27)
 
 
