@@ -16,7 +16,7 @@ const getProjectRoot = () => {
 const PROJECT_ROOT = getProjectRoot()
 
 const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
-  const url = path.resolve(PROJECT_ROOT, decodeURI(req.getUrl()).slice(1))
+  const url = path.join(PROJECT_ROOT, decodeURI(req.getUrl()))
   if (!url.startsWith(PROJECT_ROOT + path.sep)) {
     res.cork(() => res.writeStatus('403').end())
     return
