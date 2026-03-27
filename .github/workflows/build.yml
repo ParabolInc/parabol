@@ -23,7 +23,7 @@ jobs:
       id-token: "write"
     services:
       postgres:
-        image: pgvector/pgvector:0.8.0-pg16
+        image: pgvector/pgvector:0.8.2-pg18-trixie
         # This env variables must be the same in the file PARABOL_BUILD_ENV_PATH
         env:
           POSTGRES_PASSWORD: "temppassword"
