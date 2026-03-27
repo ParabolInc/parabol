@@ -16,7 +16,11 @@ const getProjectRoot = () => {
 const PROJECT_ROOT = getProjectRoot()
 
 const selfHostedHandler = async (res: HttpResponse, req: HttpRequest) => {
-  const url = path.join(PROJECT_ROOT, decodeURI(req.getUrl()))
+  const url = path.resolve(PROJECT_ROOT, decodeURI(req.getUrl()).slice(1))
+  if (!url.startsWith(PROJECT_ROOT + path.sep)) {
+    res.cork(() => res.writeStatus('403').end())
+    return
+  }
   let stats: fs.Stats
   try {
     stats = fs.statSync(url)
