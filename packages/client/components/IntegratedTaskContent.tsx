@@ -1,7 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
+import {marked} from 'marked'
 import {useFragment} from 'react-relay'
 import type {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
-import renderMarkdown from '../utils/renderMarkdown'
+import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import {JiraExtraFieldsContent} from './JiraExtraFieldsContent'
 
 interface Props {
@@ -56,7 +57,7 @@ const IntegratedTaskContent = (props: Props) => {
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{summary}</div>
-        <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+        <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
         <JiraExtraFieldsContent jiraDisplayFieldIds={jiraDisplayFieldIds} issueRef={integration} />
       </div>
     )
@@ -65,7 +66,7 @@ const IntegratedTaskContent = (props: Props) => {
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{summary}</div>
-        <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+        <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
       </div>
     )
   } else if (integration.__typename === '_xGitHubIssue') {
@@ -73,7 +74,7 @@ const IntegratedTaskContent = (props: Props) => {
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
-        <div dangerouslySetInnerHTML={{__html: bodyHTML}} />
+        <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(bodyHTML)}} />
       </div>
     )
   } else if (integration.__typename === '_xGitLabIssue') {
@@ -81,7 +82,9 @@ const IntegratedTaskContent = (props: Props) => {
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
-        {descriptionHtml && <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />}
+        {descriptionHtml && (
+          <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHtml)}} />
+        )}
       </div>
     )
   } else if (integration.__typename === 'AzureDevOpsWorkItem') {
@@ -89,12 +92,16 @@ const IntegratedTaskContent = (props: Props) => {
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
-        {descriptionHTML && <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />}
+        {descriptionHTML && (
+          <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
+        )}
       </div>
     )
   } else if (integration.__typename === '_xLinearIssue') {
     const {description, title} = integration
-    const descriptionHTML = renderMarkdown(`${description}`)
+    const descriptionHTML = sanitizeExternalHtml(
+      marked(`${description}`, {gfm: true, breaks: true}) as string
+    )
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
