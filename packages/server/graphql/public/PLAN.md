@@ -39,46 +39,46 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
 - [x] createOAuthAPIProvider
 - [x] createPage
-- [ ] createPoll
+- [ ] createPoll — `isTeamMember` on `discussion.teamId` (via `discussionId`); no direct getter
 - [x] createReflection
-- [ ] createStripeSubscription
-- [ ] createTask
-- [ ] createTaskIntegration
-- [ ] deleteComment
+- [ ] createStripeSubscription — checks viewer is in org members (not billing leader); complex
+- [x] createTask — extracted `isTeamMember('args.newTask.teamId')`
+- [ ] createTaskIntegration — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
+- [x] deleteComment — extracted `isMeetingMember('args.meetingId')`
 - [x] deleteOAuthAPIProvider
-- [ ] deleteTask
-- [ ] deleteUser
+- [ ] deleteTask — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
+- [ ] deleteUser — complex: `or(isSuperUser, viewerDeletesSelf)` with re-auth time check
 - [x] denyPushInvitation
-- [ ] dismissNewFeature
-- [ ] dismissSuggestedAction
-- [ ] downgradeToStarter
-- [ ] dragDiscussionTopic
-- [ ] dragEstimatingTask
-- [ ] editCommenting
-- [ ] editReflection
-- [ ] editTask
+- [ ] dismissNewFeature — no auth check beyond `isAuthenticated` wildcard
+- [ ] dismissSuggestedAction — viewer-ownership check; no existing rule
+- [x] downgradeToStarter — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
+- [x] dragDiscussionTopic — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [x] dragEstimatingTask — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] editCommenting — `discussionId → meetingId → meetingMember`; no direct meetingId arg
+- [ ] editReflection — no auth check (state validation only); covered by wildcard
+- [ ] editTask — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
 - [x] emailPasswordReset
-- [ ] embedUserAsset
-- [ ] endCheckIn
-- [ ] endDraggingReflection
-- [ ] endRetrospective
-- [ ] endSprintPoker
-- [ ] endTeamPrompt
-- [ ] flagReadyToAdvance
+- [ ] embedUserAsset — uses `validateScope()`; complex scope-based auth
+- [x] endCheckIn — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
+- [ ] endDraggingReflection — `isTeamMember` via `reflectionId → meetingId → teamId`; multi-hop
+- [x] endRetrospective — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
+- [x] endSprintPoker — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
+- [x] endTeamPrompt — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
+- [x] flagReadyToAdvance — extracted `isMeetingMember('args.meetingId')`
 - [x] generateInsight
-- [ ] generateRetroSummaries
-- [ ] invalidateSessions
+- [x] generateRetroSummaries — added `isSuperUser` (no existing auth; bulk op across teamIds)
+- [ ] invalidateSessions — no auth beyond `isAuthenticated` wildcard
 - [x] inviteToTeam
-- [ ] joinMeeting
-- [ ] joinTeam
-- [ ] linkMattermostChannel
+- [x] joinMeeting — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] joinTeam — complex multi-step check (isPublic, org membership, not already member)
+- [x] linkMattermostChannel — extracted `isTeamMember('args.teamId')`
 - [x] loginWithGoogle
 - [x] loginWithMicrosoft
 - [x] loginWithPassword
-- [ ] modifyCheckInQuestion
-- [ ] movePokerTemplateDimension
-- [ ] movePokerTemplateScaleValue
-- [ ] moveReflectTemplatePrompt
+- [x] modifyCheckInQuestion — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
+- [ ] movePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
+- [ ] movePokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
+- [ ] moveReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
 - [ ] moveTeamToOrg
 - [ ] navigateMeeting
 - [ ] persistGitHubSearchQuery

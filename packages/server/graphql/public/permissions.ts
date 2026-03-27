@@ -80,11 +80,36 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMember<'Mutation.createPage'>('args.teamId')
     ),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
+    createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
+    deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
     deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    downgradeToStarter: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.downgradeToStarter'>('args.orgId')
+    ),
+    dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
+    dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
+    endCheckIn: or(isTeamMemberOfMeeting<'Mutation.endCheckIn'>('args.meetingId'), isSuperUser),
+    endRetrospective: or(
+      isTeamMemberOfMeeting<'Mutation.endRetrospective'>('args.meetingId'),
+      isSuperUser
+    ),
+    endSprintPoker: or(
+      isTeamMemberOfMeeting<'Mutation.endSprintPoker'>('args.meetingId'),
+      isSuperUser
+    ),
+    endTeamPrompt: or(
+      isTeamMemberOfMeeting<'Mutation.endTeamPrompt'>('args.meetingId'),
+      isSuperUser
+    ),
+    flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
+    generateRetroSummaries: isSuperUser,
     inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
+    joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
+    linkMattermostChannel: isTeamMember<'Mutation.linkMattermostChannel'>('args.teamId'),
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
@@ -97,6 +122,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
+    modifyCheckInQuestion:
+      isTeamMemberOfMeeting<'Mutation.modifyCheckInQuestion'>('args.meetingId'),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
