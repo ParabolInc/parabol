@@ -90,6 +90,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
+    editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
     endCheckIn: or(isTeamMemberOfMeeting<'Mutation.endCheckIn'>('args.meetingId'), isSuperUser),
     endRetrospective: or(
@@ -106,7 +107,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
-    generateRetroSummaries: isSuperUser,
     inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
     linkMattermostChannel: isTeamMember<'Mutation.linkMattermostChannel'>('args.teamId'),

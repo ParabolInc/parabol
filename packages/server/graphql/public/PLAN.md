@@ -55,7 +55,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] dragDiscussionTopic — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] dragEstimatingTask — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] editCommenting — `discussionId → meetingId → meetingMember`; no direct meetingId arg
-- [ ] editReflection — no auth check (state validation only); covered by wildcard
+- [x] editReflection — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] editTask — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
 - [x] emailPasswordReset
 - [ ] embedUserAsset — uses `validateScope()`; complex scope-based auth
@@ -66,7 +66,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] endTeamPrompt — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
 - [x] flagReadyToAdvance — extracted `isMeetingMember('args.meetingId')`
 - [x] generateInsight
-- [x] generateRetroSummaries — added `isSuperUser` (no existing auth; bulk op across teamIds)
+- [x] generateRetroSummaries — mutation deleted
 - [ ] invalidateSessions — no auth beyond `isAuthenticated` wildcard
 - [x] inviteToTeam
 - [x] joinMeeting — extracted `isTeamMemberOfMeeting('args.meetingId')`
