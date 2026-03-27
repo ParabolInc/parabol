@@ -2,7 +2,7 @@ import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
 import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
-import {downloadAndCacheImages, updateJiraImageUrls} from '../../../utils/atlassian/jiraImages'
+import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
@@ -67,21 +67,23 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
             }
           }
         }
-        const nodes = issues.map((issue) => {
-          const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
-            issue.cloudId,
-            issue.descriptionHTML
-          )
-          downloadAndCacheImages(manager, imageUrlToHash)
-
-          return {
-            ...issue,
-            teamId,
-            userId,
-            descriptionHTML: updatedDescription,
-            extraFields: []
-          }
-        })
+        const nodes = await Promise.all(
+          issues.map(async (issue) => {
+            const descriptionHTML = await processJiraImages(
+              manager,
+              issue.cloudId,
+              teamId,
+              issue.descriptionHTML
+            )
+            return {
+              ...issue,
+              teamId,
+              userId,
+              descriptionHTML,
+              extraFields: []
+            }
+          })
+        )
 
         const edges = nodes.map((node) => ({
           node,

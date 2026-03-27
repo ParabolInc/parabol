@@ -18,11 +18,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  // AUTH
   const viewerId = getUserId(authToken)
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   const task = await dataLoader.get('tasks').load(taskId)
   if (!task) {
     return standardError(new Error('Task not found'), {userId: viewerId})

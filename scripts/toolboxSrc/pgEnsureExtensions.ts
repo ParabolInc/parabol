@@ -10,7 +10,7 @@ export const pgEnsureExtensions = async () => {
     // Ensure the desired version is available in ironbank, AWS, and GCP
     await sql`
     CREATE EXTENSION IF NOT EXISTS "vector";
-    ALTER EXTENSION vector UPDATE TO '0.8.0';
+    ALTER EXTENSION vector UPDATE;
     `.execute(pg)
   } else {
     Logger.log('   pgvector: skipping check (POSTGRES_USE_PGVECTOR !== true)')
