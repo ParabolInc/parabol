@@ -11,7 +11,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
@@ -45,13 +45,6 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
   const pg = getKysely()
-
-  //AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {
-      userId: viewerId
-    })
-  }
 
   const providerDbId = IntegrationProviderId.split(providerId)
   const [integrationProvider, viewer] = await Promise.all([

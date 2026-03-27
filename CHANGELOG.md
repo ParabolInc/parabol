@@ -5,6 +5,29 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.7](https://github.com/ParabolInc/parabol/compare/v13.7.6...v13.7.7) (2026-03-27)
+
+
+### Fixed
+
+* sanitize external HTML for tasks ([#12938](https://github.com/ParabolInc/parabol/issues/12938)) ([967756c](https://github.com/ParabolInc/parabol/commit/967756ce9aaa8f56af843576f214166434c3b694))
+* selfHostedHandler path prefix ([#12939](https://github.com/ParabolInc/parabol/issues/12939)) ([cfae060](https://github.com/ParabolInc/parabol/commit/cfae060da6d231954ed723dc354e1016a17bb1e8))
+
+
+### Changed
+
+* stricter tsHeadline types ([#12942](https://github.com/ParabolInc/parabol/issues/12942)) ([e13ba0b](https://github.com/ParabolInc/parabol/commit/e13ba0bb0809cd6bcbaed923ed7a68b0d16ff0b5))
+
+## [13.7.6](https://github.com/ParabolInc/parabol/compare/v13.7.5...v13.7.6) (2026-03-27)
+
+
+### Fixed
+
+* bump dev pg to v18 ([#12936](https://github.com/ParabolInc/parabol/issues/12936)) ([a71a755](https://github.com/ParabolInc/parabol/commit/a71a75550b988ddc1caf833c45d3227ae5ffe2af))
+* bump pg vector to latest ([#12935](https://github.com/ParabolInc/parabol/issues/12935)) ([43cc491](https://github.com/ParabolInc/parabol/commit/43cc491d06a19fec778391877edf370595cd3877))
+* Jira images in tasks ([#12931](https://github.com/ParabolInc/parabol/issues/12931)) ([3ad946e](https://github.com/ParabolInc/parabol/commit/3ad946e5e81d6198d47d280419d24798821da12d))
+* refactor graphql permissions to a single file pt.1 ([#12933](https://github.com/ParabolInc/parabol/issues/12933)) ([e3181b6](https://github.com/ParabolInc/parabol/commit/e3181b66b0ebc283f402d3e82e127d44e102efea))
+
 ## [13.7.5](https://github.com/ParabolInc/parabol/compare/v13.7.4...v13.7.5) (2026-03-25)
 
 

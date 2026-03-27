@@ -6,7 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
@@ -20,16 +20,7 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  // AUTH
   const viewerId = getUserId(authToken)
-  if (!isSuperUser(authToken)) {
-    if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-      return standardError(new Error('Not organization leader'), {
-        userId: viewerId
-      })
-    }
-  }
-
   const [organization, viewer] = await Promise.all([
     dataLoader.get('organizations').loadNonNull(orgId),
     dataLoader.get('users').loadNonNull(viewerId)

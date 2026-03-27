@@ -20,11 +20,6 @@ const addPokerTemplate: MutationResolvers['addPokerTemplate'] = async (
   const subOptions = {operationId, mutatorId}
   const viewerId = getUserId(authToken)
 
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
   // VALIDATION
   const [allTemplates, viewerTeam, viewer] = await Promise.all([
     dataLoader.get('meetingTemplatesByType').load({meetingType: 'poker', teamId}),
