@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
+import {marked} from 'marked'
 import {useFragment} from 'react-relay'
 import type {IntegratedTaskContent_task$key} from '../__generated__/IntegratedTaskContent_task.graphql'
-import renderMarkdown from '../utils/renderMarkdown'
 import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import {JiraExtraFieldsContent} from './JiraExtraFieldsContent'
 
@@ -99,7 +99,9 @@ const IntegratedTaskContent = (props: Props) => {
     )
   } else if (integration.__typename === '_xLinearIssue') {
     const {description, title} = integration
-    const descriptionHTML = renderMarkdown(`${description}`)
+    const descriptionHTML = sanitizeExternalHtml(
+      marked(`${description}`, {gfm: true, breaks: true}) as string
+    )
     return (
       <div className='max-h-80 overflow-auto px-4 [&_img]:h-auto'>
         <div className='font-semibold'>{title}</div>
