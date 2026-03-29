@@ -90,7 +90,7 @@
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.6.5",
     "graphql-yoga": "^5.15.2",
-    "happy-dom": "^20.0.2",
+    "happy-dom": "^20.8.9",
     "http-message-signatures": "^1.0.4",
     "ioredis": "^5.6.1",
     "js-yaml": "^4.1.1",
