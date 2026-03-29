@@ -29,7 +29,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
   if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
   if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
   if (teamIds) {
-    const hasAccessToTeams = teamIds.every((teamId) => authToken.tms.includes(teamId))
+    const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+    const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
+    const hasAccessToTeams = teamIds.every((teamId) => viewerTeamIds.has(teamId))
     if (!hasAccessToTeams) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
@@ -46,7 +48,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
   // if teamIds is defined for pages, it will limit the search to team pages
   const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
   // metadata requires a teamId, whereas pages don't because it uses RBAC
-  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...authToken.tms]
+  const allViewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  const allViewerTeamIds = allViewerTeamMembers.map((tm) => tm.teamId)
+  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...allViewerTeamIds]
 
   if (query.length === 0) {
     const noQueryEdge = {

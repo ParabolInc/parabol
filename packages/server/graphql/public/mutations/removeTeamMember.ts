@@ -39,8 +39,10 @@ const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     return standardError(new Error('Could not remove given team member'), {userId})
   }
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
-  const {tms} = user
-  publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {tms})
+  publish(SubscriptionChannel.NOTIFICATION, userId, 'TeamMembershipChangedPayload', {
+    teamId,
+    action: 'REMOVED'
+  })
   const taskIds = [...archivedTaskIds, ...reassignedTaskIds]
   const data = {teamId, teamMemberId, taskIds, notificationId, userId}
   publish(SubscriptionChannel.TEAM, teamId, 'RemoveTeamMemberPayload', data, subOptions)

@@ -5,10 +5,7 @@ import type {NotificationSubscription_paymentRejected$data} from '~/__generated_
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import type {
-  NotificationSubscription$data,
-  NotificationSubscription as TNotificationSubscription
-} from '../__generated__/NotificationSubscription.graphql'
+import type {NotificationSubscription$data} from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -17,6 +14,7 @@ import {
   createTaskNotificationUpdater
 } from '../mutations/CreateTaskMutation'
 import handleAddNotifications from '../mutations/handlers/handleAddNotifications'
+import handleRemoveTeams from '../mutations/handlers/handleRemoveTeams'
 import {
   inviteToTeamNotificationOnNext,
   inviteToTeamNotificationUpdater
@@ -35,6 +33,7 @@ import {handleArchivePage} from '../mutations/useArchivePageMutation'
 import {handleCreatePage} from '../mutations/useCreatePageMutation'
 import {handleUpdatePage} from '../mutations/useUpdatePageMutation'
 import type {OnNextHandler, OnNextNavigateContext, SharedUpdater} from '../types/relayMutations'
+import addNodeToArray from '../utils/relay/addNodeToArray'
 import {createSubscription} from './createSubscription'
 
 graphql`
@@ -136,8 +135,13 @@ const subscription = graphql`
         ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
       }
 
-      AuthTokenPayload {
-        id
+      TeamMembershipChangedPayload {
+        teamId
+        team {
+          id
+          name
+        }
+        action
       }
       MeetingStageTimeLimitPayload {
         # ScheduledJob Result
@@ -197,11 +201,6 @@ const subscription = graphql`
     }
   }
 `
-
-type NextHandler = OnNextHandler<
-  TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
-  OnNextNavigateContext
->
 
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
   NotificationSubscription_paymentRejected$data,
@@ -264,10 +263,6 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
   viewer?.setLinkedRecord(newFeature, 'newFeature')
 }
 
-const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
-  atmosphere.refreshSession()
-}
-
 const invalidateSessionsNotificationOnNext: OnNextHandler<
   InvalidateSessionsMutation_notification$data,
   OnNextNavigateContext
@@ -312,6 +307,23 @@ const updatePageAccessNotificationUpdater: SharedUpdater<
   publicRecord?.setLinkedRecord(page, 'page', {pageId})
 }
 
+const teamMembershipChangedUpdater: SharedUpdater<any> = (payload, {store}) => {
+  const action = payload.getValue('action')
+  if (action === 'ADDED') {
+    const team = payload.getLinkedRecord('team')
+    if (team) {
+      const viewer = store.getRoot().getLinkedRecord('viewer')
+      if (!viewer) return
+      addNodeToArray(team, viewer, 'teams', 'name')
+      const teamId = team.getValue('id')
+      viewer.setLinkedRecord(team, 'team', {teamId})
+    }
+  } else if (action === 'REMOVED') {
+    const teamId = payload.getValue('teamId') as string
+    handleRemoveTeams(teamId, store)
+  }
+}
+
 const updateHandlers = {
   AcceptTeamInvitationPayload: acceptTeamInvitationNotificationUpdater,
   AddNewFeaturePayload: addNewFeatureNotificationUpdater,
@@ -330,11 +342,11 @@ const updateHandlers = {
   RemoveOrgUsersSuccess: removeOrgUsersNotificationUpdater,
   RemoveTeamMemberPayload: removeTeamMemberNotificationUpdater,
   StripeFailPaymentPayload: stripeFailPaymentNotificationUpdater,
-  ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater
+  ArchiveTimelineEventSuccess: archiveTimelineEventNotificationUpdater,
+  TeamMembershipChangedPayload: teamMembershipChangedUpdater
 } as const
 
 const onNextHandlers = {
-  AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,

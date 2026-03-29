@@ -148,7 +148,7 @@ const bootstrapNewUser = async (
 
   analytics.accountCreated(newUser, !isOrganic, isPatient0)
 
-  return new AuthToken({sub: userId, tms})
+  return new AuthToken({sub: userId})
 }
 
 export default bootstrapNewUser

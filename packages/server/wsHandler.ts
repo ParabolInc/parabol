@@ -3,7 +3,6 @@ import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
-import {decode} from 'jsonwebtoken'
 import {SubscriptionChannel} from '../client/types/constEnums'
 import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
@@ -26,7 +25,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
-import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
+import {extractPersistedOperationId, getPersistedOperation, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
@@ -129,29 +128,16 @@ export const wsHandler = makeBehavior<{token?: string}>({
     }
     return {version: __APP_VERSION__}
   },
-  async onNext(context, _id, payload, {contextValue}, result) {
+  async onNext(_context, _id, payload, {contextValue: _contextValue}, result) {
     const isSubscription = (payload as any).docId.startsWith('s')
     if (!isSubscription) return result
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as
       | {
-          AuthTokenPayload?: {id: string}
           InvalidateSessionsPayload?: any
         }
       | undefined
-    const jwt = notificationSub?.AuthTokenPayload?.id
-    if (jwt) {
-      const {extra} = context
-      const {resubscribe} = extra
-      const nextAuthToken = new AuthToken(decode(jwt) as any)
-      extra.authToken = (contextValue as ServerContext).authToken = nextAuthToken
-      // wait for other payloads to get flushed to the client before resubscribing
-      setTimeout(() => {
-        Object.keys(resubscribe).forEach((key) => {
-          resubscribe[key]!()
-        })
-      }, 1000)
-    } else if (notificationSub?.InvalidateSessionsPayload) {
+    if (notificationSub?.InvalidateSessionsPayload) {
       throw new GraphQLError('Session invalidated', {
         extensions: {
           code: 'SESSION_INVALIDATED'
@@ -327,7 +313,7 @@ wsHandler.upgrade = async (res, req, context) => {
       upgradeData.authToken = {} as AuthToken
     } else {
       upgradeData.user = user
-      freshToken = getFreshTokenIfNeeded(authToken, user.tms)
+      freshToken = getFreshTokenIfNeeded(authToken)
       upgradeData.authToken = freshToken || authToken
     }
   }

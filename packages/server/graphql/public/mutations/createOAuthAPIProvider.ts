@@ -14,7 +14,7 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
   const clientSecret = generateOAuthClientSecret()
 
   if (scopes.length === 0) {
-    scopes = ['graphql:query', 'graphql:mutation']
+    scopes = ['read']
   }
 
   const pg = getKysely()

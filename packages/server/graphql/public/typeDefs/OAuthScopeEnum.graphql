@@ -1,4 +1,22 @@
 enum OAuthScopeEnum {
-  graphql_query
-  graphql_mutation
+  read
+  write
+  meetings_read
+  meetings_write
+  teams_read
+  teams_write
+  tasks_read
+  tasks_write
+  users_read
+  users_write
+  org_read
+  org_write
+  org_admin
+  templates_read
+  templates_write
+  pages_read
+  pages_write
+  pages_admin
+  comments_read
+  comments_write
 }

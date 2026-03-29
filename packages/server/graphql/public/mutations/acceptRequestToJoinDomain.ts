@@ -117,15 +117,6 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
   dataLoader.clearAll(['users', 'teamMembers'])
   await redisLock.unlock()
 
-  // Send the new team member a welcome & a new token
-  const updatedUser = await getUserById(createdBy)
-  if (!updatedUser) {
-    return standardError(new Error('User not found'))
-  }
-  publish(SubscriptionChannel.NOTIFICATION, userId, 'AuthTokenPayload', {
-    tms: updatedUser.tms
-  })
-
   validTeams.forEach((team) => {
     const {id: teamId} = team
     const teamMemberId = toTeamMemberId(teamId, userId)
@@ -133,6 +124,12 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
       teamId,
       teamMemberId
     }
+
+    // Notify the user about the team membership change
+    publish(SubscriptionChannel.NOTIFICATION, userId, 'TeamMembershipChangedPayload', {
+      teamId,
+      action: 'ADDED'
+    })
 
     // Tell the rest of the team about the new team member
     publish(SubscriptionChannel.TEAM, teamId, 'AcceptTeamInvitationPayload', data, subOptions)

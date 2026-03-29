@@ -111,16 +111,19 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
     ]
   }
 
-  removedUserResults.map(async ({removedUserId, removedUserData}) => {
-    publish(SubscriptionChannel.NOTIFICATION, removedUserId, 'AuthTokenPayload', {
-      tms: removedUserData.tms
-    })
-  })
-
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'RemoveOrgUsersSuccess', data, subOptions)
 
   data.affectedTeamIds.forEach((teamId) => {
     publish(SubscriptionChannel.TEAM, teamId, 'RemoveOrgUsersSuccess', data, subOptions)
+  })
+
+  removedUserResults.forEach(({removedUserId, removedUserData}) => {
+    removedUserData.teamIds.forEach((teamId: string) => {
+      publish(SubscriptionChannel.NOTIFICATION, removedUserId, 'TeamMembershipChangedPayload', {
+        teamId,
+        action: 'REMOVED'
+      })
+    })
   })
 
   removedUserResults.map(async ({removedUserId}) => {

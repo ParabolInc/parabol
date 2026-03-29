@@ -1,13 +1,15 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isTeamMember = <T>(dotPath: ResolverDotPath<T>) =>
   rule(`isTeamMember`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
     const teamId = getResolverDotPath(dotPath, source, args)
-    const {authToken} = context
-    if (!authToken.tms.includes(teamId)) {
+    const {authToken, dataLoader} = context
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       return new GraphQLError(`Viewer is not on team`)
     }
     return true

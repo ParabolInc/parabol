@@ -30,6 +30,20 @@ export const isTeamMember = (authToken: AuthToken, teamId: string) => {
   return Array.isArray(tms) && tms.includes(teamId)
 }
 
+/**
+ * DataLoader-based team membership check. Replaces the sync `isTeamMember`
+ * which reads from authToken.tms. This queries the database (batched and
+ * cached per-request by DataLoader) so it works for both session and OAuth tokens.
+ */
+export const isTeamMemberAsync = async (
+  userId: string,
+  teamId: string,
+  dataLoader: DataLoaderWorker
+): Promise<boolean> => {
+  const teamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+  return teamMembers.some((tm) => tm.teamId === teamId)
+}
+
 interface Options {
   clearCache?: boolean
 }

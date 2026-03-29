@@ -12,6 +12,7 @@ import {cn} from '../../../../ui/cn'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
+import OAuthScopePicker from './OAuthScopePicker'
 
 export interface FormContentProps {
   orgId: string
@@ -182,14 +183,6 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     }
   }
 
-  const toggleScope = (scope: string) => {
-    if (scopes.includes(scope)) {
-      setScopes(scopes.filter((s) => s !== scope))
-    } else {
-      setScopes([...scopes, scope])
-    }
-  }
-
   const handleRegenerateSecret = () => {
     setRegenerateConfirmOpen(true)
   }
@@ -271,35 +264,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
                 Scopes
               </label>
-              <div className='flex gap-4'>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_query')}
-                    onChange={() => toggleScope('graphql_query')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                  />
-                  graphql:query
-                </label>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={scopes.includes('graphql_mutation')}
-                    onChange={() => toggleScope('graphql_mutation')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
-                  />
-                  graphql:mutation
-                </label>
-                <div className='flex h-8 grow justify-end'>
-                  <button
-                    type='button'
-                    onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
-                  >
-                    <ContentCopyIcon fontSize='small' />
-                  </button>
-                </div>
-              </div>
+              <OAuthScopePicker selectedScopes={scopes} onScopesChange={setScopes} />
             </div>
 
             <div className='grid grid-cols-2 gap-6'>

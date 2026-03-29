@@ -27,7 +27,7 @@ import {
   selectPages,
   selectTasks
 } from '../../../postgres/select'
-import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMember, isTeamMemberAsync} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
@@ -254,7 +254,8 @@ const User: ReqResolvers<'User'> = {
 
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
-    const accessibleTeamIds = authToken.tms
+    const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+    const accessibleTeamIds = viewerTeamMembers.map((tm) => tm.teamId)
     const validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
@@ -602,11 +603,16 @@ const User: ReqResolvers<'User'> = {
 
   teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const user = (await dataLoader.get('users').load(userId))!
-    const activeTeamIds =
-      viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const userActiveTeamIds = userTeamMembers.map(({teamId}) => teamId)
+    let activeTeamIds: string[]
+    if (viewerId === userId || isSuperUser(authToken)) {
+      activeTeamIds = userActiveTeamIds
+    } else {
+      const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+      const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
+      activeTeamIds = userActiveTeamIds.filter((teamId) => viewerTeamIds.has(teamId))
+    }
     const teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
@@ -630,11 +636,12 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
 
-  tms: ({id: userId, tms}, _args, {authToken}) => {
+  tms: async ({id: userId, tms}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    return viewerId === userId
-      ? tms
-      : tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    if (viewerId === userId) return tms
+    const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+    const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
+    return tms.filter((teamId: string) => viewerTeamIds.has(teamId))
   },
 
   userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {
@@ -642,9 +649,13 @@ const User: ReqResolvers<'User'> = {
     if (!userOnTeam) {
       return null
     }
-    // const teams = new Set(userOnTeam)
-    const {tms} = userOnTeam
-    if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
+    const viewerId = getUserId(authToken)
+    const [viewerTeamMembers, userTeamMembers] = await Promise.all([
+      dataLoader.get('teamMembersByUserId').load(viewerId),
+      dataLoader.get('teamMembersByUserId').load(userId)
+    ])
+    const userTeamIds = new Set(userTeamMembers.map((tm) => tm.teamId))
+    if (!viewerTeamMembers.some((tm) => userTeamIds.has(tm.teamId))) return null
     return userOnTeam
   },
   activity: async (_source, {activityId}, {dataLoader, authToken}) => {
@@ -652,8 +663,9 @@ const User: ReqResolvers<'User'> = {
 
     const activity = await dataLoader.get('meetingTemplates').load(activityId)
     if (authToken.rol !== 'su') {
-      if (activity?.scope === 'TEAM' && !authToken.tms.includes(activity.teamId)) {
-        return null
+      if (activity?.scope === 'TEAM') {
+        const isMember = await isTeamMemberAsync(viewerId, activity.teamId, dataLoader)
+        if (!isMember) return null
       }
       if (activity?.scope === 'ORGANIZATION') {
         const organizationUser = await dataLoader
@@ -730,11 +742,16 @@ const User: ReqResolvers<'User'> = {
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const user = await dataLoader.get('users').loadNonNull(userId)
-    const teamIds =
-      viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const userTeamIds = userTeamMembers.map(({teamId}) => teamId)
+    let teamIds: string[]
+    if (viewerId === userId || isSuperUser(authToken)) {
+      teamIds = userTeamIds
+    } else {
+      const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+      const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
+      teamIds = userTeamIds.filter((teamId) => viewerTeamIds.has(teamId))
+    }
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = organizationUsers.map(({orgId}) => orgId)
@@ -799,11 +816,16 @@ const User: ReqResolvers<'User'> = {
   templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
     if (!search) return []
     const viewerId = getUserId(authToken)
-    const user = await dataLoader.get('users').loadNonNull(userId)
-    const teamIds =
-      viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+    const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(userId)
+    const userTeamIds = userTeamMembers.map(({teamId}) => teamId)
+    let teamIds: string[]
+    if (viewerId === userId || isSuperUser(authToken)) {
+      teamIds = userTeamIds
+    } else {
+      const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+      const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
+      teamIds = userTeamIds.filter((teamId) => viewerTeamIds.has(teamId))
+    }
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = organizationUsers.map(({orgId}) => orgId)

@@ -228,7 +228,7 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     }
     return {
       userId: user.id,
-      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
+      authToken: encodeAuthToken(new AuthToken({sub: user.id, rol: user.rol})),
       isNewUser: false
     }
   }
