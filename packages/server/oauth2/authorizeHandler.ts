@@ -30,10 +30,18 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
   const responseType = params.get('response_type')
   const scope = params.get('scope')
   const state = params.get('state')
+  const codeChallenge = params.get('code_challenge') ?? undefined
+  const codeChallengeMethod = params.get('code_challenge_method') ?? undefined
 
   if (!clientId || !redirectUri || responseType !== 'code') {
     res.writeStatus('400 Bad Request')
     res.end('Invalid request parameters')
+    return
+  }
+
+  if (codeChallengeMethod !== undefined && codeChallengeMethod !== 'S256') {
+    res.writeStatus('400 Bad Request')
+    res.end('Invalid code_challenge_method: only S256 is supported')
     return
   }
 
@@ -44,7 +52,9 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
       clientId,
       redirectUri,
       scopes,
-      userId: authToken.sub
+      userId: authToken.sub,
+      codeChallenge,
+      codeChallengeMethod
     })
 
     const redirectUrl = new URL(redirectUri)
@@ -52,6 +62,10 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     if (state) {
       redirectUrl.searchParams.set('state', state)
     }
+    if (scopes.length > 0) {
+      redirectUrl.searchParams.set('scope', scopes.join(' '))
+    }
+    redirectUrl.searchParams.set('app_name', result.providerName)
 
     res.writeStatus('302 Found')
     res.writeHeader('Location', redirectUrl.toString())
@@ -62,7 +76,8 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     if (
       errorMessage.includes('Invalid client_id') ||
       errorMessage.includes('Invalid redirect_uri') ||
-      errorMessage.includes('Invalid scope')
+      errorMessage.includes('Invalid scope') ||
+      errorMessage.includes('Public clients must use')
     ) {
       res.writeStatus('400 Bad Request')
       res.end(errorMessage)

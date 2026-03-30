@@ -8,16 +8,19 @@ interface CreateOAuthCodeParams {
   redirectUri: string
   scopes: string[]
   userId: string
+  codeChallenge?: string
+  codeChallengeMethod?: string
 }
 
 interface CreateOAuthCodeResult {
   code: string
+  providerName: string
 }
 
 export async function createOAuthCode(
   params: CreateOAuthCodeParams
 ): Promise<CreateOAuthCodeResult> {
-  const {clientId, redirectUri, scopes, userId} = params
+  const {clientId, redirectUri, scopes, userId, codeChallenge, codeChallengeMethod} = params
   const pg = getKysely()
 
   const provider = await pg
@@ -30,8 +33,21 @@ export async function createOAuthCode(
     throw new Error(`Invalid client_id: '${clientId}' not found.`)
   }
 
-  if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
-    throw new Error(`Invalid redirect_uri: '${redirectUri}' is not registered for this client.`)
+  if (provider.clientType === 'public') {
+    if (!codeChallenge || codeChallengeMethod !== 'S256') {
+      throw new Error(
+        'Public clients must use PKCE with code_challenge and code_challenge_method=S256'
+      )
+    }
+    if (!redirectUri.endsWith('/oauth/code/callback')) {
+      throw new Error(
+        `Invalid redirect_uri: '${redirectUri}' must end with /oauth/code/callback for public clients.`
+      )
+    }
+  } else {
+    if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
+      throw new Error(`Invalid redirect_uri: '${redirectUri}' is not registered for this client.`)
+    }
   }
 
   const allowedScopes = (provider.scopes as string[]) || []
@@ -51,12 +67,15 @@ export async function createOAuthCode(
       redirectUri,
       userId,
       scopes: scopes as Oauthscopeenum[],
-      expiresAt: expiresAt.toISOString()
+      expiresAt: expiresAt.toISOString(),
+      codeChallenge: codeChallenge || null,
+      codeChallengeMethod: codeChallengeMethod || null
     })
     .returning('id')
     .executeTakeFirstOrThrow()
 
   return {
-    code: codeId
+    code: codeId,
+    providerName: provider.name
   }
 }
