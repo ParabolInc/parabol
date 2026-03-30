@@ -2,6 +2,9 @@ import base64url from 'base64url'
 import crypto from 'crypto'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import util from 'util'
+
+const sha256Hex = (value: string) => crypto.createHash('sha256').update(value).digest('hex')
+
 import getMailManager from '../../../email/getMailManager'
 import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
 import getKysely from '../../../postgres/getKysely'
@@ -33,7 +36,7 @@ const processEmailPasswordReset = async (
     .values({
       ip,
       email,
-      token: resetPasswordToken
+      tokenHash: sha256Hex(resetPasswordToken)
     })
     .execute()
 
