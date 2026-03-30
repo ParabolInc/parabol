@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {GQLContext} from '../../graphql'
@@ -40,10 +40,6 @@ const autogroup: MutationResolvers['autogroup'] = async (
     return standardError(new Error('No autogroup reflection groups found'), {
       userId: viewerId
     })
-  }
-
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
   }
 
   const resetReflectionGroups = reflectionGroups.map((group) => {

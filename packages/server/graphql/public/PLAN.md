@@ -1,0 +1,378 @@
+# Permissions Migration Plan
+
+Tracking checklist for centralizing all GraphQL permissions into `permissions.ts`.
+
+Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthenticated` wildcard) are marked `[x]`.
+
+---
+
+## Mutations
+
+- [x] acceptTeamInvitation
+- [ ] acceptRequestToJoinDomain — auth checks viewer is team lead of any of the provided `teamIds` AND that team's org has a matching `activeDomain`; too complex for existing rules
+- [x] addAtlassianAuth — extracted `isTeamMember('args.teamId')`
+- [ ] addComment — auth loads `discussionId → meetingId → isMeetingMember`; no rule accepts a discussionId path
+- [x] addGitHubAuth — extracted `isTeamMember('args.teamId')`
+- [ ] addIntegrationProvider — conditional auth based on `args.input.scope` value (global/org/team); too complex for existing rules
+- [x] addAgendaItem
+- [x] addApprovedOrganizationDomains
+- [x] addOrg
+- [x] addPokerTemplate — extracted `isTeamMember('args.teamId')`
+- [x] addPokerTemplateDimension — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)` (templateId → teamId lookup); kept template existence check inline
+- [x] addPokerTemplateScale — extracted `isTeamMember('args.teamId')`
+- [ ] addPokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (loaded via `scaleId`); no existing getter for scaleId
+- [x] addReactjiToReactable
+- [x] addReflectTemplate — extracted `isTeamMember('args.teamId')`; secondary template-scope check stays inline
+- [x] addReflectTemplatePrompt — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)`; kept template existence check inline
+- [x] addSlackAuth — extracted `isTeamMember('args.teamId')`
+- [x] addTeam
+- [x] addTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
+- [x] addTranscriptionBot — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [x] archiveOrganization — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
+- [x] archivePage
+- [ ] archiveTeam — `or(isTeamLead, isSuperUser, isOrgAdmin)` where orgAdmin needs team→orgId resolution; too complex
+- [ ] archiveTimelineEvent — conditional auth (only for meeting events); teamId from event lookup; not extractable
+- [x] autogroup — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] batchArchiveTasks — per-item auth (task owner or team member); no single top-level gatekeeper
+- [x] changeTaskTeam — extracted `isTeamMember('args.teamId')`; secondary check on `oldTeamId` stays inline
+- [x] createImposterToken
+- [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
+- [x] createOAuthAPIProvider
+- [x] createPage
+- [ ] createPoll
+- [x] createReflection
+- [ ] createStripeSubscription
+- [ ] createTask
+- [ ] createTaskIntegration
+- [ ] deleteComment
+- [x] deleteOAuthAPIProvider
+- [ ] deleteTask
+- [ ] deleteUser
+- [x] denyPushInvitation
+- [ ] dismissNewFeature
+- [ ] dismissSuggestedAction
+- [ ] downgradeToStarter
+- [ ] dragDiscussionTopic
+- [ ] dragEstimatingTask
+- [ ] editCommenting
+- [ ] editReflection
+- [ ] editTask
+- [x] emailPasswordReset
+- [ ] embedUserAsset
+- [ ] endCheckIn
+- [ ] endDraggingReflection
+- [ ] endRetrospective
+- [ ] endSprintPoker
+- [ ] endTeamPrompt
+- [ ] flagReadyToAdvance
+- [x] generateInsight
+- [ ] generateRetroSummaries
+- [ ] invalidateSessions
+- [x] inviteToTeam
+- [ ] joinMeeting
+- [ ] joinTeam
+- [ ] linkMattermostChannel
+- [x] loginWithGoogle
+- [x] loginWithMicrosoft
+- [x] loginWithPassword
+- [ ] modifyCheckInQuestion
+- [ ] movePokerTemplateDimension
+- [ ] movePokerTemplateScaleValue
+- [ ] moveReflectTemplatePrompt
+- [ ] moveTeamToOrg
+- [ ] navigateMeeting
+- [ ] persistGitHubSearchQuery
+- [ ] persistIntegrationSearchQuery
+- [ ] persistJiraSearchQuery
+- [ ] pokerAnnounceDeckHover
+- [ ] pokerResetDimension
+- [ ] pokerRevealVotes
+- [ ] pokerTemplateDimensionUpdateDescription
+- [ ] promoteNewMeetingFacilitator
+- [ ] promoteToTeamLead
+- [x] pushInvitation
+- [ ] reflectTemplatePromptUpdateDescription
+- [ ] reflectTemplatePromptUpdateGroupColor
+- [ ] refreshSession
+- [ ] regenerateOAuthAPIProviderSecret
+- [ ] removeAgendaItem
+- [x] removeApprovedOrganizationDomains
+- [ ] removeAtlassianAuth
+- [ ] removeGitHubAuth
+- [ ] removeIntegrationProvider
+- [ ] removeIntegrationSearchQuery
+- [ ] removeOrgUsers
+- [ ] removePokerTemplate
+- [ ] removePokerTemplateDimension
+- [ ] removePokerTemplateScale
+- [ ] removePokerTemplateScaleValue
+- [ ] removeReflectTemplate
+- [ ] removeReflectTemplatePrompt
+- [ ] removeReflection
+- [ ] removeSlackAuth
+- [ ] removeTeamMember
+- [ ] removeTeamMemberIntegrationAuth
+- [ ] renameMeeting
+- [ ] renameMeetingTemplate
+- [ ] renamePokerTemplateDimension
+- [ ] renamePokerTemplateScale
+- [ ] renameReflectTemplatePrompt
+- [ ] requestPageAccess
+- [ ] requestToJoinDomain
+- [x] resetPassword
+- [ ] resetReflectionGroups
+- [ ] resetRetroMeetingToGroupStage
+- [ ] revealTeamHealthVotes
+- [x] selectTemplate
+- [ ] setDefaultSlackChannel
+- [ ] setJiraDisplayFieldIds
+- [ ] setMeetingMusic
+- [x] setMeetingSettings
+- [ ] setNotificationStatus
+- [ ] setOrgUserRole
+- [ ] setPhaseFocus
+- [ ] setPokerSpectate
+- [ ] setSlackNotification
+- [ ] setStageTimer
+- [ ] setTaskEstimate
+- [ ] setTaskHighlight
+- [ ] setTeamHealthVote
+- [ ] setTeamNotificationSetting
+- [ ] shareTopic
+- [x] signOut
+- [x] signUpWithPassword
+- [ ] startCheckIn
+- [ ] startDraggingReflection
+- [ ] startRetrospective
+- [ ] startSprintPoker
+- [ ] startTeamPrompt
+- [ ] toggleAIFeatures
+- [ ] toggleFavoriteTemplate
+- [ ] toggleFeatureFlag
+- [ ] togglePageInvitationEmail
+- [ ] toggleSummaryEmail
+- [ ] toggleTeamDrawer
+- [ ] toggleTeamPrivacy
+- [ ] ungroupReflection
+- [ ] unlinkMattermostChannel
+- [ ] updateAgendaItem
+- [ ] updateAutoJoin
+- [ ] updateAzureDevOpsDimensionField
+- [ ] updateCommentContent
+- [ ] updateCreditCard
+- [ ] updateDragLocation
+- [ ] updateGitHubDimensionField
+- [ ] updateGitLabDimensionField
+- [ ] updateIntegrationProvider
+- [ ] updateJiraDimensionField
+- [ ] updateJiraServerDimensionField
+- [ ] updateLinearDimensionField
+- [ ] updateMeetingPrompt
+- [ ] updateMeetingTemplate
+- [ ] updateNewCheckInQuestion
+- [x] updateOAuthAPIProvider
+- [ ] updateOrg
+- [x] updatePage
+- [x] updatePageAccess
+- [x] updatePageParentLink
+- [ ] updatePokerScope
+- [ ] updatePokerTemplateDimensionScale
+- [ ] updatePokerTemplateScaleValue
+- [ ] updateRecurrenceSettings
+- [ ] updateReflectionContent
+- [ ] updateReflectionGroupTitle
+- [ ] updateRetroMaxVotes
+- [x] updateSCIM
+- [ ] updateTask
+- [ ] updateTaskDueDate
+- [ ] updateTeamName
+- [x] updateTeamSortOrder
+- [x] updateTemplateCategory
+- [ ] updateTemplateScope
+- [ ] updateUserProfile
+- [x] uploadIdPMetadata
+- [ ] uploadOrgImage
+- [ ] uploadUserAsset
+- [ ] uploadUserImage
+- [ ] upsertTeamPromptResponse
+- [x] verifyEmail
+- [ ] voteForPokerStory
+- [ ] voteForReflectionGroup
+
+---
+
+## Queries
+
+- [ ] getDemoGroupTitle *(has rateLimit)*
+- [x] massInvitation *(has rateLimit)*
+- [x] public *(has rateLimit)*
+- [x] SAMLIdP *(has rateLimit)*
+- [ ] searchGifs
+- [ ] verifiedInvitation *(has rateLimit)*
+- [ ] viewer
+
+---
+
+## Types (excluding *Payload / *Success)
+
+- [ ] AIPrompt
+- [ ] ActionMeeting
+- [ ] ActionMeetingMember
+- [ ] ActionMeetingSettings
+- [ ] AddedNotification
+- [ ] AgendaItem
+- [ ] AgendaItemsPhase
+- [ ] AgendaItemsStage
+- [ ] AtlassianIntegration
+- [ ] AuthIdentityGoogle
+- [ ] AuthIdentityLocal
+- [ ] AuthIdentityMicrosoft
+- [ ] AzureDevOpsIntegration
+- [ ] AzureDevOpsRemoteProject
+- [ ] AzureDevOpsSearchQuery
+- [ ] AzureDevOpsWorkItem
+- [ ] CheckInPhase
+- [ ] CheckInStage
+- [ ] Comment
+- [ ] Company
+- [ ] DateTime
+- [ ] DiscussPhase
+- [ ] Discussion
+- [ ] DiscussionThreadStage
+- [ ] DomainJoinRequest
+- [ ] Email
+- [ ] EstimatePhase
+- [ ] EstimateStage
+- [ ] EstimateUserScore
+- [ ] File
+- [ ] FixedActivity
+- [ ] GcalIntegration
+- [ ] GenericMeetingPhase
+- [ ] GenericMeetingStage
+- [ ] GifResponse
+- [ ] GitHubIntegration
+- [ ] GitHubSearchQuery
+- [ ] GitLabIntegration
+- [ ] IntegrationProvider
+- [ ] IntegrationProviderOAuth1
+- [ ] IntegrationProviderOAuth2
+- [ ] IntegrationProviderWebhook
+- [ ] JiraIssue
+- [ ] JiraRemoteAvatarUrls
+- [ ] JiraRemoteProject
+- [ ] JiraSearchQuery
+- [ ] JiraServerIntegration
+- [ ] JiraServerIssue
+- [ ] JiraServerRemoteProject
+- [ ] LinearIntegration
+- [ ] MSTeamsIntegration
+- [ ] MattermostIntegration
+- [ ] MeetingMember
+- [ ] MeetingSeries
+- [ ] MeetingTemplate
+- [ ] NewFeatureBroadcast
+- [ ] NewMeeting
+- [ ] NewMeetingPhase
+- [ ] NewMeetingStage
+- [ ] NewMeetingTeamMemberStage
+- [ ] NotificationMeetingStageTimeLimitEnd
+- [ ] NotificationTeamInvitation
+- [ ] NotifyDiscussionMentioned
+- [ ] NotifyKickedOut
+- [ ] NotifyMentioned
+- [ ] NotifyPageAccessGranted
+- [ ] NotifyPageAccessRequested
+- [ ] NotifyPaymentRejected
+- [ ] NotifyPromoteToOrgLeader
+- [ ] NotifyPromptToJoinOrg
+- [ ] NotifyRequestToJoinOrg
+- [ ] NotifyResponseMentioned
+- [ ] NotifyResponseReplied
+- [ ] NotifyTaskInvolves
+- [ ] NotifyTeamArchived
+- [ ] NotifyTeamsLimitExceeded
+- [ ] NotifyTeamsLimitReminder
+- [ ] OAuthAPIProvider
+- [ ] OAuthScopeEnum
+- [x] Organization *(oauthAPIProvider, saml)*
+- [ ] OrgIntegrationProviders
+- [ ] OrganizationUser
+- [x] Page *(parentPage)*
+- [ ] PageAccess
+- [ ] PageAccessOrganization
+- [ ] PageAccessRequest
+- [ ] PageAccessTeam
+- [ ] PageAccessUser
+- [ ] PagePartial
+- [x] PublicRoot *(page)*
+- [ ] PokerMeeting
+- [ ] PokerMeetingMember
+- [ ] PokerMeetingSettings
+- [ ] Poll
+- [ ] PollOption
+- [ ] RRule
+- [ ] Reactable
+- [ ] Reactji
+- [ ] RedirectURI
+- [ ] ReflectPhase
+- [ ] ReflectPrompt
+- [ ] ReflectTemplate
+- [ ] RemoteReflectionDrag
+- [ ] RetroDiscussStage
+- [ ] RetroReflection
+- [x] RetroReflectionGroup *(smartTitle, voterIds)*
+- [ ] RetrospectiveMeeting
+- [ ] RetrospectiveMeetingMember
+- [ ] RetrospectiveMeetingSettings
+- [ ] SAML
+- [ ] SearchResultEdge
+- [ ] SlackIntegration
+- [ ] SlackNotification
+- [ ] SuggestedActionCreateNewTeam
+- [ ] SuggestedActionInviteYourTeam
+- [ ] SuggestedActionTryActionMeeting
+- [ ] SuggestedActionTryRetroMeeting
+- [ ] SuggestedActionTryTheDemo
+- [ ] Task
+- [ ] TaskEstimate
+- [x] Team *(massInvitation)*
+- [ ] TeamHealthPhase
+- [ ] TeamHealthStage
+- [ ] TeamInvitation
+- [ ] TeamMember
+- [ ] TeamMemberIntegrationAuthOAuth1
+- [ ] TeamMemberIntegrationAuthOAuth2
+- [ ] TeamMemberIntegrationAuthWebhook
+- [ ] TeamMemberIntegrations
+- [ ] TeamNotificationSettings
+- [ ] TeamPromptMeeting
+- [ ] TeamPromptMeetingMember
+- [ ] TeamPromptMeetingSettings
+- [ ] TeamPromptResponse
+- [ ] TeamPromptResponseStage
+- [ ] TeamPromptResponsesPhase
+- [ ] TemplateDimension
+- [ ] TemplateDimensionRef
+- [ ] TemplateScale
+- [ ] TemplateScaleRef
+- [ ] TemplateScaleValue
+- [ ] Threadable
+- [ ] TimelineEvent
+- [ ] TimelineEventCompletedActionMeeting
+- [ ] TimelineEventCompletedRetroMeeting
+- [ ] TimelineEventJoinedParabol
+- [ ] TimelineEventPokerComplete
+- [ ] TimelineEventTeamCreated
+- [ ] TimelineEventTeamPromptComplete
+- [ ] URL
+- [ ] UpdatedNotification
+- [ ] UpdatesPhase
+- [ ] UpdatesStage
+- [x] User *(domains)*
+- [ ] _xGitHubIssue
+- [ ] _xGitHubPullRequest
+- [ ] _xGitHubRepository
+- [ ] _xGitLabProject
+- [ ] _xGitLabQuery
+- [ ] _xLinearProject
+- [ ] _xLinearTeam

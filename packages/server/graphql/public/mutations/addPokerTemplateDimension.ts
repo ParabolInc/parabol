@@ -2,7 +2,7 @@ import {SprintPokerDefaults, SubscriptionChannel, Threshold} from 'parabol-clien
 import {positionAfter} from '../../../../client/shared/sortOrder'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -21,17 +21,12 @@ const addPokerTemplateDimension: MutationResolvers['addPokerTemplateDimension'] 
   ])
   const viewerId = getUserId(authToken)
 
-  // AUTH
+  // VALIDATION
   if (!template || !template.isActive) {
     return standardError(new Error('Template not found'), {
       userId: viewerId
     })
   }
-  if (!isTeamMember(authToken, template.teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
-  // VALIDATION
   const {teamId} = template
   if (activeDimensions.length >= Threshold.MAX_POKER_TEMPLATE_DIMENSIONS) {
     return standardError(new Error('Too many dimensions'), {

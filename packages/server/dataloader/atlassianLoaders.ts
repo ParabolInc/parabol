@@ -5,7 +5,6 @@ import JiraProjectId from 'parabol-client/shared/gqlIds/JiraProjectId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import getKysely from '../postgres/getKysely'
-import upsertAtlassianAuths from '../postgres/queries/upsertAtlassianAuths'
 import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
 import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
 import AtlassianServerManager, {
@@ -13,7 +12,7 @@ import AtlassianServerManager, {
   type JiraProject
 } from '../utils/AtlassianServerManager'
 import {hasDefaultEstimationField, isValidEstimationField} from '../utils/atlassian/jiraFields'
-import {downloadAndCacheImages, updateJiraImageUrls} from '../utils/atlassian/jiraImages'
+import {processJiraImages} from '../utils/atlassian/jiraImages'
 import {generateJiraExtraFields} from '../utils/generateJiraExtraFields'
 import logError from '../utils/logError'
 import publish from '../utils/publish'
@@ -48,13 +47,11 @@ export const freshAtlassianAuth = (
       const pg = getKysely()
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const userAtlassianAuths = await selectAtlassianAuth()
+          const atlassianAuthToRefresh = await selectAtlassianAuth()
             .where('userId', '=', userId)
+            .where('teamId', '=', teamId)
             .where('isActive', '=', true)
-            .execute()
-          const atlassianAuthToRefresh = userAtlassianAuths.find(
-            (atlassianAuth) => atlassianAuth.teamId === teamId
-          )
+            .executeTakeFirst()
           if (!atlassianAuthToRefresh) {
             return null
           }
@@ -83,14 +80,16 @@ export const freshAtlassianAuth = (
             const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
             // if user integrated the same Jira account with using different teams we need to update them as well
             // reference: https://github.com/ParabolInc/parabol/issues/5601
-            const updatedSameJiraAccountAtlassianAuths = userAtlassianAuths
-              .filter((auth) => auth.accountId === atlassianAuthToRefresh.accountId)
-              .map((auth) => ({
-                ...auth,
+            await pg
+              .updateTable('AtlassianAuth')
+              .set({
                 accessToken,
                 refreshToken: updatedRefreshToken
-              }))
-            await upsertAtlassianAuths(updatedSameJiraAccountAtlassianAuths)
+              })
+              .where('userId', '=', userId)
+              .where('isActive', '=', true)
+              .where('accountId', '=', atlassianAuthToRefresh.accountId)
+              .execute()
 
             return {
               ...atlassianAuthToRefresh,
@@ -220,11 +219,12 @@ export const jiraIssue = (
 
           const cacheImagesUpdateEstimates = async (issueRes: JiraIssueRaw) => {
             const {fields} = issueRes
-            const {updatedDescription, imageUrlToHash} = updateJiraImageUrls(
+            const updatedDescription = await processJiraImages(
+              manager,
               cloudId,
+              teamId,
               issueRes.renderedFields.description ?? ''
             )
-            downloadAndCacheImages(manager, imageUrlToHash)
             // update our records
             await Promise.all(
               estimates.map((estimate) => {

@@ -311,7 +311,7 @@ class AtlassianServerManager extends AtlassianManager {
   fetch = fetch
 
   protected override readonly get = async <T extends object>(url: string) => {
-    const deadline = new Date(Date.now() + 20_000)
+    const deadline = new Date(Date.now() + 30_000)
     try {
       const res = await fetchWithRetry(url, {
         headers: this.headers,

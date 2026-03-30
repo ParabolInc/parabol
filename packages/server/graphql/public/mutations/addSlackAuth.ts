@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
@@ -86,13 +86,6 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {
-      userId: viewerId
-    })
-  }
 
   // RESOLUTION
   const manager = await SlackServerManager.init(code)

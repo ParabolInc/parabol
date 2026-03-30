@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {JiraExtraFieldsContent_issue$key} from '~/__generated__/JiraExtraFieldsContent_issue.graphql'
+import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 
 interface Props {
   jiraDisplayFieldIds: readonly string[] | null | undefined
@@ -31,7 +32,7 @@ export const JiraExtraFieldsContent = (props: Props) => {
           <div key={fieldName}>
             <h4 className={'mt-3 mb-1'}>{fieldName}</h4>
             {fieldType === 'html' && (
-              <div dangerouslySetInnerHTML={{__html: fieldValue as string}} />
+              <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(fieldValue as string)}} />
             )}
             {fieldType !== 'html' && <div>{fieldValue}</div>}
           </div>
