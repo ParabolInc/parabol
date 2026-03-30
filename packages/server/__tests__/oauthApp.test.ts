@@ -180,14 +180,14 @@ test('Create app and token', async () => {
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:query', 'graphql:mutation']
+    scopes: ['read', 'write']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:query graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'read write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -227,14 +227,14 @@ test('Create app and token', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'graphql:query graphql:mutation'
+    scope: 'read write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['graphql:query', 'graphql:mutation']
+    scope: ['read', 'write']
   })
 })
 
@@ -244,14 +244,14 @@ test('Request more scope than allowed fails', async () => {
   const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:query']
+    scopes: ['read']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:query graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'read write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -270,14 +270,14 @@ test('Request less scope than allowed succeeds', async () => {
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:mutation', 'graphql:query']
+    scopes: ['write', 'read']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -317,14 +317,14 @@ test('Request less scope than allowed succeeds', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'graphql:mutation'
+    scope: 'write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['graphql:mutation']
+    scope: ['write']
   })
 })
 
@@ -334,7 +334,7 @@ test('Query and mutation token can run both', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query', 'graphql:mutation'],
+    scope: ['read', 'write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -390,7 +390,7 @@ test('Query token cannot run mutations', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query'],
+    scope: ['read'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -449,7 +449,7 @@ test('Mutation token cannot run queries', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:mutation'],
+    scope: ['write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -508,7 +508,7 @@ test('OAuth token cannot run private queries and mutations', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query', 'graphql:mutation'],
+    scope: ['read', 'write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
