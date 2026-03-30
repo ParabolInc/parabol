@@ -418,6 +418,7 @@ export const selectOAuthAPIProvider = () => {
       'id',
       'clientId',
       'clientSecret',
+      'clientType',
       'createdAt',
       'name',
       'orgId',
@@ -430,7 +431,16 @@ export const selectOAuthAPIProvider = () => {
 export const selectOAuthAPICode = () => {
   return getKysely()
     .selectFrom('OAuthAPICode')
-    .select(['id', 'clientId', 'createdAt', 'expiresAt', 'redirectUri', 'userId'])
+    .select([
+      'id',
+      'clientId',
+      'codeChallenge',
+      'codeChallengeMethod',
+      'createdAt',
+      'expiresAt',
+      'redirectUri',
+      'userId'
+    ])
     .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
 }
 

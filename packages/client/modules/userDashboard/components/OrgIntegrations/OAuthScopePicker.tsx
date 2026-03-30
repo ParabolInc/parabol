@@ -38,11 +38,18 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
   const [open, setOpen] = useState(false)
 
   const handleToggleScope = (scope: string) => {
-    const isSelected = selectedScopes.includes(scope)
+    const isSelected = getChecked(scope)
     let next: string[]
     if (isSelected) {
-      // Deselecting: also remove any scopes that require this one
       const toRemove = new Set([scope])
+      // For convenience scopes (read/write), deselecting removes all implied scopes
+      const implies = SCOPE_IMPLIES[scope]
+      if (implies) {
+        for (const dep of implies) {
+          toRemove.add(dep)
+        }
+      }
+      // Also remove any scopes that require this one
       const requiredBy = SCOPE_REQUIRED_BY[scope]
       if (requiredBy) {
         for (const dep of requiredBy) {

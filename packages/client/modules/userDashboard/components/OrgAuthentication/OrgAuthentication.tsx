@@ -66,7 +66,7 @@ const OrgAuthentication = (props: Props) => {
         <OrgAuthenticationSCIM samlRef={saml} scimEnabled={!!scimEnabled} isOrgAdmin={isOrgAdmin} />
       </StyledPanel>
 
-      {showOAuthProvider && (
+      {showOAuthProvider && isOrgAdmin && (
         <StyledPanel>
           <DialogTitle className='px-6 pt-5 pb-6'>OAuth 2.0 API</DialogTitle>
           <div className='px-6 pb-6'>

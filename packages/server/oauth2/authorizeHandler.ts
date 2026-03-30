@@ -62,8 +62,8 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
     if (state) {
       redirectUrl.searchParams.set('state', state)
     }
-    if (scopes.length > 0) {
-      redirectUrl.searchParams.set('scope', scopes.join(' '))
+    if (result.grantedScopes.length > 0) {
+      redirectUrl.searchParams.set('scope', result.grantedScopes.join(' '))
     }
     redirectUrl.searchParams.set('app_name', result.providerName)
 

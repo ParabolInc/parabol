@@ -1,14 +1,31 @@
 import CheckIcon from '@mui/icons-material/Check'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useSearchParams} from 'react-router'
+import {SCOPE_IMPLIES} from '../modules/userDashboard/components/OrgIntegrations/scopeMetadata'
+
+const expandScopes = (scopes: string[]): string[] => {
+  const expanded = new Set(scopes)
+  for (const scope of scopes) {
+    const implied = SCOPE_IMPLIES[scope]
+    if (implied) {
+      for (const s of implied) {
+        expanded.add(s)
+      }
+    }
+  }
+  return Array.from(expanded)
+}
 
 const OAuthCodeCallbackPage = () => {
   const [searchParams] = useSearchParams()
   const code = searchParams.get('code')
   const appName = searchParams.get('app_name')
   const scopeParam = searchParams.get('scope')
-  const scopes = scopeParam ? scopeParam.split(' ') : []
+  const scopes = useMemo(
+    () => (scopeParam ? expandScopes(scopeParam.split(' ')) : []),
+    [scopeParam]
+  )
   const [copied, setCopied] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(600)
 

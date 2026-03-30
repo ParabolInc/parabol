@@ -183,14 +183,16 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           const payload = response.createOAuthAPIProvider
           if (payload) {
             setClientId(payload.clientId)
-            setClientSecret(payload.clientSecret ?? '')
-            setShowSecret(true)
+            if (payload.clientSecret) {
+              setClientSecret(payload.clientSecret)
+              setShowSecret(true)
+            }
           }
         },
         onError: (err) => {
           console.error(err)
           setIsSaving(false)
-          setError(err.message)
+          setError(err?.message || 'Something went wrong')
         }
       })
     }

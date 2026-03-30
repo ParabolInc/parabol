@@ -167,7 +167,7 @@ type Mutation {
     clientType: String
     redirectUris: [RedirectURI!]!
     scopes: [OAuthScopeEnum!]!
-  ): CreateOAuthAPIProviderPayload!
+  ): CreateOAuthAPIProviderPayload
 
   """
   Update an OAuth 2.0 Application
@@ -178,17 +178,17 @@ type Mutation {
     clientType: String
     redirectUris: [RedirectURI!]
     scopes: [OAuthScopeEnum!]
-  ): UpdateOAuthAPIProviderPayload!
+  ): UpdateOAuthAPIProviderPayload
 
   """
   Delete an OAuth 2.0 Application
   """
-  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload!
+  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload
 
   """
   Regenerate the OAuth 2.0 client secret for an application
   """
-  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
+  regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload
 
   """
   Update SCIM settings for the organization

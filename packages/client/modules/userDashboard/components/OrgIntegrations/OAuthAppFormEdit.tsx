@@ -9,6 +9,7 @@ graphql`
     id
     name
     clientId
+    clientType
     redirectUris
     scopes
   }

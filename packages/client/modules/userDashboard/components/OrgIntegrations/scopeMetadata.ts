@@ -166,6 +166,8 @@ export const SCOPE_IMPLIES: Record<string, string[]> = {
     'tasks_read',
     'users_write',
     'users_read',
+    'org_write',
+    'org_read',
     'templates_write',
     'templates_read',
     'pages_write',

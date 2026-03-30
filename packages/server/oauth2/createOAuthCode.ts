@@ -15,6 +15,7 @@ interface CreateOAuthCodeParams {
 interface CreateOAuthCodeResult {
   code: string
   providerName: string
+  grantedScopes: string[]
 }
 
 export async function createOAuthCode(
@@ -76,6 +77,7 @@ export async function createOAuthCode(
 
   return {
     code: codeId,
-    providerName: provider.name
+    providerName: provider.name,
+    grantedScopes: scopes
   }
 }
