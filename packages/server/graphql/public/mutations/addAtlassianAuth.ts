@@ -3,7 +3,7 @@ import upsertAtlassianAuths from '../../../postgres/queries/upsertAtlassianAuths
 import {selectAtlassianAuth} from '../../../postgres/select'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
@@ -17,13 +17,6 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Attempted teamId spoof'), {
-      userId: viewerId
-    })
-  }
 
   // RESOLUTION
   const [oauthResponse, viewer] = await Promise.all([

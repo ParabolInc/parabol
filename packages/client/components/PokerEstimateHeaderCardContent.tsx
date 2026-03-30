@@ -8,6 +8,7 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Elevation} from '~/styles/elevation'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
+import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
 import {JiraExtraFieldsContent} from './JiraExtraFieldsContent'
@@ -161,7 +162,9 @@ const PokerEstimateHeaderCardContent = (props: PokerEstimateHeaderCardContentPro
           </CardIcons>
         </CardTitleWrapper>
         <CardDescriptionWrapper isExpanded={isExpanded}>
-          <CardDescriptionContent dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+          <CardDescriptionContent
+            dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}}
+          />
           {integration?.__typename === 'JiraIssue' && (
             <JiraExtraFieldsContent
               jiraDisplayFieldIds={jiraDisplayFieldIds!}

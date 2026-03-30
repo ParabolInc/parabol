@@ -10,7 +10,6 @@ import {setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import ICSHandler from './ICSHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
-import jiraImagesHandler from './jiraImagesHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
@@ -65,7 +64,6 @@ const app = uws
   .get('/manifest.json', PWAHandler)
   .get('/email/createics', ICSHandler)
   .get('/self-hosted/*', selfHostedHandler)
-  .get('/jira-attachments/:fileName', jiraImagesHandler)
   .get('/assets/*', assetProxyHandler)
   .get('/build/*', buildProxyHandler)
   .get('/health', yoga)
