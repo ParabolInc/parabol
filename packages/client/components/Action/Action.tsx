@@ -36,6 +36,9 @@ const PageRoot = lazy(
 const OAuthAuthorizePage = lazy(
   () => import(/* webpackChunkName: 'OAuthAuthorizePage' */ '../OAuthAuthorizePage')
 )
+const OAuthCodeCallbackPage = lazy(
+  () => import(/* webpackChunkName: 'OAuthCodeCallbackPage' */ '../OAuthCodeCallbackPage')
+)
 
 const Action = memo(() => {
   useServiceWorkerUpdater()
@@ -95,6 +98,7 @@ const Action = memo(() => {
               <Route path='/verify-email/:verificationToken' element={<VerifyEmail />} />
               <Route path='/reset-password/:token' element={<SetNewPassword />} />
               <Route path='/oauth/authorize' element={<OAuthAuthorizePage />} />
+              <Route path='/oauth/code/callback' element={<OAuthCodeCallbackPage />} />
               <Route path='/team-invitation/:token' element={<TeamInvitation />} />
               <Route path='/invitation-link/:token' element={<InvitationLink />} />
               {!isAuthenticated && (
