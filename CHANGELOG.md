@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.8](https://github.com/ParabolInc/parabol/compare/v13.7.7...v13.7.8) (2026-03-30)
+
+
+### Fixed
+
+* catch and log childPageId decrypt errors ([#12946](https://github.com/ParabolInc/parabol/issues/12946)) ([3b070ce](https://github.com/ParabolInc/parabol/commit/3b070ce480f58a64df14a96174d500edfd32c45a))
+* use fetchUntrusted in parseSAMLMetadata ([#12940](https://github.com/ParabolInc/parabol/issues/12940)) ([4660320](https://github.com/ParabolInc/parabol/commit/4660320ab6315b20c8f5d8db51b7f64590cbe913))
+
 ## [13.7.7](https://github.com/ParabolInc/parabol/compare/v13.7.6...v13.7.7) (2026-03-27)
 
 
