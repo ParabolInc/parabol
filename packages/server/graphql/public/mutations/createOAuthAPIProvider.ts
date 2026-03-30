@@ -9,9 +9,10 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
 ) => {
   let {scopes} = args
   const {orgId, name, redirectUris} = args
+  const clientType = args.clientType ?? 'confidential'
 
   const clientId = generateOAuthClientId()
-  const clientSecret = generateOAuthClientSecret()
+  const clientSecret = clientType === 'public' ? null : generateOAuthClientSecret()
 
   if (scopes.length === 0) {
     scopes = ['read']
@@ -24,8 +25,9 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
     name,
     clientId,
     clientSecret,
-    redirectUris,
-    scopes
+    redirectUris: clientType === 'public' ? [] : redirectUris,
+    scopes,
+    clientType
   }
 
   const {id: providerId} = await pg

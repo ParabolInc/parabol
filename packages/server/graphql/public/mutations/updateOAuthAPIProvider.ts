@@ -10,7 +10,7 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
   args,
   context
 ) => {
-  const {name, redirectUris, scopes} = args
+  const {name, redirectUris, scopes, clientType} = args
   const [providerId] = CipherId.fromClient(args.providerId)
   const {dataLoader, socketId} = context
 
@@ -35,7 +35,8 @@ const updateOAuthAPIProvider: MutationResolvers['updateOAuthAPIProvider'] = asyn
     .set({
       name: name ?? undefined,
       redirectUris: redirectUris ?? undefined,
-      scopes: scopes || undefined
+      scopes: scopes || undefined,
+      clientType: clientType ?? undefined
     })
     .where('id', '=', providerId)
     .execute()
