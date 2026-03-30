@@ -27,6 +27,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   const [scopes, setScopes] = useState<string[]>(
     (initialData?.scopes || []).map((s: string) => s.replace(':', '_'))
   )
+  const [clientType, setClientType] = useState<'confidential' | 'public'>(
+    initialData?.clientType || 'confidential'
+  )
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
@@ -37,17 +40,20 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       $name: String!
       $redirectUris: [RedirectURI!]!
       $scopes: [OAuthScopeEnum!]!
+      $clientType: String
     ) {
       createOAuthAPIProvider(
         orgId: $orgId
         name: $name
         redirectUris: $redirectUris
         scopes: $scopes
+        clientType: $clientType
       ) {
         provider {
           ...OAuthAppFormEdit_oauthProvider
           id
           name
+          clientType
           updatedAt
         }
         clientId
@@ -62,17 +68,20 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       $name: String
       $redirectUris: [RedirectURI!]
       $scopes: [OAuthScopeEnum!]
+      $clientType: String
     ) {
       updateOAuthAPIProvider(
         providerId: $providerId
         name: $name
         redirectUris: $redirectUris
         scopes: $scopes
+        clientType: $clientType
       ) {
         provider {
           ...OAuthAppFormEdit_oauthProvider
           id
           name
+          clientType
           updatedAt
         }
         organization {
@@ -102,19 +111,21 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       .map((s: string) => s.trim())
       .filter((s: string) => s.length > 0)
 
-    if (uriList.length === 0) {
-      setIsSaving(false)
-      setError('At least one redirect URI is required')
-      return
-    }
-
-    for (const uri of uriList) {
-      try {
-        new URL(uri)
-      } catch {
+    if (clientType !== 'public') {
+      if (uriList.length === 0) {
         setIsSaving(false)
-        setError(`Invalid redirect URI: ${uri}`)
+        setError('At least one redirect URI is required')
         return
+      }
+
+      for (const uri of uriList) {
+        try {
+          new URL(uri)
+        } catch {
+          setIsSaving(false)
+          setError(`Invalid redirect URI: ${uri}`)
+          return
+        }
       }
     }
 
@@ -133,8 +144,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         variables: {
           providerId,
           name,
-          redirectUris: uriList,
-          scopes: mutationScopes
+          redirectUris: clientType === 'public' ? [] : uriList,
+          scopes: mutationScopes,
+          clientType
         },
         onCompleted: () => {
           setIsSaving(false)
@@ -151,8 +163,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         variables: {
           orgId,
           name,
-          redirectUris: uriList,
-          scopes: mutationScopes
+          redirectUris: clientType === 'public' ? [] : uriList,
+          scopes: mutationScopes,
+          clientType
         },
         updater: (store) => {
           const payload = store.getRootField('createOAuthAPIProvider')
@@ -170,7 +183,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           const payload = response.createOAuthAPIProvider
           if (payload) {
             setClientId(payload.clientId)
-            setClientSecret(payload.clientSecret)
+            setClientSecret(payload.clientSecret ?? '')
             setShowSecret(true)
           }
         },
@@ -246,19 +259,95 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               />
             </div>
 
+            {/* Client Type selector */}
             <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                Redirect URIs (Comma separated)
+                Client Type
               </label>
-              <BasicInput
-                name='redirectUris'
-                value={redirectUris}
-                onChange={(e) => setRedirectUris(e.target.value)}
-                className='w-full font-mono text-sm'
-                placeholder='https://example.com/callback'
-                error={undefined}
-              />
+              <div className='flex gap-2'>
+                <button
+                  type='button'
+                  onClick={() => setClientType('confidential')}
+                  className={cn(
+                    'flex-1 rounded-md border-2 p-3 text-left transition-colors',
+                    clientType === 'confidential'
+                      ? 'border-sky-500 bg-sky-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  )}
+                >
+                  <div className='font-semibold text-slate-800 text-sm'>Confidential</div>
+                  <div className='mt-0.5 text-slate-500 text-xs'>
+                    Server-to-server. Uses client secret.
+                  </div>
+                </button>
+                <button
+                  type='button'
+                  onClick={() => setClientType('public')}
+                  className={cn(
+                    'flex-1 rounded-md border-2 p-3 text-left transition-colors',
+                    clientType === 'public'
+                      ? 'border-sky-500 bg-sky-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                  )}
+                >
+                  <div className='font-semibold text-slate-800 text-sm'>Public (CLI / Native)</div>
+                  <div className='mt-0.5 text-slate-500 text-xs'>No client secret. Uses PKCE.</div>
+                </button>
+              </div>
             </div>
+
+            {clientType === 'public' && (
+              <div className='rounded-md border border-amber-300 bg-amber-50 px-3 py-2.5'>
+                <div className='font-semibold text-amber-800 text-xs'>No client secret</div>
+                <div className='mt-0.5 text-amber-800 text-xs'>
+                  Public apps cannot securely store secrets. Authorization uses PKCE (Proof Key for
+                  Code Exchange). Users will copy an authorization code from a browser page.
+                </div>
+              </div>
+            )}
+
+            {clientType === 'public' ? (
+              <div className='flex flex-col space-y-1'>
+                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  Code Callback URL
+                </label>
+                <div className='flex'>
+                  <div className='relative grow'>
+                    <BasicInput
+                      name='codeCallbackUrl'
+                      value={makeAppURL(appOrigin, '/oauth/code/callback')}
+                      disabled
+                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      error={undefined}
+                    />
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => copyToClipboard(makeAppURL(appOrigin, '/oauth/code/callback'))}
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                  >
+                    <ContentCopyIcon fontSize='small' />
+                  </button>
+                </div>
+                <div className='text-slate-400 text-xs'>
+                  This page displays the authorization code for users to copy.
+                </div>
+              </div>
+            ) : (
+              <div className='flex flex-col space-y-1'>
+                <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  Redirect URIs (Comma separated)
+                </label>
+                <BasicInput
+                  name='redirectUris'
+                  value={redirectUris}
+                  onChange={(e) => setRedirectUris(e.target.value)}
+                  className='w-full font-mono text-sm'
+                  placeholder='https://example.com/callback'
+                  error={undefined}
+                />
+              </div>
+            )}
 
             <div className='flex flex-col space-y-1'>
               <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
@@ -296,74 +385,76 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   </button>
                 </div>
               </div>
-              <div className='space-y-1'>
-                <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-                    Client Secret
-                  </label>
-                  {!isNew && (
-                    <div className='flex items-center gap-2'>
-                      {regenerateConfirmOpen ? (
-                        <>
-                          <span className='text-slate-500 text-xs'>Are you sure?</span>
+              {clientType !== 'public' && (
+                <div className='space-y-1'>
+                  <div className='flex h-5 items-center justify-between'>
+                    <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                      Client Secret
+                    </label>
+                    {!isNew && (
+                      <div className='flex items-center gap-2'>
+                        {regenerateConfirmOpen ? (
+                          <>
+                            <span className='text-slate-500 text-xs'>Are you sure?</span>
+                            <button
+                              type='button'
+                              onClick={handleConfirmRegenerate}
+                              className='text-slate-500 hover:text-green-600'
+                              title='Confirm Regenerate'
+                            >
+                              <CheckIcon fontSize='small' />
+                            </button>
+                            <button
+                              type='button'
+                              onClick={() => setRegenerateConfirmOpen(false)}
+                              className='text-slate-500 hover:text-red-600'
+                              title='Cancel'
+                            >
+                              <CloseIcon fontSize='small' />
+                            </button>
+                          </>
+                        ) : (
                           <button
                             type='button'
-                            onClick={handleConfirmRegenerate}
-                            className='text-slate-500 hover:text-green-600'
-                            title='Confirm Regenerate'
+                            onClick={handleRegenerateSecret}
+                            className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
                           >
-                            <CheckIcon fontSize='small' />
+                            Regenerate
                           </button>
-                          <button
-                            type='button'
-                            onClick={() => setRegenerateConfirmOpen(false)}
-                            className='text-slate-500 hover:text-red-600'
-                            title='Cancel'
-                          >
-                            <CloseIcon fontSize='small' />
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          type='button'
-                          onClick={handleRegenerateSecret}
-                          className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
-                        >
-                          Regenerate
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className='flex'>
-                  <div className='relative grow'>
-                    <BasicInput
-                      name='clientSecret'
-                      autoComplete='new-password'
-                      value={clientSecret}
-                      disabled
-                      placeholder='Save to reveal...'
-                      onChange={() => {}}
-                      className={cn(
-                        'w-full bg-slate-50 font-mono text-sm',
-                        clientSecret !== '••••••••••••••••••••' &&
-                          'rounded-r-none border-slate-300! border-r-0!'
-                      )}
-                      type={showSecret ? 'text' : 'password'}
-                      error={undefined}
-                    />
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {clientSecret !== '••••••••••••••••••••' && (
-                    <button
-                      type='button'
-                      onClick={() => copyToClipboard(clientSecret)}
-                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
-                    >
-                      <ContentCopyIcon fontSize='small' />
-                    </button>
-                  )}
+                  <div className='flex'>
+                    <div className='relative grow'>
+                      <BasicInput
+                        name='clientSecret'
+                        autoComplete='new-password'
+                        value={clientSecret}
+                        disabled
+                        placeholder='Save to reveal...'
+                        onChange={() => {}}
+                        className={cn(
+                          'w-full bg-slate-50 font-mono text-sm',
+                          clientSecret !== '••••••••••••••••••••' &&
+                            'rounded-r-none border-slate-300! border-r-0!'
+                        )}
+                        type={showSecret ? 'text' : 'password'}
+                        error={undefined}
+                      />
+                    </div>
+                    {clientSecret !== '••••••••••••••••••••' && (
+                      <button
+                        type='button'
+                        onClick={() => copyToClipboard(clientSecret)}
+                        className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                      >
+                        <ContentCopyIcon fontSize='small' />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className='flex flex-col gap-4'>
               <div className='space-y-1'>
