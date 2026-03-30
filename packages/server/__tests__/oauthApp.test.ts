@@ -1,9 +1,18 @@
+import crypto from 'crypto'
 import faker from 'faker'
 import ms from 'ms'
 import AuthToken from '../database/types/AuthToken'
 import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
+
+function generateCodeVerifier(): string {
+  return crypto.randomBytes(32).toString('base64url')
+}
+
+function generateCodeChallenge(verifier: string): string {
+  return crypto.createHash('sha256').update(verifier).digest('base64url')
+}
 
 const AUTHORIZE_URL = `${PROTOCOL}://${HOST}/oauth/authorize`
 const TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
@@ -100,6 +109,69 @@ const createAppWithScope = async ({
 
   const {clientId, clientSecret} = oauthApp.data.createOAuthAPIProvider
   return {clientId, clientSecret, redirectUri}
+}
+
+const createPublicApp = async ({
+  orgId,
+  cookie,
+  scopes
+}: {
+  orgId: string
+  cookie: string
+  scopes: string[]
+}) => {
+  const oauthApp = await sendPublic({
+    query: `
+      mutation CreatePublicOAuthApp(
+        $orgId: ID!
+        $name: String!
+        $redirectUris: [RedirectURI!]!
+        $scopes: [OAuthScopeEnum!]!
+        $clientType: String
+      ) {
+        createOAuthAPIProvider(
+          orgId: $orgId
+          name: $name
+          redirectUris: $redirectUris
+          scopes: $scopes
+          clientType: $clientType
+        ) {
+          provider {
+            id
+            name
+            clientType
+            updatedAt
+          }
+          clientId
+          clientSecret
+        }
+      }
+    `,
+    variables: {
+      orgId,
+      name: 'Test Public CLI App',
+      redirectUris: [],
+      scopes: scopes.map((scope) => scope.replace(':', '_')),
+      clientType: 'public'
+    },
+    cookie
+  })
+
+  expect(oauthApp).toMatchObject({
+    data: {
+      createOAuthAPIProvider: {
+        provider: {
+          name: 'Test Public CLI App',
+          clientType: 'public'
+        },
+        clientId: expect.anything(),
+        clientSecret: null
+      }
+    }
+  })
+
+  const {clientId} = oauthApp.data.createOAuthAPIProvider
+  return {clientId}
 }
 
 test('Create app and token', async () => {
@@ -481,4 +553,155 @@ test('OAuth token cannot run private queries and mutations', async () => {
       autopauseUsers: null
     }
   })
+})
+
+test('Public client PKCE flow succeeds', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+
+  const {clientId} = await createPublicApp({
+    orgId,
+    cookie,
+    scopes: ['read', 'write']
+  })
+
+  const codeVerifier = generateCodeVerifier()
+  const codeChallenge = generateCodeChallenge(codeVerifier)
+  const codeCallbackUri = `${PROTOCOL}://${HOST}/oauth/code/callback`
+
+  const authorizeUrl = new URL(AUTHORIZE_URL)
+  authorizeUrl.searchParams.set('response_type', 'code')
+  authorizeUrl.searchParams.set('client_id', clientId)
+  authorizeUrl.searchParams.set('redirect_uri', codeCallbackUri)
+  authorizeUrl.searchParams.set('scope', 'read')
+  authorizeUrl.searchParams.set('state', 'pkce-test')
+  authorizeUrl.searchParams.set('code_challenge', codeChallenge)
+  authorizeUrl.searchParams.set('code_challenge_method', 'S256')
+
+  const authCodeResponse = await fetch(authorizeUrl, {
+    headers: {cookie},
+    redirect: 'manual'
+  })
+
+  expect(authCodeResponse.status).toBe(302)
+  const location = authCodeResponse.headers.get('Location')!
+  const redirectUrl = new URL(location)
+  const authCode = redirectUrl.searchParams.get('code')
+  expect(authCode).toBeDefined()
+  expect(redirectUrl.searchParams.get('state')).toBe('pkce-test')
+
+  // Exchange code with code_verifier (no client_secret)
+  const tokenResponse = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: authCode!,
+      redirect_uri: codeCallbackUri,
+      client_id: clientId,
+      code_verifier: codeVerifier
+    })
+  })
+
+  expect(tokenResponse.status).toBe(200)
+  const tokenBody = await tokenResponse.json()
+  expect(tokenBody).toMatchObject({
+    access_token: expect.any(String),
+    token_type: 'Bearer',
+    expires_in: expect.any(Number),
+    scope: 'read'
+  })
+})
+
+test('Public client PKCE with wrong verifier fails', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+
+  const {clientId} = await createPublicApp({
+    orgId,
+    cookie,
+    scopes: ['read']
+  })
+
+  const codeVerifier = generateCodeVerifier()
+  const codeChallenge = generateCodeChallenge(codeVerifier)
+  const codeCallbackUri = `${PROTOCOL}://${HOST}/oauth/code/callback`
+
+  const authorizeUrl = new URL(AUTHORIZE_URL)
+  authorizeUrl.searchParams.set('response_type', 'code')
+  authorizeUrl.searchParams.set('client_id', clientId)
+  authorizeUrl.searchParams.set('redirect_uri', codeCallbackUri)
+  authorizeUrl.searchParams.set('scope', 'read')
+  authorizeUrl.searchParams.set('code_challenge', codeChallenge)
+  authorizeUrl.searchParams.set('code_challenge_method', 'S256')
+
+  const authCodeResponse = await fetch(authorizeUrl, {
+    headers: {cookie},
+    redirect: 'manual'
+  })
+
+  const location = authCodeResponse.headers.get('Location')!
+  const authCode = new URL(location).searchParams.get('code')!
+
+  // Exchange with WRONG verifier
+  const tokenResponse = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: authCode,
+      redirect_uri: codeCallbackUri,
+      client_id: clientId,
+      code_verifier: 'wrong-verifier-value'
+    })
+  })
+
+  expect(tokenResponse.status).toBe(400)
+  const body = await tokenResponse.json()
+  expect(body.error).toBe('invalid_grant')
+})
+
+test('Public client rejects client_secret on token exchange', async () => {
+  const {cookie, orgId} = await createOrgAdmin()
+
+  const {clientId} = await createPublicApp({
+    orgId,
+    cookie,
+    scopes: ['read']
+  })
+
+  const codeVerifier = generateCodeVerifier()
+  const codeChallenge = generateCodeChallenge(codeVerifier)
+  const codeCallbackUri = `${PROTOCOL}://${HOST}/oauth/code/callback`
+
+  const authorizeUrl = new URL(AUTHORIZE_URL)
+  authorizeUrl.searchParams.set('response_type', 'code')
+  authorizeUrl.searchParams.set('client_id', clientId)
+  authorizeUrl.searchParams.set('redirect_uri', codeCallbackUri)
+  authorizeUrl.searchParams.set('scope', 'read')
+  authorizeUrl.searchParams.set('code_challenge', codeChallenge)
+  authorizeUrl.searchParams.set('code_challenge_method', 'S256')
+
+  const authCodeResponse = await fetch(authorizeUrl, {
+    headers: {cookie},
+    redirect: 'manual'
+  })
+
+  const location = authCodeResponse.headers.get('Location')!
+  const authCode = new URL(location).searchParams.get('code')!
+
+  // Try to exchange with client_secret instead of code_verifier
+  const tokenResponse = await fetch(TOKEN_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({
+      grant_type: 'authorization_code',
+      code: authCode,
+      redirect_uri: codeCallbackUri,
+      client_id: clientId,
+      client_secret: 'some-secret'
+    })
+  })
+
+  expect(tokenResponse.status).toBe(400)
+  const body = await tokenResponse.json()
+  expect(body.error).toBe('invalid_request')
 })
