@@ -2,6 +2,7 @@ type OAuthAPIProvider {
   id: ID!
   name: String!
   clientId: String!
+  clientType: String!
   redirectUris: [RedirectURI!]!
   scopes: [String!]!
   updatedAt: DateTime!

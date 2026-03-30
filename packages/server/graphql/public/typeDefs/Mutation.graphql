@@ -164,6 +164,7 @@ type Mutation {
   createOAuthAPIProvider(
     orgId: ID!
     name: String!
+    clientType: String
     redirectUris: [RedirectURI!]!
     scopes: [OAuthScopeEnum!]!
   ): CreateOAuthAPIProviderPayload!
@@ -174,6 +175,7 @@ type Mutation {
   updateOAuthAPIProvider(
     providerId: ID!
     name: String
+    clientType: String
     redirectUris: [RedirectURI!]
     scopes: [OAuthScopeEnum!]
   ): UpdateOAuthAPIProviderPayload!
