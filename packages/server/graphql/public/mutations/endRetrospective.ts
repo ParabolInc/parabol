@@ -1,4 +1,4 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
@@ -21,7 +21,7 @@ const endRetrospective: MutationResolvers['endRetrospective'] = async (
   const {endedAt, teamId} = meeting
 
   // VALIDATION
-  if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)) && authToken.rol !== 'su') {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt)

@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import publish from '../../../utils/publish'
@@ -26,7 +26,7 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
       userId: viewerId
     })
   const {endedAt, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

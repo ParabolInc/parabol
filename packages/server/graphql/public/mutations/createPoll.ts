@@ -2,7 +2,7 @@ import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import {Polls, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -56,7 +56,7 @@ const createPoll: MutationResolvers['createPoll'] = async (
     return {error: {message: 'Invalid discussion thread'}}
   }
   const {meetingId, teamId} = discussion
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on team'}}
   }
   if (!meetingId) {

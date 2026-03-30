@@ -72,7 +72,7 @@ test('rejects the encodeUnsignedAuthToken output when used as a server token', (
   // encodeUnsignedAuthToken is the utility used to create the *client-readable*
   // cookie (authToken) so the browser can inspect auth state without a secret.
   // An attacker could copy that cookie and present it as the *signed* token.
-  const authToken = new AuthToken({sub: VICTIM_USER_ID, tms: []})
+  const authToken = new AuthToken({sub: VICTIM_USER_ID})
   const unsignedJwt = encodeUnsignedAuthToken(authToken)
 
   const result = getVerifiedAuthToken(unsignedJwt, false)
@@ -82,7 +82,7 @@ test('rejects the encodeUnsignedAuthToken output when used as a server token', (
 test('accepts a legitimately signed token for the same userId', () => {
   // Baseline: a properly signed HS256 token for the same user IS accepted,
   // confirming the reject-path above is not a false positive.
-  const authToken = new AuthToken({sub: VICTIM_USER_ID, tms: []})
+  const authToken = new AuthToken({sub: VICTIM_USER_ID})
   const validJwt = encodeAuthToken(authToken)
 
   const result = getVerifiedAuthToken(validJwt, false)

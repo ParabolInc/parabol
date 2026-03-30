@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -17,7 +17,7 @@ const setSlackNotification: MutationResolvers['setSlackNotification'] = async (
   const pg = getKysely()
 
   // AUTH
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Attempted teamId spoof'), {
       userId: viewerId
     })

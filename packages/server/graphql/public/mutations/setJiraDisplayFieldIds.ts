@@ -1,6 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -18,7 +19,9 @@ const setJiraDisplayFieldIds: MutationResolvers['setJiraDisplayFieldIds'] = asyn
     throw new GraphQLError('Team not found')
   }
   // Ensuring the user has access to the team
-  if (!authToken.tms.includes(teamId)) {
+  const viewerId = getUserId(authToken)
+  const isMember = await isTeamMemberAsync(viewerId, teamId, dataLoader)
+  if (!isMember) {
     throw new GraphQLError('User not on team')
   }
 

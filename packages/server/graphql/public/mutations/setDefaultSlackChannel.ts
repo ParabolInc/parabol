@@ -1,5 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -12,7 +12,7 @@ const setDefaultSlackChannel: MutationResolvers['setDefaultSlackChannel'] = asyn
   const viewerId = getUserId(authToken)
 
   // AUTH
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Attempted teamId spoof'), {
       userId: viewerId
     })

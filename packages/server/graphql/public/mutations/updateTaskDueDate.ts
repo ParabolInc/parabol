@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isValidDate from 'parabol-client/utils/isValidDate'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -26,7 +26,7 @@ const updateTaskDueDate: MutationResolvers['updateTaskDueDate'] = async (
     dataLoader.get('tasks').load(taskId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  if (!task || !isTeamMember(authToken, task.teamId)) {
+  if (!task || !(await isTeamMemberAsync(viewerId, task.teamId, dataLoader))) {
     return standardError(new Error('Task not found'), {userId: viewerId})
   }
 

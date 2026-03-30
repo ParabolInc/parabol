@@ -18,7 +18,7 @@ import type {
 } from '../../../postgres/types/NewMeetingPhase'
 import type {MeetingMember} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -59,7 +59,8 @@ const joinMeeting: MutationResolvers['joinMeeting'] = async (
   if (!meeting) return {error: {message: 'Invalid meeting ID'}}
   const {endedAt, teamId, phases} = meeting
   if (endedAt) return {error: {message: 'Meeting has already ended'}}
-  if (!isTeamMember(authToken, teamId)) return {error: {message: 'Not on the team'}}
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)))
+    return {error: {message: 'Not on the team'}}
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)
   const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)

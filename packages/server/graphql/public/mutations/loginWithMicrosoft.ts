@@ -80,8 +80,7 @@ const loginWithMicrosoft: MutationResolvers['loginWithMicrosoft'] = async (
     // MUTATIVE
     context.authToken = new AuthToken({
       sub: viewerId,
-      rol,
-      tms: existingUser.tms
+      rol
     })
     setAuthCookie(context, context.authToken)
     return {

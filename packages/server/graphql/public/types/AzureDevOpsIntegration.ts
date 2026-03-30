@@ -1,4 +1,4 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
 import type {AzureDevOpsIntegrationResolvers} from '../resolverTypes'
@@ -23,7 +23,7 @@ const AzureDevOpsIntegration: AzureDevOpsIntegrationResolvers = {
     {authToken, dataLoader}
   ) => {
     const viewerId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       const err = new Error("Cannot access another team member's user stories")
       standardError(err, {tags: {teamId, userId}, userId: viewerId})
       return connectionFromTasks([], 0, err)

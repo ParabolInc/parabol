@@ -6,7 +6,7 @@ import {toEpochSeconds} from '../../utils/epochTime'
 
 interface Input {
   sub: string
-  tms: string[]
+  tms?: string[]
   rol?: 'su' | 'impersonate' | null
   bet?: 1
   lifespan_ms?: number
@@ -17,7 +17,7 @@ interface Input {
 
 export default class AuthToken {
   sub: string
-  tms: string[]
+  tms?: string[]
   rol: 'su' | 'impersonate' | null
   bet?: 1
   scope?: string[]

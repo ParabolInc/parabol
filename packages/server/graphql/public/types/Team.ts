@@ -9,7 +9,7 @@ import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
   isSuperUser,
-  isTeamMember,
+  isTeamMemberAsync,
   isUserBillingLeader
 } from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
@@ -20,17 +20,20 @@ import type {TeamResolvers} from '../resolverTypes'
 
 const Team: TeamResolvers = {
   activeMeetings: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return []
     // this is by team, not by meeting member, which caused an err in dev, not sure about prod
     // we need better perms for people to view/not view a meeting that happened before they joined the team
     return dataLoader.get('activeMeetingsByTeamId').load(teamId)
   },
   activeMeetingSeries: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return []
     return dataLoader.get('activeMeetingSeriesByTeamId').load(teamId)
   },
-  agendaItems: ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+  agendaItems: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return []
     return dataLoader.get('agendaItemsByTeamId').load(teamId)
   },
   billingTier: async ({orgId}, _args, {dataLoader}) => {
@@ -58,13 +61,16 @@ const Team: TeamResolvers = {
     return organizationUser?.role === 'ORG_ADMIN'
   },
   isViewerLead: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return false
     const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return false
     const teamMemberId = toTeamMemberId(teamId, viewerId)
     const teamMember = await dataLoader.get('teamMembers').loadNonNull(teamMemberId)
     return teamMember.isLead && teamMember.isNotRemoved
   },
-  isViewerOnTeam: async ({id: teamId}, _args, {authToken}) => isTeamMember(authToken, teamId),
+  isViewerOnTeam: async ({id: teamId}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return isTeamMemberAsync(viewerId, teamId, dataLoader)
+  },
   lastMetAt: async ({id: teamId}, _args, {dataLoader}) => {
     const [completedMeetings, activeMeetings] = await Promise.all([
       dataLoader.get('completedMeetingsByTeamId').load(teamId),
@@ -116,20 +122,23 @@ const Team: TeamResolvers = {
     return massInvitation
   },
   meeting: async ({id: teamId}, {meetingId}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (meeting && meeting.teamId === teamId) return meeting
     return null
   },
   meetingSettings: async ({id: teamId}, {meetingType}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null as any
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null as any
     const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
     return settings
   },
   organization: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+    const viewerId = getUserId(authToken)
     // TODO this is bad, we should probably just put the perms on each field in the org
-    if (!isTeamMember(authToken, teamId)) {
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       return {
         id: orgId,
         name: organization.name,
@@ -169,12 +178,12 @@ const Team: TeamResolvers = {
     return '!'
   },
   tasks: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) {
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       const err = new Error('Team not found')
       standardError(err, {tags: {teamId}})
       return connectionFromTasks([], 0, err)
     }
-    const viewerId = getUserId(authToken)
     const allTasks = await dataLoader.get('tasksByTeamId').load(teamId)
     const tasks = allTasks.filter((task) => {
       if (!task.userId || (isTaskPrivate(task.tags) && task.userId !== viewerId)) return false
@@ -183,7 +192,8 @@ const Team: TeamResolvers = {
     return connectionFromTasks(tasks)
   },
   teamInvitations: async ({id: teamId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return []
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return []
     return dataLoader.get('teamInvitationsByTeamId').load(teamId)
   },
   teamLead: async ({id: teamId}, _args, {dataLoader}) => {
@@ -194,7 +204,9 @@ const Team: TeamResolvers = {
     const viewerId = getUserId(authToken)
     const isBillingLeader = await isUserBillingLeader(viewerId, orgId, dataLoader)
     const canViewAllMembers =
-      isBillingLeader || isSuperUser(authToken) || isTeamMember(authToken, teamId)
+      isBillingLeader ||
+      isSuperUser(authToken) ||
+      (await isTeamMemberAsync(viewerId, teamId, dataLoader))
     if (!canViewAllMembers) return []
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamMembersWithUserFields = await Promise.all(

@@ -44,12 +44,11 @@ const sendBatchNotificationEmails: MutationResolvers['sendBatchNotificationEmail
 
   await Promise.all(
     users.map(async (user) => {
-      const {email, tms, preferredName} = user
+      const {email, preferredName} = user
       const notificationCount = userNotificationMap.get(user.id)!
 
       const authToken = new AuthToken({
         sub: user.id,
-        tms,
         rol: 'impersonate'
       })
       const environment = new ServerEnvironment({...context, authToken})

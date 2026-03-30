@@ -16,7 +16,7 @@ import type {CheckInMeeting} from '../../../postgres/types/Meeting'
 import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
@@ -149,7 +149,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
   // VALIDATION
-  if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)) && authToken.rol !== 'su') {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})

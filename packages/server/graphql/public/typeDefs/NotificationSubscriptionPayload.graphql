@@ -19,7 +19,6 @@ type NotificationSubscriptionPayload {
   StripeFailPaymentPayload: StripeFailPaymentPayload
   PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   User: User
-  AuthTokenPayload: AuthTokenPayload
   PersistGitHubSearchQuerySuccess: PersistGitHubSearchQuerySuccess
   JiraServerIssue: JiraServerIssue
   AddedNotification: AddedNotification

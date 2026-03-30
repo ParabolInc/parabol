@@ -9,7 +9,7 @@ import getFileStoreManager from './fileStorage/getFileStoreManager'
 import type {AssetScopeEnum} from './graphql/public/resolverTypes'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import getKysely from './postgres/getKysely'
-import {getUserId, isTeamMember} from './utils/authorization'
+import {getUserId, isTeamMemberAsync} from './utils/authorization'
 import {CipherId} from './utils/CipherId'
 import getReqAuth from './utils/getReqAuth'
 import {Logger} from './utils/Logger'
@@ -52,7 +52,10 @@ export const checkAccess = async (
       // all team avatars (not yet implemented) are visible to all users
       return true
     } else {
-      if (isTeamMember(authToken, scopeCode)) return true
+      const dataLoader = getNewDataLoader('imageProxyTeam')
+      const isMember = await isTeamMemberAsync(viewerId, scopeCode, dataLoader)
+      dataLoader.dispose()
+      if (isMember) return true
     }
   } else if (scope === 'Organization') {
     if (assetType === 'picture' || assetType === 'idpMetadata.xml') {

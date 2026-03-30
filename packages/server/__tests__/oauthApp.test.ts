@@ -333,7 +333,6 @@ test('Query and mutation token can run both', async () => {
 
   const authToken = new AuthToken({
     sub: userId,
-    tms: [],
     scope: ['read', 'write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
@@ -389,7 +388,6 @@ test('Query token cannot run mutations', async () => {
 
   const authToken = new AuthToken({
     sub: userId,
-    tms: [],
     scope: ['read'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
@@ -449,7 +447,6 @@ test('Write token can run both queries and mutations', async () => {
 
   const authToken = new AuthToken({
     sub: userId,
-    tms: [],
     scope: ['write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
@@ -505,7 +502,6 @@ test('OAuth token cannot run private queries and mutations', async () => {
 
   const authToken = new AuthToken({
     sub: userId,
-    tms: [],
     scope: ['read', 'write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'

@@ -1,5 +1,5 @@
 import TeamMemberIntegrationsId from '../../../../client/shared/gqlIds/TeamMemberIntegrationsId'
-import {isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import type {TeamMemberIntegrationsResolvers} from '../resolverTypes'
 
 export type TeamMemberIntegrationsSource = {
@@ -14,14 +14,16 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   id: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId),
 
   atlassian: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null
     return dataLoader.get('freshAtlassianAuth').load({teamId, userId})
   },
 
   jiraServer: (source) => source,
 
   github: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null
     const res = await dataLoader.get('githubAuth').load({teamId, userId})
     return res || null
   },
@@ -30,7 +32,8 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   mattermost: (source) => source,
 
   slack: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) return null
+    const viewerId = getUserId(authToken)
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null
     const auths = await dataLoader.get('slackAuthByUserId').load(userId)
     return auths.find((auth) => auth.teamId === teamId)!
   },

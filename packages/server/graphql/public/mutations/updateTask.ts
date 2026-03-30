@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -35,7 +35,7 @@ const updateTask: MutationResolvers['updateTask'] = async (
   if (!task) return {error: {message: 'Task not found'}}
   const {teamId, userId} = task
   const nextUserId = inputUserId === undefined ? userId : inputUserId
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (teamId || inputUserId) {

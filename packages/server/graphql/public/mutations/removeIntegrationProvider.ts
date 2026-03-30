@@ -1,7 +1,12 @@
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isTeamMemberAsync,
+  isUserOrgAdmin
+} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -28,7 +33,7 @@ const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] 
     if (scope === 'org' && !(await isUserOrgAdmin(viewerId, orgId!, dataLoader))) {
       return {error: {message: 'Must be a member of the organization that created the provider'}}
     }
-    if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
+    if (scope === 'team' && !(await isTeamMemberAsync(viewerId, teamId!, dataLoader))) {
       const team = await dataLoader.get('teams').load(teamId!)
       if (!team || !(await isUserOrgAdmin(viewerId, team.orgId, dataLoader))) {
         return {error: {message: 'Must be on the team that created the provider'}}

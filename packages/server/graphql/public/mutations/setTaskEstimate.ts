@@ -12,7 +12,7 @@ import type {IntegrationProviderJiraServer} from '../../../postgres/types/Integr
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {fieldTypeToId} from '../../../utils/azureDevOps/azureDevOpsFieldTypeToId'
 import getPhase from '../../../utils/getPhase'
 import makeScoreJiraComment from '../../../utils/makeScoreJiraComment'
@@ -47,7 +47,7 @@ const setTaskEstimate: MutationResolvers['setTaskEstimate'] = async (
     return {error: {message: 'Task not found'}}
   }
   const {teamId} = task
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on team'}}
   }
 

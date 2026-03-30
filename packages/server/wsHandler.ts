@@ -3,7 +3,6 @@ import {type execute, GraphQLError, type subscribe} from 'graphql'
 import {handleProtocols} from 'graphql-ws'
 import {makeBehavior, type UpgradeData} from 'graphql-ws/use/uWebSockets'
 import type http from 'http'
-import {decode} from 'jsonwebtoken'
 import {SubscriptionChannel} from '../client/types/constEnums'
 import sleep from '../client/utils/sleep'
 import {activeClients} from './activeClients'
@@ -26,7 +25,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import publish from './utils/publish'
 import {CLIENT_IP_POS} from './utils/uwsGetIP'
-import {extractPersistedOperationId, getPersistedOperation, type ServerContext, yoga} from './yoga'
+import {extractPersistedOperationId, getPersistedOperation, yoga} from './yoga'
 
 declare module 'graphql-ws/use/uWebSockets' {
   interface UpgradeData {
@@ -93,7 +92,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
       }
     }
     if (!authToken) return false
-    const {sub: viewerId, tms: teamIds} = authToken
+    const {sub: viewerId} = authToken
     if (!viewerId) return false
 
     const [socketCount, user] = await Promise.all([
@@ -122,36 +121,23 @@ export const wsHandler = makeBehavior<{token?: string}>({
     analytics.websocketConnected(user, {
       socketCount,
       socketId: extra.socketId,
-      tms: teamIds
+      tms: user.tms
     })
     if (socketCount === 0) {
-      handleFirstConnection(user, teamIds).catch(Logger.log)
+      handleFirstConnection(user, user.tms).catch(Logger.log)
     }
     return {version: __APP_VERSION__}
   },
-  async onNext(context, _id, payload, {contextValue}, result) {
+  async onNext(_context, _id, payload, _args, result) {
     const isSubscription = (payload as any).docId.startsWith('s')
     if (!isSubscription) return result
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as
       | {
-          AuthTokenPayload?: {id: string}
           InvalidateSessionsPayload?: any
         }
       | undefined
-    const jwt = notificationSub?.AuthTokenPayload?.id
-    if (jwt) {
-      const {extra} = context
-      const {resubscribe} = extra
-      const nextAuthToken = new AuthToken(decode(jwt) as any)
-      extra.authToken = (contextValue as ServerContext).authToken = nextAuthToken
-      // wait for other payloads to get flushed to the client before resubscribing
-      setTimeout(() => {
-        Object.keys(resubscribe).forEach((key) => {
-          resubscribe[key]!()
-        })
-      }, 1000)
-    } else if (notificationSub?.InvalidateSessionsPayload) {
+    if (notificationSub?.InvalidateSessionsPayload) {
       throw new GraphQLError('Session invalidated', {
         extensions: {
           code: 'SESSION_INVALIDATED'
@@ -227,7 +213,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
-    const {sub: viewerId, tms: teamIds} = authToken
+    const {sub: viewerId} = authToken
     Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
     extra.dataLoaders = {}
     activeClients.delete(extra.socketId)
@@ -239,6 +225,12 @@ export const wsHandler = makeBehavior<{token?: string}>({
     // A client may also reconnect quickly
     await sleep(1000)
     const socketCount = await getUserSocketCount(viewerId)
+    const dbUser = await getKysely()
+      .selectFrom('User')
+      .select(['tms'])
+      .where('id', '=', viewerId)
+      .executeTakeFirst()
+    const teamIds = dbUser?.tms ?? []
     const user = {id: viewerId, isConnected: false}
     analytics.websocketDisconnected(user, {
       socketCount: socketCount + 1,
@@ -327,7 +319,7 @@ wsHandler.upgrade = async (res, req, context) => {
       upgradeData.authToken = {} as AuthToken
     } else {
       upgradeData.user = user
-      freshToken = getFreshTokenIfNeeded(authToken, user.tms)
+      freshToken = getFreshTokenIfNeeded(authToken)
       upgradeData.authToken = freshToken || authToken
     }
   }

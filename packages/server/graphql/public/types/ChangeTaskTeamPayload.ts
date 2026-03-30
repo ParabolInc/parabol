@@ -1,4 +1,4 @@
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import type {ChangeTaskTeamPayloadResolvers} from '../resolverTypes'
 
 export type ChangeTaskTeamPayloadSource =
@@ -14,8 +14,9 @@ const ChangeTaskTeamPayload: ChangeTaskTeamPayloadResolvers = {
     const task = await dataLoader.get('tasks').load(taskId)
     if (!task) return null
     const {userId, tags, teamId} = task
-    const isViewer = userId === getUserId(authToken)
-    const isViewerOnTeam = authToken.tms.includes(teamId)
+    const viewerId = getUserId(authToken)
+    const isViewer = userId === viewerId
+    const isViewerOnTeam = await isTeamMemberAsync(viewerId, teamId, dataLoader)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? task : null
   },
   removedTaskId: (source) => ('error' in source ? null : source.taskId)

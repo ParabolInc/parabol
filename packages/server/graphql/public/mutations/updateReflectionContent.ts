@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -29,7 +29,7 @@ const updateReflectionContent: MutationResolvers['updateReflectionContent'] = as
   if (!reflectPrompt) return standardError(new Error('Category not found'), {userId: viewerId})
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})

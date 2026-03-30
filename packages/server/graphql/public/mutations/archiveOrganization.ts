@@ -3,13 +3,11 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import type Team from '../../../database/types/Team'
 import getKysely from '../../../postgres/getKysely'
-import type {User} from '../../../postgres/types'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
@@ -40,26 +38,13 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
     teamIds.map((teamId: string) => safeArchiveTeam(teamId, dataLoader))
   )) as any
   const allRemovedSuggestedActionIds = [] as string[]
-  const allUserIds = [] as string[]
 
   teamArchiveResults.forEach(
-    ({
-      team,
-      users,
-      removedSuggestedActionIds
-    }: {
-      team: Team
-      users: User[]
-      removedSuggestedActionIds: string[]
-    }) => {
+    ({team, removedSuggestedActionIds}: {team: Team; removedSuggestedActionIds: string[]}) => {
       if (!team) return
-      const userIds = users.map(({id}) => id)
-      allUserIds.push(...userIds)
       allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
     }
   )
-
-  const uniqueUserIds = Array.from(new Set(allUserIds))
 
   await Promise.all([
     getKysely()
@@ -77,14 +62,6 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
     removedSuggestedActionIds: allRemovedSuggestedActionIds
   }
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
-  const users = await dataLoader.get('users').loadMany(uniqueUserIds)
-  users.filter(isValid).forEach((user) => {
-    if (!user) return
-    const {id, tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
-      tms
-    })
-  })
 
   return data
 }

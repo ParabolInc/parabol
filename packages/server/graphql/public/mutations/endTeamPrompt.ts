@@ -1,4 +1,4 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
@@ -21,7 +21,7 @@ const endTeamPrompt: MutationResolvers['endTeamPrompt'] = async (
   const {teamId} = meeting
 
   // VALIDATION
-  if (!isTeamMember(authToken, teamId) && authToken.rol !== 'su') {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)) && authToken.rol !== 'su') {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   return safeEndTeamPrompt({meeting, context, info})

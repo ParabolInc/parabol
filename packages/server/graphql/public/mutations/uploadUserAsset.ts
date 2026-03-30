@@ -13,7 +13,7 @@ import {
 import type AuthToken from '../../../database/types/AuthToken'
 import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync, isUserInOrg} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
 import type {DataLoaderWorker} from '../../graphql'
@@ -41,7 +41,7 @@ export const validateScope = async (
   let scopeCode = scopeKey
   if (scope === 'User' && scopeKey !== viewerId) {
     return {error: {message: 'scopeKey must match your viewerId'}}
-  } else if (scope === 'Team' && !isTeamMember(authToken, scopeKey)) {
+  } else if (scope === 'Team' && !(await isTeamMemberAsync(viewerId, scopeKey, dataLoader))) {
     return {error: {message: 'scopeKey must match one of your teams'}}
   } else if (scope === 'Organization') {
     const inOrg = await isUserInOrg(viewerId, scopeKey, dataLoader)

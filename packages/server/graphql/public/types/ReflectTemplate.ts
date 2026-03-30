@@ -63,11 +63,12 @@ const ReflectTemplate: ReflectTemplateResolvers = {
       .map((team) => team.id)
 
     // The goal here is to issue all fetches to the DB at once, then we can parse out team membership
-    const {tms} = authToken
+    const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+    const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
     const [lastUsedAtOnTeam, lastUsedAtOnOrg] = await Promise.all([
-      getLastUsedAtForTeams(tms, id, dataLoader),
+      getLastUsedAtForTeams([...viewerTeamIds], id, dataLoader),
       getLastUsedAtForTeams(
-        orgTeamIds.filter((teamId) => !tms.includes(teamId)),
+        orgTeamIds.filter((teamId) => !viewerTeamIds.has(teamId)),
         id,
         dataLoader
       )

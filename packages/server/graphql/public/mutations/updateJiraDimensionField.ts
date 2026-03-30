@@ -2,7 +2,7 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import JiraProjectKeyId from '../../../../client/shared/gqlIds/JiraProjectKeyId'
 import type {JiraIssue} from '../../../dataloader/atlassianLoaders'
 import upsertJiraDimensionFieldMap from '../../../postgres/queries/upsertJiraDimensionFieldMap'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -41,7 +41,7 @@ const updateJiraDimensionField: MutationResolvers['updateJiraDimensionField'] = 
     return {error: {message: 'Not a poker meeting'}}
   }
   const {teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on team'}}
   }
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)

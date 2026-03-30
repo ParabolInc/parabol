@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from './../../../utils/authorization'
-import {isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -23,7 +22,8 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
     return {error: {message: 'Not a poker meeting'}}
   }
   const {teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  const viewerId = getUserId(authToken)
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on team'}}
   }
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
@@ -32,7 +32,6 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
   if (!matchingDimension) {
     return {error: {message: 'Invalid dimension name'}}
   }
-  const viewerId = getUserId(authToken)
   const gitlabAuth = await dataLoader.get('freshGitlabAuth').load({teamId, userId: viewerId})
   if (!gitlabAuth?.providerId) return {error: {message: 'Invalid dimension name'}}
 

@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -16,7 +16,7 @@ const linkMattermostChannel: MutationResolvers['linkMattermostChannel'] = async 
   const pg = getKysely()
 
   //AUTH
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Attempted teamId spoof'), {
       userId: viewerId
     })

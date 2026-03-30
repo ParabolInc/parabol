@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {
   getUserId,
-  isTeamMember,
+  isTeamMemberAsync,
   isUserBillingLeader,
   isUserOrgAdmin
 } from '../../../utils/authorization'
@@ -30,7 +30,11 @@ const removeReflectTemplate: MutationResolvers['removeReflectTemplate'] = async 
     isUserBillingLeader(viewerId, template.orgId, dataLoader),
     isUserOrgAdmin(viewerId, template.orgId, dataLoader)
   ])
-  if (!isTeamMember(authToken, template.teamId) && !isBillingLeader && !isOrgAdmin) {
+  if (
+    !(await isTeamMemberAsync(viewerId, template.teamId, dataLoader)) &&
+    !isBillingLeader &&
+    !isOrgAdmin
+  ) {
     return standardError(new Error('You are not authorized to remove this template'), {
       userId: viewerId
     })

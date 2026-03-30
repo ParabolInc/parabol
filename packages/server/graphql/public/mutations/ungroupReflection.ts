@@ -1,7 +1,7 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import removeReflectionFromGroup from '../../mutations/helpers/updateReflectionLocation/removeReflectionFromGroup'
 import type {MutationResolvers} from '../resolverTypes'
@@ -38,7 +38,8 @@ const ungroupReflection: MutationResolvers['ungroupReflection'] = async (
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) throw new GraphQLError('Meeting not found')
   const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  const viewerId = getUserId(authToken)
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     throw new GraphQLError('Not a team member')
   }
   if (endedAt) throw new GraphQLError('Meeting already ended')

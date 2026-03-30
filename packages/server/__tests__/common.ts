@@ -15,7 +15,7 @@ const WS_PROTOCOL = PROTOCOL === 'https' ? 'wss' : 'ws'
 
 export async function sendIntranet(req: {query: string; variables?: Record<string, any>}) {
   // getUserId looks out to make sure aGhostUser is not used, so we use the other userId that is available
-  const authToken = encodeAuthToken(new AuthToken({sub: 'parabolAIUser', tms: [], rol: 'su'}))
+  const authToken = encodeAuthToken(new AuthToken({sub: 'parabolAIUser', rol: 'su'}))
 
   const response = await fetch(`${PROTOCOL}://${HOST}/graphql`, {
     method: 'POST',

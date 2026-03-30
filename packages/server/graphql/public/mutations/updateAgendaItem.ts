@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -20,7 +20,7 @@ const updateAgendaItem: MutationResolvers['updateAgendaItem'] = async (
   // AUTH
   const {id: agendaItemId, content, pinned, sortOrder} = updatedAgendaItem
   const [teamId] = agendaItemId.split('::') as [string]
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

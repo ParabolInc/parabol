@@ -5,7 +5,7 @@ import findStageById from '../../../../client/utils/meetings/findStageById'
 import EstimateStage from '../../../database/types/EstimateStage'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types/pg'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
@@ -41,7 +41,7 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       return {error: {message: 'Not a poker meeting'}}
     }
     const {endedAt, teamId, phases, templateRefId, facilitatorStageId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       // bad actors could be naughty & just lock meetings that they don't own. Limit bad actors to team members
       return {error: {message: `Not on team`}}
     }

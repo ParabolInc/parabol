@@ -3,7 +3,7 @@ import getKysely from '../../../postgres/getKysely'
 import upsertAtlassianAuths from '../../../postgres/queries/upsertAtlassianAuths'
 import upsertGitHubAuth from '../../../postgres/queries/upsertGitHubAuth'
 import type {AtlassianAuth, GitHubAuth} from '../../../postgres/types'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
@@ -24,7 +24,7 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     return standardError(new Error('Task not found'), {userId: viewerId})
   }
   const {tags, teamId: oldTeamId} = task
-  if (!isTeamMember(authToken, oldTeamId)) {
+  if (!(await isTeamMemberAsync(viewerId, oldTeamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (task.userId !== viewerId) {

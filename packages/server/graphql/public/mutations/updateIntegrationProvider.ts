@@ -1,7 +1,12 @@
 import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProviderId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isTeamMemberAsync,
+  isUserOrgAdmin
+} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import {MattermostNotifier} from '../../mutations/helpers/notifications/MattermostNotifier'
 import {MSTeamsNotifier} from '../../mutations/helpers/notifications/MSTeamsNotifier'
@@ -82,10 +87,10 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
     }
     if (
       (oldScope === 'team' &&
-        !isTeamMember(authToken, oldTeamId!) &&
+        !(await isTeamMemberAsync(viewerId, oldTeamId!, dataLoader)) &&
         !(await isUserOrgAdmin(viewerId, oldTeam!.orgId, dataLoader))) ||
       (newScope === 'team' &&
-        !isTeamMember(authToken, newTeamId!) &&
+        !(await isTeamMemberAsync(viewerId, newTeamId!, dataLoader)) &&
         !(await isUserOrgAdmin(viewerId, newTeam!.orgId, dataLoader)))
     ) {
       return {

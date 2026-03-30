@@ -1,5 +1,5 @@
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import type {NotifyTaskInvolvesResolvers} from '../resolverTypes'
 
 const NotifyTaskInvolves: NotifyTaskInvolvesResolvers = {
@@ -9,7 +9,7 @@ const NotifyTaskInvolves: NotifyTaskInvolvesResolvers = {
     const task = await dataLoader.get('tasks').load(taskId)
     if (!task) return null
     const {tags, teamId, userId} = task
-    if (!isTeamMember(authToken, teamId)) return null
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) return null
     if (isTaskPrivate(tags) && viewerId !== userId) return null
     return task
   },

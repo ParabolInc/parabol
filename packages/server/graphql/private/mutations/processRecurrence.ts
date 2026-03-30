@@ -135,11 +135,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
         meetingsToEnd.map(async (meeting) => {
           const {facilitatorUserId} = meeting
           if (!facilitatorUserId) return {error: {message: 'No facilitator'}}
-          const userTeams = await dataLoader.get('teamMembersByUserId').load(facilitatorUserId)
-          const tms = userTeams.map(({teamId}) => teamId)
           const authToken = new AuthToken({
             sub: facilitatorUserId,
-            tms,
             rol: 'impersonate'
           })
           const context = {...serverContext, authToken}

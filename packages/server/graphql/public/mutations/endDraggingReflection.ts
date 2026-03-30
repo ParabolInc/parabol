@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import addReflectionToGroup from '../../mutations/helpers/updateReflectionLocation/addReflectionToGroup'
@@ -26,7 +26,7 @@ const endDraggingReflection: MutationResolvers['endDraggingReflection'] = async 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
   const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})

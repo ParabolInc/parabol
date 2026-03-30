@@ -1,7 +1,7 @@
 import TeamNotificationSettingsId from '../../../../client/shared/gqlIds/TeamNotificationSettingsId'
 import {isNotNull} from '../../../../client/utils/predicates'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -15,7 +15,7 @@ const unlinkMattermostChannel: MutationResolvers['unlinkMattermostChannel'] = as
   const pg = getKysely()
 
   //AUTH
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Attempted teamId spoof'), {
       userId: viewerId
     })

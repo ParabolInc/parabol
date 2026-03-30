@@ -34,11 +34,11 @@ test('Sign out clears cookie', async () => {
 })
 
 test('Sign out only invalidates the signed-out session', async () => {
-  const {userId, teamId} = await signUp()
+  const {userId} = await signUp()
 
   // Two separate tokens = two independent sessions (each gets its own jti via randomUUID)
-  const session1Token = encodeAuthToken(new AuthToken({sub: userId, tms: [teamId]}))
-  const session2Token = encodeAuthToken(new AuthToken({sub: userId, tms: [teamId]}))
+  const session1Token = encodeAuthToken(new AuthToken({sub: userId}))
+  const session2Token = encodeAuthToken(new AuthToken({sub: userId}))
 
   // Both sessions should work before sign out
   const [before1, before2] = await Promise.all([

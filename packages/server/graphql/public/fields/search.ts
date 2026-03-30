@@ -2,7 +2,7 @@ import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
 import {getEmbeddingsByRRF} from '../../../postgres/queries/getEmbeddingsByRRF'
 import {getPagesByRRF} from '../../../postgres/queries/getPagesByRRF'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {getUserQueryJobData, publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
 import type {SearchTypeEnum, UserResolvers} from '../resolverTypes'
@@ -29,8 +29,10 @@ export const search: NonNullable<UserResolvers['search']> = async (
   if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
   if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
   if (teamIds) {
-    const hasAccessToTeams = teamIds.every((teamId) => authToken.tms.includes(teamId))
-    if (!hasAccessToTeams) {
+    const membershipChecks = await Promise.all(
+      teamIds.map((teamId) => isTeamMemberAsync(viewerId, teamId, dataLoader))
+    )
+    if (membershipChecks.some((isMember) => !isMember)) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
   }
@@ -46,7 +48,9 @@ export const search: NonNullable<UserResolvers['search']> = async (
   // if teamIds is defined for pages, it will limit the search to team pages
   const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
   // metadata requires a teamId, whereas pages don't because it uses RBAC
-  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...authToken.tms]
+  const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
+  const viewerTeamIds = viewerTeamMembers.map((tm) => tm.teamId)
+  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...viewerTeamIds]
 
   if (query.length === 0) {
     const noQueryEdge = {

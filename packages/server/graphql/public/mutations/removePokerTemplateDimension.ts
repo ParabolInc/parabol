@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -21,7 +21,7 @@ const removePokerTemplateDimension: MutationResolvers['removePokerTemplateDimens
   if (!dimension || dimension.removedAt) {
     return standardError(new Error('Dimension not found'), {userId: viewerId})
   }
-  if (!isTeamMember(authToken, dimension.teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, dimension.teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

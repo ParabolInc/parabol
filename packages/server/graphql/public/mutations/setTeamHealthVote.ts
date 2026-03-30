@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type TeamHealthVote from '../../../database/types/TeamHealthVote'
 import getKysely from '../../../postgres/getKysely'
 import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase.d'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -52,7 +52,7 @@ const setTeamHealthVote: MutationResolvers['setTeamHealthVote'] = async (
     return {error: {message: 'Meeting not found'}}
   }
   const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on the team'}}
   }
   if (endedAt) {

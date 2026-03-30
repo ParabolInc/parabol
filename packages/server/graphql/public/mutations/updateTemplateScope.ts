@@ -6,7 +6,7 @@ import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync, isUserOrgAdmin} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -31,7 +31,7 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   }
   const {name, teamId, orgId, scope} = template
   if (
-    !isTeamMember(authToken, teamId) &&
+    !(await isTeamMemberAsync(viewerId, teamId, dataLoader)) &&
     !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
   ) {
     return standardError(new Error('You are not authorized to update the scope of this template'), {

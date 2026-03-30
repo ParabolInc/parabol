@@ -4,11 +4,9 @@ import {
   LOCKED_MESSAGE,
   SubscriptionChannel
 } from '../../../../client/types/constEnums'
-import AuthToken from '../../../database/types/AuthToken'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
-import {setAuthCookie} from '../../../utils/authCookie'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import RedisLock from '../../../utils/RedisLock'
 import activatePrevSlackAuth from '../../mutations/helpers/activatePrevSlackAuth'
@@ -46,7 +44,7 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     if (
       message === InvitationTokenError.ALREADY_ACCEPTED &&
       teamId &&
-      isTeamMember(authToken, teamId)
+      (await isTeamMemberAsync(viewerId, teamId, dataLoader))
     ) {
       return {
         error: {message},
@@ -102,9 +100,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
   )
   activatePrevSlackAuth(viewerId, teamId, dataLoader)
   await redisLock.unlock()
-  const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
-  // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
-  authToken.tms = tms
   const teamMemberId = toTeamMemberId(teamId, viewerId)
 
   const data = {
@@ -113,24 +108,6 @@ const acceptTeamInvitation: MutationResolvers['acceptTeamInvitation'] = async (
     teamMemberId,
     invitationNotificationIds
   }
-
-  const nextAuthToken = new AuthToken({
-    tms,
-    sub: viewerId,
-    rol: authToken.rol
-  })
-  // This is to triage https://github.com/ParabolInc/parabol/issues/11167. We know it worked if we don't see it again
-  context.authToken = nextAuthToken
-  // if this gets called without a websocket (context.request), we need to set it: https://github.com/ParabolInc/parabol/issues/12610
-  if (context.request) {
-    setAuthCookie(context, nextAuthToken)
-  }
-  // Send the new team member a welcome & a new token
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
-    tms
-  })
-  // https://github.com/ParabolInc/parabol/issues/11167 We need to sleep a bit to let the new authToken propagate
-  // To all of the viewer's subscribers (they may have 2 tabs open)
 
   // remove the old notifications
   if (invitationNotificationIds.length > 0) {

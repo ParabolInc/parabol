@@ -16,10 +16,11 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
   const subOptions = {mutatorId, operationId}
 
   // VALIDATION
-  const [viewer, tasks] = await Promise.all([
-    dataLoader.get('users').loadNonNull(viewerId),
+  const [viewerTeamMembers, tasks] = await Promise.all([
+    dataLoader.get('teamMembersByUserId').load(viewerId),
     (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
   ])
+  const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
   const validTasksByTeamId = {} as {[teamId: string]: Task[]}
 
   for (const task of tasks) {
@@ -30,7 +31,7 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
       // if viewer is the task owner, they can archive
       tasks.push(task)
     } else {
-      if (viewer.tms.includes(teamId)) {
+      if (viewerTeamIds.has(teamId)) {
         // or if viewer is in the team of the task, they can also archive
         tasks.push(task)
       }

@@ -1,5 +1,5 @@
 import type DiscussStage from '../../../database/types/DiscussStage'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import standardError from '../../../utils/standardError'
 import {SlackNotifier} from '../../mutations/helpers/notifications/SlackNotifier'
@@ -14,7 +14,7 @@ const shareTopic: MutationResolvers['shareTopic'] = async (
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   const {teamId} = meeting
 
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

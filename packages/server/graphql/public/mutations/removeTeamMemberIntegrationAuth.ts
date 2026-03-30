@@ -1,7 +1,7 @@
 import getKysely from '../../../postgres/getKysely'
 import type {Integrationproviderserviceenum} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
@@ -12,7 +12,7 @@ const removeTeamMemberIntegrationAuth: MutationResolvers['removeTeamMemberIntegr
     const viewerId = getUserId(authToken)
 
     // AUTH
-    if (!isTeamMember(authToken, teamId))
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)))
       return standardError(new Error('permission denied; must be team member'))
     const pg = getKysely()
     // RESOLUTION

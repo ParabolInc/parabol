@@ -5,7 +5,7 @@ import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import decrementFreeTemplatesRemaining from '../../../postgres/queries/decrementFreeTemplatesRemaining'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync, isUserInOrg} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import makeRetroTemplates from '../../mutations/helpers/makeRetroTemplates'
@@ -48,7 +48,7 @@ const addReflectTemplate: MutationResolvers['addReflectTemplate'] = async (
     }
     const {name, scope} = parentTemplate
     if (scope === 'TEAM') {
-      if (!isTeamMember(authToken, parentTemplate.teamId))
+      if (!(await isTeamMemberAsync(viewerId, parentTemplate.teamId, dataLoader)))
         return standardError(new Error('Template is scoped to team'), {
           userId: viewerId
         })

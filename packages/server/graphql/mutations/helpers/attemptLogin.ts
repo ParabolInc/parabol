@@ -87,7 +87,7 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
     return {
       userId: viewerId,
       // create a brand new auth token using the tms in our DB
-      authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
+      authToken: new AuthToken({sub: viewerId, rol})
     }
   }
   await logFailedLogin(ip, email)

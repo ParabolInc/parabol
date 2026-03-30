@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isSpecialPokerLabel from 'parabol-client/utils/isSpecialPokerLabel'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {validateColorValue, validateScaleLabel} from '../../mutations/helpers/validateScaleValue'
@@ -22,7 +22,7 @@ const updatePokerTemplateScaleValue: MutationResolvers['updatePokerTemplateScale
   if (!existingScale || existingScale.removedAt) {
     return standardError(new Error('Did not find an active scale'), {userId: viewerId})
   }
-  if (!isTeamMember(authToken, existingScale.teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, existingScale.teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

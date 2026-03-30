@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -28,7 +28,7 @@ const selectTemplate: MutationResolvers['selectTemplate'] = async (
   const {scope} = template
   const viewerTeam = await dataLoader.get('teams').loadNonNull(teamId)
   if (scope === 'TEAM') {
-    if (!isTeamMember(authToken, template.teamId))
+    if (!(await isTeamMemberAsync(viewerId, template.teamId, dataLoader)))
       return standardError(new Error('Template is scoped to team'), {
         userId: viewerId
       })

@@ -1,6 +1,6 @@
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -21,7 +21,7 @@ const updateMeetingTemplate: MutationResolvers['updateMeetingTemplate'] = async 
       userId: viewerId
     })
   if (!('templateId' in meeting)) return {error: {message: 'Meeting has no template'}}
-  if (!isTeamMember(authToken, meeting.teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, meeting.teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)

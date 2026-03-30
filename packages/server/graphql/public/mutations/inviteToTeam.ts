@@ -1,4 +1,4 @@
-import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isSuperUser, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import inviteToTeamHelper from '../../mutations/helpers/inviteToTeamHelper'
 import type {MutationResolvers} from '../resolverTypes'
@@ -8,11 +8,11 @@ const inviteToTeam: MutationResolvers['inviteToTeam'] = async (
   {invitees: inviteesInput, meetingId, teamId},
   context
 ) => {
-  const {authToken} = context
+  const {authToken, dataLoader} = context
 
   // AUTH
   const viewerId = getUserId(authToken)
-  if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)) && !isSuperUser(authToken)) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   return await inviteToTeamHelper(inviteesInput, teamId, meetingId, context)

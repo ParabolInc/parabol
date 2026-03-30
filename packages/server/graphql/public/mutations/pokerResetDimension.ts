@@ -2,7 +2,7 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import sendPokerMeetingRevoteEvent from '../../mutations/helpers/sendPokerMeetingRevoteEvent'
@@ -27,7 +27,7 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
     return {error: {message: 'Not a poker meeting'}}
   }
   const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on the team'}}
   }
   if (endedAt) {

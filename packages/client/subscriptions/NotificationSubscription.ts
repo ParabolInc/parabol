@@ -5,10 +5,7 @@ import type {NotificationSubscription_paymentRejected$data} from '~/__generated_
 import {archiveTimelineEventNotificationUpdater} from '~/mutations/ArchiveTimelineEventMutation'
 import {endCheckInNotificationUpdater} from '~/mutations/EndCheckInMutation'
 import {endRetrospectiveNotificationUpdater} from '~/mutations/EndRetrospectiveMutation'
-import type {
-  NotificationSubscription$data,
-  NotificationSubscription as TNotificationSubscription
-} from '../__generated__/NotificationSubscription.graphql'
+import type {NotificationSubscription$data} from '../__generated__/NotificationSubscription.graphql'
 import {acceptTeamInvitationNotificationUpdater} from '../mutations/AcceptTeamInvitationMutation'
 import {addOrgMutationNotificationUpdater} from '../mutations/AddOrgMutation'
 import {addTeamMutationNotificationUpdater} from '../mutations/AddTeamMutation'
@@ -136,9 +133,6 @@ const subscription = graphql`
         ...PersistJiraServerSearchQueryMutation_notification @relay(mask: false)
       }
 
-      AuthTokenPayload {
-        id
-      }
       MeetingStageTimeLimitPayload {
         # ScheduledJob Result
         ...NotificationSubscription_meetingStageTimeLimitEnd @relay(mask: false)
@@ -197,11 +191,6 @@ const subscription = graphql`
     }
   }
 `
-
-type NextHandler = OnNextHandler<
-  TNotificationSubscription['response']['notificationSubscription']['AuthTokenPayload'],
-  OnNextNavigateContext
->
 
 const stripeFailPaymentNotificationOnNext: OnNextHandler<
   NotificationSubscription_paymentRejected$data,
@@ -262,10 +251,6 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
   const viewer = store.getRoot().getLinkedRecord('viewer')
   const newFeature = payload.getLinkedRecord('newFeature')
   viewer?.setLinkedRecord(newFeature, 'newFeature')
-}
-
-const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
-  atmosphere.refreshSession()
 }
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<
@@ -334,7 +319,6 @@ const updateHandlers = {
 } as const
 
 const onNextHandlers = {
-  AuthTokenPayload: authTokenNotificationOnNext,
   CreateTaskPayload: createTaskNotificationOnNext,
   InviteToTeamPayload: inviteToTeamNotificationOnNext,
   RemoveOrgUsersSuccess: removeOrgUsersNotificationOnNext,

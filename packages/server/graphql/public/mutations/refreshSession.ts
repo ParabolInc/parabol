@@ -23,8 +23,7 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
 
   context.authToken = new AuthToken({
     sub,
-    rol: user.rol,
-    tms: user.tms
+    rol: user.rol
   })
   setAuthCookie(context, context.authToken!)
   return true

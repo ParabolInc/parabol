@@ -1,7 +1,7 @@
 import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
 import standardError from '../../../utils/standardError'
@@ -39,10 +39,8 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const user = await dataLoader.get('users').loadNonNull(userId)
-      const {tms} = user
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
-      if (!onTeam) {
+      const isMember = await isTeamMemberAsync(viewerId, teamId, dataLoader)
+      if (!isMember) {
         return standardError(new Error('Not on same team as user'), {
           userId: viewerId
         })
@@ -61,10 +59,8 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const user = await dataLoader.get('users').loadNonNull(userId)
-      const {tms} = user
-      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
-      if (!onTeam) {
+      const isMember = await isTeamMemberAsync(viewerId, teamId, dataLoader)
+      if (!isMember) {
         return standardError(new Error('Not on same team as user'), {
           userId: viewerId
         })

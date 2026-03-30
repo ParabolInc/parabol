@@ -72,14 +72,6 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
   }
   publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
-  users.forEach((user) => {
-    if (!user) return
-    const {id, tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
-      tms
-    })
-  })
-
   return data
 }
 

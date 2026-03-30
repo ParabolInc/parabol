@@ -1,4 +1,4 @@
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import standardError from '../../../utils/standardError'
 import type {GQLContext} from '../../graphql'
 import isValid from '../../isValid'
@@ -36,7 +36,7 @@ const AcceptTeamInvitationPayload: AcceptTeamInvitationPayloadResolvers = {
       return null
     }
     const {teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
+    if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
       standardError(new Error('Viewer not on team'), {
         userId: viewerId,
         tags: {teamId}

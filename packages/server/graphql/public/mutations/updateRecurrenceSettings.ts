@@ -8,7 +8,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {MeetingSeries} from '../../../postgres/types'
 import type {MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -143,7 +143,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
     })
   }
   const {teamId, meetingType, meetingSeriesId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
 

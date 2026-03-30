@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getRedis from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -25,7 +25,8 @@ const setTaskHighlight: MutationResolvers['setTaskHighlight'] = async (
   if (task.userId !== viewerId) return standardError(new Error('Not your turn'), {userId: viewerId})
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
   const {teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) return {error: {message: 'Not on team'}}
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader)))
+    return {error: {message: 'Not on team'}}
 
   const redis = getRedis()
   if (isHighlighted) {

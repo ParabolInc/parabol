@@ -1,7 +1,12 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import upsertIntegrationProvider from '../../../postgres/queries/upsertIntegrationProvider'
-import {getUserId, isSuperUser, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
+import {
+  getUserId,
+  isSuperUser,
+  isTeamMemberAsync,
+  isUserOrgAdmin
+} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -57,7 +62,7 @@ const addIntegrationProvider: MutationResolvers['addIntegrationProvider'] = asyn
         }
       }
     }
-    if (scope === 'team' && !isTeamMember(authToken, teamId!)) {
+    if (scope === 'team' && !(await isTeamMemberAsync(viewerId, teamId!, dataLoader))) {
       return {
         error: {
           message: 'Must be on the team for the integration provider'

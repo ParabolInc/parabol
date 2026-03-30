@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -22,7 +22,7 @@ const revealTeamHealthVotes: MutationResolvers['revealTeamHealthVotes'] = async 
     return {error: {message: 'Meeting not found'}}
   }
   const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
+  if (!(await isTeamMemberAsync(viewerId, teamId, dataLoader))) {
     return {error: {message: 'Not on the team'}}
   }
   if (endedAt) {
