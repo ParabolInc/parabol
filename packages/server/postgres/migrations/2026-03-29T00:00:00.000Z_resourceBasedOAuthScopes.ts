@@ -78,9 +78,45 @@ export async function up(db: Kysely<any>): Promise<void> {
   // 4. Drop old enum, rename new one
   await sql`DROP TYPE IF EXISTS "OAuthScopeEnum"`.execute(db)
   await sql`ALTER TYPE "OAuthScopeEnumV2" RENAME TO "OAuthScopeEnum"`.execute(db)
+
+  // 5. Add clientType to OAuthAPIProvider and make clientSecret nullable (for public clients)
+  await sql`
+    DO $$ BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'OAuthAPIProvider' AND column_name = 'clientType'
+      ) THEN
+        ALTER TABLE "OAuthAPIProvider" ADD COLUMN "clientType" varchar(20) NOT NULL DEFAULT 'confidential';
+      END IF;
+    END $$
+  `.execute(db)
+  await sql`ALTER TABLE "OAuthAPIProvider" ALTER COLUMN "clientSecret" DROP NOT NULL`.execute(db)
+
+  // 6. Add PKCE columns to OAuthAPICode
+  await sql`
+    DO $$ BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'OAuthAPICode' AND column_name = 'codeChallenge'
+      ) THEN
+        ALTER TABLE "OAuthAPICode" ADD COLUMN "codeChallenge" varchar(128);
+        ALTER TABLE "OAuthAPICode" ADD COLUMN "codeChallengeMethod" varchar(10);
+      END IF;
+    END $$
+  `.execute(db)
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+  // Reverse PKCE and clientType changes
+  await sql`ALTER TABLE "OAuthAPICode" DROP COLUMN IF EXISTS "codeChallengeMethod"`.execute(db)
+  await sql`ALTER TABLE "OAuthAPICode" DROP COLUMN IF EXISTS "codeChallenge"`.execute(db)
+  await sql`UPDATE "OAuthAPIProvider" SET "clientSecret" = '' WHERE "clientSecret" IS NULL`.execute(
+    db
+  )
+  await sql`ALTER TABLE "OAuthAPIProvider" ALTER COLUMN "clientSecret" SET NOT NULL`.execute(db)
+  await sql`ALTER TABLE "OAuthAPIProvider" DROP COLUMN IF EXISTS "clientType"`.execute(db)
+
+  // Reverse scope enum changes
   await db.schema
     .createType('OAuthScopeEnumOld')
     .asEnum(['graphql:query', 'graphql:mutation'])
