@@ -86,6 +86,7 @@
     "emoji-mart": "^5.6.0",
     "fast-json-stable-stringify": "^2.1.0",
     "form-data": "^4.0.4",
+    "google-auth-library": "^10.5.0",
     "googleapis": "^166.0.0",
     "graphql-relay": "^0.10.0",
     "graphql-shield": "^7.6.5",
