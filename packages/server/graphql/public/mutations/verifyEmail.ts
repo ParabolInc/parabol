@@ -35,14 +35,14 @@ const verifyEmail: MutationResolvers['verifyEmail'] = async (
   const user = await getUserByEmail(email)
 
   if (user) {
-    const {id: userId, identities, rol, isRemoved} = user
+    const {id: userId, identities, rol, tms, isRemoved} = user
     if (isRemoved) {
       return {error: {message: 'This account has been removed'}}
     }
     const localIdentity = identities.find(
       (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
     ) as AuthIdentityLocal
-    context.authToken = new AuthToken({sub: userId, rol})
+    context.authToken = new AuthToken({sub: userId, tms, rol})
     setAuthCookie(context, context.authToken)
     if (!localIdentity.isEmailVerified) {
       // mutative

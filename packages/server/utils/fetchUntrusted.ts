@@ -150,24 +150,36 @@ function createPinnedAgent(protocol: string, addresses: string[]) {
 
 interface PinnedResponse {
   status: number
+  statusText: string
   headers: http.IncomingHttpHeaders
   body: http.IncomingMessage
 }
 
 function pinnedRequest(
+  method: 'GET' | 'POST',
   url: URL,
   agent: http.Agent | https.Agent,
   signal: AbortSignal,
-  extraHeaders?: Record<string, string>
+  extraHeaders?: Record<string, string>,
+  body?: string
 ): Promise<PinnedResponse> {
   const mod = url.protocol === 'https:' ? https : http
   return new Promise((resolve, reject) => {
     const req = mod.request(
       url,
-      {agent, method: 'GET', headers: {'User-Agent': USER_AGENT, ...extraHeaders}, signal},
-      (res) => resolve({status: res.statusCode!, headers: res.headers, body: res})
+      {agent, method, headers: {'User-Agent': USER_AGENT, ...extraHeaders}, signal},
+      (res) =>
+        resolve({
+          status: res.statusCode!,
+          statusText: res.statusMessage!,
+          headers: res.headers,
+          body: res
+        })
     )
     req.on('error', reject)
+    if (body !== undefined) {
+      req.write(body)
+    }
     req.end()
   })
 }
@@ -206,7 +218,13 @@ export const fetchUntrusted = async (
         let fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
         try {
           // 4. Request with pinned DNS (with retry for 429 rate-limiting)
-          let response = await pinnedRequest(currentUrl, agent, controller.signal, currentHeaders)
+          let response = await pinnedRequest(
+            'GET',
+            currentUrl,
+            agent,
+            controller.signal,
+            currentHeaders
+          )
 
           for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
             clearTimeout(fetchTimeout)
@@ -219,7 +237,13 @@ export const fetchUntrusted = async (
             await new Promise((resolve) => setTimeout(resolve, delay))
             controller = new AbortController()
             fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
-            response = await pinnedRequest(currentUrl, agent, controller.signal, currentHeaders)
+            response = await pinnedRequest(
+              'GET',
+              currentUrl,
+              agent,
+              controller.signal,
+              currentHeaders
+            )
           }
 
           if (response.status >= 300 && response.status < 400) {
@@ -303,6 +327,82 @@ export const fetchUntrusted = async (
       }
 
       return outcome
+    }
+  } catch (e) {
+    Logger.log(e)
+    return null
+  }
+}
+
+export interface PostUntrustedResponse {
+  status: number
+  statusText: string
+  headers: {get: (name: string) => string | null}
+  json: () => Promise<any>
+}
+
+const MAX_WEBHOOK_RESPONSE_SIZE = 100_000
+
+export const postUntrusted = async (
+  url: string,
+  options: {
+    headers?: Record<string, string>
+    body: string
+    signal?: AbortSignal
+  }
+): Promise<PostUntrustedResponse | null> => {
+  try {
+    let parsed: URL
+    try {
+      parsed = new URL(url)
+    } catch {
+      throw new Error('Invalid URL')
+    }
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      throw new Error('Only http/https allowed')
+    }
+
+    const addresses = await resolveAndValidateHostname(parsed.hostname)
+    const agent = createPinnedAgent(parsed.protocol, addresses)
+
+    try {
+      const signal = options.signal ?? AbortSignal.timeout(TIMEOUT_MS)
+      const response = await pinnedRequest(
+        'POST',
+        parsed,
+        agent,
+        signal,
+        options.headers,
+        options.body
+      )
+
+      const chunks: Buffer[] = []
+      let total = 0
+      for await (const chunk of response.body) {
+        const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array)
+        total += buf.byteLength
+        if (total > MAX_WEBHOOK_RESPONSE_SIZE) {
+          response.body.destroy()
+          break
+        }
+        chunks.push(buf)
+      }
+      const rawBody = Buffer.concat(chunks)
+
+      return {
+        status: response.status,
+        statusText: response.statusText,
+        headers: {
+          get: (name: string): string | null => {
+            const val = response.headers[name.toLowerCase()]
+            if (Array.isArray(val)) return val[0] ?? null
+            return val ?? null
+          }
+        },
+        json: async () => JSON.parse(rawBody.toString('utf8'))
+      }
+    } finally {
+      agent.destroy()
     }
   } catch (e) {
     Logger.log(e)

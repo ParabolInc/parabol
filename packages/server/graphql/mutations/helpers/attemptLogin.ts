@@ -86,7 +86,8 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
   if (isCorrectPassword) {
     return {
       userId: viewerId,
-      authToken: new AuthToken({sub: viewerId, rol})
+      // create a brand new auth token using the tms in our DB
+      authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
     }
   }
   await logFailedLogin(ip, email)

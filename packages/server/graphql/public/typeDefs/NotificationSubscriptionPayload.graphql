@@ -20,7 +20,6 @@ type NotificationSubscriptionPayload {
   PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   User: User
   AuthTokenPayload: AuthTokenPayload
-  TeamMembershipChangedPayload: TeamMembershipChangedPayload
   PersistGitHubSearchQuerySuccess: PersistGitHubSearchQuerySuccess
   JiraServerIssue: JiraServerIssue
   AddedNotification: AddedNotification

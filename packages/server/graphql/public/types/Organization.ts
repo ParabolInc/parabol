@@ -63,9 +63,7 @@ const Organization: OrganizationResolvers = {
       return sortedTeams
     } else {
       // Regular users can see teams they're on plus public teams
-      const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
-      const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
-      return sortedTeams.filter((team) => team.isPublic || viewerTeamIds.has(team.id))
+      return sortedTeams.filter((team) => team.isPublic || authToken.tms.includes(team.id))
     }
   },
 

@@ -9,6 +9,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
@@ -39,7 +40,7 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
     teamIds.map((teamId: string) => safeArchiveTeam(teamId, dataLoader))
   )) as any
   const allRemovedSuggestedActionIds = [] as string[]
-  const allUserIds = new Set<string>()
+  const allUserIds = [] as string[]
 
   teamArchiveResults.forEach(
     ({
@@ -52,12 +53,13 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
       removedSuggestedActionIds: string[]
     }) => {
       if (!team) return
+      const userIds = users.map(({id}) => id)
+      allUserIds.push(...userIds)
       allRemovedSuggestedActionIds.push(...removedSuggestedActionIds)
-      users.forEach((user) => {
-        if (user) allUserIds.add(user.id)
-      })
     }
   )
+
+  const uniqueUserIds = Array.from(new Set(allUserIds))
 
   await Promise.all([
     getKysely()
@@ -75,13 +77,12 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
     removedSuggestedActionIds: allRemovedSuggestedActionIds
   }
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
-
-  teamIds.forEach((teamId) => {
-    allUserIds.forEach((userId) => {
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'TeamMembershipChangedPayload', {
-        teamId,
-        action: 'REMOVED'
-      })
+  const users = await dataLoader.get('users').loadMany(uniqueUserIds)
+  users.filter(isValid).forEach((user) => {
+    if (!user) return
+    const {id, tms} = user
+    publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
+      tms
     })
   })
 

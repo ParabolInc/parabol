@@ -1,4 +1,4 @@
-import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import isValid from '../../isValid'
 import type {CreateTaskPayloadResolvers} from '../resolverTypes'
 
@@ -14,9 +14,8 @@ const CreateTaskPayload: CreateTaskPayloadResolvers = {
     if ('error' in source) return null
     const taskDoc = await dataLoader.get('tasks').loadNonNull(source.taskId)
     const {userId, tags, teamId} = taskDoc
-    const viewerId = getUserId(authToken)
-    const isViewer = userId === viewerId
-    const isViewerOnTeam = await isTeamMemberAsync(viewerId, teamId, dataLoader)
+    const isViewer = userId === getUserId(authToken)
+    const isViewerOnTeam = authToken.tms.includes(teamId)
     return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
   },
 

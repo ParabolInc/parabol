@@ -7,6 +7,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import anonymousAvatar from '~/styles/theme/images/anonymous-avatar.svg'
 import type {Mentioned_notification$key} from '../__generated__/Mentioned_notification.graphql'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
+import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import NotificationTemplate from './NotificationTemplate'
 import {useTipTapContext} from './TipTapProvider'
 
@@ -90,7 +91,7 @@ const Mentioned = (props: Props) => {
     >
       {previewContent && (
         <div className='mx-0 my-1 mt-4 rounded-sm bg-white p-2 text-sm leading-5 shadow-card'>
-          <div dangerouslySetInnerHTML={{__html: htmlContent}}></div>
+          <div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(htmlContent)}}></div>
         </div>
       )}
     </NotificationTemplate>

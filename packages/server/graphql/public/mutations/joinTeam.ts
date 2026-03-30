@@ -2,7 +2,7 @@ import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import acceptTeamInvitationSafe from '../../../safeMutations/acceptTeamInvitation'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -20,7 +20,7 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     return standardError(new Error('You must be logged in to join a team'))
   }
 
-  if (await isTeamMemberAsync(viewerId, teamId, dataLoader)) {
+  if (isTeamMember(authToken, teamId)) {
     return standardError(new Error('You are already a member of this team'))
   }
 
@@ -43,17 +43,20 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
 
   await acceptTeamInvitationSafe(team, viewerId, dataLoader)
 
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'TeamMembershipChangedPayload', {
-    teamId,
-    action: 'ADDED'
-  })
-
+  const tms = authToken.tms ? authToken.tms.concat(teamId) : [teamId]
+  // IMPORTANT! mutate the current authToken so any queries or subscriptions can get the latest
+  authToken.tms = tms
   const teamMemberId = TeamMemberId.join(teamId, viewerId)
 
   const data = {
     teamId,
     teamMemberId
   }
+
+  // Send the new team member a welcome & a new token
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+    tms
+  })
 
   // Tell the rest of the team about the new team member
   publish(SubscriptionChannel.TEAM, teamId, 'JoinTeamSuccess', data, subOptions)

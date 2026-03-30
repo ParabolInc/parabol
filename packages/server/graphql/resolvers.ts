@@ -6,7 +6,7 @@ import type {Loaders} from '../dataloader/RootDataLoader'
 import type {Task, Team, User} from '../postgres/types'
 import type {AnyMeeting} from '../postgres/types/Meeting'
 import type {Newmeetingphasetypeenum} from '../postgres/types/pg'
-import {getUserId, isSuperUser, isTeamMemberAsync} from '../utils/authorization'
+import {getUserId, isSuperUser} from '../utils/authorization'
 import type {GQLContext} from './graphql'
 import isValid from './isValid'
 
@@ -50,9 +50,8 @@ export const resolveTask = async (
   const taskDoc = taskId ? await dataLoader.get('tasks').load(taskId) : task
   if (!taskDoc) return null
   const {userId, tags, teamId} = taskDoc
-  const viewerId = getUserId(authToken)
-  const isViewer = userId === viewerId
-  const isViewerOnTeam = await isTeamMemberAsync(viewerId, teamId, dataLoader)
+  const isViewer = userId === getUserId(authToken)
+  const isViewerOnTeam = authToken.tms.includes(teamId)
   return isViewer || (!tags.includes('private') && isViewerOnTeam) ? taskDoc : null
 }
 

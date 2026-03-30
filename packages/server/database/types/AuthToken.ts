@@ -6,7 +6,7 @@ import {toEpochSeconds} from '../../utils/epochTime'
 
 interface Input {
   sub: string
-  tms?: string[]
+  tms: string[]
   rol?: 'su' | 'impersonate' | null
   bet?: 1
   lifespan_ms?: number
@@ -17,7 +17,7 @@ interface Input {
 
 export default class AuthToken {
   sub: string
-  tms: string[] // Always populated from input or defaults to []
+  tms: string[]
   rol: 'su' | 'impersonate' | null
   bet?: 1
   scope?: string[]
@@ -27,7 +27,7 @@ export default class AuthToken {
   aud: string
   jti: string
   constructor(input: Input) {
-    const {bet, rol, sub, tms = [], lifespan_ms, scope, aud, jti} = input
+    const {bet, rol, sub, tms, lifespan_ms, scope, aud, jti} = input
     const now = new Date()
     this.sub = sub
     this.tms = tms

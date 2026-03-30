@@ -1,11 +1,12 @@
 import {GraphQLError} from 'graphql'
 import AuthToken from '../../../database/types/AuthToken'
 import {setAuthCookie} from '../../../utils/authCookie'
+import {blacklistJWTSession} from '../../../utils/blacklistJWT'
 import {MutationResolvers} from '../resolverTypes'
 
 const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, context) => {
   const {authToken, dataLoader} = context
-  const {rol, sub} = authToken!
+  const {rol, sub, jti, exp} = authToken!
 
   if (rol === 'impersonate') {
     throw new GraphQLError('Cannot refresh an impersonation session')
@@ -16,9 +17,14 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
     throw new GraphQLError('User not found')
   }
 
+  if (jti && exp) {
+    await blacklistJWTSession(jti, exp)
+  }
+
   context.authToken = new AuthToken({
     sub,
-    rol: user.rol
+    rol: user.rol,
+    tms: user.tms
   })
   setAuthCookie(context, context.authToken!)
   return true

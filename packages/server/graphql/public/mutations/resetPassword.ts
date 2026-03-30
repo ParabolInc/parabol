@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {passwordStrength} from '../../../../client/shared/passwordStrength'
@@ -23,10 +24,11 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     return {error: {message: 'Resetting password is disabled'}}
   }
   const pg = getKysely()
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
   const resetRequest = await pg
     .selectFrom('PasswordResetRequest')
     .selectAll()
-    .where('token', '=', token)
+    .where('tokenHash', '=', tokenHash)
     .executeTakeFirst()
 
   if (!resetRequest) {
@@ -49,7 +51,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     return {error: {message: weakError}}
   }
 
-  const {id: userId, identities, rol} = user
+  const {id: userId, identities, tms, rol} = user
   const localIdentity = identities.find(
     (identity) => identity.type === AuthIdentityTypeEnum.LOCAL
   ) as AuthIdentityLocal
@@ -73,7 +75,7 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
   await blacklistJWT(userId, toEpochSeconds(new Date()) + 2, context.socketId)
   // wait to ensure all previous tokens are blacklisted
   await sleep(2000)
-  context.authToken = new AuthToken({sub: userId, rol})
+  context.authToken = new AuthToken({sub: userId, tms, rol})
   setAuthCookie(context, context.authToken)
   return {userId}
 }

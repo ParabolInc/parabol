@@ -39,12 +39,9 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const [viewerTeamMembers, userTeamMembers] = await Promise.all([
-        dataLoader.get('teamMembersByUserId').load(viewerId),
-        dataLoader.get('teamMembersByUserId').load(userId)
-      ])
-      const userTeamIds = new Set(userTeamMembers.map((tm) => tm.teamId))
-      const onTeam = viewerTeamMembers.some((tm) => userTeamIds.has(tm.teamId))
+      const user = await dataLoader.get('users').loadNonNull(userId)
+      const {tms} = user
+      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {
           userId: viewerId
@@ -64,12 +61,9 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const [viewerTeamMembers, userTeamMembers] = await Promise.all([
-        dataLoader.get('teamMembersByUserId').load(viewerId),
-        dataLoader.get('teamMembersByUserId').load(userId)
-      ])
-      const userTeamIds = new Set(userTeamMembers.map((tm) => tm.teamId))
-      const onTeam = viewerTeamMembers.some((tm) => userTeamIds.has(tm.teamId))
+      const user = await dataLoader.get('users').loadNonNull(userId)
+      const {tms} = user
+      const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {
           userId: viewerId

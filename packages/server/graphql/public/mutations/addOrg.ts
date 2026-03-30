@@ -49,10 +49,12 @@ const addOrg: MutationResolvers['addOrg'] = async (_source, args, context) => {
     dataLoader
   )
 
+  const {tms} = authToken
+  // MUTATIVE
+  tms.push(teamId)
   analytics.newOrg(viewer, orgId, teamId, false)
-  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'TeamMembershipChangedPayload', {
-    teamId,
-    action: 'ADDED'
+  publish(SubscriptionChannel.NOTIFICATION, viewerId, 'AuthTokenPayload', {
+    tms
   })
 
   const teamMemberId = toTeamMemberId(teamId, viewerId)

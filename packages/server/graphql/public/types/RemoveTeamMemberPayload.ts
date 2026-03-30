@@ -29,12 +29,9 @@ const RemoveTeamMemberPayload: RemoveTeamMemberPayloadResolvers = {
     const {taskIds} = source
     if (!taskIds || taskIds.length === 0) return null
     const tasks = (await dataLoader.get('tasks').loadMany(taskIds)).filter(isValid)
-    const viewerId = getUserId(authToken)
     const {userId} = tasks[0]!
-    const isViewer = userId === viewerId
-    const viewerTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
-    const viewerTeamIds = new Set(viewerTeamMembers.map((tm) => tm.teamId))
-    const teamTasks = tasks.filter(({teamId}) => viewerTeamIds.has(teamId))
+    const isViewer = userId === getUserId(authToken)
+    const teamTasks = tasks.filter(({teamId}) => authToken.tms.includes(teamId))
     return isViewer ? teamTasks : nullIfEmpty(teamTasks.filter((p) => !p.tags.includes('private')))
   },
   user: async (source, _args, {dataLoader}) => {

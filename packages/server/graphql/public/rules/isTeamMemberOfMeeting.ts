@@ -1,6 +1,5 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import {getUserId, isTeamMemberAsync} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
@@ -14,8 +13,7 @@ export const isTeamMemberOfMeeting = <T>(dotPath: ResolverDotPath<T>) =>
       return new GraphQLError(`Meeting not found`)
     }
     // All team members can join a meeting, so let them interact with it even if no team member exists yet. This allows for creation of reflections beforehand
-    const viewerId = getUserId(authToken)
-    if (!(await isTeamMemberAsync(viewerId, meeting.teamId, dataLoader))) {
+    if (!authToken.tms.includes(meeting.teamId)) {
       return new GraphQLError(`Viewer is not on team`)
     }
     return true

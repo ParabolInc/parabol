@@ -26,6 +26,9 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     return standardError(new Error('Invalid login code'))
   }
   const {picture, name, email_verified, sub} = id
+  if (!id.email) {
+    return standardError(new Error('No email in Google token'))
+  }
   const email = id.email.toLowerCase()
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
@@ -69,7 +72,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
 
       // add a google identity to the user if we're sure the local isn't a squatter
       googleIdentity = new AuthIdentityGoogle({
-        isEmailVerified: email_verified !== 'false',
+        isEmailVerified: !!email_verified,
         id: sub
       })
       identities.push(googleIdentity) // mutative
@@ -79,7 +82,8 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     // MUTATIVE
     context.authToken = new AuthToken({
       sub: viewerId,
-      rol
+      rol,
+      tms: existingUser.tms
     })
     setAuthCookie(context, context.authToken)
     return {
@@ -94,7 +98,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
   const preferredName = nickname.length === 1 ? nickname.repeat(2) : nickname
   const identity = new AuthIdentityGoogle({
     id: sub,
-    isEmailVerified: email_verified !== 'false'
+    isEmailVerified: !!email_verified
   })
   const newUser = new User({
     id: userId,
