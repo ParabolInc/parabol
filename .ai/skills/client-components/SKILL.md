@@ -27,6 +27,18 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 - **Do not add new values to `constEnums.ts`** (`packages/client/types/constEnums.ts`) — it is deprecated.
 - Add new constants to `packages/client/utils/constants.ts` as plain `export const` values.
 
+## HTML Sanitization
+
+- **Wrap all external HTML with `sanitizeExternalHtml()` before `dangerouslySetInnerHTML`.** Content from external sources (Jira, GitHub, GitLab, Azure DevOps, Linear, user reflections) must be sanitized via `sanitizeExternalHtml()` from `packages/client/utils/sanitizeExternalHtml.ts`. It uses DOMPurify with a hook that forces links to `target="_blank" rel="noopener noreferrer"` and blocks `<style>` tags.
+
+```tsx
+// Good
+<div dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(descriptionHTML)}} />
+
+// Bad — XSS risk
+<div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
+```
+
 ## React Component Design
 
 - **Use `onPointerDown`** instead of `onMouseDown` + `onTouchStart`. The unified pointer API handles mouse, touch, and pen.
