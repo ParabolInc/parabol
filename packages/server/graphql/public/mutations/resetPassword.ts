@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import sleep from 'parabol-client/utils/sleep'
 import {passwordStrength} from '../../../../client/shared/passwordStrength'
@@ -23,10 +24,11 @@ const resetPassword: MutationResolvers['resetPassword'] = async (
     return {error: {message: 'Resetting password is disabled'}}
   }
   const pg = getKysely()
+  const tokenHash = crypto.createHash('sha256').update(token).digest('hex')
   const resetRequest = await pg
     .selectFrom('PasswordResetRequest')
     .selectAll()
-    .where('token', '=', token)
+    .where('tokenHash', '=', tokenHash)
     .executeTakeFirst()
 
   if (!resetRequest) {

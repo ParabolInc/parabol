@@ -9,7 +9,7 @@ import getPgConfig from '../../../postgres/getPgConfig'
 import {Logger} from '../../../utils/Logger'
 import type {MutationResolvers} from '../resolverTypes'
 
-const exec = util.promisify(childProcess.exec)
+const execFile = util.promisify(childProcess.execFile)
 
 const dumpPgDataToOrgBackupSchema = async (orgIds: string[]) => {
   const pg = getKysely()
@@ -88,11 +88,20 @@ const backupPgOrganization = async (orgIds: string[]) => {
   const config = getPgConfig()
   const {user, password, database, host, port} = config
   const dbName = `postgresql://${user}:${password}@${host}:${port}/${database}`
-  await exec(`pg_dump ${dbName} --format=c --schema-only --file ${schemaTargetLocation}`)
+  await execFile('pg_dump', [
+    dbName,
+    '--format=c',
+    '--schema-only',
+    `--file=${schemaTargetLocation}`
+  ])
   await dumpPgDataToOrgBackupSchema(orgIds)
-  await exec(
-    `pg_dump ${dbName} --format=c --data-only --schema='"orgBackup"' --file ${dataTargetLocation}`
-  )
+  await execFile('pg_dump', [
+    dbName,
+    '--format=c',
+    '--data-only',
+    '--schema="orgBackup"',
+    `--file=${dataTargetLocation}`
+  ])
   const pg = getPg()
   await pg.query(`DROP SCHEMA IF EXISTS "orgBackup" CASCADE;`)
 }
