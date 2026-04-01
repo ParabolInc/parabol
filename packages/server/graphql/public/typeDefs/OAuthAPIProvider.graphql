@@ -2,8 +2,8 @@ type OAuthAPIProvider {
   id: ID!
   name: String!
   clientId: String!
-  clientType: String!
+  clientType: OAuthClientTypeEnum!
   redirectUris: [RedirectURI!]!
-  scopes: [String!]!
+  scopes: [OAuthScopeEnum!]!
   updatedAt: DateTime!
 }

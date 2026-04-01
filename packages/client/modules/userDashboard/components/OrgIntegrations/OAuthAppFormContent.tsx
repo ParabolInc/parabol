@@ -4,6 +4,10 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useMutation} from 'react-relay'
+import type {
+  OAuthClientTypeEnum,
+  OAuthScopeEnum
+} from '~/__generated__/OAuthAppFormEditQuery.graphql'
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
@@ -14,20 +18,27 @@ import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import makeAppURL from '../../../../utils/makeAppURL'
 import OAuthScopePicker from './OAuthScopePicker'
 
+export interface OAuthProviderData {
+  id: string
+  name: string
+  clientId: string
+  clientType: OAuthClientTypeEnum
+  redirectUris?: readonly string[]
+  scopes: readonly OAuthScopeEnum[]
+}
+
 export interface FormContentProps {
   orgId: string
   isNew: boolean
-  initialData?: any
+  initialData: OAuthProviderData | null
   onClose: () => void
 }
 
 const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentProps) => {
   const [name, setName] = useState(initialData?.name || '')
   const [redirectUris, setRedirectUris] = useState((initialData?.redirectUris || []).join(', '))
-  const [scopes, setScopes] = useState<string[]>(
-    (initialData?.scopes || []).map((s: string) => s.replace(':', '_'))
-  )
-  const [clientType, setClientType] = useState<'confidential' | 'public'>(
+  const [scopes, setScopes] = useState<OAuthScopeEnum[]>([...(initialData?.scopes || [])])
+  const [clientType, setClientType] = useState<OAuthClientTypeEnum>(
     initialData?.clientType || 'confidential'
   )
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +51,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       $name: String!
       $redirectUris: [RedirectURI!]!
       $scopes: [OAuthScopeEnum!]!
-      $clientType: String
+      $clientType: OAuthClientTypeEnum!
     ) {
       createOAuthAPIProvider(
         orgId: $orgId
@@ -68,7 +79,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
       $name: String
       $redirectUris: [RedirectURI!]
       $scopes: [OAuthScopeEnum!]
-      $clientType: String
+      $clientType: OAuthClientTypeEnum!
     ) {
       updateOAuthAPIProvider(
         providerId: $providerId
@@ -136,16 +147,13 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
     }
 
     const providerId = initialData?.id
-
-    const mutationScopes = scopes as any
-
     if (providerId) {
       commitUpdate({
         variables: {
           providerId,
           name,
           redirectUris: clientType === 'public' ? [] : uriList,
-          scopes: mutationScopes,
+          scopes,
           clientType
         },
         onCompleted: () => {
@@ -164,7 +172,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           orgId,
           name,
           redirectUris: clientType === 'public' ? [] : uriList,
-          scopes: mutationScopes,
+          scopes,
           clientType
         },
         updater: (store) => {
@@ -203,6 +211,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
   }
 
   const handleConfirmRegenerate = () => {
+    if (!initialData) return
     commitRegenerate({
       variables: {
         providerId: initialData.id

@@ -1,46 +1,37 @@
+import {GraphQLError} from 'graphql'
 import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 
 export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider'] = async (
   _,
-  args,
-  {dataLoader}
+  {scopes, clientType, orgId, name, redirectUris}
 ) => {
-  let {scopes} = args
-  const {orgId, name, redirectUris} = args
-  const clientType = args.clientType ?? 'confidential'
+  if (scopes.length === 0) {
+    throw new GraphQLError('Must select at least one scope')
+  }
 
   const clientId = generateOAuthClientId()
   const clientSecret = clientType === 'public' ? null : generateOAuthClientSecret()
 
-  if (scopes.length === 0) {
-    scopes = ['read']
-  }
-
   const pg = getKysely()
-
-  const dbRow = {
-    orgId,
-    name,
-    clientId,
-    clientSecret,
-    redirectUris: clientType === 'public' ? [] : redirectUris,
-    scopes,
-    clientType
-  }
 
   const {id: providerId} = await pg
     .insertInto('OAuthAPIProvider')
-    .values(dbRow)
+    .values({
+      orgId,
+      name,
+      clientId,
+      clientSecret,
+      redirectUris,
+      scopes,
+      clientType
+    })
     .returning('id')
     .executeTakeFirstOrThrow()
 
-  dataLoader.clearAll('oAuthProviders')
-  const provider = await dataLoader.get('oAuthProviders').loadNonNull(providerId)
-
   return {
-    providerId: provider.id,
+    providerId,
     clientId,
     clientSecret
   }

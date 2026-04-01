@@ -13,6 +13,7 @@ module.exports = {
     Email: 'string',
     DateTime: 'string',
     URL: 'string',
+    RedirectURI: 'string',
     _xGitHubHTML: 'string',
     _xGitHubURI: 'string'
   },

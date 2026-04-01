@@ -1,6 +1,6 @@
 import {Dialog} from '../../../../ui/Dialog/Dialog'
+import OAuthAppFormContent from './OAuthAppFormContent'
 import OAuthAppFormEdit from './OAuthAppFormEdit'
-import OAuthAppFormNew from './OAuthAppFormNew'
 
 interface Props {
   orgId: string
@@ -15,7 +15,7 @@ const OAuthAppFormDialog = ({orgId, providerId, isOpen, onClose}: Props) => {
   return (
     <Dialog isOpen={isOpen} onClose={onClose}>
       {isNew ? (
-        <OAuthAppFormNew orgId={orgId} onClose={onClose} />
+        <OAuthAppFormContent orgId={orgId} isNew={true} initialData={null} onClose={onClose} />
       ) : (
         <OAuthAppFormEdit orgId={orgId} providerId={providerId!} onClose={onClose} />
       )}

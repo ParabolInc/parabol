@@ -1,0 +1,7 @@
+"""
+The OAuth 2.0 client type (RFC 6749). confidential clients authenticate with a client secret; public clients use PKCE.
+"""
+enum OAuthClientTypeEnum {
+  confidential
+  public
+}

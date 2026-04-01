@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {usePreloadedQuery} from 'react-relay'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {OAuthAppFormEditQuery} from '../../../../__generated__/OAuthAppFormEditQuery.graphql'
 import useQueryLoaderNow from '../../../../hooks/useQueryLoaderNow'
 import OAuthAppFormContent from './OAuthAppFormContent'
@@ -19,7 +19,7 @@ const query = graphql`
   query OAuthAppFormEditQuery($orgId: ID!, $providerId: ID!) {
     viewer {
       organization(orgId: $orgId) {
-        oauthProvider: oauthAPIProvider(providerId: $providerId) {
+        oauthAPIProvider(providerId: $providerId) {
           ...OAuthAppFormEdit_oauthProvider @relay(mask: false)
         }
       }
@@ -56,20 +56,25 @@ const OAuthAppFormContentWithData = ({
   isNew,
   onClose
 }: {
-  queryRef: any
+  queryRef: PreloadedQuery<OAuthAppFormEditQuery>
   orgId: string
   isNew: boolean
   onClose: () => void
 }) => {
   const data = usePreloadedQuery<OAuthAppFormEditQuery>(query, queryRef)
-  const provider = data.viewer.organization?.oauthProvider
+  const provider = data.viewer.organization?.oauthAPIProvider
 
   if (!provider && !isNew) {
     return <div className='p-6'>Provider not found</div>
   }
 
   return (
-    <OAuthAppFormContent orgId={orgId} isNew={isNew} initialData={provider} onClose={onClose} />
+    <OAuthAppFormContent
+      orgId={orgId}
+      isNew={isNew}
+      initialData={provider || null}
+      onClose={onClose}
+    />
   )
 }
 

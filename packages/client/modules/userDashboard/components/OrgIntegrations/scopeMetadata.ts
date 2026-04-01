@@ -1,5 +1,7 @@
+import type {OAuthScopeEnum} from '~/__generated__/OAuthAppFormEditQuery.graphql'
+
 export interface ScopeInfo {
-  scope: string
+  scope: OAuthScopeEnum
   label: string
   description: string
   group: string
@@ -11,7 +13,6 @@ export interface ScopeGroup {
 }
 
 export const SCOPE_GROUPS: ScopeGroup[] = [
-  {key: 'quick-select', label: 'Quick Select'},
   {key: 'meetings', label: 'Meetings'},
   {key: 'teams', label: 'Teams'},
   {key: 'tasks', label: 'Tasks'},
@@ -22,185 +23,128 @@ export const SCOPE_GROUPS: ScopeGroup[] = [
   {key: 'comments', label: 'Comments'}
 ]
 
-export const SCOPE_METADATA: ScopeInfo[] = [
-  // Quick select (convenience scopes)
-  {
-    scope: 'read',
-    label: 'All read access',
-    description: 'Grants read access to all resources',
-    group: 'quick-select'
-  },
-  {
-    scope: 'write',
-    label: 'All read + write access',
-    description: 'Grants read and write access to all resources',
-    group: 'quick-select'
-  },
+export const SCOPE_METADATA = [
   // Meetings
   {
-    scope: 'meetings_read',
+    scope: 'MEETINGS_READ',
     label: 'meetings:read',
     description: 'Query meeting data, phases, reflections',
     group: 'meetings'
   },
   {
-    scope: 'meetings_write',
+    scope: 'MEETINGS_WRITE',
     label: 'meetings:write',
     description: 'Start/end meetings, vote, create reflections',
     group: 'meetings'
   },
   // Teams
   {
-    scope: 'teams_read',
+    scope: 'TEAMS_READ',
     label: 'teams:read',
     description: 'Query team info, members, settings',
     group: 'teams'
   },
   {
-    scope: 'teams_write',
+    scope: 'TEAMS_WRITE',
     label: 'teams:write',
     description: 'Update team settings, manage members',
     group: 'teams'
   },
   // Tasks
   {
-    scope: 'tasks_read',
+    scope: 'TASKS_READ',
     label: 'tasks:read',
     description: 'Query tasks, task integrations',
     group: 'tasks'
   },
   {
-    scope: 'tasks_write',
+    scope: 'TASKS_WRITE',
     label: 'tasks:write',
     description: 'Create, update, delete tasks',
     group: 'tasks'
   },
   // Users
   {
-    scope: 'users_read',
+    scope: 'USERS_READ',
     label: 'users:read',
     description: 'Read own user profile, preferences',
     group: 'users'
   },
   {
-    scope: 'users_write',
+    scope: 'USERS_WRITE',
     label: 'users:write',
     description: 'Update own profile, settings',
     group: 'users'
   },
   // Organization
   {
-    scope: 'org_read',
+    scope: 'ORG_READ',
     label: 'org:read',
     description: 'Read org info, members, billing status',
     group: 'org'
   },
   {
-    scope: 'org_write',
+    scope: 'ORG_WRITE',
     label: 'org:write',
     description: 'Update org settings, domains',
     group: 'org'
   },
-  {
-    scope: 'org_admin',
-    label: 'org:admin',
-    description: 'Manage billing, SAML, SCIM, OAuth providers',
-    group: 'org'
-  },
   // Templates
   {
-    scope: 'templates_read',
+    scope: 'TEMPLATES_READ',
     label: 'templates:read',
     description: 'Read meeting templates',
     group: 'templates'
   },
   {
-    scope: 'templates_write',
+    scope: 'TEMPLATES_WRITE',
     label: 'templates:write',
     description: 'Create and modify templates',
     group: 'templates'
   },
   // Pages
   {
-    scope: 'pages_read',
+    scope: 'PAGES_READ',
     label: 'pages:read',
     description: 'Read pages (collaborative docs)',
     group: 'pages'
   },
   {
-    scope: 'pages_write',
+    scope: 'PAGES_WRITE',
     label: 'pages:write',
     description: 'Create and edit pages',
     group: 'pages'
   },
-  {
-    scope: 'pages_admin',
-    label: 'pages:admin',
-    description: 'Archive pages, manage access, reparent',
-    group: 'pages'
-  },
   // Comments
   {
-    scope: 'comments_read',
+    scope: 'COMMENTS_READ',
     label: 'comments:read',
     description: 'Read discussion threads, comments',
     group: 'comments'
   },
   {
-    scope: 'comments_write',
+    scope: 'COMMENTS_WRITE',
     label: 'comments:write',
     description: 'Post and edit comments',
     group: 'comments'
   }
-]
+] as const satisfies readonly ScopeInfo[]
 
 // Hierarchy: selecting a scope auto-selects its dependencies
-export const SCOPE_IMPLIES: Record<string, string[]> = {
-  write: [
-    'read',
-    'meetings_write',
-    'meetings_read',
-    'teams_write',
-    'teams_read',
-    'tasks_write',
-    'tasks_read',
-    'users_write',
-    'users_read',
-    'org_write',
-    'org_read',
-    'templates_write',
-    'templates_read',
-    'pages_write',
-    'pages_read',
-    'comments_write',
-    'comments_read'
-  ],
-  read: [
-    'meetings_read',
-    'teams_read',
-    'tasks_read',
-    'users_read',
-    'org_read',
-    'templates_read',
-    'pages_read',
-    'comments_read'
-  ],
-  org_admin: ['org_write', 'org_read'],
-  org_write: ['org_read'],
-  pages_admin: ['pages_write', 'pages_read'],
-  pages_write: ['pages_read'],
-  meetings_write: ['meetings_read'],
-  teams_write: ['teams_read'],
-  tasks_write: ['tasks_read'],
-  users_write: ['users_read'],
-  templates_write: ['templates_read'],
-  comments_write: ['comments_read']
+export const SCOPE_IMPLIES: Partial<Record<OAuthScopeEnum, OAuthScopeEnum[]>> = {
+  ORG_WRITE: ['ORG_READ'],
+  PAGES_WRITE: ['PAGES_READ'],
+  MEETINGS_WRITE: ['MEETINGS_READ'],
+  TEAMS_WRITE: ['TEAMS_READ'],
+  TASKS_WRITE: ['TASKS_READ'],
+  USERS_WRITE: ['USERS_READ'],
+  TEMPLATES_WRITE: ['TEMPLATES_READ'],
+  COMMENTS_WRITE: ['COMMENTS_READ']
 }
 
-// Reverse: selecting a scope's dependency means deselecting the scope
-// e.g., deselecting meetings_read should also deselect meetings_write
-export const SCOPE_REQUIRED_BY: Record<string, string[]> = {}
-for (const [scope, deps] of Object.entries(SCOPE_IMPLIES)) {
+// Reverse: deselecting a scope's dependency also deselects the scope
+export const SCOPE_REQUIRED_BY: Partial<Record<OAuthScopeEnum, OAuthScopeEnum[]>> = {}
+for (const [scope, deps] of Object.entries(SCOPE_IMPLIES) as [OAuthScopeEnum, OAuthScopeEnum[]][]) {
   for (const dep of deps) {
     if (!SCOPE_REQUIRED_BY[dep]) {
       SCOPE_REQUIRED_BY[dep] = []
@@ -209,25 +153,10 @@ for (const [scope, deps] of Object.entries(SCOPE_IMPLIES)) {
   }
 }
 
-/** All individual read scopes (not convenience) */
-const ALL_READ_SCOPES = SCOPE_METADATA.filter(
-  (s) => s.scope.endsWith('_read') && s.group !== 'quick-select'
+export const ALL_READ_SCOPES: OAuthScopeEnum[] = SCOPE_METADATA.filter((s) =>
+  s.scope.endsWith('_READ')
 ).map((s) => s.scope)
 
-/** All individual write scopes (not convenience) */
-const ALL_WRITE_SCOPES = SCOPE_METADATA.filter(
-  (s) => s.scope.endsWith('_write') && s.group !== 'quick-select'
+export const ALL_WRITE_SCOPES: OAuthScopeEnum[] = SCOPE_METADATA.filter((s) =>
+  s.scope.endsWith('_WRITE')
 ).map((s) => s.scope)
-
-/** Check if "All read access" convenience scope should be checked */
-export const isAllReadSelected = (scopes: string[]): boolean => {
-  return ALL_READ_SCOPES.every((s) => scopes.includes(s))
-}
-
-/** Check if "All read + write access" convenience scope should be checked */
-export const isAllWriteSelected = (scopes: string[]): boolean => {
-  return (
-    ALL_READ_SCOPES.every((s) => scopes.includes(s)) &&
-    ALL_WRITE_SCOPES.every((s) => scopes.includes(s))
-  )
-}

@@ -1,49 +1,53 @@
 import {type Kysely, sql} from 'kysely'
 
+const READ_SCOPES = [
+  'meetings:read',
+  'teams:read',
+  'tasks:read',
+  'users:read',
+  'org:read',
+  'templates:read',
+  'pages:read',
+  'comments:read'
+]
+
+const WRITE_SCOPES = [
+  'meetings:write',
+  'teams:write',
+  'tasks:write',
+  'users:write',
+  'org:write',
+  'templates:write',
+  'pages:write',
+  'comments:write'
+]
+
+const ALL_SCOPES = [...READ_SCOPES, ...WRITE_SCOPES]
+
 export async function up(db: Kysely<any>): Promise<void> {
   // Replace the old 2-value OAuthScopeEnum with resource-based scopes.
   // Postgres doesn't allow subqueries in ALTER COLUMN TYPE USING, so we
   // use a temp text[] column to hold the mapped values during the swap.
 
-  // 1. Create new enum type
-  await db.schema
-    .createType('OAuthScopeEnumV2')
-    .asEnum([
-      'read',
-      'write',
-      'meetings_read',
-      'meetings_write',
-      'teams_read',
-      'teams_write',
-      'tasks_read',
-      'tasks_write',
-      'users_read',
-      'users_write',
-      'org_read',
-      'org_write',
-      'org_admin',
-      'templates_read',
-      'templates_write',
-      'pages_read',
-      'pages_write',
-      'pages_admin',
-      'comments_read',
-      'comments_write'
-    ])
-    .execute()
+  // 1. Create new enum type (no global read/write aliases — only resource:action scopes)
+  await db.schema.createType('OAuthScopeEnumV2').asEnum(ALL_SCOPES).execute()
 
   // 2. Migrate OAuthAPIProvider.scopes
-  // Add temp column, populate it, drop old column, rename
+  // graphql:query  → all :read scopes
+  // graphql:mutation → all :write scopes
   await sql`ALTER TABLE "OAuthAPIProvider" ADD COLUMN "scopesNew" "OAuthScopeEnumV2"[]`.execute(db)
   await sql`
     UPDATE "OAuthAPIProvider" SET "scopesNew" = (
-      SELECT array_agg(
-        CASE v
-          WHEN 'graphql:query' THEN 'read'::"OAuthScopeEnumV2"
-          WHEN 'graphql:mutation' THEN 'write'::"OAuthScopeEnumV2"
-        END
-      )
-      FROM unnest("scopes") AS v
+      SELECT array_agg(DISTINCT ns ORDER BY ns)::"OAuthScopeEnumV2"[]
+      FROM (
+        SELECT unnest(
+          CASE v
+            WHEN 'graphql:query'    THEN ${sql.raw(`ARRAY[${READ_SCOPES.map((s) => `'${s}'`).join(',')}]`)}
+            WHEN 'graphql:mutation' THEN ${sql.raw(`ARRAY[${WRITE_SCOPES.map((s) => `'${s}'`).join(',')}]`)}
+          END
+        ) AS ns
+        FROM unnest("scopes") AS v
+      ) subq
     )
   `.execute(db)
   await sql`ALTER TABLE "OAuthAPIProvider" DROP COLUMN "scopes"`.execute(db)
@@ -61,13 +65,16 @@ export async function up(db: Kysely<any>): Promise<void> {
     await sql`ALTER TABLE "OAuthAPICode" ADD COLUMN "scopesNew" "OAuthScopeEnumV2"[]`.execute(db)
     await sql`
       UPDATE "OAuthAPICode" SET "scopesNew" = (
-        SELECT array_agg(
-          CASE v
-            WHEN 'graphql:query' THEN 'read'::"OAuthScopeEnumV2"
-            WHEN 'graphql:mutation' THEN 'write'::"OAuthScopeEnumV2"
-          END
-        )
-        FROM unnest("scopes") AS v
+        SELECT array_agg(DISTINCT ns ORDER BY ns)::"OAuthScopeEnumV2"[]
+        FROM (
+          SELECT unnest(
+            CASE v
+              WHEN 'graphql:query'    THEN ${sql.raw(`ARRAY[${READ_SCOPES.map((s) => `'${s}'`).join(',')}]`)}
+              WHEN 'graphql:mutation' THEN ${sql.raw(`ARRAY[${WRITE_SCOPES.map((s) => `'${s}'`).join(',')}]`)}
+            END
+          ) AS ns
+          FROM unnest("scopes") AS v
+        ) subq
       )
     `.execute(db)
     await sql`ALTER TABLE "OAuthAPICode" DROP COLUMN "scopes"`.execute(db)
@@ -79,14 +86,16 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`DROP TYPE IF EXISTS "OAuthScopeEnum"`.execute(db)
   await sql`ALTER TYPE "OAuthScopeEnumV2" RENAME TO "OAuthScopeEnum"`.execute(db)
 
-  // 5. Add clientType to OAuthAPIProvider and make clientSecret nullable (for public clients)
+  // 5. Add clientType as a proper enum (confidential | public) and make clientSecret nullable
+  await db.schema.createType('OAuthClientTypeEnum').asEnum(['confidential', 'public']).execute()
   await sql`
     DO $$ BEGIN
       IF NOT EXISTS (
         SELECT 1 FROM information_schema.columns
         WHERE table_name = 'OAuthAPIProvider' AND column_name = 'clientType'
       ) THEN
-        ALTER TABLE "OAuthAPIProvider" ADD COLUMN "clientType" varchar(20) NOT NULL DEFAULT 'confidential';
+        ALTER TABLE "OAuthAPIProvider"
+          ADD COLUMN "clientType" "OAuthClientTypeEnum" NOT NULL DEFAULT 'confidential';
       END IF;
     END $$
   `.execute(db)
@@ -115,6 +124,7 @@ export async function down(db: Kysely<any>): Promise<void> {
   )
   await sql`ALTER TABLE "OAuthAPIProvider" ALTER COLUMN "clientSecret" SET NOT NULL`.execute(db)
   await sql`ALTER TABLE "OAuthAPIProvider" DROP COLUMN IF EXISTS "clientType"`.execute(db)
+  await sql`DROP TYPE IF EXISTS "OAuthClientTypeEnum"`.execute(db)
 
   // Reverse scope enum changes
   await db.schema
@@ -122,16 +132,18 @@ export async function down(db: Kysely<any>): Promise<void> {
     .asEnum(['graphql:query', 'graphql:mutation'])
     .execute()
 
+  // :read scopes → graphql:query; :write scopes → graphql:mutation
   await sql`ALTER TABLE "OAuthAPIProvider" ADD COLUMN "scopesOld" "OAuthScopeEnumOld"[]`.execute(db)
   await sql`
     UPDATE "OAuthAPIProvider" SET "scopesOld" = (
-      SELECT array_agg(
-        CASE
-          WHEN v IN ('read', 'meetings_read', 'teams_read', 'tasks_read', 'users_read', 'org_read', 'templates_read', 'pages_read', 'comments_read') THEN 'graphql:query'::"OAuthScopeEnumOld"
-          ELSE 'graphql:mutation'::"OAuthScopeEnumOld"
-        END
-      )
-      FROM unnest("scopes") AS v
+      SELECT array_agg(DISTINCT old_scope ORDER BY old_scope)::"OAuthScopeEnumOld"[]
+      FROM (
+        SELECT
+          CASE WHEN v LIKE '%:read' THEN 'graphql:query'
+               ELSE 'graphql:mutation'
+          END AS old_scope
+        FROM unnest("scopes"::text[]) AS v
+      ) subq
     )
   `.execute(db)
   await sql`ALTER TABLE "OAuthAPIProvider" DROP COLUMN "scopes"`.execute(db)
@@ -148,13 +160,14 @@ export async function down(db: Kysely<any>): Promise<void> {
     await sql`ALTER TABLE "OAuthAPICode" ADD COLUMN "scopesOld" "OAuthScopeEnumOld"[]`.execute(db)
     await sql`
       UPDATE "OAuthAPICode" SET "scopesOld" = (
-        SELECT array_agg(
-          CASE
-            WHEN v IN ('read', 'meetings_read', 'teams_read', 'tasks_read', 'users_read', 'org_read', 'templates_read', 'pages_read', 'comments_read') THEN 'graphql:query'::"OAuthScopeEnumOld"
-            ELSE 'graphql:mutation'::"OAuthScopeEnumOld"
-          END
-        )
-        FROM unnest("scopes") AS v
+        SELECT array_agg(DISTINCT old_scope ORDER BY old_scope)::"OAuthScopeEnumOld"[]
+        FROM (
+          SELECT
+            CASE WHEN v LIKE '%:read' THEN 'graphql:query'
+                 ELSE 'graphql:mutation'
+            END AS old_scope
+          FROM unnest("scopes"::text[]) AS v
+        ) subq
       )
     `.execute(db)
     await sql`ALTER TABLE "OAuthAPICode" DROP COLUMN "scopes"`.execute(db)

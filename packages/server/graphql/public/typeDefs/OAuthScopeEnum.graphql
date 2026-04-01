@@ -1,22 +1,21 @@
+"""
+An OAuth 2.0 scope. Serialized as resource:action in the database (e.g. MEETINGS_READ -> meetings:read).
+"""
 enum OAuthScopeEnum {
-  read
-  write
-  meetings_read
-  meetings_write
-  teams_read
-  teams_write
-  tasks_read
-  tasks_write
-  users_read
-  users_write
-  org_read
-  org_write
-  org_admin
-  templates_read
-  templates_write
-  pages_read
-  pages_write
-  pages_admin
-  comments_read
-  comments_write
+  MEETINGS_READ
+  MEETINGS_WRITE
+  TEAMS_READ
+  TEAMS_WRITE
+  TASKS_READ
+  TASKS_WRITE
+  USERS_READ
+  USERS_WRITE
+  ORG_READ
+  ORG_WRITE
+  TEMPLATES_READ
+  TEMPLATES_WRITE
+  PAGES_READ
+  PAGES_WRITE
+  COMMENTS_READ
+  COMMENTS_WRITE
 }

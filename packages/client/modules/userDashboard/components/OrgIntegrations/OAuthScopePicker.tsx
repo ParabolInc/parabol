@@ -1,12 +1,13 @@
 import SearchIcon from '@mui/icons-material/Search'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {useMemo, useState} from 'react'
+import type {OAuthScopeEnum} from '~/__generated__/OAuthAppFormEditQuery.graphql'
 import {cn} from '../../../../ui/cn'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../../../../ui/Menu/MenuItemCheckbox'
 import {
-  isAllReadSelected,
-  isAllWriteSelected,
+  ALL_READ_SCOPES,
+  ALL_WRITE_SCOPES,
   SCOPE_GROUPS,
   SCOPE_IMPLIES,
   SCOPE_METADATA,
@@ -14,22 +15,18 @@ import {
 } from './scopeMetadata'
 
 interface OAuthScopePickerProps {
-  selectedScopes: string[]
-  onScopesChange: (scopes: string[]) => void
+  selectedScopes: OAuthScopeEnum[]
+  onScopesChange: (scopes: OAuthScopeEnum[]) => void
 }
 
-const getScopeSummary = (scopes: string[]) => {
+const getScopeSummary = (scopes: OAuthScopeEnum[]) => {
   if (scopes.length === 0) return null
-  // Only count individual scopes, not convenience scopes
-  const individual = scopes.filter((s) => s !== 'read' && s !== 'write')
-  const count = individual.length
-  const readCount = individual.filter((s) => s.endsWith('_read')).length
-  const writeCount = individual.filter((s) => s.endsWith('_write')).length
-  const adminCount = individual.filter((s) => s.endsWith('_admin')).length
+  const count = scopes.length
+  const readCount = scopes.filter((s) => s.endsWith('_READ')).length
+  const writeCount = scopes.filter((s) => s.endsWith('_WRITE')).length
   const parts: string[] = []
   if (readCount > 0) parts.push(`${readCount} read`)
   if (writeCount > 0) parts.push(`${writeCount} write`)
-  if (adminCount > 0) parts.push(`${adminCount} admin`)
   return {count, breakdown: parts.join(', ')}
 }
 
@@ -37,19 +34,17 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
 
-  const handleToggleScope = (scope: string) => {
-    const isSelected = getChecked(scope)
-    let next: string[]
+  const handleToggleScope = (scope: OAuthScopeEnum) => {
+    const isSelected = selectedScopes.includes(scope)
+    let next: OAuthScopeEnum[]
     if (isSelected) {
       const toRemove = new Set([scope])
-      // For convenience scopes (read/write), deselecting removes all implied scopes
       const implies = SCOPE_IMPLIES[scope]
       if (implies) {
         for (const dep of implies) {
           toRemove.add(dep)
         }
       }
-      // Also remove any scopes that require this one
       const requiredBy = SCOPE_REQUIRED_BY[scope]
       if (requiredBy) {
         for (const dep of requiredBy) {
@@ -60,7 +55,6 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
       }
       next = selectedScopes.filter((s) => !toRemove.has(s))
     } else {
-      // Selecting: also add any scopes this one implies
       const toAdd = new Set([scope])
       const implies = SCOPE_IMPLIES[scope]
       if (implies) {
@@ -72,6 +66,29 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
     }
     onScopesChange(next)
   }
+
+  const handleSelectAllRead = () => {
+    const allSelected = ALL_READ_SCOPES.every((s) => selectedScopes.includes(s))
+    if (allSelected) {
+      onScopesChange(selectedScopes.filter((s) => !ALL_READ_SCOPES.includes(s)))
+    } else {
+      onScopesChange([...new Set([...selectedScopes, ...ALL_READ_SCOPES])])
+    }
+  }
+
+  const handleSelectAllWrite = () => {
+    const allSelected = ALL_WRITE_SCOPES.every((s) => selectedScopes.includes(s))
+    if (allSelected) {
+      onScopesChange(selectedScopes.filter((s) => !ALL_WRITE_SCOPES.includes(s)))
+    } else {
+      // write scopes imply their read counterparts
+      const implied = ALL_WRITE_SCOPES.flatMap((s) => SCOPE_IMPLIES[s] ?? [])
+      onScopesChange([...new Set([...selectedScopes, ...ALL_WRITE_SCOPES, ...implied])])
+    }
+  }
+
+  const isAllReadSelected = ALL_READ_SCOPES.every((s) => selectedScopes.includes(s))
+  const isAllWriteSelected = ALL_WRITE_SCOPES.every((s) => selectedScopes.includes(s))
 
   const filteredGroups = useMemo(() => {
     const q = search.toLowerCase().trim()
@@ -86,13 +103,6 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
   }, [search])
 
   const summary = getScopeSummary(selectedScopes)
-
-  // Determine checked state for convenience scopes
-  const getChecked = (scope: string) => {
-    if (scope === 'read') return isAllReadSelected(selectedScopes)
-    if (scope === 'write') return isAllWriteSelected(selectedScopes)
-    return selectedScopes.includes(scope)
-  }
 
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
@@ -137,7 +147,6 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
                   onChange={(e) => setSearch(e.target.value)}
                   className='w-full border-none bg-transparent text-slate-700 text-xs placeholder-slate-400 outline-none'
                   autoFocus
-                  // Prevent the dropdown from closing when typing
                   onKeyDown={(e) => e.stopPropagation()}
                 />
               </div>
@@ -145,37 +154,52 @@ const OAuthScopePicker = ({selectedScopes, onScopesChange}: OAuthScopePickerProp
 
             {/* Scrollable scope list */}
             <div className='flex-1 overflow-y-auto'>
-              {filteredGroups.map(({group, scopes}, groupIdx) => (
+              {/* Quick select */}
+              {!search && (
+                <div>
+                  <div className='px-3 pt-2 pb-1'>
+                    <div className='font-semibold text-slate-400 text-xs uppercase tracking-wider'>
+                      Quick Select
+                    </div>
+                  </div>
+                  <MenuItemCheckbox checked={isAllReadSelected} onClick={handleSelectAllRead}>
+                    <div>
+                      <div className='font-mono text-xs'>read</div>
+                      <div className='text-slate-400 text-xs leading-tight'>
+                        All read scopes across every resource
+                      </div>
+                    </div>
+                  </MenuItemCheckbox>
+                  <MenuItemCheckbox checked={isAllWriteSelected} onClick={handleSelectAllWrite}>
+                    <div>
+                      <div className='font-mono text-xs'>write</div>
+                      <div className='text-slate-400 text-xs leading-tight'>All write scopes</div>
+                    </div>
+                  </MenuItemCheckbox>
+                </div>
+              )}
+
+              {filteredGroups.map(({group, scopes}) => (
                 <div key={group.key}>
-                  {/* Divider between quick-select and resource groups */}
-                  {groupIdx === 1 && filteredGroups[0]?.group.key === 'quick-select' && (
-                    <div className='mx-3 border-slate-100 border-t' />
-                  )}
                   <div className='px-3 pt-2 pb-1'>
                     <div className='font-semibold text-slate-400 text-xs uppercase tracking-wider'>
                       {group.label}
                     </div>
                   </div>
-                  {scopes.map((scopeInfo) => {
-                    const checked = getChecked(scopeInfo.scope)
-                    const isConvenience = scopeInfo.group === 'quick-select'
-                    return (
-                      <MenuItemCheckbox
-                        key={scopeInfo.scope}
-                        checked={checked}
-                        onClick={() => handleToggleScope(scopeInfo.scope)}
-                      >
-                        <div>
-                          <div className={cn(isConvenience ? 'text-sm' : 'font-mono text-xs')}>
-                            {scopeInfo.label}
-                          </div>
-                          <div className='text-slate-400 text-xs leading-tight'>
-                            {scopeInfo.description}
-                          </div>
+                  {scopes.map((scopeInfo) => (
+                    <MenuItemCheckbox
+                      key={scopeInfo.scope}
+                      checked={selectedScopes.includes(scopeInfo.scope)}
+                      onClick={() => handleToggleScope(scopeInfo.scope)}
+                    >
+                      <div>
+                        <div className='font-mono text-xs'>{scopeInfo.label}</div>
+                        <div className='text-slate-400 text-xs leading-tight'>
+                          {scopeInfo.description}
                         </div>
-                      </MenuItemCheckbox>
-                    )
-                  })}
+                      </div>
+                    </MenuItemCheckbox>
+                  ))}
                 </div>
               ))}
               {filteredGroups.length === 0 && (
