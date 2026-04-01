@@ -57,7 +57,7 @@ export const PageSharingPendingRequests = (props: Props) => {
   }
   return (
     <>
-      <div className='p-2 font-semibold text-slate-600 text-sm'>Pending requests...</div>
+      <div className='font-semibold text-slate-600 text-sm'>Pending requests</div>
       <div className='space-y-4'>
         {pendingRequests.map((request) => {
           const {user, role, reason} = request
