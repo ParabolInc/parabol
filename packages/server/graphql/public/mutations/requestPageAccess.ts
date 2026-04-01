@@ -79,7 +79,7 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
     publishNotification(notification, subOptions)
   })
 
-  const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}?share`, {
+  const pageLink = makeAppURL(appOrigin, `pages/${pageSlug}`, {
     searchParams: {
       share: true
     }
