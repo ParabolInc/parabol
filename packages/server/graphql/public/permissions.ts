@@ -124,11 +124,25 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     modifyCheckInQuestion:
       isTeamMemberOfMeeting<'Mutation.modifyCheckInQuestion'>('args.meetingId'),
+    persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
+    persistIntegrationSearchQuery:
+      isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
+    persistJiraSearchQuery: isTeamMember<'Mutation.persistJiraSearchQuery'>('args.teamId'),
+    pokerAnnounceDeckHover:
+      isTeamMemberOfMeeting<'Mutation.pokerAnnounceDeckHover'>('args.meetingId'),
+    pokerResetDimension: isTeamMemberOfMeeting<'Mutation.pokerResetDimension'>('args.meetingId'),
+    pokerRevealVotes: isTeamMemberOfMeeting<'Mutation.pokerRevealVotes'>('args.meetingId'),
+    promoteNewMeetingFacilitator:
+      isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    regenerateOAuthAPIProviderSecret:
+      hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
+    removeAtlassianAuth: isTeamMember<'Mutation.removeAtlassianAuth'>('args.teamId'),
+    removeGitHubAuth: isTeamMember<'Mutation.removeGitHubAuth'>('args.teamId'),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
     setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),

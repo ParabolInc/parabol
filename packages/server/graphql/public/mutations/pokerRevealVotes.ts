@@ -7,7 +7,7 @@ import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
 import type {PokerMeetingMember} from '../../../postgres/types/Meeting'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -35,9 +35,6 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
     return {error: {message: 'Not a poker meeting'}}
   }
   const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on the team'}}
-  }
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
   }

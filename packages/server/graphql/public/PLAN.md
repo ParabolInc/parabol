@@ -79,28 +79,28 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] movePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
 - [ ] movePokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
 - [ ] moveReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
-- [ ] moveTeamToOrg
-- [ ] navigateMeeting
-- [ ] persistGitHubSearchQuery
-- [ ] persistIntegrationSearchQuery
-- [ ] persistJiraSearchQuery
-- [ ] pokerAnnounceDeckHover
-- [ ] pokerResetDimension
-- [ ] pokerRevealVotes
-- [ ] pokerTemplateDimensionUpdateDescription
-- [ ] promoteNewMeetingFacilitator
-- [ ] promoteToTeamLead
+- [ ] moveTeamToOrg — complex org admin check for both orgs; skip
+- [ ] navigateMeeting — facilitatorUserId check, not team membership; skip
+- [x] persistGitHubSearchQuery — extracted `isTeamMember('args.teamId')`
+- [x] persistIntegrationSearchQuery — extracted `isTeamMember('args.teamId')`
+- [x] persistJiraSearchQuery — extracted `isTeamMember('args.teamId')`
+- [x] pokerAnnounceDeckHover — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [x] pokerResetDimension — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
+- [x] pokerRevealVotes — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
+- [ ] pokerTemplateDimensionUpdateDescription — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
+- [x] promoteNewMeetingFacilitator — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] promoteToTeamLead — complex: `or(isSuperUser, isCurrentTeamLead || isOrgAdmin)`; skip
 - [x] pushInvitation
-- [ ] reflectTemplatePromptUpdateDescription
-- [ ] reflectTemplatePromptUpdateGroupColor
-- [ ] refreshSession
-- [ ] regenerateOAuthAPIProviderSecret
-- [ ] removeAgendaItem
+- [ ] reflectTemplatePromptUpdateDescription — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [ ] reflectTemplatePromptUpdateGroupColor — same; no getter
+- [ ] refreshSession — no auth check; covered by wildcard
+- [x] regenerateOAuthAPIProviderSecret — extracted `hasProviderAccess('args.providerId')`
+- [ ] removeAgendaItem — `teamId` derived from `agendaItemId.split('::')`; no getter
 - [x] removeApprovedOrganizationDomains
-- [ ] removeAtlassianAuth
-- [ ] removeGitHubAuth
-- [ ] removeIntegrationProvider
-- [ ] removeIntegrationSearchQuery
+- [x] removeAtlassianAuth — extracted `isTeamMember('args.teamId')`
+- [x] removeGitHubAuth — extracted `isTeamMember('args.teamId')`
+- [ ] removeIntegrationProvider — conditional auth based on scope (global/org/team); skip
+- [ ] removeIntegrationSearchQuery — no explicit auth; covered by wildcard
 - [ ] removeOrgUsers
 - [ ] removePokerTemplate
 - [ ] removePokerTemplateDimension
