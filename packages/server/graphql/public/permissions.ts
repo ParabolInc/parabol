@@ -271,10 +271,20 @@ const permissionMap: PermissionMap<Resolvers> = {
       isMeetingFacilitator<'Mutation.resetRetroMeetingToGroupStage'>('args.meetingId'),
     revealTeamHealthVotes: isMeetingFacilitator<'Mutation.revealTeamHealthVotes'>('args.meetingId'),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
+    setDefaultSlackChannel: isTeamMember<'Mutation.setDefaultSlackChannel'>('args.teamId'),
+    setJiraDisplayFieldIds: isTeamMember<'Mutation.setJiraDisplayFieldIds'>('args.teamId'),
+    setMeetingMusic: isMeetingFacilitator<'Mutation.setMeetingMusic'>('args.meetingId'),
     setMeetingSettings: isTeamMember<'Mutation.setMeetingSettings'>(
       'args.settingsId',
       'meetingSettings'
     ),
+    setNotificationStatus: isUser<'Mutation.setNotificationStatus'>(
+      'args.notificationId',
+      'notifications'
+    ),
+    setOrgUserRole: or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgUserRole'>('args.orgId')),
+    setPhaseFocus: isMeetingFacilitator<'Mutation.setPhaseFocus'>('args.meetingId'),
+    setPokerSpectate: isMeetingMember<'Mutation.setPokerSpectate'>('args.meetingId'),
     signOut: allow,
     signUpWithPassword: and(
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),

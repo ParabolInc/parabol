@@ -124,14 +124,14 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] resetRetroMeetingToGroupStage — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] revealTeamHealthVotes
 - [x] selectTemplate
-- [ ] setDefaultSlackChannel
-- [ ] setJiraDisplayFieldIds
-- [ ] setMeetingMusic
+- [x] setDefaultSlackChannel
+- [x] setJiraDisplayFieldIds
+- [x] setMeetingMusic
 - [x] setMeetingSettings
-- [ ] setNotificationStatus
-- [ ] setOrgUserRole
-- [ ] setPhaseFocus
-- [ ] setPokerSpectate
+- [x] setNotificationStatus
+- [x] setOrgUserRole
+- [x] setPhaseFocus
+- [x] setPokerSpectate
 - [ ] setSlackNotification
 - [ ] setStageTimer
 - [ ] setTaskEstimate
