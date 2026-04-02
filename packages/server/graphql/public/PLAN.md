@@ -108,21 +108,21 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] removePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] removeReflectTemplate
 - [x] removeReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
-- [ ] removeReflection — `isTeamMember` on `meeting.teamId` (via `reflectionId`); no getter
+- [x] removeReflection
 - [x] removeSlackAuth — extracted `isTeamMember('args.teamId')`
-- [ ] removeTeamMember — conditional self or lead/org-admin; skip
+- [x] removeTeamMember
 - [x] removeTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
 - [x] renameMeeting — extracted `isMeetingFacilitator('args.meetingId')`
-- [ ] renameMeetingTemplate — `isTeamMember` on `template.teamId` (via `templateId`); skip (also has org admin fallback)
+- [x] renameMeetingTemplate
 - [x] renamePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] renamePokerTemplateScale — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] renameReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
-- [ ] requestPageAccess — no auth check beyond wildcard; skip
-- [ ] requestToJoinDomain — no auth check beyond wildcard; skip
+- [x] requestPageAccess — no auth check beyond wildcard; skip
+- [x] requestToJoinDomain — no auth check beyond wildcard; skip
 - [x] resetPassword
 - [x] resetReflectionGroups — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] resetRetroMeetingToGroupStage — extracted `isMeetingFacilitator('args.meetingId')`
-- [ ] revealTeamHealthVotes
+- [x] revealTeamHealthVotes
 - [x] selectTemplate
 - [ ] setDefaultSlackChannel
 - [ ] setJiraDisplayFieldIds

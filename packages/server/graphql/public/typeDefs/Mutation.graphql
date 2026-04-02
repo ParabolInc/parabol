@@ -718,9 +718,14 @@ type Mutation {
   """
   removeTeamMember(
     """
-    The teamMemberId of the person who is being removed
+    The teamId of the team the user is being removed from
     """
-    teamMemberId: ID!
+    teamId: ID!
+
+    """
+    The userId of the person who is being removed
+    """
+    userId: ID!
   ): RemoveTeamMemberPayload
 
   """

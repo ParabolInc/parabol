@@ -1,8 +1,6 @@
 import {allow, and, not, or} from 'graphql-shield'
 import type {ShieldRule} from '../composeResolvers'
 import type {Resolvers} from './resolverTypes'
-import getTeamIdFromArgSettingsId from './rules/getTeamIdFromArgSettingsId'
-import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
 import {hasOrgRole} from './rules/hasOrgRole'
 import {hasPageAccess} from './rules/hasPageAccess'
 import {hasProviderAccess} from './rules/hasProviderAccess'
@@ -16,10 +14,10 @@ import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
+import {isUser} from './rules/isUser'
 import isUserViewer from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
-import isViewerOnTeam from './rules/isViewerOnTeam'
 import {isViewerTeamLead} from './rules/isViewerTeamLead'
 import rateLimit from './rules/rateLimit'
 
@@ -55,7 +53,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
-    addPokerTemplateDimension: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addPokerTemplateDimension: isTeamMember<'Mutation.addPokerTemplateDimension'>(
+      'args.templateId',
+      'meetingTemplates'
+    ),
     addPokerTemplateScale: isTeamMember<'Mutation.addPokerTemplateScale'>('args.teamId'),
     addPokerTemplateScaleValue: isTeamMember<'Mutation.addPokerTemplateScaleValue'>(
       'args.scaleId',
@@ -63,7 +64,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
     addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
-    addReflectTemplatePrompt: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    addReflectTemplatePrompt: isTeamMember<'Mutation.addReflectTemplatePrompt'>(
+      'args.templateId',
+      'meetingTemplates'
+    ),
     addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     addTeamMemberIntegrationAuth:
@@ -227,10 +231,27 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'reflectPrompts'
     ),
+    removeReflection: isUser<'Mutation.removeReflection'>(
+      'args.reflectionId',
+      'retroReflections',
+      'creatorId'
+    ),
     removeSlackAuth: isTeamMember<'Mutation.removeSlackAuth'>('args.teamId'),
+    removeTeamMember: or(
+      isUser<'Mutation.removeTeamMember'>('args.userId'),
+      isViewerTeamLead<'Mutation.removeTeamMember'>('args.teamId'),
+      isViewerBillingLeader<'Mutation.removeTeamMember'>('args.teamId', 'teams')
+    ),
     removeTeamMemberIntegrationAuth:
       isTeamMember<'Mutation.removeTeamMemberIntegrationAuth'>('args.teamId'),
     renameMeeting: isMeetingFacilitator<'Mutation.renameMeeting'>('args.meetingId'),
+    renameMeetingTemplate: or(
+      isViewerBillingLeader<'Mutation.renameMeetingTemplate'>(
+        'args.templateId',
+        'meetingTemplates'
+      ),
+      isTeamMember<'Mutation.renameMeetingTemplate'>('args.templateId', 'meetingTemplates')
+    ),
     renamePokerTemplateDimension: isTeamMember<'Mutation.renamePokerTemplateDimension'>(
       'args.dimensionId',
       'templateDimensions'
@@ -248,8 +269,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.resetReflectionGroups'>('args.meetingId'),
     resetRetroMeetingToGroupStage:
       isMeetingFacilitator<'Mutation.resetRetroMeetingToGroupStage'>('args.meetingId'),
+    revealTeamHealthVotes: isMeetingFacilitator<'Mutation.revealTeamHealthVotes'>('args.meetingId'),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
-    setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
+    setMeetingSettings: isTeamMember<'Mutation.setMeetingSettings'>(
+      'args.settingsId',
+      'meetingSettings'
+    ),
     signOut: allow,
     signUpWithPassword: and(
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
@@ -265,7 +290,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
     updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
-    updateTemplateCategory: isViewerOnTeam(getTeamIdFromArgTemplateId),
+    updateTemplateCategory: isTeamMember<'Mutation.updateTemplateCategory'>(
+      'args.templateId',
+      'meetingTemplates'
+    ),
     uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100})
   },

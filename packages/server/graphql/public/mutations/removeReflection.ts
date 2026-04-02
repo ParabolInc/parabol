@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import unlockAllStagesForPhase from 'parabol-client/utils/unlockAllStagesForPhase'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -19,19 +19,15 @@ const removeReflection: MutationResolvers['removeReflection'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
   const reflection = await dataLoader.get('retroReflections').load(reflectionId)
-  dataLoader.get('retroReflections').clear(reflectionId)
+
   if (!reflection) {
     return standardError(new Error('Reflection not found'), {userId: viewerId})
   }
-  const {creatorId, meetingId, reflectionGroupId} = reflection
-  if (creatorId !== viewerId) {
-    return standardError(new Error('Reflection'), {userId: viewerId})
-  }
+  const {meetingId, reflectionGroupId} = reflection
+
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
+  const {endedAt, phases} = meeting
+
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
   if (isPhaseComplete('group', phases)) {
     return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
@@ -56,6 +52,7 @@ const removeReflection: MutationResolvers['removeReflection'] = async (
       0
     )
     .execute()
+  dataLoader.get('retroReflections').clear(reflectionId)
   const reflections = await dataLoader.get('retroReflectionsByMeetingId').load(meetingId)
   let unlockedStageIds: string[] | undefined
   if (reflections.length === 0) {
