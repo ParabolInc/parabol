@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.7.9](https://github.com/ParabolInc/parabol/compare/v13.7.8...v13.7.9) (2026-04-01)
+
+
+### Fixed
+
+* blacklist old authToken on refreshSession ([#12951](https://github.com/ParabolInc/parabol/issues/12951)) ([497b23d](https://github.com/ParabolInc/parabol/commit/497b23ddbbbb08313ca63430b61529b0bc3c444a))
+* hash password reset tokens ([#12955](https://github.com/ParabolInc/parabol/issues/12955)) ([2d15045](https://github.com/ParabolInc/parabol/commit/2d1504511dcbb81720fbb901c2de06998fcc6066))
+* sanitize reflections ([#12948](https://github.com/ParabolInc/parabol/issues/12948)) ([054ce42](https://github.com/ParabolInc/parabol/commit/054ce4297061452af9880fac57a271bfba85f733))
+* share page wrong url ([#12962](https://github.com/ParabolInc/parabol/issues/12962)) ([a952d94](https://github.com/ParabolInc/parabol/commit/a952d9412469a645f47eae9ddf570947edb744f7))
+
+
+### Changed
+
+* explicit index check for team health votes ([#12950](https://github.com/ParabolInc/parabol/issues/12950)) ([e17e99c](https://github.com/ParabolInc/parabol/commit/e17e99c991dbe36fd92a76e4a8b2ee8db8661f7f))
+* use execFile in backupOrganization ([#12953](https://github.com/ParabolInc/parabol/issues/12953)) ([fc9df0f](https://github.com/ParabolInc/parabol/commit/fc9df0f56ee0e81dea72b8cb3efea0a6a9ae3834))
+* use google-auth-library in GoogleServerManager ([#12952](https://github.com/ParabolInc/parabol/issues/12952)) ([f7eec67](https://github.com/ParabolInc/parabol/commit/f7eec67a1735340ca0a48de72bfc6ad30a112d41))
+* use postUntrusted for webhook calls ([#12956](https://github.com/ParabolInc/parabol/issues/12956)) ([d7188e6](https://github.com/ParabolInc/parabol/commit/d7188e6bbd6e0fde497357bbaff0644286cc94b0))
+
+## [13.7.8](https://github.com/ParabolInc/parabol/compare/v13.7.7...v13.7.8) (2026-03-30)
+
+
+### Fixed
+
+* catch and log childPageId decrypt errors ([#12946](https://github.com/ParabolInc/parabol/issues/12946)) ([3b070ce](https://github.com/ParabolInc/parabol/commit/3b070ce480f58a64df14a96174d500edfd32c45a))
+* use fetchUntrusted in parseSAMLMetadata ([#12940](https://github.com/ParabolInc/parabol/issues/12940)) ([4660320](https://github.com/ParabolInc/parabol/commit/4660320ab6315b20c8f5d8db51b7f64590cbe913))
+
 ## [13.7.7](https://github.com/ParabolInc/parabol/compare/v13.7.6...v13.7.7) (2026-03-27)
 
 

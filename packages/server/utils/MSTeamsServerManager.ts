@@ -1,5 +1,5 @@
-import {fetch} from '@whatwg-node/fetch'
 import {MAX_REQUEST_TIME} from 'parabol-client/utils/constants'
+import {postUntrusted} from './fetchUntrusted'
 import logError from './logError'
 
 // MS Teams is a server-only integration for now, unlike the Slack integration
@@ -16,40 +16,32 @@ export interface MSTeamsApiResponse {
 
 class MSTeamsServerManager {
   webhookUrl: string
-  headers: any
-  fetch = fetch
   constructor(webhookUrl: string) {
     this.webhookUrl = webhookUrl
   }
 
-  async post(payload: any) {
-    try {
-      const res = await this.fetch(this.webhookUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json' as const,
-          'Content-Type': 'application/json;charset=utf-8',
-          'User-Agent': 'parabol'
-        },
-        body: payload,
-        signal: AbortSignal.timeout(MAX_REQUEST_TIME)
-      })
-      if (res.status < 200 || res.status >= 300) {
-        if (res.headers.get('content-type') === 'application/json') {
-          const {message: error} = await res.json()
-          return new Error(`${res.status}: ${error}`)
-        } else {
-          return new Error(`${res.status}: ${res.statusText}`)
-        }
-      }
-      return res
-    } catch (error) {
-      if (error instanceof Error) {
-        logError(error)
-        return error
-      }
-      return new Error('MS Teams is not responding')
+  async post(payload: string) {
+    const res = await postUntrusted(this.webhookUrl, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: payload,
+      signal: AbortSignal.timeout(MAX_REQUEST_TIME)
+    })
+    if (!res) {
+      const error = new Error('MS Teams webhook request failed')
+      logError(error)
+      return error
     }
+    if (res.status < 200 || res.status >= 300) {
+      if (res.headers.get('content-type') === 'application/json') {
+        const {message: error} = await res.json()
+        return new Error(`${res.status}: ${error}`)
+      }
+      return new Error(`${res.status}: ${res.statusText}`)
+    }
+    return res
   }
 }
 

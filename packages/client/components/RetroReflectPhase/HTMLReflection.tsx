@@ -1,4 +1,5 @@
 import {cn} from '../../ui/cn'
+import sanitizeExternalHtml from '../../utils/sanitizeExternalHtml'
 
 interface Props {
   html: string
@@ -14,7 +15,7 @@ export const HTMLReflection = (props: Props) => {
           'ProseMirror flex max-h-41 min-h-6 w-full flex-col items-start justify-center px-4 pt-2.5 leading-5',
           disableAnonymity ? 'pb-0' : 'pb-2.5'
         )}
-        dangerouslySetInnerHTML={{__html: html}}
+        dangerouslySetInnerHTML={{__html: sanitizeExternalHtml(html)}}
       ></div>
     </div>
   )

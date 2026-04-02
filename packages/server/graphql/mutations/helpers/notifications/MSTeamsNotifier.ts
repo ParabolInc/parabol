@@ -23,7 +23,7 @@ const notifyMSTeams = async (
   webhookUrl: string,
   user: User,
   teamId: string,
-  textOrAttachmentsArray: string | unknown[]
+  textOrAttachmentsArray: string
 ) => {
   const manager = new MSTeamsServerManager(webhookUrl)
   const result = await manager.post(textOrAttachmentsArray)

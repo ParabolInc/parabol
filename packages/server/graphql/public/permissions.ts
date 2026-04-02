@@ -10,6 +10,7 @@ import isAuthenticated from './rules/isAuthenticated'
 import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
+import {isOrgAdminBySAMLDomain} from './rules/isOrgAdminBySAMLDomain'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
@@ -264,7 +265,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   User: {
-    domains: or(isSuperUser, isUserViewer)
+    domains: or(isSuperUser, isUserViewer),
+    parseSAMLMetadata: isOrgAdminBySAMLDomain
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')

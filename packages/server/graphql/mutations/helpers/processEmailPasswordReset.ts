@@ -2,6 +2,11 @@ import base64url from 'base64url'
 import crypto from 'crypto'
 import {AuthenticationError} from 'parabol-client/types/constEnums'
 import util from 'util'
+
+// SHA-256 is appropriate here: reset tokens are 48 cryptographically random bytes (384-bit entropy),
+// so brute-force is infeasible regardless of hash speed. bcrypt/argon2 are for low-entropy user passwords.
+const sha256Hex = (value: string) => crypto.createHash('sha256').update(value).digest('hex')
+
 import getMailManager from '../../../email/getMailManager'
 import resetPasswordEmailCreator from '../../../email/resetPasswordEmailCreator'
 import getKysely from '../../../postgres/getKysely'
@@ -33,7 +38,7 @@ const processEmailPasswordReset = async (
     .values({
       ip,
       email,
-      token: resetPasswordToken
+      tokenHash: sha256Hex(resetPasswordToken)
     })
     .execute()
 
