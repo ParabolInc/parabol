@@ -75,18 +75,18 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] loginWithGoogle
 - [x] loginWithMicrosoft
 - [x] loginWithPassword
-- [x] modifyCheckInQuestion — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
+- [x] modifyCheckInQuestion — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] movePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] movePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] moveReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] moveTeamToOrg — complex org admin check for both orgs; skip
-- [ ] navigateMeeting — facilitatorUserId check, not team membership; skip
+- [x] navigateMeeting — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] persistGitHubSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] persistIntegrationSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] persistJiraSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] pokerAnnounceDeckHover — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [x] pokerResetDimension — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
-- [x] pokerRevealVotes — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
+- [x] pokerResetDimension — extracted `isMeetingFacilitator('args.meetingId')`
+- [x] pokerRevealVotes — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] pokerTemplateDimensionUpdateDescription — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] promoteNewMeetingFacilitator — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] promoteToTeamLead — complex: `or(isSuperUser, isCurrentTeamLead || isOrgAdmin)`; skip
@@ -112,7 +112,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] removeSlackAuth — extracted `isTeamMember('args.teamId')`
 - [ ] removeTeamMember — conditional self or lead/org-admin; skip
 - [x] removeTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
-- [ ] renameMeeting — facilitatorUserId check; skip
+- [x] renameMeeting — extracted `isMeetingFacilitator('args.meetingId')`
 - [ ] renameMeetingTemplate — `isTeamMember` on `template.teamId` (via `templateId`); skip (also has org admin fallback)
 - [x] renamePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] renamePokerTemplateScale — extracted `isTeamMember('args.scaleId', 'templateScales')`
@@ -121,7 +121,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] requestToJoinDomain — no auth check beyond wildcard; skip
 - [x] resetPassword
 - [x] resetReflectionGroups — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [ ] resetRetroMeetingToGroupStage — facilitatorUserId check; skip
+- [x] resetRetroMeetingToGroupStage — extracted `isMeetingFacilitator('args.meetingId')`
 - [ ] revealTeamHealthVotes
 - [x] selectTemplate
 - [ ] setDefaultSlackChannel

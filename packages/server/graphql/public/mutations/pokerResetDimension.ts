@@ -2,7 +2,6 @@ import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import sendPokerMeetingRevoteEvent from '../../mutations/helpers/sendPokerMeetingRevoteEvent'
@@ -11,10 +10,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   _source,
   {meetingId, stageId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -26,18 +24,12 @@ const pokerResetDimension: MutationResolvers['pokerResetDimension'] = async (
   if (meeting.meetingType !== 'poker') {
     return {error: {message: 'Not a poker meeting'}}
   }
-  const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
+  const {endedAt, phases, teamId} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
   }
   if (isPhaseComplete('ESTIMATE', phases)) {
     return {error: {message: 'Estimate phase is already complete'}}
-  }
-  if (viewerId !== facilitatorUserId) {
-    if (viewerId !== createdBy) {
-      return {error: {message: 'Not meeting facilitator'}}
-    }
-    return {error: {message: 'Not meeting facilitator anymore'}}
   }
 
   // VALIDATION

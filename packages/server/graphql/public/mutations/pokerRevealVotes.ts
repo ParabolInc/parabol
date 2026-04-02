@@ -7,7 +7,6 @@ import {MAX_FREE_JIRA_EXPORTS} from 'parabol-client/utils/constants'
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
 import type {PokerMeetingMember} from '../../../postgres/types/Meeting'
-import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -15,10 +14,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   _source,
   {meetingId, stageId, ignoreSuggestedUpgrade},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
@@ -34,15 +32,9 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
   if (meeting.meetingType !== 'poker') {
     return {error: {message: 'Not a poker meeting'}}
   }
-  const {endedAt, phases, teamId, createdBy, facilitatorUserId} = meeting
+  const {endedAt, phases, teamId} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
-  }
-  if (viewerId !== facilitatorUserId) {
-    if (viewerId !== createdBy) {
-      return {error: {message: 'Not meeting facilitator'}}
-    }
-    return {error: {message: 'Not meeting facilitator anymore'}}
   }
 
   // VALIDATION

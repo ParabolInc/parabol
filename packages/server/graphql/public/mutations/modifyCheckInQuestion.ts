@@ -27,10 +27,6 @@ const modifyCheckInQuestion: MutationResolvers['modifyCheckInQuestion'] = async 
     })
   const {endedAt} = meeting
 
-  if (meeting.facilitatorUserId !== viewerId) {
-    return standardError(new Error('Nice try!'), {userId: viewerId})
-  }
-
   if (endedAt) {
     return standardError(new Error('Meeting has already ended'), {
       userId: viewerId
