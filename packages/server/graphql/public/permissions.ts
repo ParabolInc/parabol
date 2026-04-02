@@ -285,11 +285,38 @@ const permissionMap: PermissionMap<Resolvers> = {
     setOrgUserRole: or(isSuperUser, isViewerBillingLeader<'Mutation.setOrgUserRole'>('args.orgId')),
     setPhaseFocus: isMeetingFacilitator<'Mutation.setPhaseFocus'>('args.meetingId'),
     setPokerSpectate: isMeetingMember<'Mutation.setPokerSpectate'>('args.meetingId'),
+    setSlackNotification: isTeamMember<'Mutation.setSlackNotification'>('args.teamId'),
+    setStageTimer: isMeetingFacilitator<'Mutation.setStageTimer'>('args.meetingId'),
+    setTaskEstimate: isTeamMember<'Mutation.setTaskEstimate'>('args.taskEstimate.taskId', 'tasks'),
+    setTaskHighlight: and(
+      isTeamMember<'Mutation.setTaskHighlight'>('args.meetingId', 'newMeetings'),
+      isUser<'Mutation.setTaskHighlight'>('args.taskId', 'tasks')
+    ),
+    setTeamHealthVote: isTeamMember<'Mutation.setTeamHealthVote'>('args.meetingId', 'newMeetings'),
+    shareTopic: isTeamMember<'Mutation.shareTopic'>('args.meetingId', 'newMeetings'),
     signOut: allow,
     signUpWithPassword: and(
       not(isEnvVarTrue('AUTH_INTERNAL_DISABLED')),
       rateLimit({perMinute: 50, perHour: 500})
     ),
+    startCheckIn: isTeamMember<'Mutation.startCheckIn'>('args.teamId'),
+    startDraggingReflection: isMeetingMember<'Mutation.startDraggingReflection'>(
+      'args.reflectionId',
+      'retroReflections'
+    ),
+    startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
+    startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
+    startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
+    toggleAIFeatures: or(
+      isSuperUser,
+      isViewerBillingLeader<'Mutation.toggleAIFeatures'>('args.orgId')
+    ),
+    toggleTeamDrawer: isTeamMember<'Mutation.toggleTeamDrawer'>('args.teamId'),
+    toggleTeamPrivacy: or(
+      isViewerBillingLeader<'Mutation.toggleTeamPrivacy'>('args.teamId', 'teams'),
+      isViewerTeamLead<'Mutation.toggleTeamPrivacy'>('args.teamId')
+    ),
+    unlinkMattermostChannel: isTeamMember<'Mutation.unlinkMattermostChannel'>('args.teamId'),
     updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
     updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
     updatePageAccess: and(

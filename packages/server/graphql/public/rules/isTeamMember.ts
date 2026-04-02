@@ -9,16 +9,25 @@ type LoadersWithTeamId = {
   [K in AllPrimaryLoaders]: 'teamId' extends keyof LoaderType<K> ? K : never
 }[AllPrimaryLoaders]
 
-export const isTeamMember = <T>(dotPath: ResolverDotPath<T>, dataLoaderName?: LoadersWithTeamId) =>
+type IDGetter = (obj: any) => string
+export const isTeamMember = <T>(
+  dotPath: ResolverDotPath<T>,
+  dataLoaderName?: LoadersWithTeamId,
+  teamIdKey: string | IDGetter = 'teamId'
+) =>
   rule(`isTeamMember`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {authToken, dataLoader} = context
     let teamId: string = argVar
     if (dataLoaderName) {
       const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
-      if (!subject?.teamId)
+      if (typeof teamIdKey === 'function') {
+        teamId = teamIdKey(subject)
+      } else {
+        teamId = subject?.[teamIdKey]
+      }
+      if (!teamId)
         return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
-      teamId = subject.teamId
     }
 
     if (!authToken.tms.includes(teamId)) {

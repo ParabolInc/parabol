@@ -132,29 +132,29 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] setOrgUserRole
 - [x] setPhaseFocus
 - [x] setPokerSpectate
-- [ ] setSlackNotification
-- [ ] setStageTimer
-- [ ] setTaskEstimate
-- [ ] setTaskHighlight
-- [ ] setTeamHealthVote
+- [x] setSlackNotification
+- [x] setStageTimer
+- [x] setTaskEstimate
+- [x] setTaskHighlight
+- [x] setTeamHealthVote
 - [ ] setTeamNotificationSetting
-- [ ] shareTopic
+- [x] shareTopic
 - [x] signOut
 - [x] signUpWithPassword
-- [ ] startCheckIn
-- [ ] startDraggingReflection
-- [ ] startRetrospective
-- [ ] startSprintPoker
-- [ ] startTeamPrompt
-- [ ] toggleAIFeatures
-- [ ] toggleFavoriteTemplate
+- [x] startCheckIn
+- [x] startDraggingReflection
+- [x] startRetrospective
+- [x] startSprintPoker
+- [x] startTeamPrompt
+- [x] toggleAIFeatures
+- [x] toggleFavoriteTemplate
 - [ ] toggleFeatureFlag
-- [ ] togglePageInvitationEmail
-- [ ] toggleSummaryEmail
-- [ ] toggleTeamDrawer
-- [ ] toggleTeamPrivacy
-- [ ] ungroupReflection
-- [ ] unlinkMattermostChannel
+- [x] togglePageInvitationEmail
+- [x] toggleSummaryEmail
+- [x] toggleTeamDrawer
+- [x] toggleTeamPrivacy
+- [ ] ungroupReflection - both args are optional
+- [x] unlinkMattermostChannel
 - [ ] updateAgendaItem
 - [ ] updateAutoJoin
 - [ ] updateAzureDevOpsDimensionField
