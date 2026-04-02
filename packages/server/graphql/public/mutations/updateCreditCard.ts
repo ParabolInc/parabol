@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import removeTeamsLimitObjects from '../../../billing/helpers/removeTeamsLimitObjects'
 import getKysely from '../../../postgres/getKysely'
 import {toCreditCard} from '../../../postgres/helpers/toCreditCard'
-import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import {identifyHighestUserTierForOrgId} from '../../../utils/identifyHighestUserTierForOrgId'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -18,14 +18,7 @@ const updateCreditCard: MutationResolvers['updateCreditCard'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // AUTH
   const viewerId = getUserId(authToken)
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Must be the organization leader'), {
-      userId: viewerId
-    })
-  }
 
   // RESOLUTION
   const organization = await dataLoader.get('organizations').loadNonNull(orgId)

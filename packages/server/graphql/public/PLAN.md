@@ -155,30 +155,30 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] toggleTeamPrivacy
 - [ ] ungroupReflection - both args are optional
 - [x] unlinkMattermostChannel
-- [ ] updateAgendaItem
+- [x] updateAgendaItem
 - [ ] updateAutoJoin
-- [ ] updateAzureDevOpsDimensionField
-- [ ] updateCommentContent
-- [ ] updateCreditCard
-- [ ] updateDragLocation
-- [ ] updateGitHubDimensionField
-- [ ] updateGitLabDimensionField
+- [x] updateAzureDevOpsDimensionField
+- [x] updateCommentContent
+- [x] updateCreditCard
+- [x] updateDragLocation
+- [x] updateGitHubDimensionField
+- [x] updateGitLabDimensionField
 - [ ] updateIntegrationProvider
-- [ ] updateJiraDimensionField
-- [ ] updateJiraServerDimensionField
-- [ ] updateLinearDimensionField
-- [ ] updateMeetingPrompt
-- [ ] updateMeetingTemplate
-- [ ] updateNewCheckInQuestion
+- [x] updateJiraDimensionField
+- [x] updateJiraServerDimensionField
+- [x] updateLinearDimensionField
+- [x] updateMeetingPrompt
+- [x] updateMeetingTemplate
+- [x] updateNewCheckInQuestion
 - [x] updateOAuthAPIProvider
-- [ ] updateOrg
+- [x] updateOrg
 - [x] updatePage
 - [x] updatePageAccess
 - [x] updatePageParentLink
-- [ ] updatePokerScope
-- [ ] updatePokerTemplateDimensionScale
-- [ ] updatePokerTemplateScaleValue
-- [ ] updateRecurrenceSettings
+- [x] updatePokerScope
+- [x] updatePokerTemplateDimensionScale
+- [x] updatePokerTemplateScaleValue
+- [x] updateRecurrenceSettings
 - [ ] updateReflectionContent
 - [ ] updateReflectionGroupTitle
 - [ ] updateRetroMaxVotes

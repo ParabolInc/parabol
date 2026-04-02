@@ -317,7 +317,48 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerTeamLead<'Mutation.toggleTeamPrivacy'>('args.teamId')
     ),
     unlinkMattermostChannel: isTeamMember<'Mutation.unlinkMattermostChannel'>('args.teamId'),
+    updateAgendaItem: isTeamMember<'Mutation.updateAgendaItem'>(
+      'args.updatedAgendaItem.id',
+      'agendaItems'
+    ),
+    updateAzureDevOpsDimensionField: isTeamMember<'Mutation.updateAzureDevOpsDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateCommentContent: isMeetingMember<'Mutation.updateCommentContent'>('args.meetingId'),
+    updateCreditCard: isViewerBillingLeader<'Mutation.updateCreditCard'>('args.orgId'),
+    updateDragLocation: isTeamMember<'Mutation.updateDragLocation'>('args.input.teamId'),
+    updateGitHubDimensionField: isTeamMember<'Mutation.updateGitHubDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateGitLabDimensionField: isTeamMember<'Mutation.updateGitLabDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateJiraDimensionField: isTeamMember<'Mutation.updateJiraDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateJiraServerDimensionField: isTeamMember<'Mutation.updateJiraServerDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateLinearDimensionField: isTeamMember<'Mutation.updateLinearDimensionField'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateMeetingPrompt: isMeetingFacilitator<'Mutation.updateMeetingPrompt'>('args.meetingId'),
+    updateMeetingTemplate: isTeamMember<'Mutation.updateMeetingTemplate'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    updateNewCheckInQuestion: isTeamMember<'Mutation.updateNewCheckInQuestion'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
     updateOAuthAPIProvider: hasProviderAccess<'Mutation.updateOAuthAPIProvider'>('args.providerId'),
+    updateOrg: isViewerBillingLeader<'Mutation.updateOrg'>('args.updatedOrg.id'),
     updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),
@@ -325,6 +366,19 @@ const permissionMap: PermissionMap<Resolvers> = {
       rateLimit({perMinute: 50, perHour: 100})
     ),
     updatePageParentLink: hasPageAccess<'Mutation.updatePageParentLink'>('args.pageId', 'owner'),
+    updatePokerScope: isTeamMember<'Mutation.updatePokerScope'>('args.meetingId', 'newMeetings'),
+    updatePokerTemplateDimensionScale: isTeamMember<'Mutation.updatePokerTemplateDimensionScale'>(
+      'args.dimensionId',
+      'templateDimensions'
+    ),
+    updatePokerTemplateScaleValue: isTeamMember<'Mutation.updatePokerTemplateScaleValue'>(
+      'args.scaleId',
+      'templateScales'
+    ),
+    updateRecurrenceSettings: isTeamMember<'Mutation.updateRecurrenceSettings'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
     updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     updateTemplateCategory: isTeamMember<'Mutation.updateTemplateCategory'>(
