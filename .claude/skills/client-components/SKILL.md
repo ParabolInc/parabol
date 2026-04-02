@@ -1,3 +1,8 @@
+---
+name: client-components
+description: Reference conventions for React client components — Tailwind CSS, UI primitives (Dialog, Tooltip, Menu), constants, HTML sanitization, and component design patterns. Use when building or reviewing UI components in packages/client.
+---
+
 # packages/client conventions
 
 ## Styling

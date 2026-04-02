@@ -1,3 +1,8 @@
+---
+name: graphql
+description: Conventions for the SDL-first GraphQL server — payload types, codegen mappers, dataLoaders, TypeScript safety, database patterns, and migration best practices. Use when writing or reviewing GraphQL mutations, queries, or resolvers.
+---
+
 # Server GraphQL Migration Notes
 
 ### Type source files (`public/types/`)
@@ -77,22 +82,6 @@ When computing future/past dates, use `ms` from the `ms` package instead of manu
 ```ts
 import ms from 'ms'
 const maxAllowed = new Date(Date.now() + ms('60d'))
-```
-
-### Mutation error handling: two patterns
-
-1. **Soft errors** — return `{error: {message: string}}` for expected validation failures the client handles gracefully (e.g. bad input, user not found).
-2. **Hard errors** — throw `GraphQLError` for authorization failures or unexpected states. Use `extensions.code` for client-side branching (e.g. `'UPGRADE_REQUIRED'`, `'UNAUTHORIZED'`).
-
-Never mix the two in the same error case. Authorization failures always throw; validation failures always return.
-
-```ts
-// Soft error for expected validation
-if (!user) return {error: {message: 'User not found'}}
-// Hard error for authorization
-throw new GraphQLError('Must be an org admin')
-// Hard error with extension code
-throw new GraphQLError('Limit reached', {extensions: {code: 'UPGRADE_REQUIRED', exportCount}})
 ```
 
 ### Mutation return types: always use `*Success` directly — union Payloads are deprecated

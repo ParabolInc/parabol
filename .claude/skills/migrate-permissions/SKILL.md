@@ -1,3 +1,8 @@
+---
+name: migrate-permissions
+description: Guide for moving inline auth checks out of GraphQL resolvers and into permissions.ts using graphql-shield rules. Use when adding, reviewing, or migrating authorization logic for mutations or queries.
+---
+
 ## Permissions
 
 Authorization lives in two places: `graphql/public/permissions.ts` (preferred) and inline in resolver functions (legacy). The goal is to move all auth into `permissions.ts`.
