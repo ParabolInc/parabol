@@ -1,3 +1,8 @@
+---
+name: graphql
+description: Conventions for the SDL-first GraphQL server — payload types, codegen mappers, dataLoaders, TypeScript safety, database patterns, and migration best practices. Use when writing or reviewing GraphQL mutations, queries, or resolvers.
+---
+
 # Server GraphQL Migration Notes
 
 ### Type source files (`public/types/`)
@@ -97,8 +102,8 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 ## DataLoader Best Practices
 
 - **Always use DataLoaders** for related data fetching in resolvers — never query the DB directly from a resolver.
-  - Helper functions: `packages/server/dataloader/select.ts`
-  - Type definitions: `packages/server/dataloader/types/index.ts`
+  - Helper functions: `packages/server/postgres/select.ts`
+  - Type definitions: `packages/server/dataloader/RootDataLoader.ts`
   - Loader implementation: `packages/server/dataloader/*Loader.ts`
 - **Call `dispose()` on dataloaders** as soon as they're no longer needed. Don't extend dataloader lifetime unnecessarily.
 - **Include `mutatorId` in publish calls.** Without it, the user who triggered the mutation gets the message twice (once from the mutation response and once from the subscription).
@@ -114,6 +119,7 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 - **Consistent naming**: `orgId` not `organizationId` — follow existing column naming conventions.
 - **Let the database manage timestamps** — don't set `updatedAt` or `createdAt` in application code; let triggers/defaults handle them.
 - **Migrations must be idempotent.** Use `IF NOT EXISTS` / `IF EXISTS` so they don't fail on re-run or during upgrades.
+- **Migrations use `Kysely<any>`** — the `any` is intentional since migrations are frozen in time and must not reference evolving DB types. Export `async function up(db: Kysely<any>)` and `async function down(db: Kysely<any>)`. Name files with ISO timestamps: `2026-03-30T12:08:00.000Z_description.ts`.
 - **Use queries for read operations, mutations for writes.** Don't use mutations for operations that only read data.
 - **Store data in the database** rather than computing values on-the-fly in code.
 
