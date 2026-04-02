@@ -137,7 +137,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] setTaskEstimate
 - [x] setTaskHighlight
 - [x] setTeamHealthVote
-- [ ] setTeamNotificationSetting
+- [ ] setTeamNotificationSetting — args.id is a GraphQL composite ID requiring `TeamNotificationSettingsId.split()` before dataloader lookup; not directly expressible as a rule
 - [x] shareTopic
 - [x] signOut
 - [x] signUpWithPassword
@@ -148,15 +148,15 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] startTeamPrompt
 - [x] toggleAIFeatures
 - [x] toggleFavoriteTemplate
-- [ ] toggleFeatureFlag
+- [ ] toggleFeatureFlag — tri-conditional auth (orgId → org admin, teamId → team lead, userId → self); too complex for a single rule
 - [x] togglePageInvitationEmail
 - [x] toggleSummaryEmail
 - [x] toggleTeamDrawer
 - [x] toggleTeamPrivacy
-- [ ] ungroupReflection - both args are optional
+- [ ] ungroupReflection — both args optional; meetingId must be resolved from whichever arg is provided before team check; not expressible as a single rule
 - [x] unlinkMattermostChannel
 - [x] updateAgendaItem
-- [ ] updateAutoJoin
+- [ ] updateAutoJoin — checks billing leader for ALL teams in array; no single top-level gatekeeper
 - [x] updateAzureDevOpsDimensionField
 - [x] updateCommentContent
 - [x] updateCreditCard
@@ -179,25 +179,25 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] updatePokerTemplateDimensionScale
 - [x] updatePokerTemplateScaleValue
 - [x] updateRecurrenceSettings
-- [ ] updateReflectionContent
-- [ ] updateReflectionGroupTitle
-- [ ] updateRetroMaxVotes
+- [x] updateReflectionContent — extracted `isTeamMemberOfMeeting('args.reflectionId', 'retroReflections')`; creator check stays inline
+- [x] updateReflectionGroupTitle — extracted `isTeamMemberOfMeeting('args.reflectionGroupId', 'retroReflectionGroups')`
+- [x] updateRetroMaxVotes — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] updateSCIM
-- [ ] updateTask
-- [ ] updateTaskDueDate
-- [ ] updateTeamName
+- [x] updateTask — extracted `isTeamMember('args.updatedTask.id', 'tasks')`
+- [x] updateTaskDueDate — extracted `isTeamMember('args.taskId', 'tasks')`
+- [x] updateTeamName — extracted `isTeamMember('args.updatedTeam.id')`
 - [x] updateTeamSortOrder
 - [x] updateTemplateCategory
-- [ ] updateTemplateScope
-- [ ] updateUserProfile
+- [ ] updateTemplateScope — `or(isTeamMember, isOrgAdmin)` where orgId comes from template entity, not directly from args; `hasOrgRole` has no loader support
+- [x] updateUserProfile — removed redundant `isAuthenticated` inline check; covered by `'*': isAuthenticated` wildcard
 - [x] uploadIdPMetadata
-- [ ] uploadOrgImage
-- [ ] uploadUserAsset
-- [ ] uploadUserImage
-- [ ] upsertTeamPromptResponse
+- [x] uploadOrgImage — extracted `isViewerBillingLeader('args.orgId')`
+- [ ] uploadUserAsset — complex scope-based auth via `validateScope()`; skip
+- [x] uploadUserImage — removed redundant `isAuthenticated` inline check; covered by wildcard
+- [x] upsertTeamPromptResponse — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] verifyEmail
-- [ ] voteForPokerStory
-- [ ] voteForReflectionGroup
+- [x] voteForPokerStory — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [x] voteForReflectionGroup — extracted `isTeamMemberOfMeeting('args.reflectionGroupId', 'retroReflectionGroups')`
 
 ---
 

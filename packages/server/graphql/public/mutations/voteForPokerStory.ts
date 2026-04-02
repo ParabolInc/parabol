@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
 import type {NewMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -76,10 +76,7 @@ const voteForPokerStory: MutationResolvers['voteForPokerStory'] = async (
   if (meeting.meetingType !== 'poker') {
     return {error: {message: 'Not a poker meeting'}}
   }
-  const {endedAt, phases, teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on the team'}}
-  }
+  const {endedAt, phases, templateRefId} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
   }

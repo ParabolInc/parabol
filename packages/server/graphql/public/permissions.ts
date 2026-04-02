@@ -379,14 +379,34 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
+    updateReflectionContent: isMeetingMember<'Mutation.updateReflectionContent'>(
+      'args.reflectionId',
+      'retroReflections'
+    ),
+    updateReflectionGroupTitle: isMeetingMember<'Mutation.updateReflectionGroupTitle'>(
+      'args.reflectionGroupId',
+      'retroReflectionGroups'
+    ),
+    updateRetroMaxVotes: isMeetingMember<'Mutation.updateRetroMaxVotes'>('args.meetingId'),
     updateSCIM: hasOrgRole<'Mutation.updateSCIM'>('args.orgId', 'ORG_ADMIN'),
+    updateTask: isTeamMember<'Mutation.updateTask'>('args.updatedTask.id', 'tasks'),
+    updateTaskDueDate: isTeamMember<'Mutation.updateTaskDueDate'>('args.taskId', 'tasks'),
+    updateTeamName: isTeamMember<'Mutation.updateTeamName'>('args.updatedTeam.id'),
     updateTeamSortOrder: isTeamMember<'Mutation.updateTeamSortOrder'>('args.teamId'),
     updateTemplateCategory: isTeamMember<'Mutation.updateTemplateCategory'>(
       'args.templateId',
       'meetingTemplates'
     ),
     uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
-    verifyEmail: rateLimit({perMinute: 50, perHour: 100})
+    uploadOrgImage: isViewerBillingLeader<'Mutation.uploadOrgImage'>('args.orgId'),
+    upsertTeamPromptResponse:
+      isMeetingMember<'Mutation.upsertTeamPromptResponse'>('args.meetingId'),
+    verifyEmail: rateLimit({perMinute: 50, perHour: 100}),
+    voteForPokerStory: isMeetingMember<'Mutation.voteForPokerStory'>('args.meetingId'),
+    voteForReflectionGroup: isMeetingMember<'Mutation.voteForReflectionGroup'>(
+      'args.reflectionGroupId',
+      'retroReflectionGroups'
+    )
   },
   Query: {
     '*': isAuthenticated,

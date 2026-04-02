@@ -5,7 +5,7 @@ import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTip
 import getKysely from '../../../postgres/getKysely'
 import type {TeamPromptResponse} from '../../../postgres/types'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -54,9 +54,6 @@ const upsertTeamPromptResponse: MutationResolvers['upsertTeamPromptResponse'] = 
     })
   }
   const {endedAt, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   if (endedAt)
     return standardError(new Error('Meeting already ended'), {
       userId: viewerId
