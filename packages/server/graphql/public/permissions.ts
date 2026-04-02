@@ -74,6 +74,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.archiveOrganization'>('args.orgId')
     ),
     archivePage: hasPageAccess<'Mutation.archivePage'>('args.pageId', 'owner'),
+    archiveTeam: or(
+      isSuperUser,
+      isViewerTeamLead<'Mutation.archiveTeam'>('args.teamId'),
+      isViewerBillingLeader<'Mutation.archiveTeam'>('args.teamId', 'teams')
+    ),
     autogroup: isTeamMemberOfMeeting<'Mutation.autogroup'>('args.meetingId'),
     changeTaskTeam: isTeamMember<'Mutation.changeTaskTeam'>('args.teamId'),
     createImposterToken: isSuperUser,
@@ -88,6 +93,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
+    createStripeSubscription: isViewerOnOrg<'Mutation.createStripeSubscription'>('args.orgId'),
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
     createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
@@ -105,6 +111,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
     endCheckIn: or(isTeamMemberOfMeeting<'Mutation.endCheckIn'>('args.meetingId'), isSuperUser),
+    endDraggingReflection: isMeetingMember<'Mutation.endDraggingReflection'>(
+      'args.reflectionId',
+      'retroReflections'
+    ),
     endRetrospective: or(
       isTeamMemberOfMeeting<'Mutation.endRetrospective'>('args.meetingId'),
       isSuperUser
@@ -121,6 +131,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
     inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
+    joinTeam: isViewerOnOrg<'Mutation.joinTeam'>('args.teamId', 'teams'),
     linkMattermostChannel: isTeamMember<'Mutation.linkMattermostChannel'>('args.teamId'),
     loginWithGoogle: and(
       not(isEnvVarTrue('AUTH_GOOGLE_DISABLED')),
@@ -164,6 +175,11 @@ const permissionMap: PermissionMap<Resolvers> = {
       ),
     promoteNewMeetingFacilitator:
       isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
+    promoteToTeamLead: or(
+      isSuperUser,
+      isViewerTeamLead<'Mutation.promoteToTeamLead'>('args.teamId'),
+      isViewerBillingLeader<'Mutation.promoteToTeamLead'>('args.teamId', 'teams')
+    ),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     reflectTemplatePromptUpdateDescription:
       isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
@@ -184,6 +200,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     removeAtlassianAuth: isTeamMember<'Mutation.removeAtlassianAuth'>('args.teamId'),
     removeGitHubAuth: isTeamMember<'Mutation.removeGitHubAuth'>('args.teamId'),
+    removePokerTemplate: or(
+      isViewerBillingLeader<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates'),
+      isTeamMember<'Mutation.removePokerTemplate'>('args.templateId', 'meetingTemplates')
+    ),
     removePokerTemplateDimension: isTeamMember<'Mutation.removePokerTemplateDimension'>(
       'args.dimensionId',
       'templateDimensions'
@@ -195,6 +215,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     removePokerTemplateScaleValue: isTeamMember<'Mutation.removePokerTemplateScaleValue'>(
       'args.scaleId',
       'templateScales'
+    ),
+    removeReflectTemplate: or(
+      isViewerBillingLeader<'Mutation.removeReflectTemplate'>(
+        'args.templateId',
+        'meetingTemplates'
+      ),
+      isTeamMember<'Mutation.removeReflectTemplate'>('args.templateId', 'meetingTemplates')
     ),
     removeReflectTemplatePrompt: isTeamMember<'Mutation.removeReflectTemplatePrompt'>(
       'args.promptId',

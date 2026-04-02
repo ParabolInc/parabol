@@ -30,7 +30,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] addTranscriptionBot — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] archiveOrganization — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
 - [x] archivePage
-- [ ] archiveTeam — `or(isTeamLead, isSuperUser, isOrgAdmin)` where orgAdmin needs team→orgId resolution; too complex
+- [x] archiveTeam — `or(isTeamLead, isSuperUser, isOrgAdmin)`
 - [ ] archiveTimelineEvent — conditional auth (only for meeting events); teamId from event lookup; not extractable
 - [x] autogroup — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] batchArchiveTasks — per-item auth (task owner or team member); no single top-level gatekeeper
@@ -41,7 +41,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] createPage
 - [x] createPoll — extracted `isTeamMember('args.newPoll.discussionId', 'discussions')`
 - [x] createReflection
-- [ ] createStripeSubscription — checks viewer is in org members (not billing leader); complex
+- [x] createStripeSubscription
 - [x] createTask — extracted `isTeamMember('args.newTask.teamId')`
 - [x] createTaskIntegration — extracted `isTeamMember('args.taskId', 'tasks')`
 - [x] deleteComment — extracted `isMeetingMember('args.meetingId')`
@@ -49,8 +49,8 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] deleteTask — extracted `isTeamMember('args.taskId', 'tasks')`
 - [ ] deleteUser — complex: `or(isSuperUser, viewerDeletesSelf)` with re-auth time check
 - [x] denyPushInvitation
-- [ ] dismissNewFeature — no auth check beyond `isAuthenticated` wildcard
-- [ ] dismissSuggestedAction — viewer-ownership check; no existing rule
+- [x] dismissNewFeature — no auth check beyond `isAuthenticated` wildcard
+- [x] dismissSuggestedAction — viewer-ownership check; no existing rule
 - [x] downgradeToStarter — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
 - [x] dragDiscussionTopic — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] dragEstimatingTask — extracted `isTeamMemberOfMeeting('args.meetingId')`
@@ -60,17 +60,17 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] emailPasswordReset
 - [ ] embedUserAsset — uses `validateScope()`; complex scope-based auth
 - [x] endCheckIn — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
-- [ ] endDraggingReflection — `isTeamMember` via `reflectionId → meetingId → teamId`; multi-hop
+- [x] endDraggingReflection
 - [x] endRetrospective — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
 - [x] endSprintPoker — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
 - [x] endTeamPrompt — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
 - [x] flagReadyToAdvance — extracted `isMeetingMember('args.meetingId')`
 - [x] generateInsight
 - [x] generateRetroSummaries — mutation deleted
-- [ ] invalidateSessions — no auth beyond `isAuthenticated` wildcard
+- [x] invalidateSessions — no auth beyond `isAuthenticated` wildcard
 - [x] inviteToTeam
 - [x] joinMeeting — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [ ] joinTeam — complex multi-step check (isPublic, org membership, not already member)
+- [x] joinTeam
 - [x] linkMattermostChannel — extracted `isTeamMember('args.teamId')`
 - [x] loginWithGoogle
 - [x] loginWithMicrosoft
@@ -79,7 +79,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] movePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] movePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] moveReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
-- [ ] moveTeamToOrg — complex org admin check for both orgs; skip
+- [x] moveTeamToOrg
 - [x] navigateMeeting — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] persistGitHubSearchQuery — extracted `isTeamMember('args.teamId')`
 - [x] persistIntegrationSearchQuery — extracted `isTeamMember('args.teamId')`
@@ -89,24 +89,24 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] pokerRevealVotes — extracted `isMeetingFacilitator('args.meetingId')`
 - [x] pokerTemplateDimensionUpdateDescription — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] promoteNewMeetingFacilitator — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [ ] promoteToTeamLead — complex: `or(isSuperUser, isCurrentTeamLead || isOrgAdmin)`; skip
+- [x] promoteToTeamLead
 - [x] pushInvitation
 - [x] reflectTemplatePromptUpdateDescription — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [x] reflectTemplatePromptUpdateGroupColor — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
-- [ ] refreshSession — no auth check; covered by wildcard
+- [x] refreshSession — no auth check; covered by wildcard
 - [x] regenerateOAuthAPIProviderSecret — extracted `hasProviderAccess('args.providerId')`
 - [x] removeAgendaItem — extracted `isTeamMember('args.agendaItemId', 'agendaItems')`
 - [x] removeApprovedOrganizationDomains
 - [x] removeAtlassianAuth — extracted `isTeamMember('args.teamId')`
 - [x] removeGitHubAuth — extracted `isTeamMember('args.teamId')`
 - [ ] removeIntegrationProvider — conditional auth based on scope (global/org/team); skip
-- [ ] removeIntegrationSearchQuery — no explicit auth; covered by wildcard
+- [x] removeIntegrationSearchQuery
 - [ ] removeOrgUsers — conditional self/billing-leader/org-admin; skip
-- [ ] removePokerTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); no getter
+- [x] removePokerTemplate
 - [x] removePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] removePokerTemplateScale — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] removePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
-- [ ] removeReflectTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); skip
+- [x] removeReflectTemplate
 - [x] removeReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] removeReflection — `isTeamMember` on `meeting.teamId` (via `reflectionId`); no getter
 - [x] removeSlackAuth — extracted `isTeamMember('args.teamId')`

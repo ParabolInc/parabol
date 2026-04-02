@@ -1,10 +1,15 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
+import type {LoaderType} from '../../../dataloader/foreignKeyLoaderMaker'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
-export const isTeamMember = <T>(dotPath: ResolverDotPath<T>, dataLoaderName?: AllPrimaryLoaders) =>
+type LoadersWithTeamId = {
+  [K in AllPrimaryLoaders]: 'teamId' extends keyof LoaderType<K> ? K : never
+}[AllPrimaryLoaders]
+
+export const isTeamMember = <T>(dotPath: ResolverDotPath<T>, dataLoaderName?: LoadersWithTeamId) =>
   rule(`isTeamMember`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
     const argVar = getResolverDotPath(dotPath, source, args)
     const {authToken, dataLoader} = context
