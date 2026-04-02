@@ -101,27 +101,27 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] removeGitHubAuth — extracted `isTeamMember('args.teamId')`
 - [ ] removeIntegrationProvider — conditional auth based on scope (global/org/team); skip
 - [ ] removeIntegrationSearchQuery — no explicit auth; covered by wildcard
-- [ ] removeOrgUsers
-- [ ] removePokerTemplate
-- [ ] removePokerTemplateDimension
-- [ ] removePokerTemplateScale
-- [ ] removePokerTemplateScaleValue
-- [ ] removeReflectTemplate
-- [ ] removeReflectTemplatePrompt
-- [ ] removeReflection
-- [ ] removeSlackAuth
-- [ ] removeTeamMember
-- [ ] removeTeamMemberIntegrationAuth
-- [ ] renameMeeting
-- [ ] renameMeetingTemplate
-- [ ] renamePokerTemplateDimension
-- [ ] renamePokerTemplateScale
-- [ ] renameReflectTemplatePrompt
-- [ ] requestPageAccess
-- [ ] requestToJoinDomain
+- [ ] removeOrgUsers — conditional self/billing-leader/org-admin; skip
+- [ ] removePokerTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); no getter
+- [ ] removePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
+- [ ] removePokerTemplateScale — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
+- [ ] removePokerTemplateScaleValue — same; no getter
+- [ ] removeReflectTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); no getter
+- [ ] removeReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [ ] removeReflection — `isTeamMember` on `meeting.teamId` (via `reflectionId`); no getter
+- [x] removeSlackAuth — extracted `isTeamMember('args.teamId')`
+- [ ] removeTeamMember — conditional self or lead/org-admin; skip
+- [x] removeTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
+- [ ] renameMeeting — facilitatorUserId check; skip
+- [ ] renameMeetingTemplate — `isTeamMember` on `template.teamId` (via `templateId`); no getter
+- [ ] renamePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
+- [ ] renamePokerTemplateScale — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
+- [ ] renameReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [ ] requestPageAccess — no auth check beyond wildcard; skip
+- [ ] requestToJoinDomain — no auth check beyond wildcard; skip
 - [x] resetPassword
-- [ ] resetReflectionGroups
-- [ ] resetRetroMeetingToGroupStage
+- [x] resetReflectionGroups — extracted `isTeamMemberOfMeeting('args.meetingId')`
+- [ ] resetRetroMeetingToGroupStage — facilitatorUserId check; skip
 - [ ] revealTeamHealthVotes
 - [x] selectTemplate
 - [ ] setDefaultSlackChannel

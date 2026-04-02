@@ -54,6 +54,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
     addPokerTemplateDimension: isViewerOnTeam(getTeamIdFromArgTemplateId),
     addPokerTemplateScale: isTeamMember<'Mutation.addPokerTemplateScale'>('args.teamId'),
+    addPokerTemplateScaleValue: isTeamMember<'Mutation.addPokerTemplateScaleValue'>(
+      'args.scaleId',
+      'templateScales'
+    ),
     addReactjiToReactable: isMeetingMember<'Mutation.addReactjiToReactable'>('args.meetingId'),
     addReflectTemplate: isTeamMember<'Mutation.addReflectTemplate'>('args.teamId'),
     addReflectTemplatePrompt: isViewerOnTeam(getTeamIdFromArgTemplateId),
@@ -79,10 +83,13 @@ const permissionMap: PermissionMap<Resolvers> = {
       isNull<'Mutation.createPage'>('args.teamId'),
       isTeamMember<'Mutation.createPage'>('args.teamId')
     ),
+    createPoll: isTeamMember<'Mutation.createPoll'>('args.newPoll.discussionId', 'discussions'),
     createReflection: isTeamMemberOfMeeting<'Mutation.createReflection'>('args.input.meetingId'),
     createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
+    createTaskIntegration: isTeamMember<'Mutation.createTaskIntegration'>('args.taskId', 'tasks'),
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
     deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
+    deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     downgradeToStarter: or(
       isSuperUser,
@@ -91,6 +98,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
+    editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
     endCheckIn: or(isTeamMemberOfMeeting<'Mutation.endCheckIn'>('args.meetingId'), isSuperUser),
     endRetrospective: or(
@@ -124,6 +132,18 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     modifyCheckInQuestion:
       isTeamMemberOfMeeting<'Mutation.modifyCheckInQuestion'>('args.meetingId'),
+    movePokerTemplateDimension: isTeamMember<'Mutation.movePokerTemplateDimension'>(
+      'args.dimensionId',
+      'templateDimensions'
+    ),
+    movePokerTemplateScaleValue: isTeamMember<'Mutation.movePokerTemplateScaleValue'>(
+      'args.scaleId',
+      'templateScales'
+    ),
+    moveReflectTemplatePrompt: isTeamMember<'Mutation.moveReflectTemplatePrompt'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
     persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
     persistIntegrationSearchQuery:
       isTeamMember<'Mutation.persistIntegrationSearchQuery'>('args.teamId'),
@@ -132,18 +152,64 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.pokerAnnounceDeckHover'>('args.meetingId'),
     pokerResetDimension: isTeamMemberOfMeeting<'Mutation.pokerResetDimension'>('args.meetingId'),
     pokerRevealVotes: isTeamMemberOfMeeting<'Mutation.pokerRevealVotes'>('args.meetingId'),
+    pokerTemplateDimensionUpdateDescription: isTeamMember<'Mutation.pokerTemplateDimensionUpdateDescription'>(
+      'args.dimensionId',
+      'templateDimensions'
+    ),
     promoteNewMeetingFacilitator:
       isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
+    reflectTemplatePromptUpdateDescription: isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
+    reflectTemplatePromptUpdateGroupColor: isTeamMember<'Mutation.reflectTemplatePromptUpdateGroupColor'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
     regenerateOAuthAPIProviderSecret:
       hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
+    removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
     removeApprovedOrganizationDomains: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.removeApprovedOrganizationDomains'>('args.orgId')
     ),
     removeAtlassianAuth: isTeamMember<'Mutation.removeAtlassianAuth'>('args.teamId'),
     removeGitHubAuth: isTeamMember<'Mutation.removeGitHubAuth'>('args.teamId'),
+    removePokerTemplateDimension: isTeamMember<'Mutation.removePokerTemplateDimension'>(
+      'args.dimensionId',
+      'templateDimensions'
+    ),
+    removePokerTemplateScale: isTeamMember<'Mutation.removePokerTemplateScale'>(
+      'args.scaleId',
+      'templateScales'
+    ),
+    removePokerTemplateScaleValue: isTeamMember<'Mutation.removePokerTemplateScaleValue'>(
+      'args.scaleId',
+      'templateScales'
+    ),
+    removeReflectTemplatePrompt: isTeamMember<'Mutation.removeReflectTemplatePrompt'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
+    removeSlackAuth: isTeamMember<'Mutation.removeSlackAuth'>('args.teamId'),
+    removeTeamMemberIntegrationAuth:
+      isTeamMember<'Mutation.removeTeamMemberIntegrationAuth'>('args.teamId'),
+    renamePokerTemplateDimension: isTeamMember<'Mutation.renamePokerTemplateDimension'>(
+      'args.dimensionId',
+      'templateDimensions'
+    ),
+    renamePokerTemplateScale: isTeamMember<'Mutation.renamePokerTemplateScale'>(
+      'args.scaleId',
+      'templateScales'
+    ),
+    renameReflectTemplatePrompt: isTeamMember<'Mutation.renameReflectTemplatePrompt'>(
+      'args.promptId',
+      'reflectPrompts'
+    ),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
+    resetReflectionGroups:
+      isTeamMemberOfMeeting<'Mutation.resetReflectionGroups'>('args.meetingId'),
     selectTemplate: isTeamMember<'Mutation.selectTemplate'>('args.teamId'),
     setMeetingSettings: isViewerOnTeam(getTeamIdFromArgSettingsId),
     signOut: allow,
