@@ -3,9 +3,8 @@ import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
@@ -17,8 +16,6 @@ const uploadUserImage: MutationResolvers['uploadUserImage'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  // AUTH
-  if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
   const userId = getUserId(authToken)
 
   // VALIDATION

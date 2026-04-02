@@ -24,14 +24,9 @@ const resetRetroMeetingToGroupStage: MutationResolvers['resetRetroMeetingToGroup
   const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-  const {createdBy, facilitatorUserId, phases, meetingType} = meeting
+  const {phases, meetingType} = meeting
   if (meetingType !== 'retrospective') {
     return standardError(new Error('Meeting type is not retrospective'), {userId: viewerId})
-  }
-  if (viewerId !== facilitatorUserId) {
-    if (viewerId !== createdBy)
-      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
-    return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
   }
 
   // VALIDATION

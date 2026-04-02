@@ -17,12 +17,8 @@ const setTaskHighlight: MutationResolvers['setTaskHighlight'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const [task, meeting] = await Promise.all([
-    dataLoader.get('tasks').load(taskId),
-    dataLoader.get('newMeetings').load(meetingId)
-  ])
-  if (!task) return standardError(new Error('Task not found'), {userId: viewerId})
-  if (task.userId !== viewerId) return standardError(new Error('Not your turn'), {userId: viewerId})
+  const [meeting] = await Promise.all([dataLoader.get('newMeetings').load(meetingId)])
+
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
   const {teamId} = meeting
   if (!isTeamMember(authToken, teamId)) return {error: {message: 'Not on team'}}

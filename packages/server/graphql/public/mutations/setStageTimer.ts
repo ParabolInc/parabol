@@ -3,7 +3,7 @@ import findStageById from 'parabol-client/utils/meetings/findStageById'
 import ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
@@ -29,14 +29,8 @@ const setStageTimer: MutationResolvers['setStageTimer'] = async (
     dataLoader.get('newMeetings').loadNonNull(meetingId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  const {endedAt, facilitatorStageId, facilitatorUserId, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
+  const {endedAt, facilitatorStageId, phases, teamId} = meeting
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
-  if (facilitatorUserId !== viewerId) {
-    return standardError(new Error('Not the facilitator'), {userId: viewerId})
-  }
 
   // VALIDATION
   if (newScheduledEndTime && newScheduledEndTime.getTime() < now.getTime()) {

@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -17,13 +16,8 @@ const flagReadyToAdvance: MutationResolvers['flagReadyToAdvance'] = async (
   const subOptions = {mutatorId, operationId}
 
   // AUTH
-  const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-  const [meeting, viewerMeetingMember] = await Promise.all([
-    dataLoader.get('newMeetings').load(meetingId),
-    dataLoader.get('meetingMembers').load(meetingMemberId)
-  ])
+  const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return {error: {message: 'Meeting not found'}}
-  if (!viewerMeetingMember) return {error: {message: `Not a part of the meeting`}}
   const {endedAt, phases} = meeting
   if (endedAt) return {error: {message: 'Meeting already ended'}}
 

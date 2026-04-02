@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {ESTIMATE_TASK_SORT_ORDER} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -20,10 +20,7 @@ const dragEstimatingTask: MutationResolvers['dragEstimatingTask'] = async (
   // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-  const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Not on team'), {userId: viewerId})
-  }
+  const {endedAt, phases} = meeting
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
   const estimatePhase = getPhase(phases, 'ESTIMATE')
   if (!estimatePhase) {

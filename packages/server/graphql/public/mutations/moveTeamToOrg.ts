@@ -29,14 +29,9 @@ const moveToOrg = async (
   if (!su) {
     const userId = getUserId(authToken)
     if (!userId) return standardError(new Error('No userId provided'))
-    const [newOrganizationUser, oldOrganizationUser] = await Promise.all([
-      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId, userId}),
-      dataLoader.get('organizationUsersByUserIdOrgId').load({orgId: currentOrgId, userId})
-    ])
-    if (!newOrganizationUser) return standardError(new Error('Not on organization'), {userId})
-    const isBillingLeaderForOrg =
-      newOrganizationUser.role === 'BILLING_LEADER' || newOrganizationUser.role === 'ORG_ADMIN'
-    if (!isBillingLeaderForOrg) return standardError(new Error('Not organization leader'), {userId})
+    const oldOrganizationUser = await dataLoader
+      .get('organizationUsersByUserIdOrgId')
+      .load({orgId: currentOrgId, userId})
     const isBillingLeaderForTeam =
       oldOrganizationUser?.role === 'BILLING_LEADER' || oldOrganizationUser?.role === 'ORG_ADMIN'
     if (!isBillingLeaderForTeam)

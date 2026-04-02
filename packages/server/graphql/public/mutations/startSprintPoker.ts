@@ -8,7 +8,7 @@ import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMee
 import type {MeetingTypeEnum, PokerMeeting} from '../../../postgres/types/Meeting'
 import type {PokerMeetingPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getHashAndJSON from '../../../utils/getHashAndJSON'
 import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
@@ -82,10 +82,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Not on team'), {userId: viewerId})
-  }
+
   const [unpaidError, viewer, overLimitError] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
     dataLoader.get('users').loadNonNull(viewerId),

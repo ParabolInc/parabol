@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {VOTE} from 'parabol-client/utils/constants'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import safelyCastVote from '../../mutations/helpers/safelyCastVote'
@@ -30,10 +30,7 @@ const voteForReflectionGroup: MutationResolvers['voteForReflectionGroup'] = asyn
   const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
   if (meeting.meetingType !== 'retrospective')
     return {error: {message: 'Meeting type is not retrospective'}}
-  const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
+  const {endedAt, phases} = meeting
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
   if (isPhaseComplete(VOTE, phases)) {
     return standardError(new Error('Meeting phase already completed'), {userId: viewerId})

@@ -15,7 +15,7 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  // AUTH
+  // VALIDATION
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) {
     return standardError(new Error('Meeting not found'), {userId: viewerId})
@@ -25,14 +25,6 @@ const updateMeetingPrompt: MutationResolvers['updateMeetingPrompt'] = async (
       userId: viewerId
     })
   }
-  const {facilitatorUserId} = meeting
-  if (viewerId !== facilitatorUserId) {
-    return standardError(new Error('Only the facilitator can change the meeting prompt'), {
-      userId: viewerId
-    })
-  }
-
-  // VALIDATION
   if (newPrompt.length < 2 || newPrompt.length > 500) {
     return standardError(new Error('Invalid meeting prompt'), {
       userId: viewerId

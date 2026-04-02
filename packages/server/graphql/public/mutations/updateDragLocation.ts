@@ -10,12 +10,10 @@ const updateDragLocation: MutationResolvers['updateDragLocation'] = async (
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
-  const {teamId, meetingId, ...inputData} = input
+  const {teamId: _teamId, meetingId, ...inputData} = input
   const viewerId = getUserId(authToken)
-  if (viewerId && authToken.tms.includes(teamId)) {
-    const data = {remoteDrag: inputData, userId: viewerId}
-    publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, subOptions)
-  }
+  const data = {remoteDrag: inputData, userId: viewerId}
+  publish(SubscriptionChannel.MEETING, meetingId, 'UpdateDragLocationPayload', data, subOptions)
   return true
 }
 
