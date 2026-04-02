@@ -11,7 +11,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] acceptTeamInvitation
 - [ ] acceptRequestToJoinDomain — auth checks viewer is team lead of any of the provided `teamIds` AND that team's org has a matching `activeDomain`; too complex for existing rules
 - [x] addAtlassianAuth — extracted `isTeamMember('args.teamId')`
-- [ ] addComment — auth loads `discussionId → meetingId → isMeetingMember`; no rule accepts a discussionId path
+- [x] addComment — extracted `isMeetingMember('args.comment.discussionId', 'discussions')`
 - [x] addGitHubAuth — extracted `isTeamMember('args.teamId')`
 - [ ] addIntegrationProvider — conditional auth based on `args.input.scope` value (global/org/team); too complex for existing rules
 - [x] addAgendaItem
@@ -20,7 +20,7 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] addPokerTemplate — extracted `isTeamMember('args.teamId')`
 - [x] addPokerTemplateDimension — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)` (templateId → teamId lookup); kept template existence check inline
 - [x] addPokerTemplateScale — extracted `isTeamMember('args.teamId')`
-- [ ] addPokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (loaded via `scaleId`); no existing getter for scaleId
+- [x] addPokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
 - [x] addReactjiToReactable
 - [x] addReflectTemplate — extracted `isTeamMember('args.teamId')`; secondary template-scope check stays inline
 - [x] addReflectTemplatePrompt — extracted `isViewerOnTeam(getTeamIdFromArgTemplateId)`; kept template existence check inline
@@ -39,14 +39,14 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] createOAuth1AuthorizeUrl — extracted `isTeamMember('args.teamId')`
 - [x] createOAuthAPIProvider
 - [x] createPage
-- [ ] createPoll — `isTeamMember` on `discussion.teamId` (via `discussionId`); no direct getter
+- [x] createPoll — extracted `isTeamMember('args.newPoll.discussionId', 'discussions')`
 - [x] createReflection
 - [ ] createStripeSubscription — checks viewer is in org members (not billing leader); complex
 - [x] createTask — extracted `isTeamMember('args.newTask.teamId')`
-- [ ] createTaskIntegration — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
+- [x] createTaskIntegration — extracted `isTeamMember('args.taskId', 'tasks')`
 - [x] deleteComment — extracted `isMeetingMember('args.meetingId')`
 - [x] deleteOAuthAPIProvider
-- [ ] deleteTask — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
+- [x] deleteTask — extracted `isTeamMember('args.taskId', 'tasks')`
 - [ ] deleteUser — complex: `or(isSuperUser, viewerDeletesSelf)` with re-auth time check
 - [x] denyPushInvitation
 - [ ] dismissNewFeature — no auth check beyond `isAuthenticated` wildcard
@@ -54,9 +54,9 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] downgradeToStarter — extracted `or(isSuperUser, isViewerBillingLeader('args.orgId'))`
 - [x] dragDiscussionTopic — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] dragEstimatingTask — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [ ] editCommenting — `discussionId → meetingId → meetingMember`; no direct meetingId arg
+- [x] editCommenting — extracted `isMeetingMember('args.discussionId', 'discussions')`
 - [x] editReflection — extracted `isTeamMemberOfMeeting('args.meetingId')`
-- [ ] editTask — `isTeamMember` on `task.teamId` (via `taskId`); no direct getter
+- [x] editTask — extracted `isTeamMember('args.taskId', 'tasks')`
 - [x] emailPasswordReset
 - [ ] embedUserAsset — uses `validateScope()`; complex scope-based auth
 - [x] endCheckIn — extracted `or(isTeamMemberOfMeeting('args.meetingId'), isSuperUser)`
@@ -76,9 +76,9 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] loginWithMicrosoft
 - [x] loginWithPassword
 - [x] modifyCheckInQuestion — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
-- [ ] movePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
-- [ ] movePokerTemplateScaleValue — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
-- [ ] moveReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [x] movePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
+- [x] movePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
+- [x] moveReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] moveTeamToOrg — complex org admin check for both orgs; skip
 - [ ] navigateMeeting — facilitatorUserId check, not team membership; skip
 - [x] persistGitHubSearchQuery — extracted `isTeamMember('args.teamId')`
@@ -87,15 +87,15 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [x] pokerAnnounceDeckHover — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [x] pokerResetDimension — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
 - [x] pokerRevealVotes — extracted `isTeamMemberOfMeeting('args.meetingId')`; facilitatorUserId check stays inline
-- [ ] pokerTemplateDimensionUpdateDescription — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
+- [x] pokerTemplateDimensionUpdateDescription — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
 - [x] promoteNewMeetingFacilitator — extracted `isTeamMemberOfMeeting('args.meetingId')`
 - [ ] promoteToTeamLead — complex: `or(isSuperUser, isCurrentTeamLead || isOrgAdmin)`; skip
 - [x] pushInvitation
-- [ ] reflectTemplatePromptUpdateDescription — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
-- [ ] reflectTemplatePromptUpdateGroupColor — same; no getter
+- [x] reflectTemplatePromptUpdateDescription — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
+- [x] reflectTemplatePromptUpdateGroupColor — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] refreshSession — no auth check; covered by wildcard
 - [x] regenerateOAuthAPIProviderSecret — extracted `hasProviderAccess('args.providerId')`
-- [ ] removeAgendaItem — `teamId` derived from `agendaItemId.split('::')`; no getter
+- [x] removeAgendaItem — extracted `isTeamMember('args.agendaItemId', 'agendaItems')`
 - [x] removeApprovedOrganizationDomains
 - [x] removeAtlassianAuth — extracted `isTeamMember('args.teamId')`
 - [x] removeGitHubAuth — extracted `isTeamMember('args.teamId')`
@@ -103,20 +103,20 @@ Items already in `permissions.ts` with specific rules (beyond the `'*': isAuthen
 - [ ] removeIntegrationSearchQuery — no explicit auth; covered by wildcard
 - [ ] removeOrgUsers — conditional self/billing-leader/org-admin; skip
 - [ ] removePokerTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); no getter
-- [ ] removePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
-- [ ] removePokerTemplateScale — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
-- [ ] removePokerTemplateScaleValue — same; no getter
-- [ ] removeReflectTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); no getter
-- [ ] removeReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [x] removePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
+- [x] removePokerTemplateScale — extracted `isTeamMember('args.scaleId', 'templateScales')`
+- [x] removePokerTemplateScaleValue — extracted `isTeamMember('args.scaleId', 'templateScales')`
+- [ ] removeReflectTemplate — `or(isTeamMember, isBillingLeader, isOrgAdmin)` on template.teamId/orgId (via templateId); skip
+- [x] removeReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] removeReflection — `isTeamMember` on `meeting.teamId` (via `reflectionId`); no getter
 - [x] removeSlackAuth — extracted `isTeamMember('args.teamId')`
 - [ ] removeTeamMember — conditional self or lead/org-admin; skip
 - [x] removeTeamMemberIntegrationAuth — extracted `isTeamMember('args.teamId')`
 - [ ] renameMeeting — facilitatorUserId check; skip
-- [ ] renameMeetingTemplate — `isTeamMember` on `template.teamId` (via `templateId`); no getter
-- [ ] renamePokerTemplateDimension — `isTeamMember` on `dimension.teamId` (via `dimensionId`); no getter
-- [ ] renamePokerTemplateScale — `isTeamMember` on `scale.teamId` (via `scaleId`); no getter
-- [ ] renameReflectTemplatePrompt — `isTeamMember` on `prompt.teamId` (via `promptId`); no getter
+- [ ] renameMeetingTemplate — `isTeamMember` on `template.teamId` (via `templateId`); skip (also has org admin fallback)
+- [x] renamePokerTemplateDimension — extracted `isTeamMember('args.dimensionId', 'templateDimensions')`
+- [x] renamePokerTemplateScale — extracted `isTeamMember('args.scaleId', 'templateScales')`
+- [x] renameReflectTemplatePrompt — extracted `isTeamMember('args.promptId', 'reflectPrompts')`
 - [ ] requestPageAccess — no auth check beyond wildcard; skip
 - [ ] requestToJoinDomain — no auth check beyond wildcard; skip
 - [x] resetPassword

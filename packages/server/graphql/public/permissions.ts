@@ -50,6 +50,7 @@ const permissionMap: PermissionMap<Resolvers> = {
         isOrgTier<'Mutation.addApprovedOrganizationDomains'>('args.orgId', 'enterprise')
       )
     ),
+    addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
     addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
     addOrg: rateLimit({perMinute: 2, perHour: 5}),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
@@ -98,6 +99,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
+    editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
@@ -153,21 +155,24 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.pokerAnnounceDeckHover'>('args.meetingId'),
     pokerResetDimension: isTeamMemberOfMeeting<'Mutation.pokerResetDimension'>('args.meetingId'),
     pokerRevealVotes: isTeamMemberOfMeeting<'Mutation.pokerRevealVotes'>('args.meetingId'),
-    pokerTemplateDimensionUpdateDescription: isTeamMember<'Mutation.pokerTemplateDimensionUpdateDescription'>(
-      'args.dimensionId',
-      'templateDimensions'
-    ),
+    pokerTemplateDimensionUpdateDescription:
+      isTeamMember<'Mutation.pokerTemplateDimensionUpdateDescription'>(
+        'args.dimensionId',
+        'templateDimensions'
+      ),
     promoteNewMeetingFacilitator:
       isTeamMemberOfMeeting<'Mutation.promoteNewMeetingFacilitator'>('args.meetingId'),
     pushInvitation: rateLimit({perMinute: 10, perHour: 20}),
-    reflectTemplatePromptUpdateDescription: isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
-      'args.promptId',
-      'reflectPrompts'
-    ),
-    reflectTemplatePromptUpdateGroupColor: isTeamMember<'Mutation.reflectTemplatePromptUpdateGroupColor'>(
-      'args.promptId',
-      'reflectPrompts'
-    ),
+    reflectTemplatePromptUpdateDescription:
+      isTeamMember<'Mutation.reflectTemplatePromptUpdateDescription'>(
+        'args.promptId',
+        'reflectPrompts'
+      ),
+    reflectTemplatePromptUpdateGroupColor:
+      isTeamMember<'Mutation.reflectTemplatePromptUpdateGroupColor'>(
+        'args.promptId',
+        'reflectPrompts'
+      ),
     regenerateOAuthAPIProviderSecret:
       hasProviderAccess<'Mutation.regenerateOAuthAPIProviderSecret'>('args.providerId'),
     removeAgendaItem: isTeamMember<'Mutation.removeAgendaItem'>('args.agendaItemId', 'agendaItems'),
