@@ -133,7 +133,7 @@
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
-"GifResponse": "./types/GifResponse#GifResponseSource",
+          "GifResponse": "./types/GifResponse#GifResponseSource",
           "GitHubIntegration": "../../postgres/types/index#GitHubAuth as GitHubAuthDB",
           "GitHubSearchQuery": "../../postgres/types/index#GitHubSearchQuery as GitHubSearchQueryDB",
           "GitLabIntegration": "./types/GitLabIntegration#GitLabIntegrationSource",
