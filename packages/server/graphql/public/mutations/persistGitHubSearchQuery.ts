@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -15,10 +15,6 @@ const persistGitHubSearchQuery: MutationResolvers['persistGitHubSearchQuery'] = 
   const subOptions = {mutatorId, operationId}
   const MAX_QUERIES = 5
 
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: `Not on team`}}
-  }
   const githubAuth = await dataLoader.get('githubAuth').load({teamId, userId: viewerId})
   if (!githubAuth) {
     return {error: {message: 'Not integrated with GitHub'}}

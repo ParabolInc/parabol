@@ -627,6 +627,18 @@ class AtlassianServerManager extends AtlassianManager {
     )
   }
 
+  async updateDescription(cloudId: string, issueKey: string, description: Record<string, any>) {
+    const payload = {
+      fields: {
+        description
+      }
+    }
+    return this.put(
+      `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/issue/${issueKey}`,
+      payload
+    )
+  }
+
   async updateStoryPoints(
     cloudId: string,
     issueKey: string,

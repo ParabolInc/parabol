@@ -1,15 +1,26 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
-export const isMeetingMember = <T>(dotPath: ResolverDotPath<T>) =>
+export const isMeetingMember = <T>(
+  dotPath: ResolverDotPath<T>,
+  dataLoaderName?: AllPrimaryLoaders
+) =>
   rule(`isMeetingMember`, {cache: 'strict'})(async (source, args, context: GQLContext) => {
-    const meetingId = getResolverDotPath(dotPath, source, args)
+    const argVar = getResolverDotPath(dotPath, source, args)
     const {dataLoader, authToken} = context
     const viewerId = getUserId(authToken)
+    let meetingId: string = argVar
+    if (dataLoaderName) {
+      const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
+      if (!subject?.meetingId)
+        return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+      meetingId = subject.meetingId
+    }
     const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
     const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
     if (!meetingMember) {

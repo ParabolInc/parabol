@@ -1,6 +1,5 @@
 import {generateText} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
@@ -20,16 +19,9 @@ const updateCommentContent: MutationResolvers['updateCommentContent'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-  const [comment, viewerMeetingMember] = await Promise.all([
-    dataLoader.get('comments').load(commentId),
-    dataLoader.get('meetingMembers').load(meetingMemberId)
-  ])
+  const comment = await dataLoader.get('comments').load(commentId)
   if (!comment || !comment.isActive) {
     return standardError(new Error('comment not found'), {userId: viewerId})
-  }
-  if (!viewerMeetingMember) {
-    return {error: {message: `Not a member of the meeting`}}
   }
   const {createdBy, discussionId} = comment
   const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)

@@ -43,51 +43,11 @@ export const useTipTapReflectionEditor = (
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
-        TaskList,
-        TaskItem.configure({
-          nested: true
-        }),
-        SlashCommand.configure({
-          'Heading 1': false,
-          'Heading 2': false,
-          'To-do list': false,
-          Insights: false,
-          Table: false,
-          Details: false,
-          'Create page': false,
-          Database: false
-        }),
-        ClearOnSubmit,
-        Focus,
-        FileUpload.configure({
-          scopeKey: teamId,
-          assetScope: 'Team',
-          highestTier: 'starter',
-          commit
-        }),
-        ImageBlock.configure({
-          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
-          editorHeight: 88
-        }),
-        LoomExtension,
-        Placeholder.configure({
-          showOnlyWhenEditable: false,
-          placeholder: () => {
-            return placeholderRef.current || '*New Reflection*'
-          }
-        }),
-        Mention.configure(
-          atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
-        ),
-        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
-        TiptapLinkExtension.configure({
-          openOnClick: false
-        }),
-        SearchAndReplace.configure(),
         CharacterCount.configure({
           // this is a rough estimate because we store the JSON content as a string, not plaintext
           limit: 1900
         }),
+        ClearOnSubmit,
         Extension.create({
           name: 'reflectKeyboardShortcuts',
           addKeyboardShortcuts(this) {
@@ -101,6 +61,46 @@ export const useTipTapReflectionEditor = (
               }
             }
           }
+        }),
+        FileUpload.configure({
+          scopeKey: teamId,
+          assetScope: 'Team',
+          highestTier: 'starter',
+          commit
+        }),
+        Focus,
+        ImageBlock.configure({
+          editorWidth: ElementWidth.REFLECTION_CARD - 16 * 2,
+          editorHeight: 88
+        }),
+        LoomExtension,
+        Mention.configure(
+          atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
+        ),
+        Mention.extend({name: 'emojiMention'}).configure(tiptapEmojiConfig),
+        Placeholder.configure({
+          showOnlyWhenEditable: false,
+          placeholder: () => {
+            return placeholderRef.current || '*New Reflection*'
+          }
+        }),
+        SearchAndReplace.configure(),
+        SlashCommand.configure({
+          'Heading 1': false,
+          'Heading 2': false,
+          'To-do list': false,
+          Insights: false,
+          Table: false,
+          Details: false,
+          'Create page': false,
+          Database: false
+        }),
+        TaskList,
+        TaskItem.configure({
+          nested: true
+        }),
+        TiptapLinkExtension.configure({
+          openOnClick: false
         })
       ].filter(isValid),
       autofocus: generateText(contentJSON, serverTipTapExtensions).length === 0,

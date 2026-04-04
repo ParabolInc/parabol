@@ -1,6 +1,5 @@
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
-import standardError from '../../../utils/standardError'
+import {getUserId} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleTeamDrawer: MutationResolvers['toggleTeamDrawer'] = async (
@@ -9,13 +8,6 @@ const toggleTeamDrawer: MutationResolvers['toggleTeamDrawer'] = async (
   {authToken}
 ) => {
   const pg = getKysely()
-  const viewerId = getUserId(authToken)
-
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
   // RESOLUTION
   const userId = getUserId(authToken)
   const viewerTeamMemberId = `${userId}::${teamId}`

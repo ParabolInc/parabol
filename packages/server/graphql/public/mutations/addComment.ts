@@ -1,6 +1,5 @@
 import {generateText, type JSONContent} from '@tiptap/core'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {getAllNodesAttributesByType} from '../../../../client/shared/tiptap/getAllNodesAttributesByType'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
@@ -53,7 +52,6 @@ const addComment: MutationResolvers['addComment'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  //AUTH
   const {discussionId, threadSortOrder, isAnonymous, threadParentId} = comment
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
@@ -65,16 +63,10 @@ const addComment: MutationResolvers['addComment'] = async (
       error: {message: 'Discussion does not take place in a meeting'}
     }
   }
-  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-  const [meeting, viewerMeetingMember, viewer] = await Promise.all([
+  const [meeting, viewer] = await Promise.all([
     dataLoader.get('newMeetings').loadNonNull(meetingId),
-    dataLoader.get('meetingMembers').load(meetingMemberId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-
-  if (!viewerMeetingMember) {
-    return {error: {message: 'Not a member of the meeting'}}
-  }
 
   // VALIDATION
   const content = convertToTipTap(comment.content)

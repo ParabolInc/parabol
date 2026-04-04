@@ -16,10 +16,6 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
-  if (!viewerId) {
-    return standardError(new Error('You must be logged in to join a team'))
-  }
-
   if (isTeamMember(authToken, teamId)) {
     return standardError(new Error('You are already a member of this team'))
   }
@@ -28,17 +24,9 @@ const joinTeam: MutationResolvers['joinTeam'] = async (
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
-  const {orgId} = team
 
   if (!team.isPublic) {
     return standardError(new Error('This team is not public'))
-  }
-
-  const organizationUser = await dataLoader
-    .get('organizationUsersByUserIdOrgId')
-    .load({userId: viewerId, orgId})
-  if (!organizationUser) {
-    return standardError(new Error('Viewer does not belong to organization'))
   }
 
   await acceptTeamInvitationSafe(team, viewerId, dataLoader)

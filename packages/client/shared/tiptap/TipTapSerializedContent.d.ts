@@ -6,9 +6,14 @@ import type {PageLinkBlockAttrs} from './extensions/PageLinkBlockBase'
 import type {ResponseBlockAttrs} from './extensions/ResponseBlockBase'
 import type {TaskBlockAttrs} from './extensions/TaskBlockBase'
 
-export interface TipTapSerializedContent {
+export interface TipTapSerializedPageContent {
   type: 'doc'
   content: [TiptapHeadingNode<1>, ...TipTapContentNode[]]
+}
+
+export interface TipTapSerializedContent {
+  type: 'doc'
+  content: TipTapContentNode[]
 }
 export interface TipTapTextNode {
   type: 'text'
@@ -123,7 +128,7 @@ export interface TipTapTableNode {
   content: [TipTapTableRowNode<TipTapTableHeaderNode>, ...TipTapTableRowNode[]]
 }
 
-export interface TipTapTableRowNode<TRowType extends TipTapTableCellNode = TipTapTableCellNode> {
+export interface TipTapTableRowNode<TRowType = TipTapTableCellNode> {
   type: 'tableRow'
   content: TRowType[]
 }

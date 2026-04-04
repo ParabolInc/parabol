@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {getUserId, isSuperUser} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -32,22 +32,6 @@ const setOrgUserRole: MutationResolvers['setOrgUserRole'] = async (
   const subOptions = {mutatorId, operationId}
 
   const viewerId = getUserId(authToken)
-  if (
-    !(await isUserBillingLeader(viewerId, orgId, dataLoader, {
-      clearCache: true
-    })) &&
-    !isSuperUser(authToken)
-  ) {
-    return standardError(new Error('Must be the organization leader or admin'), {
-      userId: viewerId
-    })
-  }
-
-  if (roleToSet && roleToSet !== 'BILLING_LEADER' && roleToSet !== 'ORG_ADMIN') {
-    return standardError(new Error('Invalid role to set'), {
-      userId: viewerId
-    })
-  }
 
   const [orgUsers, viewer] = await Promise.all([
     dataLoader.get('organizationUsersByOrgId').load(orgId),

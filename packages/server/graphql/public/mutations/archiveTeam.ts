@@ -1,11 +1,10 @@
-import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import removeMeetingTemplatesForTeam from '../../../postgres/queries/removeMeetingTemplatesForTeam'
 import safeArchiveTeam from '../../../safeMutations/safeArchiveTeam'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isSuperUser, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -19,22 +18,9 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  // AUTH
-  const viewerId = getUserId(authToken)
-  const [teamMember, viewer, teamToArchive] = await Promise.all([
-    dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId)),
-    dataLoader.get('users').loadNonNull(viewerId),
-    dataLoader.get('teams').loadNonNull(teamId)
-  ])
-  const isTeamLead = teamMember?.isNotRemoved && teamMember?.isLead
-  const isOrgAdmin = await isUserOrgAdmin(viewerId, teamToArchive.orgId, dataLoader)
-  if (!isTeamLead && !isSuperUser(authToken) && !isOrgAdmin) {
-    return standardError(new Error('Not team lead or org admin'), {
-      userId: viewerId
-    })
-  }
-
   // RESOLUTION
+  const viewerId = getUserId(authToken)
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   analytics.archiveTeam(viewer, teamId)
   const {team, users, removedSuggestedActionIds} = await safeArchiveTeam(teamId, dataLoader)
 

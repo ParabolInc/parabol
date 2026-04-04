@@ -13,19 +13,12 @@ const createStripeSubscription: MutationResolvers['createStripeSubscription'] = 
 ) => {
   const viewerId = getUserId(authToken)
 
-  const [viewer, organization, orgUsers, activeOrgUsers] = await Promise.all([
+  const [viewer, organization, activeOrgUsers] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     dataLoader.get('organizations').loadNonNull(orgId),
-    dataLoader.get('organizationUsersByOrgId').load(orgId),
     dataLoader.get('activeOrganizationUsersByOrgId').load(orgId)
   ])
   const orgUsersCount = activeOrgUsers.length
-  const organizationUser = orgUsers.find(({userId}) => userId === viewerId)
-  if (!organizationUser)
-    return standardError(new Error('Unable to create subscription'), {
-      userId: viewerId
-    })
-
   const manager = getStripeManager()
   const {stripeId, stripeSubscriptionId} = organization
   if (stripeSubscriptionId) {

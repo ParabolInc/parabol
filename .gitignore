@@ -12,7 +12,7 @@
 .roomodes
 .nx/
 .yarn/
-.claude/
+.claude/settings.local.json
 pgBackup/
 build/
 coverage/

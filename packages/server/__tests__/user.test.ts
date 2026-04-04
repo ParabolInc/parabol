@@ -1,5 +1,4 @@
 import faker from 'faker'
-import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../postgres/getKysely'
 import {sendIntranet, sendPublic, signUp, signUpWithEmail} from './common'
 
@@ -340,12 +339,11 @@ test('Leaving a team updates User.tms', async () => {
     }
   })
   const teamId = user1.data.viewer.tms[0]
-  const teamMemberId = TeamMemberId.join(teamId, user.userId)
 
   const leftTeam = await sendPublic({
     query: `
-      mutation RemoveTeamMember($teamMemberId: ID!) {
-        removeTeamMember(teamMemberId: $teamMemberId) {
+      mutation RemoveTeamMember($teamId: ID!, $userId: ID!) {
+        removeTeamMember(teamId: $teamId, userId: $userId) {
           error {
             message
           }
@@ -353,7 +351,8 @@ test('Leaving a team updates User.tms', async () => {
       }
     `,
     variables: {
-      teamMemberId
+      teamId,
+      userId: user.userId
     },
     cookie: user.cookie
   })

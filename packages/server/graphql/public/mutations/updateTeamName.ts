@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import teamNameValidation from 'parabol-client/validation/teamNameValidation'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -16,13 +16,8 @@ const updateTeamName: MutationResolvers['updateTeamName'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
-  // AUTH
-  const teamId = updatedTeam.id
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('User not on team'), {userId: viewerId})
-  }
-
   // VALIDATION
+  const teamId = updatedTeam.id
   const [team, viewer] = await Promise.all([
     dataLoader.get('teams').loadNonNull(teamId),
     dataLoader.get('users').loadNonNull(viewerId)

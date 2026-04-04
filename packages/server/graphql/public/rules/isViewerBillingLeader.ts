@@ -1,13 +1,24 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
+import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
-export const isViewerBillingLeader = <T>(orgIdDotPath: ResolverDotPath<T>) =>
+export const isViewerBillingLeader = <T>(
+  orgIdDotPath: ResolverDotPath<T>,
+  dataLoaderName?: AllPrimaryLoaders
+) =>
   rule(`isViewerBillingLeader-${orgIdDotPath}`, {cache: 'strict'})(
     async (source, args, {authToken, dataLoader}: GQLContext) => {
-      const orgId = getResolverDotPath(orgIdDotPath, source, args)
+      const argVar = getResolverDotPath(orgIdDotPath, source, args)
+      let orgId: string = argVar
+      if (dataLoaderName) {
+        const subject = await dataLoader.get(dataLoaderName as any).load(argVar)
+        if (!subject?.orgId)
+          return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
+        orgId = subject.orgId
+      }
       const viewerId = getUserId(authToken)
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')

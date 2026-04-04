@@ -2,9 +2,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import linkify from 'parabol-client/utils/linkify'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isAuthenticated} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import {broadcastUserMentionUpdate} from '../../../utils/tiptap/hocusPocusHub'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -17,8 +16,6 @@ const updateUserProfile: MutationResolvers['updateUserProfile'] = async (
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
-  // AUTH
-  if (!isAuthenticated(authToken)) return standardError(new Error('Not authenticated'))
   const userId = getUserId(authToken)
 
   // VALIDATION

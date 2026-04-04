@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {getSortOrder} from '../../../../client/shared/sortOrder'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {validateColorValue, validateScaleLabel} from '../../mutations/helpers/validateScaleValue'
@@ -24,10 +24,6 @@ export const addPokerTemplateScaleValue: MutationResolvers['addPokerTemplateScal
       userId: viewerId
     })
   }
-  if (!isTeamMember(authToken, existingScale.teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
   // VALIDATION
   const {color, label} = scaleValue
   if (!validateColorValue(color)) {

@@ -5,7 +5,7 @@ import findStageById from '../../../../client/utils/meetings/findStageById'
 import EstimateStage from '../../../database/types/EstimateStage'
 import getKysely from '../../../postgres/getKysely'
 import type {Discussion} from '../../../postgres/types/pg'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
@@ -32,7 +32,6 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
 
   // Wrap everything in try catch to ensure the lock is released
   try {
-    //AUTH
     const meeting = await dataLoader.get('newMeetings').load(meetingId)
     if (!meeting) {
       return {error: {message: `Meeting not found`}}
@@ -41,10 +40,6 @@ const updatePokerScope: MutationResolvers['updatePokerScope'] = async (
       return {error: {message: 'Not a poker meeting'}}
     }
     const {endedAt, teamId, phases, templateRefId, facilitatorStageId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
-      // bad actors could be naughty & just lock meetings that they don't own. Limit bad actors to team members
-      return {error: {message: `Not on team`}}
-    }
     if (endedAt) {
       return {error: {message: `Meeting already ended`}}
     }

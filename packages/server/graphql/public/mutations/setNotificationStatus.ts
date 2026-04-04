@@ -2,7 +2,6 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const setNotificationStatus: MutationResolvers['setNotificationStatus'] = async (
@@ -16,15 +15,10 @@ const setNotificationStatus: MutationResolvers['setNotificationStatus'] = async 
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const notification = await dataLoader.get('notifications').load(notificationId)
-
-  if (!notification || notification.userId !== viewerId) {
-    return standardError(new Error('Notification not found'), {userId: viewerId})
-  }
 
   // RESOLUTION
   await pg.updateTable('Notification').set({status}).where('id', '=', notificationId).execute()
-  notification.status = status
+  dataLoader.clearAll('notifications')
 
   const data = {notificationId}
   publish(

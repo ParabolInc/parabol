@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.8.0](https://github.com/ParabolInc/parabol/compare/v13.7.9...v13.8.0) (2026-04-04)
+
+
+### Added
+
+* implement ADF to TipTap conversion so users can edit jira poker issues ([#12968](https://github.com/ParabolInc/parabol/issues/12968)) ([836a7aa](https://github.com/ParabolInc/parabol/commit/836a7aa99d83b109e0886f244175a28a32b3e518))
+
+
+### Fixed
+
+* moves gql perms to permissions.ts ([#12965](https://github.com/ParabolInc/parabol/issues/12965)) ([5072ad7](https://github.com/ParabolInc/parabol/commit/5072ad7f30ad8ad8a07319bea854919db5f5393d))
+
+
+### Changed
+
+* update project dependencies and lockfile ([#12967](https://github.com/ParabolInc/parabol/issues/12967)) ([5b978bc](https://github.com/ParabolInc/parabol/commit/5b978bca5fc19715a6178d2b4a53003dba47ebb6))
+
 ## [13.7.9](https://github.com/ParabolInc/parabol/compare/v13.7.8...v13.7.9) (2026-04-01)
 
 

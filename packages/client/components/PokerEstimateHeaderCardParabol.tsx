@@ -1,18 +1,12 @@
-import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import useBreakpoint from '~/hooks/useBreakpoint'
-import {Breakpoint} from '~/types/constEnums'
 import type {PokerEstimateHeaderCardParabol_task$key} from '../__generated__/PokerEstimateHeaderCardParabol_task.graphql'
-import useAtmosphere from '../hooks/useAtmosphere'
-import useTaskChildFocus from '../hooks/useTaskChildFocus'
-import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'
-import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import {isEqualWhenSerialized} from '../shared/isEqualWhenSerialized'
+import useBreakpoint from '../hooks/useBreakpoint'
+import {Breakpoint} from '../types/constEnums'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
-import {TipTapEditor} from './TipTapEditor/TipTapEditor'
+import PokerEstimateHeaderCardEditable from './PokerEstimateHeaderCardEditable'
 
 interface Props {
   task: PokerEstimateHeaderCardParabol_task$key
@@ -24,46 +18,19 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
     graphql`
       fragment PokerEstimateHeaderCardParabol_task on Task {
         id
-        title
-        plaintextContent
         content
         teamId
       }
     `,
     taskRef
   )
-  const {id: taskId, content} = task
-  const atmosphere = useAtmosphere()
+  const {id: taskId, content, teamId} = task
   const [isExpanded, setIsExpanded] = useState(true)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const {useTaskChild} = useTaskChildFocus(taskId)
-
-  const editorLinkChanger = useTaskChild('editor-link-changer')
-
-  const {teamId} = task
-  const onBlur = useEventCallback(() => {
-    if (!editor || editor.isEmpty) return
-    const nextContent = editor.getJSON()
-    if (isEqualWhenSerialized(nextContent, JSON.parse(content))) return
-    const updatedTask = {
-      id: taskId,
-      content: JSON.stringify(nextContent)
-    }
-    UpdateTaskMutation(atmosphere, {updatedTask}, {})
-  })
-  const {editor} = useTipTapTaskEditor(content, {
-    atmosphere,
-    teamId,
-    onBlur
-  })
 
   const toggleExpand = () => {
     setIsExpanded((isExpanded) => !isExpanded)
   }
-
-  if (!editor) return null
-
-  const editorMaxHeight = isExpanded ? '300px' : '38px'
 
   return (
     <div className={`flex ${isDesktop ? 'px-4 pb-1' : 'px-2 pb-1'}`}>
@@ -76,9 +43,9 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
             className={`m-0 font-normal text-slate-700 text-sm leading-5 transition-all duration-300 ${
               isExpanded ? 'overflow-y-auto' : 'overflow-y-hidden'
             }`}
-            style={{maxHeight: editorMaxHeight}}
+            style={{maxHeight: isExpanded ? '300px' : '38px'}}
           >
-            <TipTapEditor editor={editor} useLinkEditor={() => editorLinkChanger} />
+            <PokerEstimateHeaderCardEditable taskId={taskId} teamId={teamId} content={content} />
           </div>
         </div>
         <div className='flex items-center'>

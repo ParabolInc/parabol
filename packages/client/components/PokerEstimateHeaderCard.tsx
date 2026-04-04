@@ -1,5 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {
   PokerEstimateHeaderCard_stage$data,
@@ -9,11 +9,12 @@ import type {PokerEstimateHeaderCardQuery as TPokerEstimateHeaderCardQuery} from
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
+import {convertADFToTipTap} from '../shared/tiptap/convertADFToTipTap'
 import renderMarkdown from '../utils/renderMarkdown'
-import PokerEstimateHeaderCardContent, {
-  type PokerEstimateHeaderCardContentProps
-} from './PokerEstimateHeaderCardContent'
 import PokerEstimateHeaderCardError from './PokerEstimateHeaderCardError'
+import PokerEstimateHeaderCardIntegration, {
+  type HeaderFields
+} from './PokerEstimateHeaderCardIntegration'
 import PokerEstimateHeaderCardParabol from './PokerEstimateHeaderCardParabol'
 
 const refreshStoryIntegrationQuery = graphql`
@@ -49,9 +50,7 @@ interface Props {
 
 type Integration = NonNullable<PokerEstimateHeaderCard_stage$data['task']>['integration']
 
-const getHeaderFields = (
-  integration: Integration | null
-): Omit<PokerEstimateHeaderCardContentProps, 'taskRef'> | null => {
+const getHeaderFields = (integration: Integration | null): HeaderFields | null => {
   if (!integration) return null
   const {__typename} = integration
   switch (__typename) {
@@ -82,11 +81,11 @@ const getHeaderFields = (
         title: azureDevOpsTitle,
         url: azureDevOpsUrl,
         id: workItemId,
-        descriptionHTML: azureDevOpsDescriptionHTML
+        descriptionHTML
       } = integration
       return {
         cardTitle: azureDevOpsTitle,
-        descriptionHTML: azureDevOpsDescriptionHTML,
+        descriptionHTML,
         url: azureDevOpsUrl,
         linkTitle: `${azureDevOpsTitle} Issue #${workItemId}`,
         linkText: `#${workItemId}`
@@ -104,11 +103,10 @@ const getHeaderFields = (
     }
     case '_xLinearIssue': {
       const {identifier, title: linearTitle, description, url} = integration
-      const linearDescHTML = renderMarkdown(description ?? '_no description found_')
       return {
         cardTitle: linearTitle,
-        descriptionHTML: linearDescHTML ?? '',
-        url: url,
+        descriptionHTML: renderMarkdown(description ?? '_no description found_') ?? '',
+        url,
         linkTitle: `Linear Issue #${identifier}`,
         linkText: `#${identifier}`
       }
@@ -120,7 +118,6 @@ const getHeaderFields = (
 graphql`
   fragment PokerEstimateHeaderCardTask on Task {
     ...PokerEstimateHeaderCardParabol_task
-    ...PokerEstimateHeaderCardContent_task
     integrationHash
     integration {
       ... on AzureDevOpsWorkItem {
@@ -137,8 +134,10 @@ graphql`
         __typename
         issueKey
         summary
+        jiraDescription: description
         descriptionHTML
         jiraUrl: url
+        cloudId
       }
       ... on JiraServerIssue {
         __typename
@@ -179,6 +178,8 @@ const PokerEstimateHeaderCard = (props: Props) => {
   const stage = useFragment(
     graphql`
       fragment PokerEstimateHeaderCard_stage on EstimateStage {
+        ...PokerEstimateHeaderCardIntegration_stage
+        creatorUserId
         meetingId
         taskId
         task {
@@ -188,39 +189,46 @@ const PokerEstimateHeaderCard = (props: Props) => {
     `,
     stageRef
   )
-  const {meetingId, task} = stage
+  const {meetingId, task, creatorUserId} = stage
+  const integration = task?.integration
+  const editorContent = useMemo(() => {
+    if (creatorUserId !== atmosphere.viewerId) return null
+    if (integration?.__typename !== 'JiraIssue' || !integration.jiraDescription) return null
+    try {
+      const adf = JSON.parse(integration.jiraDescription)
+      return JSON.stringify(convertADFToTipTap(adf, integration.summary))
+    } catch {
+      return null
+    }
+  }, [integration, creatorUserId, atmosphere.viewerId])
+
   if (!task) {
     const {taskId} = stage
     const onRemove = () => {
       UpdatePokerScopeMutation(
         atmosphere,
-        {
-          meetingId,
-          updates: [
-            {
-              service: 'PARABOL',
-              serviceTaskId: taskId,
-              action: 'DELETE'
-            }
-          ]
-        },
-        {
-          onCompleted: () => {},
-          onError: () => {},
-          contents: []
-        }
+        {meetingId, updates: [{service: 'PARABOL', serviceTaskId: taskId, action: 'DELETE'}]},
+        {onCompleted: () => {}, onError: () => {}, contents: []}
       )
     }
-
     return <PokerEstimateHeaderCardError onRemove={onRemove} />
   }
 
-  const {integrationHash, integration} = task
-  // it's a vanilla parabol task.
+  const handleRefresh = async () => {
+    if (!integrationHash) return
+    setIsRefreshing(true)
+    try {
+      await RefreshStoryIntegration(atmosphere, {storyId: stage.taskId, meetingId})
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
+
+  const {integrationHash} = task
   if (!integrationHash) {
     return <PokerEstimateHeaderCardParabol task={task} />
   }
-  // it's an integrated task, but the service might be down
+
   const headerFields = getHeaderFields(integration)
   if (!headerFields) {
     const onRemove = () => {
@@ -228,44 +236,21 @@ const PokerEstimateHeaderCard = (props: Props) => {
         atmosphere,
         {
           meetingId,
-          updates: [
-            {
-              // since this is a delete the service doesn't matter
-              service: 'PARABOL',
-              serviceTaskId: integrationHash,
-              action: 'DELETE'
-            }
-          ]
+          updates: [{service: 'PARABOL', serviceTaskId: integrationHash, action: 'DELETE'}]
         },
-        {
-          onCompleted: () => {},
-          onError: () => {},
-          contents: []
-        }
+        {onCompleted: () => {}, onError: () => {}, contents: []}
       )
     }
     return <PokerEstimateHeaderCardError service={'Integration'} onRemove={onRemove} />
   }
 
-  const handleRefresh = async () => {
-    if (!integrationHash) return
-    setIsRefreshing(true)
-    try {
-      await RefreshStoryIntegration(atmosphere, {
-        storyId: stage.taskId,
-        meetingId
-      })
-    } finally {
-      setIsRefreshing(false)
-    }
-  }
-
   return (
-    <PokerEstimateHeaderCardContent
-      {...headerFields}
+    <PokerEstimateHeaderCardIntegration
+      stageRef={stage}
+      headerFields={headerFields}
+      editorContent={editorContent}
       onRefresh={handleRefresh}
       isRefreshing={isRefreshing}
-      taskRef={task}
     />
   )
 }

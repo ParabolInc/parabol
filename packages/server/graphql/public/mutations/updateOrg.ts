@@ -1,26 +1,16 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const updateOrg: MutationResolvers['updateOrg'] = async (
   _source,
   {updatedOrg},
-  {authToken, dataLoader, socketId: mutatorId}
+  {socketId: mutatorId, dataLoader}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // AUTH
-  const viewerId = getUserId(authToken)
   const {id: orgId, name} = updatedOrg
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Not organization lead'), {
-      userId: viewerId
-    })
-  }
 
   // VALIDATION
   if (!name) {

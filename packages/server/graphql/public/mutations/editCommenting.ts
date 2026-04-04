@@ -1,6 +1,5 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
 import {getUserId} from '../../../utils/authorization'
 import getRedis, {type RedisPipelineResponse} from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
@@ -15,18 +14,11 @@ const editCommenting: MutationResolvers['editCommenting'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  //AUTH
   const discussion = await dataLoader.get('discussions').load(discussionId)
   if (!discussion) {
     return {error: {message: 'Discussion not found'}}
   }
   const {meetingId} = discussion
-
-  const meetingMemberId = MeetingMemberId.join(meetingId, viewerId)
-  const viewerMeetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-  if (!viewerMeetingMember) {
-    return {error: {message: `Not a part of the meeting`}}
-  }
 
   // RESOLUTION
   const redis = getRedis()

@@ -8,13 +8,8 @@ import UpdatableCacheDataLoader from './UpdatableCacheDataLoader'
 type LoaderMakers = typeof primaryKeyLoaderMakers
 type LoaderKeys = keyof LoaderMakers
 type Loader<LoaderName extends LoaderKeys> = ReturnType<LoaderMakers[LoaderName]>
-type LoaderType<LoaderName extends LoaderKeys> = Loader<LoaderName> extends NullableDataLoader<
-  any,
-  infer T,
-  any
->
-  ? NonNullable<T>
-  : any
+export type LoaderType<LoaderName extends LoaderKeys> =
+  Loader<LoaderName> extends NullableDataLoader<any, infer T, any> ? NonNullable<T> : any
 
 /**
  * Used to register loaders for types by foreign key.
