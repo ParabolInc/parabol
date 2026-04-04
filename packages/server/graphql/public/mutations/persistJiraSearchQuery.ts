@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -15,10 +15,6 @@ const persistJiraSearchQuery: MutationResolvers['persistJiraSearchQuery'] = asyn
   const subOptions = {mutatorId, operationId}
   const MAX_QUERIES = 5
 
-  // AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: `Not on team`}}
-  }
   const atlassianAuth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
   if (!atlassianAuth) {
     return {error: {message: 'Not integrated with Jira'}}

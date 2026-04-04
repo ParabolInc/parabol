@@ -1,5 +1,6 @@
 import {generateText, type JSONContent} from '@tiptap/core'
 import {serverTipTapExtensions} from './serverTipTapExtensions'
+import type {TipTapSerializedContent} from './TipTapSerializedContent'
 
 export const splitTipTapContent = (doc: JSONContent, maxLength = 256) => {
   const [firstBlock, ...bodyBlocks] = doc.content!
@@ -11,11 +12,11 @@ export const splitTipTapContent = (doc: JSONContent, maxLength = 256) => {
   if (fullTitle.length < maxLength) {
     const bodyText = generateText({...doc, content: bodyBlocks}, serverTipTapExtensions)
     const content = bodyText.trim().length > 0 ? bodyBlocks : doc.content!
-    return {title: fullTitle, bodyContent: {...doc, content}}
+    return {title: fullTitle, bodyContent: {...doc, content} as TipTapSerializedContent}
   }
   return {
     title: fullTitle.slice(0, maxLength),
     // repeat the full title in the body since we had to truncate it
-    bodyContent: doc
+    bodyContent: doc as TipTapSerializedContent
   }
 }

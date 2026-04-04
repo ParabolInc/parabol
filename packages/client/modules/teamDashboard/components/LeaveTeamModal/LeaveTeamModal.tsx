@@ -29,18 +29,19 @@ const LeaveTeamModal = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment LeaveTeamModal_teamMember on TeamMember {
-        teamMemberId: id
+        userId
+        teamId
       }
     `,
     teamMemberRef
   )
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
-  const {teamMemberId} = teamMember
+  const {userId, teamId} = teamMember
   const handleClick = () => {
     navigate('/meetings')
     closePortal()
-    RemoveTeamMemberMutation(atmosphere, {teamMemberId})
+    RemoveTeamMemberMutation(atmosphere, {userId, teamId})
   }
   return (
     <StyledDialogContainer>

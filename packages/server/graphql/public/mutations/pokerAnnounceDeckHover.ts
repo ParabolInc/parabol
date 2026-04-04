@@ -1,7 +1,7 @@
 import ms from 'ms'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis, {type RedisPipelineResponse} from '../../../utils/getRedis'
 import publish from '../../../utils/publish'
@@ -24,10 +24,7 @@ const pokerAnnounceDeckHover: MutationResolvers['pokerAnnounceDeckHover'] = asyn
   if (meeting.meetingType !== 'poker') {
     return {error: {message: 'Not a poker meeting'}}
   }
-  const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on the team'}}
-  }
+  const {endedAt, phases} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
   }

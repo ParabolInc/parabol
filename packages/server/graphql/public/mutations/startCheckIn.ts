@@ -6,7 +6,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meeting'
 import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -28,10 +28,6 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   const [unpaidError, viewer, overLimitError] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
     dataLoader.get('users').loadNonNull(viewerId),

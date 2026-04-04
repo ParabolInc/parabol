@@ -7,7 +7,7 @@ import TimelineEventPokerComplete from '../../../database/types/TimelineEventPok
 import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import getRedis from '../../../utils/getRedis'
 import {Logger} from '../../../utils/Logger'
@@ -41,9 +41,6 @@ const endSprintPoker: MutationResolvers['endSprintPoker'] = async (
   const {endedAt, facilitatorStageId, phases, teamId} = meeting
 
   // VALIDATION
-  if (!isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-    return standardError(new Error('Not on team'), {userId: viewerId})
-  }
   if (endedAt) return standardError(new Error('Meeting already ended'), {userId: viewerId})
 
   // RESOLUTION

@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const editTask: MutationResolvers['editTask'] = async (
@@ -19,10 +18,6 @@ const editTask: MutationResolvers['editTask'] = async (
   }
   const viewerId = getUserId(authToken)
   const {tags, teamId, userId: taskUserId} = task
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
-
   // RESOLUTION
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const isPrivate = tags.includes('private')

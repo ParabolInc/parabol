@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import fromTeamMemberId from 'parabol-client/utils/relay/fromTeamMemberId'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import removeTeamMemberHelper from '../../mutations/helpers/removeTeamMember'
@@ -9,7 +8,7 @@ import type {MutationResolvers} from '../resolverTypes'
 
 const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   _source,
-  {teamMemberId},
+  {teamId, userId},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -17,19 +16,13 @@ const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
 
   // AUTH
   const viewerId = getUserId(authToken)
-  const {userId, teamId} = fromTeamMemberId(teamMemberId)
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const [isOrgAdmin, teamMember] = await Promise.all([
-    isUserOrgAdmin(viewerId, team.orgId, dataLoader),
-    dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
-  ])
-  const isViewerTeamLead = teamMember?.isNotRemoved && teamMember?.isLead
+  const teamMemberId = TeamMemberId.join(teamId, userId)
+
+  const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
+
+  if (!teamMember) return {error: {message: 'User is not on team'}}
+  if (!teamMember.isNotRemoved) return {error: {message: 'User already removed from team'}}
   const isSelf = viewerId === userId
-  if (!isSelf) {
-    if (!isOrgAdmin && !isViewerTeamLead) {
-      return standardError(new Error('Not team lead or org admin'), {userId: viewerId})
-    }
-  }
 
   // RESOLUTION
   const evictorUserId = isSelf ? undefined : viewerId

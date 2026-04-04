@@ -4,7 +4,7 @@ import appOrigin from '../../../appOrigin'
 import TaskIntegrationManagerFactory from '../../../integrations/TaskIntegrationManagerFactory'
 import updatePrevUsedRepoIntegrationsCache from '../../../integrations/updatePrevUsedRepoIntegrationsCache'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -27,10 +27,6 @@ const createTaskIntegration: MutationResolvers['createTaskIntegration'] = async 
     return {error: {message: 'Task not found'}}
   }
   const {content: rawContentJSON, teamId, userId} = task
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Team not found'}}
-  }
-
   // VALIDATION
   if (task.integration) {
     return {

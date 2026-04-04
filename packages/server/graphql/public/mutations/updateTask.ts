@@ -1,9 +1,12 @@
 import {generateText} from '@tiptap/core'
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {convertTiptapToADF} from '../../../../client/shared/tiptap/convertTipTapToADF'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import AtlassianServerManager from '../../../utils/AtlassianServerManager'
+import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -35,9 +38,6 @@ const updateTask: MutationResolvers['updateTask'] = async (
   if (!task) return {error: {message: 'Task not found'}}
   const {teamId, userId} = task
   const nextUserId = inputUserId === undefined ? userId : inputUserId
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   if (teamId || inputUserId) {
     const error = await validateTaskUserIsTeamMember(nextUserId, teamId, dataLoader)
     if (error) return standardError(new Error('Invalid user ID'), {userId: viewerId})
@@ -60,6 +60,18 @@ const updateTask: MutationResolvers['updateTask'] = async (
   if (Number(updateRes.numChangedRows) === 0) {
     return standardError(new Error('Already updated task'), {userId: viewerId})
   }
+  // If the task has a Jira integration and content was updated, sync the description to Jira
+  if (content && task.integration?.service === 'jira') {
+    const {cloudId, issueKey} = task.integration
+    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
+    if (auth) {
+      const manager = new AtlassianServerManager(auth.accessToken)
+      const adf = convertTiptapToADF(validContent as TipTapSerializedContent)
+      // fire-and-forget; don't block the response on Jira's API
+      manager.updateDescription(cloudId, issueKey, adf).catch(() => {})
+    }
+  }
+
   dataLoader.clearAll('tasks')
   const newTask = await dataLoader.get('tasks').loadNonNull(taskId)
   const usersToIgnore = await getUsersToIgnore(newTask.meetingId)

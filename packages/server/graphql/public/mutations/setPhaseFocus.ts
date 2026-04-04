@@ -20,13 +20,10 @@ const setPhaseFocus: MutationResolvers['setPhaseFocus'] = async (
   const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-  const {endedAt, facilitatorUserId, phases} = meeting
+  const {endedAt, phases} = meeting
   if (endedAt) return standardError(new Error('Meeting already completed'), {userId: viewerId})
   if (isPhaseComplete(GROUP, phases)) {
     return standardError(new Error('Meeting phase already completed'), {userId: viewerId})
-  }
-  if (facilitatorUserId !== viewerId) {
-    return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
   }
   const reflectPhase = getPhase(meeting.phases, 'reflect')
   if (!reflectPhase) return standardError(new Error('Meeting not found'), {userId: viewerId})

@@ -22,11 +22,8 @@ const setPokerSpectate: MutationResolvers['setPokerSpectate'] = async (
   const meetingMemberId = toTeamMemberId(meetingId, viewerId)
   const [meetingMember, meeting] = await Promise.all([
     dataLoader.get('meetingMembers').loadNonNull(meetingMemberId),
-    dataLoader.get('newMeetings').load(meetingId)
+    dataLoader.get('newMeetings').loadNonNull(meetingId)
   ])
-  if (!meeting) {
-    return {error: {message: 'Meeting not found'}}
-  }
   const {endedAt, phases, meetingType, teamId} = meeting
   if (endedAt) {
     return {error: {message: 'Meeting has ended'}}
@@ -52,7 +49,7 @@ const setPokerSpectate: MutationResolvers['setPokerSpectate'] = async (
     .set({isSpectatingPoker: isSpectating})
     .where('id', '=', teamMemberId)
     .execute()
-  dataLoader.clearAll('teamMembers')
+  dataLoader.clearAll(['teamMembers', 'meetingMembers'])
   // mutate the dataLoader cache
   meetingMember.isSpectating = isSpectating
   const dirtyStages: EstimateStage[] = []

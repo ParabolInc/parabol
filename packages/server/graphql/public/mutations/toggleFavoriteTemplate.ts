@@ -9,7 +9,6 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
 ) => {
   const viewerId = getUserId(authToken)
   const pg = getKysely()
-  const userId = getUserId(authToken)
 
   const favoriteTemplateIds = await dataLoader.get('favoriteTemplateIds').load(viewerId)
 
@@ -28,7 +27,7 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
     .set({
       favoriteTemplateIds: updatedFavoriteTemplateIds
     })
-    .where('id', '=', userId)
+    .where('id', '=', viewerId)
     .execute()
 
   return true

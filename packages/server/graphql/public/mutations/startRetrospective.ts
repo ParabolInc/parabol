@@ -3,7 +3,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -25,9 +25,6 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('User not on team'), {userId: viewerId})
-  }
 
   // RESOLUTION
   const meetingType = 'retrospective' as const

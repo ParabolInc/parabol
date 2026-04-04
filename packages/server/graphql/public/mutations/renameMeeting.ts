@@ -20,11 +20,8 @@ const renameMeeting: MutationResolvers['renameMeeting'] = async (
   if (!meeting) {
     return {error: {message: 'Meeting not found'}}
   }
-  const {facilitatorUserId, teamId} = meeting
+  const {teamId} = meeting
   const viewerId = getUserId(authToken)
-  if (viewerId !== facilitatorUserId) {
-    return {error: {message: 'Only the facilitator can change the meeting name'}}
-  }
 
   // VALIDATION
   if (name.length < 2 || name.length > 50) {

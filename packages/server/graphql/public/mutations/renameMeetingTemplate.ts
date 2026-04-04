@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember, isUserOrgAdmin} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {publishToEmbedder} from '../../mutations/helpers/publishToEmbedder'
@@ -20,14 +20,6 @@ const renameMeetingTemplate: MutationResolvers['renameMeetingTemplate'] = async 
   // AUTH
   if (!template || !template.isActive) {
     return standardError(new Error('Template not found'), {userId: viewerId})
-  }
-  if (
-    !isTeamMember(authToken, template.teamId) &&
-    !(await isUserOrgAdmin(viewerId, template.orgId, dataLoader))
-  ) {
-    return standardError(new Error('You are not authorized to rename this template'), {
-      userId: viewerId
-    })
   }
 
   // VALIDATION

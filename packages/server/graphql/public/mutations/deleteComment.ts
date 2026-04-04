@@ -1,5 +1,4 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
 import {PARABOL_AI_USER_ID} from '../../../../client/utils/constants'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
@@ -17,17 +16,12 @@ const deleteComment: MutationResolvers['deleteComment'] = async (
   const now = new Date()
 
   //AUTH
-  const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-  const [comment, viewerMeetingMember] = await Promise.all([
+  const [comment] = await Promise.all([
     dataLoader.get('comments').load(commentId),
-    dataLoader.get('meetingMembers').load(meetingMemberId),
     dataLoader.get('newMeetings').load(meetingId)
   ])
   if (!comment || !comment.isActive) {
     return {error: {message: 'Comment does not exist'}}
-  }
-  if (!viewerMeetingMember) {
-    return {error: {message: `Not a member of the meeting`}}
   }
   const {createdBy, discussionId} = comment
   const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)

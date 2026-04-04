@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {getUserId, isSuperUser, isUserBillingLeader} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import resolveDowngradeToStarter from '../../mutations/helpers/resolveDowngradeToStarter'
@@ -13,15 +13,8 @@ const downgradeToStarter: MutationResolvers['downgradeToStarter'] = async (
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
 
-  // AUTH
   const viewerId = getUserId(authToken)
-  const [isBillingLeader, viewer] = await Promise.all([
-    isUserBillingLeader(viewerId, orgId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
-  if (!isSuperUser(authToken) && !isBillingLeader) {
-    return standardError(new Error('Not organization leader'), {userId: viewerId})
-  }
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   // VALIDATION
   if (otherTool && otherTool?.length > 100) {

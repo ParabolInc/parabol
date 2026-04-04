@@ -1,6 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {isTeamMember} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -8,7 +7,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'] = async (
   _source,
   {dimensionName, labelTemplate, meetingId, repoId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
@@ -23,9 +22,6 @@ const updateLinearDimensionField: MutationResolvers['updateLinearDimensionField'
     return {error: {message: 'Not a poker meeting'}}
   }
   const {teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on team'}}
-  }
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
   const {dimensions} = templateRef
   const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)

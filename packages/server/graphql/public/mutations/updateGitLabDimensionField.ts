@@ -1,7 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from './../../../utils/authorization'
-import {isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
@@ -23,9 +22,6 @@ const updateGitLabDimensionField: MutationResolvers['updateGitLabDimensionField'
     return {error: {message: 'Not a poker meeting'}}
   }
   const {teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on team'}}
-  }
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
   const {dimensions} = templateRef
   const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)

@@ -24,14 +24,15 @@ const navigateMeeting: MutationResolvers['navigateMeeting'] = async (
   const viewerId = getUserId(authToken)
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
-  const {createdBy, endedAt, facilitatorUserId, phases, teamId, meetingType} = meeting
+  const {
+    endedAt,
+    facilitatorUserId: nullableFacilitatorUserId,
+    phases,
+    teamId,
+    meetingType
+  } = meeting
+  const facilitatorUserId = nullableFacilitatorUserId!
   if (endedAt) return {error: {message: 'Meeting already ended'}}
-  if (viewerId !== facilitatorUserId) {
-    if (viewerId !== createdBy) {
-      return standardError(new Error('Not meeting facilitator'), {userId: viewerId})
-    }
-    return standardError(new Error('Not meeting facilitator anymore'), {userId: viewerId})
-  }
 
   // VALIDATION
   let phaseCompleteData

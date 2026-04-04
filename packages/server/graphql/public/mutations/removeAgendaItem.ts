@@ -1,7 +1,7 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type AgendaItemsStage from '../../../database/types/AgendaItemsStage'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import removeStagesFromMeetings from '../../mutations/helpers/removeStagesFromMeetings'
@@ -16,12 +16,8 @@ const removeAgendaItem: MutationResolvers['removeAgendaItem'] = async (
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
 
-  // AUTH
   // id is of format 'teamId::randomId'
   const [teamId] = agendaItemId.split('::') as [string]
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
 
   // RESOLUTION
   const agendaItem = await getKysely()

@@ -13,7 +13,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {Task} from '../../../postgres/types/index.d'
 import type {Notification} from '../../../postgres/types/pg'
 import {analytics} from '../../../utils/analytics/analytics'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import type {DataLoaderWorker} from '../../graphql'
@@ -151,10 +151,6 @@ const createTask: MutationResolvers['createTask'] = async (
     teamId,
     userId
   } = newTask
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on team'}}
-  }
-
   const [viewer, ...errors] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     validateTaskDiscussionId(discussionId, teamId, meetingId, dataLoader),

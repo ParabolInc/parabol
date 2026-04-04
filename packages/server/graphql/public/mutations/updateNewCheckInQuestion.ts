@@ -2,7 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {makeCheckinQuestion} from 'parabol-client/utils/makeCheckinGreeting'
 import {plaintextToTipTap} from '../../../../client/shared/tiptap/plaintextToTipTap'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import getPhase from '../../../utils/getPhase'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -17,14 +17,9 @@ const updateNewCheckInQuestion: MutationResolvers['updateNewCheckInQuestion'] = 
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-
-  // AUTH
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) return standardError(new Error('Meeting not found'), {userId: viewerId})
   const {endedAt, phases, teamId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   if (endedAt) return {error: {message: 'Meeting has already ended'}}
 
   // VALIDATION

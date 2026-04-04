@@ -39,7 +39,8 @@ const loaderMakers = {
   ...linearLoaders
 } as const
 
-export type Loaders = keyof typeof loaderMakers
+export type LoaderTypes = typeof loaderMakers
+export type Loaders = keyof LoaderTypes
 
 export type AllPrimaryLoaders = keyof typeof primaryKeyLoaderMakers
 
@@ -53,7 +54,7 @@ interface GenericDataLoader<TLoaders, TPrimaryLoaderNames> {
   ): Loader extends (...args: any[]) => any ? ReturnType<Loader> : never
 }
 
-export type DataLoaderInstance = GenericDataLoader<typeof loaderMakers, AllPrimaryLoaders>
+export type DataLoaderInstance = GenericDataLoader<LoaderTypes, AllPrimaryLoaders>
 
 /**
  * This is the main dataloader
@@ -79,7 +80,7 @@ export default class RootDataLoader<
   get: DataLoaderInstance['get'] = (loaderName) => {
     let loader = this.loaders[loaderName]
     if (loader) return loader
-    const loaderMaker = loaderMakers[loaderName as keyof typeof loaderMakers]
+    const loaderMaker = loaderMakers[loaderName as keyof LoaderTypes]
     const dependsOn: RegisterDependsOn = (inPrimaryLoaders) => {
       const primaryLoaders = Array.isArray(inPrimaryLoaders) ? inPrimaryLoaders : [inPrimaryLoaders]
       primaryLoaders.forEach((primaryLoader) => {

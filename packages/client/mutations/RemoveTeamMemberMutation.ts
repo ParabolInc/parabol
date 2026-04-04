@@ -97,8 +97,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation RemoveTeamMemberMutation($teamMemberId: ID!) {
-    removeTeamMember(teamMemberId: $teamMemberId) {
+  mutation RemoveTeamMemberMutation($teamId: ID!, $userId: ID!) {
+    removeTeamMember(teamId: $teamId, userId: $userId) {
       error {
         message
       }

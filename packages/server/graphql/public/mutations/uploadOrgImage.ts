@@ -3,26 +3,16 @@ import getFileStoreManager from '../../../fileStorage/getFileStoreManager'
 import normalizeAvatarUpload from '../../../fileStorage/normalizeAvatarUpload'
 import validateAvatarUpload from '../../../fileStorage/validateAvatarUpload'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const uploadOrgImage: MutationResolvers['uploadOrgImage'] = async (
   _,
   {file, orgId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  // AUTH
-  const viewerId = getUserId(authToken)
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return standardError(new Error('Must be the organization leader'), {
-      userId: viewerId
-    })
-  }
 
   // VALIDATION
   const contentType = file.type

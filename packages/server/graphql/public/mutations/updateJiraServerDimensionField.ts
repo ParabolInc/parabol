@@ -2,7 +2,7 @@ import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/con
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
 import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -24,9 +24,6 @@ const updateJiraServerDimensionField: MutationResolvers['updateJiraServerDimensi
     return {error: {message: 'Not a poker meeting'}}
   }
   const {teamId, templateRefId} = meeting
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: 'Not on team'}}
-  }
   const templateRef = await dataLoader.get('templateRefs').loadNonNull(templateRefId)
   const {dimensions} = templateRef
   const matchingDimension = dimensions.find((dimension) => dimension.name === dimensionName)

@@ -2,7 +2,7 @@ import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/type
 import isPhaseComplete from 'parabol-client/utils/meetings/isPhaseComplete'
 import mode from '../../../../client/utils/mode'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -31,9 +31,6 @@ const updateRetroMaxVotes: MutationResolvers['updateRetroMaxVotes'] = async (
   } = meeting
   if (meetingType !== 'retrospective') return {error: {message: 'Meeting not found'}}
   if (endedAt) return {error: {message: 'Meeting already ended'}}
-  if (!isTeamMember(authToken, teamId)) {
-    return standardError(new Error('Team not found'), {userId: viewerId})
-  }
   if (isPhaseComplete('vote', phases)) {
     return standardError(new Error('Vote phase already completed'), {userId: viewerId})
   }

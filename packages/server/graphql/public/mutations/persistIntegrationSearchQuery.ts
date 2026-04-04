@@ -3,7 +3,7 @@ import IntegrationProviderId from 'parabol-client/shared/gqlIds/IntegrationProvi
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import {selectIntegrationProvider} from '../../../postgres/select'
-import {getUserId, isTeamMember} from '../../../utils/authorization'
+import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import type {
   JiraSearchQueryInput,
@@ -19,11 +19,6 @@ const persistIntegrationSearchQuery: MutationResolvers['persistIntegrationSearch
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  //AUTH
-  if (!isTeamMember(authToken, teamId)) {
-    return {error: {message: `Not on team`}}
-  }
 
   let query: JiraServerSearchQueryInput | JiraSearchQueryInput
   switch (service) {

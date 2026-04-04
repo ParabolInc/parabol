@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.7.9",
+  "version": "13.8.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -51,7 +51,7 @@
     "ansi-regex": "^5.0.1",
     "json-schema": "^0.4.0",
     "nanoid": "^3.1.31",
-    "@xmldom/xmldom": "^0.8.6",
+    "@xmldom/xmldom": "^0.8.12",
     "node-gyp": "^8.4.1",
     "simple-get": "^4.0.1",
     "caniuse-lite": "~1.0.0",
@@ -68,7 +68,9 @@
     "brace-expansion@1.1.11": "1.1.12",
     "brace-expansion@2.0.1": "2.0.2",
     "source-map": "0.7.6",
-    "qs": "^6.14.1"
+    "qs": "^6.14.1",
+    "handlebars": "^4.7.9",
+    "brace-expansion": "^1.1.13"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -141,7 +143,7 @@
     "sucrase": "^3.35.1",
     "tailwindcss": "^4.0.1",
     "terser-webpack-plugin": "^5.3.9",
-    "ts-jest": "^29.3.2",
+    "ts-jest": "^29.4.6",
     "ts-loader": "9.2.6",
     "typescript": "^5.9.3",
     "vscode-apollo-relay": "^1.5.0",
