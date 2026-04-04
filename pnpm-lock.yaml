@@ -991,9 +991,6 @@ importers:
       mailgun.js:
         specifier: ^9.3.0
         version: 9.4.1
-      md-to-adf:
-        specifier: ^0.6.4
-        version: 0.6.4
       mime-types:
         specifier: ^2.1.16
         version: 2.1.35
@@ -6617,10 +6614,6 @@ packages:
   adaptivecards@2.10.0:
     resolution: {integrity: sha512-QcgXGFlX3rgIfZkxvQY896zEVBh30mE37z3XKhcQW2OqSUrVH6dNT78MkM//W4wRdrZizSHqXKLaKyVVxAgVFg==}
 
-  adf-builder@3.3.0:
-    resolution: {integrity: sha512-zl5Sk2HtJk/E+gBnD0g51w5wIEEujaAbzsBhSsteO8Fnef7v+7pvas0FeQuLCAgOxrwy945HWAB1gQ4yjPI3/g==}
-    deprecated: Use @atlaskit/adf-utils instead
-
   adm-zip@0.5.16:
     resolution: {integrity: sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ==}
     engines: {node: '>=12.0'}
@@ -9722,11 +9715,6 @@ packages:
     resolution: {integrity: sha512-BuU2qnTti9YKgK5N+IeMubp14ZUKUUw7yeJbkjtosvHiP0AZ5c8IAgEMk79D0eC8F23r4Ac/q8cAIFdm2FtyoA==}
     hasBin: true
 
-  marked@0.8.2:
-    resolution: {integrity: sha512-EGwzEeCcLniFX51DhTpmTom+dSA/MG/OBUDjnWtHbEnjAH180VzUeAw+oE4+Zv+CoYBWyRlYOTR0N8SO9R1PVw==}
-    engines: {node: '>= 8.16.2'}
-    hasBin: true
-
   marked@15.0.12:
     resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
@@ -9753,9 +9741,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  md-to-adf@0.6.4:
-    resolution: {integrity: sha512-MynWm2w+adyzeaCJGXoOjgHAAhql0I9jR2Bq55hM7GQ05u6cGX7jThdWN6dgVSGnBmuAGmZGy2rDGBP+hJRckA==}
 
   md-to-react-email@5.0.5:
     resolution: {integrity: sha512-OvAXqwq57uOk+WZqFFNCMZz8yDp8BD3WazW1wAKHUrPbbdr89K9DWS6JXY09vd9xNdPNeurI8DU/X4flcfaD8A==}
@@ -19337,8 +19322,6 @@ snapshots:
 
   adaptivecards@2.10.0: {}
 
-  adf-builder@3.3.0: {}
-
   adm-zip@0.5.16: {}
 
   agent-base@7.1.4: {}
@@ -22885,8 +22868,6 @@ snapshots:
       punycode.js: 2.3.1
       uc.micro: 2.1.0
 
-  marked@0.8.2: {}
-
   marked@15.0.12: {}
 
   marked@17.0.1: {}
@@ -22910,11 +22891,6 @@ snapshots:
       timezones.json: 1.7.2
     optionalDependencies:
       typescript: 5.9.3
-
-  md-to-adf@0.6.4:
-    dependencies:
-      adf-builder: 3.3.0
-      marked: 0.8.2
 
   md-to-react-email@5.0.5(react@18.3.1):
     dependencies:

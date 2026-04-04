@@ -1,5 +1,5 @@
 import {TiptapTransformer} from '@hocuspocus/transformer'
-import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
+import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
@@ -16,7 +16,7 @@ import {validateParentPage} from './validateParentPage'
 type CreateNewPageOptions = {
   parentPageId?: number
   isDatabase?: boolean
-  content: TipTapSerializedContent
+  content: TipTapSerializedPageContent
   teamId?: string | null
   summaryMeetingId?: string | null
   userId: string

@@ -1,8 +1,11 @@
 import {generateText} from '@tiptap/core'
+import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {convertTiptapToADF} from '../../../../client/shared/tiptap/convertTipTapToADF'
 import {getTagsFromTipTapTask} from '../../../../client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from '../../../../client/shared/tiptap/serverTipTapExtensions'
 import getKysely from '../../../postgres/getKysely'
+import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
@@ -57,6 +60,18 @@ const updateTask: MutationResolvers['updateTask'] = async (
   if (Number(updateRes.numChangedRows) === 0) {
     return standardError(new Error('Already updated task'), {userId: viewerId})
   }
+  // If the task has a Jira integration and content was updated, sync the description to Jira
+  if (content && task.integration?.service === 'jira') {
+    const {cloudId, issueKey} = task.integration
+    const auth = await dataLoader.get('freshAtlassianAuth').load({teamId, userId: viewerId})
+    if (auth) {
+      const manager = new AtlassianServerManager(auth.accessToken)
+      const adf = convertTiptapToADF(validContent as TipTapSerializedContent)
+      // fire-and-forget; don't block the response on Jira's API
+      manager.updateDescription(cloudId, issueKey, adf).catch(() => {})
+    }
+  }
+
   dataLoader.clearAll('tasks')
   const newTask = await dataLoader.get('tasks').loadNonNull(taskId)
   const usersToIgnore = await getUsersToIgnore(newTask.meetingId)

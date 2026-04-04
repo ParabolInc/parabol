@@ -98,7 +98,6 @@
     "jsonwebtoken": "^9.0.3",
     "lib0": "^0.2.114",
     "mailgun.js": "^9.3.0",
-    "md-to-adf": "^0.6.4",
     "mime-types": "^2.1.16",
     "nest-graphql-endpoint": "^0.8.3",
     "node-env-flag": "0.1.0",

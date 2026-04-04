@@ -25,7 +25,6 @@ declare module 'tayden-clusterfck'
 declare module 'jest-extended'
 declare module 'object-hash'
 declare module 'string-score'
-declare module 'md-to-adf'
 
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: boolean
