@@ -85,7 +85,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     )
     .addColumn('label', 'varchar(255)', (col) => col.notNull())
     .addColumn('prefix', 'varchar(8)', (col) => col.notNull().unique())
-    .addColumn('hashedToken', 'varchar(64)', (col) => col.notNull())
+    .addColumn('hashedToken', 'varchar(60)', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('scopes', sql`"OAuthScopeEnum"[]`, (col) => col.notNull())
     .addColumn('grantedOrgIds', sql`text[]`)

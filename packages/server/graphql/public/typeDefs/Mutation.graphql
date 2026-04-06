@@ -126,6 +126,35 @@ type Mutation {
     """
     teamId: ID
   ): CreatePagePayload!
+  """
+  Create a personal access token for API access
+  """
+  createPersonalAccessToken(
+    """
+    A human-readable label for the token
+    """
+    label: String!
+    """
+    The scopes this token is permitted to use
+    """
+    scopes: [OAuthScopeEnum!]!
+    """
+    Restrict token to specific orgs; null means all orgs the user belongs to
+    """
+    grantedOrgIds: [ID!]
+    """
+    Restrict token to specific teams; null means all teams the user belongs to
+    """
+    grantedTeamIds: [ID!]
+    """
+    Restrict token to specific pages; null means all pages the user can access
+    """
+    grantedPageIds: [ID!]
+    """
+    Expiration date; cannot be more than 1 year in the future
+    """
+    expiresAt: DateTime!
+  ): CreatePersonalAccessTokenSuccess!
   createTaskIntegration(
     """
     Which integration to push the task to

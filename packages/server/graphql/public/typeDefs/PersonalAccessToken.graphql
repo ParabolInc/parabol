@@ -1,0 +1,22 @@
+type PersonalAccessToken {
+  id: ID!
+  label: String!
+  prefix: String!
+  scopes: [OAuthScopeEnum!]!
+  """
+  Null means the token can access all orgs the user belongs to
+  """
+  grantedOrgIds: [ID!]
+  """
+  Null means the token can access all teams the user belongs to
+  """
+  grantedTeamIds: [ID!]
+  """
+  Null means the token can access all pages the user can access
+  """
+  grantedPageIds: [ID!]
+  createdAt: DateTime!
+  lastUsedAt: DateTime
+  expiresAt: DateTime
+  revokedAt: DateTime
+}

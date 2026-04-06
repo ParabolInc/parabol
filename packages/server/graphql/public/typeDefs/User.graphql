@@ -573,4 +573,5 @@ type User implements UserPartial {
     "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.75."
     alpha: Float
   ): SearchResultConnection!
+  personalAccessTokens: [PersonalAccessToken!]!
 }

@@ -91,6 +91,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.orgId',
       'ORG_ADMIN'
     ),
+    createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
     createPage: or(
       isNull<'Mutation.createPage'>('args.teamId'),
       isTeamMember<'Mutation.createPage'>('args.teamId')

@@ -1059,7 +1059,13 @@ const User: ReqResolvers<'User'> = {
       }))
     }
   },
-  search
+  search,
+  personalAccessTokens: async (source, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (source.id !== viewerId) return []
+    const pg = getKysely()
+    return pg.selectFrom('PersonalAccessToken').selectAll().where('userId', '=', viewerId).execute()
+  }
 }
 
 export default User
