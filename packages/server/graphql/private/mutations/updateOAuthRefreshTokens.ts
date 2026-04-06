@@ -9,9 +9,14 @@ const updateOAuthRefreshTokens: MutationResolvers['updateOAuthRefreshTokens'] = 
   {dataLoader}
 ) => {
   // RESOLUTION
-  const atlassianAuthsToUpdate = await selectAtlassianAuth()
+  const atlassianAuthRows = await selectAtlassianAuth()
     .where('updatedAt', '<=', updatedBefore)
+    .where('isActive', '=', true)
     .execute()
+  // distinct on userId, since freshAtlassianAuth will renew all active tokens across all teams for a user
+  const atlassianAuthsToUpdate = [
+    ...new Map(atlassianAuthRows.map((row) => [row.userId, row])).values()
+  ]
   const updatedAtlassianAuths = (
     await dataLoader.get('freshAtlassianAuth').loadMany(atlassianAuthsToUpdate)
   ).filter((auth) => isNotNull(auth) && isNotError(auth))
