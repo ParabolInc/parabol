@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.9.1](https://github.com/ParabolInc/parabol/compare/v13.9.0...v13.9.1) (2026-04-07)
+
+
+### Fixed
+
+* text style kit  ([#12975](https://github.com/ParabolInc/parabol/issues/12975)) ([ae2c45b](https://github.com/ParabolInc/parabol/commit/ae2c45b481117be7f89b479c6820822b5ce883d3))
+
 ## [13.9.0](https://github.com/ParabolInc/parabol/compare/v13.8.0...v13.9.0) (2026-04-07)
 
 
