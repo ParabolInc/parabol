@@ -1,6 +1,8 @@
 import {SearchAndReplace} from '@sereneinserenade/tiptap-search-and-replace'
+import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
+import {TextStyle} from '@tiptap/extension-text-style'
 import {CharacterCount, Focus, Placeholder} from '@tiptap/extensions'
 import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -99,6 +101,8 @@ export const useTipTapReflectionEditor = (
         TaskItem.configure({
           nested: true
         }),
+        TextStyle,
+        Highlight,
         TiptapLinkExtension.configure({
           openOnClick: false
         })
