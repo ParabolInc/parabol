@@ -54,6 +54,31 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 - **Lazy `useState` initialization** for hot-path components: `useState(() => expensiveComputation())` not `useState(expensiveComputation())`. The thunk runs only on mount, not every render.
 - **Provide clear user feedback.** Forms need submit buttons or auto-save — don't rely on implicit Enter-to-save without visual cues.
 
+- **Extract reusable editable vs readonly component variants.** When a component supports both an editable and read-only mode, split it into separate components (e.g. PokerEstimateHeaderCardEditable and PokerEstimateHeaderCardReadonly) rather than using conditional rendering within a single component. The parent component decides which variant to render based on permissions or state.
+  ```
+  // Good
+    {editorContent !== null ? (
+      <PokerEstimateHeaderCardEditable
+        taskId={taskId}
+        teamId={teamId}
+        content={editorContent}
+        hideTitle
+      />
+    ) : (
+      <PokerEstimateHeaderCardReadonly descriptionHTML={headerFields.descriptionHTML} />
+    )}
+
+  // Bad
+    // Single component with internal mode switching
+    const PokerEstimateHeaderCardContent = ({content, isEditable}) => {
+      if (isEditable) {
+        const {editor} = useTipTapTaskEditor(content, ...)
+        return <TipTapEditor editor={editor} />
+      }
+      return <div dangerouslySetInnerHTML={{__html: content}} />
+    }
+  ```
+
 ## UI/UX Patterns
 
 - **Autocomplete behavior**: Allow Tab and Enter to complete suggestions. Show a visual preview of what will be completed (inline ghost text or bold matching).

@@ -7,6 +7,60 @@ description: Guide for moving inline auth checks out of GraphQL resolvers and in
 
 Authorization lives in two places: `graphql/public/permissions.ts` (preferred) and inline in resolver functions (legacy). The goal is to move all auth into `permissions.ts`.
 
+- **Centralize GraphQL permissions in permissions.ts using graphql-shield rules.** All authorization checks for GraphQL mutations and queries must be declared in \`packages/server/graphql/public/permissions.ts\` using composable graphql-shield rules (isTeamMember, isMeetingMember, isMeetingFacilitator, isUser, isViewerBillingLeader, etc.) rather than inline in resolver functions. Rules accept a type-safe dot path to the argument (e.g. 'args.teamId') and an optional dataLoader name to resolve indirect IDs (e.g. 'tasks' to look up teamId from a taskId). Compose rules with \`or()\`, \`and()\`, \`not()\` from graphql-shield. The wildcard '\*': isAuthenticated provides a default. Inline auth checks in resolvers are legacy and should be removed when found; complex auth that cannot fit a rule may stay inline but must be documented in PLAN.md.
+  ```
+  // Good
+    // In permissions.ts
+    // Direct ID check
+    createTask: isTeamMember<'Mutation.createTask'>('args.newTask.teamId'),
+    
+    // Indirect ID resolution via dataLoader
+    removeReflection: isUser<'Mutation.removeReflection'>('args.reflectionId', 'retroReflections', 'creatorId'),
+    deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
+    
+    // Composed rules
+    removeTeamMember: or(
+      isUser<'Mutation.removeTeamMember'>('args.userId'),
+      isViewerTeamLead<'Mutation.removeTeamMember'>('args.teamId'),
+      isViewerBillingLeader<'Mutation.removeTeamMember'>('args.teamId', 'teams')
+    ),
+
+  // Bad
+    // Inline auth check in resolver (legacy pattern to remove)
+    const archiveTeam = async (_source, {teamId}, {authToken, dataLoader}) => {
+      const viewerId = getUserId(authToken)
+      const teamMember = await dataLoader.get('teamMembers').load(TeamMemberId.join(teamId, viewerId))
+      if (!teamMember?.isLead && !isSuperUser(authToken)) {
+        return standardError(new Error('Not team lead'), {userId: viewerId})
+      }
+      // ... resolver logic
+    }
+    
+    // Custom helper function for indirect ID resolution (avoid)
+    import getTeamIdFromArgTemplateId from './rules/getTeamIdFromArgTemplateId'
+    addPokerTemplateDimension: isViewerOnTeam(getTeamIdFromArgTemplateId),
+  ```
+
+- **Export LoaderType from foreignKeyLoaderMaker for type-safe dataLoader lookups in rules.** The \`LoaderType\` utility type is exported from \`foreignKeyLoaderMaker.ts\` and used by shield rules to constrain which dataloaders can be used based on whether they have the required key (e.g. \`teamId\`). The \`LoadersWithTeamId\` pattern uses conditional types to filter loaders that have a \`teamId\` property, ensuring type safety in permission rule declarations.
+  ```
+  // Good
+    type LoadersWithTeamId = {
+      [K in AllPrimaryLoaders]: 'teamId' extends keyof LoaderType<K> ? K : never
+    }[AllPrimaryLoaders]
+    
+    export const isTeamMember = <T>(
+      dotPath: ResolverDotPath<T>,
+      dataLoaderName?: LoadersWithTeamId
+    ) =>
+
+  // Bad
+    // Accepting any string as dataLoader name with no type constraint
+    export const isTeamMember = <T>(
+      dotPath: ResolverDotPath<T>,
+      dataLoaderName?: string
+    ) =>
+  ```
+
 ### How it works
 
 `permissions.ts` exports a `permissionMap` that maps GraphQL types/fields to shield rules. `composeResolvers.ts` wraps each resolver with its rule as a higher-order function — avoiding the overhead of `graphql-middleware`.

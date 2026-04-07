@@ -136,6 +136,31 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 - **Explain non-obvious architectural decisions in comments** — prevents cargo-culting of bad patterns.
 - **Avoid O(n) operations in hot paths.** Use UUIDs (`crypto.randomUUID()`) or Snowflake IDs for guaranteed uniqueness instead of collision checks.
 
+- **Converter modules use symmetric function pairs with comprehensive JSDoc.** When building bidirectional converters between formats (e.g. ADF ↔ TipTap), create a symmetric pair of files in the same directory with matching structure: exported ADF/input types, a private mark/node transformer pipeline, helper functions, and a public entry-point function with JSDoc including @example and @param tags. The two files should mirror each other's structure to make maintenance easier.
+  ````
+  // Good
+    /**
+     * Convert a top-level ADF document to a TipTapSerializedContent document.
+     *
+     * @example
+     * ```ts
+     * const doc = convertADFToTipTap(issue.fields.description, issue.fields.summary)
+     * editor.commands.setContent(doc)
+     * ```
+     *
+     * @param adf   - The root ADF document node (type: "doc").
+     * @param title - The Jira issue `summary` field, used as the H1.
+     */
+    export function convertADFToTipTap(adf: AdfNode, title?: string): TipTapSerializedContent {
+
+  // Bad
+    // No documentation, no types, ad-hoc structure
+    export const convertTipTapToADF = (content: JSONContent) => {
+      const markdown = convertTipTapToMarkdown(content)
+      return fnTranslate(markdown)
+    }
+  ````
+
 ## Security
 
 - **Sanitize HTML with DOMPurify** — never render user-provided HTML without sanitization.
