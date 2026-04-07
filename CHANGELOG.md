@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.9.0](https://github.com/ParabolInc/parabol/compare/v13.8.0...v13.9.0) (2026-04-07)
+
+
+### Added
+
+* add Highlight and TextStyle extensions to all Tiptap editors ([#12974](https://github.com/ParabolInc/parabol/issues/12974)) ([4e2688e](https://github.com/ParabolInc/parabol/commit/4e2688e7efae71ff2d85871db1d9e12b856e0372))
+
+
+### Fixed
+
+* deadlock on renew ([#12970](https://github.com/ParabolInc/parabol/issues/12970)) ([9fe07c2](https://github.com/ParabolInc/parabol/commit/9fe07c2dccdf938bd1dd17526c8dc5f4cf776216))
+
 ## [13.8.0](https://github.com/ParabolInc/parabol/compare/v13.7.9...v13.8.0) (2026-04-04)
 
 

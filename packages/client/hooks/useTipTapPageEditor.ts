@@ -13,6 +13,7 @@ import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
+
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
