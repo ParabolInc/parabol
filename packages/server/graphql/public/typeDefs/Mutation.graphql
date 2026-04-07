@@ -778,6 +778,11 @@ type Mutation {
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
 
   """
+  Revoke a personal access token, preventing further use
+  """
+  revokePersonalAccessToken(tokenId: ID!): RevokePersonalAccessTokenSuccess!
+
+  """
   Set the selected template for the upcoming retro meeting
   """
   selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload

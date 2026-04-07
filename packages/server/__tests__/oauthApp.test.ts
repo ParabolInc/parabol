@@ -108,14 +108,14 @@ test('Create app and token', async () => {
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:query', 'graphql:mutation']
+    scopes: ['user:read', 'user:write']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:query graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'user:read user:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -155,14 +155,14 @@ test('Create app and token', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'graphql:query graphql:mutation'
+    scope: 'user:read user:write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['graphql:query', 'graphql:mutation']
+    scope: ['user:read', 'user:write']
   })
 })
 
@@ -172,14 +172,14 @@ test('Request more scope than allowed fails', async () => {
   const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:query']
+    scopes: ['user:read']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:query graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'user:read user:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -198,14 +198,14 @@ test('Request less scope than allowed succeeds', async () => {
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['graphql:mutation', 'graphql:query']
+    scopes: ['user:write', 'user:read']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'graphql:mutation')
+  authorizeUrl.searchParams.set('scope', 'user:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -245,14 +245,14 @@ test('Request less scope than allowed succeeds', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'graphql:mutation'
+    scope: 'user:write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['graphql:mutation']
+    scope: ['user:write']
   })
 })
 
@@ -262,7 +262,7 @@ test('Query and mutation token can run both', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query', 'graphql:mutation'],
+    scope: ['user:read', 'user:write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -318,7 +318,7 @@ test('Query token cannot run mutations', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query'],
+    scope: ['user:read'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -377,7 +377,7 @@ test('Mutation token cannot run queries', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:mutation'],
+    scope: ['user:write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
@@ -436,7 +436,7 @@ test('OAuth token cannot run private queries and mutations', async () => {
   const authToken = new AuthToken({
     sub: userId,
     tms: [],
-    scope: ['graphql:query', 'graphql:mutation'],
+    scope: ['user:read', 'user:write'],
     lifespan_ms: ms('30d'),
     aud: 'action-oauth2'
   })
