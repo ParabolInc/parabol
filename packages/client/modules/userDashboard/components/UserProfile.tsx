@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {UserProfileQuery} from '../../../__generated__/UserProfileQuery.graphql'
@@ -7,20 +6,10 @@ import EmailNotifications from '../../../components/EmailNotifications'
 import Panel from '../../../components/Panel/Panel'
 import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
-import {PALETTE} from '../../../styles/paletteV3'
-import {AuthIdentityTypeEnum, Layout} from '../../../types/constEnums'
+import {AuthIdentityTypeEnum} from '../../../types/constEnums'
+import PersonalAccessTokens from './PersonalAccessTokens'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
-
-const SettingsBlock = styled('div')({
-  width: '100%'
-})
-
-const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  padding: Layout.ROW_GUTTER,
-  textAlign: 'center'
-})
 
 interface Props {
   teamId: string
@@ -33,6 +22,7 @@ const query = graphql`
       ...PasswordResetLink_viewer
       ...EmailNotifications_viewer
       ...DeleteAccount_viewer
+      ...PersonalAccessTokens_viewer
       preferredName
       picture
       identities {
@@ -50,28 +40,29 @@ const UserProfile = ({queryRef}: Props) => {
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
     <UserSettingsWrapper>
-      <SettingsBlock>
+      <div className='w-full'>
         <Panel label='Profile' casing={'capitalize'}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
         {isLocal && (
           <Panel label='Authentication' casing={'capitalize'}>
-            <PanelRow>
+            <div className='border-slate-300 border-t p-4 text-center'>
               <PasswordResetLink viewerRef={viewer} />
-            </PanelRow>
+            </div>
           </Panel>
         )}
         <Panel label='Email Notifications' casing={'capitalize'}>
-          <PanelRow>
+          <div className='border-slate-300 border-t p-4 text-center'>
             <EmailNotifications viewerRef={viewer} />
-          </PanelRow>
+          </div>
         </Panel>
+        <PersonalAccessTokens viewerRef={viewer} />
         <Panel label='Danger Zone' casing={'capitalize'}>
-          <PanelRow>
+          <div className='border-slate-300 border-t p-4 text-center'>
             <DeleteAccount viewerRef={viewer} />
-          </PanelRow>
+          </div>
         </Panel>
-      </SettingsBlock>
+      </div>
     </UserSettingsWrapper>
   )
 }

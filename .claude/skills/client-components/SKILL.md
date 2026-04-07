@@ -44,6 +44,11 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 <div dangerouslySetInnerHTML={{__html: descriptionHTML}} />
 ```
 
+## Component Size
+
+- **Target under 100 LOC per component.** If a component is approaching 100 lines, look for self-contained sections (a form section, a list item, a panel) to extract into their own files.
+- **Hard limit: 300 LOC.** A component that exceeds 300 lines must be split — no exceptions.
+
 ## React Component Design
 
 - **Use `onPointerDown`** instead of `onMouseDown` + `onTouchStart`. The unified pointer API handles mouse, touch, and pen.
