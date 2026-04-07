@@ -9,7 +9,7 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
-import {TextStyle} from '@tiptap/extension-text-style'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
@@ -95,7 +95,7 @@ export const useTipTapPageEditor = (
             node: 'paragraph'
           }
         }),
-        TextStyle,
+        TextStyleKit,
         Highlight,
         Details.configure({
           persist: true,

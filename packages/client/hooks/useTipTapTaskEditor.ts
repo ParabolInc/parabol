@@ -1,7 +1,7 @@
 import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
-import {TextStyle} from '@tiptap/extension-text-style'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
 import {Extension, generateText, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -41,7 +41,7 @@ export const useTipTapTaskEditor = (
       content: contentJSON,
       extensions: [
         StarterKit.configure({link: false}),
-        TextStyle,
+        TextStyleKit,
         Highlight,
         FileUpload.configure({
           scopeKey: teamId,

@@ -4,7 +4,7 @@ import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
-import {TextStyle} from '@tiptap/extension-text-style'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
 import {PageUserMention} from '~/tiptap/extensions/pageUserMention/PageUserMention'
@@ -57,7 +57,7 @@ export const serverTipTapExtensions: Extensions = [
   TableRow,
   TableHeader,
   TableCell,
-  TextStyle,
+  TextStyleKit,
   Highlight,
   TaskList,
   TaskItem.configure({
