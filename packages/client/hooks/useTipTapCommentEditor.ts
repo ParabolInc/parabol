@@ -1,6 +1,6 @@
 import Highlight from '@tiptap/extension-highlight'
 import Mention from '@tiptap/extension-mention'
-import {TextStyle} from '@tiptap/extension-text-style'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Placeholder} from '@tiptap/extensions'
 import {Extension, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -42,7 +42,7 @@ export const useTipTapCommentEditor = (
       extensions: [
         StarterKit.configure({link: false}),
         Highlight,
-        TextStyle,
+        TextStyleKit,
         LoomExtension,
         Placeholder.configure({
           showOnlyWhenEditable: false,
