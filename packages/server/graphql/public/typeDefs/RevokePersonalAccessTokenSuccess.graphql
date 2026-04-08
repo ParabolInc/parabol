@@ -1,6 +1,0 @@
-type RevokePersonalAccessTokenSuccess {
-  """
-  The revoked personal access token
-  """
-  personalAccessToken: PersonalAccessToken!
-}

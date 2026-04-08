@@ -1,4 +1,3 @@
-import {selectPersonalAccessToken} from '../../../postgres/select'
 import type {CreatePersonalAccessTokenSuccessResolvers} from '../resolverTypes'
 
 export type CreatePersonalAccessTokenSuccessSource = {
@@ -8,8 +7,8 @@ export type CreatePersonalAccessTokenSuccessSource = {
 
 const CreatePersonalAccessTokenSuccess: CreatePersonalAccessTokenSuccessResolvers = {
   token: (source) => `pat_${source.token}`,
-  personalAccessToken: async ({patId}) => {
-    return selectPersonalAccessToken().where('id', '=', patId).executeTakeFirstOrThrow()
+  personalAccessToken: async ({patId}, _args, {dataLoader}) => {
+    return dataLoader.get('personalAccessTokens').loadNonNull(patId)
   }
 }
 

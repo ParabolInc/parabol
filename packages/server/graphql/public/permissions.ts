@@ -15,7 +15,7 @@ import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
 import {isUser} from './rules/isUser'
-import isUserViewer from './rules/isUserViewer'
+import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
 import {isViewerOnOrg} from './rules/isViewerOnOrg'
 import {isViewerTeamLead} from './rules/isViewerTeamLead'
@@ -92,6 +92,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'ORG_ADMIN'
     ),
     createPersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
+    updatePersonalAccessToken: rateLimit({perMinute: 10, perHour: 50}),
     createPage: or(
       isNull<'Mutation.createPage'>('args.teamId'),
       isTeamMember<'Mutation.createPage'>('args.teamId')
@@ -442,9 +443,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   User: {
-    domains: or(isSuperUser, isUserViewer),
+    domains: or(isSuperUser, isUserViewer<'User.id'>('source.id')),
     parseSAMLMetadata: isOrgAdminBySAMLDomain,
-    personalAccessTokens: isUserViewer
+    personalAccessTokens: isUserViewer<'User.id'>('source.id')
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')

@@ -48,11 +48,35 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
 
   const [commitRevoke] = useMutation<PersonalAccessTokensRevokeMutation>(graphql`
-    mutation PersonalAccessTokensRevokeMutation($tokenId: ID!) {
-      revokePersonalAccessToken(tokenId: $tokenId) {
+    mutation PersonalAccessTokensRevokeMutation(
+    $tokenId: ID!
+    $label: String
+    $scopes: [OAuthScopeEnum!]
+    $grantedOrgIds: [ID!]
+    $grantedTeamIds: [ID!]
+    $grantedPageIds: [ID!]
+    $expiresAt: DateTime
+    $revoke: Boolean
+    ) {
+      updatePersonalAccessToken(
+        tokenId: $tokenId
+        label: $label
+        scopes: $scopes
+        grantedOrgIds: $grantedOrgIds
+        grantedTeamIds: $grantedTeamIds
+        grantedPageIds: $grantedPageIds
+        expiresAt: $expiresAt
+        revoke: $revoke
+        ) {
         personalAccessToken {
           id
           revokedAt
+          label
+          scopes
+          grantedOrgIds
+          grantedTeamIds
+          grantedPageIds
+          expiresAt
         }
       }
     }
@@ -62,11 +86,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
 
   const handleRevoke = (tokenId: string) => {
     commitRevoke({
-      variables: {tokenId},
-      optimisticUpdater: (store) => {
-        const token = store.get(tokenId)
-        if (token) token.setValue(new Date().toISOString(), 'revokedAt')
-      }
+      variables: {tokenId, revoke: true}
     })
   }
 
