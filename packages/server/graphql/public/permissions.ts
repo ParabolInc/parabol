@@ -443,7 +443,8 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   User: {
     domains: or(isSuperUser, isUserViewer),
-    parseSAMLMetadata: isOrgAdminBySAMLDomain
+    parseSAMLMetadata: isOrgAdminBySAMLDomain,
+    personalAccessTokens: isUserViewer
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')

@@ -26,6 +26,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   const viewer = useFragment(
     graphql`
       fragment PersonalAccessTokens_viewer on User {
+        ...PersonalAccessTokenCreateDialog_viewer
         id
         personalAccessTokens {
           id
@@ -40,19 +41,10 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
           expiresAt
           revokedAt
         }
-        organizations {
-          id
-          name
-          teams {
-            id
-            name
-          }
-        }
       }
     `,
     viewerRef
   )
-
   const [isCreateOpen, setIsCreateOpen] = useState(false)
 
   const [commitRevoke] = useMutation<PersonalAccessTokensRevokeMutation>(graphql`
@@ -128,8 +120,8 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                     <td className='px-4 py-3 text-right'>
                       <Menu
                         trigger={
-                          <button className='rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600'>
-                            <MoreVertIcon fontSize='small' />
+                          <button className='flex size-8 cursor-pointer items-center justify-center rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-60'>
+                            <MoreVertIcon className='size-5' />
                           </button>
                         }
                       >
@@ -148,11 +140,12 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
         )}
       </Panel>
 
-      <PersonalAccessTokenCreateDialog
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        orgs={viewer.organizations}
-      />
+      {isCreateOpen && (
+        <PersonalAccessTokenCreateDialog
+          viewerRef={viewer}
+          onClose={() => setIsCreateOpen(false)}
+        />
+      )}
     </>
   )
 }

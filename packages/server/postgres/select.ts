@@ -452,7 +452,7 @@ export const selectPersonalAccessToken = () => {
       'lastUsedAt',
       'prefix',
       'revokedAt',
-      'scopes',
       'userId'
     ])
+    .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
 }

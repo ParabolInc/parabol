@@ -25,6 +25,7 @@ import {
   selectNewMeetings,
   selectNotifications,
   selectPages,
+  selectPersonalAccessToken,
   selectTasks
 } from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
@@ -1060,11 +1061,10 @@ const User: ReqResolvers<'User'> = {
     }
   },
   search,
-  personalAccessTokens: async (source, _args, {authToken}) => {
+  personalAccessTokens: async (_source, _args, {authToken}) => {
     const viewerId = getUserId(authToken)
-    if (source.id !== viewerId) return []
-    const pg = getKysely()
-    return pg.selectFrom('PersonalAccessToken').selectAll().where('userId', '=', viewerId).execute()
+    const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
+    return tokens
   }
 }
 
