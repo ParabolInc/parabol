@@ -162,7 +162,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'reflectPrompts'
     ),
-    moveTeamToOrg: isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId'),
+    moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
     persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
     persistIntegrationSearchQuery:
