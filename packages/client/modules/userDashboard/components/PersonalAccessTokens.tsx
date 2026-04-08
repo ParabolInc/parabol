@@ -110,6 +110,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
             <table className='w-full text-sm'>
               <thead>
                 <tr className='border-slate-200 border-b bg-slate-50 text-left text-slate-500 text-xs uppercase tracking-wider'>
+                  <th className='px-4 py-2 font-semibold'>Token</th>
                   <th className='px-4 py-2 font-semibold'>Label</th>
                   <th className='px-4 py-2 font-semibold'>Scopes</th>
                   <th className='px-4 py-2 font-semibold'>Created</th>
@@ -119,54 +120,57 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                 </tr>
               </thead>
               <tbody>
-                {activeTokens.map((token) => (
-                  <tr
-                    key={token.id}
-                    className='border-slate-100 border-b last:border-0 hover:bg-slate-50'
-                  >
-                    <td className='px-4 py-3 font-medium text-slate-800'>{token.label}</td>
-                    <td className='max-w-[200px] truncate px-4 py-3 text-slate-800'>
-                      {token.scopes.map(formatScope).join(', ')}
-                    </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
-                      {new Date(token.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
-                      {token.lastUsedAt ? new Date(token.lastUsedAt).toLocaleDateString() : '—'}
-                    </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
-                      {token.expiresAt ? new Date(token.expiresAt).toLocaleDateString() : '—'}
-                    </td>
-                    <td className='px-4 py-3 text-right'>
-                      <Menu
-                        trigger={
-                          <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-slate-400 outline-none hover:bg-slate-100 hover:text-slate-60'>
-                            <MoreVertIcon className='size-5' />
-                          </button>
-                        }
-                      >
-                        <MenuContent align='end'>
-                          <MenuItem
-                            onClick={() =>
-                              setEditingToken({
-                                ...token,
-                                grantedOrgIds: token.grantedOrgIds ?? null,
-                                grantedTeamIds: token.grantedTeamIds ?? null,
-                                grantedPageIds: token.grantedPageIds ?? null,
-                                expiresAt: token.expiresAt ?? null
-                              })
-                            }
-                          >
-                            Edit
-                          </MenuItem>
-                          <MenuItem onClick={() => handleRevoke(token.id)}>
-                            <span className='text-red-600'>Revoke</span>
-                          </MenuItem>
-                        </MenuContent>
-                      </Menu>
-                    </td>
-                  </tr>
-                ))}
+                {activeTokens
+                  .filter((token) => !token.revokedAt)
+                  .map((token) => (
+                    <tr
+                      key={token.id}
+                      className='border-slate-100 border-b last:border-0 hover:bg-slate-50'
+                    >
+                      <td className='px-4 py-3 font-medium text-slate-800'>{token.id}</td>
+                      <td className='px-4 py-3 font-medium text-slate-800'>{token.label}</td>
+                      <td className='max-w-[200px] px-4 py-3 text-slate-800'>
+                        {token.scopes.map(formatScope).join(', ')}
+                      </td>
+                      <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        {new Date(token.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        {token.lastUsedAt ? new Date(token.lastUsedAt).toLocaleDateString() : '—'}
+                      </td>
+                      <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        {token.expiresAt ? new Date(token.expiresAt).toLocaleDateString() : '—'}
+                      </td>
+                      <td className='px-4 py-3 text-right'>
+                        <Menu
+                          trigger={
+                            <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-slate-400 outline-none hover:bg-slate-100 hover:text-slate-60'>
+                              <MoreVertIcon className='size-5' />
+                            </button>
+                          }
+                        >
+                          <MenuContent align='end'>
+                            <MenuItem
+                              onClick={() =>
+                                setEditingToken({
+                                  ...token,
+                                  grantedOrgIds: token.grantedOrgIds ?? null,
+                                  grantedTeamIds: token.grantedTeamIds ?? null,
+                                  grantedPageIds: token.grantedPageIds ?? null,
+                                  expiresAt: token.expiresAt ?? null
+                                })
+                              }
+                            >
+                              Edit
+                            </MenuItem>
+                            <MenuItem onClick={() => handleRevoke(token.id)}>
+                              <span className='text-red-600'>Revoke</span>
+                            </MenuItem>
+                          </MenuContent>
+                        </Menu>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
