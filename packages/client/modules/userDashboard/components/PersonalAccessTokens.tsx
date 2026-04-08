@@ -9,7 +9,7 @@ import SecondaryButton from '../../../components/SecondaryButton'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
-import PersonalAccessTokenCreateDialog from './PersonalAccessTokenCreateDialog'
+import PersonalAccessTokenUpsertDialog, {type TokenForEdit} from './PersonalAccessTokenUpsertDialog'
 
 interface Props {
   viewerRef: PersonalAccessTokens_viewer$key
@@ -26,7 +26,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   const viewer = useFragment(
     graphql`
       fragment PersonalAccessTokens_viewer on User {
-        ...PersonalAccessTokenCreateDialog_viewer
+        ...PersonalAccessTokenUpsertDialog_viewer
         id
         personalAccessTokens {
           id
@@ -46,6 +46,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
     viewerRef
   )
   const [isCreateOpen, setIsCreateOpen] = useState(false)
+  const [editingToken, setEditingToken] = useState<TokenForEdit | null>(null)
 
   const [commitRevoke] = useMutation<PersonalAccessTokensRevokeMutation>(graphql`
     mutation PersonalAccessTokensRevokeMutation(
@@ -145,6 +146,19 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                         }
                       >
                         <MenuContent align='end'>
+                          <MenuItem
+                            onClick={() =>
+                              setEditingToken({
+                                ...token,
+                                grantedOrgIds: token.grantedOrgIds ?? null,
+                                grantedTeamIds: token.grantedTeamIds ?? null,
+                                grantedPageIds: token.grantedPageIds ?? null,
+                                expiresAt: token.expiresAt ?? null
+                              })
+                            }
+                          >
+                            Edit
+                          </MenuItem>
                           <MenuItem onClick={() => handleRevoke(token.id)}>
                             <span className='text-red-600'>Revoke</span>
                           </MenuItem>
@@ -160,11 +174,16 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
       </Panel>
 
       {isCreateOpen && (
-        <PersonalAccessTokenCreateDialog
+        <PersonalAccessTokenUpsertDialog
           viewerRef={viewer}
-          onClose={() => {
-            setIsCreateOpen(false)
-          }}
+          onClose={() => setIsCreateOpen(false)}
+        />
+      )}
+      {editingToken && (
+        <PersonalAccessTokenUpsertDialog
+          viewerRef={viewer}
+          personalAccessToken={editingToken}
+          onClose={() => setEditingToken(null)}
         />
       )}
     </>

@@ -1,7 +1,7 @@
 import {cn} from '../../../ui/cn'
 import {RadioGroup, RadioGroupItem} from '../../../ui/RadioGroup/RadioGroup'
-import type {GrantModeOption} from './PersonalAccessTokenCreateDialog'
 import {PersonalAccessTokenPageGrantRoot} from './PersonalAccessTokenPageGrantRoot'
+import type {GrantModeOption} from './PersonalAccessTokenUpsertDialog'
 
 export interface PageResult {
   id: string

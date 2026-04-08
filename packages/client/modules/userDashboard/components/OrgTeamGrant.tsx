@@ -6,7 +6,7 @@ import type {OrgTeamGrant_viewer$key} from '../../../__generated__/OrgTeamGrant_
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {RadioGroup, RadioGroupItem} from '../../../ui/RadioGroup/RadioGroup'
-import type {GrantModeOption} from './PersonalAccessTokenCreateDialog'
+import type {GrantModeOption} from './PersonalAccessTokenUpsertDialog'
 
 interface Props {
   viewerRef: OrgTeamGrant_viewer$key

@@ -5,8 +5,8 @@ import useQueryLoaderNow from '../../../hooks/useQueryLoaderNow'
 import plural from '../../../utils/plural'
 import {Loader} from '../../../utils/relay/renderLoader'
 import type {PageResult} from './PageGrant'
-import type {GrantModeOption} from './PersonalAccessTokenCreateDialog'
 import {PersonalAccessTokenPageGrant} from './PersonalAccessTokenPageGrant'
+import type {GrantModeOption} from './PersonalAccessTokenUpsertDialog'
 
 const buildSummary = (
   selectedPageIds: Set<string>,
