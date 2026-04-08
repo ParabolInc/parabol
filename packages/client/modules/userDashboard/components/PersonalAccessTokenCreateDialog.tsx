@@ -120,13 +120,12 @@ const PersonalAccessTokenCreateDialog = ({viewerRef, onClose}: Props) => {
       onError: (err) => setError(err.message)
     })
   }
-
   if (createdToken) {
     return <PersonalAccessTokenCreateSuccess token={createdToken} onClose={onClose} />
   }
 
   return (
-    <Dialog onClose={onClose}>
+    <Dialog onClose={onClose} open>
       <DialogContent className='flex flex-col overflow-hidden p-0!'>
         <div className='shrink-0 px-6 pt-6 pb-4'>
           <DialogTitle>New Personal Access Token</DialogTitle>

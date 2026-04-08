@@ -41,10 +41,10 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
       grantedPageIds: grantedPageIds,
       expiresAt: expiresAt
     })
-    .returningAll()
+    .returning('id')
     .executeTakeFirstOrThrow()
 
-  return {token: rawToken, pat}
+  return {token: rawToken, patId: pat.id}
 }
 
 export default createPersonalAccessToken

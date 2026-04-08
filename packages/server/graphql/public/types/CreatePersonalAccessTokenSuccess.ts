@@ -1,14 +1,16 @@
-import type {PersonalAccessToken} from '../../../postgres/types'
+import {selectPersonalAccessToken} from '../../../postgres/select'
 import type {CreatePersonalAccessTokenSuccessResolvers} from '../resolverTypes'
 
 export type CreatePersonalAccessTokenSuccessSource = {
   token: string
-  pat: PersonalAccessToken
+  patId: string
 }
 
 const CreatePersonalAccessTokenSuccess: CreatePersonalAccessTokenSuccessResolvers = {
   token: (source) => `pat_${source.token}`,
-  personalAccessToken: (source) => source.pat
+  personalAccessToken: async ({patId}) => {
+    return selectPersonalAccessToken().where('id', '=', patId).executeTakeFirstOrThrow()
+  }
 }
 
 export default CreatePersonalAccessTokenSuccess

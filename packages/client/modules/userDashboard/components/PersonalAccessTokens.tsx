@@ -77,7 +77,6 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
       </SecondaryButton>
     </div>
   )
-
   return (
     <>
       <Panel label='Personal Access Tokens' casing='capitalize' controls={controls}>
@@ -105,22 +104,22 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                     className='border-slate-100 border-b last:border-0 hover:bg-slate-50'
                   >
                     <td className='px-4 py-3 font-medium text-slate-800'>{token.label}</td>
-                    <td className='max-w-[200px] truncate px-4 py-3 text-slate-500'>
+                    <td className='max-w-[200px] truncate px-4 py-3 text-slate-800'>
                       {token.scopes.map(formatScope).join(', ')}
                     </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-500'>
+                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
                       {new Date(token.createdAt).toLocaleDateString()}
                     </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-500'>
+                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
                       {token.lastUsedAt ? new Date(token.lastUsedAt).toLocaleDateString() : '—'}
                     </td>
-                    <td className='whitespace-nowrap px-4 py-3 text-slate-500'>
+                    <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
                       {token.expiresAt ? new Date(token.expiresAt).toLocaleDateString() : '—'}
                     </td>
                     <td className='px-4 py-3 text-right'>
                       <Menu
                         trigger={
-                          <button className='flex size-8 cursor-pointer items-center justify-center rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-60'>
+                          <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-slate-400 outline-none hover:bg-slate-100 hover:text-slate-60'>
                             <MoreVertIcon className='size-5' />
                           </button>
                         }
@@ -143,7 +142,9 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
       {isCreateOpen && (
         <PersonalAccessTokenCreateDialog
           viewerRef={viewer}
-          onClose={() => setIsCreateOpen(false)}
+          onClose={() => {
+            setIsCreateOpen(false)
+          }}
         />
       )}
     </>
