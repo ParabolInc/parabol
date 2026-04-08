@@ -30,7 +30,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
         id
         personalAccessTokens {
           id
-          label
+          name
           prefix
           scopes
           grantedOrgIds
@@ -51,7 +51,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   const [commitRevoke] = useMutation<PersonalAccessTokensRevokeMutation>(graphql`
     mutation PersonalAccessTokensRevokeMutation(
     $tokenId: ID!
-    $label: String
+    $name: String
     $scopes: [OAuthScopeEnum!]
     $grantedOrgIds: [ID!]
     $grantedTeamIds: [ID!]
@@ -61,7 +61,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
     ) {
       updatePersonalAccessToken(
         tokenId: $tokenId
-        label: $label
+        name: $name
         scopes: $scopes
         grantedOrgIds: $grantedOrgIds
         grantedTeamIds: $grantedTeamIds
@@ -72,7 +72,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
         personalAccessToken {
           id
           revokedAt
-          label
+          name
           scopes
           grantedOrgIds
           grantedTeamIds
@@ -110,8 +110,8 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
             <table className='w-full text-sm'>
               <thead>
                 <tr className='border-slate-200 border-b bg-slate-50 text-left text-slate-500 text-xs uppercase tracking-wider'>
+                  <th className='px-4 py-2 font-semibold'>Name</th>
                   <th className='px-4 py-2 font-semibold'>Token</th>
-                  <th className='px-4 py-2 font-semibold'>Label</th>
                   <th className='px-4 py-2 font-semibold'>Scopes</th>
                   <th className='px-4 py-2 font-semibold'>Created</th>
                   <th className='px-4 py-2 font-semibold'>Last Used</th>
@@ -127,8 +127,8 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                       key={token.id}
                       className='border-slate-100 border-b last:border-0 hover:bg-slate-50'
                     >
+                      <td className='px-4 py-3 font-medium text-slate-800'>{token.name}</td>
                       <td className='px-4 py-3 font-medium text-slate-800'>{token.id}</td>
-                      <td className='px-4 py-3 font-medium text-slate-800'>{token.label}</td>
                       <td className='max-w-[200px] px-4 py-3 text-slate-800'>
                         {token.scopes.map(formatScope).join(', ')}
                       </td>

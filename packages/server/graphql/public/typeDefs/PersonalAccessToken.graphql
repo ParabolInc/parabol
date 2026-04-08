@@ -1,6 +1,6 @@
 type PersonalAccessToken {
   id: ID!
-  label: String!
+  name: String!
   prefix: String!
   scopes: [OAuthScopeEnum!]!
   """

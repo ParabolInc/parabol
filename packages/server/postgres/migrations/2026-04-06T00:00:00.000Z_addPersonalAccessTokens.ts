@@ -7,7 +7,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     'teams:read',
     'tasks:read',
     'users:read',
-    'org:read',
+    'orgs:read',
     'templates:read',
     'pages:read',
     'comments:read'
@@ -18,7 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     'teams:write',
     'tasks:write',
     'users:write',
-    'org:write',
+    'orgs:write',
     'templates:write',
     'pages:write',
     'comments:write'
@@ -83,7 +83,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('userId', 'varchar(100)', (col) =>
       col.notNull().references('User.id').onDelete('cascade')
     )
-    .addColumn('label', 'varchar(255)', (col) => col.notNull())
+    .addColumn('name', 'varchar(255)', (col) => col.notNull())
     .addColumn('prefix', 'varchar(8)', (col) => col.notNull().unique())
     .addColumn('hashedToken', 'varchar(60)', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))

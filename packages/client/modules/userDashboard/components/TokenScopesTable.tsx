@@ -4,7 +4,7 @@ import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 const SCOPE_GROUPS = [
   {resource: 'Comments', read: 'COMMENTS_READ', write: 'COMMENTS_WRITE'},
   {resource: 'Meetings', read: 'MEETINGS_READ', write: 'MEETINGS_WRITE'},
-  {resource: 'Organizations', read: 'ORG_READ', write: 'ORG_WRITE'},
+  {resource: 'Organizations', read: 'ORGS_READ', write: 'ORGS_WRITE'},
   {resource: 'Pages', read: 'PAGES_READ', write: 'PAGES_WRITE'},
   {resource: 'Tasks', read: 'TASKS_READ', write: 'TASKS_WRITE'},
   {resource: 'Teams', read: 'TEAMS_READ', write: 'TEAMS_WRITE'},

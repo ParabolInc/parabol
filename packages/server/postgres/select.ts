@@ -448,7 +448,7 @@ export const selectPersonalAccessToken = () => {
       'grantedOrgIds',
       'grantedPageIds',
       'grantedTeamIds',
-      'label',
+      'name',
       'lastUsedAt',
       'prefix',
       'revokedAt',

@@ -56,7 +56,7 @@ const UserProfile = ({queryRef}: Props) => {
             <EmailNotifications viewerRef={viewer} />
           </div>
         </Panel>
-        <PersonalAccessTokens viewerRef={viewer} />
+        {true && <PersonalAccessTokens viewerRef={viewer} />}
         <Panel label='Danger Zone' casing={'capitalize'}>
           <div className='border-slate-300 border-t p-4 text-center'>
             <DeleteAccount viewerRef={viewer} />

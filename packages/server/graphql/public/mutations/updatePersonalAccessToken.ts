@@ -6,7 +6,16 @@ import type {MutationResolvers} from '../resolverTypes'
 
 export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessToken'] = async (
   _,
-  {tokenId, label, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt, revoke},
+  {
+    tokenId,
+    name: tokenName,
+    scopes,
+    grantedOrgIds,
+    grantedTeamIds,
+    grantedPageIds,
+    expiresAt,
+    revoke
+  },
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
@@ -23,7 +32,7 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
   await pg
     .updateTable('PersonalAccessToken')
     .set({
-      ...(label !== undefined && label !== null ? {label} : {}),
+      ...(tokenName !== undefined && tokenName !== null ? {name: tokenName} : {}),
       ...(scopes !== undefined && scopes !== null ? {scopes} : {}),
       ...(grantedOrgIds !== undefined ? {grantedOrgIds} : {}),
       ...(grantedTeamIds !== undefined ? {grantedTeamIds} : {}),

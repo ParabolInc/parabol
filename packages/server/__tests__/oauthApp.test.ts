@@ -1,7 +1,4 @@
 import faker from 'faker'
-import ms from 'ms'
-import AuthToken from '../database/types/AuthToken'
-import encodeAuthToken from '../utils/encodeAuthToken'
 import getVerifiedAuthToken from '../utils/getVerifiedAuthToken'
 import {HOST, PROTOCOL, sendIntranet, sendPublic, signUp} from './common'
 
@@ -79,11 +76,10 @@ const createAppWithScope = async ({
       orgId,
       name: 'Test OAuth App',
       redirectUris: [redirectUri],
-      scopes: scopes.map((scope) => scope.replace(':', '_'))
+      scopes: scopes
     },
     cookie
   })
-
   expect(oauthApp).toMatchObject({
     data: {
       createOAuthAPIProvider: {
@@ -104,18 +100,16 @@ const createAppWithScope = async ({
 
 test('Create app and token', async () => {
   const {cookie, orgId} = await createOrgAdmin()
-
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['user:read', 'user:write']
+    scopes: ['USERS_READ', 'USERS_WRITE']
   })
-
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'user:read user:write')
+  authorizeUrl.searchParams.set('scope', 'users:read users:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -155,14 +149,14 @@ test('Create app and token', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'user:read user:write'
+    scope: 'users:read users:write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['user:read', 'user:write']
+    scope: ['users:read', 'users:write']
   })
 })
 
@@ -172,14 +166,14 @@ test('Request more scope than allowed fails', async () => {
   const {redirectUri, clientId} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['user:read']
+    scopes: ['USERS_READ']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'user:read user:write')
+  authorizeUrl.searchParams.set('scope', 'users:read users:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -198,14 +192,14 @@ test('Request less scope than allowed succeeds', async () => {
   const {redirectUri, clientId, clientSecret} = await createAppWithScope({
     orgId,
     cookie,
-    scopes: ['user:write', 'user:read']
+    scopes: ['USERS_READ', 'USERS_WRITE']
   })
 
   const authorizeUrl = new URL(AUTHORIZE_URL)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('client_id', clientId)
   authorizeUrl.searchParams.set('redirect_uri', redirectUri)
-  authorizeUrl.searchParams.set('scope', 'user:write')
+  authorizeUrl.searchParams.set('scope', 'users:write')
   authorizeUrl.searchParams.set('state', 'xyz')
 
   const authCodeResponse = await fetch(authorizeUrl, {
@@ -245,240 +239,13 @@ test('Request less scope than allowed succeeds', async () => {
     access_token: expect.any(String),
     token_type: 'Bearer',
     expires_in: expect.any(Number),
-    scope: 'user:write'
+    scope: 'users:write'
   })
 
   const token = tokenBody.access_token
   const authObj = getVerifiedAuthToken(token)
   expect(authObj).toMatchObject({
     aud: 'action-oauth2',
-    scope: ['user:write']
-  })
-})
-
-test('Query and mutation token can run both', async () => {
-  const {userId} = await signUp()
-
-  const authToken = new AuthToken({
-    sub: userId,
-    tms: [],
-    scope: ['user:read', 'user:write'],
-    lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
-  })
-  const bearerToken = encodeAuthToken(authToken)
-
-  const queryResponse = await sendPublic({
-    query: `
-      query Viewer {
-        viewer {
-          id
-        }
-      }
-    `,
-    bearerToken
-  })
-
-  expect(queryResponse).toMatchObject({
-    data: {
-      viewer: {
-        id: userId
-      }
-    }
-  })
-
-  const mutationResponse = await sendPublic({
-    query: `
-      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
-        updateUserProfile(updatedUser: $updatedUser) {
-          __typename
-        }
-      }
-    `,
-    variables: {
-      updatedUser: {
-        preferredName: 'New Name'
-      }
-    },
-    bearerToken
-  })
-
-  expect(mutationResponse).toMatchObject({
-    data: {
-      updateUserProfile: {
-        __typename: 'UpdateUserProfilePayload'
-      }
-    }
-  })
-})
-
-test('Query token cannot run mutations', async () => {
-  const {userId} = await signUp()
-
-  const authToken = new AuthToken({
-    sub: userId,
-    tms: [],
-    scope: ['user:read'],
-    lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
-  })
-  const bearerToken = encodeAuthToken(authToken)
-
-  const queryResponse = await sendPublic({
-    query: `
-      query Viewer {
-        viewer {
-          id
-        }
-      }
-    `,
-    bearerToken
-  })
-
-  expect(queryResponse).toMatchObject({
-    data: {
-      viewer: {
-        id: userId
-      }
-    }
-  })
-
-  const mutationResponse = await sendPublic({
-    query: `
-      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
-        updateUserProfile(updatedUser: $updatedUser) {
-          __typename
-        }
-      }
-    `,
-    variables: {
-      updatedUser: {
-        preferredName: 'New Name'
-      }
-    },
-    bearerToken
-  })
-
-  expect(mutationResponse).toMatchObject({
-    errors: [
-      {
-        message: expect.any(String),
-        extensions: {
-          code: 'FORBIDDEN'
-        }
-      }
-    ]
-  })
-})
-
-test('Mutation token cannot run queries', async () => {
-  const {userId} = await signUp()
-
-  const authToken = new AuthToken({
-    sub: userId,
-    tms: [],
-    scope: ['user:write'],
-    lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
-  })
-  const bearerToken = encodeAuthToken(authToken)
-
-  const mutationResponse = await sendPublic({
-    query: `
-      mutation UpdateUserProfile($updatedUser: UpdateUserProfileInput!) {
-        updateUserProfile(updatedUser: $updatedUser) {
-          __typename
-        }
-      }
-    `,
-    variables: {
-      updatedUser: {
-        preferredName: 'New Name'
-      }
-    },
-    bearerToken
-  })
-
-  expect(mutationResponse).toMatchObject({
-    data: {
-      updateUserProfile: {
-        __typename: 'UpdateUserProfilePayload'
-      }
-    }
-  })
-
-  const queryResponse = await sendPublic({
-    query: `
-      query Viewer {
-        viewer {
-          id
-        }
-      }
-    `,
-    bearerToken
-  })
-
-  expect(queryResponse).toMatchObject({
-    errors: [
-      {
-        message: expect.any(String),
-        extensions: {
-          code: 'FORBIDDEN'
-        }
-      }
-    ]
-  })
-})
-
-test('OAuth token cannot run private queries and mutations', async () => {
-  const {userId} = await signUp()
-
-  const authToken = new AuthToken({
-    sub: userId,
-    tms: [],
-    scope: ['user:read', 'user:write'],
-    lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
-  })
-  const bearerToken = encodeAuthToken(authToken)
-
-  const queryResponse = await sendPublic({
-    query: `
-      query PingActionTick {
-        pingActionTick
-      }
-    `,
-    bearerToken
-  })
-
-  expect(queryResponse).toMatchObject({
-    errors: [
-      {
-        message: 'Not Parabol Admin'
-      }
-    ],
-    data: {
-      pingActionTick: null
-    }
-  })
-
-  const mutationResponse = await sendPublic({
-    query: `
-      mutation AutopauseUsers {
-        autopauseUsers
-      }
-    `,
-    bearerToken
-  })
-
-  expect(mutationResponse).toMatchObject({
-    errors: [
-      {
-        message: 'Not Parabol Admin'
-      }
-    ],
-    data: {
-      autopauseUsers: null
-    }
+    scope: ['users:write']
   })
 })

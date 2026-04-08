@@ -5,7 +5,7 @@ import type {useUpdatePersonalAccessTokenMutation as TuseUpdatePersonalAccessTok
 const mutation = graphql`
   mutation useUpdatePersonalAccessTokenMutation(
     $tokenId: ID!
-    $label: String
+    $name: String
     $scopes: [OAuthScopeEnum!]
     $grantedOrgIds: [ID!]
     $grantedTeamIds: [ID!]
@@ -14,7 +14,7 @@ const mutation = graphql`
   ) {
     updatePersonalAccessToken(
       tokenId: $tokenId
-      label: $label
+      name: $name
       scopes: $scopes
       grantedOrgIds: $grantedOrgIds
       grantedTeamIds: $grantedTeamIds
@@ -23,7 +23,7 @@ const mutation = graphql`
     ) {
       personalAccessToken {
         id
-        label
+        name
         scopes
         grantedOrgIds
         grantedTeamIds

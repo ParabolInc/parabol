@@ -21,7 +21,7 @@ export type GrantModeOption = 'all' | 'custom'
 
 export type TokenForEdit = {
   id: string
-  label: string
+  name: string
   scopes: readonly string[]
   grantedOrgIds: readonly string[] | null
   grantedTeamIds: readonly string[] | null
@@ -50,7 +50,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
     viewerRef
   )
 
-  const [label, setLabel] = useState(personalAccessToken?.label ?? '')
+  const [tokenName, setTokenName] = useState(personalAccessToken?.name ?? '')
   const [expiresAt, setExpiresAt] = useState<Date>(
     personalAccessToken?.expiresAt ? new Date(personalAccessToken.expiresAt) : maxExpiresAt
   )
@@ -126,7 +126,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
   }
 
   const handleSubmit = () => {
-    if (!label.trim()) {
+    if (!tokenName.trim()) {
       setError('Label is required')
       return
     }
@@ -140,7 +140,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
       commitUpdate({
         variables: {
           tokenId: personalAccessToken.id,
-          label: label.trim(),
+          name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
           grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
           grantedTeamIds: orgGrantMode === 'custom' ? [...selectedTeamIds] : null,
@@ -160,7 +160,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
     } else {
       commitCreate({
         variables: {
-          label: label.trim(),
+          name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
           grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
           grantedTeamIds: orgGrantMode === 'custom' ? [...selectedTeamIds] : null,
@@ -200,12 +200,12 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
         <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
           <div className='flex flex-col gap-1'>
             <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-              Label
+              Name
             </label>
             <BasicInput
-              name='label'
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
+              name='name'
+              value={tokenName}
+              onChange={(e) => setTokenName(e.target.value)}
               placeholder='e.g. CI pipeline token'
               className='w-full'
               error={undefined}

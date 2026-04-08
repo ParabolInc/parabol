@@ -133,7 +133,7 @@ type Mutation {
     """
     A human-readable label for the token
     """
-    label: String!
+    name: String!
     """
     The scopes this token is permitted to use
     """
@@ -788,7 +788,7 @@ type Mutation {
     """
     A human-readable label for the token
     """
-    label: String
+    name: String
     """
     The scopes this token is permitted to use
     """

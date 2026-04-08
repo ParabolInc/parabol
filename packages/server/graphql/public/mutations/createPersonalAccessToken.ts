@@ -11,7 +11,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   args,
   {authToken}
 ) => {
-  const {label, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
+  const {name, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
   const {sub: userId} = authToken
 
   if (scopes.length === 0) {
@@ -23,6 +23,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
     throw new GraphQLError('Expiration date cannot be more than 1 year in the future')
   }
 
+  // throw new GraphQLError('PATs not enabled for your account. Reach out to sales to enable for free')
   const rawToken = crypto.randomBytes(32).toString('base64url')
   const prefix = rawToken.slice(0, 8)
   const hashedToken = await bcrypt.hash(rawToken, Security.SALT_ROUNDS)
@@ -32,7 +33,7 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
     .insertInto('PersonalAccessToken')
     .values({
       userId,
-      label,
+      name,
       prefix,
       hashedToken,
       scopes,
