@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.9.2](https://github.com/ParabolInc/parabol/compare/v13.9.1...v13.9.2) (2026-04-08)
+
+
+### Fixed
+
+* support su for moveTeamToOrg ([#12978](https://github.com/ParabolInc/parabol/issues/12978)) ([853f465](https://github.com/ParabolInc/parabol/commit/853f46562cea1002aa061dc75657f9fc4f7afbad))
+
 ## [13.9.1](https://github.com/ParabolInc/parabol/compare/v13.9.0...v13.9.1) (2026-04-07)
 
 
