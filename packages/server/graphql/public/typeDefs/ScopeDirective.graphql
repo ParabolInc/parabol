@@ -1,0 +1,5 @@
+"""
+Require a personal access token to have the given OAuth scope.
+No-op for requests authenticated with a regular JWT.
+"""
+directive @scope(name: OAuthScopeEnum!) on FIELD_DEFINITION
