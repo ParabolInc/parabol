@@ -24,6 +24,18 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
     throw new GraphQLError('Expiration date cannot be more than 1 year in the future')
   }
 
+  if (name.length > 255) {
+    throw new GraphQLError('Name cannot be more than 255 characters')
+  }
+  if (grantedOrgIds && grantedOrgIds.length > 100) {
+    throw new GraphQLError('Cannot grant access to more than 100 organizations')
+  }
+  if (grantedTeamIds && grantedTeamIds.length > 100) {
+    throw new GraphQLError('Cannot grant access to more than 100 teams')
+  }
+  if (grantedPageIds && grantedPageIds.length > 100) {
+    throw new GraphQLError('Cannot grant access to more than 100 pages')
+  }
   if (!enabled) {
     throw new GraphQLError(
       'PATs not enabled for your account. Reach out to sales to enable for free'
