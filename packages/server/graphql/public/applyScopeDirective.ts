@@ -21,13 +21,13 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
   if (!scopeDirective) return schema
   for (const type of Object.values(schema.getTypeMap())) {
     if (!isObjectType(type) || type.name.startsWith('__')) continue
-    // const isScopeDirectiveRequired = type.name === 'Mutation'
+    const isScopeDirectiveRequired = type.name === 'Mutation'
     for (const field of Object.values(type.getFields())) {
       if (!field.astNode) continue
       const directiveValues = getDirectiveValues(scopeDirective, field.astNode)
       if (!directiveValues) {
-        // if (isScopeDirectiveRequired)
-        // throw new Error(`Missing @scope directive on ${type.name}.${field.name}`)
+        if (isScopeDirectiveRequired)
+          throw new Error(`Missing @scope directive on ${type.name}.${field.name}`)
         continue
       }
 

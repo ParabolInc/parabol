@@ -498,7 +498,7 @@ type Mutation {
     endDate: DateTime!
     useSummaries: Boolean
     prompt: String
-  ): GenerateInsightPayload! @scope(name: MEETINGS_READ)
+  ): GenerateInsightPayload! @scope(name: TEAMS_WRITE)
 
   """
   Move a template dimension
