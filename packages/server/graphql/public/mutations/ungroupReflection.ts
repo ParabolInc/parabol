@@ -41,6 +41,9 @@ const ungroupReflection: MutationResolvers['ungroupReflection'] = async (
   if (!isTeamMember(authToken, teamId)) {
     throw new GraphQLError('Not a team member')
   }
+  if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+    throw new GraphQLError('PAT does not grant access to this team')
+  }
   if (endedAt) throw new GraphQLError('Meeting already ended')
   if (isPhaseComplete('group', phases)) {
     throw new GraphQLError('Meeting phase already completed')

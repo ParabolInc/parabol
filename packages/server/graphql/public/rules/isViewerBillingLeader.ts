@@ -10,7 +10,8 @@ export const isViewerBillingLeader = <T>(
   dataLoaderName?: AllPrimaryLoaders
 ) =>
   rule(`isViewerBillingLeader-${orgIdDotPath}`, {cache: 'strict'})(
-    async (source, args, {authToken, dataLoader}: GQLContext) => {
+    async (source, args, context: GQLContext) => {
+      const {authToken, dataLoader} = context
       const argVar = getResolverDotPath(orgIdDotPath, source, args)
       let orgId: string = argVar
       if (dataLoaderName) {
@@ -27,6 +28,9 @@ export const isViewerBillingLeader = <T>(
       const {role} = organizationUser
       if (role !== 'BILLING_LEADER' && role !== 'ORG_ADMIN')
         return new GraphQLError('User is not billing leader')
+      if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
+        return new GraphQLError(`PAT does not grant access to this organization`)
+      }
       return true
     }
   )

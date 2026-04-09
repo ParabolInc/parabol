@@ -7,8 +7,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
   _source,
   {teamIds, autoJoin},
-  {authToken, dataLoader}
+  context
 ) => {
+  const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
   if (!isSuperUser(authToken)) {
     const viewerTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
@@ -19,6 +20,12 @@ const updateAutoJoin: MutationResolvers['updateAutoJoin'] = async (
       return standardError(new Error('Viewer is not billing leader'), {
         userId: viewerId
       })
+    }
+  }
+  if (context.resourceGrants) {
+    const hasAccess = await Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
+    if (hasAccess.some((v) => !v)) {
+      return standardError(new Error('PAT does not grant access to this team'), {userId: viewerId})
     }
   }
 

@@ -16,5 +16,8 @@ export const isMeetingFacilitator = <T>(dotPath: ResolverDotPath<T>) =>
     if (viewerId !== meeting.facilitatorUserId) {
       return new GraphQLError(`Viewer is not meeting facilitator`)
     }
+    if (context.resourceGrants && !(await context.resourceGrants.hasTeam(meeting.teamId))) {
+      return new GraphQLError(`PAT does not grant access to this team`)
+    }
     return true
   })

@@ -4,8 +4,8 @@ import {defaultFieldResolver, GraphQLError, getDirectiveValues, isObjectType} fr
 import {sql} from 'kysely'
 import ms from 'ms'
 import AuthToken from '../../database/types/AuthToken'
-import getKysely from '../../postgres/getKysely'
 import {selectPersonalAccessToken} from '../../postgres/select'
+import {ResourceGrants} from './ResourceGrants'
 import type {OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 const PAT_PREFIX = 'pat_'
@@ -77,23 +77,21 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
               }
             )
           }
-          const teamMembers = await getKysely()
-            .selectFrom('TeamMember')
-            .select('teamId')
-            .where('userId', '=', token.userId)
-            .where('isNotRemoved', '=', true)
-            .execute()
-          const teamIds = teamMembers.map(({teamId}) => teamId)
+          // All granted resources are untrusted! We must verify before executing a query against them
+          const resourceGrants = new ResourceGrants(
+            token.userId,
+            token.grantedOrgIds,
+            token.grantedTeamIds,
+            token.grantedPageIds,
+            context.dataLoader
+          )
+          context.resourceGrants = resourceGrants
 
-          context.resourceGrants = {
-            orgIds: token.grantedOrgIds,
-            teamIds: token.grantedTeamIds,
-            pageIds: token.grantedPageIds
-          }
-
+          const teamMembers = await context.dataLoader.get('teamMembersByUserId').load(token.userId)
+          const tms = teamMembers.map(({teamId}: {teamId: string}) => teamId)
           context.authToken = new AuthToken({
             sub: token.userId,
-            tms: token.grantedTeamIds || teamIds,
+            tms,
             scope: token.scopes,
             lifespan_ms: ms('1h'),
             aud: 'action-pat'
