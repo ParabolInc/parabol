@@ -6,7 +6,7 @@ import {Security} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 
-let enabled = true
+let enabled = false
 export const createPersonalAccessToken: MutationResolvers['createPersonalAccessToken'] = async (
   _,
   args,
@@ -14,7 +14,6 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
 ) => {
   const {name, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
   const {sub: userId} = authToken
-  console.log({grantedOrgIds, grantedTeamIds})
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick at least one scope')
   }

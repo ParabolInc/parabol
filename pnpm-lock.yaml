@@ -71,7 +71,7 @@ importers:
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(@tiptap/y-tiptap@3.0.2(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.4)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))
       '@tiptap/extension-details':
         specifier: 3.18.0
-        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
       '@tiptap/extension-document':
         specifier: 3.18.0
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
@@ -80,8 +80,11 @@ importers:
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-collaboration@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(@tiptap/y-tiptap@3.0.2(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.4)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))(yjs@13.6.29))(@tiptap/extension-node-range@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)(@tiptap/y-tiptap@3.0.2(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.4)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29))
       '@tiptap/extension-file-handler':
         specifier: 3.18.0
-        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)
       '@tiptap/extension-heading':
+        specifier: 3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-highlight':
         specifier: 3.18.0
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
       '@tiptap/extension-image':
@@ -103,6 +106,9 @@ importers:
         specifier: 3.18.0
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
       '@tiptap/extension-text':
+        specifier: 3.18.0
+        version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-text-style':
         specifier: 3.18.0
         version: 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
       '@tiptap/extensions':
@@ -5964,6 +5970,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.18.0
 
+  '@tiptap/extension-highlight@3.18.0':
+    resolution: {integrity: sha512-syk2WsqfcZN+QZ8AS97hu7atqaLYi8MHQQRrjgO9z+CQzlA7qrTHFl9VF54vfCMQV3arVZlO/qLqFxDZ05tWyw==}
+    peerDependencies:
+      '@tiptap/core': ^3.18.0
+
   '@tiptap/extension-horizontal-rule@3.18.0':
     resolution: {integrity: sha512-fEq7DwwQZ496RHNbMQypBVNqoWnhDEERbzWMBqlmfCfc/0FvJrHtsQkk3k4lgqMYqmBwym3Wp0SrRYiyKCPGTw==}
     peerDependencies:
@@ -6036,10 +6047,10 @@ packages:
       '@tiptap/core': ^3.18.0
       '@tiptap/pm': ^3.18.0
 
-  '@tiptap/extension-text-style@3.11.0':
-    resolution: {integrity: sha512-q8RM4gzmdnUHosL65SIJzTTmL29bm+3hNPdloOuJyLd4sTYs2q+cues5mH5/n85HqX3+TvKrfrTVb1Yj62E1NA==}
+  '@tiptap/extension-text-style@3.18.0':
+    resolution: {integrity: sha512-4HNTzkRGP+9YL8ccCRHFwH469GN6/NKefFAzYZjh2l8JOrPgiYqIlu7Tc+q9w1L5m8f6sC5DBQfGOsgWxuM3GQ==}
     peerDependencies:
-      '@tiptap/core': ^3.11.0
+      '@tiptap/core': ^3.18.0
 
   '@tiptap/extension-text@3.18.0':
     resolution: {integrity: sha512-9TvctdnBCwK/zyTi9kS7nGFNl5OvGM8xE0u38ZmQw5t79JOqJHgOroyqMjw8LHK/1PWrozfNCmsZbpq4IZuKXw==}
@@ -18535,10 +18546,10 @@ snapshots:
       '@tiptap/y-tiptap': 3.0.2(prosemirror-model@1.25.4)(prosemirror-state@1.4.4)(prosemirror-view@1.41.4)(y-protocols@1.0.7(yjs@13.6.29))(yjs@13.6.29)
       yjs: 13.6.29
 
-  '@tiptap/extension-details@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)':
+  '@tiptap/extension-details@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)':
     dependencies:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
-      '@tiptap/extension-text-style': 3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-text-style': 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
       '@tiptap/pm': 3.18.0
 
   '@tiptap/extension-document@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))':
@@ -18558,10 +18569,10 @@ snapshots:
     dependencies:
       '@tiptap/extensions': 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)
 
-  '@tiptap/extension-file-handler@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)':
+  '@tiptap/extension-file-handler@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0)))(@tiptap/pm@3.18.0)':
     dependencies:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
-      '@tiptap/extension-text-style': 3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
+      '@tiptap/extension-text-style': 3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))
       '@tiptap/pm': 3.18.0
 
   '@tiptap/extension-floating-menu@3.18.0(@floating-ui/dom@1.7.4)(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))(@tiptap/pm@3.18.0)':
@@ -18580,6 +18591,10 @@ snapshots:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
 
   '@tiptap/extension-heading@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))':
+    dependencies:
+      '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
+
+  '@tiptap/extension-highlight@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))':
     dependencies:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
 
@@ -18643,7 +18658,7 @@ snapshots:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
       '@tiptap/pm': 3.18.0
 
-  '@tiptap/extension-text-style@3.11.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))':
+  '@tiptap/extension-text-style@3.18.0(@tiptap/core@3.18.0(@tiptap/pm@3.18.0))':
     dependencies:
       '@tiptap/core': 3.18.0(@tiptap/pm@3.18.0)
 
