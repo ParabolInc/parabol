@@ -5,6 +5,9 @@ description: Conventions for the SDL-first GraphQL server — payload types, cod
 
 # Server GraphQL Migration Notes
 
+### `schema.graphql` is auto-generated — never edit it directly
+The file `packages/server/graphql/public/schema.graphql` is generated from `typeDefs/*.graphql`. Always add new types and mutations to files in `typeDefs/` — one `.graphql` file per type or input, plus entries in `Mutation.graphql` or `Query.graphql`. Run `pnpm codegen` to regenerate.
+
 ### Type source files (`public/types/`)
 Only needed when the payload type requires **custom field resolvers** beyond the default passthrough. Examples:
 - Store an ID and load the full object via dataLoader (e.g. `CreateTaskPayload` stores `taskId`, resolves `task` via dataLoader)
@@ -12,6 +15,11 @@ Only needed when the payload type requires **custom field resolvers** beyond the
 
 ### codegen.json mappers
 Only add a mapper entry when you create a new source type file. If the payload's fields are all handled by existing mapped types (e.g. `Task → TaskDB`) and the default resolver suffices, no mapper is needed.
+
+**Mapper path for DB-backed types:** When a GraphQL type maps directly to a Postgres table row, derive the type from the select helper and reference it from `postgres/types/index.d.ts`:
+1. Add a `selectFoo()` helper in `packages/server/postgres/select.ts` (explicitly list columns — **omit sensitive fields** like `hashedToken`, `password`, etc.)
+2. Export `export type Foo = ExtractTypeFromQueryBuilderSelect<typeof selectFoo>` from `packages/server/postgres/types/index.d.ts`
+3. Set the mapper in `codegen.json` to `"../../postgres/types/index#Foo"` (not a hand-rolled source type file)
 
 **Always run `pnpm codegen` after modifying `codegen.json`** to regenerate `resolverTypes.ts` and confirm no type errors were introduced. Do not assume the mapper is correct until codegen succeeds.
 
@@ -102,7 +110,7 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 ## DataLoader Best Practices
 
 - **Always use DataLoaders** for related data fetching in resolvers — never query the DB directly from a resolver.
-  - Helper functions: `packages/server/postgres/select.ts`
+  - Helper functions: `packages/server/postgres/select.ts` — **use these select helpers, not `selectAll()`**, so sensitive columns are excluded automatically
   - Type definitions: `packages/server/dataloader/RootDataLoader.ts`
   - Loader implementation: `packages/server/dataloader/*Loader.ts`
 - **Call `dispose()` on dataloaders** as soon as they're no longer needed. Don't extend dataloader lifetime unnecessarily.

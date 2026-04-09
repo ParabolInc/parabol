@@ -437,3 +437,22 @@ export const selectOAuthAPICode = () => {
 export const selectUserDetails = () => {
   return getKysely().selectFrom('UserDetail').selectAll()
 }
+
+export const selectPersonalAccessToken = () => {
+  return getKysely()
+    .selectFrom('PersonalAccessToken')
+    .select([
+      'id',
+      'createdAt',
+      'expiresAt',
+      'grantedOrgIds',
+      'grantedPageIds',
+      'grantedTeamIds',
+      'name',
+      'lastUsedAt',
+      'prefix',
+      'revokedAt',
+      'userId'
+    ])
+    .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
+}

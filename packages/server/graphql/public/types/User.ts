@@ -25,6 +25,7 @@ import {
   selectNewMeetings,
   selectNotifications,
   selectPages,
+  selectPersonalAccessToken,
   selectTasks
 } from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
@@ -1059,7 +1060,12 @@ const User: ReqResolvers<'User'> = {
       }))
     }
   },
-  search
+  search,
+  personalAccessTokens: async (_source, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
+    return tokens
+  }
 }
 
 export default User

@@ -14,7 +14,8 @@ module.exports = {
     DateTime: 'string',
     URL: 'string',
     _xGitHubHTML: 'string',
-    _xGitHubURI: 'string'
+    _xGitHubURI: 'string',
+    RedirectURI: 'string'
   },
   noFutureProofEnums: true,
   schema: path.join(__dirname, 'packages/server/graphql/public/schema.graphql'),

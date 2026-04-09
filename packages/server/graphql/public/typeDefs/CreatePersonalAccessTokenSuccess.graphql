@@ -1,0 +1,10 @@
+type CreatePersonalAccessTokenSuccess {
+  """
+  The plaintext token value — only returned once at creation, store it securely
+  """
+  token: String!
+  """
+  The created personal access token
+  """
+  personalAccessToken: PersonalAccessToken!
+}

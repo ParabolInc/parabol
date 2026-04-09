@@ -1,0 +1,6 @@
+type UpdatePersonalAccessTokenSuccess {
+  """
+  The updated personal access token
+  """
+  personalAccessToken: PersonalAccessToken!
+}

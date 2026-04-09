@@ -17,6 +17,7 @@ import {
   selectOAuthAPIProvider,
   selectOrganizations,
   selectPages,
+  selectPersonalAccessToken,
   selectReflectPrompts,
   selectRetroReflections,
   selectSlackAuths,
@@ -200,4 +201,8 @@ export const oAuthProviders = primaryKeyLoaderMaker((ids: readonly number[]) => 
 
 export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectUserDetails().where('id', 'in', ids).execute()
+})
+
+export const personalAccessTokens = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectPersonalAccessToken().where('id', 'in', ids).execute()
 })

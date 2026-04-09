@@ -1,3 +1,4 @@
+import {GraphQLError} from 'graphql'
 import {generateOAuthClientId, generateOAuthClientSecret} from '../../../oauth2/credentials'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
@@ -14,7 +15,7 @@ export const createOAuthAPIProvider: MutationResolvers['createOAuthAPIProvider']
   const clientSecret = generateOAuthClientSecret()
 
   if (scopes.length === 0) {
-    scopes = ['graphql:query', 'graphql:mutation']
+    throw new GraphQLError('Must pick a scope')
   }
 
   const pg = getKysely()
