@@ -70,7 +70,8 @@
     "source-map": "0.7.6",
     "qs": "^6.14.1",
     "handlebars": "^4.7.9",
-    "brace-expansion": "^1.1.13"
+    "brace-expansion": "^1.1.13",
+    "@graphql-tools/utils": "^11.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",

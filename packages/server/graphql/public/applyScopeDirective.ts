@@ -6,7 +6,7 @@ import ms from 'ms'
 import AuthToken from '../../database/types/AuthToken'
 import getKysely from '../../postgres/getKysely'
 import {selectPersonalAccessToken} from '../../postgres/select'
-import type {OAuthScopeEnum} from './resolverTypes'
+import type {OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
 const PAT_PREFIX = 'pat_'
 const PREFIX_LENGTH = 8
@@ -19,22 +19,22 @@ const PREFIX_LENGTH = 8
 export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
   const scopeDirective = schema.getDirective('scope')
   if (!scopeDirective) return schema
-
   for (const type of Object.values(schema.getTypeMap())) {
     if (!isObjectType(type) || type.name.startsWith('__')) continue
-    const isScopeDirectiveRequired = type.name === 'Mutation'
-
+    // const isScopeDirectiveRequired = type.name === 'Mutation'
     for (const field of Object.values(type.getFields())) {
       if (!field.astNode) continue
-
       const directiveValues = getDirectiveValues(scopeDirective, field.astNode)
       if (!directiveValues) {
-        if (isScopeDirectiveRequired)
-          throw new Error(`Missing @scope directive on ${type.name}.${field.name}`)
+        // if (isScopeDirectiveRequired)
+        // throw new Error(`Missing @scope directive on ${type.name}.${field.name}`)
         continue
       }
 
-      const requiredScope = directiveValues.name as OAuthScopeEnum
+      // FIXME: https://github.com/ardatan/graphql-tools/pull/8117
+      // const requiredScope = OAuthScopeEnum[directiveValues.name as string] as TOAuthScopeEnum
+      const requiredScope = directiveValues.name as TOAuthScopeEnum
+
       const originalResolver = field.resolve ?? defaultFieldResolver
 
       field.resolve = async (source, args, context, info) => {

@@ -7,8 +7,8 @@ type Mutation {
     The new task including an id, teamMemberId, and content
     """
     newAgendaItem: CreateAgendaItemInput!
-  ): AddAgendaItemPayload
-  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
+  ): AddAgendaItemPayload @scope(name: TEAMS_WRITE)
+  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Add a comment to a discussion
@@ -18,17 +18,19 @@ type Mutation {
     A partial new comment
     """
     comment: AddCommentInput!
-  ): AddCommentPayload!
+  ): AddCommentPayload! @scope(name: COMMENTS_WRITE)
 
   """
   Add a new dimension for the poker template
   """
   addPokerTemplateDimension(templateId: ID!): AddPokerTemplateDimensionPayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new scale for the poker template
   """
   addPokerTemplateScale(parentScaleId: ID, teamId: ID!): AddPokerTemplateScalePayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new scale value for a scale in a poker template
@@ -36,7 +38,7 @@ type Mutation {
   addPokerTemplateScaleValue(
     scaleId: ID!
     scaleValue: AddTemplateScaleInput!
-  ): AddPokerTemplateScaleValuePayload!
+  ): AddPokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new template full of prompts
