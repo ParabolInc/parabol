@@ -191,15 +191,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const authToken = getVerifiedAuthToken(token, false)
 
         const isSuperUser = authToken?.rol === 'su'
-        // const isOAuthToken = authToken?.aud === 'action-oauth2'
-
-        // const hasScope =
-        //   authToken?.scope?.includes('graphql:query') ||
-        //   authToken?.scope?.includes('graphql:mutation')
-
-        // const result = isSuperUser || (isOAuthToken && !!hasScope)
-
-        return isSuperUser
+        const isPAT = headerToken?.startsWith('pat_') ?? false
+        return isSuperUser || isPAT
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
