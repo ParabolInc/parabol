@@ -15,6 +15,7 @@ interface Props {
 export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   const onCopy = () => {
+    navigator.clipboard.writeText(token)
     setIsOpen(true)
     setTimeout(() => {
       setIsOpen(false)
@@ -22,7 +23,7 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
   }
 
   return (
-    <Dialog open={true}>
+    <Dialog open={true} onClose={onClose}>
       <DialogContent className='flex flex-col gap-4'>
         <DialogTitle>Token Created</DialogTitle>
         <p className='text-slate-600 text-sm'>Copy your new token now — it won't be shown again.</p>

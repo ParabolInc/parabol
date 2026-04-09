@@ -7,8 +7,8 @@ type Mutation {
     The new task including an id, teamMemberId, and content
     """
     newAgendaItem: CreateAgendaItemInput!
-  ): AddAgendaItemPayload
-  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload!
+  ): AddAgendaItemPayload @scope(name: TEAMS_WRITE)
+  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Add a comment to a discussion
@@ -18,17 +18,19 @@ type Mutation {
     A partial new comment
     """
     comment: AddCommentInput!
-  ): AddCommentPayload!
+  ): AddCommentPayload! @scope(name: COMMENTS_WRITE)
 
   """
   Add a new dimension for the poker template
   """
   addPokerTemplateDimension(templateId: ID!): AddPokerTemplateDimensionPayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new scale for the poker template
   """
   addPokerTemplateScale(parentScaleId: ID, teamId: ID!): AddPokerTemplateScalePayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new scale value for a scale in a poker template
@@ -36,14 +38,15 @@ type Mutation {
   addPokerTemplateScaleValue(
     scaleId: ID!
     scaleValue: AddTemplateScaleInput!
-  ): AddPokerTemplateScaleValuePayload!
+  ): AddPokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Add a new template full of prompts
   """
   addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
-  addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload!
-  addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload!
+    @scope(name: TEMPLATES_WRITE)
+  addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload! @scope(name: TEAMS_WRITE)
+  addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Create a new team and add the first team member
@@ -59,7 +62,7 @@ type Mutation {
     """
     orgName: String!
     invitees: [Email!]
-  ): AddOrgPayload!
+  ): AddOrgPayload! @scope(name: ORGS_WRITE)
 
   """
   Create a new team and add the first team member
@@ -70,19 +73,19 @@ type Mutation {
     """
     newTeam: NewTeamInput!
     invitees: [Email!]
-  ): AddTeamPayload!
+  ): AddTeamPayload! @scope(name: TEAMS_WRITE)
   archiveOrganization(
     """
     The orgId to archive
     """
     orgId: ID!
-  ): ArchiveOrganizationPayload!
+  ): ArchiveOrganizationPayload! @scope(name: ORGS_WRITE)
   archiveTeam(
     """
     The teamId to archive (or delete, if team is unused)
     """
     teamId: ID!
-  ): ArchiveTeamPayload!
+  ): ArchiveTeamPayload! @scope(name: TEAMS_WRITE)
 
   """
   Archive a timeline event
@@ -92,7 +95,7 @@ type Mutation {
     the id for the timeline event
     """
     timelineEventId: ID!
-  ): ArchiveTimelineEventPayload!
+  ): ArchiveTimelineEventPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Change the team a task is associated with. Also copy the viewers integration if necessary.
@@ -107,7 +110,7 @@ type Mutation {
     The new team to assign the task to
     """
     teamId: ID!
-  ): ChangeTaskTeamPayload
+  ): ChangeTaskTeamPayload @scope(name: TASKS_WRITE)
 
   """
   set the interaction status of a notifcation
@@ -118,14 +121,14 @@ type Mutation {
     """
     notificationId: ID!
     status: NotificationStatusEnum!
-  ): SetNotificationStatusPayload
+  ): SetNotificationStatusPayload @scope(name: USERS_WRITE)
 
   createPage(
     """
     The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
     """
     teamId: ID
-  ): CreatePagePayload!
+  ): CreatePagePayload! @scope(name: PAGES_WRITE)
   """
   Create a personal access token for API access
   """
@@ -154,7 +157,7 @@ type Mutation {
     Expiration date; cannot be more than 1 year in the future
     """
     expiresAt: DateTime!
-  ): CreatePersonalAccessTokenSuccess!
+  ): CreatePersonalAccessTokenSuccess! @scope(name: USERS_WRITE)
   createTaskIntegration(
     """
     Which integration to push the task to
@@ -170,7 +173,7 @@ type Mutation {
     The id of the task to convert to an issue
     """
     taskId: ID!
-  ): CreateTaskIntegrationPayload
+  ): CreateTaskIntegrationPayload @scope(name: TASKS_WRITE)
 
   """
   Generate a new OAuth1 request token and encode it in the authorization URL to start an oauth1 flow
@@ -185,7 +188,7 @@ type Mutation {
     Id of the team where the integration should be added
     """
     teamId: ID!
-  ): CreateOAuth1AuthorizationURLPayload
+  ): CreateOAuth1AuthorizationURLPayload @scope(name: TEAMS_WRITE)
 
   """
   Create a new OAuth 2.0 Application
@@ -195,7 +198,7 @@ type Mutation {
     name: String!
     redirectUris: [RedirectURI!]!
     scopes: [OAuthScopeEnum!]!
-  ): CreateOAuthAPIProviderPayload!
+  ): CreateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
   Update an OAuth 2.0 Application
@@ -205,17 +208,18 @@ type Mutation {
     name: String
     redirectUris: [RedirectURI!]
     scopes: [OAuthScopeEnum!]
-  ): UpdateOAuthAPIProviderPayload!
+  ): UpdateOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
   Delete an OAuth 2.0 Application
   """
-  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload!
+  deleteOAuthAPIProvider(providerId: ID!): DeleteOAuthAPIProviderPayload! @scope(name: ORGS_WRITE)
 
   """
   Regenerate the OAuth 2.0 client secret for an application
   """
   regenerateOAuthAPIProviderSecret(providerId: ID!): RegenerateOAuthAPIProviderSecretPayload!
+    @scope(name: ORGS_WRITE)
 
   """
   Update SCIM settings for the organization
@@ -230,12 +234,13 @@ type Mutation {
     The authentication type. SCIM will be disabled if set to null
     """
     authenticationType: SCIMAuthenticationTypeEnum
-  ): UpdateSCIMPayload!
+  ): UpdateSCIMPayload! @scope(name: ORGS_WRITE)
 
   """
   Create a new reflection
   """
   createReflection(input: CreateReflectionInput!): CreateReflectionPayload
+    @scope(name: MEETINGS_WRITE)
 
   """
   Create a new task, triggering a CreateCard for other viewers
@@ -250,12 +255,12 @@ type Mutation {
     The part of the site where the creation occurred
     """
     area: AreaEnum
-  ): CreateTaskPayload!
+  ): CreateTaskPayload! @scope(name: TASKS_WRITE)
 
   """
   Delete a comment from a discussion
   """
-  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
+  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload! @scope(name: COMMENTS_WRITE)
 
   """
   Delete (not archive!) a task
@@ -265,7 +270,7 @@ type Mutation {
     The taskId to delete
     """
     taskId: ID!
-  ): DeleteTaskPayload
+  ): DeleteTaskPayload @scope(name: TASKS_WRITE)
 
   """
   Delete a user, removing them from all teams and orgs
@@ -285,17 +290,17 @@ type Mutation {
     the reason why the user wants to delete their account
     """
     reason: String
-  ): DeleteUserPayload!
+  ): DeleteUserPayload! @scope(name: USERS_WRITE)
 
   """
   Deny a user from joining via push invitation
   """
-  denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload
+  denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload @scope(name: TEAMS_WRITE)
 
   """
   Redeem an invitation token for a logged in user
   """
-  dismissNewFeature: DismissNewFeaturePayload!
+  dismissNewFeature: DismissNewFeaturePayload! @scope(name: USERS_WRITE)
 
   """
   Dismiss a suggested action
@@ -305,7 +310,7 @@ type Mutation {
     The id of the suggested action to dismiss
     """
     suggestedActionId: ID!
-  ): DismissSuggestedActionPayload!
+  ): DismissSuggestedActionPayload! @scope(name: USERS_WRITE)
 
   """
   Downgrade a paid account to the starter plan service
@@ -325,12 +330,13 @@ type Mutation {
     the name of the tool they are moving to. only required if anotherTool is selected as a reason to downgrade
     """
     otherTool: String
-  ): DowngradeToStarterPayload
+  ): DowngradeToStarterPayload @scope(name: ORGS_WRITE)
 
   """
   Changes the priority of the discussion topics
   """
   dragDiscussionTopic(meetingId: ID!, stageId: ID!, sortOrder: Float!): DragDiscussionTopicPayload
+    @scope(name: MEETINGS_WRITE)
 
   """
   Changes the ordering of the estimating tasks
@@ -343,7 +349,7 @@ type Mutation {
     The index of the tasks will be moved to, in the list of estimating tasks sidebar section
     """
     newPositionIndex: Int!
-  ): DragEstimatingTaskPayload!
+  ): DragEstimatingTaskPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Send an email to reset a password
@@ -353,7 +359,7 @@ type Mutation {
     email to send the password reset code to
     """
     email: ID!
-  ): EmailPasswordResetPayload!
+  ): EmailPasswordResetPayload! @scope(name: USERS_WRITE)
 
   """
   Track which users are commenting
@@ -364,7 +370,7 @@ type Mutation {
     """
     isCommenting: Boolean!
     discussionId: ID!
-  ): EditCommentingPayload
+  ): EditCommentingPayload @scope(name: MEETINGS_WRITE)
 
   """
   Finish a sprint poker meeting
@@ -374,7 +380,7 @@ type Mutation {
     The meeting to end
     """
     meetingId: ID!
-  ): EndSprintPokerPayload!
+  ): EndSprintPokerPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Changes the editing state of a user for a phase item
@@ -386,7 +392,7 @@ type Mutation {
     isEditing: Boolean!
     meetingId: ID!
     promptId: ID!
-  ): EditReflectionPayload
+  ): EditReflectionPayload @scope(name: MEETINGS_WRITE)
 
   """
   Announce to everyone that you are editing a task
@@ -401,7 +407,7 @@ type Mutation {
     true if the editing is starting, false if it is stopping
     """
     isEditing: Boolean!
-  ): EditTaskPayload
+  ): EditTaskPayload @scope(name: TASKS_WRITE)
 
   """
   Finish a check-in meeting
@@ -411,7 +417,7 @@ type Mutation {
     The meeting to end
     """
     meetingId: ID!
-  ): EndCheckInPayload!
+  ): EndCheckInPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Broadcast that the viewer stopped dragging a reflection
@@ -433,7 +439,7 @@ type Mutation {
     the ID of the drag to connect to the start drag event
     """
     dragId: ID
-  ): EndDraggingReflectionPayload
+  ): EndDraggingReflectionPayload @scope(name: MEETINGS_WRITE)
 
   """
   Finish a retrospective meeting
@@ -443,7 +449,7 @@ type Mutation {
     The meeting to end
     """
     meetingId: ID!
-  ): EndRetrospectivePayload!
+  ): EndRetrospectivePayload! @scope(name: MEETINGS_WRITE)
 
   """
   flag a viewer as ready to advance to the next stage of a meeting
@@ -460,12 +466,12 @@ type Mutation {
     true if ready to advance, else false
     """
     isReady: Boolean!
-  ): FlagReadyToAdvancePayload!
+  ): FlagReadyToAdvancePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Invalidate all sessions by blacklisting all JWTs issued before now
   """
-  invalidateSessions: InvalidateSessionsPayload!
+  invalidateSessions: InvalidateSessionsPayload! @scope(name: USERS_WRITE)
 
   """
   Send a team invitation to an email address
@@ -481,7 +487,7 @@ type Mutation {
     """
     teamId: ID!
     invitees: [Email!]!
-  ): InviteToTeamPayload!
+  ): InviteToTeamPayload! @scope(name: TEAMS_WRITE)
 
   """
   Generate an insight for a team
@@ -492,7 +498,7 @@ type Mutation {
     endDate: DateTime!
     useSummaries: Boolean
     prompt: String
-  ): GenerateInsightPayload!
+  ): GenerateInsightPayload! @scope(name: TEAMS_WRITE)
 
   """
   Move a template dimension
@@ -500,12 +506,13 @@ type Mutation {
   movePokerTemplateDimension(
     dimensionId: ID!
     sortOrder: String!
-  ): MovePokerTemplateDimensionPayload!
+  ): MovePokerTemplateDimensionPayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Move a reflect template
   """
   moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Move a team to a different org. Requires billing leader rights on both orgs!
@@ -520,7 +527,7 @@ type Mutation {
     The ID of the organization you want to move the team to
     """
     orgId: ID!
-  ): String
+  ): String @scope(name: ORGS_WRITE)
 
   """
   update a meeting by marking an item complete and setting the facilitator location
@@ -540,7 +547,7 @@ type Mutation {
     The meeting ID
     """
     meetingId: ID!
-  ): NavigateMeetingPayload!
+  ): NavigateMeetingPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Add or remove a task and its estimate phase from the meeting
@@ -555,7 +562,7 @@ type Mutation {
     the jira search query to persist (or remove, if isRemove is true)
     """
     input: JiraSearchQueryInput!
-  ): PersistJiraSearchQueryPayload!
+  ): PersistJiraSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """
   Request to be invited to a team in real time
@@ -566,7 +573,7 @@ type Mutation {
     """
     meetingId: ID
     teamId: ID!
-  ): PushInvitationPayload
+  ): PushInvitationPayload @scope(name: TEAMS_WRITE)
 
   """
   Change a facilitator while the meeting is in progress
@@ -577,7 +584,7 @@ type Mutation {
     """
     facilitatorUserId: ID!
     meetingId: ID!
-  ): PromoteNewMeetingFacilitatorPayload
+  ): PromoteNewMeetingFacilitatorPayload @scope(name: MEETINGS_WRITE)
 
   """
   Promote another team member to be the leader
@@ -592,7 +599,7 @@ type Mutation {
     userId who will be set as a new team leader
     """
     userId: ID!
-  ): PromoteToTeamLeadPayload
+  ): PromoteToTeamLeadPayload @scope(name: TEAMS_WRITE)
 
   """
   Update the description of a reflection prompt
@@ -600,7 +607,7 @@ type Mutation {
   reflectTemplatePromptUpdateDescription(
     promptId: ID!
     description: String!
-  ): ReflectTemplatePromptUpdateDescriptionPayload
+  ): ReflectTemplatePromptUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
 
   """
   Update the description of a poker template dimension
@@ -608,11 +615,11 @@ type Mutation {
   pokerTemplateDimensionUpdateDescription(
     dimensionId: ID!
     description: String!
-  ): PokerTemplateDimensionUpdateDescriptionPayload
+  ): PokerTemplateDimensionUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
   reflectTemplatePromptUpdateGroupColor(
     promptId: ID!
     groupColor: String!
-  ): ReflectTemplatePromptUpdateGroupColorPayload
+  ): ReflectTemplatePromptUpdateGroupColorPayload @scope(name: TEMPLATES_WRITE)
 
   """
   Remove an agenda item
@@ -622,7 +629,7 @@ type Mutation {
     The agenda item unique id
     """
     agendaItemId: ID!
-  ): RemoveAgendaItemPayload
+  ): RemoveAgendaItemPayload @scope(name: TEAMS_WRITE)
 
   """
   Disconnect a team member from atlassian
@@ -632,7 +639,7 @@ type Mutation {
     the teamId to disconnect from the token
     """
     teamId: ID!
-  ): RemoveAtlassianAuthPayload!
+  ): RemoveAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Disconnect a team member from GitHub
@@ -642,7 +649,7 @@ type Mutation {
     the teamId to disconnect from the token
     """
     teamId: ID!
-  ): RemoveGitHubAuthPayload!
+  ): RemoveGitHubAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove multiple users from an org
@@ -657,27 +664,29 @@ type Mutation {
     The org that does not want them anymore
     """
     orgId: ID!
-  ): RemoveOrgUsersPayload!
+  ): RemoveOrgUsersPayload! @scope(name: ORGS_WRITE)
 
   """
   Remove a poker meeting template
   """
-  removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload!
+  removePokerTemplate(templateId: ID!): RemovePokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a template full of prompts
   """
-  removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload
+  removeReflectTemplate(templateId: ID!): RemoveReflectTemplatePayload @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a prompt from a template
   """
   removeReflectTemplatePrompt(promptId: ID!): RemoveReflectTemplatePromptPayload
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a dimension from a template
   """
   removePokerTemplateDimension(dimensionId: ID!): RemovePokerTemplateDimensionPayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Rename a meeting
@@ -692,17 +701,19 @@ type Mutation {
     the meeting with the new name
     """
     meetingId: ID!
-  ): RenameMeetingPayload!
+  ): RenameMeetingPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Rename a meeting template
   """
   renameMeetingTemplate(templateId: ID!, name: String!): RenameMeetingTemplatePayload
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Rename a reflect template prompt
   """
   renameReflectTemplatePrompt(promptId: ID!, question: String!): RenameReflectTemplatePromptPayload
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Rename a poker template dimension
@@ -710,27 +721,30 @@ type Mutation {
   renamePokerTemplateDimension(
     dimensionId: ID!
     name: String!
-  ): RenamePokerTemplateDimensionPayload!
+  ): RenamePokerTemplateDimensionPayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Rename a poker template scale
   """
   renamePokerTemplateScale(scaleId: ID!, name: String!): RenamePokerTemplateScalePayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a scale from a template
   """
   removePokerTemplateScale(scaleId: ID!): RemovePokerTemplateScalePayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a scale value from the scale of a template
   """
   removePokerTemplateScaleValue(scaleId: ID!, label: String!): RemovePokerTemplateScaleValuePayload!
+    @scope(name: TEMPLATES_WRITE)
 
   """
   Remove a reflection
   """
-  removeReflection(reflectionId: ID!): RemoveReflectionPayload
+  removeReflection(reflectionId: ID!): RemoveReflectionPayload @scope(name: MEETINGS_WRITE)
 
   """
   Disconnect a team member from Slack
@@ -740,7 +754,7 @@ type Mutation {
     the teamId to disconnect from the token
     """
     teamId: ID!
-  ): RemoveSlackAuthPayload!
+  ): RemoveSlackAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove a team member from the team
@@ -755,7 +769,7 @@ type Mutation {
     The userId of the person who is being removed
     """
     userId: ID!
-  ): RemoveTeamMemberPayload
+  ): RemoveTeamMemberPayload @scope(name: TEAMS_WRITE)
 
   """
   Reset the password for an account
@@ -770,12 +784,13 @@ type Mutation {
     The new password for the account
     """
     newPassword: String!
-  ): ResetPasswordPayload!
+  ): ResetPasswordPayload! @scope(name: USERS_WRITE)
 
   """
   Reset a retro meeting to group stage
   """
   resetRetroMeetingToGroupStage(meetingId: ID!): ResetRetroMeetingToGroupStagePayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Update a personal access token's fields or revoke it
@@ -813,17 +828,19 @@ type Mutation {
     If true, sets revokedAt to the current timestamp, preventing further use
     """
     revoke: Boolean
-  ): UpdatePersonalAccessTokenSuccess!
+  ): UpdatePersonalAccessTokenSuccess! @scope(name: USERS_WRITE)
 
   """
   Set the selected template for the upcoming retro meeting
   """
   selectTemplate(selectedTemplateId: ID!, teamId: ID!): SelectTemplatePayload
+    @scope(name: TEAMS_WRITE)
 
   """
   Update the default Slack channel where notifications are sent
   """
   setDefaultSlackChannel(slackChannelId: ID!, teamId: ID!): SetDefaultSlackChannelPayload!
+    @scope(name: TEAMS_WRITE)
 
   """
   Focus (or unfocus) a phase item
@@ -835,7 +852,7 @@ type Mutation {
     The currently focused phase item
     """
     focusedPromptId: ID
-  ): SetPhaseFocusPayload
+  ): SetPhaseFocusPayload @scope(name: MEETINGS_WRITE)
 
   """
   Set or clear a timer for a meeting stage
@@ -855,13 +872,13 @@ type Mutation {
     scheduledEndTime - now. Used to reconcile bad client clocks. Present for time limit, else null
     """
     timeRemaining: Float
-  ): SetStageTimerPayload!
+  ): SetStageTimerPayload! @scope(name: MEETINGS_WRITE)
 
   setSlackNotification(
     slackChannelId: ID
     slackNotificationEvents: [SlackNotificationEventEnum!]!
     teamId: ID!
-  ): SetSlackNotificationPayload!
+  ): SetSlackNotificationPayload! @scope(name: TEAMS_WRITE)
 
   """
   Update the notification settings for a provider and team
@@ -877,7 +894,7 @@ type Mutation {
     """
     event: SlackNotificationEventEnum!
     isEnabled: Boolean!
-  ): SetTeamNotificationSettingPayload!
+  ): SetTeamNotificationSettingPayload! @scope(name: TEAMS_WRITE)
 
   """
   Broadcast that the viewer started dragging a reflection
@@ -886,7 +903,7 @@ type Mutation {
     reflectionId: ID!
     dragId: ID!
     isSpotlight: Boolean
-  ): StartDraggingReflectionPayload
+  ): StartDraggingReflectionPayload @scope(name: MEETINGS_WRITE)
 
   """
   Start a new sprint poker meeting
@@ -910,12 +927,13 @@ type Mutation {
     Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
     """
     ignoreSuggestedUpgrade: Boolean
-  ): StartSprintPokerPayload!
+  ): StartSprintPokerPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Broadcast that the viewer highlights a task
   """
   setTaskHighlight(taskId: ID!, meetingId: ID!, isHighlighted: Boolean!): SetTaskHighlightPayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Update an agenda item
@@ -925,7 +943,7 @@ type Mutation {
     The updated item including an id, content, status, sortOrder
     """
     updatedAgendaItem: UpdateAgendaItemInput!
-  ): UpdateAgendaItemPayload
+  ): UpdateAgendaItemPayload @scope(name: TEAMS_WRITE)
 
   """
   Update the content of a comment
@@ -938,7 +956,7 @@ type Mutation {
     """
     content: String!
     meetingId: ID!
-  ): UpdateCommentContentPayload
+  ): UpdateCommentContentPayload @scope(name: COMMENTS_WRITE)
 
   """
   Update the scale used for a dimension in a template
@@ -946,7 +964,7 @@ type Mutation {
   updatePokerTemplateDimensionScale(
     dimensionId: ID!
     scaleId: ID!
-  ): UpdatePokerTemplateDimensionScalePayload!
+  ): UpdatePokerTemplateDimensionScalePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Update the label, numerical value or color of a scale value in a scale
@@ -955,7 +973,7 @@ type Mutation {
     scaleId: ID!
     oldScaleValue: TemplateScaleInput!
     newScaleValue: TemplateScaleInput!
-  ): UpdatePokerTemplateScaleValuePayload!
+  ): UpdatePokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Update a Team's Icebreaker in a new meeting
@@ -970,12 +988,12 @@ type Mutation {
     The Team's new Icebreaker
     """
     checkInQuestion: String!
-  ): UpdateNewCheckInQuestionPayload
+  ): UpdateNewCheckInQuestionPayload @scope(name: MEETINGS_WRITE)
 
   """
   all the info required to provide an accurate display-specific location of where an item is
   """
-  updateDragLocation(input: UpdateDragLocationInput!): Boolean
+  updateDragLocation(input: UpdateDragLocationInput!): Boolean @scope(name: MEETINGS_WRITE)
 
   """
   Add or remove a task and its estimate phase from the meeting
@@ -990,7 +1008,7 @@ type Mutation {
     The list of items to add/remove to the estimate phase
     """
     updates: [UpdatePokerScopeItemInput!]!
-  ): UpdatePokerScopePayload!
+  ): UpdatePokerScopePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Update the content of a reflection
@@ -1002,7 +1020,7 @@ type Mutation {
     A stringified TipTap JSONContent document containing thoughts
     """
     content: String!
-  ): UpdateReflectionContentPayload
+  ): UpdateReflectionContentPayload @scope(name: MEETINGS_WRITE)
 
   """
   Update the title of a reflection group
@@ -1014,7 +1032,7 @@ type Mutation {
     The new title for the group
     """
     title: String!
-  ): UpdateReflectionGroupTitlePayload
+  ): UpdateReflectionGroupTitlePayload @scope(name: MEETINGS_WRITE)
 
   """
   Change the max votes for participants
@@ -1034,7 +1052,7 @@ type Mutation {
     the meeting to update
     """
     meetingId: ID!
-  ): UpdateRetroMaxVotesPayload!
+  ): UpdateRetroMaxVotesPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Update a task with a change in content, ownership, or status
@@ -1049,7 +1067,7 @@ type Mutation {
     the updated task including the id, and at least one other field
     """
     updatedTask: UpdateTaskInput!
-  ): UpdateTaskPayload
+  ): UpdateTaskPayload @scope(name: TASKS_WRITE)
 
   """
   Set or unset the due date of a task
@@ -1064,13 +1082,13 @@ type Mutation {
     the new due date. if not a valid date, it will unset the due date
     """
     dueDate: DateTime
-  ): UpdateTaskDueDatePayload
+  ): UpdateTaskDueDatePayload @scope(name: TASKS_WRITE)
   updateTeamName(
     """
     The input object containing the teamId and any modified fields
     """
     updatedTeam: UpdatedTeamInput!
-  ): UpdateTeamNamePayload
+  ): UpdateTeamNamePayload @scope(name: TEAMS_WRITE)
 
   """
   Change the scope of a template
@@ -1085,7 +1103,7 @@ type Mutation {
     the new scope
     """
     scope: SharingScopeEnum!
-  ): UpdateTemplateScopePayload!
+  ): UpdateTemplateScopePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Cast your vote for a reflection group
@@ -1096,7 +1114,7 @@ type Mutation {
     """
     isUnvote: Boolean
     reflectionGroupId: ID!
-  ): VoteForReflectionGroupPayload
+  ): VoteForReflectionGroupPayload @scope(name: MEETINGS_WRITE)
 
   """
   Cast a vote for the estimated points for a given dimension
@@ -1113,7 +1131,7 @@ type Mutation {
     The label of the scaleValue to vote for. If null, remove the vote
     """
     score: String
-  ): VoteForPokerStoryPayload!
+  ): VoteForPokerStoryPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Progresses the stage dimension to the reveal & discuss step
@@ -1125,12 +1143,13 @@ type Mutation {
     Set to true to ignore MAX_TEAM_UPGRADE_SUGGESTED
     """
     ignoreSuggestedUpgrade: Boolean
-  ): PokerRevealVotesPayload!
+  ): PokerRevealVotesPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Remove all votes, the final vote, and reset the stage
   """
   pokerResetDimension(meetingId: ID!, stageId: ID!): PokerResetDimensionPayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   """
@@ -1142,7 +1161,7 @@ type Mutation {
     true if the viewer has started hovering the deck, else false
     """
     isHover: Boolean!
-  ): PokerAnnounceDeckHoverPayload!
+  ): PokerAnnounceDeckHoverPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Move a scale value to an index
@@ -1159,12 +1178,12 @@ type Mutation {
     The index position where the scale value is moving to
     """
     index: Int!
-  ): MovePokerTemplateScaleValuePayload!
+  ): MovePokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Create a meeting member for a user
   """
-  joinMeeting(meetingId: ID!): JoinMeetingPayload!
+  joinMeeting(meetingId: ID!): JoinMeetingPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Join a public Team directly without requiring an invitation
@@ -1174,7 +1193,7 @@ type Mutation {
     The ID of the team to join
     """
     teamId: ID!
-  ): JoinTeamPayload!
+  ): JoinTeamPayload! @scope(name: TEAMS_WRITE)
 
   """
   Set whether the user is spectating poker meeting
@@ -1186,7 +1205,7 @@ type Mutation {
     true if the viewer is spectating poker and does not want to vote. else false
     """
     isSpectating: Boolean!
-  ): SetPokerSpectatePayload!
+  ): SetPokerSpectatePayload! @scope(name: MEETINGS_WRITE)
 
   """
   """
@@ -1205,12 +1224,13 @@ type Mutation {
     true if this query should be deleted
     """
     isRemove: Boolean
-  ): PersistGitHubSearchQueryPayload!
+  ): PersistGitHubSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """
   Update a task estimate
   """
   setTaskEstimate(taskEstimate: TaskEstimateInput!): SetTaskEstimatePayload!
+    @scope(name: TASKS_WRITE)
 
   """
   Show/hide the drawer in the team dashboard
@@ -1225,7 +1245,7 @@ type Mutation {
     The type of team drawer that the viewer is toggling. Null if closing the drawer.
     """
     teamDrawerType: TeamDrawer
-  ): ToggleTeamDrawerPayload!
+  ): ToggleTeamDrawerPayload! @scope(name: TEAMS_WRITE)
 
   """
   Toggle a feature flag for a specific owner (organization, team, or user)
@@ -1247,7 +1267,7 @@ type Mutation {
     The user ID if toggling for a user
     """
     userId: ID
-  ): ToggleFeatureFlagPayload!
+  ): ToggleFeatureFlagPayload! @scope(name: ORGS_WRITE)
 
   """
   Toggle whether the organization has access to ai features
@@ -1257,7 +1277,7 @@ type Mutation {
     The id of the org being toggled
     """
     orgId: ID!
-  ): ToggleAIFeaturesPayload!
+  ): ToggleAIFeaturesPayload! @scope(name: ORGS_WRITE)
 
   """
   Toggle whether the team privacy settings
@@ -1267,7 +1287,7 @@ type Mutation {
     The id of the team being toggled
     """
     teamId: ID!
-  ): ToggleTeamPrivacyPayload!
+  ): ToggleTeamPrivacyPayload! @scope(name: TEAMS_WRITE)
 
   """
   Update how a parabol dimension maps to a GitHub label
@@ -1289,13 +1309,13 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateGitHubDimensionFieldPayload!
+  ): UpdateGitHubDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
   createPoll(
     """
     The new poll including title and poll options
     """
     newPoll: CreatePollInput!
-  ): CreatePollPayload!
+  ): CreatePollPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Adds a new Integration Provider configuration
@@ -1305,7 +1325,7 @@ type Mutation {
     The new Integration Provider
     """
     input: AddIntegrationProviderInput!
-  ): AddIntegrationProviderPayload!
+  ): AddIntegrationProviderPayload! @scope(name: TEAMS_WRITE)
 
   """
   Update the Integration Provider settings
@@ -1315,7 +1335,7 @@ type Mutation {
     The new Integration Provider
     """
     provider: UpdateIntegrationProviderInput!
-  ): UpdateIntegrationProviderPayload!
+  ): UpdateIntegrationProviderPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove an Integration Provider, and any associated tokens
@@ -1325,7 +1345,7 @@ type Mutation {
     Id of the Integration Provider to remove
     """
     providerId: ID!
-  ): RemoveIntegrationProviderPayload!
+  ): RemoveIntegrationProviderPayload! @scope(name: TEAMS_WRITE)
 
   """
   Finish the team prompt meeting
@@ -1335,7 +1355,7 @@ type Mutation {
     The meeting to end
     """
     meetingId: ID!
-  ): EndTeamPromptPayload!
+  ): EndTeamPromptPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Set the Azure DevOps field that the poker dimension should map to
@@ -1367,7 +1387,7 @@ type Mutation {
     The work item type in Azure DevOps
     """
     workItemType: ID!
-  ): UpdateAzureDevOpsDimensionFieldPayload!
+  ): UpdateAzureDevOpsDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Adds a new poker template with a default dimension created.
@@ -1382,7 +1402,7 @@ type Mutation {
     The ID of the team for which the template is being created.
     """
     teamId: ID!
-  ): AddPokerTemplatePayload!
+  ): AddPokerTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Adds a new reflect template with a default dimension created.
@@ -1397,7 +1417,7 @@ type Mutation {
     The ID of the team for which the template is being created.
     """
     teamId: ID!
-  ): AddReflectTemplatePayload!
+  ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   pauses the subscription for a single user
@@ -1407,7 +1427,7 @@ type Mutation {
     the user to pause
     """
     userId: ID!
-  ): InactivateUserPayload
+  ): InactivateUserPayload @scope(name: USERS_WRITE)
 
   """
   Adds the request user to multiple selected teams on the domain
@@ -1422,7 +1442,7 @@ type Mutation {
     Array of team ids
     """
     teamIds: [ID!]!
-  ): AcceptRequestToJoinDomainPayload!
+  ): AcceptRequestToJoinDomainPayload! @scope(name: ORGS_WRITE)
 
   """
   Redeem an invitation token for a logged in user
@@ -1437,7 +1457,7 @@ type Mutation {
     the notification clicked to accept, if any
     """
     notificationId: ID
-  ): AcceptTeamInvitationPayload!
+  ): AcceptTeamInvitationPayload! @scope(name: TEAMS_WRITE)
 
   """
   Restrict accepting team invites to a list of approved domains
@@ -1452,7 +1472,7 @@ type Mutation {
     A list of domains or email addressed allowed to join the organization
     """
     emailDomains: [String!]!
-  ): AddApprovedOrganizationDomainsPayload!
+  ): AddApprovedOrganizationDomainsPayload! @scope(name: ORGS_WRITE)
 
   """
   Add or remove a reactji from a reactable
@@ -1482,7 +1502,7 @@ type Mutation {
     The id of the meeting
     """
     meetingId: ID!
-  ): AddReactjiToReactablePayload!
+  ): AddReactjiToReactablePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Add an integration authorization for a specific team member
@@ -1506,7 +1526,7 @@ type Mutation {
     The URL the OAuth2 token will be sent to. Null for webhook auth
     """
     redirectUri: URL
-  ): AddTeamMemberIntegrationAuthPayload!
+  ): AddTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   This mutation is specific to the mattermost global integration provider.
@@ -1522,7 +1542,7 @@ type Mutation {
     The channel to link
     """
     channelId: ID!
-  ): LinkMattermostChannelPayload!
+  ): LinkMattermostChannelPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove a previously linked channel from the team
@@ -1537,17 +1557,18 @@ type Mutation {
     The channel to unlink
     """
     channelId: ID!
-  ): UnlinkMattermostChannelPayload!
+  ): UnlinkMattermostChannelPayload! @scope(name: TEAMS_WRITE)
 
   """
   Add the transcription bot to the Zoom meeting
   """
   addTranscriptionBot(meetingId: ID!, videoMeetingURL: String!): AddTranscriptionBotPayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Creates suggested reflection groups using OpenAI
   """
-  autogroup(meetingId: ID!): AutogroupPayload!
+  autogroup(meetingId: ID!): AutogroupPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Batch archive tasks
@@ -1557,7 +1578,7 @@ type Mutation {
     ids of the tasks to archive
     """
     taskIds: [ID!]!
-  ): BatchArchiveTasksPayload!
+  ): BatchArchiveTasksPayload! @scope(name: TASKS_WRITE)
 
   """
   for troubleshooting by admins, create a JWT for a given userId
@@ -1572,12 +1593,13 @@ type Mutation {
     The email address of the user to impersonate
     """
     email: Email
-  ): CreateImposterTokenPayload!
+  ): CreateImposterTokenPayload! @scope(name: USERS_WRITE)
 
   """
   Create the Stripe subscription for the given org
   """
   createStripeSubscription(orgId: ID!, paymentMethodId: ID!): CreateStripeSubscriptionPayload!
+    @scope(name: ORGS_WRITE)
 
   """
   Sign up or login using Google
@@ -1602,7 +1624,7 @@ type Mutation {
     query params on the login page, used to maybe add feature flag
     """
     params: String!
-  ): UserLogInPayload!
+  ): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
   Sign up or login using Microsoft
@@ -1627,22 +1649,22 @@ type Mutation {
     query params on the login page, used to maybe add feature flag
     """
     params: String!
-  ): UserLogInPayload!
+  ): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
   Login using an email address and password
   """
-  loginWithPassword(email: ID!, password: String!): UserLogInPayload!
+  loginWithPassword(email: ID!, password: String!): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
   Sign out the current user by unsetting the session cookie
   """
-  signOut: Boolean!
+  signOut: Boolean! @scope(name: USERS_WRITE)
 
   """
   Refresh the session token
   """
-  refreshSession: Boolean!
+  refreshSession: Boolean! @scope(name: USERS_WRITE)
 
   """
   Describe the mutation here
@@ -1651,13 +1673,13 @@ type Mutation {
     meetingId: ID!
     checkInQuestion: String!
     modifyType: ModifyType!
-  ): ModifyCheckInQuestionPayload!
+  ): ModifyCheckInQuestionPayload! @scope(name: MEETINGS_WRITE)
   persistIntegrationSearchQuery(
     teamId: ID!
     service: IntegrationProviderServiceEnum!
     providerId: ID
     jiraServerSearchQuery: JiraServerSearchQueryInput
-  ): PersistIntegrationSearchQueryPayload!
+  ): PersistIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove the approved domains for a given organization
@@ -1672,7 +1694,7 @@ type Mutation {
     The list of emails and/or domains to unrestrict from the org
     """
     emailDomains: [String!]!
-  ): RemoveApprovedOrganizationDomainsPayload!
+  ): RemoveApprovedOrganizationDomainsPayload! @scope(name: ORGS_WRITE)
 
   """
   Describe the mutation here
@@ -1683,7 +1705,7 @@ type Mutation {
     """
     id: ID!
     teamId: ID!
-  ): RemoveIntegrationSearchQueryPayload!
+  ): RemoveIntegrationSearchQueryPayload! @scope(name: TEAMS_WRITE)
 
   """
   Remove the integrated auth for a given team member
@@ -1698,23 +1720,25 @@ type Mutation {
     The team id related to the token
     """
     teamId: ID!
-  ): RemoveTeamMemberIntegrationAuthPayload!
+  ): RemoveTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Sends the request to the appropriate organizations on the viewer's domain
   """
-  requestToJoinDomain: RequestToJoinDomainPayload!
+  requestToJoinDomain: RequestToJoinDomainPayload! @scope(name: ORGS_WRITE)
 
   """
   Resets the reflection groups to the state they were in before autogrouping
   """
-  resetReflectionGroups(meetingId: ID!): ResetReflectionGroupsPayload!
+  resetReflectionGroups(meetingId: ID!): ResetReflectionGroupsPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Remove a reflection from its group, placing it into its own new group
   """
   ungroupReflection(reflectionGroupId: ID, reflectionId: ID): UngroupReflectionSuccess!
+    @scope(name: MEETINGS_WRITE)
   revealTeamHealthVotes(meetingId: ID!, stageId: ID!): RevealTeamHealthVotesPayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Enabled or disable the icebreaker round
@@ -1741,7 +1765,7 @@ type Mutation {
     the url of the video meeting, e.g. the Zoom link
     """
     videoMeetingURL: String
-  ): SetMeetingSettingsPayload!
+  ): SetMeetingSettingsPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Set the Jira fields to display on the estimate header card
@@ -1749,12 +1773,13 @@ type Mutation {
   setJiraDisplayFieldIds(
     teamId: ID!
     jiraDisplayFieldIds: [String!]!
-  ): SetJiraDisplayFieldIdsPayload!
+  ): SetJiraDisplayFieldIdsPayload! @scope(name: TEAMS_WRITE)
 
   """
   Set the music being played in the meeting
   """
   setMeetingMusic(meetingId: ID!, trackSrc: String, isPlaying: Boolean!): SetMeetingMusicPayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Update the role of the org user
@@ -1767,8 +1792,9 @@ type Mutation {
     The role to set the user to, e.g. billing leader. Null to remove the role
     """
     role: OrgUserRole
-  ): SetOrgUserRolePayload!
+  ): SetOrgUserRolePayload! @scope(name: ORGS_WRITE)
   setTeamHealthVote(meetingId: ID!, stageId: ID!, label: String!): SetTeamHealthVotePayload!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Shares retro discussion to integration
@@ -1788,7 +1814,7 @@ type Mutation {
     Integration channelId
     """
     channelId: ID!
-  ): ShareTopicPayload!
+  ): ShareTopicPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Sign up using an email address and password
@@ -1811,7 +1837,7 @@ type Mutation {
     query params on the login page, used to maybe add feature flag
     """
     params: String!
-  ): UserLogInPayload!
+  ): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
   Start a new meeting
@@ -1835,7 +1861,7 @@ type Mutation {
     Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
     """
     ignoreSuggestedUpgrade: Boolean
-  ): StartCheckInPayload!
+  ): StartCheckInPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Start a new meeting
@@ -1864,7 +1890,7 @@ type Mutation {
     Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
     """
     ignoreSuggestedUpgrade: Boolean
-  ): StartRetrospectivePayload!
+  ): StartRetrospectivePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Starts a new team prompt meeting
@@ -1893,7 +1919,7 @@ type Mutation {
     Set to true it ignore MAX_TEAM_UPGRADE_SUGGESTED
     """
     ignoreSuggestedUpgrade: Boolean
-  ): StartTeamPromptPayload!
+  ): StartTeamPromptPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Add or remove the template to the user's favorite templates
@@ -1903,17 +1929,17 @@ type Mutation {
     The ID of the template to be toggled as a favorite
     """
     templateId: ID!
-  ): ToggleFavoriteTemplatePayload!
+  ): ToggleFavoriteTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
   Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
   """
-  toggleSummaryEmail: ToggleSummaryEmailPayload!
+  toggleSummaryEmail: ToggleSummaryEmailPayload! @scope(name: USERS_WRITE)
 
   """
   Toggles the sendPageInvitationEmail value on the User object which determines whether page invitation emails are sent to the user
   """
-  togglePageInvitationEmail: TogglePageInvitationEmailPayload!
+  togglePageInvitationEmail: TogglePageInvitationEmailPayload! @scope(name: USERS_WRITE)
 
   """
   Update the autoJoin value for a set of teams
@@ -1928,7 +1954,7 @@ type Mutation {
     The new autoJoin value for the teams
     """
     autoJoin: Boolean!
-  ): UpdateAutoJoinPayload!
+  ): UpdateAutoJoinPayload! @scope(name: TEAMS_WRITE)
 
   """
   Update an org's credit card
@@ -1943,7 +1969,7 @@ type Mutation {
     The id of the new payment method from Stripe
     """
     paymentMethodId: ID!
-  ): UpdateCreditCardPayload!
+  ): UpdateCreditCardPayload! @scope(name: ORGS_WRITE)
 
   """
   Update how a parabol dimension maps to a GitLab label
@@ -1968,7 +1994,7 @@ type Mutation {
     The id of the project the issue belongs to
     """
     projectId: Int!
-  ): UpdateGitLabDimensionFieldPayload!
+  ): UpdateGitLabDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Update how a parabol dimension maps to a Linear label
@@ -1993,7 +2019,7 @@ type Mutation {
     The id of the project the issue belongs to
     """
     repoId: String!
-  ): UpdateLinearDimensionFieldPayload!
+  ): UpdateLinearDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Set the jira field that the poker dimension should map to
@@ -2018,7 +2044,7 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload!
+  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Set the JiraServer field that the poker dimension should map to`,
@@ -2045,7 +2071,7 @@ type Mutation {
     The meeting the update happend in. Returns a meeting object with updated serviceField
     """
     meetingId: ID!
-  ): UpdateDimensionFieldPayload!
+  ): UpdateDimensionFieldPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Describe the mutation here
@@ -2060,7 +2086,7 @@ type Mutation {
     The updated prompt
     """
     newPrompt: String!
-  ): UpdateMeetingPromptPayload!
+  ): UpdateMeetingPromptPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Update a meeting template
@@ -2075,7 +2101,7 @@ type Mutation {
     The id of the meeting template
     """
     templateId: ID!
-  ): UpdateMeetingTemplatePayload!
+  ): UpdateMeetingTemplatePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Update an with a change in name, avatar
@@ -2085,7 +2111,7 @@ type Mutation {
     the updated org including the id, and at least one other field
     """
     updatedOrg: UpdateOrgInput!
-  ): UpdateOrgPayload!
+  ): UpdateOrgPayload! @scope(name: ORGS_WRITE)
 
   """
   Updates the recurrence settings for a meeting
@@ -2108,7 +2134,7 @@ type Mutation {
     The recurrence rule for the meeting series in RRULE format
     """
     rrule: RRule
-  ): UpdateRecurrenceSettingsPayload!
+  ): UpdateRecurrenceSettingsPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Updates the mainCategory for the given template
@@ -2123,13 +2149,13 @@ type Mutation {
     The new category for the template
     """
     mainCategory: String!
-  ): UpdateTemplateCategoryPayload!
+  ): UpdateTemplateCategoryPayload! @scope(name: TEMPLATES_WRITE)
   updateUserProfile(
     """
     The input object containing the user profile fields that can be changed
     """
     updatedUser: UpdateUserProfileInput!
-  ): UpdateUserProfilePayload
+  ): UpdateUserProfilePayload @scope(name: USERS_WRITE)
 
   """
   Upload the IdP Metadata file for an org for those who cannot self-host the file
@@ -2144,7 +2170,7 @@ type Mutation {
     The orgId to upload the IdP Metadata for
     """
     orgId: ID!
-  ): UploadIdPMetadataPayload!
+  ): UploadIdPMetadataPayload! @scope(name: ORGS_WRITE)
 
   """
   Upload an image for an org avatar
@@ -2159,7 +2185,7 @@ type Mutation {
     The org id to upload an avatar for
     """
     orgId: ID!
-  ): UpdateOrgPayload!
+  ): UpdateOrgPayload! @scope(name: ORGS_WRITE)
 
   """
   Take any asset & host it in the file store
@@ -2177,7 +2203,7 @@ type Mutation {
     The client ID of the scope, e.g. userId, teamId, orgId, pageKey
     """
     scopeKey: ID!
-  ): UploadUserAssetPayload
+  ): UploadUserAssetPayload @scope(name: USERS_WRITE)
 
   """
   Upload any asset owned by a user
@@ -2195,7 +2221,7 @@ type Mutation {
     The client ID of the scope, e.g. userId, teamId, orgId, pageKey
     """
     scopeKey: ID!
-  ): UploadUserAssetPayload
+  ): UploadUserAssetPayload @scope(name: USERS_WRITE)
 
   """
   Upload an image for a user avatar
@@ -2205,7 +2231,7 @@ type Mutation {
     the user avatar image file
     """
     file: File!
-  ): UpdateUserProfilePayload
+  ): UpdateUserProfilePayload @scope(name: USERS_WRITE)
 
   """
   upsert the content of a team prompt response
@@ -2225,7 +2251,7 @@ type Mutation {
     The stringified content of the team prompt response
     """
     content: String!
-  ): UpsertTeamPromptResponsePayload!
+  ): UpsertTeamPromptResponsePayload! @scope(name: MEETINGS_WRITE)
 
   """
   Verify an email address and sign in if not already a user
@@ -2235,7 +2261,7 @@ type Mutation {
     The 48-byte url-safe base64 encoded verification token
     """
     verificationToken: ID!
-  ): UserLogInPayload!
+  ): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
   Update the role-based access for a page
@@ -2252,7 +2278,7 @@ type Mutation {
     True if this mutation can unlink the pageId from its parent
     """
     unlinkApproved: Boolean
-  ): UpdatePageAccessPayload
+  ): UpdatePageAccessPayload @scope(name: PAGES_WRITE)
 
   """
   Requests access to a page
@@ -2272,7 +2298,7 @@ type Mutation {
     The requested access role
     """
     role: PageRoleEnum!
-  ): Boolean
+  ): Boolean @scope(name: PAGES_WRITE)
 
   """
   Update the page sortOrder, teamId, or parentPageId and adjust access accordingly
@@ -2302,7 +2328,7 @@ type Mutation {
     true to revoke access for all but the mutator
     """
     makePrivate: Boolean
-  ): UpdatePagePayload!
+  ): UpdatePagePayload! @scope(name: PAGES_WRITE)
   """
   link or unlink a page to its parent
   """
@@ -2315,14 +2341,14 @@ type Mutation {
     True to re-link, false to unlink
     """
     isParentLinked: Boolean!
-  ): UpdatePagePayload
+  ): UpdatePagePayload @scope(name: PAGES_WRITE)
   updateTeamSortOrder(
     teamId: ID!
     """
     The new sort order as a fractional index
     """
     sortOrder: String!
-  ): UpdateTeamSortOrderPayload
+  ): UpdateTeamSortOrderPayload @scope(name: TEAMS_WRITE)
   """
   Move a page to the trash
   """
@@ -2332,5 +2358,5 @@ type Mutation {
     The action to take on the page
     """
     action: ArchivePageActionEnum!
-  ): ArchivePagePayload
+  ): ArchivePagePayload @scope(name: PAGES_WRITE)
 }

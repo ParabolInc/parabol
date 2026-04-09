@@ -18,8 +18,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] = async (
   _source,
   {requestId, teamIds},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -48,6 +49,13 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
 
   if (!validTeamMembers.length) {
     return standardError(new Error('Not a team leader'))
+  }
+
+  if (context.resourceGrants) {
+    const hasAccess = await Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
+    if (hasAccess.some((v) => !v)) {
+      return standardError(new Error('PAT does not grant access to this team'))
+    }
   }
 
   // Provided request domain should match team's organizations activeDomain

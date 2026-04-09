@@ -14,8 +14,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
   _source,
   {userIds, orgId},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
 
@@ -44,6 +45,12 @@ const removeOrgUsers: MutationResolvers['removeOrgUsers'] = async (
         userId: viewerId
       })
     }
+  }
+
+  if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
+    return standardError(new Error('PAT does not grant access to this organization'), {
+      userId: viewerId
+    })
   }
 
   const organization = await dataLoader.get('organizations').load(orgId)

@@ -45,6 +45,12 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
     graphql`
       fragment PersonalAccessTokenUpsertDialog_viewer on User {
         ...OrgTeamGrant_viewer
+        organizations {
+          id
+          teams {
+            id
+          }
+        }
       }
     `,
     viewerRef
@@ -125,6 +131,18 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
     })
   }
 
+  const computeGrantedTeamIds = (): string[] | null => {
+    if (orgGrantMode !== 'custom') return null
+    // Exclude teams whose org is fully covered by selectedOrgIds — the org grant suffices
+    const orgTeamIds = new Set(
+      viewer.organizations
+        .filter((org) => selectedOrgIds.has(org.id))
+        .flatMap((org) => org.teams.map((t) => t.id))
+    )
+    const partialTeamIds = [...selectedTeamIds].filter((id) => !orgTeamIds.has(id))
+    return partialTeamIds
+  }
+
   const handleSubmit = () => {
     if (!tokenName.trim()) {
       setError('Label is required')
@@ -135,6 +153,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
       return
     }
     setError(null)
+    const grantedTeamIds = computeGrantedTeamIds()
 
     if (isEdit) {
       commitUpdate({
@@ -143,7 +162,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
           grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
-          grantedTeamIds: orgGrantMode === 'custom' ? [...selectedTeamIds] : null,
+          grantedTeamIds,
           grantedPageIds: pageGrantMode === 'custom' ? [...selectedPageIds] : null,
           expiresAt: expiresAt.toISOString()
         },
@@ -163,7 +182,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           name: tokenName.trim(),
           scopes: [...selectedScopes] as OAuthScopeEnum[],
           grantedOrgIds: orgGrantMode === 'custom' ? [...selectedOrgIds] : null,
-          grantedTeamIds: orgGrantMode === 'custom' ? [...selectedTeamIds] : null,
+          grantedTeamIds,
           grantedPageIds: pageGrantMode === 'custom' ? [...selectedPageIds] : null,
           expiresAt: expiresAt.toISOString()
         },

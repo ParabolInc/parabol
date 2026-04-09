@@ -6,13 +6,17 @@ import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 
 export const isViewerTeamLead = <T>(teamIdDotPath: ResolverDotPath<T>) =>
   rule(`isViewerTeamLead-${teamIdDotPath}`, {cache: 'strict'})(
-    async (source, args, {authToken, dataLoader}: GQLContext) => {
+    async (source, args, context: GQLContext) => {
+      const {authToken, dataLoader} = context
       const teamId = getResolverDotPath(teamIdDotPath, source, args)
       const viewerId = getUserId(authToken)
       const teamMemberId = TeamMemberId.join(teamId, viewerId)
       const teamMember = await dataLoader.get('teamMembers').load(teamMemberId)
       if (!teamMember?.isLead) return new Error('User is not team lead')
       if (!teamMember?.isNotRemoved) return new Error('User is not team lead anymore')
+      if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+        return new Error(`PAT does not grant access to this team`)
+      }
       return true
     }
   )

@@ -14,7 +14,6 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
 ) => {
   const {name, scopes, grantedOrgIds, grantedTeamIds, grantedPageIds, expiresAt} = args
   const {sub: userId} = authToken
-
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick at least one scope')
   }

@@ -9,8 +9,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'] = async (
   _source,
   {id: gqlId, event, isEnabled},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -29,6 +30,9 @@ const setTeamNotificationSetting: MutationResolvers['setTeamNotificationSetting'
     return standardError(new Error('Attempted teamId spoof'), {
       userId: viewerId
     })
+  }
+  if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+    return standardError(new Error('PAT does not grant access to this team'), {userId: viewerId})
   }
 
   // RESOLUTION
