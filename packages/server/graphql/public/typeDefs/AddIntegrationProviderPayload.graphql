@@ -1,4 +1,4 @@
 """
-Return object for AddIntegrationProviderPayload
+Return value for addIntegrationProvider mutation. Returns either an error or the newly registered integration provider configuration.
 """
 union AddIntegrationProviderPayload = ErrorPayload | AddIntegrationProviderSuccess

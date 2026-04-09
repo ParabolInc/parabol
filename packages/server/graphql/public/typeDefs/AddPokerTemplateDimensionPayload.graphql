@@ -1,4 +1,17 @@
+"""
+The payload returned after adding a new dimension to a poker template.
+A dimension represents a scoring axis (e.g., effort, complexity, business value) that participants
+estimate during a Sprint Poker meeting. On success, the new dimension is appended to the template
+and broadcast to all team members via the TEAM subscription channel.
+"""
 type AddPokerTemplateDimensionPayload {
+  """
+  Present when the mutation fails (e.g., template not found, dimension limit reached).
+  Null on success.
+  """
   error: StandardMutationError
+  """
+  The newly created dimension. Null when an error occurred.
+  """
   dimension: TemplateDimension
 }

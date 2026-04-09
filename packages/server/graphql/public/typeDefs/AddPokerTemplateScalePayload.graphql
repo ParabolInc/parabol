@@ -1,4 +1,13 @@
+"""
+The payload returned by the addPokerTemplateScale mutation. On success, returns the newly created TemplateScale. If parentScaleId was provided, the new scale is a copy of that parent scale; otherwise a blank scale is created for the team.
+"""
 type AddPokerTemplateScalePayload {
+  """
+  Present when the mutation fails. Null on success.
+  """
   error: StandardMutationError
+  """
+  The newly created scale, ready to be named and populated with values. Null if the mutation failed.
+  """
   scale: TemplateScale
 }

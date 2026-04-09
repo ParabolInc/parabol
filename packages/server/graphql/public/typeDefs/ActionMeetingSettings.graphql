@@ -1,7 +1,10 @@
 """
-The action-specific meeting settings
+Configuration settings for Check-In (Action) meetings on a team. Controls which phases are included in the meeting flow.
 """
 type ActionMeetingSettings implements TeamMeetingSettings {
+  """
+  The unique ID of this settings record
+  """
   id: ID!
 
   """

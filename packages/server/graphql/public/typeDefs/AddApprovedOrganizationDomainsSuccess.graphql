@@ -1,8 +1,14 @@
+"""
+Successful result of addApprovedOrganizationDomains. The specified email domains have been added to the organization's approved list, allowing users with matching email addresses to auto-join.
+"""
 type AddApprovedOrganizationDomainsSuccess {
+  """
+  The ID of the organization whose approved domains were updated
+  """
   orgId: ID!
 
   """
-  Organization with the updated approvals
+  Organization with the updated approved domain list
   """
   organization: Organization!
 }

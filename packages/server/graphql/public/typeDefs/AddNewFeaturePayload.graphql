@@ -1,6 +1,9 @@
+"""
+Return value for addNewFeature mutation. Contains the new feature broadcast that was announced to all users.
+"""
 type AddNewFeaturePayload {
   """
-  the new feature broadcast
+  The new feature announcement broadcast to all users
   """
   newFeature: NewFeatureBroadcast
 }

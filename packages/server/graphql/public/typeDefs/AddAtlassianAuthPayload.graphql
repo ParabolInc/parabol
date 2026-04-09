@@ -1,19 +1,25 @@
+"""
+Return value for addAtlassianAuth mutation. On success, contains the new Atlassian (Jira Cloud) integration and the updated team member. On failure, contains a StandardMutationError.
+"""
 type AddAtlassianAuthPayload {
   error: StandardMutationError
 
   """
-  The newly created auth
+  The newly created Atlassian (Jira Cloud) integration for the team member
   """
   atlassianIntegration: AtlassianIntegration
+  """
+  The ID of the team the Atlassian auth was connected to
+  """
   teamId: ID
 
   """
-  The team member with the updated atlassianAuth
+  The team member with the updated Atlassian auth
   """
   teamMember: TeamMember
 
   """
-  The user with updated atlassianAuth
+  The user with the updated Atlassian auth
   """
   user: User
 }

@@ -1,6 +1,15 @@
+"""
+Subscription payload delivered when a new Notification is created for the current viewer.
+Returned as the AddedNotification field on NotificationSubscriptionPayload whenever the
+server pushes a freshly-created notification to the client (e.g. a team invitation arrives,
+a meeting stage time limit fires, or a payment fails). Use this to insert the notification
+into the client-side notification list without requiring a full refetch.
+"""
 type AddedNotification {
   """
-  A notification
+  The newly created notification that was just sent to the viewer. Query its type field
+  to determine which concrete Notification implementation was returned and render the
+  appropriate UI (e.g. NotificationTeamInvitation, NotificationMeetingStageTimeLimitEnd).
   """
   addedNotification: Notification!
 }

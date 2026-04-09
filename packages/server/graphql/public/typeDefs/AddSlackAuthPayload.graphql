@@ -1,13 +1,19 @@
+"""
+Payload returned after a user completes the Slack OAuth flow to connect their Slack account to a Parabol team. On success, slackIntegration and user are populated; on failure, error is populated and the other fields are null.
+"""
 type AddSlackAuthPayload {
+  """
+  Present when the mutation failed. Contains a human-readable message and an error code describing why the Slack auth could not be added.
+  """
   error: StandardMutationError
 
   """
-  The newly created auth
+  The newly created or updated Slack integration record, linking the Parabol team member to their Slack workspace. Use this to read the resulting bot credentials, default notification channel, and per-event notification settings.
   """
   slackIntegration: SlackIntegration
 
   """
-  The user with updated slackAuth
+  The Parabol user whose Slack auth was just added or refreshed. Use this to reflect updated integration state in the UI without a separate user query.
   """
   user: User
 }
