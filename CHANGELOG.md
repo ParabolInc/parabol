@@ -5,6 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.9.2](https://github.com/ParabolInc/parabol/compare/v13.9.1...v13.9.2) (2026-04-08)
+
+
+### Fixed
+
+* support su for moveTeamToOrg ([#12978](https://github.com/ParabolInc/parabol/issues/12978)) ([853f465](https://github.com/ParabolInc/parabol/commit/853f46562cea1002aa061dc75657f9fc4f7afbad))
+
+## [13.9.1](https://github.com/ParabolInc/parabol/compare/v13.9.0...v13.9.1) (2026-04-07)
+
+
+### Fixed
+
+* text style kit  ([#12975](https://github.com/ParabolInc/parabol/issues/12975)) ([ae2c45b](https://github.com/ParabolInc/parabol/commit/ae2c45b481117be7f89b479c6820822b5ce883d3))
+
+## [13.9.0](https://github.com/ParabolInc/parabol/compare/v13.8.0...v13.9.0) (2026-04-07)
+
+
+### Added
+
+* add Highlight and TextStyle extensions to all Tiptap editors ([#12974](https://github.com/ParabolInc/parabol/issues/12974)) ([4e2688e](https://github.com/ParabolInc/parabol/commit/4e2688e7efae71ff2d85871db1d9e12b856e0372))
+
+
+### Fixed
+
+* deadlock on renew ([#12970](https://github.com/ParabolInc/parabol/issues/12970)) ([9fe07c2](https://github.com/ParabolInc/parabol/commit/9fe07c2dccdf938bd1dd17526c8dc5f4cf776216))
+
 ## [13.8.0](https://github.com/ParabolInc/parabol/compare/v13.7.9...v13.8.0) (2026-04-04)
 
 

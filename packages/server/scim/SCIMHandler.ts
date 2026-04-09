@@ -99,7 +99,7 @@ const scimHandler = (handler: Handler) =>
       await handler(res, {query, id, body}, {ip, authToken: unverifiedToken, dataLoader})
     } catch (err) {
       const response = new SCIMMY.Messages.Error(err as any)
-      if (response.status >= 500) {
+      if (response.status >= 400) {
         Logger.error(err)
       }
       res
