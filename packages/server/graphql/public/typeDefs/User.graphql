@@ -31,7 +31,7 @@ type User implements UserPartial {
     The unique team ID
     """
     teamId: ID!
-  ): Int @scope(name: TASKS_READ)
+  ): Int
 
   """
   The timestamp the user was created
@@ -75,7 +75,7 @@ type User implements UserPartial {
   """
   true if the user is a billing leader on any organization, else false
   """
-  isAnyBillingLeader: Boolean! @scope(name: ORGS_READ)
+  isAnyBillingLeader: Boolean!
 
   """
   true if the user is currently online
@@ -110,22 +110,22 @@ type User implements UserPartial {
   """
   the endedAt timestamp of the most recent meeting they were a member of
   """
-  lastMetAt: DateTime @scope(name: MEETINGS_READ)
+  lastMetAt: DateTime
 
   """
   The number of meetings the user has attended
   """
-  meetingCount: Int! @scope(name: MEETINGS_READ)
+  meetingCount: Int!
 
   """
   The largest number of consecutive months the user has checked into a meeting
   """
-  monthlyStreakMax: Int! @scope(name: MEETINGS_READ)
+  monthlyStreakMax: Int!
 
   """
   The number of consecutive 30-day intervals that the user has checked into a meeting as of this moment
   """
-  monthlyStreakCurrent: Int! @scope(name: MEETINGS_READ)
+  monthlyStreakCurrent: Int!
 
   """
   the most important actions for the user to perform
@@ -251,7 +251,7 @@ type User implements UserPartial {
   """
   a string with message stating that the user is over the free tier limit, else null
   """
-  overLimitCopy: String @scope(name: ORGS_READ)
+  overLimitCopy: String
 
   """
   Whether the user should receive a meeting summary email
@@ -439,7 +439,7 @@ type User implements UserPartial {
   """
   The highest tier of all the user's organizations
   """
-  highestTier: TierEnum! @scope(name: ORGS_READ)
+  highestTier: TierEnum!
 
   """
   A connection of activities available to the user
@@ -496,12 +496,12 @@ type User implements UserPartial {
   """
   The number of free custom retro templates remaining
   """
-  freeCustomRetroTemplatesRemaining: Int! @scope(name: TEMPLATES_READ)
+  freeCustomRetroTemplatesRemaining: Int!
 
   """
   The number of free custom poker templates remaining
   """
-  freeCustomPokerTemplatesRemaining: Int! @scope(name: TEMPLATES_READ)
+  freeCustomPokerTemplatesRemaining: Int!
   """
   AI-provided Insights
   """
@@ -509,7 +509,7 @@ type User implements UserPartial {
     meetingIds: [ID!]!
     prompt: String!
     responseFormat: ContentFormatEnum = markdown
-  ): [String!]! @scope(name: PAGES_READ)
+  ): [String!]!
 
   """
   Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared

@@ -117,7 +117,7 @@ type Organization implements OrganizationPartial {
   """
   The OrganizationUser of the viewer
   """
-  viewerOrganizationUser: OrganizationUser @scope(name: USERS_READ)
+  viewerOrganizationUser: OrganizationUser
 
   """
   The users that are part of the organization
@@ -127,7 +127,7 @@ type Organization implements OrganizationPartial {
   """
   The count of active & inactive users
   """
-  orgUserCount: OrgUserCount! @scope(name: USERS_READ)
+  orgUserCount: OrgUserCount!
 
   """
   The leaders of the org
