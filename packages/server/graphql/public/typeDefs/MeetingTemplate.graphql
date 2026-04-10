@@ -50,7 +50,7 @@ interface MeetingTemplate {
   """
   The team this template belongs to
   """
-  team: Team!
+  team: Team! @scope(name: TEAMS_READ)
 
   """
   The type of the template
