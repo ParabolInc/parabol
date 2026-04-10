@@ -1,3 +1,6 @@
+"""
+Result of removing a scoring dimension from a Poker template
+"""
 type RemovePokerTemplateDimensionPayload {
   error: StandardMutationError
   pokerTemplate: PokerTemplate

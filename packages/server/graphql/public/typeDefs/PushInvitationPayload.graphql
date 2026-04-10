@@ -1,6 +1,15 @@
+"""
+Result of pushing a team invitation to a user who is already a member
+"""
 type PushInvitationPayload {
   error: StandardMutationError
+  """
+  The user who received the invitation push
+  """
   user: User
+  """
+  The meeting the user is being invited into, if any
+  """
   meetingId: ID
   team: Team
 }

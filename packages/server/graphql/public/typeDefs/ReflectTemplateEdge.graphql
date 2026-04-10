@@ -1,5 +1,5 @@
 """
-An edge in a connection.
+A paginated edge containing a single retrospective reflection template
 """
 type ReflectTemplateEdge {
   """

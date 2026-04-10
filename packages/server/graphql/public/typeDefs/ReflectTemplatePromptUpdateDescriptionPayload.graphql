@@ -1,3 +1,6 @@
+"""
+Result of updating the description of a retrospective template prompt
+"""
 type ReflectTemplatePromptUpdateDescriptionPayload {
   error: StandardMutationError
   prompt: ReflectPrompt

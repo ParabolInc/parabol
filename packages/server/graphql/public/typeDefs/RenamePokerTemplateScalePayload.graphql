@@ -1,3 +1,6 @@
+"""
+Result of renaming a Poker scoring scale
+"""
 type RenamePokerTemplateScalePayload {
   error: StandardMutationError
   scale: TemplateScale

@@ -1,1 +1,4 @@
+"""
+Result of saving an integration search query for later reuse
+"""
 union PersistIntegrationSearchQueryPayload = PersistIntegrationSearchQuerySuccess | ErrorPayload

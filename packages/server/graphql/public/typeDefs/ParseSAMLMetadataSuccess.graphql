@@ -1,3 +1,9 @@
+"""
+Successfully parsed SAML metadata, containing the identity provider URL
+"""
 type ParseSAMLMetadataSuccess {
+  """
+  The SAML identity provider SSO URL extracted from the metadata
+  """
   url: String!
 }

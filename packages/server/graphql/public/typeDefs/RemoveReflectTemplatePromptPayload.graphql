@@ -1,3 +1,6 @@
+"""
+Result of removing a prompt from a retrospective reflection template
+"""
 type RemoveReflectTemplatePromptPayload {
   error: StandardMutationError
   reflectTemplate: ReflectTemplate

@@ -1,4 +1,13 @@
+"""
+Result of requesting access to a page, containing the page and the section it belongs to
+"""
 type RequestPageAccessPayload {
+  """
+  The page access was requested for
+  """
   page: Page!
+  """
+  The section of the page within the viewer's navigation
+  """
   pageSection: PageSectionEnum!
 }

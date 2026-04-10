@@ -1,3 +1,6 @@
+"""
+Successfully revealed all hidden votes in a Poker meeting stage
+"""
 type PokerRevealVotesSuccess {
   """
   The stage that holds the updated isVoting step

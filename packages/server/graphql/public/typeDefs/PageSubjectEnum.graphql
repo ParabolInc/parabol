@@ -1,3 +1,6 @@
+"""
+The subject or owner associated with a page
+"""
 enum PageSubjectEnum {
   external
   user

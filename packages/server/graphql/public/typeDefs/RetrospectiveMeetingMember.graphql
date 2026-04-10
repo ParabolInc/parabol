@@ -30,5 +30,8 @@ type RetrospectiveMeetingMember implements MeetingMember {
   The tasks assigned to members during the meeting
   """
   tasks: [Task!]!
+  """
+  The number of votes this member has left to cast in the voting phase
+  """
   votesRemaining: Int!
 }

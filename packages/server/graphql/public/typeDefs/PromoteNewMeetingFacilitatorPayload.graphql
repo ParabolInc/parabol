@@ -1,3 +1,6 @@
+"""
+Result of transferring the facilitator role to a new team member during a meeting
+"""
 type PromoteNewMeetingFacilitatorPayload {
   error: StandardMutationError
 
@@ -5,6 +8,9 @@ type PromoteNewMeetingFacilitatorPayload {
   The meeting in progress
   """
   meeting: NewMeeting
+  """
+  The stage the new facilitator is now on
+  """
   facilitatorStage: NewMeetingStage
 
   """

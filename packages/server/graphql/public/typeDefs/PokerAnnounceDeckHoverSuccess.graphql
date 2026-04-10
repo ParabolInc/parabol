@@ -1,8 +1,23 @@
+"""
+Broadcast data when a participant hovers over or leaves the voting deck in a Poker meeting
+"""
 type PokerAnnounceDeckHoverSuccess {
+  """
+  The Poker meeting where the hover occurred
+  """
   meetingId: ID!
+  """
+  The estimate stage where the hover occurred
+  """
   stageId: ID!
+  """
+  The user who is hovering over the deck
+  """
   userId: ID!
   user: User!
+  """
+  True if the user is currently hovering, false if they left
+  """
   isHover: Boolean!
 
   """

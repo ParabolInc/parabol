@@ -1,3 +1,6 @@
+"""
+Result of archiving a Poker scoring scale
+"""
 type RemovePokerTemplateScalePayload {
   error: StandardMutationError
   scale: TemplateScale
