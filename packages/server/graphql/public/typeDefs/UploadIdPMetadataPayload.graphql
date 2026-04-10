@@ -1,1 +1,4 @@
+"""
+Return value for uploadIdPMetadata mutation
+"""
 union UploadIdPMetadataPayload = ErrorPayload | UploadIdPMetadataSuccess

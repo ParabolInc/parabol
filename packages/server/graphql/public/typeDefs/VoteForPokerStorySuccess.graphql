@@ -1,3 +1,6 @@
+"""
+Success result for voteForPokerStory mutation
+"""
 type VoteForPokerStorySuccess {
   """
   The stage that holds the updated scores

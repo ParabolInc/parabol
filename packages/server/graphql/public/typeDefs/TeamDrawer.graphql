@@ -2,6 +2,8 @@
 The right drawer types available on the team dashboard
 """
 enum TeamDrawer {
+  "The agenda items drawer"
   agenda
+  "The manage team members drawer"
   manageTeam
 }

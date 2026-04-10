@@ -370,7 +370,7 @@ type User implements UserPartial {
   ): TeamMember
 
   """
-  all the teams the user is a part of that the viewer can see
+  IDs of all teams the user is a part of that the viewer can see
   """
   tms: [ID!]!
 
@@ -378,6 +378,7 @@ type User implements UserPartial {
   The timestamp the user was last updated
   """
   updatedAt: DateTime
+  "Look up another user who shares a team with this user"
   userOnTeam(
     """
     The other user
@@ -386,7 +387,7 @@ type User implements UserPartial {
   ): User
 
   """
-  The assumed company this organizaiton belongs to
+  The assumed company this organization belongs to
   """
   company: Company
 
@@ -514,12 +515,15 @@ type User implements UserPartial {
   Prompts to send to an AI endpoint, e.g. pageInsights. Limited to 20 user-defined prompts + n shared
   """
   aiPrompts: [AIPrompt!]!
+  "Paginated list of meetings for the given teams and types"
   meetings(
     """
     The max number of meetings to return
     """
     first: Int!
+    "Filter to meetings belonging to these teams"
     teamIds: [ID!]!
+    "Filter to these meeting types"
     meetingTypes: [MeetingTypeEnum!]!
     """
     The createdAt DateTime used as a cursor
@@ -573,5 +577,6 @@ type User implements UserPartial {
     "Alpha controls the weight given to vector (semantic) search vs. keyword search. 1.0 = pure vector, 0.0 = pure keyword. Defaults to 0.75."
     alpha: Float
   ): SearchResultConnection!
+  "The user's personal access tokens for API access"
   personalAccessTokens: [PersonalAccessToken!]!
 }

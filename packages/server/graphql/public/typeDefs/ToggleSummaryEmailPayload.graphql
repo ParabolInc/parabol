@@ -1,4 +1,4 @@
 """
-Return value for toggleSummaryEmail, which could be an error
+Return value for toggleSummaryEmail mutation
 """
 union ToggleSummaryEmailPayload = ErrorPayload | ToggleSummaryEmailSuccess

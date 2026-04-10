@@ -1,10 +1,8 @@
 """
-A team-specific template dimension: e.g., effort, importance etc.
+A scoring dimension in a sprint poker template (e.g. Effort, Complexity)
 """
 type TemplateDimension {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
   createdAt: DateTime!
 
@@ -18,9 +16,7 @@ type TemplateDimension {
   """
   removedAt: DateTime
 
-  """
-  foreign key. use the team field
-  """
+  "The ID of the team that owns this dimension"
   teamId: ID!
 
   """
@@ -34,9 +30,7 @@ type TemplateDimension {
   """
   sortOrder: String!
 
-  """
-  FK for template
-  """
+  "The ID of the poker template this dimension belongs to"
   templateId: ID!
 
   """
@@ -54,9 +48,7 @@ type TemplateDimension {
   """
   description: String!
 
-  """
-  The scaleId to resolve the selected scale
-  """
+  "The ID of the scale used to score this dimension"
   scaleId: ID!
 
   """

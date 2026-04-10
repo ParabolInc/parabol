@@ -1,7 +1,8 @@
+"""
+A single team health question stage where participants vote on a label
+"""
 type TeamHealthStage implements NewMeetingStage {
-  """
-  stageId, shortid
-  """
+  "Unique identifier"
   id: ID!
 
   """
@@ -9,9 +10,7 @@ type TeamHealthStage implements NewMeetingStage {
   """
   endAt: DateTime
 
-  """
-  foreign key. try using meeting
-  """
+  "The ID of the meeting this stage belongs to"
   meetingId: ID!
 
   """
@@ -100,9 +99,7 @@ type TeamHealthStage implements NewMeetingStage {
   """
   labels: [String!]!
 
-  """
-  Viewer score
-  """
+  "The label the viewer voted for, if any"
   viewerVote: String
 
   """

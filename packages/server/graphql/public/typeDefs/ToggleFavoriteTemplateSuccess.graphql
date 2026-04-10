@@ -1,6 +1,7 @@
+"""
+Success result for toggleFavoriteTemplate mutation
+"""
 type ToggleFavoriteTemplateSuccess {
-  """
-  The user who's favorite templates were updated
-  """
+  "The user whose favorite templates were updated"
   user: User!
 }

@@ -1,13 +1,14 @@
 """
-Notification settings for a team. All team members
+Notification settings controlling which events get posted to an integration channel for a team
 """
 type TeamNotificationSettings {
   id: ID!
   teamId: ID!
+  "The ID of the integration provider (e.g. Slack workspace) these settings apply to"
   providerId: ID!
 
   """
-  The channel in the integration to wich these settings apply.
+  The channel in the integration to which these settings apply.
   Null for the default channel.
   """
   channel: ID

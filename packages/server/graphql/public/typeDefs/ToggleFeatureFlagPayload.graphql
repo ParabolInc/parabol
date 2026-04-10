@@ -1,1 +1,4 @@
+"""
+Return value for toggleFeatureFlag mutation
+"""
 union ToggleFeatureFlagPayload = ErrorPayload | ToggleFeatureFlagSuccess

@@ -1,3 +1,6 @@
+"""
+A periodic snapshot of team-level statistics
+"""
 type TeamStat {
   id: ID!
   createdAt: DateTime!

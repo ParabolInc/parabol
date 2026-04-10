@@ -1,4 +1,9 @@
+"""
+Return value for updatePage mutation
+"""
 type UpdatePagePayload {
+  "The updated page"
   page: Page!
+  "The section of the page that was updated"
   pageSection: PageSectionEnum!
 }

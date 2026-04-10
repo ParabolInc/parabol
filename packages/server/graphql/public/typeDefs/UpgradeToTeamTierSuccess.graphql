@@ -1,3 +1,6 @@
+"""
+Success result for upgradeToTeamTier mutation
+"""
 type UpgradeToTeamTierSuccess {
   """
   The new org on the team tier

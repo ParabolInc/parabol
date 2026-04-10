@@ -1,6 +1,9 @@
+"A Linear issue linked to a Parabol task"
 type _xLinearIssue implements TaskIntegration
 
+"A Linear team available for integration"
 type _xLinearTeam implements RepoIntegration
+"A Linear project available for integration"
 type _xLinearProject implements RepoIntegration
 
 extend type _xLinearProject {

@@ -1,3 +1,6 @@
+"""
+Success result for updateAutoJoin mutation
+"""
 type UpdateAutoJoinSuccess {
   """
   The teams that were updated

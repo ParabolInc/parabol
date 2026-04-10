@@ -1,16 +1,22 @@
+"""
+Input for broadcasting a drag position update during a retro grouping phase
+"""
 input UpdateDragLocationInput {
+  "ID of the drag operation"
   id: ID!
+  "Viewport height of the dragging client"
   clientHeight: Float!
+  "Viewport width of the dragging client"
   clientWidth: Float!
   meetingId: ID!
 
   """
-  The primary key of the item being drug
+  The primary key of the item being dragged
   """
   sourceId: ID!
 
   """
-  The estimated destination of the item being drug
+  The estimated destination of the item being dragged
   """
   targetId: ID
 

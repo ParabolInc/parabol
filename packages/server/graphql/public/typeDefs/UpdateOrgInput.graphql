@@ -1,6 +1,9 @@
+"""
+Input for updating an organization's settings
+"""
 input UpdateOrgInput {
   """
-  The unique action ID
+  The org ID
   """
   id: ID!
 

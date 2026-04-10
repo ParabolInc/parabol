@@ -1,12 +1,19 @@
 """
-The list of services for task integrations
+The external service a task is integrated with
 """
 enum TaskServiceEnum {
+  "GitHub"
   github
+  "Jira Cloud"
   jira
+  "Parabol (no external integration)"
   PARABOL
+  "Jira Server (self-hosted)"
   jiraServer
+  "GitLab"
   gitlab
+  "Azure DevOps"
   azureDevOps
+  "Linear"
   linear
 }

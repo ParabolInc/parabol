@@ -1,4 +1,4 @@
 """
-Return value for toggleAIFeatures, which could be an error
+Return value for toggleAIFeatures mutation
 """
 union ToggleAIFeaturesPayload = ErrorPayload | ToggleAIFeaturesSuccess

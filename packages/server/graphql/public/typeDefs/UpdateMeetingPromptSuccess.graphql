@@ -1,8 +1,12 @@
+"""
+Success result for updateMeetingPrompt mutation
+"""
 type UpdateMeetingPromptSuccess {
+  "ID of the updated meeting"
   meetingId: ID!
 
   """
-  the updated meeting
+  The updated meeting
   """
   meeting: TeamPromptMeeting!
 }

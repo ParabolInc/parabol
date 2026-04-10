@@ -1,5 +1,10 @@
+"""
+Return value for updateReflectionGroupTitle mutation
+"""
 type UpdateReflectionGroupTitlePayload {
   error: StandardMutationError
+  "The meeting containing the updated reflection group"
   meeting: NewMeeting
+  "The updated reflection group"
   reflectionGroup: RetroReflectionGroup
 }

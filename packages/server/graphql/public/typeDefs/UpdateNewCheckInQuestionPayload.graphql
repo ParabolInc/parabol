@@ -1,4 +1,8 @@
+"""
+Return value for updateNewCheckInQuestion mutation
+"""
 type UpdateNewCheckInQuestionPayload {
   error: StandardMutationError
+  "The updated meeting"
   meeting: NewMeeting
 }

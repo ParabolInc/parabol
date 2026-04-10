@@ -2,17 +2,19 @@
 Generic payload to send when user signs up
 """
 type UserLogInPayload {
+  "Error details, if sign-in failed"
   error: StandardMutationError
 
+  "ID of the signed-in user"
   userId: ID
 
   """
-  if a new user is created
+  If a new user is created
   """
   isNewUser: Boolean
 
   """
-  the newly created user, or the existing user
+  The newly created user, or the existing user
   """
   user: User
 }

@@ -183,7 +183,9 @@ type Team implements Node & TeamPartial {
   true if the viewer is an admin for the team's org, else false
   """
   isOrgAdmin: Boolean!
+  "The team's current billing tier"
   tier: TierEnum!
+  "The tier the team is actively billed at (may differ from tier during trials)"
   billingTier: TierEnum!
 
   """

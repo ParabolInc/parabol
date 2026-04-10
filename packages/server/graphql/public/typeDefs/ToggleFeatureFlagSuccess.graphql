@@ -1,3 +1,6 @@
+"""
+Success result for toggleFeatureFlag mutation
+"""
 type ToggleFeatureFlagSuccess {
   """
   The feature flag that was toggled

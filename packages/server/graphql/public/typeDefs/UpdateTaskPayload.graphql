@@ -1,10 +1,15 @@
+"""
+Return value for updateTask mutation
+"""
 type UpdateTaskPayload {
   error: StandardMutationError
+  "The updated task"
   task: Task
 
   """
-  If a task was just turned private, this its ID, else null
+  If a task was just turned private, its ID, else null
   """
   privatizedTaskId: ID
+  "Notification created if a user was newly involved in the task"
   addedNotification: NotifyTaskInvolves
 }

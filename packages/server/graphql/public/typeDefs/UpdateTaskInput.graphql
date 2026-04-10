@@ -1,10 +1,16 @@
+"""
+Input for updating an existing task
+"""
 input UpdateTaskInput {
   """
   The task id
   """
   id: ID!
+  "Updated task content (rich text)"
   content: String
+  "Updated sort order for display"
   sortOrder: Float
+  "Updated task status"
   status: TaskStatusEnum
 
   """

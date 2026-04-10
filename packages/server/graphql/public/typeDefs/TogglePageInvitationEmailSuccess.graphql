@@ -1,6 +1,7 @@
+"""
+Success result for togglePageInvitationEmail mutation
+"""
 type TogglePageInvitationEmailSuccess {
-  """
-  The user whose summary email settings have changed
-  """
+  "The user whose page invitation email preference was updated"
   user: User!
 }

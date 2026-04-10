@@ -1,5 +1,10 @@
+"""
+Success result for updateLinearDimensionField mutation
+"""
 type UpdateLinearDimensionFieldSuccess {
+  "ID of the team whose dimension field mapping was updated"
   teamId: ID
+  "ID of the poker meeting the update was triggered from, if any"
   meetingId: ID
   team: Team
   meeting: NewMeeting

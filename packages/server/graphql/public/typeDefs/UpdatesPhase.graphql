@@ -2,16 +2,17 @@
 The meeting phase where all team members give updates one-by-one
 """
 type UpdatesPhase implements NewMeetingPhase {
-  """
-  shortid
-  """
+  "Unique phase ID"
   id: ID!
+  "ID of the meeting this phase belongs to"
   meetingId: ID!
+  "ID of the team running the meeting"
   teamId: ID!
 
   """
   The type of phase
   """
   phaseType: NewMeetingPhaseTypeEnum!
+  "Ordered stages, one per team member"
   stages: [UpdatesStage!]!
 }

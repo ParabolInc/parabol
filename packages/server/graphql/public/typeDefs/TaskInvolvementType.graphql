@@ -2,6 +2,8 @@
 How a user is involved with a task (listed in hierarchical order)
 """
 enum TaskInvolvementType {
+  "The task is assigned to this user"
   ASSIGNEE
+  "The user is mentioned in the task"
   MENTIONEE
 }

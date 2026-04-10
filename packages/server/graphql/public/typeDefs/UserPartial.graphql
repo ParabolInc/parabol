@@ -1,8 +1,15 @@
 directive @stream_HACK on FIELD
 
+"""
+Minimal user fields shared across User and UserPreview
+"""
 interface UserPartial {
+  "The user ID"
   id: ID!
+  "The user's email address"
   email: Email!
+  "The user's display name"
   preferredName: String!
+  "URL of the user's profile picture"
   picture: URL!
 }
