@@ -1,10 +1,8 @@
 """
-OAuth token for a team member
+A team member's Slack OAuth integration, used to post notifications to Slack
 """
 type SlackIntegration {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
 
   """
@@ -12,14 +10,10 @@ type SlackIntegration {
   """
   isActive: Boolean!
 
-  """
-  the parabol bot user id
-  """
+  "Parabol's Slack bot user ID"
   botUserId: ID
 
-  """
-  the parabol bot access token, used as primary communication
-  """
+  "Parabol's Slack bot access token, used as the primary communication channel"
   botAccessToken: ID
 
   """
@@ -32,29 +26,19 @@ type SlackIntegration {
   """
   defaultTeamChannelId: String!
 
-  """
-  The id of the team in slack
-  """
+  "The Slack workspace ID"
   slackTeamId: ID
 
-  """
-  The name of the team in slack
-  """
+  "The Slack workspace name"
   slackTeamName: String
 
-  """
-  The userId in slack
-  """
+  "The user's ID within Slack"
   slackUserId: ID!
 
-  """
-  The name of the user in slack
-  """
+  "The user's display name in Slack"
   slackUserName: String!
 
-  """
-  *The team that the token is linked to
-  """
+  "The Parabol team this integration is linked to"
   teamId: ID!
 
   """
@@ -62,9 +46,7 @@ type SlackIntegration {
   """
   updatedAt: DateTime!
 
-  """
-  The id of the user that integrated Slack
-  """
+  "The Parabol user who connected this Slack integration"
   userId: ID!
 
   """

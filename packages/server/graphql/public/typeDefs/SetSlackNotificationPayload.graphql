@@ -1,5 +1,9 @@
+"""
+Return value for setSlackNotification mutation
+"""
 type SetSlackNotificationPayload {
   error: StandardMutationError
+  "The Slack notifications that were created or updated"
   slackNotifications: [SlackNotification!]
 
   """

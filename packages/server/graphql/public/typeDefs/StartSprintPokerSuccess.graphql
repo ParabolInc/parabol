@@ -1,7 +1,14 @@
+"""
+Success result for startSprintPoker mutation
+"""
 type StartSprintPokerSuccess {
+  "ID of the newly started sprint poker meeting"
   meetingId: ID!
+  "The newly started sprint poker meeting"
   meeting: PokerMeeting!
+  "The team the meeting was started for"
   team: Team!
+  "ID of the team"
   teamId: ID!
 
   """

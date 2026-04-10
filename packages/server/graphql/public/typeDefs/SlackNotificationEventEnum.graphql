@@ -1,11 +1,17 @@
 """
-The event that triggers a slack notification
+The event that triggers a Slack notification
 """
 enum SlackNotificationEventEnum {
+  "A meeting has started"
   meetingStart
+  "A meeting has ended"
   meetingEnd
+  "A stage's time limit has expired"
   MEETING_STAGE_TIME_LIMIT_END
+  "A stage's time limit has started"
   MEETING_STAGE_TIME_LIMIT_START
+  "A retro topic was shared with the team"
   TOPIC_SHARED
+  "A standup response was submitted"
   STANDUP_RESPONSE_SUBMITTED
 }

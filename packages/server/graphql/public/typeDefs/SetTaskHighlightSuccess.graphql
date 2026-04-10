@@ -1,16 +1,13 @@
+"""
+Success result for setTaskHighlight mutation
+"""
 type SetTaskHighlightSuccess {
-  """
-  Meeting where the task is highlighted
-  """
+  "ID of the meeting where the task is highlighted"
   meetingId: ID!
 
-  """
-  Task which highlight changed
-  """
+  "ID of the task whose highlight changed"
   taskId: ID!
 
-  """
-  Task which highlight changed
-  """
+  "The task whose highlight changed"
   task: Task!
 }

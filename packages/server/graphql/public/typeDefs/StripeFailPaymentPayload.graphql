@@ -1,5 +1,9 @@
+"""
+Payload for a Stripe payment failure event
+"""
 type StripeFailPaymentPayload {
   error: StandardMutationError
+  "The organization whose payment failed"
   organization: Organization
 
   """

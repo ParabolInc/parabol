@@ -1,4 +1,8 @@
+"""
+Return value for selectTemplate mutation
+"""
 type SelectTemplatePayload {
   error: StandardMutationError
+  "The updated meeting settings with the newly selected template"
   meetingSettings: TeamMeetingSettings
 }

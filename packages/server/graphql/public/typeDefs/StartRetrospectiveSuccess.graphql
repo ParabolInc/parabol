@@ -1,6 +1,13 @@
+"""
+Success result for startRetrospective mutation
+"""
 type StartRetrospectiveSuccess {
+  "The newly started retrospective meeting"
   meeting: RetrospectiveMeeting!
+  "ID of the newly started meeting"
   meetingId: ID!
+  "The team the meeting was started for"
   team: Team!
+  "True if creating the Google Calendar event failed"
   hasGcalError: Boolean
 }

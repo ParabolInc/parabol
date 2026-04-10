@@ -1,5 +1,10 @@
+"""
+Success result for setPokerSpectate mutation
+"""
 type SetPokerSpectateSuccess {
+  "The meeting the spectating change applies to"
   meetingId: ID!
+  "The user whose spectating status changed"
   userId: ID!
 
   """
