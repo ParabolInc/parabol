@@ -1,4 +1,24 @@
+"""
+Payload returned by the createTaskIntegration mutation, which pushes an existing Parabol task to
+an external issue tracker (e.g. Jira, GitHub) and links the two records together.
+
+Success: error is null and task reflects the newly linked external issue (task.integration is
+populated with the service-specific data and task.integrationHash is set).
+
+Failure: error is non-null and task is null. Common failure reasons include: task not found,
+task is already linked to an external service, neither the viewer nor the assignee has an active
+auth token for the requested integration, or the external service call itself failed.
+"""
 type CreateTaskIntegrationPayload {
+  """
+  Present when the mutation failed. Describes why the task could not be pushed to the external
+  integration (e.g. missing auth, task already linked, downstream API error).
+  """
   error: StandardMutationError
+  """
+  The Parabol task after it has been successfully linked to the external issue. Contains the
+  updated integration metadata (integrationHash, integration service details) returned by the
+  external provider. Null when error is non-null.
+  """
   task: Task
 }

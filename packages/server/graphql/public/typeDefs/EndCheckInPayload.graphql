@@ -1,4 +1,4 @@
 """
-Return object for EndCheckInPayload
+The result of ending a check-in (Action) meeting. Returns either a successful outcome or an error.
 """
 union EndCheckInPayload = ErrorPayload | EndCheckInSuccess

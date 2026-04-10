@@ -1,8 +1,34 @@
+"""
+Returned by the deleteComment mutation when the comment is successfully soft-deleted.
+The comment record is retained so that reply threading is preserved, but its content
+is replaced with tombstone text and isActive is set to false on the Comment object.
+
+Mutation signature:
+  deleteComment(commentId: ID!, meetingId: ID!): DeleteCommentPayload!
+
+Success conditions:
+  - The comment exists and is still active (isActive true).
+  - The comment belongs to a discussion whose meetingId matches the supplied meetingId.
+  - The viewer is the comment author, OR the comment was posted by the Parabol AI user.
+
+Failure conditions (returns ErrorPayload instead):
+  - Comment does not exist or was already deleted.
+  - The comment's discussion is not associated with the provided meetingId.
+  - The viewer is not the comment author and the comment was not posted by the Parabol AI.
+
+A DeleteCommentSuccess message is also broadcast on the MEETING subscription channel so
+all participants in the meeting receive the update in real time.
+"""
 type DeleteCommentSuccess {
+  """
+  The ID of the comment that was deleted. Use this to remove or tombstone the comment
+  in client-side caches and optimistic updates without needing to read the full Comment object.
+  """
   commentId: ID!
 
   """
-  the comment just deleted
+  The full Comment object as it exists after deletion. isActive will be false and content
+  will contain tombstone placeholder text. Replies and other metadata are preserved.
   """
   comment: Comment!
 }

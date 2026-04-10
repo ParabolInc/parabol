@@ -1,6 +1,22 @@
+"""
+The payload returned when a Team Prompt meeting is successfully ended.
+Contains the updated meeting, its ID, the team it belongs to, and the
+timeline event created to record the meeting's completion.
+"""
 type EndTeamPromptSuccess {
+  """
+  The Team Prompt meeting that was ended, with its final state.
+  """
   meeting: TeamPromptMeeting!
+
+  """
+  The ID of the Team Prompt meeting that was ended.
+  """
   meetingId: ID!
+
+  """
+  The team that owns the ended meeting.
+  """
   team: Team!
 
   """

@@ -1,6 +1,22 @@
+"""
+Returned when a task is successfully reordered in the estimating sidebar of a Poker meeting.
+Contains the affected meeting and the full ordered list of estimate stages after the drag.
+"""
 type DragEstimatingTaskSuccess {
+  """
+  The ID of the Poker meeting in which the task was reordered
+  """
   meetingId: ID!
+  """
+  The Poker meeting in which the task was reordered
+  """
   meeting: PokerMeeting!
+  """
+  The ordered IDs of all estimate stages in the meeting after the reorder
+  """
   stageIds: [ID!]!
+  """
+  The ordered list of all estimate stages in the meeting after the reorder
+  """
   stages: [EstimateStage!]!
 }

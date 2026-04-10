@@ -1,26 +1,37 @@
+"""
+A request submitted by a user to join an organization whose activeDomain matches
+the domain of their email address. Team leads in that organization receive a
+notification and can accept the request via acceptRequestToJoinDomain, which adds
+the requester to one or more of their teams. Requests expire after 30 days and are
+deduplicated per (createdBy, domain) pair.
+"""
 type DomainJoinRequest {
   """
-  Request id
+  A globally unique opaque identifier for this join request, prefixed for use as a GraphQL ID.
+  Derived from the underlying integer primary key via DomainJoinRequestId.
   """
   id: ID!
 
   """
-  Created by user id
+  The user ID of the person who submitted the join request.
   """
   createdBy: ID!
 
   """
-  Created by email
+  The email address of the user who submitted the join request, resolved from createdBy.
   """
   createdByEmail: String!
 
   """
-  Request domain
+  The lowercase email domain (e.g. "acme.com") that this request targets.
+  Only organizations whose activeDomain matches this value are eligible to accept the request.
   """
   domain: String!
 
   """
-  Matching teams
+  The teams the viewing user leads that belong to organizations whose activeDomain matches
+  the request domain. These are the teams the viewer may add the requester to when
+  calling acceptRequestToJoinDomain.
   """
   teams: [Team!]!
 }

@@ -1,4 +1,5 @@
 """
-Return object for DragEstimatingTaskPayload
+The result of reordering a task within the estimate phase of a Poker meeting.
+Returns an error if the meeting is not found, has already ended, or the requested position is out of range.
 """
 union DragEstimatingTaskPayload = ErrorPayload | DragEstimatingTaskSuccess

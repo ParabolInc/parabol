@@ -1,5 +1,35 @@
+"""
+Input for the createTask mutation. Used to create a new task on a team, optionally scoped to a
+meeting and/or a discussion thread. Tasks are the core unit of work in Parabol — they appear on
+team and personal dashboards, can be assigned to a team member, and can be mirrored to an external
+service (GitHub, GitLab, Jira, etc.) at creation time.
+
+Required fields: status and teamId.
+
+Failure cases:
+- The viewer is not a member of the meeting specified by meetingId.
+- The discussionId does not belong to the meeting specified by meetingId, or does not belong to the team.
+- The userId is not a member of the team.
+- The integration field refers to a project the viewer is not authorized to push to, or the external
+  service returns an error.
+
+Success: returns CreateTaskPayload with the newly created Task and any NotifyTaskInvolves
+notifications generated for the assignee or @mentioned users.
+"""
 input CreateTaskInput {
+  """
+  The rich-text body of the task encoded as a TipTap/ProseMirror JSON document serialized to a
+  string. If omitted or null, the task is created with an empty body. Inline @mentions of user IDs
+  cause MENTIONEE notifications to be sent to those users. Tags such as #private and #archived can
+  be embedded in the content and affect task visibility.
+  """
   content: String
+
+  """
+  Plain-text version of the task body. When provided this value is stored directly; when omitted
+  the server derives it from the content field. Useful for full-text search and notification
+  previews.
+  """
   plaintextContent: String
 
   """
@@ -11,9 +41,30 @@ input CreateTaskInput {
   foreign key for the thread this was created in
   """
   discussionId: ID
+
+  """
+  The sort position of this task within its parent thread, used to order threaded replies relative
+  to threadParentId. Only meaningful when threadParentId is set.
+  """
   threadSortOrder: Int
+
+  """
+  The ID of the parent Threadable item (e.g. a reflection or comment) when this task is created as
+  a reply inside a discussion thread. Null for top-level tasks.
+  """
   threadParentId: ID
+
+  """
+  The position of this task in the shared team/user dashboard kanban column. Used by drag-and-drop
+  ordering. If omitted, the server assigns a noise value that places the task at the end of the
+  list.
+  """
   sortOrder: Float
+
+  """
+  The initial workflow status of the task. Must be one of: active, stuck, done, or future. This
+  field is required — there is no server-side default.
+  """
   status: TaskStatusEnum!
 
   """
@@ -25,5 +76,12 @@ input CreateTaskInput {
   userId, the owner of the task. This can be null if the task is not assigned to anyone.
   """
   userId: ID
+
+  """
+  When provided, the task is simultaneously pushed to an external project management service
+  (e.g. GitHub, GitLab, Jira) at creation time. The viewer must have a valid OAuth integration
+  with the service. If the external call fails, the entire mutation returns an error and no task
+  is persisted locally.
+  """
   integration: CreateTaskIntegrationInput
 }

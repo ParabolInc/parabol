@@ -1,3 +1,21 @@
+"""
+Returned by the deleteOAuthAPIProvider mutation after an OAuth API provider is
+permanently removed from an organization.
+
+Use this mutation to delete a provider that was previously created for
+machine-to-machine OAuth flows. Requires the ORGS_WRITE scope.
+
+Success: deletedProviderId is populated with the opaque client-side ID of the
+removed provider so the caller can evict it from any local cache or list.
+
+Failure: a GraphQL error is thrown (not returned as a field) when the provider
+does not exist or cannot be found, e.g. "Provider not found".
+"""
 type DeleteOAuthAPIProviderPayload {
+  """
+  The opaque client-side ID of the OAuth API provider that was deleted.
+  Use this to remove the provider from any locally cached list or relay store.
+  Matches the providerId argument passed to the mutation.
+  """
   deletedProviderId: ID!
 }
