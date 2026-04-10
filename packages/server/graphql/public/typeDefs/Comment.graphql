@@ -39,7 +39,7 @@ type Comment implements Reactable & Threadable {
   All direct replies to this comment, returned as an ordered list of Threadable items.
   An empty array means no one has replied yet.
   """
-  replies: [Threadable!]! @scope(name: COMMENTS_READ)
+  replies: [Threadable!]!
 
   """
   The ID of the Discussion thread this comment belongs to. Null if the comment was not
