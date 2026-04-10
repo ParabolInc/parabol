@@ -52,7 +52,7 @@ type Page implements PagePartial {
   """
   The team this page belongs to, null if it is private
   """
-  team: Team
+  team: Team @scope(name: TEAMS_READ)
 
   """
   true if this page is nested under a parent that links back to it

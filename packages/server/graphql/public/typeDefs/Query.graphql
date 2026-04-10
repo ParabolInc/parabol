@@ -5,7 +5,7 @@ type Query {
   """
   The currently authenticated user
   """
-  viewer: User!
+  viewer: User! @scope(name: USERS_READ)
   """
   Look up a team's mass invitation by token
   """
@@ -14,7 +14,7 @@ type Query {
     The mass invitation token
     """
     token: ID!
-  ): MassInvitationPayload!
+  ): MassInvitationPayload! @scope(name: TEAMS_READ)
   """
   Search for GIFs using Giphy
   """
@@ -48,7 +48,7 @@ type Query {
     The invitation token
     """
     token: ID!
-  ): VerifiedInvitationPayload!
+  ): VerifiedInvitationPayload! @scope(name: TEAMS_READ)
   """
   Generate an AI-suggested title for a reflection group in the demo
   """

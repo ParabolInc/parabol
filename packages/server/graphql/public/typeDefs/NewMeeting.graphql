@@ -20,7 +20,7 @@ interface NewMeeting {
   """
   The user that created the meeting, null if user was hard deleted
   """
-  createdByUser: User
+  createdByUser: User @scope(name: USERS_READ)
 
   """
   The timestamp the meeting officially ended
@@ -40,7 +40,7 @@ interface NewMeeting {
   """
   The facilitator team member
   """
-  facilitator: TeamMember!
+  facilitator: TeamMember! @scope(name: TEAMS_READ)
 
   """
   Is this locked for starter plans?
@@ -80,7 +80,7 @@ interface NewMeeting {
   """
   The organization this meeting belongs to
   """
-  organization: Organization!
+  organization: Organization! @scope(name: ORGS_READ)
 
   """
   The phases the meeting will go through, including all phase-specific state
@@ -110,7 +110,7 @@ interface NewMeeting {
   """
   The team that ran the meeting
   """
-  team: Team!
+  team: Team! @scope(name: TEAMS_READ)
 
   """
   The last time a meeting was updated (stage completed, finished, etc)

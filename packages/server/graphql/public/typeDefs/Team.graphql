@@ -94,22 +94,22 @@ type Team implements Node & TeamPartial {
     The scale ID for the desired scale
     """
     scaleId: ID!
-  ): TemplateScale
+  ): TemplateScale @scope(name: TEMPLATES_READ)
 
   """
   The list of scales this team can use
   """
-  scales: [TemplateScale!]!
+  scales: [TemplateScale!]! @scope(name: TEMPLATES_READ)
 
   """
   list of meetings that are currently in progress including active meetings of activeMeetingSeries
   """
-  activeMeetings: [NewMeeting!]!
+  activeMeetings: [NewMeeting!]! @scope(name: MEETINGS_READ)
 
   """
   list of all active meeting series, a series can be active without having an active meeting
   """
-  activeMeetingSeries: [MeetingSeries!]!
+  activeMeetingSeries: [MeetingSeries!]! @scope(name: MEETINGS_READ)
 
   """
   Whether the team has a feature flag enabled or not
@@ -129,18 +129,18 @@ type Team implements Node & TeamPartial {
     The unique meetingId
     """
     meetingId: ID!
-  ): NewMeeting
-  organization: Organization!
+  ): NewMeeting @scope(name: MEETINGS_READ)
+  organization: Organization! @scope(name: ORGS_READ)
 
   """
   The AI insight for the team. Null if not enough data or feature flag isn't set
   """
-  insight: Insight
+  insight: Insight @scope(name: MEETINGS_READ)
 
   """
   The agenda items for the upcoming or current meeting
   """
-  agendaItems: [AgendaItem!]!
+  agendaItems: [AgendaItem!]! @scope(name: MEETINGS_READ)
 
   """
   All of the tasks for this team
@@ -152,7 +152,7 @@ type Team implements Node & TeamPartial {
     the datetime cursor
     """
     after: DateTime
-  ): TaskConnection!
+  ): TaskConnection! @scope(name: TASKS_READ)
 
   """
   All the team members actively associated with the team
