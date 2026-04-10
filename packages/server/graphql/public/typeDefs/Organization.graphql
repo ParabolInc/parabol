@@ -60,7 +60,7 @@ type Organization implements OrganizationPartial {
   allTeamsCount: Int!
 
   """
-  THe datetime the current billing cycle ends
+  The datetime the current billing cycle ends
   """
   periodEnd: DateTime
 
@@ -120,7 +120,7 @@ type Organization implements OrganizationPartial {
   viewerOrganizationUser: OrganizationUser
 
   """
-  The users that are apart of the organization
+  The users that are part of the organization
   """
   organizationUsers(after: String, first: Int): OrganizationUserConnection!
 
@@ -135,13 +135,13 @@ type Organization implements OrganizationPartial {
   billingLeaders: [OrganizationUser!]!
 
   """
-  The assumed company this organizaiton belongs to
+  The assumed company this organization belongs to
   """
   company: Company
 
   """
   Basic meeting metadata for aggregated stats across the entire organization.
-  Includes metadata on teams the viewer is not apart of
+  Includes metadata on teams the viewer is not part of
   """
   meetingStats: [MeetingStat!]!
 
@@ -149,6 +149,10 @@ type Organization implements OrganizationPartial {
   The org avatar
   """
   picture: URL
+
+  """
+  The current subscription tier of the organization
+  """
   tier: TierEnum!
 
   """
@@ -156,6 +160,9 @@ type Organization implements OrganizationPartial {
   """
   useAI: Boolean!
 
+  """
+  The tier used for billing purposes (may differ from tier during trials or grace periods)
+  """
   billingTier: TierEnum!
 
   """

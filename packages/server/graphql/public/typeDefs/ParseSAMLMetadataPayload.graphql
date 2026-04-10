@@ -1,1 +1,4 @@
+"""
+Result of parsing SAML identity provider metadata XML
+"""
 union ParseSAMLMetadataPayload = ErrorPayload | ParseSAMLMetadataSuccess

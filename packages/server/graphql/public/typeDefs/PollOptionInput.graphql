@@ -1,3 +1,6 @@
+"""
+Input for creating a poll option
+"""
 input PollOptionInput {
   """
   Poll option title

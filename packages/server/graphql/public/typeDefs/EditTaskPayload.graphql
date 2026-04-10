@@ -1,6 +1,15 @@
+"""
+Payload for the editTask mutation. Broadcast to team members when a user starts or stops editing a task, enabling real-time presence indicators on task cards.
+"""
 type EditTaskPayload {
   error: StandardMutationError
+  """
+  The task being edited.
+  """
   task: Task
+  """
+  The user who started or stopped editing the task.
+  """
   editor: User
 
   """

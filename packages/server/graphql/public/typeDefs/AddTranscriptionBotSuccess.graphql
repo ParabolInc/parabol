@@ -1,6 +1,17 @@
+"""
+Returned when addTranscriptionBot succeeds. Confirms that a Recall.ai bot has
+been dispatched to the video call identified by videoMeetingURL and that the
+retrospective meeting record has been updated with that URL. The bot will
+join the call, capture a transcript, and store it on the meeting once the
+call ends. Use the returned meeting to read the updated videoMeetingURL and,
+after the call concludes, the transcription field.
+"""
 type AddTranscriptionBotSuccess {
   """
-  The Parabol meeting where the videoMeetingURL and recallBotId were added
+  The retrospective meeting that was updated with the video meeting URL and
+  the Recall.ai bot assignment. Query videoMeetingURL to confirm the URL that
+  was stored, or transcription to retrieve the transcript once the bot has
+  finished processing the recording.
   """
   meeting: RetrospectiveMeeting!
 }

@@ -6,6 +6,10 @@ type NotifyTeamArchived implements Notification {
   the user that archived the team, can be null if the team was archived via SCIM
   """
   archivor: User
+
+  """
+  The team that was archived
+  """
   team: Team!
 
   """
@@ -25,7 +29,7 @@ type NotifyTeamArchived implements Notification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 }

@@ -1,5 +1,15 @@
+"""
+AI-generated insights summarizing wins and challenges from a team's retrospective meetings over a time period
+"""
 type Insight {
+  """
+  The unique identifier for this insight
+  """
   id: ID!
+
+  """
+  The team this insight was generated for
+  """
   teamId: ID!
 
   """

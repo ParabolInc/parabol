@@ -14,11 +14,35 @@ interface MeetingMember {
     @deprecated(
       reason: "Members are checked in when they enter the meeting now & not created beforehand"
     )
+
+  """
+  The meeting this member participated in
+  """
   meetingId: ID!
+
+  """
+  The type of meeting
+  """
   meetingType: MeetingTypeEnum!
+
+  """
+  The team the meeting belongs to
+  """
   teamId: ID!
+
+  """
+  The team member record for this user
+  """
   teamMember: TeamMember!
+
+  """
+  The user who participated in the meeting
+  """
   user: User!
+
+  """
+  The ID of the user who participated in the meeting
+  """
   userId: ID!
 
   """

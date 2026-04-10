@@ -1,5 +1,16 @@
 """
-A credit card
+Safe, display-only summary of a credit card on file for an organization, sourced from Stripe.
+
+Returned on `Organization.creditCard` when the org has an active paid subscription with a saved
+payment method. The field is null when the org is on a free plan or has no card on file.
+
+To update the card, call the `updateCreditCard` mutation (requires `ORGS_WRITE` scope / billing
+leader role), passing the Stripe `paymentMethodId` obtained from the client-side Stripe Elements
+flow. On success, `UpdateCreditCardSuccess` returns the updated `Organization` (with a fresh
+`CreditCard` here) plus a `stripeSubscriptionClientSecret` for confirming the payment intent.
+
+No sensitive data (full card number, CVV) is ever stored or returned — only the brand, expiry,
+and last four digits needed to identify the card to the user.
 """
 type CreditCard {
   """

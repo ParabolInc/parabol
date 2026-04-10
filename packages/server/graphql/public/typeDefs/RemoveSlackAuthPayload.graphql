@@ -1,3 +1,6 @@
+"""
+Result of disconnecting a user's Slack integration for a team
+"""
 type RemoveSlackAuthPayload {
   error: StandardMutationError
 
@@ -5,6 +8,9 @@ type RemoveSlackAuthPayload {
   The ID of the authorization removed
   """
   authId: ID
+  """
+  The team the integration was removed from
+  """
   teamId: ID
 
   """

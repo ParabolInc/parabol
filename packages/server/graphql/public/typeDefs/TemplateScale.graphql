@@ -1,10 +1,8 @@
 """
-A team-specific template scale.
+A set of labeled values used to score a poker template dimension (e.g. Fibonacci, T-shirt sizes)
 """
 type TemplateScale {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
   createdAt: DateTime!
 
@@ -23,9 +21,7 @@ type TemplateScale {
   """
   removedAt: DateTime
 
-  """
-  foreign key. use the team field
-  """
+  "The ID of the team that owns this scale"
   teamId: ID!
 
   """

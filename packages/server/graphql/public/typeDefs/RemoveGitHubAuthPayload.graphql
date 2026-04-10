@@ -1,5 +1,11 @@
+"""
+Result of disconnecting a user's GitHub integration for a team
+"""
 type RemoveGitHubAuthPayload {
   error: StandardMutationError
+  """
+  The team the integration was removed from
+  """
   teamId: ID
 
   """

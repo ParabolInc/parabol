@@ -1,5 +1,16 @@
+"""
+Return value for the archiveTeam mutation. When a team is archived (or deleted if unused),
+this payload delivers the updated team record, a notification sent to all former members,
+the IDs of any homepage suggested-action cards that were removed, and the IDs of meeting
+templates owned by the team so clients can remove them from local caches.
+"""
 type ArchiveTeamPayload {
   error: StandardMutationError
+
+  """
+  The team that was archived (or deleted). Inspect team.isArchived to distinguish the two cases.
+  Null when the operation fails.
+  """
   team: Team
 
   """
@@ -8,7 +19,9 @@ type ArchiveTeamPayload {
   notification: NotifyTeamArchived
 
   """
-  all the suggested actions that never happened
+  IDs of suggested-action cards (e.g. "Invite your team", "Try a retro") that were shown on the
+  user's homepage and are now removed because they referenced this team. Clients should evict
+  these records from their caches.
   """
   removedSuggestedActionIds: [ID]
 

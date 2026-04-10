@@ -1,3 +1,6 @@
+"""
+Data produced when a retrospective meeting phase completes; only the relevant phase field is populated
+"""
 type PhaseCompletePayload {
   """
   payload provided if the retro reflect phase was completed

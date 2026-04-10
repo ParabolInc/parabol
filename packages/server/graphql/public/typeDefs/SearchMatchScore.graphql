@@ -1,8 +1,25 @@
+"""
+Relevance scores for a search result, combining vector (semantic) and keyword matching
+"""
 type SearchMatchScore {
-  # RRF of vectorRank and keywordRank
+  """
+  Reciprocal Rank Fusion of vectorRank and keywordRank; higher is more relevant
+  """
   combined: Float!
+  """
+  Rank of this result in the vector (semantic) search results; null if not in vector results
+  """
   vectorRank: Int
+  """
+  Rank of this result in the keyword search results; null if not in keyword results
+  """
   keywordRank: Int
+  """
+  Raw vector similarity score
+  """
   vector: Float!
+  """
+  Raw keyword relevance score
+  """
   keyword: Float!
 }

@@ -1,9 +1,11 @@
 """
-an event trigger and slack channel to receive it
+A mapping of a Slack notification event to the channel it should be posted in
 """
 type SlackNotification {
   id: ID!
+  "The event that triggers this notification"
   event: SlackNotificationEventEnum!
+  "Whether this notification targets the whole team or an individual member"
   eventType: SlackNotificationEventTypeEnum!
 
   """

@@ -1,4 +1,8 @@
+"""
+Return value for updateAgendaItem mutation
+"""
 type UpdateAgendaItemPayload {
+  "The updated agenda item"
   agendaItem: AgendaItem
   meetingId: ID
 

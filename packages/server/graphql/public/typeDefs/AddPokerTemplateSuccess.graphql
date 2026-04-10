@@ -1,3 +1,8 @@
+"""
+Returned when the addPokerTemplate mutation succeeds. Contains the newly created (or cloned) poker
+template and the user who triggered the operation. Use this to update the client's template list and
+reflect the creator's identity without a separate query.
+"""
 type AddPokerTemplateSuccess {
   """
   The poker template that was created

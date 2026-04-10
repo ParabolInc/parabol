@@ -1,5 +1,5 @@
 """
-Where the upgrade CTA button was clicked
+Reason a user provides when downgrading their subscription
 """
 enum ReasonToDowngradeEnum {
   tooExpensive

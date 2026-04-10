@@ -6,5 +6,9 @@ type InvoiceEdge {
   The item at the end of the edge
   """
   node: Invoice!
+
+  """
+  Cursor for date-based pagination
+  """
   cursor: DateTime
 }

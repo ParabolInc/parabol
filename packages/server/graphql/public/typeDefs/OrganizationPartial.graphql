@@ -1,5 +1,19 @@
+"""
+Minimal organization fields shared by Organization and OrganizationPreview
+"""
 interface OrganizationPartial {
+  """
+  The unique organization ID
+  """
   id: ID!
+
+  """
+  The name of the organization
+  """
   name: String!
+
+  """
+  The organization avatar URL
+  """
   picture: URL
 }

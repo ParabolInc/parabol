@@ -1,3 +1,6 @@
+"""
+A lightweight team preview shown to users who are not yet members
+"""
 type TeamPreview implements Node & TeamPartial {
   id: ID!
   name: String!

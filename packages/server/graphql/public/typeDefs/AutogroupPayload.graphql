@@ -1,4 +1,4 @@
 """
-Return value for autogroup, which could be an error
+The result of the autogroup mutation, which applies AI-suggested reflection groupings to a retrospective meeting. Returns AutogroupSuccess on success or ErrorPayload if something went wrong (e.g. meeting not found, not a retrospective, or no AI suggestions available yet).
 """
 union AutogroupPayload = ErrorPayload | AutogroupSuccess

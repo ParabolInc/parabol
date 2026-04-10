@@ -1,3 +1,9 @@
+"""
+The result of invalidating all active sessions for a user, forcing them to log in again
+"""
 type InvalidateSessionsPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
 }

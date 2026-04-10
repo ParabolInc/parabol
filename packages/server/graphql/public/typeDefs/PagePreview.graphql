@@ -1,6 +1,24 @@
+"""
+A lightweight page summary for use in notification and access control contexts
+"""
 type PagePreview implements PagePartial {
+  """
+  The unique page ID
+  """
   id: ID!
+
+  """
+  The page title, null if untitled
+  """
   title: String
+
+  """
+  The ID of the team this page belongs to, null if private
+  """
   teamId: ID
+
+  """
+  The team this page belongs to, null if private
+  """
   team: TeamPartial
 }

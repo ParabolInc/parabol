@@ -1,3 +1,7 @@
+"""
+Success result for toggleTeamDrawer mutation
+"""
 type ToggleTeamDrawerSuccess {
+  "The team member with the updated open drawer state"
   teamMember: TeamMember!
 }

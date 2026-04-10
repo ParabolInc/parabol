@@ -13,6 +13,12 @@ input AddCommentInput {
   foreign key for the discussion this was created in
   """
   discussionId: ID!
+  """
+  The sort order of this comment within its thread (used to order replies)
+  """
   threadSortOrder: Int!
+  """
+  The ID of the parent comment if this is a reply; omit for top-level comments
+  """
   threadParentId: ID
 }

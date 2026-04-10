@@ -1,4 +1,4 @@
 """
-Return value for acceptRequestToJoinDomain, which could be an error
+Return value for acceptRequestToJoinDomain mutation. Returns either an error or the updated viewer after a pending domain-join request has been approved by an org admin.
 """
 union AcceptRequestToJoinDomainPayload = ErrorPayload | AcceptRequestToJoinDomainSuccess

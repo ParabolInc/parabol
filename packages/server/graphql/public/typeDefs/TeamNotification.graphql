@@ -1,3 +1,6 @@
+"""
+A notification sent to a team (deprecated in favor of typed Notification union members)
+"""
 interface TeamNotification {
   id: ID
   type: NotificationEnum

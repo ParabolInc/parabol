@@ -1,34 +1,41 @@
+"""
+Return value for acceptTeamInvitation mutation. On success, contains a new auth token and the team the user joined. On failure, contains a StandardMutationError.
+"""
 type AcceptTeamInvitationPayload {
   error: StandardMutationError
 
   """
-  The new auth token sent to the mutator
+  A new JWT auth token issued after joining the team; the client should replace its current token with this one
   """
   authToken: ID
 
   """
-  the meetingId to redirect to
+  The ID of an in-progress meeting to redirect the user to after joining
   """
   meetingId: ID
 
   """
-  The requested meeting
+  The in-progress meeting the user should be redirected to, if any
   """
   meeting: NewMeeting
 
   """
-  The team that the invitee will be joining
+  The team that the invitee joined
   """
   team: Team
 
   """
-  The new team member on the team
+  The new TeamMember record created for the user on the team
   """
   teamMember: TeamMember
+
+  """
+  Any pending team-invitation notifications for the joining user that can now be dismissed
+  """
   notifications: [NotificationTeamInvitation!]
 
   """
-  For payloads going to the team leader that got new suggested actions
+  The team lead user, updated with new suggested actions after a member joins
   """
   teamLead: User
 }

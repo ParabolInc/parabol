@@ -1,4 +1,10 @@
+"""
+The result of inviting one or more users to join a team
+"""
 type InviteToTeamPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
 
   """

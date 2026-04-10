@@ -1,3 +1,6 @@
+"""
+Subscription payload for team-level changes (meetings, members, templates, integrations)
+"""
 type TeamSubscriptionPayload {
   fieldName: String!
   AcceptTeamInvitationPayload: AcceptTeamInvitationPayload

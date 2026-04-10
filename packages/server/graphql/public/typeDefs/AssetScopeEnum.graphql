@@ -1,9 +1,42 @@
 """
-The scope of who has access to the asset
+Controls who can read an uploaded asset. The scope is encoded into the asset's storage path
+(e.g. Team/<teamId>/assets/<hash>.webp) and is enforced at both upload time and serve time.
+Choose the narrowest scope that satisfies the use-case so that assets are not inadvertently
+exposed to unrelated users.
 """
 enum AssetScopeEnum {
+  """
+  Asset is tied to a single Page (a collaborative document). Any user with at least viewer
+  access to that page can read the asset. The scopeKey must be the page's client-side
+  cipher ID, and the uploader must hold commentor or higher access to the page.
+  Use this scope for files or images embedded inside a specific page.
+  """
   Page
+
+  """
+  Asset is private to a single user. Only the owning user (or the ghost user) can read
+  non-avatar assets stored under this scope. Profile pictures (assetType = "picture") are
+  an exception and are visible to all authenticated users.
+  The scopeKey must equal the caller's own userId.
+  Use this scope for personal uploads that should not be visible to teammates.
+  """
   User
+
+  """
+  Asset is shared within a team. Any team member can read non-avatar assets stored under
+  this scope. Team avatars (assetType = "picture", not yet implemented) are visible to all
+  users. The scopeKey must be a teamId that the caller belongs to.
+  Use this scope for files uploaded in the context of a team meeting or team workspace.
+  """
   Team
+
+  """
+  Asset is shared within an organization. Any member of the organization can read
+  non-avatar assets stored under this scope. Org avatars (assetType = "picture") and IdP
+  metadata files are publicly readable. Parabol-seeded assets live under the special
+  "aGhostOrg" org and are visible to all users.
+  The scopeKey must be an orgId that the caller belongs to.
+  Use this scope for org-wide resources such as template illustrations or branding assets.
+  """
   Organization
 }

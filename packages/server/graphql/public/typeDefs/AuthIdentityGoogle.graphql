@@ -1,15 +1,17 @@
 """
-An authentication strategy using Google
+An authentication identity backed by Google OAuth. A user account may have this identity if they signed up or linked their account via "Sign in with Google". Use this type (via the AuthIdentity interface) to distinguish Google-authenticated users from those using local passwords or Microsoft OAuth.
 """
 type AuthIdentityGoogle implements AuthIdentity {
   """
-  true if the email address using this strategy is verified, else false
+  true if the email address associated with this Google identity has been verified by Google, else false. Google accounts are almost always verified; check this before trusting the email for sensitive operations.
   """
   isEmailVerified: Boolean!
-  type: AuthIdentityTypeEnum!
-
   """
-  The googleID for this strategy
+  The authentication strategy discriminator. Always GOOGLE for this type. Use this field when you need to branch logic based on how the user authenticates (e.g. to show the correct "sign in with" button or to filter identities by provider).
+  """
+  type: AuthIdentityTypeEnum!
+  """
+  The unique Google account ID (the "sub" claim from Google's ID token) for this identity. Use this to correlate the Parabol user with a specific Google account, or to look up the identity when a user has multiple auth strategies on their account.
   """
   id: ID!
 }

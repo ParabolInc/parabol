@@ -1,3 +1,6 @@
+"""
+Minimal team fields shared across full and preview team types
+"""
 interface TeamPartial {
   id: ID!
   name: String!

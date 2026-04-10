@@ -1,3 +1,6 @@
+"""
+A notification sent as a reminder that an organization is approaching its team limit
+"""
 type NotifyTeamsLimitReminder implements Notification {
   """
   A shortid for the notification

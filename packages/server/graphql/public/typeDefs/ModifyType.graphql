@@ -1,5 +1,19 @@
+"""
+The tone to apply when modifying AI-generated content
+"""
 enum ModifyType {
+  """
+  Make the content more serious and professional
+  """
   SERIOUS
+
+  """
+  Make the content more humorous and lighthearted
+  """
   FUNNY
+
+  """
+  Make the content more energetic and enthusiastic
+  """
   EXCITING
 }

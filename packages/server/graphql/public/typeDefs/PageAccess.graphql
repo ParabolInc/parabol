@@ -1,12 +1,39 @@
+"""
+The access control configuration for a page, listing who can view or edit it
+"""
 type PageAccess {
-  viewer: PageRoleEnum
-  public: PageRoleEnum
-  guests: [PageAccessGuest!]!
-  users: [PageAccessUser!]!
-  teams: [PageAccessTeam!]!
-  organizations: [PageAccessOrganization!]!
   """
-  Users who have requested access to this page withing the last 30 days but have not yet been granted access.
+  The viewer's access role on this page, null if the viewer has no access
+  """
+  viewer: PageRoleEnum
+
+  """
+  The public access role for this page, null if not publicly accessible
+  """
+  public: PageRoleEnum
+
+  """
+  Guest users (by email) who have been granted access
+  """
+  guests: [PageAccessGuest!]!
+
+  """
+  Individual users who have been granted explicit access
+  """
+  users: [PageAccessUser!]!
+
+  """
+  Teams that have been granted access
+  """
+  teams: [PageAccessTeam!]!
+
+  """
+  Organizations that have been granted access
+  """
+  organizations: [PageAccessOrganization!]!
+
+  """
+  Users who have requested access to this page within the last 30 days but have not yet been granted access.
   """
   pendingRequests: [PageAccessRequest!]!
 }

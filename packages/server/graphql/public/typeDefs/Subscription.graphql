@@ -1,7 +1,15 @@
+"""
+Real-time subscriptions for live meeting, notification, org, task, and team updates
+"""
 type Subscription {
+  "Subscribe to all events in a meeting (reflections, votes, stages, etc.)"
   meetingSubscription(meetingId: ID!): MeetingSubscriptionPayload!
+  "Subscribe to notifications for the current user"
   notificationSubscription: NotificationSubscriptionPayload!
+  "Subscribe to organization-level changes for the current user"
   organizationSubscription: OrganizationSubscriptionPayload!
+  "Subscribe to task changes visible to the current user"
   taskSubscription: TaskSubscriptionPayload!
+  "Subscribe to team-level changes for teams the current user belongs to"
   teamSubscription: TeamSubscriptionPayload!
 }

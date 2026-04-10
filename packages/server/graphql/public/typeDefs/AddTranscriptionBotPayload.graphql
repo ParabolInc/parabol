@@ -1,4 +1,4 @@
 """
-Return value for addTranscriptionBot, which could be an error
+The result of the addTranscriptionBot mutation, which attaches a Recall.ai transcription bot to an active Zoom video meeting linked to a retrospective. On success, returns AddTranscriptionBotSuccess containing the updated meeting (with the videoMeetingURL and recallBotId populated). On failure, returns ErrorPayload describing what went wrong (e.g. meeting not found, meeting type is not retrospective).
 """
 union AddTranscriptionBotPayload = ErrorPayload | AddTranscriptionBotSuccess

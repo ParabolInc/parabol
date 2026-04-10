@@ -1,5 +1,17 @@
+"""
+Successfully removed a saved integration search query
+"""
 type RemoveIntegrationSearchQuerySuccess {
+  """
+  The user whose search query was removed
+  """
   userId: ID
+  """
+  The team context for the removed search query
+  """
   teamId: ID
+  """
+  The updated Jira Server integration after removing the query
+  """
   jiraServerIntegration: JiraServerIntegration
 }

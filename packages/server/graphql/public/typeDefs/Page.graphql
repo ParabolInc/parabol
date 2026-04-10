@@ -1,25 +1,111 @@
+"""
+A collaborative document page that can be nested, shared, and linked to teams or meetings
+"""
 type Page implements PagePartial {
+  """
+  The unique page ID
+  """
   id: ID!
+
+  """
+  The ID of the user who owns this page
+  """
   userId: ID!
+
   # yDoc is binary and not part of GraphQL. It must be requested using the y.js protocol
+  """
+  The page title, null if untitled
+  """
   title: String
+
   # plaintextContent: String!
+  """
+  When the page was created
+  """
   createdAt: DateTime!
+
+  """
+  When the page was last updated
+  """
   updatedAt: DateTime!
+
+  """
+  Access control settings for this page
+  """
   access: PageAccess!
+
+  """
+  The ID of the parent page, null if this is a root page
+  """
   parentPageId: ID
+
+  """
+  The ID of the team this page belongs to, null if it is private
+  """
   teamId: ID
+
+  """
+  The parent page, null if this is a root page
+  """
   parentPage: PagePartial
+
+  """
+  The team this page belongs to, null if it is private
+  """
   team: Team
+
+  """
+  true if this page is nested under a parent that links back to it
+  """
   isParentLinked: Boolean!
+
+  """
+  true if this page is only visible to the owner
+  """
   isPrivate: Boolean!
+
+  """
+  true if this page functions as a database view
+  """
   isDatabase: Boolean!
+
+  """
+  The sort order of this page among its siblings, as a fractional index string
+  """
   sortOrder: String!
+
+  """
+  The viewer-specific sort order override, as a fractional index string
+  """
   userSortOrder: String!
+
+  """
+  When the page was deleted, null if not deleted
+  """
   deletedAt: DateTime
+
+  """
+  The ID of the user who deleted this page, null if not deleted
+  """
   deletedBy: ID
+
+  """
+  The user who deleted this page, null if not deleted
+  """
   deletedByUser: User
+
+  """
+  IDs of all ancestor pages from root to direct parent
+  """
   ancestorIds: [ID!]!
+
+  """
+  All ancestor pages from root to direct parent
+  """
   ancestors: [PagePartial!]!
+
+  """
+  true if this page serves as a table of contents for a meeting
+  """
   isMeetingTOC: Boolean!
 }

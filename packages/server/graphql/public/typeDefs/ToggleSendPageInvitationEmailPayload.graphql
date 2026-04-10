@@ -1,4 +1,4 @@
 """
-Return value for togglePageInvitationEmail, which could be an error
+Return value for togglePageInvitationEmail mutation
 """
 union TogglePageInvitationEmailPayload = ErrorPayload | TogglePageInvitationEmailSuccess

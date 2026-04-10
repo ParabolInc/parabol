@@ -1,3 +1,6 @@
+"""
+Details about a user currently editing a task in real time
+"""
 type TaskEditorDetails {
   """
   The userId of the person editing the task

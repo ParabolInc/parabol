@@ -1,3 +1,6 @@
+"""
+Payload broadcast when a participant begins dragging a reflection card
+"""
 type StartDraggingReflectionPayload {
   error: StandardMutationError
 

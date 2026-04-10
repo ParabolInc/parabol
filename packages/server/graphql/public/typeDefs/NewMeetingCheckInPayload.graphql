@@ -1,5 +1,19 @@
+"""
+The result of checking a member in or out of a meeting
+"""
 type NewMeetingCheckInPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
+
+  """
+  The updated meeting member
+  """
   meetingMember: MeetingMember
+
+  """
+  The meeting that was updated
+  """
   meeting: NewMeeting
 }

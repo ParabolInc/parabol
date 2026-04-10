@@ -6,5 +6,9 @@ type LinearIntegrationEdge {
   The item at the end of the edge
   """
   node: TaskIntegration!
+
+  """
+  Cursor for pagination
+  """
   cursor: String
 }

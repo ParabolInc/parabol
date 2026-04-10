@@ -1,4 +1,4 @@
 """
-Return object for UpdateCommentContentPayload
+Return value for updateCommentContent mutation
 """
 union UpdateCommentContentPayload = ErrorPayload | UpdateCommentContentSuccess

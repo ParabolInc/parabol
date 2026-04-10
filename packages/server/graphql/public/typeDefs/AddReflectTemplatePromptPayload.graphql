@@ -1,4 +1,15 @@
+"""
+Returned by the addReflectTemplatePrompt mutation. On success, contains the newly created
+ReflectPrompt that was appended to the specified retrospective template. On failure, contains
+a StandardMutationError describing what went wrong (e.g. template not found, insufficient
+permissions, or the template already has the maximum number of prompts).
+"""
 type AddReflectTemplatePromptPayload {
   error: StandardMutationError
+  """
+  The newly created prompt added to the retrospective template. Null when the mutation fails.
+  Use this to update the UI with the new prompt, including its generated id, default question
+  text, description, groupColor, and sort order within the template.
+  """
   prompt: ReflectPrompt
 }

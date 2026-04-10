@@ -1,5 +1,11 @@
+"""
+Success result for setOrgUserRole mutation
+"""
 type SetOrgUserRoleSuccess {
+  "The organization whose member role was changed"
   organization: Organization!
+  "The org member whose role was updated"
   updatedOrgMember: OrganizationUser!
+  "Any notifications created as a result of the role change (e.g. billing leader granted)"
   notificationsAdded: [Notification!]!
 }

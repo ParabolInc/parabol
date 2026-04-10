@@ -2,7 +2,10 @@
 The pay tier of the team
 """
 enum TierEnum {
+  "Free tier with limited features"
   starter
+  "Paid team tier"
   team
+  "Enterprise tier with advanced features"
   enterprise
 }

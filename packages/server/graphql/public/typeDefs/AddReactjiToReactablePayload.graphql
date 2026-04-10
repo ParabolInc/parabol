@@ -1,1 +1,4 @@
+"""
+The result of the addReactjiToReactable mutation, which adds or removes an emoji reaction on a reactable item (such as a reflection or comment). Returns the updated reactable on success, or an error if the operation failed (e.g. item not found, user lacks permission).
+"""
 union AddReactjiToReactablePayload = AddReactjiToReactableSuccess | ErrorPayload

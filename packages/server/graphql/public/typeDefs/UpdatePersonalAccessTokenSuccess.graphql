@@ -1,3 +1,6 @@
+"""
+Success result for updatePersonalAccessToken mutation
+"""
 type UpdatePersonalAccessTokenSuccess {
   """
   The updated personal access token

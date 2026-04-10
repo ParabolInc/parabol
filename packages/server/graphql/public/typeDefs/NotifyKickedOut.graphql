@@ -19,7 +19,7 @@ type NotifyKickedOut implements Notification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 
@@ -29,7 +29,7 @@ type NotifyKickedOut implements Notification {
   evictor: User!
 
   """
-  The name of the team the user is joining
+  The name of the team the user was removed from
   """
   teamName: String!
 

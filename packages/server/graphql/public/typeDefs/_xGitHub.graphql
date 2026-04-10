@@ -1,5 +1,7 @@
+"A GitHub issue linked to a Parabol task"
 type _xGitHubIssue implements TaskIntegration
 
+"A GitHub repository available for integration"
 type _xGitHubRepository implements RepoIntegration
 
 extend type _xGitHubRepository {

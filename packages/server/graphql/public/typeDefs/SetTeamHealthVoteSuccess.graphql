@@ -1,5 +1,11 @@
+"""
+Success result for setTeamHealthVote mutation
+"""
 type SetTeamHealthVoteSuccess {
+  "The meeting the vote was cast in"
   meetingId: ID!
+  "The stage where the vote was recorded"
   stageId: ID!
+  "The updated team health stage with the new vote"
   stage: TeamHealthStage!
 }

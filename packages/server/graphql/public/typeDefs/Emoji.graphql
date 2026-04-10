@@ -1,4 +1,18 @@
+"""
+A lightweight emoji reaction aggregate attached to an item. Each instance represents one
+distinct emoji that has been reacted with, along with how many times it was used. Similar
+to Reactji but without the per-user details — use this when you only need the reaction
+counts, not which specific users reacted.
+"""
 type Emoji {
+  """
+  The emoji identifier, typically the shortcode name (e.g. "thumbsup" or "heart"). Use
+  this to look up the rendered glyph or image for display in a reaction bar.
+  """
   id: ID!
+
+  """
+  The total number of times this emoji has been reacted with on the parent item.
+  """
   count: Int!
 }

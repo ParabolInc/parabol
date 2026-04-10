@@ -1,6 +1,24 @@
+"""
+The level of access a user, team, or organization has on a page
+"""
 enum PageRoleEnum {
+  """
+  Full control including sharing, deleting, and managing access
+  """
   owner
+
+  """
+  Can edit page content
+  """
   editor
+
+  """
+  Can read content and add comments
+  """
   commenter
+
+  """
+  Can read content only
+  """
   viewer
 }

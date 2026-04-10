@@ -1,21 +1,41 @@
+"""
+Returned when a check-in (Action) meeting is successfully ended. Contains the final state of the
+meeting, the team, any task changes that occurred, and a timeline event for the viewer's activity feed.
+"""
 type EndCheckInSuccess {
   """
   true if the meeting was killed (ended before reaching last stage)
   """
   isKill: Boolean!
+
+  """
+  The team that ran the check-in meeting
+  """
   team: Team!
+
+  """
+  The check-in meeting that was ended
+  """
   meeting: ActionMeeting!
 
   """
   The ID of the suggestion to try a check-in meeting, if tried
   """
   removedSuggestedActionId: ID
+
+  """
+  IDs of tasks that were deleted when the meeting ended, such as private tasks belonging to members who left the team
+  """
   removedTaskIds: [ID!]
 
   """
-  An event that is important to the viewer, e.g. an ended meeting
+  The timeline event created for this ended meeting, surfaced in the viewer's activity feed
   """
   timelineEvent: TimelineEvent!
+
+  """
+  IDs of tasks that were updated during the meeting
+  """
   updatedTaskIds: [ID!]
 
   """

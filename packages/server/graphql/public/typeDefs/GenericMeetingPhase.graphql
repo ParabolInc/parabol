@@ -3,15 +3,26 @@ An all-purpose meeting phase with no extra state
 """
 type GenericMeetingPhase implements NewMeetingPhase {
   """
-  shortid
+  The unique phase ID
   """
   id: ID!
+  """
+  The meeting this phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The team this phase belongs to
+  """
   teamId: ID!
 
   """
   The type of phase
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  The stages that make up this phase
+  """
   stages: [GenericMeetingStage!]!
 }

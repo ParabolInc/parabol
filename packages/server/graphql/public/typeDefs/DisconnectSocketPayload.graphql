@@ -1,6 +1,18 @@
+"""
+Pushed via the notificationSubscription to all team members when a user's last
+WebSocket connection closes. This is not the result of a mutation — the server
+emits it automatically from the onDisconnect handler once it confirms the user
+has no remaining open sockets (socketCount === 0). Subscribers use this payload
+to update presence indicators, e.g. marking the user as offline in the UI.
+
+Success: user is present and reflects the now-disconnected user.
+No-op / not emitted: if the user still has other open connections (e.g. multiple
+browser tabs), the payload is suppressed and presence is unchanged.
+"""
 type DisconnectSocketPayload {
   """
-  The user that disconnected
+  The user who just fully disconnected (all sockets closed). Use this to update
+  presence state — the user should be treated as offline after receiving this payload.
   """
   user: User
 }

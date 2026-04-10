@@ -1,11 +1,34 @@
+"""
+Specifies which external project or repository a newly created Parabol task should be pushed to as
+an issue/work-item. Used as the optional `integration` field on CreateTaskInput when calling the
+`createTask` mutation, and also accepted directly by the `createTaskIntegration` mutation to link
+an existing task that has no integration yet.
+
+The caller must have a valid OAuth token for the target service (stored via the team's integration
+settings). If neither the viewer nor the task assignee has an active token, the mutation returns an
+error. Providing this input when the task already has an integration also returns an error.
+
+Success: the external issue is created, the Task record is updated with an `integrationHash` and
+`integration` sub-object, and a TaskSubscription notification is published to all team members.
+"""
 input CreateTaskIntegrationInput {
   """
-  The service to push this new task to
+  The external service where the issue should be created. Must match one of the configured
+  integration providers for the team. Determines how `serviceProjectHash` is interpreted and which
+  OAuth credentials are used.
   """
   service: TaskServiceEnum!
 
   """
-  The key or composite key where the task should live in the service, e.g. nameWithOwner or cloudId:projectKey
+  A service-specific identifier for the project or repository that will own the new issue.
+  The required format differs by service:
+  - github:      "owner/repo"  (nameWithOwner, e.g. "ParabolInc/parabol")
+  - jira:        "cloudId:projectKey"  (e.g. "abc123:ENG")
+  - jiraServer:  service-specific composite key for the Jira Server project
+  - gitlab:      full project path (e.g. "group/subgroup/project")
+  - azureDevOps: IntegrationRepoId composite (instanceId:projectId)
+  - linear:      Linear team/project identifier
+  Passing an unrecognised format for the selected service will cause task creation to fail.
   """
   serviceProjectHash: String!
 }

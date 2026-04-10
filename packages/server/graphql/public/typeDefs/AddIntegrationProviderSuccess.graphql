@@ -1,16 +1,19 @@
+"""
+Successful result of addIntegrationProvider. The integration provider has been registered and is now available for use by teams or org members.
+"""
 type AddIntegrationProviderSuccess {
   """
-  The provider that was added
+  The newly registered integration provider
   """
   provider: IntegrationProvider!
 
   """
-  The updated set of organization integration providers if there were changes
+  The updated set of organization-level integration providers, if the new provider affects org scope
   """
   orgIntegrationProviders: OrgIntegrationProviders
 
   """
-  Updated team member integrations if there were changes
+  Updated team member integrations, if the new provider affects team scope
   """
   teamMemberIntegrations: TeamMemberIntegrations
 }

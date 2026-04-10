@@ -1,3 +1,9 @@
+"""
+Returned by mutations when an error prevents the operation from completing successfully. When present, the client should surface the error details to the user rather than attempting to process any other payload fields.
+"""
 type ErrorPayload {
+  """
+  Structured error information describing why the mutation failed.
+  """
   error: StandardMutationError!
 }

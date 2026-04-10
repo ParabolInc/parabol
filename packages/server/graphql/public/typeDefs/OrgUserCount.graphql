@@ -1,3 +1,6 @@
+"""
+A count of active and inactive users within an organization
+"""
 type OrgUserCount {
   """
   The number of orgUsers who have an inactive flag

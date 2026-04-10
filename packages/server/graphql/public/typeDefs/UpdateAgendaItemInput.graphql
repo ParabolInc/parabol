@@ -1,3 +1,6 @@
+"""
+Input for updating an existing agenda item
+"""
 input UpdateAgendaItemInput {
   """
   The unique agenda item ID, composed of a teamId::shortid

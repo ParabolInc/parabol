@@ -1,4 +1,8 @@
+"""
+Return value for updatePokerTemplateScaleValue mutation
+"""
 type UpdatePokerTemplateScaleValuePayload {
   error: StandardMutationError
+  "The updated template scale"
   scale: TemplateScale
 }

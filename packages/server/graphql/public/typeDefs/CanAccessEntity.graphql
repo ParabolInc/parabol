@@ -1,5 +1,24 @@
+"""
+The type of entity to check access for, used as an argument to User.canAccess.
+Lets callers determine whether the viewer has permission to see a specific resource
+(e.g. to distinguish a "not found" error from an "invite required" situation).
+"""
 enum CanAccessEntity {
+  """
+  A team the viewer may or may not be a member of. Use to check whether the viewer
+  can see team details before prompting them to request membership.
+  """
   Team
+
+  """
+  A meeting (retrospective, standup, poker, etc.) that may be restricted to team members.
+  Use to determine whether the viewer needs an invite link to join.
+  """
   Meeting
+
+  """
+  An organization the viewer may or may not belong to. Use to check visibility before
+  directing the viewer to request access or an invitation.
+  """
   Organization
 }

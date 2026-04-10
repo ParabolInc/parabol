@@ -8,6 +8,9 @@ type Mutation {
     """
     newAgendaItem: CreateAgendaItemInput!
   ): AddAgendaItemPayload @scope(name: TEAMS_WRITE)
+  """
+  Connect the current user's Atlassian (Jira Cloud) account to a team
+  """
   addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
@@ -41,15 +44,21 @@ type Mutation {
   ): AddPokerTemplateScaleValuePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Add a new template full of prompts
+  Add a new prompt to an existing reflect template
   """
   addReflectTemplatePrompt(templateId: ID!): AddReflectTemplatePromptPayload!
     @scope(name: TEMPLATES_WRITE)
+  """
+  Connect the current user's Slack account to a team
+  """
   addSlackAuth(code: ID!, teamId: ID!): AddSlackAuthPayload! @scope(name: TEAMS_WRITE)
+  """
+  Connect the current user's GitHub account to a team
+  """
   addGitHubAuth(code: ID!, teamId: ID!): AddGitHubAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Create a new team and add the first team member
+  Create a new organization with an initial team, optionally inviting members by email
   """
   addOrg(
     """
@@ -74,12 +83,18 @@ type Mutation {
     newTeam: NewTeamInput!
     invitees: [Email!]
   ): AddTeamPayload! @scope(name: TEAMS_WRITE)
+  """
+  Archive an organization, making it inactive
+  """
   archiveOrganization(
     """
     The orgId to archive
     """
     orgId: ID!
   ): ArchiveOrganizationPayload! @scope(name: ORGS_WRITE)
+  """
+  Archive a team. If the team has never been used, it will be permanently deleted.
+  """
   archiveTeam(
     """
     The teamId to archive (or delete, if team is unused)
@@ -123,9 +138,12 @@ type Mutation {
     status: NotificationStatusEnum!
   ): SetNotificationStatusPayload @scope(name: USERS_WRITE)
 
+  """
+  Create a new top-level page. To create a child page, insert a page block link inside an existing document.
+  """
   createPage(
     """
-    The team this should be placed at the root under and inherit from. Mutally exclusive to parentPageId
+    The team to scope this page under. If omitted, the page is created as a personal page.
     """
     teamId: ID
   ): CreatePagePayload! @scope(name: PAGES_WRITE)
@@ -158,6 +176,9 @@ type Mutation {
     """
     expiresAt: DateTime!
   ): CreatePersonalAccessTokenSuccess! @scope(name: USERS_WRITE)
+  """
+  Push a Parabol task to an external integration as a new issue (e.g. Jira, GitHub)
+  """
   createTaskIntegration(
     """
     Which integration to push the task to
@@ -298,7 +319,7 @@ type Mutation {
   denyPushInvitation(teamId: ID!, userId: ID!): DenyPushInvitationPayload @scope(name: TEAMS_WRITE)
 
   """
-  Redeem an invitation token for a logged in user
+  Dismiss the new feature announcement for the current user
   """
   dismissNewFeature: DismissNewFeaturePayload! @scope(name: USERS_WRITE)
 
@@ -362,11 +383,11 @@ type Mutation {
   ): EmailPasswordResetPayload! @scope(name: USERS_WRITE)
 
   """
-  Track which users are commenting
+  Broadcast that the current user started or stopped typing a comment in a discussion
   """
   editCommenting(
     """
-    True if the user is commenting, false if the user has stopped commenting
+    True if the user started commenting, false if they stopped
     """
     isCommenting: Boolean!
     discussionId: ID!
@@ -383,11 +404,11 @@ type Mutation {
   ): EndSprintPokerPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Changes the editing state of a user for a phase item
+  Broadcast that the current user started or stopped editing a reflection
   """
   editReflection(
     """
-    Whether a reflectPrompt is being edited or not
+    True if the user started editing, false if they stopped
     """
     isEditing: Boolean!
     meetingId: ID!
@@ -452,7 +473,7 @@ type Mutation {
   ): EndRetrospectivePayload! @scope(name: MEETINGS_WRITE)
 
   """
-  flag a viewer as ready to advance to the next stage of a meeting
+  Flag the current user as ready (or not ready) to advance to the next stage of a meeting
   """
   flagReadyToAdvance(
     meetingId: ID!
@@ -490,7 +511,7 @@ type Mutation {
   ): InviteToTeamPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Generate an insight for a team
+  Generate an AI-powered insight report for a team based on meeting data within a date range
   """
   generateInsight(
     teamId: ID!
@@ -501,7 +522,7 @@ type Mutation {
   ): GenerateInsightPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Move a template dimension
+  Reorder a dimension within a poker template
   """
   movePokerTemplateDimension(
     dimensionId: ID!
@@ -509,13 +530,13 @@ type Mutation {
   ): MovePokerTemplateDimensionPayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  Move a reflect template
+  Reorder a prompt within a reflect template
   """
   moveReflectTemplatePrompt(promptId: ID!, sortOrder: String!): MoveReflectTemplatePromptPayload
     @scope(name: TEMPLATES_WRITE)
 
   """
-  Move a team to a different org. Requires billing leader rights on both orgs!
+  Move one or more teams to a different org. Requires billing leader rights on both orgs.
   """
   moveTeamToOrg(
     """
@@ -530,7 +551,7 @@ type Mutation {
   ): String @scope(name: ORGS_WRITE)
 
   """
-  update a meeting by marking an item complete and setting the facilitator location
+  Advance the meeting by marking a stage complete and/or moving the facilitator to a different stage
   """
   navigateMeeting(
     """
@@ -550,7 +571,7 @@ type Mutation {
   ): NavigateMeetingPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Add or remove a task and its estimate phase from the meeting
+  Save or remove a Jira search query for a team's sprint poker backlog
   """
   persistJiraSearchQuery(
     """
@@ -616,6 +637,9 @@ type Mutation {
     dimensionId: ID!
     description: String!
   ): PokerTemplateDimensionUpdateDescriptionPayload @scope(name: TEMPLATES_WRITE)
+  """
+  Update the color of a reflect template prompt
+  """
   reflectTemplatePromptUpdateGroupColor(
     promptId: ID!
     groupColor: String!
@@ -843,13 +867,13 @@ type Mutation {
     @scope(name: TEAMS_WRITE)
 
   """
-  Focus (or unfocus) a phase item
+  Focus a specific reflection prompt so all participants see it highlighted. Pass null to unfocus.
   """
   setPhaseFocus(
     meetingId: ID!
 
     """
-    The currently focused phase item
+    The prompt to focus. Null to clear focus.
     """
     focusedPromptId: ID
   ): SetPhaseFocusPayload @scope(name: MEETINGS_WRITE)
@@ -874,6 +898,9 @@ type Mutation {
     timeRemaining: Float
   ): SetStageTimerPayload! @scope(name: MEETINGS_WRITE)
 
+  """
+  Configure which Slack notification events are sent to a channel for a team
+  """
   setSlackNotification(
     slackChannelId: ID
     slackNotificationEvents: [SlackNotificationEventEnum!]!
@@ -906,7 +933,7 @@ type Mutation {
   ): StartDraggingReflectionPayload @scope(name: MEETINGS_WRITE)
 
   """
-  Start a new sprint poker meeting
+  Start a new sprint poker (estimation) meeting for a team
   """
   startSprintPoker(
     """
@@ -930,7 +957,7 @@ type Mutation {
   ): StartSprintPokerPayload! @scope(name: MEETINGS_WRITE)
 
   """
-  Broadcast that the viewer highlights a task
+  Broadcast that the current user is highlighting or un-highlighting a task for other meeting participants
   """
   setTaskHighlight(taskId: ID!, meetingId: ID!, isHighlighted: Boolean!): SetTaskHighlightPayload!
     @scope(name: MEETINGS_WRITE)
@@ -991,12 +1018,12 @@ type Mutation {
   ): UpdateNewCheckInQuestionPayload @scope(name: MEETINGS_WRITE)
 
   """
-  all the info required to provide an accurate display-specific location of where an item is
+  Broadcast the current user's drag position to other meeting participants
   """
   updateDragLocation(input: UpdateDragLocationInput!): Boolean @scope(name: MEETINGS_WRITE)
 
   """
-  Add or remove a task and its estimate phase from the meeting
+  Add or remove tasks from the sprint poker meeting's estimation backlog
   """
   updatePokerScope(
     """
@@ -1035,7 +1062,7 @@ type Mutation {
   ): UpdateReflectionGroupTitlePayload @scope(name: MEETINGS_WRITE)
 
   """
-  Change the max votes for participants
+  Update the total votes and max votes per topic available to each participant in a retrospective
   """
   updateRetroMaxVotes(
     """
@@ -1083,6 +1110,9 @@ type Mutation {
     """
     dueDate: DateTime
   ): UpdateTaskDueDatePayload @scope(name: TASKS_WRITE)
+  """
+  Rename a team
+  """
   updateTeamName(
     """
     The input object containing the teamId and any modified fields
@@ -1152,6 +1182,7 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Broadcast that the current user started or stopped hovering over the poker scoring deck
   """
   pokerAnnounceDeckHover(
     meetingId: ID!
@@ -1208,6 +1239,7 @@ type Mutation {
   ): SetPokerSpectatePayload! @scope(name: MEETINGS_WRITE)
 
   """
+  Save or remove a GitHub search query for a team's sprint poker backlog
   """
   persistGitHubSearchQuery(
     """
@@ -1233,7 +1265,7 @@ type Mutation {
     @scope(name: TASKS_WRITE)
 
   """
-  Show/hide the drawer in the team dashboard
+  Show or hide a drawer panel in the team dashboard
   """
   toggleTeamDrawer(
     """
@@ -1248,7 +1280,7 @@ type Mutation {
   ): ToggleTeamDrawerPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Toggle a feature flag for a specific owner (organization, team, or user)
+  Toggle a feature flag on or off for a specific owner (organization, team, or user). Admin-only.
   """
   toggleFeatureFlag(
     """
@@ -1270,7 +1302,7 @@ type Mutation {
   ): ToggleFeatureFlagPayload! @scope(name: ORGS_WRITE)
 
   """
-  Toggle whether the organization has access to ai features
+  Toggle AI features on or off for an organization
   """
   toggleAIFeatures(
     """
@@ -1280,7 +1312,7 @@ type Mutation {
   ): ToggleAIFeaturesPayload! @scope(name: ORGS_WRITE)
 
   """
-  Toggle whether the team privacy settings
+  Toggle the team's privacy between public (joinable without invitation) and private
   """
   toggleTeamPrivacy(
     """
@@ -1420,7 +1452,7 @@ type Mutation {
   ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
 
   """
-  pauses the subscription for a single user
+  Deactivate a user's billing seat. The user can still log in and will be automatically reactivated when they do.
   """
   inactivateUser(
     """
@@ -1430,7 +1462,7 @@ type Mutation {
   ): InactivateUserPayload @scope(name: USERS_WRITE)
 
   """
-  Adds the request user to multiple selected teams on the domain
+  Add the requesting user to multiple selected teams on the organization's domain
   """
   acceptRequestToJoinDomain(
     """
@@ -1475,7 +1507,7 @@ type Mutation {
   ): AddApprovedOrganizationDomainsPayload! @scope(name: ORGS_WRITE)
 
   """
-  Add or remove a reactji from a reactable
+  Add or remove an emoji reaction (reactji) on a reactable item such as a reflection or comment
   """
   addReactjiToReactable(
     """
@@ -1484,7 +1516,7 @@ type Mutation {
     reactableId: ID!
 
     """
-    the type of the
+    The type of the reactable (e.g. reflection, comment)
     """
     reactableType: ReactableEnum!
 
@@ -1529,8 +1561,7 @@ type Mutation {
   ): AddTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
-  This mutation is specific to the mattermost global integration provider.
-  It will create a new TeamNotificationSettings object for the team and channel
+  Link a Mattermost channel to a team to receive meeting notifications
   """
   linkMattermostChannel(
     """
@@ -1581,7 +1612,7 @@ type Mutation {
   ): BatchArchiveTasksPayload! @scope(name: TASKS_WRITE)
 
   """
-  for troubleshooting by admins, create a JWT for a given userId
+  Admin-only: create an auth token to impersonate a given user for troubleshooting
   """
   createImposterToken(
     """
@@ -1657,7 +1688,7 @@ type Mutation {
   loginWithPassword(email: ID!, password: String!): UserLogInPayload! @scope(name: USERS_WRITE)
 
   """
-  Sign out the current user by unsetting the session cookie
+  Sign out the current user
   """
   signOut: Boolean! @scope(name: USERS_WRITE)
 
@@ -1667,13 +1698,16 @@ type Mutation {
   refreshSession: Boolean! @scope(name: USERS_WRITE)
 
   """
-  Describe the mutation here
+  Modify the tone of an AI-generated draft icebreaker question for a check-in meeting. Only visible to the facilitator before it is applied. modifyType options: EXCITING, FUNNY, SERIOUS.
   """
   modifyCheckInQuestion(
     meetingId: ID!
     checkInQuestion: String!
     modifyType: ModifyType!
   ): ModifyCheckInQuestionPayload! @scope(name: MEETINGS_WRITE)
+  """
+  Save a search query for a team's integration provider (e.g. Jira Server) for reuse in sprint poker
+  """
   persistIntegrationSearchQuery(
     teamId: ID!
     service: IntegrationProviderServiceEnum!
@@ -1697,7 +1731,7 @@ type Mutation {
   ): RemoveApprovedOrganizationDomainsPayload! @scope(name: ORGS_WRITE)
 
   """
-  Describe the mutation here
+  Remove a saved search query from a team's integration provider
   """
   removeIntegrationSearchQuery(
     """
@@ -1723,7 +1757,7 @@ type Mutation {
   ): RemoveTeamMemberIntegrationAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Sends the request to the appropriate organizations on the viewer's domain
+  Send a request to join the organizations associated with the current user's email domain
   """
   requestToJoinDomain: RequestToJoinDomainPayload! @scope(name: ORGS_WRITE)
 
@@ -1737,11 +1771,14 @@ type Mutation {
   """
   ungroupReflection(reflectionGroupId: ID, reflectionId: ID): UngroupReflectionSuccess!
     @scope(name: MEETINGS_WRITE)
+  """
+  Simultaneously reveal all hidden team health votes in a meeting stage
+  """
   revealTeamHealthVotes(meetingId: ID!, stageId: ID!): RevealTeamHealthVotesPayload!
     @scope(name: MEETINGS_WRITE)
 
   """
-  Enabled or disable the icebreaker round
+  Update configurable settings for a meeting type, including icebreaker phase, team health phase, reflection anonymity, and video meeting URL
   """
   setMeetingSettings(
     settingsId: ID!

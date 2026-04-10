@@ -1,5 +1,7 @@
+"A GitLab issue linked to a Parabol task"
 type _xGitLabIssue implements TaskIntegration
 
+"A GitLab project available for integration"
 type _xGitLabProject implements RepoIntegration
 
 extend type _xGitLabProject {

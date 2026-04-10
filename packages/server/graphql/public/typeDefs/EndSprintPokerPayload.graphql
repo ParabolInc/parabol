@@ -1,4 +1,5 @@
 """
-Return object for EndSprintPokerPayload
+The result of the endSprintPoker mutation. Returns EndSprintPokerSuccess on success,
+or ErrorPayload if the meeting was not found, was already ended, or the caller lacks permission.
 """
 union EndSprintPokerPayload = ErrorPayload | EndSprintPokerSuccess

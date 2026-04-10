@@ -2,13 +2,48 @@
 The name of the service of the Integration Provider
 """
 enum IntegrationProviderServiceEnum {
+  """
+  Atlassian Jira Cloud
+  """
   jira
+
+  """
+  GitHub
+  """
   github
+
+  """
+  GitLab
+  """
   gitlab
+
+  """
+  Mattermost messaging platform
+  """
   mattermost
+
+  """
+  Atlassian Jira Server (self-hosted)
+  """
   jiraServer
+
+  """
+  Google Calendar
+  """
   gcal
+
+  """
+  Microsoft Azure DevOps
+  """
   azureDevOps
+
+  """
+  Microsoft Teams
+  """
   msTeams
+
+  """
+  Linear issue tracker
+  """
   linear
 }

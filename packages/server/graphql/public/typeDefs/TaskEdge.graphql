@@ -1,5 +1,5 @@
 """
-An edge in a connection.
+A cursor-based edge wrapping a single task in a paginated list
 """
 type TaskEdge {
   """

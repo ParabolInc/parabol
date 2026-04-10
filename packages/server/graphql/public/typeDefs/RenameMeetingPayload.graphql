@@ -1,4 +1,4 @@
 """
-Return object for RenameMeetingPayload
+Result of renaming a meeting
 """
 union RenameMeetingPayload = ErrorPayload | RenameMeetingSuccess

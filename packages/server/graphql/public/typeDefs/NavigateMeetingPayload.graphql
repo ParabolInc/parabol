@@ -1,5 +1,15 @@
+"""
+The result of the facilitator navigating to a different meeting stage
+"""
 type NavigateMeetingPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
+
+  """
+  The updated meeting after navigation
+  """
   meeting: NewMeeting
 
   """

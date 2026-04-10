@@ -1,3 +1,6 @@
+"""
+Success result for updateMeetingTemplate mutation
+"""
 type UpdateMeetingTemplateSuccess {
   """
   The updated meeting

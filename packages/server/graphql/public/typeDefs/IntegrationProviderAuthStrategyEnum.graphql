@@ -2,9 +2,28 @@
 The kind of token provided by the service
 """
 enum IntegrationProviderAuthStrategyEnum {
+  """
+  OAuth 1.0 token-based authentication (e.g. Jira Server)
+  """
   oauth1
+
+  """
+  OAuth 2.0 token-based authentication (e.g. GitLab, Google Calendar)
+  """
   oauth2
+
+  """
+  Personal access token authentication
+  """
   pat
+
+  """
+  Outbound webhook with no inbound authentication
+  """
   webhook
+
+  """
+  Shared secret used to sign requests between Parabol and the provider
+  """
   sharedSecret
 }

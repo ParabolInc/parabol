@@ -1,12 +1,31 @@
+"""
+The successful result of ending a Sprint Poker meeting, including the final meeting state,
+affected tasks, and a timeline event for the viewer's activity feed.
+"""
 type EndSprintPokerSuccess {
   """
   true if the meeting was killed (ended before reaching last stage)
   """
   isKill: Boolean!
+  """
+  The ID of the Sprint Poker meeting that was ended.
+  """
   meetingId: ID!
+  """
+  The Sprint Poker meeting that was ended, with its final state.
+  """
   meeting: PokerMeeting!
+  """
+  IDs of tasks that were removed when the meeting ended (e.g. tasks with no story points assigned).
+  """
   removedTaskIds: [ID!]!
+  """
+  The team that hosted the Sprint Poker meeting.
+  """
   team: Team!
+  """
+  The ID of the team that hosted the Sprint Poker meeting.
+  """
   teamId: ID!
 
   """

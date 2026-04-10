@@ -1,3 +1,6 @@
+"""
+Success result for setDefaultSlackChannel mutation
+"""
 type SetDefaultSlackChannelSuccess {
   """
   The id of the slack channel that is now the default slack channel

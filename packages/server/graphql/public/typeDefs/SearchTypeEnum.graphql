@@ -1,5 +1,11 @@
+"""
+The category of content to search across
+"""
 enum SearchTypeEnum {
+  "A wiki-style page"
   page
+  "A retro or sprint poker meeting template"
   meetingTemplate
+  "A topic from a retrospective discussion"
   retrospectiveDiscussionTopic
 }

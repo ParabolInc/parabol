@@ -1,5 +1,5 @@
 """
-All the meeting specifics for a user in a action meeting
+Represents a team member's participation record in a Check-In (Action) meeting. Tracks which tasks were completed or assigned during the meeting for that member.
 """
 type ActionMeetingMember implements MeetingMember {
   """
@@ -14,11 +14,29 @@ type ActionMeetingMember implements MeetingMember {
     @deprecated(
       reason: "Members are checked in when they enter the meeting now & not created beforehand"
     )
+  """
+  The ID of the meeting this member record belongs to
+  """
   meetingId: ID!
+  """
+  Always ACTION for this meeting type
+  """
   meetingType: MeetingTypeEnum!
+  """
+  The ID of the team this meeting belongs to
+  """
   teamId: ID!
+  """
+  The team member associated with this participation record
+  """
   teamMember: TeamMember!
+  """
+  The user associated with this participation record
+  """
   user: User!
+  """
+  The ID of the user associated with this participation record
+  """
   userId: ID!
 
   """

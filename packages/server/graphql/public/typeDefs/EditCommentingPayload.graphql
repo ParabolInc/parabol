@@ -1,4 +1,4 @@
 """
-Return object for EditCommentingPayload
+The result of the editCommenting mutation, which tracks whether a user has started or stopped actively typing a comment in a discussion thread. Returns the affected discussion on success so subscribers can update the live typing-indicator state.
 """
 union EditCommentingPayload = ErrorPayload | EditCommentingSuccess

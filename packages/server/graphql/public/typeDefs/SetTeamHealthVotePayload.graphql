@@ -1,1 +1,4 @@
+"""
+Return value for setTeamHealthVote mutation
+"""
 union SetTeamHealthVotePayload = ErrorPayload | SetTeamHealthVoteSuccess

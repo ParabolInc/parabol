@@ -1,17 +1,36 @@
 """
-The meeting phase where all team members estimate a the point value of a task
+The phase in a Sprint Poker meeting where the team collectively estimates the effort or complexity
+of each task, one at a time. Each task gets its own EstimateStage, where participants privately
+select a score from a template dimension (e.g. story points), then reveal votes simultaneously
+to spark discussion. The facilitator moves through stages sequentially and sets a final score for
+each task before advancing. Use this type to render the estimation phase UI, iterate over tasks
+being estimated, or inspect scoring progress.
 """
 type EstimatePhase implements NewMeetingPhase {
   """
-  shortid
+  Unique identifier for this phase instance (shortid)
   """
   id: ID!
+
+  """
+  The ID of the Sprint Poker meeting this estimate phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The ID of the team running this meeting
+  """
   teamId: ID!
 
   """
-  The type of phase
+  The type of phase — always "ESTIMATE" for this type
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  Ordered list of estimation stages, one per task being estimated. Each stage contains the
+  scoring state for a single task, including participant votes and the final score set by
+  the facilitator.
+  """
   stages: [EstimateStage!]!
 }

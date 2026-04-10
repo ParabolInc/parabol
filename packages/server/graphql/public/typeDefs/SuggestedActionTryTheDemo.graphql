@@ -1,15 +1,11 @@
 """
-a suggestion to invite others to your team
+A suggestion to try the Parabol demo
 """
 type SuggestedActionTryTheDemo implements SuggestedAction {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
 
-  """
-  * The timestamp the action was created at
-  """
+  "When the suggested action was created"
   createdAt: DateTime!
 
   """
@@ -17,9 +13,7 @@ type SuggestedActionTryTheDemo implements SuggestedAction {
   """
   priority: Float
 
-  """
-  * The timestamp the action was removed at
-  """
+  "When the suggested action was dismissed or completed, if applicable"
   removedAt: DateTime
 
   """
@@ -27,13 +21,9 @@ type SuggestedActionTryTheDemo implements SuggestedAction {
   """
   type: SuggestedActionTypeEnum!
 
-  """
-  * The userId this action is for
-  """
+  "The user this action is suggested for"
   userId: ID!
 
-  """
-  The user than can see this event
-  """
+  "The user who can see this suggestion"
   user: User!
 }

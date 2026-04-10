@@ -2,6 +2,9 @@
 A notification alerting the user that they have been promoted (to team or org leader)
 """
 type NotifyPromoteToOrgLeader implements Notification {
+  """
+  The organization in which the viewer was promoted
+  """
   organization: Organization!
 
   """
@@ -21,7 +24,7 @@ type NotifyPromoteToOrgLeader implements Notification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 }

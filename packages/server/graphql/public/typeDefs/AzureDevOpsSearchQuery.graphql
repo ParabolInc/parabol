@@ -1,29 +1,40 @@
 """
-An Azure DevOps search query including all filters selected when the query was executed
+A saved Azure DevOps work-item search query, capturing the query string and any
+filters that were active when the query was last run. These are persisted per-user
+so that recently used searches can be surfaced and re-executed quickly during
+sprint planning or issue scoping.
 """
 type AzureDevOpsSearchQuery {
   """
-  shortid
+  A short unique identifier for this saved search query.
   """
   id: ID!
 
   """
-  The query string, either simple or WIQL depending on the isWIQL flag
+  The search string used to find work items. When isWIQL is false this is a
+  plain-text keyword search; when isWIQL is true this is a full WIQL (Work Item
+  Query Language) statement, which supports WHERE clauses, field comparisons, and
+  ordering (e.g. "SELECT [Id] FROM WorkItems WHERE [System.State] = 'Active'").
   """
   queryString: String!
 
   """
-  A list of projects to restrict the search to
+  An optional list of Azure DevOps project keys (slugs) used to narrow results to
+  specific projects. An empty array means the query runs across all projects the
+  user has access to. Each entry corresponds to an Azure DevOps project name or ID.
   """
   projectKeyFilters: [String!]!
 
   """
-  true if the queryString is WIQL, else false
+  When true, queryString must be a valid WIQL statement and will be sent to the
+  Azure DevOps WIQL endpoint directly. When false, queryString is treated as a
+  simple keyword search and project-level filters are applied separately.
   """
   isWIQL: Boolean!
 
   """
-  the time the search query was last used. Used for sorting
+  The timestamp of the most recent time this query was executed. Used to sort saved
+  queries so the most recently used ones appear first in the UI.
   """
   lastUsedAt: DateTime!
 }

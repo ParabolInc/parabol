@@ -1,29 +1,35 @@
 """
-The user and number of points they estimated for dimension (where 1 stage has 1 dimension)
+A single team member's vote on a Poker planning stage. Each stage corresponds to one
+estimation dimension, so this record captures which label (e.g. "5", "XL") a specific
+user chose when voting on that dimension. One score exists per (stage, user) pair.
 """
 type EstimateUserScore {
   """
-  shortid
+  A composite identifier derived from the stageId and userId, uniquely identifying this
+  vote within the meeting.
   """
   id: ID!
 
   """
-  The stageId
+  The ID of the EstimateStage (i.e. the specific dimension being estimated) that this
+  score belongs to.
   """
   stageId: ID!
 
   """
-  The userId that for this score
+  The ID of the team member who cast this vote.
   """
   userId: ID!
 
   """
-  The user that for this score
+  The team member who cast this vote.
   """
   user: User!
 
   """
-  The label that was associated with the score at the time of the vote. Note: It may no longer exist on the dimension
+  The scale label selected by the user at the time of voting (e.g. "3", "8", "?").
+  Stored as a snapshot because scale values are mutable — the label may no longer exist
+  on the dimension's template scale after the vote was cast.
   """
   label: String!
 }

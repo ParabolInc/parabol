@@ -1,6 +1,7 @@
+"""
+Success result for shareTopic mutation
+"""
 type ShareTopicSuccess {
-  """
-  Meeting
-  """
+  "The meeting containing the shared topic"
   meeting: NewMeeting
 }
