@@ -1,4 +1,10 @@
+"""
+The result of a user successfully joining a team
+"""
 type JoinTeamSuccess {
+  """
+  The viewer who just joined the team
+  """
   viewer: User!
   """
   The team that was joined

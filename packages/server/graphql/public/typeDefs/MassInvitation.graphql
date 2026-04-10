@@ -11,5 +11,9 @@ type MassInvitation {
   the expiration for the token
   """
   expiration: DateTime!
+
+  """
+  The meeting ID to auto-join upon accepting, if the invitation is tied to a specific meeting
+  """
   meetingId: ID
 }

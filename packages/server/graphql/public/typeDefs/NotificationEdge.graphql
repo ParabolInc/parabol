@@ -6,5 +6,9 @@ type NotificationEdge {
   The item at the end of the edge
   """
   node: Notification!
+
+  """
+  Cursor for date-based pagination
+  """
   cursor: DateTime
 }

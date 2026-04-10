@@ -1,5 +1,19 @@
+"""
+A lightweight organization summary for use in access control and notification contexts
+"""
 type OrganizationPreview implements OrganizationPartial {
+  """
+  The unique organization ID
+  """
   id: ID!
+
+  """
+  The name of the organization
+  """
   name: String!
+
+  """
+  The organization avatar URL
+  """
   picture: URL
 }

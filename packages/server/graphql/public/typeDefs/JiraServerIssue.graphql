@@ -6,10 +6,29 @@ type JiraServerIssue implements TaskIntegration {
   GUID providerId:repositoryId:issueId
   """
   id: ID!
+  """
+  The issue key as shown in Jira (e.g. "PROJ-123")
+  """
   issueKey: ID!
+
+  """
+  The issue type identifier
+  """
   issueType: ID!
+
+  """
+  The ID of the Jira project this issue belongs to
+  """
   projectId: ID!
+
+  """
+  The key of the Jira project (e.g. "PROJ")
+  """
   projectKey: ID!
+
+  """
+  The human-readable project name
+  """
   projectName: String!
 
   """
@@ -31,12 +50,19 @@ type JiraServerIssue implements TaskIntegration {
   The plaintext summary of the jira issue
   """
   summary: String!
+
+  """
+  The stringified ADF description of the Jira issue
+  """
   description: String!
 
   """
   The description converted into raw HTML
   """
   descriptionHTML: String!
+  """
+  Names of fields on this issue that can be used for story point estimation
+  """
   possibleEstimationFieldNames: [String!]!
 
   """

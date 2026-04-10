@@ -1,3 +1,9 @@
+"""
+The result of successfully generating AI insights for a team's retrospective meetings
+"""
 type GenerateInsightSuccess {
+  """
+  The team for which insights were generated
+  """
   team: Team!
 }

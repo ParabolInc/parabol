@@ -19,12 +19,12 @@ type NotificationMeetingStageTimeLimitEnd implements Notification & TeamNotifica
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 
   """
-  FK
+  The ID of the meeting whose stage time limit expired
   """
   meetingId: ID!
 

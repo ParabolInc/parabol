@@ -1,5 +1,19 @@
+"""
+Basic metadata about a meeting, used for aggregated org-level statistics
+"""
 type MeetingStat {
+  """
+  The unique meeting ID
+  """
   id: ID!
+
+  """
+  The type of meeting (action, retrospective, poker, teamPrompt)
+  """
   meetingType: MeetingTypeEnum!
+
+  """
+  When the meeting was created
+  """
   createdAt: DateTime!
 }

@@ -6,5 +6,9 @@ type GifResponseEdge {
   The item at the end of the edge
   """
   node: GifResponse!
+
+  """
+  Cursor for pagination
+  """
   cursor: String
 }

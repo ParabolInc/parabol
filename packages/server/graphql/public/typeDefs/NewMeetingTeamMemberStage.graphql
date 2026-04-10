@@ -8,7 +8,7 @@ interface NewMeetingTeamMemberStage {
   meetingMember: MeetingMember!
 
   """
-  foreign key. use teamMember
+  The ID of the team member who is the focus of this stage
   """
   teamMemberId: ID!
 

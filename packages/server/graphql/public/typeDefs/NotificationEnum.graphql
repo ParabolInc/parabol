@@ -2,21 +2,88 @@
 The kind of notification
 """
 enum NotificationEnum {
+  """
+  The viewer was mentioned in a discussion thread
+  """
   DISCUSSION_MENTIONED
+
+  """
+  The viewer was removed from a team
+  """
   KICKED_OUT
+
+  """
+  A payment method was rejected by Stripe
+  """
   PAYMENT_REJECTED
+
+  """
+  The viewer was promoted to a billing leader role
+  """
   PROMOTE_TO_BILLING_LEADER
+
+  """
+  The viewer received a team invitation
+  """
   TEAM_INVITATION
+
+  """
+  A team the viewer was on has been archived
+  """
   TEAM_ARCHIVED
+
+  """
+  The viewer was assigned to or mentioned in a task
+  """
   TASK_INVOLVES
+
+  """
+  A timed meeting stage has reached its time limit
+  """
   MEETING_STAGE_TIME_LIMIT_END
+
+  """
+  The viewer was mentioned in a standup response
+  """
   RESPONSE_MENTIONED
+
+  """
+  The viewer was mentioned somewhere in a meeting
+  """
   MENTIONED
+
+  """
+  Someone replied to a standup response the viewer authored
+  """
   RESPONSE_REPLIED
+
+  """
+  The organization is approaching its team limit and may be locked soon
+  """
   TEAMS_LIMIT_REMINDER
+
+  """
+  The viewer is prompted to join an organization that matches their email domain
+  """
   PROMPT_TO_JOIN_ORG
+
+  """
+  An org admin received a request from someone who wants to join their organization
+  """
   REQUEST_TO_JOIN_ORG
+
+  """
+  The organization has exceeded its team limit and is now locked
+  """
   TEAMS_LIMIT_EXCEEDED
+
+  """
+  The viewer was granted access to a page
+  """
   PAGE_ACCESS_GRANTED
+
+  """
+  A page owner received a request to access their page
+  """
   PAGE_ACCESS_REQUESTED
 }

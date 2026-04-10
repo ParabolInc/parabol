@@ -1,3 +1,6 @@
+"""
+The result of flagging a participant as ready to advance to the next meeting stage
+"""
 type FlagReadyToAdvanceSuccess {
   """
   the meeting with the updated readyUserIds

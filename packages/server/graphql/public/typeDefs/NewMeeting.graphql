@@ -1,9 +1,9 @@
 """
-A team meeting history for all previous meetings
+A Parabol team meeting, representing a single occurrence of any meeting type (check-in, retro, poker, standup)
 """
 interface NewMeeting {
   """
-  The unique meeting id. shortid.
+  The unique meeting ID
   """
   id: ID!
 
@@ -66,6 +66,10 @@ interface NewMeeting {
   The meeting series this meeting is associated with if the meeting is recurring
   """
   meetingSeries: MeetingSeries
+
+  """
+  The type of meeting (action, retrospective, poker, teamPrompt)
+  """
   meetingType: MeetingTypeEnum!
 
   """
@@ -99,7 +103,7 @@ interface NewMeeting {
   summarySentAt: DateTime
 
   """
-  foreign key for team
+  The team that ran the meeting
   """
   teamId: ID!
 
@@ -117,5 +121,9 @@ interface NewMeeting {
   The meeting member of the viewer
   """
   viewerMeetingMember: MeetingMember
+
+  """
+  The ID of the page containing the meeting summary, if one was created
+  """
   summaryPageId: ID
 }

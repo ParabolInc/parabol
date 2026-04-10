@@ -1,3 +1,6 @@
+"""
+A greeting shown at the start of a check-in meeting, displayed in a foreign language
+"""
 type MeetingGreeting {
   """
   The foreign-language greeting
