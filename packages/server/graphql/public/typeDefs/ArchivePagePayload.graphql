@@ -1,7 +1,20 @@
+"""
+The return payload for the archivePage mutation, which handles all three steps
+of a page's soft-delete lifecycle: moving to trash (archive), permanent removal
+(delete), and recovery (restore). Check pageId to confirm which page was acted
+on, and inspect page (or its absence) to determine the resulting state.
+"""
 type ArchivePagePayload {
+  """
+  The ID of the page that was acted on. Always present so callers can update
+  local state even when the page object itself is no longer accessible.
+  """
   pageId: String
   """
-  page is null if it was hard deleted
+  The affected page after the action was applied. Null when the page was
+  permanently deleted (hard-deleted), because no record remains to return.
+  Present after an archive (soft-delete) or restore action, allowing the
+  caller to read the updated deletedAt and other fields.
   """
   page: Page
 }

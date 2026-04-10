@@ -1,15 +1,19 @@
 """
-An authentication strategy using Microsoft
+An authentication strategy that uses a Microsoft account (Azure AD / Microsoft Entra ID) to verify a user's identity. Present on a user when they have linked or signed in with Microsoft OAuth. Use this type when distinguishing Microsoft-authenticated users from those using Google or local (email + password) auth.
 """
 type AuthIdentityMicrosoft implements AuthIdentity {
   """
-  true if the email address using this strategy is verified, else false
+  True if Microsoft has verified the email address associated with this identity, false otherwise. Microsoft OAuth accounts are typically verified, but this should be checked before treating the email as trusted.
   """
   isEmailVerified: Boolean!
+
+  """
+  The authentication strategy discriminator. Always MICROSOFT for this type. Useful when iterating over a user's AuthIdentity list to filter or branch on the specific strategy.
+  """
   type: AuthIdentityTypeEnum!
 
   """
-  The Microsoft ID for this strategy
+  The unique identifier assigned by Microsoft (the Azure AD object ID or subject claim) for this user's Microsoft account. Use this to correlate the Parabol user with their Microsoft identity without relying on email address.
   """
   id: ID!
 }

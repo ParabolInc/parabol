@@ -1,19 +1,14 @@
 """
-A request placeholder that will likely turn into 1 or more tasks
+A topic a team member wants to discuss during the agenda phase of a Check-In meeting (meetingType: "action"). Agenda items are added before or during a meeting, worked through one-by-one in the AgendaItemsPhase, and cleared when the meeting ends. Items marked as pinned are automatically re-created for the next meeting so recurring topics always appear on the agenda.
 """
 type AgendaItem {
   """
-  The team member that created the agenda item
-  """
-  teamMember: TeamMember!
-
-  """
-  The unique agenda item id teamId::shortid
+  The unique agenda item id, formatted as teamId::shortid
   """
   id: ID!
 
   """
-  The body of the agenda item
+  The text description of the topic to discuss. Maximum 64 characters.
   """
   content: String!
 
@@ -23,42 +18,47 @@ type AgendaItem {
   createdAt: DateTime
 
   """
-  true if the agenda item has not been processed or deleted
+  True if the agenda item is currently visible and actionable. Set to false when the item is removed or when the meeting ends and non-pinned items are cleared.
   """
   isActive: Boolean!
 
   """
-  True if the agenda item has been pinned
-  """
-  pinned: Boolean
-
-  """
-  If pinned, this is the unique id of the original agenda item
-  """
-  pinnedParentId: ID
-
-  """
-  The sort order of the agenda item in the list
-  """
-  sortOrder: String!
-
-  """
-  *The team for this agenda item
-  """
-  teamId: ID!
-
-  """
-  The teamMemberId that created this agenda item
-  """
-  teamMemberId: ID!
-
-  """
-  The meetingId of the agenda item
+  The id of the Check-In meeting this agenda item belongs to. Null when the item was added outside of a meeting or carried forward from a previous meeting via pinning.
   """
   meetingId: ID
 
   """
-  The timestamp the agenda item was updated
+  True if this agenda item should automatically be re-added to the next meeting when the current meeting ends. Pinned items are cloned at meeting close so they persist across meetings.
+  """
+  pinned: Boolean
+
+  """
+  The id of the original agenda item that was first pinned, tracing the clone lineage across meetings. Null on the original pinned item itself; set on every subsequent clone so the full history of a recurring topic can be retrieved.
+  """
+  pinnedParentId: ID
+
+  """
+  The fractional-index sort order used to position this item in the agenda list
+  """
+  sortOrder: String!
+
+  """
+  The id of the team this agenda item belongs to
+  """
+  teamId: ID!
+
+  """
+  The team member who created this agenda item
+  """
+  teamMember: TeamMember!
+
+  """
+  The id of the team member who created this agenda item
+  """
+  teamMemberId: ID!
+
+  """
+  The timestamp the agenda item was last updated
   """
   updatedAt: DateTime
 }

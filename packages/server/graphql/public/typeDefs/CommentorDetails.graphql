@@ -1,14 +1,16 @@
 """
-The user that is commenting
+A lightweight snapshot of a user who is actively commenting on a retro reflection group thread.
+Contains only the identity fields needed to display a commenter indicator, rather than the full User type.
+Note: this type is deprecated on RetroReflectionGroup — commentor presence has moved to ThreadConnection.
 """
 type CommentorDetails {
   """
-  The userId of the person commenting
+  The userId of the person commenting. Matches the id field on the User type and can be used to fetch the full user record if more details are needed.
   """
   id: ID!
 
   """
-  The preferred name of the user commenting
+  The display name the user has chosen (e.g. "Jane Smith"). Use this to label the commenter in the UI without needing a separate User lookup.
   """
   preferredName: String!
 }

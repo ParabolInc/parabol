@@ -1,8 +1,26 @@
 """
-The part of the site that is calling the mutation
+The area of the application UI from which a task mutation (createTask, updateTask) was triggered.
+Used for analytics and context tracking so the server knows which view the user was in when they
+created or modified a task.
 """
 enum AreaEnum {
+  """
+  The user was inside an active meeting (e.g. Action, Retrospective, Poker) when the task was
+  created or updated. Use this value when the task card is rendered within a meeting room.
+  """
   meeting
+
+  """
+  The user was on the Team Dashboard (the per-team task board at /team/:teamId/tasks) when the
+  task was created or updated. Use this value when the task card is rendered in the team task
+  columns view.
+  """
   teamDash
+
+  """
+  The user was on their personal My Dashboard (the cross-team task view at /me/tasks) when the
+  task was created or updated. Use this value when the task card is rendered in the user-scoped
+  task columns view.
+  """
   userDash
 }

@@ -1,64 +1,98 @@
 """
-A grouping of organizations. Automatically grouped by top level domain of each
+A Company groups one or more Organizations that share the same top-level domain (e.g. "acme.com").
+It is created and maintained automatically — whenever a user joins or creates an Organization,
+Parabol extracts the TLD from their email address and associates that Organization with the
+matching Company. Use Company when you need aggregate metrics (usage, billing tier, engagement)
+across every Organization that belongs to the same corporate entity.
 """
 type Company {
   """
-  the top level domain
+  The top-level domain that uniquely identifies this company (e.g. "acme.com").
+  Derived from user email addresses and used as the primary key.
   """
   id: ID!
 
   """
-  the number of active teams across all organizations
+  The total number of non-archived teams that are currently active across all
+  Organizations belonging to this company.
   """
   activeTeamCount: Int!
 
   """
-  the number of active users across all organizations
+  The number of distinct users who are members of at least one Organization in
+  this company and are not marked inactive. Pass `after` to restrict the count
+  to users who joined after a specific point in time — useful for measuring
+  recent growth.
   """
   activeUserCount(
     """
-    Only include users that joined after this time
+    When provided, only users whose Organization membership began after this
+    timestamp are counted. Omit to count all non-inactive members.
     """
     after: DateTime
   ): Int!
 
   """
-  the number of active workspaces used by the company
+  The number of Organizations within this company that are considered "active":
+  they must have at least one non-archived team and at least two team members
+  who have logged in within the last 30 days.
   """
   activeOrganizationCount: Int!
 
   """
-  the last time any team in the organization started a meeting, null if no meetings were ever run
+  The timestamp of the most recently started meeting across every team in every
+  Organization belonging to this company. Returns null if no meetings have ever
+  been run.
   """
   lastMetAt: DateTime
 
   """
-  the total number of meetings started across all teams on all organizations
+  The total number of meetings that have been started across all teams in all
+  Organizations belonging to this company. Pass `after` to count only meetings
+  created on or after that timestamp.
   """
-  meetingCount(after: DateTime): Int!
+  meetingCount(
+    """
+    When provided, only meetings created on or after this timestamp are counted.
+    """
+    after: DateTime
+  ): Int!
 
   """
-  the longest monthly streak for meeting at least once per month for any team in the company
+  The longest streak (in consecutive calendar months) during which at least one
+  team in the company ran a meeting every month. A streak resets if any calendar
+  month passes without a completed meeting. Useful as an engagement health signal.
   """
   monthlyTeamStreakMax: Int!
 
   """
-  Get the list of all organizations that belong to the company
+  All Organizations that belong to this company. The list is visibility-scoped:
+  enterprise-tier members and super-users see every Organization; other members
+  see only the Organizations they personally belong to.
   """
   organizations: [Organization!]!
 
   """
-  The highest tier than an organization user is being squeezed to upgrade to, "starter" if not squeezed
+  The highest billing tier that any organization user across this company has been
+  nudged to upgrade to, based on their `suggestedTier` field. Returns null if no
+  upgrade nudge is in effect. "starter" means no upgrade is suggested; "team" or
+  "enterprise" indicates the recommended next tier. This drives upsell prompts in
+  the UI — use `tier` instead if you want the current paid tier rather than the
+  suggested one.
   """
   suggestedTier: TierEnum
 
   """
-  The highest tier for any organization within the company
+  The highest billing tier currently active across all Organizations in this
+  company. Determined by inspecting each Organization's `tier` field and
+  returning the highest value ("enterprise" > "team" > "starter"). Use this
+  to determine what features the company already has access to.
   """
   tier: TierEnum!
 
   """
-  the total number of users across all organizations
+  The total number of distinct users who are members of at least one
+  Organization in this company, regardless of activity or join date.
   """
   userCount: Int!
 }

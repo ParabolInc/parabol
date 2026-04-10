@@ -1,8 +1,19 @@
+"""
+Payload returned by the createImposterToken mutation. On success, the server sets an
+auth cookie scoped to the impersonated user (role: "impersonate", valid for 5 minutes),
+allowing an admin to act as that user for troubleshooting without knowing their
+credentials. The token is delivered via cookie, not as a field on this type.
+"""
 type CreateImposterTokenPayload {
+  """
+  Present when the mutation fails — for example when no user matches the supplied
+  userId or email. Null on success.
+  """
   error: StandardMutationError
 
   """
-  The user you have assumed
+  The user whose identity was assumed. Use this to confirm which account the
+  impersonation session was created for before redirecting or continuing.
   """
   user: User
 }

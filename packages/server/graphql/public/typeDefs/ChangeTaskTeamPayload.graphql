@@ -1,9 +1,23 @@
+"""
+Returned by the changeTaskTeam mutation, which reassigns a task from one team to another.
+Contains the updated task for members of the new team, an error if the operation failed,
+and the removed task ID for users who are no longer permitted to see the task after the move.
+"""
 type ChangeTaskTeamPayload {
+  """
+  Present when the mutation fails; describes what went wrong so the client can surface an error message.
+  """
   error: StandardMutationError
+
+  """
+  The task after being reassigned to the new team, including any updated team-scoped fields.
+  Null if the viewer is not a member of the new team (use removedTaskId instead).
+  """
   task: Task
 
   """
-  the taskId sent to a user who is not on the new team so they can remove it from their client
+  The ID of the task that was moved, sent only to viewers who are not members of the new team.
+  Clients should use this to evict the task from their local store when they receive this payload.
   """
   removedTaskId: ID
 }

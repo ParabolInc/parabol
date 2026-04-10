@@ -1,6 +1,13 @@
+"""
+Returned when the archiveTimelineEvent mutation succeeds. Archiving a timeline
+event sets its isActive flag to false, hiding it from the viewer's activity
+feed without permanently deleting it. Use this payload to update local state
+so the event is removed from the displayed timeline.
+"""
 type ArchiveTimelineEventSuccess {
   """
-  the archived timelineEvent
+  The timeline event that was just archived. Its isActive field will be false.
+  Use this to remove or hide the event in the caller's UI after a successful mutation.
   """
   timelineEvent: TimelineEvent!
 }

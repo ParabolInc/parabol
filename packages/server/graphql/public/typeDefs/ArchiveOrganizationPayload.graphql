@@ -1,10 +1,21 @@
+"""
+Payload returned after archiving an organization. Archiving permanently deactivates the org and all its teams. Only starter-tier orgs can be archived — paid orgs must be downgraded first. On success, all teams are archived, all org memberships are soft-deleted, and suggested actions tied to those teams are removed.
+"""
 type ArchiveOrganizationPayload {
   error: StandardMutationError
+
+  """
+  The ID of the organization that was archived. Use this to remove the org from the client store.
+  """
   orgId: ID
+
+  """
+  All teams that belonged to the organization and were archived as part of this operation. Use this to update team records in the client store.
+  """
   teams: [Team!]
 
   """
-  all the suggested actions that never happened
+  IDs of suggested actions that were removed because the teams they referenced no longer exist. Use this to purge stale suggested actions from the client store.
   """
   removedSuggestedActionIds: [ID]
 }

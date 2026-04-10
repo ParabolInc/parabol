@@ -1,14 +1,22 @@
 """
-A suggested reflection group created by OpenAI'
+A single AI-generated reflection group proposed by OpenAI during a retrospective meeting.
+Produced by the autogroup mutation, which calls OpenAI to cluster a meeting's reflections
+into thematically similar groups and gives each cluster a descriptive title.
+This type is used in two places on RetrospectiveMeeting:
+  - autogroupReflectionGroups: the current AI-suggested grouping
+  - resetReflectionGroups: a snapshot of the grouping that existed before autogroup ran,
+    used to restore the original arrangement if the facilitator rejects the AI suggestion.
 """
 type AutogroupReflectionGroup {
   """
-  The smart title for the reflection group created by OpenAI
+  The AI-generated display title summarising the theme shared by the reflections in this group.
+  Produced by OpenAI based on the text content of the reflections and the prompt question they answered.
   """
   groupTitle: String!
 
   """
-  The ids of the reflections in the group
+  The IDs of the RetroReflection records assigned to this group.
+  Use these IDs to look up the full reflection objects and render the group's cards.
   """
   reflectionIds: [ID!]!
 }

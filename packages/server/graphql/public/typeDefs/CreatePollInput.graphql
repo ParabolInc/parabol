@@ -1,21 +1,29 @@
+"""
+Input for the createPoll mutation. Creates a new poll inside a discussion thread during a meeting.
+Polls let meeting participants vote on a question with 2–4 predefined options.
+The caller must be an active member of the meeting that owns the discussion.
+"""
 input CreatePollInput {
   """
-  Foreign key for the discussion this was created in
+  The ID of the discussion thread in which the poll will appear.
+  Determines which meeting and team the poll belongs to.
   """
   discussionId: ID!
 
   """
-  The order of this threadable
+  Numeric sort key that controls where this poll appears within its thread, relative to other threadable items (comments, tasks, polls).
+  Lower values appear first. Assign a value consistent with the ordering of existing items in the thread.
   """
   threadSortOrder: Int!
 
   """
-  Poll question
+  The question being posed to voters. Must be between 2 and 100 characters.
   """
   title: String!
 
   """
-  All the poll voting options
+  The voting options presented to participants. Must contain between 2 and 4 items (inclusive).
+  Every option must have a non-empty title. The order of items in this list determines display order.
   """
   options: [PollOptionInput!]!
 }
