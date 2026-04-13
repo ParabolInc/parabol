@@ -284,7 +284,7 @@ export const ActivityLibrary = (props: Props) => {
   const templatesToRender = useMemo(() => {
     if (searchQuery.length > 0) {
       // If there's a search query, combine the filtered templates with the search results
-      const searchResults = templateSearch.viewer.templateSearch
+      const searchResults = templateSearch?.viewer?.templateSearch ?? []
       const doubleMatches = searchResults.filter((searchResult) =>
         filteredTemplates.find((template) => template.id === searchResult.id)
       )
