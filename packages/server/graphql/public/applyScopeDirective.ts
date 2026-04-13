@@ -40,9 +40,13 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
       field.resolve = async (source, args, context, info) => {
         if (context.authToken?.aud === 'action-pat') {
           // authToken from PAT already created
-          if (context.authToken?.scopes.includes(requiredScope)) {
+          if (context.authToken.scope?.includes(requiredScope)) {
             return originalResolver(source, args, context, info)
           }
+          throw new GraphQLError(
+            `Personal access token is missing required scope: ${requiredScope}`,
+            {extensions: {code: 'FORBIDDEN'}}
+          )
         }
         const authHeader: string | null | undefined = context.request?.headers?.get('authorization')
         const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
