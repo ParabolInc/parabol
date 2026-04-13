@@ -20,7 +20,7 @@ class PublishedDataLoaders {
   private async pushToRedis(id: string, topic: string, type: string) {
     const dataLoaderWorker = getInMemoryDataLoader(id)?.dataLoaderWorker
     if (!dataLoaderWorker) {
-      // publish did not happen within SHARED_DATALOADER_TTL
+      delete this.promiseLookup[id]
       return
     }
     const buffer = await serializeDataLoader(dataLoaderWorker)
