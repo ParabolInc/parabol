@@ -51,6 +51,7 @@ export default class JiraServerOAuth1Manager {
       }
     })
     if (response.status !== 200) {
+      await response.body?.cancel()
       return new Error(`Requesting OAuth1 request token failed with status ${response.status}`)
     }
 
@@ -94,6 +95,7 @@ export default class JiraServerOAuth1Manager {
       }
     })
     if (response.status !== 200) {
+      await response.body?.cancel()
       return new Error(`Requesting OAuth1 access token failed with status ${response.status}`)
     }
 

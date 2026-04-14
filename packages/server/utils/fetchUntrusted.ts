@@ -14,24 +14,37 @@ const USER_AGENT = `Parabol/${__APP_VERSION__} (https://parabol.co)`
 // Per-domain serialization to prevent overwhelming external servers with
 // concurrent requests. When multiple fetches target the same hostname, they
 // queue and execute one at a time. Different hostnames run concurrently.
-const domainLocks = new Map<string, Promise<void>>()
+//
+// Uses an explicit queue instead of chaining .then() on promises so that
+// each queued callback is a single function reference rather than a growing
+// closure chain that pins earlier fn/agent/lock objects in memory until the
+// entire chain settles.
+const domainQueues = new Map<string, (() => void)[]>()
 
 function withDomainLimit<T>(hostname: string, fn: () => Promise<T>): Promise<T> {
-  const prev = domainLocks.get(hostname) ?? Promise.resolve()
-  let releaseLock!: () => void
-  const lock = new Promise<void>((resolve) => {
-    releaseLock = resolve
-  })
-  domainLocks.set(hostname, lock)
-
-  return prev.then(async () => {
-    try {
-      return await fn()
-    } finally {
-      releaseLock()
-      if (domainLocks.get(hostname) === lock) {
-        domainLocks.delete(hostname)
+  return new Promise<T>((resolve, reject) => {
+    const execute = async () => {
+      try {
+        resolve(await fn())
+      } catch (e) {
+        reject(e)
+      } finally {
+        const queue = domainQueues.get(hostname)
+        if (queue && queue.length > 0) {
+          const next = queue.shift()!
+          next()
+        } else {
+          domainQueues.delete(hostname)
+        }
       }
+    }
+
+    const queue = domainQueues.get(hostname)
+    if (queue) {
+      queue.push(execute)
+    } else {
+      domainQueues.set(hostname, [])
+      execute()
     }
   })
 }

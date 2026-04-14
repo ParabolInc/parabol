@@ -51,6 +51,7 @@ export const downloadAndCacheImage = async (
     return null
   }
   if (!res.ok) {
+    await res.body?.cancel()
     Logger.log(`Jira Image Download fail: ${fetchUrl} (${res.status})`)
     return null
   }

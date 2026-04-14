@@ -139,6 +139,7 @@ export default class JiraServerRestManager implements TaskIntegrationManager {
   async parseJsonResponse<T>(response: Response): Promise<T | Error> {
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('application/json')) {
+      await response.body?.cancel()
       return new Error('Received non-JSON Jira Data Center Response')
     }
     const json = await response.json()
