@@ -5,6 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.0](https://github.com/ParabolInc/parabol/compare/v13.9.2...v13.10.0) (2026-04-14)
+
+
+### Added
+
+* add [@scope](https://github.com/scope) directive to gql schema ([#12977](https://github.com/ParabolInc/parabol/issues/12977)) ([bdb743c](https://github.com/ParabolInc/parabol/commit/bdb743c1d02d302761ee737bda71799bea0bee45))
+* add read authorization scopes to GraphQL ([#12984](https://github.com/ParabolInc/parabol/issues/12984)) ([651b15f](https://github.com/ParabolInc/parabol/commit/651b15f3c1428b810dd30e8676d9156f19228196))
+* Personal Access Tokens ([#12972](https://github.com/ParabolInc/parabol/issues/12972)) ([e73a74b](https://github.com/ParabolInc/parabol/commit/e73a74bd263bfdd1fb281a0f614ff537294dcf06))
+
+
+### Fixed
+
+* activity library null filter, pat error path ([#12987](https://github.com/ParabolInc/parabol/issues/12987)) ([96a0c63](https://github.com/ParabolInc/parabol/commit/96a0c63c20135228ee4b1c9a77d79e5bc1c84bf0))
+* log 400 SCIM errors ([#12980](https://github.com/ParabolInc/parabol/issues/12980)) ([b841de6](https://github.com/ParabolInc/parabol/commit/b841de614e810cbc15ac31c29960bf0f9ab712ac))
+* prevent memory leak and socket exhaustion in publish + fetch paths ([#12986](https://github.com/ParabolInc/parabol/issues/12986)) ([a217cde](https://github.com/ParabolInc/parabol/commit/a217cde05c78df345b057e4c10dca2f6f6689b32))
+* schema descriptions ([#12982](https://github.com/ParabolInc/parabol/issues/12982)) ([7d3f77f](https://github.com/ParabolInc/parabol/commit/7d3f77f18649419154877a0ff62ce92775f9626f))
+
 ## [13.9.2](https://github.com/ParabolInc/parabol/compare/v13.9.1...v13.9.2) (2026-04-08)
 
 
