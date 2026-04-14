@@ -1,5 +1,40 @@
+"""
+Returned by the createTask mutation. On success, contains the newly created
+task and any involvement notifications that were generated. On failure,
+contains a StandardMutationError and null task/notification fields.
+
+Success conditions: the viewer is a member of the target team, the optional
+meetingId belongs to a meeting the viewer is currently in, the optional
+discussionId is valid and belongs to the same meeting and team, and the
+optional userId (assignee) is a member of the same team.
+
+Failure conditions: viewer is not on the team, meetingId refers to a meeting
+the viewer has not joined, discussionId is inconsistent with the meetingId or
+teamId, the assignee userId is not a team member, or the optional integration
+(e.g. GitHub/GitLab/Jira) fails to create a linked issue.
+
+Subscription channels: the payload is also published via the TASK subscription
+channel to all team members (excluding private tasks) and via the NOTIFICATION
+channel to any user who was assigned or mentioned in the task content.
+"""
 type CreateTaskPayload {
+  """
+  Present when the mutation fails. Contains a human-readable message describing
+  why the task could not be created (e.g. permission error, invalid meeting,
+  integration failure).
+  """
   error: StandardMutationError
+
+  """
+  The newly created task. Null when error is present.
+  """
   task: Task
+
+  """
+  A notification sent to the assigned user or any user mentioned in the task
+  content, indicating they are now involved with this task. Null when no such
+  involvement notification was triggered (e.g. the creator assigned it to
+  themselves, or the task has no assignee and no mentions).
+  """
   involvementNotification: NotifyTaskInvolves
 }

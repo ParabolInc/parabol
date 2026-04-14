@@ -2,8 +2,23 @@
 The type of meeting
 """
 enum MeetingTypeEnum {
+  """
+  Check-in meeting where each team member gives a brief status update
+  """
   action
+
+  """
+  Retrospective meeting for reflecting on what went well, what didn't, and what to change
+  """
   retrospective
+
+  """
+  Sprint Poker meeting for estimating task complexity via planning poker
+  """
   poker
+
+  """
+  Standup meeting where each team member shares async written responses to a prompt
+  """
   teamPrompt
 }

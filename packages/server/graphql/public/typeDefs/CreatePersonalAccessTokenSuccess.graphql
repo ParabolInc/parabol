@@ -1,0 +1,18 @@
+"""
+Returned when a personal access token is successfully created. The plaintext token
+is only available in this response — it is never retrievable again after creation,
+so callers must store it immediately. Subsequent API calls use this token for
+Bearer authentication.
+"""
+type CreatePersonalAccessTokenSuccess {
+  """
+  The plaintext token value — only returned once at creation, store it securely
+  """
+  token: String!
+  """
+  The persisted metadata record for the newly created token. Use this to display
+  token details (name, scopes, expiry) to the user or to reference the token by
+  ID for future revocation.
+  """
+  personalAccessToken: PersonalAccessToken!
+}

@@ -1,3 +1,6 @@
+"""
+Minimal public user profile, used where full User data is not needed
+"""
 type UserPreview implements UserPartial {
   id: ID!
   email: Email!

@@ -1,91 +1,128 @@
 """
-The Azure DevOps auth + integration helpers for a specific team member
+Represents a single team member's Azure DevOps integration, including their OAuth2 credentials,
+the ADO instances they have access to, and helpers for querying work items and projects. One record
+exists per (team, user) pair. Use this type to fetch ADO work items for display in Parabol (e.g.
+linking a task to an ADO work item during a meeting) or to surface the member's available ADO
+projects and saved search queries.
 """
 type AzureDevOpsIntegration {
   """
-  The OAuth2 Authorization for this team member
+  The OAuth2 access and refresh tokens for this team member's Azure DevOps connection. Null when
+  the user has not yet authorized Parabol to access their ADO account, or when the token has been
+  revoked. Check this field before attempting to fetch work items or projects.
   """
   auth: TeamMemberIntegrationAuthOAuth2
 
   """
-  Composite key in ado:teamId:userId format
+  Composite primary key in the format "ado:{teamId}:{userId}". Uniquely identifies this integration
+  record across all teams and users.
   """
   id: ID!
 
   """
-  The Azure DevOps account ID
+  The Azure DevOps account (organization-level) ID associated with this integration. Corresponds to
+  the ADO organization that owns the instances the user granted access to.
   """
   accountId: ID!
 
   """
-  The Azure DevOps instance IDs that the user has granted
+  The list of Azure DevOps instance (organization) IDs the user has explicitly granted Parabol
+  access to. Each entry is an ADO organization URL slug or ID. Use this to scope API requests to
+  only the instances the user has authorized.
   """
   instanceIds: [ID!]!
 
   """
-  The timestamp the provider was created
+  The timestamp when this integration record was first created, i.e. when the user first connected
+  their ADO account to this Parabol team.
   """
   createdAt: DateTime!
 
   """
-  The team that the token is linked to
+  The Parabol team ID this integration belongs to. An ADO integration is always scoped to a single
+  team — the same ADO account can be connected to multiple teams, each producing a separate record.
   """
   teamId: ID!
 
   """
-  The timestamp the token was updated at
+  The timestamp when this integration record was last updated, e.g. when the OAuth token was
+  refreshed or when the user updated their authorized instances.
   """
   updatedAt: DateTime!
 
   """
-  The user that the access token is attached to
+  The Parabol user ID of the team member who owns this integration. Combined with teamId, this
+  uniquely identifies the integration.
   """
   userId: ID!
 
   """
-  A list of work items coming straight from the azure dev ops integration for a specific team member
+  A paginated list of Azure DevOps work items fetched live from the ADO API for this team member.
+  Use this field to search for work items to link to a Parabol task or meeting agenda item. Supports
+  free-text search or full WIQL (Work Item Query Language) for advanced filtering. Results are
+  ordered by most recently updated first.
   """
   workItems(
+    """
+    Maximum number of work items to return. Defaults to 100. Use with `after` for pagination.
+    """
     first: Int = 100
 
     """
-    the datetime cursor
+    An ISO8601 datetime cursor for pagination. Pass the `endCursor` from a previous page's
+    `pageInfo` to retrieve the next page of results.
     """
     after: DateTime
 
     """
-    A string of text to search for, or WIQL if isWIQL is true
+    A plain-text search string, or a full WIQL query string if `isWIQL` is true. When plain text,
+    the ADO API performs a full-text search against work item titles and descriptions. Leave null or
+    empty to return the most recently updated items without filtering.
     """
     queryString: String
 
     """
-    A list of projects to restrict the search to, if null will search all
+    An optional list of ADO project IDs or names to restrict the search to. Pass an empty array or
+    omit filtering to search across all projects the user has access to within their authorized
+    instances.
     """
     projectKeyFilters: [String!]!
 
     """
-    true if the queryString is WIQL, else false
+    Set to true when `queryString` contains a WIQL (Work Item Query Language) expression, which
+    allows advanced filtering by any work item field. Set to false (or omit) for a simple
+    full-text keyword search.
     """
     isWIQL: Boolean!
   ): AzureDevOpsWorkItemConnection!
 
   """
-  A list of projects coming straight from the azure dev ops integration for a specific team member
+  The complete list of Azure DevOps projects the team member has access to across all of their
+  authorized instances. Use this to populate a project picker so the user can filter work item
+  searches by project.
   """
   projects: [AzureDevOpsRemoteProject!]!
 
   """
-  The cloud provider the team member may choose to integrate with. Nullable based on env vars
+  The global (cloud-level) OAuth2 integration provider for Azure DevOps configured via Parabol
+  environment variables. This is the system-wide ADO provider available to all teams. Null when
+  no cloud ADO provider has been configured in the environment (i.e. the ADO integration is
+  disabled at the instance level).
   """
   cloudProvider: IntegrationProviderOAuth2
 
   """
-  The non-global providers shared with the team or organization
+  OAuth2 integration providers for Azure DevOps that have been shared at the team or organization
+  level (as opposed to the global cloud provider). These are custom ADO provider configurations an
+  admin has made available to specific teams. Use this list alongside `cloudProvider` to show the
+  user all available ADO providers they can authorize against.
   """
   sharedProviders: [IntegrationProviderOAuth2!]!
 
   """
-  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  The team member's saved Azure DevOps search queries, sorted by most recently used. Only queries
+  used within the last 60 days are included. Use this to populate a "recent searches" UI so the
+  user can quickly re-run a previous work item search without retyping their query or filters.
   """
   azureDevOpsSearchQueries: [AzureDevOpsSearchQuery!]!
 }

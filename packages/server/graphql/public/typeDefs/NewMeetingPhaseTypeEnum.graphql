@@ -2,19 +2,78 @@
 The phase of the meeting
 """
 enum NewMeetingPhaseTypeEnum {
+  """
+  Waiting room before the meeting officially starts
+  """
   lobby
+
+  """
+  Check-in round where each participant gives a brief status
+  """
   checkin
+
+  """
+  Updates round in a check-in meeting
+  """
   updates
+
+  """
+  First call for agenda items in a check-in meeting
+  """
   firstcall
+
+  """
+  Discussion of agenda items in a check-in meeting
+  """
   agendaitems
+
+  """
+  Last call for additional agenda items
+  """
   lastcall
+
+  """
+  Reflection phase in a retrospective where participants add cards
+  """
   reflect
+
+  """
+  Grouping phase in a retrospective where similar reflections are clustered
+  """
   group
+
+  """
+  Voting phase in a retrospective where participants upvote groups
+  """
   vote
+
+  """
+  Discussion phase in a retrospective where groups are discussed one at a time
+  """
   discuss
+
+  """
+  Summary phase shown at the end of any meeting type
+  """
   SUMMARY
+
+  """
+  Scope phase in a Poker meeting for selecting issues to estimate
+  """
   SCOPE
+
+  """
+  Estimation phase in a Poker meeting where participants vote on story points
+  """
   ESTIMATE
+
+  """
+  Responses phase in a standup meeting where team members write their updates
+  """
   RESPONSES
+
+  """
+  Team health check phase for pulse-check voting
+  """
   TEAM_HEALTH
 }

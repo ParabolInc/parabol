@@ -9,8 +9,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   _source,
   {featureName, orgId, teamId, userId},
-  {authToken, dataLoader}
+  context
 ) => {
+  const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
@@ -22,6 +23,9 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
 
   if (orgId && !(await isUserOrgAdmin(viewerId, orgId, dataLoader))) {
     return standardError(new Error('Not organization admin'))
+  }
+  if (orgId && context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
+    return standardError(new Error('PAT does not grant access to this organization'))
   }
 
   if (teamId) {
@@ -35,6 +39,9 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
     }
     if (!teamMember.isLead) {
       return standardError(new Error('Not team lead'))
+    }
+    if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+      return standardError(new Error('PAT does not grant access to this team'))
     }
   }
 

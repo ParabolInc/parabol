@@ -3,7 +3,7 @@ A jira search query including all filters selected when the query was executed
 """
 type JiraSearchQuery {
   """
-  shortid
+  The unique ID of the search query
   """
   id: ID!
 

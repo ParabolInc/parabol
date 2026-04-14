@@ -1,4 +1,14 @@
+"""
+A team that has been granted access to a page
+"""
 type PageAccessTeam {
+  """
+  The team that was granted access
+  """
   team: TeamPreview!
+
+  """
+  The access role granted to all members of the team
+  """
   role: PageRoleEnum!
 }

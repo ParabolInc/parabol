@@ -3,6 +3,7 @@ import type AuthToken from '../database/types/AuthToken'
 import type {CacheWorker} from '../dataloader/DataLoaderCache'
 import type RootDataLoader from '../dataloader/RootDataLoader'
 import type {InMemoryRateLimiter} from '../utils/rateLimiters/InMemoryRateLimiter'
+import type {ResourceGrants} from './public/ResourceGrants'
 
 // Avoid needless parsing & validating for the 300 hottest operations
 export type DataLoaderWorker = CacheWorker<RootDataLoader>
@@ -14,6 +15,7 @@ export interface GQLContext {
   socketId: string
   dataLoader: DataLoaderWorker
   request: Request
+  resourceGrants?: ResourceGrants
 }
 
 export type SubscriptionContext = Omit<GQLContext, 'dataLoader'>

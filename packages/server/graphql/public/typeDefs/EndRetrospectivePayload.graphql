@@ -1,4 +1,4 @@
 """
-Return object for EndRetrospectivePayload
+The result of ending a retrospective meeting. Returns either a success payload with the concluded meeting details or an error describing why the operation failed.
 """
 union EndRetrospectivePayload = ErrorPayload | EndRetrospectiveSuccess

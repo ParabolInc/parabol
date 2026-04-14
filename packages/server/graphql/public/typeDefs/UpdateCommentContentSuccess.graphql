@@ -1,3 +1,6 @@
+"""
+Success result for updateCommentContent mutation
+"""
 type UpdateCommentContentSuccess {
   """
   the comment with updated content

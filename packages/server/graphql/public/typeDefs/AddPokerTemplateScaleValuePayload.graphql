@@ -1,4 +1,18 @@
+"""
+The result of the addPokerTemplateScaleValue mutation, which adds a new value
+(e.g., a story-point label like "XS" or "?") to an existing poker template scale.
+On success, the updated scale — including its full list of values — is returned.
+On failure, error is populated and scale is null.
+"""
 type AddPokerTemplateScaleValuePayload {
+  """
+  Present when the mutation fails; describes what went wrong. Null on success.
+  """
   error: StandardMutationError
+  """
+  The poker template scale that was modified, now containing the newly added value.
+  Use this to update the client-side scale and its values list without a separate refetch.
+  Null when an error occurred.
+  """
   scale: TemplateScale
 }

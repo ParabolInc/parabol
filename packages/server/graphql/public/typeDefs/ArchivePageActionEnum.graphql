@@ -1,14 +1,27 @@
+"""
+The action to perform on a page via the archivePage mutation. Pages follow a
+soft-delete lifecycle: they are first moved to the trash (archive), and can
+then be permanently removed (delete) or recovered (restore). Use `archive` for
+the initial move-to-trash step, `delete` only when the page is already in the
+trash and permanent removal is intended, and `restore` to undo a previous
+archive.
+"""
 enum ArchivePageActionEnum {
   """
-  Move the page to the trash
+  Move the page to the trash. The page is soft-deleted and hidden from normal
+  views but can still be restored. This is the first step in the delete
+  lifecycle.
   """
   archive
   """
-  Permanently delete the page from trash
+  Permanently delete the page from the trash. The page must already be in the
+  trash (i.e., previously archived). This action is irreversible.
   """
   delete
   """
-  Restore the page from the trash
+  Restore the page from the trash back to its original location. The page must
+  currently be in the trash (i.e., previously archived but not yet permanently
+  deleted).
   """
   restore
 }

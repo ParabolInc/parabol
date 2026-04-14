@@ -21,7 +21,6 @@ import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
-import {useOAuthScopeValidation} from './utils/useOAuthScopeValidation'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
 
@@ -192,15 +191,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const authToken = getVerifiedAuthToken(token, false)
 
         const isSuperUser = authToken?.rol === 'su'
-        const isOAuthToken = authToken?.aud === 'action-oauth2'
-
-        const hasScope =
-          authToken?.scope?.includes('graphql:query') ||
-          authToken?.scope?.includes('graphql:mutation')
-
-        const result = isSuperUser || (isOAuthToken && !!hasScope)
-
-        return result
+        const isPAT = headerToken?.startsWith('pat_') ?? false
+        return isSuperUser || isPAT
       },
       skipDocumentValidation: true,
       extractPersistedOperationId,
@@ -208,10 +200,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCheckBlacklist(),
     usePrivateSchemaForSuperUser,
-    // TODO: more logic will need to be added in order to validate that a
-    //       non-superuser has not only the correct scopes, but also sufficient
-    //       complexity quota remaining in order to execute the operation(s)
-    useOAuthScopeValidation(),
     useDisposeDataloader,
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],

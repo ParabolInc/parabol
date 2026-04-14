@@ -1,1 +1,6 @@
+"""
+A valid email address string (e.g. "user@example.com").
+Conforms to RFC 5322. Used for user identity, notifications, and authentication.
+Stored and compared case-insensitively; always serialized in lowercase.
+"""
 scalar Email

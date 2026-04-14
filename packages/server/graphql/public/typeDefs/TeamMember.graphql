@@ -91,9 +91,7 @@ type TeamMember {
   """
   team: Team
 
-  """
-  foreign key to Team table
-  """
+  "The ID of the team this member belongs to"
   teamId: ID!
 
   """
@@ -101,9 +99,7 @@ type TeamMember {
   """
   user: User!
 
-  """
-  foreign key to User table
-  """
+  "The ID of the Parabol user"
   userId: ID!
 
   """

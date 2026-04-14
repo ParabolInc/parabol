@@ -1,16 +1,26 @@
+"""
+Payload returned after the addOrg mutation, which creates a new organization with an initial team and adds the caller as the team leader.
+"""
 type AddOrgPayload {
+  """
+  The newly created organization.
+  """
   organization: Organization
+
   error: StandardMutationError
 
+  """
+  The first team created inside the new organization. Every new org starts with exactly one team.
+  """
   team: Team
 
   """
-  The teamMember that just created the new team, if this is a creation
+  The TeamMember record for the caller, who is automatically added as the leader of the new team.
   """
   teamMember: TeamMember
 
   """
-  The ID of the suggestion to create a new team
+  The ID of the 'Create a New Team' suggested action that was removed from the caller's dashboard as a result of this mutation. Null if no such suggestion existed.
   """
   removedSuggestedActionId: ID
 }

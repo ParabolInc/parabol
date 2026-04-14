@@ -1,3 +1,6 @@
+"""
+Success result for setTeamNotificationSetting mutation
+"""
 type SetTeamNotificationSettingSuccess {
   """
   The updated settings

@@ -1,14 +1,30 @@
 """
-A meeting stage that includes a discussion thread
+Interface implemented by every meeting stage that hosts a live discussion thread.
+Any stage that lets participants post comments and tasks during a meeting implements this interface.
+
+Concrete implementations (and the meeting type each belongs to):
+- RetroDiscussStage — Retrospective meeting, Discuss phase. One stage per voted-on reflection group.
+- EstimateStage — Sprint Poker meeting, Estimate phase. One stage per task being pointed.
+- AgendaItemsStage — Check-In meeting, AgendaItems phase. One stage per agenda item.
+- TeamPromptResponseStage — Standup (Team Prompt) meeting, Responses phase. One stage per team member.
+
+When querying a stage, check for this interface to determine whether a discussion thread is available.
+Use discussionId as the stable key for subscriptions, mutations (e.g. createComment, editComment),
+and any other operation that targets a specific thread.
 """
 interface DiscussionThreadStage {
   """
-  The ID to find the discussion that goes in the stage
+  The ID of the Discussion record that holds the comment and task thread for this stage.
+  Use this as the key when subscribing to thread updates or when calling mutations that
+  operate on a discussion (e.g. createComment, deleteComment, editComment).
+  Each stage has exactly one discussion; the ID is stable for the lifetime of the stage.
   """
   discussionId: ID!
 
   """
-  The discussion about the stage
+  The Discussion object containing the full comment and task thread for this stage,
+  including commentCount, active commentors, and the paginated thread connection.
+  Prefer this over discussionId when you need to read thread data rather than just reference it.
   """
   discussion: Discussion!
 }

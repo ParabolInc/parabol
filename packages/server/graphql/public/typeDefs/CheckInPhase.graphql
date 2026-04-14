@@ -1,27 +1,39 @@
 """
-The meeting phase where all team members check in one-by-one
+The icebreaker phase that opens Action and Retrospective meetings. Each team member gets their own CheckInStage and responds to a shared question of the week before the substantive meeting work begins. The phase includes a rotating multilingual greeting and a randomly-selected icebreaker question, both seeded by the team ID and meeting count so they vary across meetings.
 """
 type CheckInPhase implements NewMeetingPhase {
   """
-  shortid
+  Unique identifier for this phase instance (shortid)
   """
   id: ID!
+
+  """
+  The ID of the meeting this phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The ID of the team running this meeting
+  """
   teamId: ID!
 
   """
-  The type of phase
+  The type of phase — always 'checkin' for this type
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  One stage per team member, ordered by team member position. Each stage represents a single team member's turn to answer the check-in question. Iterate these to show progress through the phase or to render each member's check-in turn.
+  """
   stages: [CheckInStage!]!
 
   """
-  The checkIn greeting (fun language)
+  A randomly-selected greeting in a non-English language, shown at the top of the check-in phase to add a fun, multicultural touch. Rotates each meeting based on the team ID and meeting count. Use this to display the opening greeting word alongside its source language.
   """
   checkInGreeting: MeetingGreeting!
 
   """
-  The checkIn question of the week (Stringified TipTap JSON format)
+  The icebreaker question posed to every team member during check-in, stored as a stringified TipTap JSON document. Rotates each meeting based on the team ID and meeting count. Parse and render this with a TipTap-compatible renderer. The trailing "?" is typically appended by the UI component.
   """
   checkInQuestion: String!
 }

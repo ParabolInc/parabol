@@ -1,4 +1,9 @@
+"""
+Return value for updateOAuthAPIProvider mutation
+"""
 type UpdateOAuthAPIProviderPayload {
+  "The updated OAuth API provider"
   provider: OAuthAPIProvider!
+  "The organization that owns the provider"
   organization: Organization!
 }

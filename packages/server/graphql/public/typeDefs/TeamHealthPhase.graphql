@@ -1,7 +1,8 @@
+"""
+The meeting phase where team members answer health check questions
+"""
 type TeamHealthPhase implements NewMeetingPhase {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
   meetingId: ID!
   teamId: ID!

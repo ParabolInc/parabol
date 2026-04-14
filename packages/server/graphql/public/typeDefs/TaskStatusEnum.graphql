@@ -1,9 +1,13 @@
 """
-The status of the task
+The status of a task
 """
 enum TaskStatusEnum {
+  "In progress"
   active
+  "Blocked or needs attention"
   stuck
+  "Completed"
   done
+  "Planned for the future"
   future
 }

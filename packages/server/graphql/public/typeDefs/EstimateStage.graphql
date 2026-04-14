@@ -1,160 +1,164 @@
 """
-The stage where the team estimates & discusses a single task
+A stage within a Sprint Poker meeting where the team estimates and discusses a single task (Parabol Task or linked integration issue). Each stage is tied to one dimension (e.g. Story Points) and one task, and progresses from active voting to revealed scores to a facilitator-chosen final score.
 """
 type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
   """
-  stageId, shortid
+  The unique stage ID (shortid)
   """
   id: ID!
 
   """
-  The datetime the stage was completed
+  The datetime the stage was completed (facilitator clicked 'Done'), null while still in progress
   """
   endAt: DateTime
 
   """
-  foreign key. try using meeting
+  Foreign key for the Sprint Poker meeting this stage belongs to. Prefer the meeting field for full details.
   """
   meetingId: ID!
 
   """
-  The meeting this stage belongs to
+  The Sprint Poker meeting this stage belongs to
   """
   meeting: NewMeeting!
 
   """
-  true if the facilitator has completed this stage, else false. Should be boolean(endAt)
+  True if the facilitator has marked this stage complete (equivalent to endAt being set)
   """
   isComplete: Boolean!
 
   """
-  true if any meeting participant can navigate to this stage
+  True if any meeting participant is allowed to navigate directly to this stage
   """
   isNavigable: Boolean!
 
   """
-  true if the facilitator can navigate to this stage
+  True if the facilitator is allowed to navigate directly to this stage
   """
   isNavigableByFacilitator: Boolean!
 
   """
-  The phase this stage belongs to
+  The phase this stage belongs to (e.g. the ESTIMATE phase of a Sprint Poker meeting)
   """
   phase: NewMeetingPhase
 
   """
-  The type of the phase
+  The type identifier of the phase this stage belongs to
   """
   phaseType: NewMeetingPhaseTypeEnum
 
   """
-  The datetime the stage was started
+  The datetime the facilitator first entered this stage
   """
   startAt: DateTime
 
   """
-  Number of times the facilitator has visited this stage
+  The number of times the facilitator has visited this stage during the meeting
   """
   viewCount: Int
 
   """
-  true if a time limit is set, false if end time is set, null if neither is set
+  True if a time limit is active and the stage is running asynchronously, false if a fixed end time is set, null if no time constraint is set
   """
   isAsync: Boolean
 
   """
-  true if the viewer is ready to advance, else false
+  True if the current viewer has clicked Ready to advance to the next stage
   """
   isViewerReady: Boolean!
 
   """
-  User ids of those who are ready to advance to the next stage
+  IDs of all team members who have clicked Ready to advance to the next stage
   """
   readyUserIds: [ID!]!
 
   """
-  The datetime the phase is scheduled to be finished, null if no time limit or end time is set
+  The datetime when this stage's time limit expires. Null if no time limit or end time has been set.
   """
   scheduledEndTime: DateTime
 
   """
-  The suggested ending datetime for a phase to be completed async, null if not enough data to make a suggestion
+  A system-suggested async deadline based on historical meeting data for this team. Null if insufficient data.
   """
   suggestedEndTime: DateTime
 
   """
-  The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
+  A system-suggested synchronous time limit (in minutes) based on historical meeting data for this team. Null if insufficient data.
   """
   suggestedTimeLimit: Float
+
+  """
+  The ID of the team running the Sprint Poker meeting that contains this stage
+  """
   teamId: ID!
 
   """
-  The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
+  Milliseconds remaining until scheduledEndTime, calculated server-side to compensate for unsynchronized client clocks. Null if scheduledEndTime is null.
   """
   timeRemaining: Float
 
   """
-  The ID to find the discussion that goes in the stage
+  Foreign key linking to the Discussion thread associated with this stage
   """
   discussionId: ID!
 
   """
-  The discussion about the stage
+  The threaded discussion attached to this estimation stage, used for comments and reactions during estimation
   """
   discussion: Discussion!
 
   """
-  The id of the user that added this stage.
+  The ID of the user who added this stage to the meeting (typically the facilitator or the user who added the task to the meeting)
   """
   creatorUserId: ID!
 
   """
-  The ID that points to the issue that exists in parabol
+  The ID of the Parabol Task being estimated in this stage
   """
   taskId: ID!
 
   """
-  The field name used by the service for this dimension
+  The field on the external service (e.g. Jira story points field) that this dimension maps to, used to push the final score back to the integration
   """
   serviceField: ServiceField!
 
   """
-  The immutable index of the dimensionRef tied to this stage
+  The zero-based index of the TemplateDimensionRef used for this stage. Immutable after stage creation.
   """
   dimensionRefIdx: Int!
 
   """
-  The immutable dimension linked to this stage
+  A frozen snapshot of the template dimension (e.g. Story Points) used for this stage. Immutable so historical meetings are unaffected by template edits.
   """
   dimensionRef: TemplateDimensionRef!
 
   """
-  the final score, as defined by the facilitator
+  The final score chosen by the facilitator after voting is revealed. Null until the facilitator selects a value.
   """
   finalScore: String
 
   """
-  the userIds of the team members hovering the deck
+  IDs of team members whose cursors are currently hovering over the card deck (used for live presence indicators)
   """
   hoveringUserIds: [ID!]!
 
   """
-  the users of the team members hovering the deck
+  User objects for team members whose cursors are currently hovering over the card deck
   """
   hoveringUsers: [User!]!
 
   """
-  all the estimates, 1 per user
+  All vote scores submitted for this stage, one entry per user who voted
   """
   scores: [EstimateUserScore!]!
 
   """
-  The task referenced in the stage, as it exists in Parabol. null if the task was deleted
+  The Parabol Task being estimated. Null if the task has been deleted since the stage was created.
   """
   task: Task
 
   """
-  true when the participants are still voting and results are hidden. false when votes are revealed
+  True while participants are actively voting and individual scores are hidden. False after the facilitator reveals all votes.
   """
   isVoting: Boolean!
 }

@@ -2,9 +2,7 @@
 A stage that focuses on a single team member
 """
 type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
-  """
-  stageId, shortid
-  """
+  "Unique stage ID"
   id: ID!
 
   """
@@ -12,9 +10,7 @@ type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   """
   endAt: DateTime
 
-  """
-  foreign key. try using meeting
-  """
+  "ID of the meeting this stage belongs to"
   meetingId: ID!
 
   """
@@ -86,6 +82,7 @@ type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
   """
   suggestedTimeLimit: Float
+  "ID of the team running the meeting"
   teamId: ID!
 
   """
@@ -98,9 +95,7 @@ type UpdatesStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   """
   meetingMember: MeetingMember!
 
-  """
-  foreign key. use teamMember
-  """
+  "ID of the team member who is the focus for this stage"
   teamMemberId: ID!
 
   """

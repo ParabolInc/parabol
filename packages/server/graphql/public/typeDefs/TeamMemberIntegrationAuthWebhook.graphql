@@ -1,5 +1,5 @@
 """
-A notification integration authorization that connects via Webhook auth strategy
+An integration authorization that connects via webhook
 """
 type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   """
@@ -22,9 +22,7 @@ type TeamMemberIntegrationAuthWebhook implements TeamMemberIntegrationAuth {
   """
   updatedAt: DateTime!
 
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
+  "The ID of the integration provider this token belongs to"
   providerId: ID!
 
   """

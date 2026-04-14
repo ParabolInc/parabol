@@ -1,7 +1,21 @@
 """
-The format of the string response
+The format in which an AI-generated string response should be returned.
+Use this to control how the client will render the content — choose html if the
+response will be injected directly into the DOM, or markdown if the client will
+parse/render Markdown syntax (e.g. inside a Markdown renderer or plain-text
+display). Defaults to markdown in most AI query fields.
 """
 enum ContentFormatEnum {
+  """
+  The response is returned as an HTML string. Use when the caller will render
+  the content directly in the DOM without an intermediate Markdown parser,
+  e.g. setting innerHTML or using dangerouslySetInnerHTML in React.
+  """
   html
+  """
+  The response is returned as a Markdown-formatted string. This is the default.
+  Use when the caller will pass the content to a Markdown renderer or display
+  it as plain text where Markdown syntax is acceptable.
+  """
   markdown
 }

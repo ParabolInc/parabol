@@ -3,12 +3,12 @@ A notification sent to a user that was invited to a new team
 """
 type NotificationTeamInvitation implements Notification & TeamNotification {
   """
-  FK
+  The ID of the team the user was invited to
   """
   teamId: ID!
 
   """
-  FK
+  The ID of the team invitation that triggered this notification
   """
   invitationId: ID!
 
@@ -16,6 +16,10 @@ type NotificationTeamInvitation implements Notification & TeamNotification {
   The invitation that triggered this notification
   """
   invitation: TeamInvitation!
+
+  """
+  The team the user was invited to
+  """
   team: Team!
 
   """
@@ -35,7 +39,7 @@ type NotificationTeamInvitation implements Notification & TeamNotification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 }

@@ -20,6 +20,7 @@ import {
   type selectOAuthAPIProvider,
   type selectOrganizations,
   type selectPages,
+  selectPersonalAccessToken,
   type selectPoll,
   type selectPollOption,
   type selectReflectPrompts,
@@ -202,3 +203,7 @@ export type EmbeddingsJobQueueV2 = Omit<Selectable<DB['EmbeddingsJobQueueV2']>, 
 }
 
 export type TimelineEvent = ExtractTypeFromQueryBuilderSelect<typeof selectTimelineEvent>
+
+export type PersonalAccessToken = ExtractTypeFromQueryBuilderSelect<
+  typeof selectPersonalAccessToken
+>

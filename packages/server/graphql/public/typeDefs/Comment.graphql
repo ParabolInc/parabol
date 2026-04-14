@@ -1,74 +1,90 @@
 """
-A comment on a thread
+A comment posted in a discussion thread. Comments can be top-level posts or replies to other
+Threadable items (including other Comments). They support emoji reactions via the Reactable
+interface and can be posted anonymously. When a comment is deleted its content is replaced
+with tombstone text but the record is retained (isActive becomes false) so that reply
+threading is preserved.
 """
 type Comment implements Reactable & Threadable {
   """
-  shortid
+  Unique short ID for this comment.
   """
   id: ID!
 
   """
-  The rich text body of the item, if inactive, a tombstone text
+  The rich-text (Prosemirror JSON serialised as a string) body of the comment. When the
+  comment has been deleted (isActive is false) this contains tombstone placeholder text
+  rather than the original content.
   """
   content: String!
 
   """
-  The timestamp the item was created
+  The timestamp when this comment was first created.
   """
   createdAt: DateTime!
 
   """
-  The userId that created the item, null if anonymous
+  The ID of the user who created this comment. Null when the comment was posted anonymously
+  (isAnonymous is true).
   """
   createdBy: ID
 
   """
-  The user that created the item, null if anonymous
+  The full User object for the comment author. Null when the comment was posted anonymously
+  (isAnonymous is true). Prefer this over createdBy when you need to display author details.
   """
   createdByUser: User
 
   """
-  the replies to this threadable item
+  All direct replies to this comment, returned as an ordered list of Threadable items.
+  An empty array means no one has replied yet.
   """
   replies: [Threadable!]!
 
   """
-  The FK of the discussion this task was created in. Null if task was not created in a discussion
+  The ID of the Discussion thread this comment belongs to. Null if the comment was not
+  created inside a discussion (e.g. it was created on a Task directly).
   """
   discussionId: ID
 
   """
-  the parent, if this threadable is a reply, else null
+  The ID of the parent Threadable item when this comment is a reply. Null when this comment
+  is a top-level post in the thread rather than a reply.
   """
   threadParentId: ID
 
   """
-  the order of this threadable, relative to threadParentId
+  Numeric sort key that determines the display order of this comment relative to its siblings
+  that share the same threadParentId. Lower values appear first.
   """
   threadSortOrder: Int
 
   """
-  The timestamp the item was updated
+  The timestamp when this comment was last modified (e.g. content edited or reactions changed).
   """
   updatedAt: DateTime!
 
   """
-  All the reactjis for the given reflection
+  The emoji reactions that have been added to this comment, grouped by emoji so each entry
+  represents one distinct reactji and includes how many users reacted with it.
   """
   reactjis: [Reactji!]!
 
   """
-  true if the agenda item has not been processed or deleted
+  False when the comment has been soft-deleted. Soft-deleted comments retain their record
+  so that reply threading is not broken, but their content is replaced with tombstone text.
   """
   isActive: Boolean!
 
   """
-  true if the comment is anonymous, else false
+  True when the comment was posted anonymously. When true, createdBy and createdByUser are
+  null and the author's identity must not be surfaced in the UI.
   """
   isAnonymous: Boolean!
 
   """
-  true if the viewer wrote this comment, else false
+  True when the currently authenticated viewer is the author of this comment. Use this to
+  conditionally show edit and delete controls.
   """
   isViewerComment: Boolean!
 }

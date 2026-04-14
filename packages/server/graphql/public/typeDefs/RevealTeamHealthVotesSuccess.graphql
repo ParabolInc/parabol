@@ -1,5 +1,17 @@
+"""
+Successfully revealed hidden votes in a Team Health meeting stage
+"""
 type RevealTeamHealthVotesSuccess {
+  """
+  The Team Health meeting where votes were revealed
+  """
   meetingId: ID!
+  """
+  The stage where votes were revealed
+  """
   stageId: ID!
+  """
+  The updated stage with all votes now visible
+  """
   stage: TeamHealthStage!
 }

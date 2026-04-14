@@ -1,10 +1,22 @@
 """
-An authentication strategy using an email & password
+An authentication identity backed by a locally-stored email address and hashed
+password. This is the classic username/password login strategy. Use this type
+(rather than AuthIdentityGoogle or AuthIdentityMicrosoft) when the user signed
+up via Parabol's own registration form and authenticates without an external
+OAuth provider.
 """
 type AuthIdentityLocal implements AuthIdentity {
   """
-  true if the email address using this strategy is verified, else false
+  true if the user has confirmed ownership of the email address (e.g. by
+  clicking a verification link), false if the address is still unconfirmed.
+  Unverified users may have restricted access to certain features.
   """
   isEmailVerified: Boolean!
+  """
+  Discriminator that identifies this as the LOCAL authentication strategy.
+  Always LOCAL for this type. Use this field to distinguish AuthIdentityLocal
+  from other AuthIdentity implementations (GOOGLE, MICROSOFT) when working
+  with a union or interface value.
+  """
   type: AuthIdentityTypeEnum!
 }

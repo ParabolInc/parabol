@@ -1,4 +1,4 @@
 """
-Return object for AddCommentPayload
+Return value for addComment mutation. Returns either an error or the newly created comment along with the meeting it belongs to.
 """
 union AddCommentPayload = ErrorPayload | AddCommentSuccess

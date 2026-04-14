@@ -1,8 +1,34 @@
+"""
+An OAuth 2.0 application registered with an organization, allowing third-party apps to access Parabol on behalf of users
+"""
 type OAuthAPIProvider {
+  """
+  The unique provider ID
+  """
   id: ID!
+
+  """
+  The human-readable application name
+  """
   name: String!
+
+  """
+  The OAuth 2.0 client ID issued to the application
+  """
   clientId: String!
+
+  """
+  The allowed redirect URIs for the OAuth flow
+  """
   redirectUris: [RedirectURI!]!
+
+  """
+  The OAuth scopes granted to this application
+  """
   scopes: [String!]!
+
+  """
+  When the provider configuration was last updated
+  """
   updatedAt: DateTime!
 }

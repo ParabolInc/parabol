@@ -1,4 +1,8 @@
+"""
+Success result for setTaskEstimate mutation
+"""
 type SetTaskEstimateSuccess {
+  "The task with the updated estimate"
   task: Task!
 
   """

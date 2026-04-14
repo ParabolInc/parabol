@@ -18,7 +18,7 @@ type GifResponse {
   tags: [String!]!
 
   """
-  url
+  The URL of the gif at the requested size
   """
   url(
     """

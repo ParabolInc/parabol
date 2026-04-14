@@ -1,5 +1,5 @@
 """
-The meeting phase where all team members check in one-by-one
+The retrospective meeting phase where team members add reflections to prompts
 """
 type ReflectPhase implements NewMeetingPhase {
   """

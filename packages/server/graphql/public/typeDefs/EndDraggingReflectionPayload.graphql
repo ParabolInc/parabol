@@ -1,5 +1,13 @@
+"""
+The payload returned after a team member stops dragging a reflection card during a retrospective meeting.
+Describes where the reflection landed, which groups were affected, and who performed the drag.
+"""
 type EndDraggingReflectionPayload {
   error: StandardMutationError
+
+  """
+  The unique identifier for this drag interaction, used to correlate start and end drag events
+  """
   dragId: ID
 
   """
@@ -16,10 +24,30 @@ type EndDraggingReflectionPayload {
   The ID that the dragged item was dropped on, if dropTargetType is not specific enough
   """
   dropTargetId: ID
+
+  """
+  The retrospective meeting in which the drag occurred
+  """
   meeting: RetrospectiveMeeting
+
+  """
+  The ID of the retrospective meeting in which the drag occurred
+  """
   meetingId: ID
+
+  """
+  The reflection card that was dragged and dropped
+  """
   reflection: RetroReflection
+
+  """
+  The ID of the reflection group the reflection now belongs to after being dropped
+  """
   reflectionGroupId: ID
+
+  """
+  The ID of the reflection card that was dragged
+  """
   reflectionId: ID
 
   """

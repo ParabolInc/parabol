@@ -2,9 +2,7 @@
 A long-term task shared across the team, assigned to a single user
 """
 type Task implements Threadable {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
 
   """
@@ -55,7 +53,7 @@ type Task implements Threadable {
   """
   The agenda item that the task was created in, if any
   """
-  agendaItem: AgendaItem
+  agendaItem: AgendaItem @scope(name: MEETINGS_READ)
 
   """
   Type of the integration if there is one
@@ -87,14 +85,10 @@ type Task implements Threadable {
   """
   integrationHash: ID
 
-  """
-  the foreign key for the meeting the task was created in
-  """
+  "The ID of the meeting the task was created in, if any"
   meetingId: ID
 
-  """
-  the foreign key for the meeting the task was marked as complete
-  """
+  "The ID of the meeting in which this task was marked as done, if any"
   doneMeetingId: ID
 
   """
@@ -125,22 +119,20 @@ type Task implements Threadable {
   """
   The team this task belongs to
   """
-  team: Team!
+  team: Team! @scope(name: TEAMS_READ)
 
   """
   The first block of the content
   """
   title: String!
 
-  """
-  * The userId, index useful for server-side methods getting all tasks under a user. This can be null if the task is not assigned to anyone.
-  """
+  "The ID of the user the task is assigned to. Null if unassigned."
   userId: ID
 
   """
   The user the task is assigned to. Null if it is not assigned to anyone.
   """
-  user: User
+  user: User @scope(name: USERS_READ)
 
   """
   The owner hovers over the task in their solo update of a checkin

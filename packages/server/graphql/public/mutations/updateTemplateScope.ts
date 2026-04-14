@@ -14,8 +14,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
   _source,
   {templateId, scope: newScope},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const pg = getKysely()
   const now = new Date()
   const operationId = dataLoader.share()
@@ -37,6 +38,17 @@ const updateTemplateScope: MutationResolvers['updateTemplateScope'] = async (
     return standardError(new Error('You are not authorized to update the scope of this template'), {
       userId: viewerId
     })
+  }
+  if (context.resourceGrants) {
+    const [teamOk, orgOk] = await Promise.all([
+      context.resourceGrants.hasTeam(teamId),
+      context.resourceGrants.hasOrg(orgId)
+    ])
+    if (!teamOk && !orgOk) {
+      return standardError(new Error('PAT does not grant access to this template'), {
+        userId: viewerId
+      })
+    }
   }
 
   // VALIDATION

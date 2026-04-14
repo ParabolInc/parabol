@@ -1,4 +1,7 @@
 """
-Return object for CreatePollPayload
+The result of the createPoll mutation. Returns CreatePollSuccess when the poll is
+successfully created in a meeting discussion thread, or ErrorPayload when creation
+fails (e.g. the discussion does not exist, the user lacks permission, or the input
+is invalid). Callers should check the __typename field to distinguish the two cases.
 """
 union CreatePollPayload = ErrorPayload | CreatePollSuccess

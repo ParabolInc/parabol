@@ -5,6 +5,49 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.0](https://github.com/ParabolInc/parabol/compare/v13.9.2...v13.10.0) (2026-04-14)
+
+
+### Added
+
+* add [@scope](https://github.com/scope) directive to gql schema ([#12977](https://github.com/ParabolInc/parabol/issues/12977)) ([bdb743c](https://github.com/ParabolInc/parabol/commit/bdb743c1d02d302761ee737bda71799bea0bee45))
+* add read authorization scopes to GraphQL ([#12984](https://github.com/ParabolInc/parabol/issues/12984)) ([651b15f](https://github.com/ParabolInc/parabol/commit/651b15f3c1428b810dd30e8676d9156f19228196))
+* Personal Access Tokens ([#12972](https://github.com/ParabolInc/parabol/issues/12972)) ([e73a74b](https://github.com/ParabolInc/parabol/commit/e73a74bd263bfdd1fb281a0f614ff537294dcf06))
+
+
+### Fixed
+
+* activity library null filter, pat error path ([#12987](https://github.com/ParabolInc/parabol/issues/12987)) ([96a0c63](https://github.com/ParabolInc/parabol/commit/96a0c63c20135228ee4b1c9a77d79e5bc1c84bf0))
+* log 400 SCIM errors ([#12980](https://github.com/ParabolInc/parabol/issues/12980)) ([b841de6](https://github.com/ParabolInc/parabol/commit/b841de614e810cbc15ac31c29960bf0f9ab712ac))
+* prevent memory leak and socket exhaustion in publish + fetch paths ([#12986](https://github.com/ParabolInc/parabol/issues/12986)) ([a217cde](https://github.com/ParabolInc/parabol/commit/a217cde05c78df345b057e4c10dca2f6f6689b32))
+* schema descriptions ([#12982](https://github.com/ParabolInc/parabol/issues/12982)) ([7d3f77f](https://github.com/ParabolInc/parabol/commit/7d3f77f18649419154877a0ff62ce92775f9626f))
+
+## [13.9.2](https://github.com/ParabolInc/parabol/compare/v13.9.1...v13.9.2) (2026-04-08)
+
+
+### Fixed
+
+* support su for moveTeamToOrg ([#12978](https://github.com/ParabolInc/parabol/issues/12978)) ([853f465](https://github.com/ParabolInc/parabol/commit/853f46562cea1002aa061dc75657f9fc4f7afbad))
+
+## [13.9.1](https://github.com/ParabolInc/parabol/compare/v13.9.0...v13.9.1) (2026-04-07)
+
+
+### Fixed
+
+* text style kit  ([#12975](https://github.com/ParabolInc/parabol/issues/12975)) ([ae2c45b](https://github.com/ParabolInc/parabol/commit/ae2c45b481117be7f89b479c6820822b5ce883d3))
+
+## [13.9.0](https://github.com/ParabolInc/parabol/compare/v13.8.0...v13.9.0) (2026-04-07)
+
+
+### Added
+
+* add Highlight and TextStyle extensions to all Tiptap editors ([#12974](https://github.com/ParabolInc/parabol/issues/12974)) ([4e2688e](https://github.com/ParabolInc/parabol/commit/4e2688e7efae71ff2d85871db1d9e12b856e0372))
+
+
+### Fixed
+
+* deadlock on renew ([#12970](https://github.com/ParabolInc/parabol/issues/12970)) ([9fe07c2](https://github.com/ParabolInc/parabol/commit/9fe07c2dccdf938bd1dd17526c8dc5f4cf776216))
+
 ## [13.8.0](https://github.com/ParabolInc/parabol/compare/v13.7.9...v13.8.0) (2026-04-04)
 
 

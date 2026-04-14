@@ -1,0 +1,43 @@
+"""
+An API token belonging to a user for programmatic access, with optional scope restrictions
+"""
+type PersonalAccessToken {
+  id: ID!
+  """
+  Human-readable label for the token
+  """
+  name: String!
+  """
+  The first few characters of the token used to identify it without exposing the full secret
+  """
+  prefix: String!
+  """
+  The OAuth permission scopes granted to this token
+  """
+  scopes: [OAuthScopeEnum!]!
+  """
+  Null means the token can access all orgs the user belongs to
+  """
+  grantedOrgIds: [ID!]
+  """
+  Null means the token can access all teams the user belongs to
+  """
+  grantedTeamIds: [ID!]
+  """
+  Null means the token can access all pages the user can access
+  """
+  grantedPageIds: [ID!]
+  createdAt: DateTime!
+  """
+  The last time this token was used to make an API request
+  """
+  lastUsedAt: DateTime
+  """
+  When the token expires; null means it never expires
+  """
+  expiresAt: DateTime
+  """
+  When the token was revoked; null means it is still active
+  """
+  revokedAt: DateTime
+}

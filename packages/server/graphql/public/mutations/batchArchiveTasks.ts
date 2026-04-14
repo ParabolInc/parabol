@@ -9,8 +9,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
   _source,
   {taskIds},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -40,6 +41,12 @@ const batchArchiveTasks: MutationResolvers['batchArchiveTasks'] = async (
 
   const validTasks = Object.values(validTasksByTeamId).flat()
   const teamIds = Object.keys(validTasksByTeamId)
+  if (context.resourceGrants) {
+    const hasAccess = await Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
+    if (hasAccess.some((v) => !v)) {
+      return {archivedTaskIds: []}
+    }
+  }
   const archivedTaskIds = validTasks.map(({id}) => id)
 
   // RESOLUTION

@@ -1,3 +1,6 @@
+"""
+Return value for updateSCIM mutation
+"""
 type UpdateSCIMPayload {
   """
   The updated SAML configuration containing the SCIM settings

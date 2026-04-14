@@ -1,14 +1,14 @@
 """
-Input for adding a new scale
+Input for adding a new value to an existing poker template scale. Used with the addPokerTemplateScaleValue mutation, which appends a single TemplateScaleValue to the ordered list of values on a TemplateScale. Each scale value represents one option that participants can vote on during a Poker meeting (e.g., a story-point size or complexity tier).
 """
 input AddTemplateScaleInput {
   """
-  The color used to visually group a scale value
+  The hex color code (e.g., "#DB70DB") used to visually distinguish this scale value from others on the scale. Colors are displayed in the Poker voting UI next to the label so participants can quickly identify each option.
   """
   color: String!
 
   """
-  The label for this value, e.g., XS, M, L
+  A short human-readable label for this scale value shown to participants during voting (e.g., "XS", "M", "L", "1", "8", "?"). Labels must be unique within the scale.
   """
   label: String!
 }

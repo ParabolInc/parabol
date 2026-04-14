@@ -28,6 +28,9 @@ export const hasPageAccess = <T>(dotPath: ResolverDotPath<T>, roleRequired: Page
         )
       }
       dataLoader.get('pageAccessByPageIdUserId').clearAll()
+      if (context.resourceGrants && !(await context.resourceGrants.hasPage(dbPageId))) {
+        return new GraphQLError(`PAT does not grant access to this page`)
+      }
       return true
     }
   )

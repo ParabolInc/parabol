@@ -1,13 +1,32 @@
+"""
+Input for creating a new retro reflection during the reflect phase of a retrospective meeting.
+Each reflection belongs to exactly one reflect prompt (category) and is placed in its own
+newly-created reflection group. Reflections can only be added before the group phase is complete.
+"""
 input CreateReflectionInput {
   """
-  A stringified TipTap JSONContent  document containing thoughts
+  A stringified TipTap JSONContent document containing the reflection's thoughts.
+  Must be 2000 characters or fewer. If omitted or null, an empty document is created.
+  The server normalises legacy formats to TipTap automatically.
   """
   content: String
+
+  """
+  The ID of the retrospective meeting in which to create the reflection.
+  The meeting must be active (not ended) and must not have completed the group phase yet.
+  """
   meetingId: ID!
 
   """
-  The prompt the reflection belongs to
+  The ID of the ReflectPrompt (category) this reflection answers, e.g. "What went well?".
+  Determines which column the reflection appears in on the board. Immutable after creation.
   """
   promptId: ID!
+
+  """
+  The vertical sort position of the reflection's containing group within its prompt column.
+  A new ReflectionGroup is created for this reflection and placed at this position.
+  Use a float so items can be inserted between existing positions without renumbering.
+  """
   sortOrder: Float!
 }

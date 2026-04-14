@@ -16,5 +16,6 @@ type UserTiersCount {
   The number of orgs on the team tier the user holds the role of Billing Leader
   """
   tierTeamBillingLeaderCount: Int
+  "The user these counts belong to"
   user: User
 }

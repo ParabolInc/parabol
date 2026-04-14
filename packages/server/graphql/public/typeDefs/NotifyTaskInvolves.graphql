@@ -1,5 +1,5 @@
 """
-A notification sent to someone who was just added to a team
+A notification sent when a task is assigned to or mentions the viewer
 """
 type NotifyTaskInvolves implements Notification & TeamNotification {
   """
@@ -19,7 +19,7 @@ type NotifyTaskInvolves implements Notification & TeamNotification {
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 
@@ -47,6 +47,10 @@ type NotifyTaskInvolves implements Notification & TeamNotification {
   The TeamMember of the person that made the change
   """
   changeAuthor: TeamMember!
+
+  """
+  The team this task belongs to
+  """
   teamId: ID!
 
   """

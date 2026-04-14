@@ -1,10 +1,8 @@
 """
-A team prompt meeting
+A standup-style meeting where each team member responds to a shared prompt
 """
 type TeamPromptMeeting implements NewMeeting {
-  """
-  The name of the meeting
-  """
+  "The prompt all team members are responding to"
   meetingPrompt: String!
 
   """
@@ -138,9 +136,7 @@ type TeamPromptMeeting implements NewMeeting {
   """
   tasks: [Task!]!
 
-  """
-  foreign key for team
-  """
+  "The ID of the team that ran the meeting"
   teamId: ID!
 
   """

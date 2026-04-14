@@ -1,4 +1,8 @@
+"""
+Input for updating a team's name or picture
+"""
 input UpdatedTeamInput {
+  "The team ID"
   id: ID!
 
   """
@@ -7,7 +11,7 @@ input UpdatedTeamInput {
   name: String!
 
   """
-  A link to the team’s profile image.
+  A link to the team's profile image.
   """
   picture: URL
 }

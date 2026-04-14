@@ -1,3 +1,6 @@
+"""
+An error returned by a mutation using the legacy error pattern
+"""
 type StandardMutationError {
   """
   The title of the error

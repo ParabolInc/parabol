@@ -1,11 +1,23 @@
 """
-Authorization URL constructed after creating a new request token
+Payload returned by the createOAuth1AuthorizeUrl mutation. On success, contains
+the authorization URL the client should redirect the user to in order to begin
+the OAuth 1.0a three-legged authorization flow. The URL already contains the
+oauth_token (request token) obtained from the provider, so the client only
+needs to redirect to it. On failure, error is populated and url is null.
 """
 type CreateOAuth1AuthorizationURLPayload {
+  """
+  Present when the mutation fails (e.g. invalid providerId, provider
+  unreachable, or team not found). Null on success.
+  """
   error: StandardMutationError
 
   """
-  Authorization URL including oauth_token to start authorization flow
+  The provider's authorization endpoint URL with the oauth_token query
+  parameter already appended. Redirect the user to this URL to have them grant
+  access on the provider's site. After the user approves, the provider will
+  redirect back with oauth_token and oauth_verifier, which are then used in the
+  subsequent step to exchange for a permanent access token. Null on error.
   """
   url: String
 }

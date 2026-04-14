@@ -1,4 +1,10 @@
+"""
+The payload returned after a user dismisses a suggested action, removing it from their list of suggested next steps.
+"""
 type DismissSuggestedActionPayload {
+  """
+  Present if an error occurred during the mutation; null on success.
+  """
   error: StandardMutationError
 
   """

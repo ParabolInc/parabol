@@ -1,4 +1,6 @@
 """
-Return object for EndTeamPromptPayload
+The result of ending a Team Prompt (async standup) meeting. Returns either a success object with the
+finalized meeting data or an error if the meeting could not be ended (e.g. meeting not found,
+caller lacks permission, or meeting is already ended).
 """
 union EndTeamPromptPayload = ErrorPayload | EndTeamPromptSuccess

@@ -86,6 +86,10 @@ type AgendaItemsStage implements NewMeetingStage & DiscussionThreadStage {
   The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
   """
   suggestedTimeLimit: Float
+
+  """
+  The team hosting the meeting this stage belongs to
+  """
   teamId: ID!
 
   """
@@ -107,5 +111,9 @@ type AgendaItemsStage implements NewMeetingStage & DiscussionThreadStage {
   The id of the agenda item this relates to
   """
   agendaItemId: ID!
+
+  """
+  The agenda item being discussed in this stage. Contains the topic text, who added it, and whether it has been pinned for recurring use
+  """
   agendaItem: AgendaItem!
 }

@@ -52,7 +52,7 @@ type Organization implements OrganizationPartial {
   For org admins/super users: all teams in the org (viewer's teams first).
   For regular users: teams the viewer is on plus public teams.
   """
-  teams: [Team!]!
+  teams: [Team!]! @scope(name: TEAMS_READ)
 
   """
   The count of all teams in the organization
@@ -60,7 +60,7 @@ type Organization implements OrganizationPartial {
   allTeamsCount: Int!
 
   """
-  THe datetime the current billing cycle ends
+  The datetime the current billing cycle ends
   """
   periodEnd: DateTime
 
@@ -120,9 +120,9 @@ type Organization implements OrganizationPartial {
   viewerOrganizationUser: OrganizationUser
 
   """
-  The users that are apart of the organization
+  The users that are part of the organization
   """
-  organizationUsers(after: String, first: Int): OrganizationUserConnection!
+  organizationUsers(after: String, first: Int): OrganizationUserConnection! @scope(name: USERS_READ)
 
   """
   The count of active & inactive users
@@ -132,23 +132,27 @@ type Organization implements OrganizationPartial {
   """
   The leaders of the org
   """
-  billingLeaders: [OrganizationUser!]!
+  billingLeaders: [OrganizationUser!]! @scope(name: USERS_READ)
 
   """
-  The assumed company this organizaiton belongs to
+  The assumed company this organization belongs to
   """
   company: Company
 
   """
   Basic meeting metadata for aggregated stats across the entire organization.
-  Includes metadata on teams the viewer is not apart of
+  Includes metadata on teams the viewer is not part of
   """
-  meetingStats: [MeetingStat!]!
+  meetingStats: [MeetingStat!]! @scope(name: MEETINGS_READ)
 
   """
   The org avatar
   """
   picture: URL
+
+  """
+  The current subscription tier of the organization
+  """
   tier: TierEnum!
 
   """
@@ -156,6 +160,9 @@ type Organization implements OrganizationPartial {
   """
   useAI: Boolean!
 
+  """
+  The tier used for billing purposes (may differ from tier during trials or grace periods)
+  """
   billingTier: TierEnum!
 
   """
@@ -181,7 +188,7 @@ type Organization implements OrganizationPartial {
   """
   Minimal details about all teams in the organization
   """
-  teamStats: [TeamStat!]!
+  teamStats: [TeamStat!]! @scope(name: TEAMS_READ)
 
   """
   Whether the org has a feature flag enabled or not

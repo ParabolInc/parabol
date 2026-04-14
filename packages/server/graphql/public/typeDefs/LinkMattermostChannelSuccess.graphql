@@ -1,5 +1,15 @@
+"""
+The result of linking a Mattermost channel to a team for notifications
+"""
 type LinkMattermostChannelSuccess {
+  """
+  The ID of the team the channel was linked to
+  """
   teamId: ID!
+
+  """
+  The IDs of all currently linked Mattermost channels for this team
+  """
   linkedChannels: [ID!]!
 
   """

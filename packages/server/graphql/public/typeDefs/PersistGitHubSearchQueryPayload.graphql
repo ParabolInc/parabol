@@ -1,4 +1,4 @@
 """
-Return object for PersistGitHubSearchQueryPayload
+Result of saving a GitHub search query for later reuse
 """
 union PersistGitHubSearchQueryPayload = ErrorPayload | PersistGitHubSearchQuerySuccess

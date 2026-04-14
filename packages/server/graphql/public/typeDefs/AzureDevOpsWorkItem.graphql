@@ -1,49 +1,72 @@
 """
-The Azure DevOps Work Item that comes direct from Azure DevOps
+An Azure DevOps work item fetched in real time from the Azure DevOps REST API.
+Implements TaskIntegration, meaning a Parabol Task can be linked to this work item
+so that changes (e.g. title, state) are reflected back to Azure DevOps.
+Use this type when displaying, linking, or syncing a specific work item inside a Parabol task or retro card.
 """
 type AzureDevOpsWorkItem implements TaskIntegration {
   """
-  GUID instanceId:projectKey:issueKey
+  Globally unique identifier for this work item within Parabol, formed by joining the Azure DevOps
+  instance ID, the team project name/ID, and the numeric work item ID with colons:
+  "<instanceId>:<teamProject>:<issueKey>" (e.g. "a1b2c3.visualstudio.com:MyProject:42").
+  Use this as the stable reference when storing or querying the work item inside Parabol.
   """
   id: ID!
 
   """
-  URL to the issue
+  The direct browser URL to open this work item in Azure DevOps
+  (e.g. "https://dev.azure.com/org/MyProject/_workitems/edit/42").
+  Use this to link users directly to the work item in the Azure DevOps UI.
   """
   url: String!
 
   """
-  The id of the issue from Azure, e.g. 7
+  The numeric work item ID assigned by Azure DevOps (e.g. "42").
+  This is the raw ID as it appears in Azure DevOps, without any project or instance prefix.
+  Use this when displaying the work item reference or constructing Azure DevOps API calls.
   """
   issueKey: String!
 
   """
-  Title of the work item
+  The human-readable title (name) of the work item, equivalent to the "Title" field in Azure DevOps.
+  Use this for display purposes wherever a short label for the work item is needed.
   """
   title: String!
 
   """
-  Name or id of the Team Project the work item belongs to
+  The name or ID of the Azure DevOps Team Project that owns this work item
+  (e.g. "MyProject"). Team Projects are the top-level organizational unit inside an Azure DevOps instance.
+  Use this to scope API calls or to display which project the work item belongs to.
   """
   teamProject: String!
 
   """
-  The Azure DevOps Remote Project the work item belongs to
+  The full AzureDevOpsRemoteProject record for the team project that owns this work item.
+  Provides richer project metadata (instance ID, visibility, revision, etc.) beyond the plain teamProject name.
+  Use this when you need project-level details alongside the work item, such as constructing links or
+  validating access.
   """
   project: AzureDevOpsRemoteProject!
 
   """
-  The Current State of the Work item
+  The current workflow state of the work item as defined in Azure DevOps (e.g. "Active", "Resolved", "Closed").
+  The available states depend on the work item type and the process template configured for the project.
+  Use this to show progress, filter by status, or decide whether a task should be marked complete in Parabol.
   """
   state: String!
 
   """
-  The Type of the Work item
+  The work item type as defined in Azure DevOps (e.g. "Bug", "User Story", "Task", "Epic").
+  The available types depend on the process template (Agile, Scrum, CMMI) configured for the project.
+  Use this to display the correct icon/label or to differentiate handling between bugs and stories.
   """
   type: String!
 
   """
-  The description converted into raw HTML
+  The work item's description field rendered as an HTML string.
+  Azure DevOps stores descriptions as HTML; this field exposes that HTML directly so it can be
+  rendered in a rich-text context. May be an empty string if the work item has no description.
+  Use this when showing a preview of the work item's details inside Parabol (e.g. in a task drawer).
   """
   descriptionHTML: String!
 }

@@ -1,5 +1,19 @@
+"""
+Input for a Jira Data Center search query with optional project key filters
+"""
 input JiraServerSearchQueryInput {
+  """
+  The query string, either simple text or JQL depending on isJQL
+  """
   queryString: String!
+
+  """
+  true if the queryString is JQL, else false
+  """
   isJQL: Boolean!
+
+  """
+  The list of project keys to filter results by
+  """
   projectKeyFilters: [ID!]!
 }

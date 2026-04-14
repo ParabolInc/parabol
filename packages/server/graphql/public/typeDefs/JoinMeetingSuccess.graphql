@@ -1,4 +1,10 @@
+"""
+The result of a user successfully joining a meeting in progress
+"""
 type JoinMeetingSuccess {
+  """
+  The ID of the meeting that was joined
+  """
   meetingId: ID!
 
   """

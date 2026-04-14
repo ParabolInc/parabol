@@ -2,8 +2,23 @@
 The payment status of the invoice
 """
 enum InvoiceStatusEnum {
+  """
+  Payment is being processed
+  """
   PENDING
+
+  """
+  Payment was successfully collected
+  """
   PAID
+
+  """
+  Payment attempt failed
+  """
   FAILED
+
+  """
+  Invoice for the current billing period, not yet due
+  """
   UPCOMING
 }

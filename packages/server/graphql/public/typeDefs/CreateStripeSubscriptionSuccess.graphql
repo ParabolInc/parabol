@@ -1,6 +1,21 @@
+"""
+Returned by the createStripeSubscription mutation when a new Stripe subscription has been
+successfully created for the given organization. The caller must use the
+stripeSubscriptionClientSecret to confirm payment on the client side (e.g. via
+stripe.confirmCardPayment) before the subscription becomes active.
+
+Failure cases surfaced as ErrorPayload instead:
+- The organization already has an active Stripe subscription (stripeSubscriptionId is set).
+- Creating or retrieving the Stripe customer fails.
+- Attaching the payment method to an existing customer fails.
+"""
 type CreateStripeSubscriptionSuccess {
   """
-  The client secret from the Stripe subscription. Used for client-side retrieval using a publishable key.
+  The client secret from the Stripe PaymentIntent on the subscription's latest invoice.
+  Pass this to stripe.confirmCardPayment (or equivalent) on the client using the
+  Stripe publishable key to complete 3DS / SCA payment confirmation and activate the
+  subscription. This value is single-use and short-lived; confirm payment immediately
+  after receiving it.
   """
   stripeSubscriptionClientSecret: String!
 }

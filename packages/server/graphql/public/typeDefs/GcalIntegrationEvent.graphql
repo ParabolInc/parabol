@@ -1,6 +1,24 @@
+"""
+A Google Calendar event returned as part of a GcalIntegration query
+"""
 type GcalIntegrationEvent {
+  """
+  The event title or subject
+  """
   summary: String
+
+  """
+  The start date and time of the event
+  """
   startDate: DateTime
+
+  """
+  The end date and time of the event
+  """
   endDate: DateTime
+
+  """
+  A URL link to the event in Google Calendar
+  """
   link: String
 }

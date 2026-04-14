@@ -1,5 +1,12 @@
+"""
+Payload returned when a participant starts or stops editing a reflection card during the reflect phase of a retrospective meeting. Broadcast to all meeting subscribers so clients can show real-time editing indicators.
+"""
 type EditReflectionPayload {
   error: StandardMutationError
+
+  """
+  The ID of the reflect prompt (column/category) whose reflection card is being edited.
+  """
   promptId: ID
 
   """

@@ -1,3 +1,6 @@
+"""
+Success result for updateRecurrenceSettings mutation
+"""
 type UpdateRecurrenceSettingsSuccess {
   """
   The updated meeting

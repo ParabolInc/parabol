@@ -1,10 +1,8 @@
 """
-The stage where the single team member responds to a prompt
+The stage where a single team member writes their response to a team prompt
 """
 type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage & NewMeetingTeamMemberStage {
-  """
-  stageId, shortid
-  """
+  "Unique identifier"
   id: ID!
 
   """
@@ -12,9 +10,7 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   """
   endAt: DateTime
 
-  """
-  foreign key. try using meeting
-  """
+  "The ID of the meeting this stage belongs to"
   meetingId: ID!
 
   """
@@ -103,9 +99,7 @@ type TeamPromptResponseStage implements NewMeetingStage & DiscussionThreadStage 
   """
   discussion: Discussion!
 
-  """
-  foreign key. use teamMember
-  """
+  "The ID of the team member whose response this stage captures"
   teamMemberId: ID!
 
   """

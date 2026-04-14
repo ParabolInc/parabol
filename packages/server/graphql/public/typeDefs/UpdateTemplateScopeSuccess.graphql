@@ -1,11 +1,14 @@
+"""
+Success result for updateTemplateScope mutation
+"""
 type UpdateTemplateScopeSuccess {
   """
-  the template that was just updated, if downscoped, does not provide whole story
+  The updated template; if downscoped, may not reflect the full sharing state
   """
   template: MeetingTemplate!
 
   """
-  if downscoping a previously used template, this will be the replacement
+  If downscoping a previously used template, this will be the replacement
   """
   clonedTemplate: MeetingTemplate
 

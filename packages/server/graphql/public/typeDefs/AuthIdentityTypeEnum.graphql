@@ -1,8 +1,17 @@
 """
-The types of authentication strategies
+The authentication strategy used to verify a user's identity. Each user account may have multiple linked identities of different types. Use this to determine how a user logs in and what credentials they manage.
 """
 enum AuthIdentityTypeEnum {
+  """
+  Email and password authentication managed by Parabol. The user registered with an email address and a hashed password stored in Parabol's own database. Supports email verification, password reset flows, and is the only identity type where the user controls a password directly in Parabol.
+  """
   LOCAL
+  """
+  OAuth 2.0 authentication via Google Sign-In. The user logs in through Google and Parabol receives a verified Google ID token. No password is stored; the user's email verification status is sourced from Google.
+  """
   GOOGLE
+  """
+  OAuth 2.0 authentication via Microsoft (Azure AD / Entra ID). The user logs in through Microsoft and Parabol receives a verified Microsoft ID token. Includes a tenant ID (tid) that identifies the user's Microsoft organization, enabling tenant-scoped SSO enforcement.
+  """
   MICROSOFT
 }

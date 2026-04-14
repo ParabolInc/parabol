@@ -1,11 +1,21 @@
+"""
+The success payload returned by the createPoll mutation. Use this type (as opposed to ErrorPayload)
+when the union CreatePollPayload resolves successfully. It gives you both the stable identifier of
+the newly created poll and the full Poll object so you can immediately display or interact with the
+poll without a follow-up query.
+"""
 type CreatePollSuccess {
   """
-  Poll id in a format of `poll:idGeneratedByDatabase`
+  The stable, globally unique identifier of the newly created poll, in the format
+  `poll:<database-generated-id>`. Use this ID to reference the poll in subsequent mutations
+  (e.g. vote on an option) or queries without needing to traverse the full Poll object.
   """
   pollId: ID!
 
   """
-  the poll just created
+  The fully hydrated Poll object that was just created, including its title, voting options, the
+  discussion it belongs to, the team it is scoped to, and authorship metadata. Use this field to
+  render the poll UI immediately after creation rather than refetching it separately.
   """
   poll: Poll!
 }

@@ -18,6 +18,9 @@ type RemoveOrgUsersSuccess {
   Basic info about the organization the users were removed from
   """
   affectedOrganizationId: ID!
+  """
+  The name of the organization the users were removed from
+  """
   affectedOrganizationName: String!
 
   """

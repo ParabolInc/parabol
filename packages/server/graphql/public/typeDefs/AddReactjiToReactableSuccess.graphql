@@ -1,3 +1,12 @@
+"""
+Returned when an emoji reaction (reactji) has been successfully added to a reactable item
+(a comment, reflection, or response). Use the reactable field to read the updated list of
+reactjis and re-render the reaction bar on the item.
+"""
 type AddReactjiToReactableSuccess {
+  """
+  The item that received the reactji, with its reactjis list updated to include the new reaction.
+  Cast to the concrete type (Comment, RetroReflection, or Poll Response) to access type-specific fields.
+  """
   reactable: Reactable!
 }

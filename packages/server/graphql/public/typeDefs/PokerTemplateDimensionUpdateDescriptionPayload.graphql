@@ -1,3 +1,6 @@
+"""
+Result of updating the description of a Poker template dimension
+"""
 type PokerTemplateDimensionUpdateDescriptionPayload {
   error: StandardMutationError
   dimension: TemplateDimension

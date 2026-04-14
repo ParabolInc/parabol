@@ -1,3 +1,6 @@
+"""
+Subscription payload for task-related changes visible to the current user
+"""
 type TaskSubscriptionPayload {
   fieldName: String!
   ChangeTaskTeamPayload: ChangeTaskTeamPayload

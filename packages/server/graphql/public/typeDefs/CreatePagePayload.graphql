@@ -1,3 +1,7 @@
+"""
+The payload returned by the createPage mutation. Contains the newly created top-level page.
+"""
 type CreatePagePayload {
+  "The newly created page, seeded with an empty heading and ready for content."
   page: Page!
 }

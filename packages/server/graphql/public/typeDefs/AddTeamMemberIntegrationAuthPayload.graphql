@@ -1,4 +1,7 @@
 """
-Return object for addTeamMemberIntegrationAuth
+The result of the addTeamMemberIntegrationAuth mutation, which links an integration provider's
+credentials (OAuth2 token, OAuth1 token, personal access token, or webhook URL) to a specific
+team member. Returns the updated auth record and related entities on success, or an error if
+the authorization could not be stored (e.g. invalid code, provider not found, permission denied).
 """
 union AddTeamMemberIntegrationAuthPayload = ErrorPayload | AddTeamMemberIntegrationAuthSuccess

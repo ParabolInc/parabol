@@ -1,3 +1,6 @@
+"""
+Result of resetting a retrospective meeting back to the grouping stage
+"""
 type ResetRetroMeetingToGroupStagePayload {
   error: StandardMutationError
   meeting: NewMeeting

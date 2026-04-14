@@ -95,6 +95,26 @@ const updateIntegrationProvider: MutationResolvers['updateIntegrationProvider'] 
       }
     }
   }
+  if (context.resourceGrants) {
+    const orgIds = [
+      oldScope === 'org' ? oldOrgId : null,
+      newScope === 'org' ? newOrgId : null
+    ].filter(Boolean) as string[]
+    const teamIds = [
+      oldScope === 'team' ? oldTeamId : null,
+      newScope === 'team' ? newTeamId : null
+    ].filter(Boolean) as string[]
+    const [orgAccess, teamAccess] = await Promise.all([
+      Promise.all(orgIds.map((id) => context.resourceGrants!.hasOrg(id))),
+      Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
+    ])
+    if (orgAccess.some((v) => !v)) {
+      return {error: {message: 'PAT does not grant access to this organization'}}
+    }
+    if (teamAccess.some((v) => !v)) {
+      return {error: {message: 'PAT does not grant access to this team'}}
+    }
+  }
 
   // VALIDATION
   if (oAuth2ProviderMetadataInput && webhookProviderMetadataInput) {

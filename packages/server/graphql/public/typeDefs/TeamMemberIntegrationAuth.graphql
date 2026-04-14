@@ -1,5 +1,5 @@
 """
-The auth credentials for a token, specific to a team member
+Auth credentials linking a team member to an external integration provider
 """
 interface TeamMemberIntegrationAuth {
   """
@@ -22,9 +22,7 @@ interface TeamMemberIntegrationAuth {
   """
   updatedAt: DateTime!
 
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
+  "The ID of the integration provider this token belongs to"
   providerId: ID!
 
   """

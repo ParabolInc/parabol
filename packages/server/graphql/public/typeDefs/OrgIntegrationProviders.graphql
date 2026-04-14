@@ -3,7 +3,7 @@ Custom integration providers for this organization
 """
 type OrgIntegrationProviders {
   """
-  composite
+  Composite key derived from the org ID
   """
   id: ID!
 

@@ -1,4 +1,14 @@
+"""
+A guest user identified by email who has been granted access to a page
+"""
 type PageAccessGuest {
+  """
+  The email address of the guest
+  """
   email: Email!
+
+  """
+  The access role granted to this guest
+  """
   role: PageRoleEnum!
 }

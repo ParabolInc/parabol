@@ -1,3 +1,6 @@
+"""
+Success result for updateIntegrationProvider mutation
+"""
 type UpdateIntegrationProviderSuccess {
   """
   The provider that was updated

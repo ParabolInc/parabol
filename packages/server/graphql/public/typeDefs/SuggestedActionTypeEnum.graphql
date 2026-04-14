@@ -2,9 +2,14 @@
 The specific type of the suggested action
 """
 enum SuggestedActionTypeEnum {
+  "Invite teammates to your team"
   inviteYourTeam
+  "Try the Parabol demo"
   tryTheDemo
+  "Run a retrospective meeting"
   tryRetroMeeting
+  "Create a new team"
   createNewTeam
+  "Run a check-in (action) meeting"
   tryActionMeeting
 }

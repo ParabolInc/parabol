@@ -1,4 +1,23 @@
+"""
+The result of a successful OAuth 2.0 authorization code request. Returned
+when a user approves an OAuth 2.0 authorization flow initiated via
+GET /oauth/authorize. The client application exchanges the code for an
+access token by POSTing to /oauth/token with grant_type=authorization_code.
+"""
 type CreateOAuthAPICodePayload {
+  """
+  A short-lived, single-use authorization code (valid for 10 minutes) that
+  the OAuth client exchanges for an access token at the /oauth/token endpoint.
+  This code is tied to the requesting client_id, redirect_uri, user, and
+  approved scopes.
+  """
   code: String!
+
+  """
+  The opaque state value originally supplied by the OAuth client in the
+  authorization request. Echoed back unchanged so the client can verify
+  the response matches its request and guard against CSRF attacks. Null
+  when the client did not include a state parameter.
+  """
   state: String
 }
