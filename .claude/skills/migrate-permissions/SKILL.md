@@ -56,6 +56,22 @@ When extracting inline auth:
 4. Remove the inline check from the resolver, along with any imports that are no longer used
 5. If no existing rule fits and the logic is reusable, ask before creating a new rule — most cases can reuse existing rules
 
+### PAT resource grants in permission rules
+
+- **Check context.resourceGrants in graphql-shield permission rules for PAT resource access.** Every graphql-shield permission rule must check context.resourceGrants (when present) after the standard JWT-based authorization passes. The ResourceGrants object is set on the context only for PAT-authenticated requests and provides hasTeam(), hasOrg(), and hasPage() async methods. The pattern is: first do the normal permission check (team membership, org role, etc.), then if context.resourceGrants exists, verify the PAT grants access to the specific resource. Return a GraphQLError with message 'PAT does not grant access to this \[team|organization|page]' on failure.
+  ```
+  // Good
+    if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
+      return new GraphQLError(`PAT does not grant access to this organization`)
+    }
+    return true
+
+  // Bad
+    // Missing resourceGrants check — PAT could access any org the user belongs to
+    if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
+    return true
+  ```
+
 ### When a new rule is needed (ask first)
 
 - Auth that depends on an array of IDs (e.g., "team lead for any of these teamIds")

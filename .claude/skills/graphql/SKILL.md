@@ -97,6 +97,19 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 
 ---
 
+### @scope directive for PAT authorization on mutations and read fields
+
+- **Use @scope directive on all GraphQL mutations and read fields for PAT authorization.** Every mutation field in the GraphQL schema MUST have a @scope(name: OAuthScopeEnum!) directive. The applyScopeDirective transformer enforces this at startup — if any Mutation field is missing the directive, the server throws an error. Read fields on types like User, Team, and Organization also use @scope for PAT-authorized read access. The scope names follow the pattern ENTITY\_READ or ENTITY\_WRITE (e.g., TEAMS\_WRITE, TASKS\_READ, ORGS\_WRITE, COMMENTS\_WRITE). For regular JWT-authenticated requests the directive is a no-op; for PAT bearer tokens it verifies the token has the required scope.
+  ```
+  // Good
+    addAgendaItem(newAgendaItem: CreateAgendaItemInput!): AddAgendaItemPayload @scope(name: TEAMS_WRITE)
+    archivedTasks(first: Int!, after: DateTime, teamId: ID!): TaskConnection @scope(name: TASKS_READ)
+
+  // Bad
+    addAgendaItem(newAgendaItem: CreateAgendaItemInput!): AddAgendaItemPayload
+    # Missing @scope directive — server will throw at startup
+  ```
+
 ## TypeScript & Type Safety
 
 - **Never use `any`** without strong justification. Don't remove type annotations.
@@ -106,6 +119,20 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 - **Create objects in a single call** instead of building them incrementally across multiple statements. Cleaner for the compiler and immediately shows if variables are unused.
 - **Kysely: `undefined` skips the field, `null` sets it to NULL.** The DB driver ignores `undefined` values but does _not_ ignore `null`. Use this distinction intentionally.
 - **Use `Number(id)`** when passing string IDs to PostgreSQL integer columns. PG may accept strings, but not every dataloader will.
+
+- **Type mutation resolvers as MutationResolvers\['mutationName'] and type resolvers as ReqResolvers<'TypeName'>.** Mutation resolver functions must be typed using the generated MutationResolvers index type: \`const myMutation: MutationResolvers\['myMutation'] = async (\_, args, context) => { ... }\`. Type resolvers (for object types like User, Team, PersonalAccessToken) use a custom \`ReqResolvers<'TypeName'>\` wrapper that ensures all fields not present on the mapper parent type are required to be implemented. Both patterns use codegen'd types from resolverTypes.
+  ```
+  // Good
+    const createPersonalAccessToken: MutationResolvers['createPersonalAccessToken'] = async (_, args, {authToken}) => { ... }
+    
+    const PersonalAccessToken: ReqResolvers<'PersonalAccessToken'> = {
+      id: ({prefix}) => `pat_${prefix}`
+    }
+
+  // Bad
+    const createPersonalAccessToken = async (_, args, context) => { ... }  // Untyped resolver
+    const PersonalAccessToken = { id: ({prefix}) => `pat_${prefix}` }  // Missing ReqResolvers type
+  ```
 
 ## DataLoader Best Practices
 
@@ -130,6 +157,23 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 - **Migrations use `Kysely<any>`** — the `any` is intentional since migrations are frozen in time and must not reference evolving DB types. Export `async function up(db: Kysely<any>)` and `async function down(db: Kysely<any>)`. Name files with ISO timestamps: `2026-03-30T12:08:00.000Z_description.ts`.
 - **Use queries for read operations, mutations for writes.** Don't use mutations for operations that only read data.
 - **Store data in the database** rather than computing values on-the-fly in code.
+
+- **Centralize table queries in select.ts factory functions returning composable Kysely query builders.** All database table queries go through factory functions in packages/server/postgres/select.ts named select\<TableName>(). These return Kysely query builders (not executed queries) so callers can chain additional .where(), .select(), .orderBy() etc. They handle type narrowing ($narrowType), JSON column casting (fn\<T>('to\_json', \[col])), and custom type assertions (AssertedQuery). This pattern avoids raw SQL, centralizes column selection, and enables type-safe composability.
+  ```
+  // Good
+    export const selectPersonalAccessToken = () => {
+      return getKysely()
+        .selectFrom('PersonalAccessToken')
+        .select(['id', 'createdAt', 'expiresAt', 'name', 'prefix', 'revokedAt', 'userId'])
+        .select(({fn}) => [fn<string[]>('to_json', ['scopes']).as('scopes')])
+    }
+    // Usage:
+    const tokens = await selectPersonalAccessToken().where('userId', '=', viewerId).execute()
+
+  // Bad
+    // Don't write raw queries or inline selectFrom in resolvers
+    const tokens = await getKysely().selectFrom('PersonalAccessToken').selectAll().where('userId', '=', viewerId).execute()
+  ```
 
 ## YJS / CRDT Patterns
 
