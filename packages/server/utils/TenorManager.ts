@@ -56,6 +56,7 @@ export class TenorManager {
         signal: AbortSignal.timeout(MAX_REQUEST_TIME)
       })
       if (res.status !== 200) {
+        await res.body?.cancel()
         return new Error(`${res.status}: ${res.statusText}`)
       }
       const resJSON = await res.json()
