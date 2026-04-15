@@ -17,6 +17,7 @@ import {getUserId, isTeamMember, isUserInOrg} from '../../../utils/authorization
 import {CipherId} from '../../../utils/CipherId'
 import {compressImage} from '../../../utils/compressImage'
 import type {DataLoaderWorker} from '../../graphql'
+import type {ResourceGrants} from '../ResourceGrants'
 import type {AssetScopeEnum, MutationResolvers} from '../resolverTypes'
 
 export const incrementUserBytesUploaded = async (userId: string, sizeInBytes: number) => {
@@ -35,18 +36,27 @@ export const validateScope = async (
   authToken: AuthToken,
   scope: AssetScopeEnum,
   scopeKey: string,
-  dataLoader: DataLoaderWorker
+  dataLoader: DataLoaderWorker,
+  resourceGrants?: ResourceGrants
 ) => {
   const viewerId = getUserId(authToken)
   let scopeCode = scopeKey
   if (scope === 'User' && scopeKey !== viewerId) {
     return {error: {message: 'scopeKey must match your viewerId'}}
-  } else if (scope === 'Team' && !isTeamMember(authToken, scopeKey)) {
-    return {error: {message: 'scopeKey must match one of your teams'}}
+  } else if (scope === 'Team') {
+    if (!isTeamMember(authToken, scopeKey)) {
+      return {error: {message: 'scopeKey must match one of your teams'}}
+    }
+    if (resourceGrants && !(await resourceGrants.hasTeam(scopeKey))) {
+      return {error: {message: 'PAT does not grant access to this team'}}
+    }
   } else if (scope === 'Organization') {
     const inOrg = await isUserInOrg(viewerId, scopeKey, dataLoader)
     if (!inOrg) {
       return {error: {message: 'scopeKey must match one of your organizations'}}
+    }
+    if (resourceGrants && !(await resourceGrants.hasOrg(scopeKey))) {
+      return {error: {message: 'PAT does not grant access to this organization'}}
     }
   } else if (scope === 'Page') {
     const [pageId, pageCode] = CipherId.fromClient(scopeKey)
@@ -57,6 +67,9 @@ export const validateScope = async (
     if (!pageAccess || pageAccess === 'viewer') {
       return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
     }
+    if (resourceGrants && !(await resourceGrants.hasPage(pageId))) {
+      return {error: {message: 'PAT does not grant access to this page'}}
+    }
   }
   return scopeCode
 }
@@ -64,12 +77,13 @@ export const validateScope = async (
 const uploadUserAsset: MutationResolvers['uploadUserAsset'] = async (
   _,
   {file, scope, scopeKey},
-  {authToken, dataLoader}
+  context
 ) => {
+  const {authToken, dataLoader, resourceGrants} = context
   // VALIDATION
   const viewerId = getUserId(authToken)
   const [scopeCode, userDetails, viewerTier] = await Promise.all([
-    validateScope(authToken, scope, scopeKey, dataLoader),
+    validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants),
     dataLoader.get('userDetails').load(viewerId),
     dataLoader.get('highestTierForUserId').load(viewerId)
   ])

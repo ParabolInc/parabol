@@ -1,8 +1,26 @@
 """
-The source that a change to a record came in through
+Identifies how a change to a record was initiated. Used on TaskEstimate to distinguish
+whether a story-point estimate was set during a poker planning meeting, updated directly
+on the task outside of a meeting, or synchronized in from an external integration such
+as Jira or Azure DevOps.
 """
 enum ChangeSourceEnum {
+  """
+  The change was made during a Parabol poker planning meeting (Sprint Poker). Use this
+  value when an estimate is recorded as the outcome of a team vote in a meeting stage.
+  """
   meeting
+
+  """
+  The change was made directly on the task itself, outside of any meeting context. Use
+  this value when a user edits an estimate from the task detail view or task list.
+  """
   task
+
+  """
+  The change originated from an external integration, such as a Jira or Azure DevOps
+  webhook or sync. Use this value when the estimate was pushed into Parabol by a
+  third-party service rather than by a user action within the app.
+  """
   external
 }

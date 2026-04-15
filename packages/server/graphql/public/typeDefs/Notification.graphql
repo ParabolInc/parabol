@@ -1,6 +1,9 @@
+"""
+A notification sent to a user to inform them of an event that requires their attention
+"""
 interface Notification {
   """
-  A shortid for the notification
+  The unique notification ID
   """
   id: ID!
 
@@ -13,10 +16,14 @@ interface Notification {
   The datetime to activate the notification & send it to the client
   """
   createdAt: DateTime!
+
+  """
+  The notification type, used to determine which concrete type to resolve
+  """
   type: NotificationEnum!
 
   """
-  *The userId that should see this notification
+  The ID of the user who should see this notification
   """
   userId: ID!
 }

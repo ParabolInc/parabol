@@ -1,8 +1,21 @@
+"""
+Payload returned by the deleteTask mutation. Permanently removes a task record
+from the database (hard delete — not an archive or soft-delete). On success,
+task is populated with the deleted task's data and the deletion is broadcast via
+the TASK subscription channel to all team members who had visibility of the task
+(private tasks are only broadcast to the task owner). On failure, error is set
+and task is null.
+"""
 type DeleteTaskPayload {
+  """
+  Present when the mutation fails. Common reasons: the requested task does not
+  exist or the caller does not have permission to delete it.
+  """
   error: StandardMutationError
 
   """
-  The task that was deleted
+  The task that was deleted, returned so clients can optimistically remove it
+  from local caches or subscription listeners. Null when an error occurred.
   """
   task: Task
 }

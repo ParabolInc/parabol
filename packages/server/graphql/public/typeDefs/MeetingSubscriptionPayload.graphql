@@ -1,3 +1,6 @@
+"""
+A discriminated union of all possible meeting subscription event payloads
+"""
 type MeetingSubscriptionPayload {
   fieldName: String!
   AddTranscriptionBotSuccess: AddTranscriptionBotSuccess

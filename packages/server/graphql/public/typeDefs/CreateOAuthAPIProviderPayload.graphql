@@ -1,5 +1,18 @@
+"""
+The result of successfully creating a new OAuth 2.0 API provider. The clientSecret is only
+returned here and is never stored in a retrievable form — the caller must save it immediately.
+"""
 type CreateOAuthAPIProviderPayload {
+  """
+  The newly created OAuth 2.0 provider record, containing metadata such as name, redirect URIs, and scopes. Does not include the clientSecret.
+  """
   provider: OAuthAPIProvider!
+  """
+  The public OAuth 2.0 client identifier for this provider. Safe to share; used by third-party clients when initiating authorization flows.
+  """
   clientId: String!
+  """
+  The secret credential for this provider. Returned only once at creation time — it is not persisted in a readable form and cannot be retrieved later. Store it securely now.
+  """
   clientSecret: String!
 }

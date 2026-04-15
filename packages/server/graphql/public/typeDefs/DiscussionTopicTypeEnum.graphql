@@ -1,11 +1,44 @@
 """
-The topic being discussed
+Identifies the type of entity that is the subject of a Discussion thread. Each Discussion belongs
+to exactly one meeting and one topic entity. The topic type determines which meeting phase owns
+the discussion and how the discussionTopicId foreign key should be resolved.
 """
 enum DiscussionTopicTypeEnum {
+  """
+  An agenda item in an Action (check-in) meeting. The discussionTopicId references an AgendaItem.
+  One discussion is created per agenda item stage when the team works through the agenda.
+  """
   agendaItem
+
+  """
+  A reflection group (theme) in the Discuss phase of a Retrospective meeting. The discussionTopicId
+  references a RetroReflectionGroup. One discussion is created per group so the team can comment
+  and create tasks around each theme.
+  """
   reflectionGroup
+
+  """
+  A Parabol task being estimated in a Sprint Poker meeting. The discussionTopicId references a Task.
+  Used when the item being pointed is a native Parabol task rather than an external issue.
+  """
   task
+
+  """
+  A GitHub issue being estimated in a Sprint Poker meeting. The discussionTopicId references a
+  GitHub issue. Used when the item pulled into the Estimate phase originates from GitHub.
+  """
   githubIssue
+
+  """
+  A Jira issue being estimated in a Sprint Poker meeting. The discussionTopicId references a
+  Jira issue. Used when the item pulled into the Estimate phase originates from Jira.
+  """
   jiraIssue
+
+  """
+  A team member's standup response in a Team Prompt (async standup) meeting. The discussionTopicId
+  references a TeamMember. One discussion is created per team member so others can reply to that
+  person's update.
+  """
   teamPromptResponse
 }

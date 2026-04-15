@@ -1,4 +1,11 @@
 """
-Return object for DeleteCommentPayload
+Return type for the deleteComment mutation. Resolves to DeleteCommentSuccess on success
+or ErrorPayload when the operation fails.
+
+Common error cases:
+- The comment does not exist or is no longer active
+- The commentId does not belong to the specified meetingId
+- The viewer is not the author of the comment (only the original author or Parabol AI comment owners may delete)
+- The viewer is not a member of the meeting (enforced by the @scope directive)
 """
 union DeleteCommentPayload = ErrorPayload | DeleteCommentSuccess

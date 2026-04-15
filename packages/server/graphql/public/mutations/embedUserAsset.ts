@@ -25,8 +25,9 @@ const VALID_ASSET_TYPES: AssetType[] = ['assets', 'picture', 'metadata', 'templa
 const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   _,
   {url: rawUrl, scope, scopeKey},
-  {authToken, dataLoader}
+  context
 ) => {
+  const {authToken, dataLoader, resourceGrants} = context
   // VALIDATION
   let parsedUrl: URL
   try {
@@ -37,7 +38,7 @@ const embedUserAsset: MutationResolvers['embedUserAsset'] = async (
   const url = parsedUrl.href
   const viewerId = getUserId(authToken)
   const [scopeCode, userDetails, viewerTier] = await Promise.all([
-    validateScope(authToken, scope, scopeKey, dataLoader),
+    validateScope(authToken, scope, scopeKey, dataLoader, resourceGrants),
     dataLoader.get('userDetails').load(viewerId),
     dataLoader.get('highestTierForUserId').load(viewerId)
   ])

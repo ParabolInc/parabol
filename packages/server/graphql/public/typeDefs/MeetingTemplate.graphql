@@ -1,11 +1,15 @@
 """
-A meeting template that can be shared across team, orgnization and public
+A meeting template that can be shared across a team, organization, or publicly
 """
 interface MeetingTemplate {
   """
-  shortid
+  The unique template ID
   """
   id: ID!
+
+  """
+  When the template was created
+  """
   createdAt: DateTime!
 
   """
@@ -29,7 +33,7 @@ interface MeetingTemplate {
   name: String!
 
   """
-  *Foreign key. The organization that owns the team that created the template
+  The organization that owns the team that created the template
   """
   orgId: ID!
 
@@ -39,14 +43,14 @@ interface MeetingTemplate {
   scope: SharingScopeEnum!
 
   """
-  *Foreign key. The team this template belongs to
+  The team this template belongs to
   """
   teamId: ID!
 
   """
   The team this template belongs to
   """
-  team: Team!
+  team: Team! @scope(name: TEAMS_READ)
 
   """
   The type of the template

@@ -1,5 +1,26 @@
+"""
+Payload returned by the denyPushInvitation mutation.
+
+A push invitation is a request made by a user to join a team without a direct invite link.
+Team members can approve or deny these requests. This payload is returned when a team member
+denies such a request, incrementing the denial count on the PushInvitation record and
+broadcasting the result via the TEAM subscription channel.
+
+Success: teamId and userId are both present and error is null.
+Failure: error is set and teamId/userId may be null. Common failure cases include:
+  - The caller is not a member of the specified team.
+  - No pending push invitation exists from the specified user to the specified team.
+"""
 type DenyPushInvitationPayload {
   error: StandardMutationError
+  """
+  The ID of the team to which the push invitation was denied.
+  Present on success; used by subscribers to identify which team's invitation list changed.
+  """
   teamId: ID
+  """
+  The ID of the user whose push invitation was denied.
+  Present on success; identifies the user who will not be added to the team.
+  """
   userId: ID
 }

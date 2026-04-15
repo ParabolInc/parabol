@@ -1,4 +1,14 @@
+"""
+The result of reordering a prompt within a Retrospective template
+"""
 type MoveReflectTemplatePromptPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
+
+  """
+  The reordered prompt
+  """
   prompt: ReflectPrompt
 }

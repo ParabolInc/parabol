@@ -1,4 +1,10 @@
+"""
+The result of validating a mass invitation token, including team info or an error reason
+"""
 type MassInvitationPayload {
+  """
+  The reason the invitation is invalid, null if valid
+  """
   errorType: TeamInvitationErrorEnum
 
   """

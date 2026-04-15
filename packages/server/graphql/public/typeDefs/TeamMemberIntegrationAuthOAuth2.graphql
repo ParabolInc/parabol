@@ -22,9 +22,7 @@ type TeamMemberIntegrationAuthOAuth2 implements TeamMemberIntegrationAuth {
   """
   updatedAt: DateTime!
 
-  """
-  The GQL GUID of the DB providerId foreign key
-  """
+  "The ID of the integration provider this token belongs to"
   providerId: ID!
 
   """

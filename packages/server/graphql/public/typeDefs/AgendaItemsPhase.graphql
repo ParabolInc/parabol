@@ -1,17 +1,35 @@
 """
-The meeting phase where all team members discuss the topics with the most votes
+The phase of an Action meeting in which the team works through each agenda item one by one.
+Each agenda item gets its own AgendaItemsStage, and the team discusses them in order.
+This phase only appears in Action meetings (not retrospectives or poker meetings).
+Use this type when traversing meeting phases to find agenda-item discussion stages,
+or when you need to know which team's meeting a set of agenda items belongs to.
 """
 type AgendaItemsPhase implements NewMeetingPhase {
   """
-  shortid
+  Unique identifier for this phase instance (shortid format)
   """
   id: ID!
+
+  """
+  The ID of the Action meeting this phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The ID of the team running this meeting
+  """
   teamId: ID!
 
   """
-  The type of phase
+  The type of phase — always 'agendaitems' for this type
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  Ordered list of stages, one per agenda item. Each stage represents the discussion
+  of a single agenda item. Navigate through these stages to find or display each
+  agenda item's discussion thread.
+  """
   stages: [AgendaItemsStage!]!
 }

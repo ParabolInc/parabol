@@ -1,6 +1,9 @@
+"""
+Success result for updateRetroMaxVotes mutation
+"""
 type UpdateRetroMaxVotesSuccess {
   """
-  the meeting with the updated max votes
+  The meeting with the updated max votes
   """
   meeting: RetrospectiveMeeting!
 }

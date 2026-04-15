@@ -293,8 +293,11 @@ export default class Atmosphere extends Environment {
         }
       }
       sink.next = (value: any) => {
-        const {data} = value
+        const {data, errors} = value
         if (!data) {
+          if (errors) {
+            console.warn('GraphQL errors:', errors)
+          }
           _next({...value, data: {}})
           return
         }

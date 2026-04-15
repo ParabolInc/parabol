@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.8.0",
+  "version": "13.10.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -70,7 +70,8 @@
     "source-map": "0.7.6",
     "qs": "^6.14.1",
     "handlebars": "^4.7.9",
-    "brace-expansion": "^1.1.13"
+    "brace-expansion": "^1.1.13",
+    "@graphql-tools/utils": "^11.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
@@ -171,6 +172,7 @@
     "@tiptap/extension-drag-handle": "3.18.0",
     "@tiptap/extension-file-handler": "3.18.0",
     "@tiptap/extension-heading": "3.18.0",
+    "@tiptap/extension-highlight": "3.18.0",
     "@tiptap/extension-image": "3.18.0",
     "@tiptap/extension-link": "3.18.0",
     "@tiptap/extension-list": "3.18.0",
@@ -178,6 +180,7 @@
     "@tiptap/extension-node-range": "3.18.0",
     "@tiptap/extension-table": "3.18.0",
     "@tiptap/extension-text": "3.18.0",
+    "@tiptap/extension-text-style": "3.18.0",
     "@tiptap/extensions": "3.18.0",
     "@tiptap/html": "3.18.0",
     "@tiptap/markdown": "3.18.0",

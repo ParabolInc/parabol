@@ -13,8 +13,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
   _source,
   {timelineEventId},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
@@ -45,6 +46,9 @@ const archiveTimelineEvent: MutationResolvers['archiveTimelineEvent'] = async (
       | TimelineEventTeamPromptComplete
     if (!isTeamMember(authToken, teamId)) {
       return standardError(new Error('Team not found'), {userId: viewerId})
+    }
+    if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+      return standardError(new Error('PAT does not grant access to this team'), {userId: viewerId})
     }
     const meetingTimelineEvents = await dataLoader.get('timelineEventsByMeetingId').load(meetingId)
     const eventIds = meetingTimelineEvents.map(({id}) => id)

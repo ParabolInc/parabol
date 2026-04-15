@@ -1,3 +1,6 @@
+"""
+A server-side feature flag used to enable or disable functionality for specific users, teams, or organizations
+"""
 type FeatureFlag {
   """
   The ID of the feature flag
@@ -20,7 +23,7 @@ type FeatureFlag {
   expiresAt: DateTime!
 
   """
-  The scope of the feature flag
+  The scope at which this flag applies: User, Team, or Organization
   """
   scope: FeatureFlagScope!
 }

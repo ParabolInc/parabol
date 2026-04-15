@@ -1,4 +1,8 @@
+"""
+Return value for updateTaskDueDate mutation
+"""
 type UpdateTaskDueDatePayload {
   error: StandardMutationError
+  "The task with the updated due date"
   task: Task
 }

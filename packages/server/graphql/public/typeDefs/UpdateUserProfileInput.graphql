@@ -1,3 +1,6 @@
+"""
+Input for updating a user's profile
+"""
 input UpdateUserProfileInput {
   """
   The name, as confirmed by the user

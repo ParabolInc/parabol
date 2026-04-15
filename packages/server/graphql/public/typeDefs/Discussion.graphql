@@ -1,57 +1,81 @@
 """
-A discussion thread
+A threaded discussion attached to a specific topic within a meeting. Each Discussion belongs to
+one meeting and one topic (e.g. a retro reflection group, an agenda item, or an issue from an
+integration like GitHub or Jira). It acts as the container for all comments and tasks created
+during that conversation. Use this type to render the comment thread UI, show participant
+activity, and paginate thread items for a given topic.
 """
 type Discussion {
+  """
+  The unique identifier for this discussion thread.
+  """
   id: ID!
+
+  """
+  The ID of the team that owns the meeting this discussion belongs to.
+  """
   teamId: ID!
 
   """
-  Team
+  The team that owns the meeting this discussion belongs to.
   """
   team: Team!
+
+  """
+  The ID of the meeting in which this discussion takes place.
+  """
   meetingId: ID!
 
   """
-  time the thread was created
+  The timestamp when this discussion thread was created.
   """
   createdAt: DateTime!
 
   """
-  The partial foreign key that references the object that is the topic of the discussion. E.g. AgendaItemId, TaskId, ReflectionGroupId, teamMemberId
+  The ID of the entity being discussed. The meaning depends on discussionTopicType — for example,
+  an AgendaItem ID, a RetroReflectionGroup ID, a Task ID, or an external issue ID from an
+  integration such as GitHub or Jira.
   """
   discussionTopicId: ID!
 
   """
-  The partial foregin key that describes the type of object that is the topic of the discussion. E.g. AgendaItem, TaskId, ReflectionGroup, GitHubIssue
+  The type of entity being discussed, used together with discussionTopicId to resolve the actual
+  topic object. Possible values include agendaItem, reflectionGroup, task, githubIssue, jiraIssue,
+  and teamPromptResponse.
   """
   discussionTopicType: DiscussionTopicTypeEnum!
 
   """
-  The stage where the discussion is
+  The meeting stage associated with this discussion, if the meeting is currently on that stage.
+  Null when the meeting has not yet reached this topic's stage or the stage cannot be determined.
   """
   stage: NewMeetingStage
 
   """
-  The number of comments contained in the thread
+  The total number of comments posted in this discussion thread.
   """
   commentCount: Int!
 
   """
-  The users writing a comment right now
+  The list of users who are currently composing a comment in this discussion. Use this to render
+  a live "someone is typing…" indicator.
   """
   commentors: [User!]!
 
   """
-  The comments & tasks thread in the discussion
+  A paginated connection containing the comments and tasks that make up this discussion thread,
+  ordered by their sort position. Use first/after for cursor-based pagination.
   """
   thread(
     """
-    How many items to show. optional if only comments are desired
+    The maximum number of thread items to return in a single page. Omit to fetch all items when
+    only comments are needed and volume is expected to be small.
     """
     first: Int
 
     """
-    the incrementing sort order in string format
+    The cursor (incrementing sort order value as a string) to start paging from, enabling
+    forward pagination through the thread.
     """
     after: String
   ): ThreadableConnection!

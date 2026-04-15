@@ -6,5 +6,9 @@ type JiraServerIssueEdge {
   The item at the end of the edge
   """
   node: JiraServerIssue!
+
+  """
+  Cursor for pagination
+  """
   cursor: String
 }

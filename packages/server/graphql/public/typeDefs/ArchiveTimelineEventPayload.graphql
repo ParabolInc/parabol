@@ -1,4 +1,4 @@
 """
-Return object for ArchiveTimelineEventPayload
+The result of the archiveTimelineEvent mutation, which hides a timeline event from the user's activity feed. Returns either a success object containing the updated event or an error if the event could not be found or the caller lacks permission to archive it.
 """
 union ArchiveTimelineEventPayload = ErrorPayload | ArchiveTimelineEventSuccess

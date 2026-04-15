@@ -1,26 +1,40 @@
+"""
+Input for creating a Google Calendar event that accompanies the start of a Parabol meeting
+(Sprint Poker, Check-In, Retrospective, or Team Prompt). Provide this when the caller wants
+to place a calendar event on team members' calendars at the same time the meeting is created.
+All time values must be consistent: startTimestamp and endTimestamp should fall within the
+wall-clock day described by timeZone.
+"""
 input CreateGcalEventInput {
   """
-  The start timestamp of the event
+  Unix timestamp (seconds since epoch) for when the calendar event starts.
+  Must be earlier than endTimestamp.
   """
   startTimestamp: Int!
 
   """
-  The end timestamp of the event
+  Unix timestamp (seconds since epoch) for when the calendar event ends.
+  Must be later than startTimestamp.
   """
   endTimestamp: Int!
 
   """
-  The timezone of the event
+  IANA timezone name (e.g. "America/Los_Angeles") used to display the event's
+  start and end times correctly in Google Calendar for each attendee.
   """
   timeZone: String!
 
   """
-  The emails that will be invited to the gcal event. If not provided, the no one will be invited
+  List of email addresses to invite as attendees on the Google Calendar event.
+  Each address receives a calendar invitation. If omitted or empty, no attendees
+  are added beyond the organizer.
   """
   invitees: [Email!]
 
   """
-  The type of video call to added to the gcal event. If not provided, no video call will be added
+  The video conferencing provider to attach to the calendar event.
+  Use "meet" to add a Google Meet link, or "zoom" to add a Zoom link.
+  If omitted, no video conferencing link is added to the event.
   """
   videoType: GcalVideoTypeEnum
 }

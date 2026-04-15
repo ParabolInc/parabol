@@ -1,5 +1,17 @@
+"""
+A paginated edge containing a single search result with relevance score and text snippets
+"""
 type SearchResultEdge {
+  """
+  The relevance score breakdown for this result
+  """
   score: SearchMatchScore!
+  """
+  Short text excerpts from the matched content highlighting why it matched
+  """
   snippets: [String!]!
+  """
+  The matched item
+  """
   node: SearchResultItem!
 }

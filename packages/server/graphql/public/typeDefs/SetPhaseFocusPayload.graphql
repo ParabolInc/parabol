@@ -1,5 +1,10 @@
+"""
+Return value for setPhaseFocus mutation — sets which prompt is in focus during a retro
+"""
 type SetPhaseFocusPayload {
   error: StandardMutationError
+  "The retrospective meeting whose focus changed"
   meeting: RetrospectiveMeeting!
+  "The reflect phase with the updated focused prompt"
   reflectPhase: ReflectPhase!
 }

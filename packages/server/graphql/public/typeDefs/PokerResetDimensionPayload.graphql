@@ -1,4 +1,4 @@
 """
-Return object for PokerResetDimensionPayload
+Result of resetting votes for a Poker dimension so voting can restart
 """
 union PokerResetDimensionPayload = ErrorPayload | PokerResetDimensionSuccess

@@ -26,5 +26,12 @@ export const isMeetingMember = <T>(
     if (!meetingMember) {
       return new GraphQLError(`Viewer is not meeting member`)
     }
+    if (context.resourceGrants) {
+      const meeting = await dataLoader.get('newMeetings').load(meetingId)
+      if (!meeting) return new GraphQLError(`Meeting not found`)
+      if (!(await context.resourceGrants.hasTeam(meeting.teamId))) {
+        return new GraphQLError(`PAT does not grant access to this team`)
+      }
+    }
     return true
   })

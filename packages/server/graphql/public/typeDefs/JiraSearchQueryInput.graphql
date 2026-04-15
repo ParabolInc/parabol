@@ -1,3 +1,6 @@
+"""
+Input for saving or removing a Jira search query with optional project key filters
+"""
 input JiraSearchQueryInput {
   """
   The query string, either simple or JQL depending on the isJQL flag

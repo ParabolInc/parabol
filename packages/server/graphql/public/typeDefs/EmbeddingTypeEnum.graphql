@@ -1,5 +1,28 @@
+"""
+The type of content that has been embedded for semantic search and retrieval.
+Each value corresponds to a distinct domain object whose text is vectorized and indexed.
+"""
 enum EmbeddingTypeEnum {
+  """
+  A rich-text wiki page owned by a team or organization. Pages are embedded as
+  they are created and updated via the Hocus Pocus collaboration server, and are
+  searched using RBAC-based access rather than team-scoped EmbeddingsMetadata.
+  """
   page
+
+  """
+  A meeting template (reflect, poker, check-in, etc.) whose name, prompts, and
+  description are embedded so users can discover relevant templates via semantic
+  search. Embeddings are updated whenever a template is renamed or modified.
+  """
   meetingTemplate
+
+  """
+  A discussion topic from a retrospective meeting (a reflect-phase grouping of
+  reflection cards that was discussed during the meeting). The full text of the
+  topic and its cards is embedded to support post-meeting search and retrieval.
+  These records are never updated after creation, so searches always filter on
+  refUpdatedAt rather than a mutable updatedAt field.
+  """
   retrospectiveDiscussionTopic
 }

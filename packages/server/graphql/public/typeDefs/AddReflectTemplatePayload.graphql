@@ -1,4 +1,4 @@
 """
-Return value for addReflectTemplate, which could be an error
+Result of the addReflectTemplate mutation, which creates a new retrospective meeting template for a team (optionally cloned from an existing template via parentTemplateId). Returns AddReflectTemplateSuccess on success, or ErrorPayload if the operation fails (e.g. insufficient permissions, invalid team, or template limit reached).
 """
 union AddReflectTemplatePayload = ErrorPayload | AddReflectTemplateSuccess

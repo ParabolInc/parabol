@@ -1,11 +1,14 @@
+"""
+GitHub OAuth integration data for a team member, including access token and search query history
+"""
 type GitHubIntegration {
   """
-  composite key
+  Composite key: userId:teamId
   """
   id: ID!
 
   """
-  The access token to github. good forever
+  The OAuth access token for GitHub API requests (non-expiring)
   """
   accessToken: ID
 
@@ -25,7 +28,7 @@ type GitHubIntegration {
   githubSearchQueries: [GitHubSearchQuery!]!
 
   """
-  *The GitHub login used for queries
+  The GitHub username used for API queries
   """
   login: ID!
 
@@ -35,7 +38,7 @@ type GitHubIntegration {
   scope: String!
 
   """
-  *The team that the token is linked to
+  The team this integration is linked to
   """
   teamId: ID!
 

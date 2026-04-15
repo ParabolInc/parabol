@@ -1,14 +1,29 @@
+"""
+A phase within a meeting, containing one or more stages that participants move through
+"""
 interface NewMeetingPhase {
   """
-  shortid
+  The unique phase ID
   """
   id: ID!
+
+  """
+  The meeting this phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The team this phase belongs to
+  """
   teamId: ID!
 
   """
   The type of phase
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  The stages that make up this phase
+  """
   stages: [NewMeetingStage!]!
 }

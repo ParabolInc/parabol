@@ -1,3 +1,6 @@
+"""
+Data produced when the reflect phase of a retrospective completes, including auto-grouped reflections
+"""
 type ReflectPhaseCompletePayload {
   """
   a list of empty reflection groups to remove

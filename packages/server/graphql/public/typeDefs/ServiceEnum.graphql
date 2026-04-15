@@ -1,10 +1,21 @@
+"""
+A service that Parabol integrates with for tasks and calendar
+"""
 enum ServiceEnum {
+  "Parabol itself"
   PARABOL
+  "GitHub"
   github
+  "Jira Cloud"
   jira
+  "GitLab"
   gitlab
+  "Mattermost"
   mattermost
+  "Jira Server (self-hosted)"
   jiraServer
+  "Google Calendar"
   gcal
+  "Azure DevOps"
   azureDevOps
 }

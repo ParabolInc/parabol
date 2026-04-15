@@ -1,11 +1,25 @@
+"""
+Returned when the addReflectTemplate mutation succeeds. This payload is produced in two scenarios:
+(1) a brand-new blank reflect (retrospective) template is created for a team, seeded with a single
+default prompt; or (2) an existing template is cloned — when parentTemplateId is provided the new
+template is named "<original> Copy" (or "<original> Copy #N" for subsequent clones) and all of the
+source template's active prompts are duplicated. In both cases the caller's
+freeCustomRetroTemplatesRemaining counter is decremented if the team is on the starter tier.
+Use the reflectTemplate field to read the created/cloned template immediately and the user field
+to update any client-side state that tracks the viewer's remaining free template quota.
+"""
 type AddReflectTemplateSuccess {
   """
-  The reflect template that was created
+  The newly created or cloned reflect template. For a net-new template this will contain a single
+  default prompt named "New prompt". For a clone it will contain copies of every active prompt from
+  the source template. Use this to update the team's template list in the client cache.
   """
   reflectTemplate: ReflectTemplate!
 
   """
-  The user that created the template
+  The viewer (authenticated user) who performed the mutation. Returned so the client can refresh
+  freeCustomRetroTemplatesRemaining, which is decremented on starter-tier teams each time a custom
+  template is created or cloned.
   """
   user: User!
 }

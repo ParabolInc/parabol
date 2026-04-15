@@ -68,6 +68,7 @@ export const authorizeOAuth2 = async <
   })
   const contentTypeHeader = oauth2Response.headers.get('content-type') || ''
   if (!contentTypeHeader.toLowerCase().startsWith('application/json')) {
+    await oauth2Response.body?.cancel()
     return new Error('Received non-JSON OAuth2 Response')
   }
   const tokenJson = (await oauth2Response.json()) as OAuth2Response

@@ -13,7 +13,7 @@ input IntegrationProviderMetadataInputOAuth2 {
   clientId: String!
 
   """
-  The client id to give to the provider
+  The client secret to give to the provider
   """
   clientSecret: String!
 

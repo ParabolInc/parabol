@@ -1,15 +1,11 @@
 """
-a suggestion to try a retro with your team
+A suggestion to try a check-in (action) meeting with your team
 """
 type SuggestedActionTryActionMeeting implements SuggestedAction {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
 
-  """
-  * The timestamp the action was created at
-  """
+  "When the suggested action was created"
   createdAt: DateTime!
 
   """
@@ -17,9 +13,7 @@ type SuggestedActionTryActionMeeting implements SuggestedAction {
   """
   priority: Float
 
-  """
-  * The timestamp the action was removed at
-  """
+  "When the suggested action was dismissed or completed, if applicable"
   removedAt: DateTime
 
   """
@@ -27,19 +21,13 @@ type SuggestedActionTryActionMeeting implements SuggestedAction {
   """
   type: SuggestedActionTypeEnum!
 
-  """
-  * The userId this action is for
-  """
+  "The user this action is suggested for"
   userId: ID!
 
-  """
-  The user than can see this event
-  """
+  "The user who can see this suggestion"
   user: User!
 
-  """
-  fk
-  """
+  "The ID of the team to run an action meeting with"
   teamId: ID!
 
   """

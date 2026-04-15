@@ -1,3 +1,10 @@
+"""
+The result of the dismissNewFeature mutation, which clears the new-feature
+announcement for the authenticated user by setting their newFeatureId to null.
+"""
 type DismissNewFeaturePayload {
+  """
+  Present when the dismissal failed; null on success.
+  """
   error: StandardMutationError
 }

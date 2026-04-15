@@ -1,11 +1,17 @@
 """
-The specific type of event
+The type of timeline event
 """
 enum TimelineEventEnum {
+  "A retrospective meeting was completed"
   retroComplete
+  "A check-in meeting was completed"
   actionComplete
+  "The user joined Parabol for the first time"
   joinedParabol
+  "A new team was created"
   createdTeam
+  "A sprint poker meeting was completed"
   POKER_COMPLETE
+  "A standup (team prompt) meeting was completed"
   TEAM_PROMPT_COMPLETE
 }

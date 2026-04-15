@@ -9,8 +9,9 @@ import type {MutationResolvers} from '../resolverTypes'
 const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] = async (
   _source,
   {providerId},
-  {authToken, dataLoader, socketId: mutatorId}
+  context
 ) => {
+  const {authToken, dataLoader, socketId: mutatorId} = context
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
@@ -33,6 +34,13 @@ const removeIntegrationProvider: MutationResolvers['removeIntegrationProvider'] 
       if (!team || !(await isUserOrgAdmin(viewerId, team.orgId, dataLoader))) {
         return {error: {message: 'Must be on the team that created the provider'}}
       }
+    }
+  }
+  if (context.resourceGrants) {
+    if (scope === 'org' && !(await context.resourceGrants.hasOrg(orgId!))) {
+      return {error: {message: 'PAT does not grant access to this organization'}}
+    } else if (scope === 'team' && !(await context.resourceGrants.hasTeam(teamId!))) {
+      return {error: {message: 'PAT does not grant access to this team'}}
     }
   }
 

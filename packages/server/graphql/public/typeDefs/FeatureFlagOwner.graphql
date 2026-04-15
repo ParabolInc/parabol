@@ -1,3 +1,6 @@
+"""
+The entity (user, team, or organization) that a feature flag is applied to
+"""
 type FeatureFlagOwner {
   """
   The feature flag id

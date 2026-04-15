@@ -1,5 +1,5 @@
 """
-A connection to a list of items.
+A paginated list of retrospective reflection templates
 """
 type ReflectTemplateConnection {
   """

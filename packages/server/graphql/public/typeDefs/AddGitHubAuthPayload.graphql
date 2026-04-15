@@ -1,18 +1,21 @@
+"""
+Return value for addGitHubAuth mutation. On success, contains the new GitHub integration and the updated team member. On failure, contains a StandardMutationError.
+"""
 type AddGitHubAuthPayload {
   error: StandardMutationError
 
   """
-  The newly created auth
+  The newly created GitHub integration for the team member
   """
   githubIntegration: GitHubIntegration
 
   """
-  The team member with the updated auth
+  The team member with the updated GitHub auth
   """
   teamMember: TeamMember
 
   """
-  The user with updated githubAuth
+  The user with the updated GitHub auth
   """
   user: User
 }

@@ -1,3 +1,15 @@
+"""
+Returned when the autogroup mutation succeeds. The mutation uses OpenAI to cluster
+retrospective reflections into thematically similar groups and rearranges them
+accordingly. The meeting's autogroupReflectionGroups field holds the AI-suggested
+groupings, and resetReflectionGroups is snapshot of the groups before grouping so
+the facilitator can undo via resetReflectionGroups mutation.
+"""
 type AutogroupSuccess {
+  """
+  The retrospective meeting whose reflections were just regrouped by AI. Fetch
+  autogroupReflectionGroups on this meeting to see the AI-suggested clusters, or
+  resetReflectionGroups to see the snapshot that was saved so the grouping can be undone.
+  """
   meeting: RetrospectiveMeeting!
 }

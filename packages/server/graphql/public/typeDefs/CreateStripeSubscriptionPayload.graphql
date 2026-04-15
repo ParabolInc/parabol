@@ -1,4 +1,14 @@
 """
-Return value for createStripeSubscription, which could be an error
+Return value for the createStripeSubscription mutation, which creates a new Stripe subscription
+for an organization that does not yet have one. The caller provides an orgId and a Stripe
+paymentMethodId. On success the mutation creates (or reuses) a Stripe customer, attaches the
+payment method, and creates a team subscription billed by the number of active org members,
+applying any pending coupon before clearing it from the org record.
+
+Success: returns CreateStripeSubscriptionSuccess with a client secret the client must use to
+confirm payment via the Stripe.js SDK (e.g. stripe.confirmCardPayment).
+
+Failure: returns ErrorPayload. Common error cases include the organization already having an
+active subscription, or Stripe rejecting the customer or payment method creation.
 """
 union CreateStripeSubscriptionPayload = ErrorPayload | CreateStripeSubscriptionSuccess

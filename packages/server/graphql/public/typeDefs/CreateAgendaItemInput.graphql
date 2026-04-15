@@ -1,27 +1,34 @@
+"""
+Input for the addAgendaItem mutation. Describes a new agenda item to be added to a team's Check-In meeting (meetingType: "action"). Agenda items represent topics a team member wants to discuss during the AgendaItemsPhase. Items can be created before a meeting starts or while one is in progress. Pinned items are automatically re-created at the start of each subsequent meeting so recurring topics always appear on the agenda.
+"""
 input CreateAgendaItemInput {
   """
-  The content of the agenda item
+  The text description of the topic to discuss. Maximum 64 characters.
   """
   content: String!
 
   """
-  True if the agenda item has been pinned
+  When true, this agenda item will be automatically cloned and re-added to the next Check-In meeting when the current meeting ends. Use for recurring topics the team discusses every meeting. Non-pinned items are cleared when the meeting closes.
   """
   pinned: Boolean!
+
+  """
+  The ID of the team this agenda item belongs to.
+  """
   teamId: ID!
 
   """
-  The team member ID of the person creating the agenda item
+  The ID of the team member who is creating this agenda item (format: teamId::userId). Determines who "owns" the item in the agenda list and whose avatar appears next to it.
   """
   teamMemberId: ID!
 
   """
-  The sort order of the agenda item in the list
+  The fractional-index sort order used to position this item in the agenda list. If omitted, the server places the item at the end of the list. Provide a value to insert the item at a specific position between existing items.
   """
   sortOrder: String
 
   """
-  The meeting ID of the agenda item
+  The ID of the active Check-In meeting to associate this agenda item with. If provided, the item is linked to that meeting and will appear in its agenda phase. If omitted, the item is added to the team's agenda queue and will be associated with the next meeting that starts.
   """
   meetingId: String
 }

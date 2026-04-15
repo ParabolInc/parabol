@@ -1,11 +1,14 @@
+"""
+Successful result of addComment. The comment has been added to the specified discussion thread.
+"""
 type AddCommentSuccess {
   """
-  the comment just created
+  The comment that was just created
   """
   comment: Comment!
 
   """
-  The id of the meeting where the comment was added
+  The ID of the meeting where the comment was added
   """
   meetingId: ID!
 }

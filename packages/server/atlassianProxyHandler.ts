@@ -33,6 +33,7 @@ export const atlassianProxyHandler = async (
       deadline: new Date(Date.now() + 20_000)
     })
     if (!atlassianRes.ok) {
+      await atlassianRes.body?.cancel()
       await servePlaceholderImage(res)
       return
     }

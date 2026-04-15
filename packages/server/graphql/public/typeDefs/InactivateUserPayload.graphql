@@ -1,4 +1,10 @@
+"""
+The result of deactivating a user account
+"""
 type InactivateUserPayload {
+  """
+  Error information if the mutation failed
+  """
   error: StandardMutationError
 
   """

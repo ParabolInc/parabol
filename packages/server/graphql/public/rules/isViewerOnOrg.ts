@@ -10,7 +10,8 @@ export const isViewerOnOrg = <T>(
   dataLoaderName?: AllPrimaryLoaders
 ) =>
   rule(`isViewerOnOrg-${orgIdDotPath}`, {cache: 'strict'})(
-    async (source, args, {authToken, dataLoader}: GQLContext) => {
+    async (source, args, context: GQLContext) => {
+      const {authToken, dataLoader} = context
       const argVar = getResolverDotPath(orgIdDotPath, source, args)
       let orgId: string = argVar
       if (dataLoaderName) {
@@ -24,6 +25,9 @@ export const isViewerOnOrg = <T>(
         .get('organizationUsersByUserIdOrgId')
         .load({orgId, userId: viewerId})
       if (!organizationUser) return new GraphQLError('Viewer is not on Organization')
+      if (context.resourceGrants && !(await context.resourceGrants.hasOrg(orgId))) {
+        return new GraphQLError(`PAT does not grant access to this organization`)
+      }
       return true
     }
   )

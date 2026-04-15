@@ -3,7 +3,7 @@ organization-specific details about a user
 """
 type OrganizationUser {
   """
-  orgId::userId
+  Composite key: orgId::userId
   """
   id: ID!
 
@@ -13,7 +13,7 @@ type OrganizationUser {
   joinedAt: DateTime!
 
   """
-  FK
+  The organization this record belongs to
   """
   orgId: ID!
 
@@ -33,7 +33,7 @@ type OrganizationUser {
   role: OrgUserRole
 
   """
-  FK
+  The user this record belongs to
   """
   userId: ID!
 
@@ -41,7 +41,19 @@ type OrganizationUser {
   The user attached to the organization
   """
   user: User!
+
+  """
+  The suggested tier upgrade for this user based on usage
+  """
   suggestedTier: TierEnum
+
+  """
+  The effective tier for this user within the organization
+  """
   tier: TierEnum
+
+  """
+  The tier used for billing this user
+  """
   billingTier: TierEnum
 }

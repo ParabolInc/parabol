@@ -1,16 +1,59 @@
+"""
+Payload returned by the createReflection mutation.
+
+A successful call creates one RetroReflection and a new RetroReflectionGroup that
+wraps it, both persisted to the database. The meeting's group phase is also unlocked
+(made navigable for the facilitator) if this is the first reflection added to the
+meeting. The payload is broadcast over the MEETING subscription channel so all
+participants see the new card in real time.
+
+Failure cases surfaced via error:
+- promptId does not match a known ReflectPrompt ("Category not found")
+- meetingId does not match a known meeting ("Meeting not found")
+- The meeting has already ended ("Meeting already ended")
+- The group phase of the meeting is already complete ("Meeting phase already completed")
+- content exceeds 2 000 characters ("Reflection content is too long")
+"""
 type CreateReflectionPayload {
+  """
+  Present when the mutation failed. Null on success.
+  """
   error: StandardMutationError
+
+  """
+  The retrospective meeting in which the reflection was created.
+  Null when error is non-null.
+  """
   meeting: NewMeeting
+
+  """
+  The ID of the newly created RetroReflection. Useful for optimistic updates
+  before the full reflection object is needed.
+  Null when error is non-null.
+  """
   reflectionId: ID
+
+  """
+  The newly created RetroReflection containing the content, promptId, and
+  creator information.
+  Null when error is non-null.
+  """
   reflection: RetroReflection
 
   """
-  The group automatically created for the reflection
+  The new RetroReflectionGroup automatically created to hold this reflection.
+  Every reflection starts in its own group; groups are later merged during the
+  group phase. The group's title is initially derived from the reflection text
+  and may be asynchronously upgraded to an AI-generated title.
+  Null when error is non-null.
   """
   reflectionGroup: RetroReflectionGroup
 
   """
-  The stages that were unlocked by navigating
+  Any meeting stages that were unlocked as a side-effect of adding this reflection.
+  Specifically, the group phase stages are unlocked the first time any reflection is
+  added to the meeting (i.e. when the group phase was not yet navigable by the
+  facilitator). Empty or null when no stages changed state.
   """
   unlockedStages: [NewMeetingStage!]
 }

@@ -1,11 +1,23 @@
+"""
+Root query type for all read operations
+"""
 type Query {
-  viewer: User!
+  """
+  The currently authenticated user
+  """
+  viewer: User! @scope(name: USERS_READ)
+  """
+  Look up a team's mass invitation by token
+  """
   massInvitation(
     """
     The mass invitation token
     """
     token: ID!
-  ): MassInvitationPayload!
+  ): MassInvitationPayload! @scope(name: TEAMS_READ)
+  """
+  Search for GIFs using Giphy
+  """
   searchGifs(
     """
     The search query to send to the service
@@ -28,18 +40,27 @@ type Query {
     """
     after: String
   ): GifResponseConnection!
+  """
+  Verify a team invitation token and return details about the invitation
+  """
   verifiedInvitation(
     """
     The invitation token
     """
     token: ID!
-  ): VerifiedInvitationPayload!
+  ): VerifiedInvitationPayload! @scope(name: TEAMS_READ)
+  """
+  Generate an AI-suggested title for a reflection group in the demo
+  """
   getDemoGroupTitle(
     """
-    Get a reflection group title for the demo using AI
+    The text content of the reflections in the group
     """
     reflectionsContent: [String!]!
   ): GetDemoGroupTitlePayload!
+  """
+  Look up the SAML identity provider SSO URL for a given email domain
+  """
   SAMLIdP(
     """
     the email associated with a SAML login. null if instance is SSO-only

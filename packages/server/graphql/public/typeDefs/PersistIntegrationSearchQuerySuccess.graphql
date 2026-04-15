@@ -1,5 +1,17 @@
+"""
+Successfully saved an integration search query
+"""
 type PersistIntegrationSearchQuerySuccess {
+  """
+  The user whose search query was saved
+  """
   userId: ID
+  """
+  The team context for the saved search query
+  """
   teamId: ID
+  """
+  The updated Jira Server integration with the saved query
+  """
   jiraServerIntegration: JiraServerIntegration
 }

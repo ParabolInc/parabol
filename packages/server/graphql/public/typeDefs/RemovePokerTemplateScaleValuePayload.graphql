@@ -1,4 +1,10 @@
+"""
+Result of removing a value from a Poker scoring scale
+"""
 type RemovePokerTemplateScaleValuePayload {
   error: StandardMutationError
+  """
+  The updated scale after removing the value
+  """
   scale: TemplateScale
 }

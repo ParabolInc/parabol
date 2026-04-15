@@ -1,3 +1,6 @@
+"""
+A notification sent when an organization exceeds its team limit and becomes locked
+"""
 type NotifyTeamsLimitExceeded implements Notification {
   """
   A shortid for the notification

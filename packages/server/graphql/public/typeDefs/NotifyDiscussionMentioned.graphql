@@ -1,3 +1,6 @@
+"""
+A notification sent when the viewer is mentioned in a meeting discussion thread
+"""
 type NotifyDiscussionMentioned implements Notification {
   """
   A shortid for the notification

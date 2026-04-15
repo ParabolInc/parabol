@@ -1,7 +1,9 @@
 """
-The possible places a reflection can be dropped
+The possible drop targets when a user drags a reflection card during a retrospective meeting. Determines whether the card is merged into an existing group or placed as a standalone card on the open board.
 """
 enum DragReflectionDropTargetTypeEnum {
+  "The reflection was dropped onto an existing reflection group, merging it into that group"
   REFLECTION_GROUP
+  "The reflection was dropped onto the open grid (board), creating or remaining as a standalone group"
   REFLECTION_GRID
 }

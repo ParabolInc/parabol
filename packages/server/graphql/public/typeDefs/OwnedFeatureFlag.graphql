@@ -1,3 +1,6 @@
+"""
+A feature flag with its enabled status for a specific owner (user, team, or organization)
+"""
 type OwnedFeatureFlag {
   """
   The ID of the feature flag

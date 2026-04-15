@@ -1,82 +1,123 @@
 """
-The atlassian auth + integration helpers for a specific team member
+The Atlassian (Jira Cloud) OAuth integration for a specific user on a specific Parabol team.
+Stores the OAuth tokens and account linkage needed to read and write Jira issues on behalf of
+the user. One record exists per (team, user) pair. Use this type to determine whether a team
+member has connected Jira, to retrieve their accessible Jira projects, and to fetch or search
+Jira issues for display in Parabol meetings (e.g. Sprint Poker estimation).
 """
 type AtlassianIntegration {
   """
-  Composite key in atlassiani:teamId:userId format
+  Composite primary key in the format "atlassian:teamId:userId". Use this to uniquely
+  identify a single user's Atlassian integration within a specific Parabol team.
   """
   id: ID!
 
   """
-  true if the auth is valid, else false
+  Whether the stored OAuth tokens are still valid and the integration is usable. Becomes
+  false when the user revokes access in Atlassian, the refresh token expires, or the
+  integration is explicitly disconnected. Check this before attempting any Jira operations.
   """
   isActive: Boolean!
 
   """
-  The access token to atlassian, useful for 1 hour. null if no access token available or the viewer is not the user
+  A short-lived Atlassian OAuth 2.0 access token (valid for ~1 hour) that can be used to
+  call the Atlassian REST API directly. Only returned when the requesting viewer is the
+  owner of this integration; null otherwise or when no token is available. Do not cache
+  this value — treat it as ephemeral.
   """
   accessToken: ID
 
   """
-  *The atlassian account ID
+  The Atlassian account ID (e.g. "5b10a2844c20165700ede21g") of the user who authorized
+  the integration. This is the Atlassian-side identifier and can be used in Jira API calls
+  to reference the user.
   """
   accountId: ID!
 
   """
-  The atlassian cloud IDs that the user has granted
+  The list of Atlassian cloud site IDs (e.g. "your-domain.atlassian.net" instance IDs) that
+  the user has granted Parabol access to. A user may have multiple Atlassian organizations;
+  this list scopes which ones are available. Required when constructing Atlassian API URLs,
+  which are of the form https://api.atlassian.com/ex/jira/{cloudId}/...
   """
   cloudIds: [ID!]!
 
   """
-  The timestamp the provider was created
+  Timestamp when this integration record was first created, i.e. when the user first
+  connected their Atlassian account to this Parabol team.
   """
   createdAt: DateTime!
 
   """
-  *The team that the token is linked to
+  The Parabol team ID that this integration belongs to. The integration is scoped to a
+  single team — the same Atlassian account connected to two different teams creates two
+  separate AtlassianIntegration records.
   """
   teamId: ID!
 
   """
-  The timestamp the token was updated at
+  Timestamp when the OAuth tokens were last refreshed or the integration record was last
+  modified. Useful for determining how recently the integration was active.
   """
   updatedAt: DateTime!
 
   """
-  The user that the access token is attached to
+  The Parabol user ID of the person who owns this integration. Together with teamId, this
+  uniquely identifies the integration. Only that user can see sensitive fields like
+  accessToken.
   """
   userId: ID!
 
   """
-  A list of projects accessible by this team member. empty if viewer is not the user
+  All Jira projects accessible to this user across all connected Atlassian cloud sites.
+  Fetched in real time from the Atlassian API. Returns an empty list if the viewer is not
+  the owner of this integration, or if the user has no accessible projects. Use this to
+  populate project pickers when the user is adding a Jira issue to a Parabol meeting.
   """
   projects: [JiraRemoteProject!]!
 
   """
-  the list of suggested search queries, sorted by most recent. Guaranteed to be < 60 days old
+  The user's recent Jira search queries, ordered from most recently used to oldest.
+  Only includes queries used within the last 60 days. Use this to populate a
+  "recent searches" dropdown so the user can quickly repeat previous searches.
   """
   jiraSearchQueries: [JiraSearchQuery!]!
 
   """
-  A list of issues coming straight from the jira integration for a specific team member
+  A paginated list of Jira issues fetched live from the Jira API for this team member.
+  Returns an empty connection if the viewer is not the owner of this integration.
+  Use this to let users search for and select Jira issues to bring into a Parabol meeting.
   """
   issues(
+    """
+    Maximum number of issues to return per page. Defaults to 100.
+    """
     first: Int = 100
 
     """
-    the index cursor
+    Pagination cursor — the value of endCursor from a previous page's pageInfo. Omit to
+    start from the beginning.
     """
     after: String
 
     """
-    A string of text to search for, or JQL if isJQL is true
+    A plain-text search string (matched against issue summary and description) or a full
+    JQL query string when isJQL is true. Omit or pass an empty string to return all issues
+    the user can access.
     """
     queryString: String
 
     """
-    true if the queryString is JQL, else false
+    Set to true when queryString contains a JQL expression (Jira Query Language), which
+    allows advanced filtering by project, assignee, status, sprint, etc. Set to false for
+    simple keyword search.
     """
     isJQL: Boolean!
+
+    """
+    Optional list of Jira project keys (e.g. ["ENG", "INFRA"]) to restrict results to
+    specific projects. When omitted, issues from all accessible projects are returned.
+    """
     projectKeyFilters: [ID!]
   ): JiraIssueConnection!
 }

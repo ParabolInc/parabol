@@ -1,10 +1,18 @@
 """
-An edge in a connection.
+A pagination edge wrapping a single Azure DevOps work item in a cursor-based connection.
+Use this type when iterating over a paginated list of work items returned from AzureDevOpsWorkItemConnection.
+Each edge pairs the work item node with a cursor that marks its position in the result set,
+allowing subsequent queries to resume from that point using the cursor as a pagination argument.
 """
 type AzureDevOpsWorkItemEdge {
   """
-  The item at the end of the edge
+  The Azure DevOps work item at this position in the paginated result set.
   """
   node: AzureDevOpsWorkItem!
+  """
+  An opaque ISO8601 DateTime cursor representing this edge's position in the connection.
+  Pass this value as the `after` argument on the parent connection query to fetch the next page of results starting after this work item.
+  Null if the work item has no associated timestamp for ordering.
+  """
   cursor: DateTime
 }

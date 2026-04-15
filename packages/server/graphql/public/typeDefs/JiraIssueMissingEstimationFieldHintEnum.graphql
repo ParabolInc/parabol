@@ -1,4 +1,14 @@
+"""
+A hint describing why a Jira issue is missing an estimation field and how to fix it
+"""
 enum JiraIssueMissingEstimationFieldHintEnum {
+  """
+  The story points field is missing on a team-managed project; add it in project settings
+  """
   teamManagedStoryPoints
+
+  """
+  The story points field is missing on a company-managed project; add it to the board's estimation configuration
+  """
   companyManagedStoryPoints
 }

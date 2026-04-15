@@ -5,12 +5,15 @@ import {CollaborationCaret} from '@tiptap/extension-collaboration-caret'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
 import {Document} from '@tiptap/extension-document'
 import {FileHandler} from '@tiptap/extension-file-handler'
+import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention from '@tiptap/extension-mention'
 import {TableRow} from '@tiptap/extension-table'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Focus, Placeholder} from '@tiptap/extensions'
 import {Markdown} from '@tiptap/markdown'
 import {useEditor} from '@tiptap/react'
+
 import StarterKit from '@tiptap/starter-kit'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
@@ -92,6 +95,8 @@ export const useTipTapPageEditor = (
             node: 'paragraph'
           }
         }),
+        TextStyleKit,
+        Highlight,
         Details.configure({
           persist: true,
           HTMLAttributes: {

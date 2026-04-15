@@ -1,5 +1,5 @@
 """
-An immutable TemplateDimension
+An immutable snapshot of a TemplateDimension, stored with completed meetings
 """
 type TemplateDimensionRef {
   id: ID!
@@ -14,9 +14,7 @@ type TemplateDimensionRef {
   """
   name: String!
 
-  """
-  The md5 hash to resolve the immutable selected scale ref
-  """
+  "The md5 hash identifying the immutable scale ref used in this dimension"
   scaleRefId: ID!
 
   """

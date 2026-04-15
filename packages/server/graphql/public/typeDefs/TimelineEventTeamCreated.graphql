@@ -1,15 +1,11 @@
 """
-An event triggered whenever a team is created
+A timeline event for when a new team was created
 """
 type TimelineEventTeamCreated implements TimelineEvent {
-  """
-  shortid
-  """
+  "Unique identifier"
   id: ID!
 
-  """
-  * The timestamp the event was created at
-  """
+  "When the event was created"
   createdAt: DateTime!
 
   """
@@ -38,7 +34,7 @@ type TimelineEventTeamCreated implements TimelineEvent {
   seenCount: Int!
 
   """
-  The teamId this event is associated with. Null if not traceable to one team
+  The teamId this event is associated with
   """
   teamId: ID!
 
@@ -52,13 +48,9 @@ type TimelineEventTeamCreated implements TimelineEvent {
   """
   type: TimelineEventEnum!
 
-  """
-  * The userId that can see this event
-  """
+  "The ID of the user who can see this event"
   userId: ID!
 
-  """
-  The user than can see this event
-  """
+  "The user who can see this event"
   user: User!
 }

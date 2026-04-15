@@ -14,9 +14,7 @@ interface TeamMeetingSettings {
   """
   phaseTypes: [NewMeetingPhaseTypeEnum!]!
 
-  """
-  FK
-  """
+  "The ID of the team these settings belong to"
   teamId: ID!
 
   """

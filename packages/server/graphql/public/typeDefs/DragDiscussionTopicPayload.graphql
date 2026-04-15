@@ -1,5 +1,8 @@
+"The result of dragging a discussion topic to a new position in a retrospective meeting's discuss phase."
 type DragDiscussionTopicPayload {
   error: StandardMutationError
+  "The meeting whose discuss-phase stage order was updated."
   meeting: NewMeeting
+  "The discuss stage that was repositioned."
   stage: RetroDiscussStage
 }

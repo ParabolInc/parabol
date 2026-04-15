@@ -1,6 +1,9 @@
+"""
+Payload containing a notification that was updated
+"""
 type UpdatedNotification {
   """
-  A notification
+  The updated notification
   """
   updatedNotification: Notification!
 }

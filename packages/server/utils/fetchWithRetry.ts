@@ -36,6 +36,7 @@ export default async (url: RequestInfo, options: FetchWithRetryOptions): Promise
       }
 
       const retryAfter = response.headers.get('Retry-After')
+      await response.body?.cancel()
       // if Retry-After specified, use it; else fallback to exponential backoff
       let waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : 2 ** attempt * 1000
 

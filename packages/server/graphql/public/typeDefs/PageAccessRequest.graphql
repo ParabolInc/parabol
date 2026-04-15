@@ -1,6 +1,24 @@
+"""
+A pending request from a user who wants access to a page
+"""
 type PageAccessRequest {
+  """
+  The user who requested access
+  """
   user: UserPreview!
+
+  """
+  The access role the user is requesting
+  """
   role: PageRoleEnum!
+
+  """
+  An optional message from the requester explaining why they need access
+  """
   reason: String
+
+  """
+  When the access request was submitted
+  """
   createdAt: DateTime!
 }

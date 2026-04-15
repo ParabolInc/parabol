@@ -1,6 +1,13 @@
+"""
+Success result for startCheckIn mutation
+"""
 type StartCheckInSuccess {
+  "The newly started check-in meeting"
   meeting: ActionMeeting!
+  "ID of the newly started meeting"
   meetingId: ID!
+  "The team the meeting was started for"
   team: Team!
+  "True if creating the Google Calendar event failed"
   hasGcalError: Boolean
 }

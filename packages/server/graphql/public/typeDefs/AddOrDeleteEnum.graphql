@@ -1,7 +1,21 @@
 """
-Option to add or delete
+Discriminates between adding and removing an item in a collection. Used as the
+action field on mutation inputs (e.g. UpdatePokerScopeItemInput) where a single
+mutation handles both insert and removal rather than exposing separate add/remove
+mutations.
 """
 enum AddOrDeleteEnum {
+  """
+  Insert the item into the collection. Use this when the item does not yet
+  exist in the target set and should be added (e.g. adding a task to the
+  scope of a sprint poker meeting).
+  """
   ADD
+
+  """
+  Remove the item from the collection. Use this when the item already exists
+  in the target set and should be removed (e.g. removing a task from the
+  scope of a sprint poker meeting).
+  """
   DELETE
 }

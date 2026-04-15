@@ -1,5 +1,5 @@
 """
-A stage that focuses on a single team member
+A single stage within the check-in phase of an Action meeting, scoped to one team member. The check-in phase contains one CheckInStage per team member, and the facilitator advances through them sequentially. Each stage presents the check-in question to the focused team member, who answers before the meeting moves on. Use this type when you need to inspect or display the per-member check-in status, readiness, or timing within a meeting.
 """
 type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   """
@@ -86,6 +86,10 @@ type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   The suggested time limit for a phase to be completed together, null if not enough data to make a suggestion
   """
   suggestedTimeLimit: Float
+
+  """
+  The id of the team this stage belongs to. Useful for scoping queries without fetching the full meeting.
+  """
   teamId: ID!
 
   """

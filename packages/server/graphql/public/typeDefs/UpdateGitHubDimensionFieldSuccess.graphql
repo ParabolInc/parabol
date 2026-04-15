@@ -1,5 +1,10 @@
+"""
+Success result for updateGitHubDimensionField mutation
+"""
 type UpdateGitHubDimensionFieldSuccess {
+  "The team whose dimension field mapping was updated"
   teamId: ID!
+  "The poker meeting the update was triggered from"
   meetingId: ID!
   team: Team!
 

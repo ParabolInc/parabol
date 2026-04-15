@@ -1,3 +1,9 @@
+"""
+The AI-generated title for a demo reflection group
+"""
 type GetDemoGroupTitleSuccess {
+  """
+  The suggested title for the reflection group
+  """
   title: String!
 }

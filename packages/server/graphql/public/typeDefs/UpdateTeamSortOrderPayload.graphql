@@ -1,4 +1,9 @@
+"""
+Return value for updateTeamSortOrder mutation
+"""
 type UpdateTeamSortOrderPayload {
+  "The team with the updated sort order"
   team: Team!
+  "The user whose team sort order was updated"
   user: User!
 }

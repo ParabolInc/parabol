@@ -1,6 +1,9 @@
+"""
+Returned when a user successfully broadcasts that they started or stopped typing a comment in a discussion
+"""
 type EditCommentingSuccess {
   """
-  The discussion the comment was created in
+  The ID of the discussion where the commenting state changed
   """
   discussionId: ID!
 

@@ -1,11 +1,14 @@
 """
-A historical prompt used for an LLM
+A saved prompt submitted to an LLM (e.g. OpenAI) by a user. Stores the content sent and metadata about usage. Use to retrieve or display a user's AI prompt history.
 """
 type AIPrompt {
   """
-  The promptId
+  The unique ID of this AI prompt record
   """
   id: ID!
+  """
+  The ID of the user who created this prompt
+  """
   userId: ID!
   """
   the AI-generated title of the content

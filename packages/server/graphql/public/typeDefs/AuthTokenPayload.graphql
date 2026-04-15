@@ -1,9 +1,9 @@
 """
-An auth token provided by Parabol to the client
+A replacement auth token pushed to the client over the notification subscription when the server issues a new JWT on behalf of the viewer. This happens whenever the server-side token state diverges from what the client holds — most commonly after the viewer joins or is removed from a team, which changes the list of team IDs (tms) embedded in the token. Upon receiving this payload the client must replace its stored JWT with the new one and use it for all subsequent requests.
 """
 type AuthTokenPayload {
   """
-  The encoded JWT
+  The newly-issued JWT, encoded and unsigned, that the client should store and attach to future requests. Decoding this token exposes standard JWT claims (sub, iat, exp, iss, aud, jti) plus Parabol-specific claims: tms (array of team IDs the viewer belongs to), rol (optional elevated role such as 'su' or 'impersonate'), bet (present when the viewer is a beta tester), and scope (optional OAuth-style permission scopes).
   """
   id: ID!
 }

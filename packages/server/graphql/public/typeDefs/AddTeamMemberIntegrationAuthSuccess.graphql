@@ -1,21 +1,32 @@
+"""
+The success payload returned when a team member's integration auth credentials are successfully
+added or replaced via the addTeamMemberIntegrationAuth mutation. This payload is returned after
+a user completes an OAuth flow (OAuth1, OAuth2) or provides a personal access token (PAT),
+and the resulting credentials have been persisted and linked to their account on a specific team.
+"""
 type AddTeamMemberIntegrationAuthSuccess {
   """
-  The auth that was just added
+  The newly created or updated auth credential record that was upserted for this team member.
+  Contains the access token, refresh token, and related metadata for the integration service.
   """
   integrationAuth: TeamMemberIntegrationAuth!
 
   """
-  The service this provider is associated with
+  The integration service (e.g. github, gitlab, jira, linear) that the newly added auth
+  credential is associated with. Denormalized from the integration provider for convenience.
   """
   service: IntegrationProviderServiceEnum!
 
   """
-  The team member with the updated auth
+  The team member record (user + team relationship) whose integration auth was just updated.
+  Useful for refreshing the client-side view of which integrations are connected for this person
+  on this team.
   """
   teamMember: TeamMember!
 
   """
-  The user who updated TeamMemberIntegrationAuth object
+  The user who completed the auth flow and whose credentials were saved. This is always the
+  currently authenticated viewer — a user can only add auth for themselves.
   """
   user: User!
 }

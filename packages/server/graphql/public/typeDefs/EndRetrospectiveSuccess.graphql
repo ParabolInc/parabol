@@ -1,19 +1,36 @@
+"""
+The result of successfully ending a retrospective meeting. Contains the final
+state of the meeting, the team it belonged to, any cleanup side-effects (removed
+tasks and suggested actions), and a timeline event surfaced to the viewer.
+"""
 type EndRetrospectiveSuccess {
   """
-  true if the meeting was killed (ended before reaching last stage)
+  True if the meeting was force-ended (killed) before reaching the last stage; false if it completed normally through all stages.
   """
   isKill: Boolean!
+
+  """
+  The team that hosted the retrospective meeting
+  """
   team: Team!
+
+  """
+  The retrospective meeting that was ended, including all phases, reflections, and action items
+  """
   meeting: RetrospectiveMeeting!
 
   """
-  The ID of the suggestion to try a retro meeting, if tried
+  The ID of the suggested action to try a retrospective meeting that was removed because the meeting was completed, if one existed.
   """
   removedSuggestedActionId: ID
+
+  """
+  IDs of tasks that were removed as part of ending the meeting (e.g. orphaned tasks with no assignee)
+  """
   removedTaskIds: [ID!]!
 
   """
-  An event that is important to the viewer, e.g. an ended meeting
+  The timeline event created for this ended meeting, surfaced in the viewer's activity feed.
   """
   timelineEvent: TimelineEvent!
 }

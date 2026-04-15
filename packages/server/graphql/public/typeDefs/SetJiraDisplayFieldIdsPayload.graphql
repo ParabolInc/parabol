@@ -1,3 +1,7 @@
+"""
+Return value for setJiraDisplayFieldIds mutation
+"""
 type SetJiraDisplayFieldIdsPayload {
+  "The team with updated Jira display field configuration"
   team: Team
 }

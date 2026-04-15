@@ -1,15 +1,24 @@
+"""
+Return payload for the addTeam mutation. Returned when a user creates a new team within an existing organization. Contains the new team, the creator's team membership record, and an optional side-effect indicating that a suggested-action prompt has been dismissed.
+"""
 type AddTeamPayload {
+  """
+  Non-null if the mutation failed. Contains an error name and message describing what went wrong.
+  """
   error: StandardMutationError
 
+  """
+  The newly created team.
+  """
   team: Team
 
   """
-  The teamMember that just created the new team, if this is a creation
+  The TeamMember record for the user who created the team. Use this to update the viewer's team list and permissions in the client.
   """
   teamMember: TeamMember
 
   """
-  The ID of the suggestion to create a new team
+  The ID of the 'createNewTeam' suggested action that was automatically dismissed because the user fulfilled it by creating a team. Null if no such suggestion existed. Use this to remove the suggestion from the client UI.
   """
   removedSuggestedActionId: ID
 }

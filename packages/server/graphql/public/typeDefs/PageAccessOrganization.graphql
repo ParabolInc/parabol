@@ -1,4 +1,14 @@
+"""
+An organization that has been granted access to a page
+"""
 type PageAccessOrganization {
+  """
+  The organization that was granted access
+  """
   organization: OrganizationPreview!
+
+  """
+  The access role granted to all members of the organization
+  """
   role: PageRoleEnum!
 }

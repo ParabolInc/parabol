@@ -1,29 +1,88 @@
 """
-A project fetched from Azure DevOps in real time
+A Team Project fetched live from the Azure DevOps REST API. Implements RepoIntegration so it
+can appear alongside Jira, GitHub, and other repo integrations in project-picker UIs. Use this
+type when you need project-level metadata (name, state, visibility) to let a user select which
+Azure DevOps project to link work items against, or when you need to navigate from a work item
+back to its parent project.
 """
 type AzureDevOpsRemoteProject implements RepoIntegration {
+  """
+  Globally unique identifier for this project within Parabol, composed as
+  instanceId:projectId (e.g. "dev.azure.com/myorg:abc123"). Use this when
+  referencing the project in mutations or as a cache key.
+  """
   id: ID!
+
+  """
+  Always "azureDevOps". Identifies the integration provider so clients can
+  route this RepoIntegration to the correct handler.
+  """
   service: IntegrationProviderServiceEnum!
 
   """
-  The parabol teamId this issue was fetched for
+  The Parabol team ID on whose behalf this project was fetched. Used to scope
+  the result to the correct team context.
   """
   teamId: ID!
 
   """
-  The parabol userId this issue was fetched for
+  The Parabol user ID on whose behalf this project was fetched. The OAuth
+  token belonging to this user was used to make the Azure DevOps API request.
   """
   userId: ID!
+
+  """
+  Timestamp of the most recent change to this project in Azure DevOps, as
+  returned by the API. Useful for sorting or detecting stale data.
+  """
   lastUpdateTime: DateTime!
+
+  """
+  The Azure DevOps REST API URL for this project's own resource endpoint
+  (the href from _links.self). Use this to make direct API calls or to
+  construct deep links into the Azure DevOps UI.
+  """
   self: ID!
 
   """
-  The instance ID that the project lives on
+  The Azure DevOps organization instance hostname, e.g. "dev.azure.com/myorg".
+  Combined with the project name or ID this uniquely identifies the project
+  across all Azure DevOps organizations the user has access to.
   """
   instanceId: ID!
+
+  """
+  The human-readable display name of the Team Project in Azure DevOps, e.g.
+  "MyApp Backend". Show this in project-picker dropdowns and task detail views.
+  """
   name: String!
+
+  """
+  A monotonically increasing integer that Azure DevOps increments each time
+  the project's metadata is updated. Useful for detecting whether locally
+  cached project data is out of date compared to the remote.
+  """
   revision: Int!
+
+  """
+  The lifecycle state of the project as reported by Azure DevOps. Common
+  values are "wellFormed" (active and fully provisioned), "createPending",
+  "deleting", "deleted", and "new". Only "wellFormed" projects are fully
+  usable for creating and querying work items.
+  """
   state: String!
+
+  """
+  The Azure DevOps REST API URL for this project, e.g.
+  "https://dev.azure.com/myorg/_apis/projects/abc123". Can be used to fetch
+  further project details directly from the Azure DevOps API.
+  """
   url: String!
+
+  """
+  Access visibility of the project within Azure DevOps. Either "private"
+  (accessible only to members) or "public" (accessible to anyone). Surfaces
+  in the UI when helping users understand who can see linked work items.
+  """
   visibility: String!
 }

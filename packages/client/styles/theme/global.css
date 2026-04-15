@@ -170,6 +170,21 @@
       transform: translateY(10px);
     }
   }
+  --animate-shake: shake 400ms ease;
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-5px);
+    }
+    40%,
+    80% {
+      transform: translateX(5px);
+    }
+  }
   --animate-slide-down: slide-down 200ms cubic-bezier(0, 0, 0.2, 1);
   @keyframes slide-down {
     from {

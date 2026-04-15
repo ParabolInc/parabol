@@ -1,1 +1,4 @@
+"""
+Return value for toggleFavoriteTemplate mutation
+"""
 union ToggleFavoriteTemplatePayload = ErrorPayload | ToggleFavoriteTemplateSuccess

@@ -1,4 +1,8 @@
+"""
+Input for setting or updating a task estimate in a poker meeting
+"""
 input TaskEstimateInput {
+  "The task being estimated"
   taskId: ID!
 
   """
@@ -10,5 +14,6 @@ input TaskEstimateInput {
   The name of the estimate, e.g. Story Points
   """
   dimensionName: String!
+  "The poker meeting where the estimate is being set"
   meetingId: ID!
 }

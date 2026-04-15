@@ -1,13 +1,28 @@
+"""
+Payload returned by the downgradeToStarter mutation. Transitions an organization
+from a paid tier (Team or Enterprise) back to the free Starter tier. On success,
+organization reflects the updated billing tier and teams contains each team
+belonging to the org with any paid-only features reverted. On failure, error is
+set and organization and teams are null.
+"""
 type DowngradeToStarterPayload {
+  """
+  Present when the mutation fails. Common reasons: the organization does not
+  exist, is already on the Starter tier, or the caller lacks billing-admin
+  permissions for the organization.
+  """
   error: StandardMutationError
 
   """
-  The new Starter Org
+  The organization after the downgrade, with its tier updated to Starter and
+  billing details cleared. Null when an error occurred.
   """
   organization: Organization
 
   """
-  The updated teams under the org
+  All teams belonging to the organization, updated to reflect the removal of
+  paid-only features (e.g. reduced member limits, disabled integrations).
+  Null when an error occurred.
   """
   teams: [Team]
 }

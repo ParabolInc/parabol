@@ -1,3 +1,6 @@
+"""
+Success result for toggleTeamPrivacy mutation
+"""
 type ToggleTeamPrivacySuccess {
   """
   The team with the updated privacy setting

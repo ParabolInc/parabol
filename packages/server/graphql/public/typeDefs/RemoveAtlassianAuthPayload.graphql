@@ -1,5 +1,11 @@
+"""
+Result of disconnecting a user's Atlassian (Jira) integration for a team
+"""
 type RemoveAtlassianAuthPayload {
   error: StandardMutationError
+  """
+  The team the integration was removed from
+  """
   teamId: ID
 
   """

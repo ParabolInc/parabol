@@ -9,6 +9,7 @@ import {addResolversToSchema, mergeSchemas} from '@graphql-tools/schema'
 import {nestGitHub} from '../../utils/nestGitHub'
 import composeResolvers from '../composeResolvers'
 import resolveTypesForMutationPayloads from '../resolveTypesForMutationPayloads'
+import {applyScopeDirective} from './applyScopeDirective'
 import {typeDefs} from './importedTypeDefs'
 import {nestGitLab} from './nestGitLab'
 import {nestLinear} from './nestLinear'
@@ -26,12 +27,14 @@ const {schema: typeDefsWithGitHubGitLabLinear, linearRequest} = nestLinear(typeD
 
 // IMPORTANT! mergeSchemas has a bug where resolvers will be overwritten by the default resolvers
 // See https://github.com/ardatan/graphql-tools/issues/4367
-const publicSchema = resolveTypesForMutationPayloads(
-  addResolversToSchema({
-    schema: typeDefsWithGitHubGitLabLinear,
-    resolvers: composeResolvers(resolvers, permissions),
-    inheritResolversFromInterfaces: true
-  })
+const publicSchema = applyScopeDirective(
+  resolveTypesForMutationPayloads(
+    addResolversToSchema({
+      schema: typeDefsWithGitHubGitLabLinear,
+      resolvers: composeResolvers(resolvers, permissions),
+      inheritResolversFromInterfaces: true
+    })
+  )
 )
 
 export {githubRequest, gitlabRequest, linearRequest}

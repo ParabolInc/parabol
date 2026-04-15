@@ -1,10 +1,15 @@
 """
-The reason the invitation failed
+The reason a team invitation could not be accepted
 """
 enum TeamInvitationErrorEnum {
+  "The invitation was already accepted"
   accepted
+  "The invitation has expired"
   expired
+  "No matching invitation was found"
   notFound
+  "The invitee's email domain is not allowed on this team"
   restrictedDomain
+  "The invitee's email address has not been verified"
   unverifiedEmail
 }

@@ -1,17 +1,35 @@
 """
-The meeting phase where all team members discuss the topics with the most votes
+A phase in a retrospective meeting where the team discusses the top-voted reflection groups one at a time.
+This is the final structured phase of a retro — after grouping and voting, the team works through each
+discussion topic in priority order. Each topic gets its own RetroDiscussStage, and the facilitator
+advances through them sequentially. Use this type to render the discuss phase UI, navigate between
+discussion topics, or inspect which topics remain.
 """
 type DiscussPhase implements NewMeetingPhase {
   """
-  shortid
+  Unique identifier for this phase instance (shortid)
   """
   id: ID!
+
+  """
+  The ID of the retrospective meeting this discuss phase belongs to
+  """
   meetingId: ID!
+
+  """
+  The ID of the team running this meeting
+  """
   teamId: ID!
 
   """
-  The type of phase
+  The type of phase — always "discuss" for this type
   """
   phaseType: NewMeetingPhaseTypeEnum!
+
+  """
+  Ordered list of discussion stages, one per top-voted reflection group. Each stage represents a
+  single topic the team will discuss. Stages are sorted by vote count (highest first) so the most
+  important topics are discussed while energy is highest.
+  """
   stages: [RetroDiscussStage!]!
 }

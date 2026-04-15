@@ -1,4 +1,8 @@
+"""
+Result of verifying a team invitation token
+"""
 type VerifiedInvitationPayload {
+  "Null if the invitation is valid; otherwise the reason it failed"
   errorType: TeamInvitationErrorEnum
 
   """
@@ -7,7 +11,7 @@ type VerifiedInvitationPayload {
   inviterName: String
 
   """
-  The email of the person that send the invitation, present if errorType is expired
+  The email of the person that sent the invitation, present if errorType is expired
   """
   inviterEmail: String
 
@@ -17,7 +21,7 @@ type VerifiedInvitationPayload {
   isGoogle: Boolean
 
   """
-  a string to redirect to the sso IdP, else null
+  A string to redirect to the SSO IdP, else null
   """
   ssoURL: String
 
@@ -27,11 +31,14 @@ type VerifiedInvitationPayload {
   teamInvitation: TeamInvitation
 
   """
-  name of the inviting team, present if invitation exists
+  Name of the inviting team, present if invitation exists
   """
   teamName: String
+  "ID of the meeting the invite is linked to, if any"
   meetingId: ID
+  "Name of the meeting the invite is linked to, if any"
   meetingName: String
+  "Type of the meeting the invite is linked to, if any"
   meetingType: MeetingTypeEnum
 
   """

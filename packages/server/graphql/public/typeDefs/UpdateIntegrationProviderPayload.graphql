@@ -1,4 +1,4 @@
 """
-Return object for UpdateIntegrationProviderPayload
+Return value for updateIntegrationProvider mutation
 """
 union UpdateIntegrationProviderPayload = ErrorPayload | UpdateIntegrationProviderSuccess

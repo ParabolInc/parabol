@@ -1,8 +1,10 @@
 import {type Extensions, mergeAttributes} from '@tiptap/core'
 import {Details, DetailsContent, DetailsSummary} from '@tiptap/extension-details'
+import Highlight from '@tiptap/extension-highlight'
 import {TaskItem, TaskList} from '@tiptap/extension-list'
 import Mention, {type MentionNodeAttrs, type MentionOptions} from '@tiptap/extension-mention'
 import {Table, TableCell, TableHeader, TableRow} from '@tiptap/extension-table'
+import {TextStyleKit} from '@tiptap/extension-text-style'
 import {Markdown} from '@tiptap/markdown'
 import StarterKit from '@tiptap/starter-kit'
 import {PageUserMention} from '~/tiptap/extensions/pageUserMention/PageUserMention'
@@ -55,6 +57,8 @@ export const serverTipTapExtensions: Extensions = [
   TableRow,
   TableHeader,
   TableCell,
+  TextStyleKit,
+  Highlight,
   TaskList,
   TaskItem.configure({
     nested: true

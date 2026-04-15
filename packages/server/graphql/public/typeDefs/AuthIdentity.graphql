@@ -1,10 +1,13 @@
 """
-An authentication strategy to log in to Parabol
+An authentication strategy linked to a Parabol user account. A user may have multiple identities (e.g. both a local password and a Google SSO login). Concrete implementations are AuthIdentityLocal, AuthIdentityGoogle, and AuthIdentityMicrosoft. Use the type field to discriminate between them.
 """
 interface AuthIdentity {
   """
-  true if the email address using this strategy is verified, else false
+  true if the email address associated with this identity has been verified by the provider, false if verification is still pending. For Google and Microsoft identities this is always true because the OAuth provider guarantees it; for local (email/password) identities it reflects whether the user has clicked the verification link.
   """
   isEmailVerified: Boolean!
+  """
+  Discriminator that identifies which concrete identity type this is (LOCAL, GOOGLE, or MICROSOFT). Use this to determine whether to cast to AuthIdentityLocal, AuthIdentityGoogle, or AuthIdentityMicrosoft when you need provider-specific fields such as the OAuth provider ID.
+  """
   type: AuthIdentityTypeEnum!
 }

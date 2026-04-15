@@ -1,1 +1,4 @@
+"""
+Return value for addApprovedOrganizationDomains mutation. Returns either an error or the updated organization after new email domains are approved for auto-join.
+"""
 union AddApprovedOrganizationDomainsPayload = ErrorPayload | AddApprovedOrganizationDomainsSuccess

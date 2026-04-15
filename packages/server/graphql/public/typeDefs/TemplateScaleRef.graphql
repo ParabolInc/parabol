@@ -1,10 +1,8 @@
 """
-An immutable version of TemplateScale to be shared across all users
+An immutable snapshot of a TemplateScale, stored with completed meetings
 """
 type TemplateScaleRef {
-  """
-  md5 hash
-  """
+  "md5 hash of the scale values, used as a stable identifier"
   id: ID!
   createdAt: DateTime!
 

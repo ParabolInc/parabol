@@ -1,6 +1,9 @@
+"""
+Payload sent when the voting phase of a retrospective is complete
+"""
 type VotePhaseCompletePayload {
   """
-  the current meeting
+  The current meeting
   """
   meeting: RetrospectiveMeeting
 }
