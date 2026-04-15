@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.9.3](https://github.com/ParabolInc/parabol/compare/v13.9.2...v13.9.3) (2026-04-14)
+
+
+### Fixed
+
+* activity library null filter ([#12987](https://github.com/ParabolInc/parabol/issues/12987)) ([980472a](https://github.com/ParabolInc/parabol/commit/980472ab3ca9b0dcd6addbecc6d3759730d64f6e))
+* prevent memory leak and socket exhaustion in publish + fetch paths ([#12986](https://github.com/ParabolInc/parabol/issues/12986)) ([93fd979](https://github.com/ParabolInc/parabol/commit/93fd9798582735391611e71819c420693d5b8185))
+
 ## [13.9.2](https://github.com/ParabolInc/parabol/compare/v13.9.1...v13.9.2) (2026-04-08)
 
 
