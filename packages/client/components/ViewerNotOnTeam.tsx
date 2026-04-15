@@ -41,9 +41,8 @@ const ViewerNotOnTeam = (props: Props) => {
   const {queryRef} = props
   const data = usePreloadedQuery<ViewerNotOnTeamQuery>(query, queryRef)
   const {viewer} = data
-  const {
-    teamInvitation: {teamInvitation, meetingId, teamId, isOnTeam}
-  } = viewer
+  const {teamInvitation: payload} = viewer
+  const {teamInvitation, meetingId, teamId, isOnTeam} = payload ?? {}
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {onError, onCompleted} = useMutationProps()

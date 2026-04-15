@@ -57,6 +57,7 @@ const NewTeamOrgPicker = (props: Props) => {
   )
   const sortedOrgs = useMemo(() => sortByTier(organizations), [organizations])
   useEffect(() => {
+    if (orgId) return
     const [firstOrg] = sortedOrgs
     if (firstOrg) {
       onChange(firstOrg.id)
