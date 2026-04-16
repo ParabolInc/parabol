@@ -670,8 +670,14 @@ const User: ReqResolvers<'User'> = {
   canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
     switch (entity) {
-      case 'Team':
-        return isTeamMember(authToken, id)
+      case 'Team': {
+        if (isTeamMember(authToken, id)) return true
+        // JWT `tms` can lag immediately after team creation or invitation acceptance,
+        // until the AuthTokenPayload subscription round-trips and refreshes the cookie.
+        // Fall back to a DB lookup so access is correct during that window.
+        const teamMember = await dataLoader.get('teamMembers').load(TeamMemberId.join(id, viewerId))
+        return !!teamMember?.isNotRemoved
+      }
       case 'Meeting': {
         const meeting = await dataLoader.get('newMeetings').load(id)
         if (!meeting) {

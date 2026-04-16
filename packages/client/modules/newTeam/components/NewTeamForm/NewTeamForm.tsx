@@ -101,11 +101,12 @@ const controlSize = 'medium'
 
 interface Props {
   isInitiallyNewOrg: boolean
+  defaultOrgId?: string
   organizationsRef: NewTeamForm_organizations$key
 }
 
 const NewTeamForm = (props: Props) => {
-  const {isInitiallyNewOrg, organizationsRef} = props
+  const {isInitiallyNewOrg, defaultOrgId, organizationsRef} = props
 
   graphql`
     fragment NewTeamForm_teams on Team @relay(plural: true) {
@@ -135,7 +136,7 @@ const NewTeamForm = (props: Props) => {
   )
   const [isPublic, setIsPublic] = useState(true)
   const [isNewOrg, setIsNewOrg] = useState(isInitiallyNewOrg)
-  const [orgId, setOrgId] = useState('')
+  const [orgId, setOrgId] = useState(defaultOrgId ?? '')
   const [rawInvitees, setRawInvitees] = useState('')
   const [invitees, setInvitees] = useState([] as string[])
   const [isSubmitted, setIsSubmitted] = useState(false)
