@@ -131,7 +131,17 @@ export const wsHandler = makeBehavior<{token?: string}>({
   },
   async onNext(context, _id, payload, {contextValue}, result) {
     const isSubscription = (payload as any).docId.startsWith('s')
-    if (!isSubscription) return result
+    if (!isSubscription) {
+      // Sync auth token changes from mutations back to the WS connection.
+      // Mutations like addTeam, acceptTeamInvitation, joinTeam update
+      // contextValue.authToken with a new tms array. Without this sync,
+      // subsequent queries on the same connection would use stale tms.
+      const mutationToken = (contextValue as ServerContext).authToken
+      if (mutationToken && mutationToken !== context.extra.authToken) {
+        context.extra.authToken = mutationToken
+      }
+      return result
+    }
     const subResult = dehydrateResult(result)
     const notificationSub = subResult.data?.notificationSubscription as
       | {
