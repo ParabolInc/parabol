@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.2](https://github.com/ParabolInc/parabol/compare/v13.10.1...v13.10.2) (2026-04-16)
+
+
+### Changed
+
+* cleanup legacy /newteam route ([#12994](https://github.com/ParabolInc/parabol/issues/12994)) ([94cb2a2](https://github.com/ParabolInc/parabol/commit/94cb2a218759b045ecf704c31774aa90ccb093fd))
+
 ## [13.10.1](https://github.com/ParabolInc/parabol/compare/v13.10.0...v13.10.1) (2026-04-16)
 
 
