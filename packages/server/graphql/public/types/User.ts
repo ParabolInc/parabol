@@ -287,7 +287,6 @@ const User: ReqResolvers<'User'> = {
       (await dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})) ?? {}
     const isOrgAdmin = role === 'ORG_ADMIN'
     if (!isOrgAdmin && !isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-      const viewerId = getUserId(authToken)
       if (!HANDLED_OPS.includes(operation?.name?.value ?? '')) {
         standardError(new Error('Team not found'), {userId: viewerId})
       }

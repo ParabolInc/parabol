@@ -84,11 +84,18 @@ const NewTeam = (props: Props) => {
   )
   const {viewer} = data
   const {organizations} = viewer
+  const validDefaultOrgId = organizations.find((org) => org.id === defaultOrgId)
+    ? defaultOrgId
+    : undefined
 
   return (
     <NewTeamLayout>
       <NewTeamInner>
-        <NewTeamForm isInitiallyNewOrg={!defaultOrgId} organizationsRef={organizations} />
+        <NewTeamForm
+          isInitiallyNewOrg={organizations.length === 0}
+          defaultOrgId={validDefaultOrgId}
+          organizationsRef={organizations}
+        />
         {isDesktop && (
           <HelpLayout>
             <HelpBlock>

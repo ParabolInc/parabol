@@ -246,7 +246,7 @@ const MobileDashSidebar = (props: Props) => {
             <LeftDashNavItem
               onClick={handleMenuClick}
               Icon={AddIcon}
-              href={'/newteam/1'}
+              href={'/newteam'}
               label={'Add a Team'}
             />
           </NavItemsWrap>
