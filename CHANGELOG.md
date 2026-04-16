@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.3](https://github.com/ParabolInc/parabol/compare/v13.10.2...v13.10.3) (2026-04-16)
+
+
+### Fixed
+
+* sync auth token changes from mutations back to the WS connection ([#12997](https://github.com/ParabolInc/parabol/issues/12997)) ([2372906](https://github.com/ParabolInc/parabol/commit/2372906c4344d0f75943fd8ff444aa748407915c))
+
 ## [13.10.2](https://github.com/ParabolInc/parabol/compare/v13.10.1...v13.10.2) (2026-04-16)
 
 
