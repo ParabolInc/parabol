@@ -145,7 +145,7 @@ const DashSidebar = (props: Props) => {
             <SearchDialog />
             <LeftDashNavItem Icon={TimelineIcon} href={'/me'} label={'History'} exact />
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
-            <LeftDashNavItem Icon={AddIcon} href={'/newteam/1'} label={'Add a Team'} />
+            <LeftDashNavItem Icon={AddIcon} href={'/newteam'} label={'Add a Team'} />
           </div>
           <NavMain>
             <NavList viewerRef={viewer} />
