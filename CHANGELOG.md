@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.1](https://github.com/ParabolInc/parabol/compare/v13.10.0...v13.10.1) (2026-04-16)
+
+
+### Fixed
+
+* jwt race on new team ([#12991](https://github.com/ParabolInc/parabol/issues/12991)) ([a78e4d3](https://github.com/ParabolInc/parabol/commit/a78e4d3f038e0eb166f6a2af64f49d81d465816f))
+
 ## [13.10.0](https://github.com/ParabolInc/parabol/compare/v13.9.2...v13.10.0) (2026-04-14)
 
 
