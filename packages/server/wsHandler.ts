@@ -230,9 +230,10 @@ export const wsHandler = makeBehavior<{token?: string}>({
   },
   onComplete: (ctx, id) => {
     const {extra} = ctx
-    const {dataLoaders} = extra
+    const {dataLoaders, resubscribe} = extra
     dataLoaders[id]?.dispose()
     delete dataLoaders[id]
+    delete resubscribe[id]
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
@@ -240,6 +241,7 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const {sub: viewerId, tms: teamIds} = authToken
     Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
     extra.dataLoaders = {}
+    extra.resubscribe = {}
     activeClients.delete(extra.socketId)
     extra.socket.closed = true
 

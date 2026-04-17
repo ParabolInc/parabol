@@ -20,7 +20,7 @@ import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
 import logError from './utils/logError'
 import {publishPageNotification} from './utils/publishPageNotification'
-import {afterLoadDocument} from './utils/tiptap/afterLoadDocument'
+import {afterLoadDocument, afterUnloadDocument} from './utils/tiptap/afterLoadDocument'
 import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
 import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
@@ -162,6 +162,7 @@ export const hocuspocus = new Hocuspocus({
     return {userId}
   },
   afterLoadDocument,
+  afterUnloadDocument,
   extensions: [
     new Database({
       // Return a Promise to retrieve data …
