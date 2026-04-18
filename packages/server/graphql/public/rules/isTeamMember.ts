@@ -30,7 +30,7 @@ export const isTeamMember = <T>(
         return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
     }
 
-    if (!authToken.tms.includes(teamId)) {
+    if (!authToken.tms?.includes(teamId)) {
       return new GraphQLError(`Viewer is not on team`)
     }
     return true
