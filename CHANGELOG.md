@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.4](https://github.com/ParabolInc/parabol/compare/v13.10.3...v13.10.4) (2026-04-18)
+
+
+### Fixed
+
+* handle undefined tms in isTeamMember ([#13002](https://github.com/ParabolInc/parabol/issues/13002)) ([1fe0529](https://github.com/ParabolInc/parabol/commit/1fe0529e53ab172343999415ed9780b711dfb979))
+
 ## [13.10.3](https://github.com/ParabolInc/parabol/compare/v13.10.2...v13.10.3) (2026-04-16)
 
 
