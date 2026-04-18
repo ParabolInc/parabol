@@ -25,8 +25,8 @@ export const isSuperUser = (authToken: AuthToken) => {
   return userId ? authToken.rol === 'su' : false
 }
 
-export const isTeamMember = (authToken: AuthToken, teamId: string) => {
-  const {tms} = authToken
+export const isTeamMember = (authToken: AuthToken | null, teamId: string) => {
+  const tms = authToken?.tms
   return Array.isArray(tms) && tms.includes(teamId)
 }
 

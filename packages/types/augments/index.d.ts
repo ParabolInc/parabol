@@ -2,6 +2,7 @@
 // if a declaration files calls import, then it is regarded as an ESModule and the scope
 // of the declaration is limited to that module, instead of being hoisted globally
 type ParabolGraphQLErrorCodes =
+  | 'INTERNAL_SERVER_ERROR'
   | 'MAX_PAGE_DEPTH_REACHED'
   | 'NOT_FOUND'
   | 'SESSION_INVALIDATED'

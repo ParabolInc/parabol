@@ -16,7 +16,7 @@ const uWSAsyncHandler =
     } catch (e) {
       res.writeStatus('503').end()
       const error = e instanceof Error ? e : new Error('uWSAsyncHandler failed')
-      logError(error, {userId: authToken.sub})
+      logError(error, {userId: authToken?.sub})
     }
   }
 

@@ -85,11 +85,11 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (!authToken) {
       const token = connectionParams?.token
       if (typeof token === 'string') {
-        authToken = getVerifiedAuthToken(token)
-        const {sub: viewerId} = authToken
-        if (!viewerId) return false
-        const isBlacklistedJWT = await checkBlacklistJWT(authToken)
+        const verifiedToken = getVerifiedAuthToken(token)
+        if (!verifiedToken?.sub) return false
+        const isBlacklistedJWT = await checkBlacklistJWT(verifiedToken)
         if (isBlacklistedJWT) return false
+        authToken = verifiedToken
       }
     }
     if (!authToken) return false
@@ -314,23 +314,24 @@ wsHandler.upgrade = async (res, req, context) => {
   let freshToken: AuthToken | null = null
   if (typeof token === 'string') {
     const authToken = getVerifiedAuthToken(token)
-    const {sub: viewerId} = authToken
-    const [isBlacklistedJWT, user] = viewerId
-      ? await Promise.all([
-          checkBlacklistJWT(authToken),
-          getKysely()
-            .selectFrom('User')
-            .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
-            .where('id', '=', viewerId)
-            .where('isRemoved', '=', false)
-            .executeTakeFirst()
-        ])
-      : [true, null]
+    const viewerId = authToken?.sub
+    const [isBlacklistedJWT, user] =
+      authToken && viewerId
+        ? await Promise.all([
+            checkBlacklistJWT(authToken),
+            getKysely()
+              .selectFrom('User')
+              .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+              .where('id', '=', viewerId)
+              .where('isRemoved', '=', false)
+              .executeTakeFirst()
+          ])
+        : [true, null]
 
     if (isAborted) {
       return
     }
-    if (isBlacklistedJWT || !user) {
+    if (!authToken || isBlacklistedJWT || !user) {
       // We cannot reject here with a 401 because it will be swallowed by the browser and the client cannot distinguish it from other connection errors
       // Let us reject after we've established the connection
       // Setting an empty token here to not allow passing an additional token via the connectionParams in onConnect
