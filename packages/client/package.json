@@ -77,7 +77,7 @@
     "csv-parse": "^6.1.0",
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.3",
-    "dompurify": "^3.3.2",
+    "dompurify": "^3.4.0",
     "email-addresses": "^3.0.1",
     "emoji-mart": "^5.6.0",
     "eventemitter3": "^4.0.0",
