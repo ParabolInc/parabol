@@ -56,16 +56,16 @@ test('rejects alg=none token crafted with jsonwebtoken sign()', () => {
   const decoded = JSON.parse(Buffer.from(rawPayload!, 'base64url').toString())
   expect(decoded.sub).toBe(VICTIM_USER_ID)
 
-  // The server must reject the token and return an empty AuthToken
+  // The server must reject the token and return null
   const result = getVerifiedAuthToken(maliciousJwt, false)
-  expect(result.sub).toBeUndefined()
+  expect(result).toBeNull()
 })
 
 test('rejects manually constructed base64url alg=none token', () => {
   const maliciousJwt = craftRawAlgNoneToken(VICTIM_USER_ID)
 
   const result = getVerifiedAuthToken(maliciousJwt, false)
-  expect(result.sub).toBeUndefined()
+  expect(result).toBeNull()
 })
 
 test('rejects the encodeUnsignedAuthToken output when used as a server token', () => {
@@ -76,7 +76,7 @@ test('rejects the encodeUnsignedAuthToken output when used as a server token', (
   const unsignedJwt = encodeUnsignedAuthToken(authToken)
 
   const result = getVerifiedAuthToken(unsignedJwt, false)
-  expect(result.sub).toBeUndefined()
+  expect(result).toBeNull()
 })
 
 test('accepts a legitimately signed token for the same userId', () => {
@@ -86,5 +86,5 @@ test('accepts a legitimately signed token for the same userId', () => {
   const validJwt = encodeAuthToken(authToken)
 
   const result = getVerifiedAuthToken(validJwt, false)
-  expect(result.sub).toBe(VICTIM_USER_ID)
+  expect(result?.sub).toBe(VICTIM_USER_ID)
 })

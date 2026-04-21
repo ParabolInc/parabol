@@ -7,7 +7,7 @@ import {Logger} from './utils/Logger'
 
 export const atlassianProxyHandler = async (
   res: HttpResponse,
-  authToken: AuthToken,
+  authToken: AuthToken | null,
   teamId: string,
   rawFilename: string,
   servePlaceholderImage: (res: HttpResponse) => Promise<void>

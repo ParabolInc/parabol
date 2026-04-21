@@ -339,7 +339,8 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       const {promise, resolve, reject} = Promise.withResolvers()
       this.pendingReplies[replyId] = resolve
       setTimeout(() => {
-        reject('TIMEOUT')
+        delete this.pendingReplies[replyId]
+        reject(new Error('TIMEOUT'))
       }, this.customEventTTL)
       return promise as Promise<ReturnType<TCE[TName]>>
     }
@@ -426,6 +427,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   async onDestroy() {
+    this.pendingReplies = {}
     this.pub.disconnect(false)
     this.sub.disconnect(false)
   }

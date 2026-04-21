@@ -107,22 +107,25 @@ export const ImportDatabaseDialog = (props: Props) => {
 
     try {
       const pageId = await new Promise<string>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error('Timed out waiting for page link to be created'))
-        }, 30000)
-
-        root.observeDeep((events) => {
-          events.forEach(async (e) => {
+        const observer = (events: any[]) => {
+          events.forEach(async (e: any) => {
             if (isPageLink(e.target) && e.target.getAttribute('title') === title) {
               const pageCode = e.target.getAttribute('pageCode')
               if (pageCode !== -1) {
                 clearTimeout(timeout)
+                root.unobserveDeep(observer)
                 const pageId = `page:${pageCode}`
                 resolve(pageId)
               }
             }
           })
-        })
+        }
+        const timeout = setTimeout(() => {
+          root.unobserveDeep(observer)
+          reject(new Error('Timed out waiting for page link to be created'))
+        }, 30000)
+
+        root.observeDeep(observer)
 
         const databaseNode = schema.nodes.pageLinkBlock!.create({
           pageCode: -1,

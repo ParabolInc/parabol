@@ -85,11 +85,11 @@ export const wsHandler = makeBehavior<{token?: string}>({
     if (!authToken) {
       const token = connectionParams?.token
       if (typeof token === 'string') {
-        authToken = getVerifiedAuthToken(token)
-        const {sub: viewerId} = authToken
-        if (!viewerId) return false
-        const isBlacklistedJWT = await checkBlacklistJWT(authToken)
+        const verifiedToken = getVerifiedAuthToken(token)
+        if (!verifiedToken?.sub) return false
+        const isBlacklistedJWT = await checkBlacklistJWT(verifiedToken)
         if (isBlacklistedJWT) return false
+        authToken = verifiedToken
       }
     }
     if (!authToken) return false
@@ -230,16 +230,37 @@ export const wsHandler = makeBehavior<{token?: string}>({
   },
   onComplete: (ctx, id) => {
     const {extra} = ctx
-    const {dataLoaders} = extra
+    const {dataLoaders, resubscribe} = extra
     dataLoaders[id]?.dispose()
     delete dataLoaders[id]
+    delete resubscribe[id]
   },
   onDisconnect: async (ctx) => {
     const {extra} = ctx
     const {authToken, socketId} = extra
     const {sub: viewerId, tms: teamIds} = authToken
+    // Ensure every active subscription iterator is released.
+    // graphql-ws is supposed to .return() each entry in ctx.subscriptions
+    // before firing onDisconnect, but abnormal closes (socket error, uWS aborts,
+    // process-to-client network drops) can leave entries behind. Those iterators
+    // pin the upstream SubscriptionIterator + Redis pub/sub listener and
+    // context.dataLoader, producing the leaked-generator-closure signature we saw
+    // in heap snapshots. Running .return() here is idempotent and safe.
+    await Promise.all(
+      Object.keys(ctx.subscriptions).map(async (id) => {
+        const sub = ctx.subscriptions[id]
+        delete ctx.subscriptions[id]
+        if (!sub || typeof (sub as {return?: unknown}).return !== 'function') return
+        try {
+          await (sub as AsyncIterator<unknown>).return!(undefined)
+        } catch (e) {
+          Logger.log(`wsHandler.onDisconnect: sub ${id} return threw: ${e}`)
+        }
+      })
+    )
     Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
     extra.dataLoaders = {}
+    extra.resubscribe = {}
     activeClients.delete(extra.socketId)
     extra.socket.closed = true
 
@@ -314,23 +335,24 @@ wsHandler.upgrade = async (res, req, context) => {
   let freshToken: AuthToken | null = null
   if (typeof token === 'string') {
     const authToken = getVerifiedAuthToken(token)
-    const {sub: viewerId} = authToken
-    const [isBlacklistedJWT, user] = viewerId
-      ? await Promise.all([
-          checkBlacklistJWT(authToken),
-          getKysely()
-            .selectFrom('User')
-            .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
-            .where('id', '=', viewerId)
-            .where('isRemoved', '=', false)
-            .executeTakeFirst()
-        ])
-      : [true, null]
+    const viewerId = authToken?.sub
+    const [isBlacklistedJWT, user] =
+      authToken && viewerId
+        ? await Promise.all([
+            checkBlacklistJWT(authToken),
+            getKysely()
+              .selectFrom('User')
+              .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+              .where('id', '=', viewerId)
+              .where('isRemoved', '=', false)
+              .executeTakeFirst()
+          ])
+        : [true, null]
 
     if (isAborted) {
       return
     }
-    if (isBlacklistedJWT || !user) {
+    if (!authToken || isBlacklistedJWT || !user) {
       // We cannot reject here with a 401 because it will be swallowed by the browser and the client cannot distinguish it from other connection errors
       // Let us reject after we've established the connection
       // Setting an empty token here to not allow passing an additional token via the connectionParams in onConnect
