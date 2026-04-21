@@ -4,9 +4,12 @@ import logError from './logError'
 
 const SERVER_SECRET_BUFFER = Buffer.from(process.env.SERVER_SECRET!, 'base64')
 
-const getVerifiedAuthToken = (jwt: string | undefined | null, logErrors = true) => {
+const getVerifiedAuthToken = (
+  jwt: string | undefined | null,
+  logErrors = true
+): AuthToken | null => {
   if (!jwt) {
-    return {} as AuthToken
+    return null
   }
   try {
     return verify(jwt, SERVER_SECRET_BUFFER, {
@@ -17,7 +20,7 @@ const getVerifiedAuthToken = (jwt: string | undefined | null, logErrors = true) 
       const error = e instanceof Error ? e : new Error('Verify auth token failed')
       logError(error, {tags: {jwt}})
     }
-    return {} as AuthToken
+    return null
   }
 }
 

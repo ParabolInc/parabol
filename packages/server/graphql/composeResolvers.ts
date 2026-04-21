@@ -23,7 +23,11 @@ type Resolver = ResolverFn<any, any, any, any>
 
 const options = {
   allowExternalErrors: false,
-  debug: false,
+  // debug: true makes graphql-shield re-throw exceptions from rule callbacks
+  // instead of silently coercing them to `false` (which surfaces to clients
+  // as the opaque "Not authorized"). We catch those throws below and log
+  // them with operation context so permission bugs are visible, not hidden.
+  debug: true,
   fallbackRule: allow,
   fallbackError: () => new Error(''),
   hashFunction: hash
@@ -37,21 +41,29 @@ const wrapResolve =
         cache: {}
       }
     }
+    let res: unknown
     try {
-      const res = await rule.resolve(source, args, context, info, options)
-      if (res === true) {
-        return await resolve(source, args, context, info)
-      } else {
-        if (res === false) return new GraphQLError('Not authorized')
-        if (typeof res === 'string') return new GraphQLError(res)
-        return res
-      }
+      res = await rule.resolve(source, args, context, info, options)
     } catch (err) {
-      if (!(err instanceof GraphQLError)) {
-        Logger.log(err)
-      }
-      throw err
+      const error = err instanceof Error ? err : new Error(String(err))
+      Logger.error(`Permission rule threw on ${info.parentType.name}.${info.fieldName}`, error)
+      return new GraphQLError('Internal server error', {
+        extensions: {code: 'INTERNAL_SERVER_ERROR'}
+      })
     }
+    if (res === true) {
+      try {
+        return await resolve(source, args, context, info)
+      } catch (err) {
+        if (!(err instanceof GraphQLError)) {
+          Logger.log(err)
+        }
+        throw err
+      }
+    }
+    if (res === false) return new GraphQLError('Not authorized')
+    if (typeof res === 'string') return new GraphQLError(res)
+    return res
   }
 
 type ResolverMap = {

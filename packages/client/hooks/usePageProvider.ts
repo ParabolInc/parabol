@@ -10,29 +10,31 @@ import {getPageSlug} from '../tiptap/getPageSlug'
 import {providerManager} from '../tiptap/providerManager'
 import useAtmosphere from './useAtmosphere'
 
-let headerBlockObserver: null | (() => void) = null
-let currentHeaderBlock: Y.XmlElement | null = null
-
-function observeFirstInnerXmlText(frag: Y.XmlFragment, onChange: (headerBlock: Y.XmlText) => void) {
+function observeFirstInnerXmlText(
+  frag: Y.XmlFragment,
+  onChange: (headerBlock: Y.XmlText) => void,
+  currentHeaderBlockRef: React.MutableRefObject<Y.XmlElement | null>,
+  headerBlockObserverRef: React.MutableRefObject<(() => void) | null>
+) {
   const newHeaderBlock = frag.firstChild as Y.XmlElement
-  if (newHeaderBlock === currentHeaderBlock) return
+  if (newHeaderBlock === currentHeaderBlockRef.current) return
 
-  if (currentHeaderBlock && headerBlockObserver) {
-    currentHeaderBlock.unobserveDeep(headerBlockObserver)
-    headerBlockObserver = null
+  if (currentHeaderBlockRef.current && headerBlockObserverRef.current) {
+    currentHeaderBlockRef.current.unobserveDeep(headerBlockObserverRef.current)
+    headerBlockObserverRef.current = null
   }
 
   if (newHeaderBlock) {
-    headerBlockObserver = () => {
+    headerBlockObserverRef.current = () => {
       const newHeaderText = newHeaderBlock.firstChild as Y.XmlText | null
       if (newHeaderText) {
         onChange(newHeaderText)
       }
     }
-    headerBlockObserver()
-    newHeaderBlock.observeDeep(headerBlockObserver)
+    headerBlockObserverRef.current()
+    newHeaderBlock.observeDeep(headerBlockObserverRef.current)
   }
-  currentHeaderBlock = newHeaderBlock
+  currentHeaderBlockRef.current = newHeaderBlock
 }
 
 const updateUrlWithSlug = (
@@ -67,6 +69,8 @@ export const usePageProvider = (pageId: string) => {
   const pageCode = Number(pageId.split(':')[1])
   const prevPageIdRef = useRef<string | undefined>()
   const [isSynced, setIsSynced] = useState(false)
+  const headerBlockObserverRef = useRef<(() => void) | null>(null)
+  const currentHeaderBlockRef = useRef<Y.XmlElement | null>(null)
   // Connect to your Collaboration server
   const provider = useMemo(() => {
     providerManager.unregister(prevPageIdRef.current)
@@ -84,16 +88,34 @@ export const usePageProvider = (pageId: string) => {
     nextProvider.on('synced', () => {
       setIsSynced(true)
     })
-    const frag = nextProvider.document.getXmlFragment('default')
-    frag.observe((event) => {
-      if (event.changes.added.size > 0 || event.changes.deleted.size > 0) {
-        observeFirstInnerXmlText(frag, (headerBlock) => {
-          updateUrlWithSlug(headerBlock, pageCode, navigate, atmosphere)
-        })
-      }
-    })
     return nextProvider
   }, [pageId])
+
+  // Register the fragment observer in useEffect so it gets cleaned up properly
+  useEffect(() => {
+    const frag = provider.document.getXmlFragment('default')
+    const onSlugChange = (headerBlock: Y.XmlText) => {
+      updateUrlWithSlug(headerBlock, pageCode, navigate, atmosphere)
+    }
+
+    // Set up the initial header block observer for already-synced documents
+    observeFirstInnerXmlText(frag, onSlugChange, currentHeaderBlockRef, headerBlockObserverRef)
+
+    const fragObserver = (event: Y.YXmlEvent) => {
+      if (event.changes.added.size > 0 || event.changes.deleted.size > 0) {
+        observeFirstInnerXmlText(frag, onSlugChange, currentHeaderBlockRef, headerBlockObserverRef)
+      }
+    }
+    frag.observe(fragObserver)
+    return () => {
+      frag.unobserve(fragObserver)
+      if (currentHeaderBlockRef.current && headerBlockObserverRef.current) {
+        currentHeaderBlockRef.current.unobserveDeep(headerBlockObserverRef.current)
+        headerBlockObserverRef.current = null
+        currentHeaderBlockRef.current = null
+      }
+    }
+  }, [provider])
 
   useEffect(() => {
     return () => {

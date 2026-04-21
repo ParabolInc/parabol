@@ -34,7 +34,7 @@ const servePlaceholderImage = async (res: HttpResponse) => {
 }
 
 export const checkAccess = async (
-  authToken: AuthToken,
+  authToken: AuthToken | null,
   scope: AssetScopeEnum,
   scopeCode: string,
   assetType: AssetType | 'idpMetadata.xml'

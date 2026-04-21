@@ -16,37 +16,40 @@ export const generateRetroSummary = async (
   prompt?: string
 ): Promise<string | null> => {
   const dataLoader = getNewDataLoader(`generateRetroSummary`)
-  dataLoader.dispose()
-  const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
-  const {teamId} = meeting
+  try {
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    const {teamId} = meeting
 
-  const team = await dataLoader.get('teams').loadNonNull(teamId)
-  const isAISummaryAccessible = await canAccessAI(team, dataLoader)
-  if (!isAISummaryAccessible) {
-    return setSummaryToNull(meetingId)
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const isAISummaryAccessible = await canAccessAI(team, dataLoader)
+    if (!isAISummaryAccessible) {
+      return setSummaryToNull(meetingId)
+    }
+
+    const transformedMeeting = await transformRetroToAIFormat(meetingId, dataLoader)
+    if (!transformedMeeting || transformedMeeting.length === 0) {
+      return setSummaryToNull(meetingId)
+    }
+
+    const yamlData = yaml.dump(transformedMeeting, {
+      noCompatMode: true
+    })
+
+    const manager = new OpenAIServerManager()
+    const newSummary = await manager.generateSummary(yamlData, prompt)
+    if (!newSummary) {
+      return setSummaryToNull(meetingId)
+    }
+
+    const pg = getKysely()
+    await pg
+      .updateTable('NewMeeting')
+      .set({summary: newSummary})
+      .where('id', '=', meetingId)
+      .execute()
+
+    return newSummary
+  } finally {
+    dataLoader.dispose()
   }
-
-  const transformedMeeting = await transformRetroToAIFormat(meetingId, dataLoader)
-  if (!transformedMeeting || transformedMeeting.length === 0) {
-    return setSummaryToNull(meetingId)
-  }
-
-  const yamlData = yaml.dump(transformedMeeting, {
-    noCompatMode: true
-  })
-
-  const manager = new OpenAIServerManager()
-  const newSummary = await manager.generateSummary(yamlData, prompt)
-  if (!newSummary) {
-    return setSummaryToNull(meetingId)
-  }
-
-  const pg = getKysely()
-  await pg
-    .updateTable('NewMeeting')
-    .set({summary: newSummary})
-    .where('id', '=', meetingId)
-    .execute()
-
-  return newSummary
 }
