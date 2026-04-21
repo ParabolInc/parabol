@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.5](https://github.com/ParabolInc/parabol/compare/v13.10.4...v13.10.5) (2026-04-21)
+
+
+### Fixed
+
+* silent coercion between token failure and absence ([#13006](https://github.com/ParabolInc/parabol/issues/13006)) ([4716b2e](https://github.com/ParabolInc/parabol/commit/4716b2e95e222f2425872e615c552b8efebdb6bb))
+* various handle leak fixes ([#13001](https://github.com/ParabolInc/parabol/issues/13001)) ([f500334](https://github.com/ParabolInc/parabol/commit/f500334ea68f8ceb90dde417dc22c73403499ff9))
+
 ## [13.10.4](https://github.com/ParabolInc/parabol/compare/v13.10.3...v13.10.4) (2026-04-18)
 
 
