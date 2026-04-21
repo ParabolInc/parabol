@@ -107,6 +107,47 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
 - **Kysely: `undefined` skips the field, `null` sets it to NULL.** The DB driver ignores `undefined` values but does _not_ ignore `null`. Use this distinction intentionally.
 - **Use `Number(id)`** when passing string IDs to PostgreSQL integer columns. PG may accept strings, but not every dataloader will.
 
+- **Return null for failed auth token verification.** When token verification fails or no token is present, return \`null\` rather than \`{} as AuthToken\`. Returning an empty object silently coerces token failure into token absence, hiding authentication bugs. All callers should use \`AuthToken | null\` and optional chaining (\`authToken?.sub\`, \`authToken?.tms\`) to safely access properties. Functions accepting auth tokens from untrusted sources must type the parameter as \`AuthToken | null\`.
+
+  **Good:**
+
+  ```typescript
+  const getVerifiedAuthToken = (
+    jwt: string | undefined | null,
+    logErrors = true
+  ): AuthToken | null => {
+    if (!jwt) return null
+    try {
+      return verify(jwt, SECRET, {clockTolerance: 10}) as AuthToken
+    } catch (e) {
+      return null
+    }
+  }
+
+  // Caller uses optional chaining for safe access
+  const authToken = getVerifiedAuthToken(token)
+  if (!authToken?.sub) return false
+  if (!authToken?.tms?.includes(teamId)) {
+    throw new GraphQLError('Viewer is not on team')
+  }
+  ```
+
+  **Bad:**
+
+  ```typescript
+  const getVerifiedAuthToken = (jwt: string | undefined | null): AuthToken => {
+    if (!jwt) return {} as AuthToken
+    try {
+      return verify(jwt, SECRET) as AuthToken
+    } catch (e) {
+      return {} as AuthToken  // Silent failure, type system lies
+    }
+  }
+
+  // Bug: no type error, but runtime crash
+  if (!authToken.tms.includes(teamId)) {  // TypeError: Cannot read property 'includes' of undefined
+  ```
+
 ## DataLoader Best Practices
 
 - **Always use DataLoaders** for related data fetching in resolvers — never query the DB directly from a resolver.
@@ -115,6 +156,33 @@ Mutations must return the `*Success` type directly (e.g. `SetCompanyTeamLimitAtS
   - Loader implementation: `packages/server/dataloader/*Loader.ts`
 - **Call `dispose()` on dataloaders** as soon as they're no longer needed. Don't extend dataloader lifetime unnecessarily.
 - **Include `mutatorId` in publish calls.** Without it, the user who triggered the mutation gets the message twice (once from the mutation response and once from the subscription).
+
+- **Use try/finally to guarantee DataLoader disposal.** When creating a standalone DataLoader via \`getNewDataLoader()\`, wrap all usage in a try/finally block with \`dataLoader.dispose()\` in the finally clause. DataLoaders hold shared Redis/in-memory state and must be disposed even when early returns or exceptions occur. The dispose call must never be placed inline before the work is done — it belongs exclusively in finally (or in the callback chain for streaming scenarios).
+
+  **Good:**
+
+  ```typescript
+  const dataLoader = getNewDataLoader('generateGroups')
+  const operationId = dataLoader.share()
+  try {
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    // ... all dataLoader usage here
+    return result
+  } finally {
+    dataLoader.dispose()
+  }
+  ```
+
+  **Bad:**
+
+  ```typescript
+  const dataLoader = getNewDataLoader('generateGroups')
+  const operationId = dataLoader.share()
+  dataLoader.dispose()
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
+  // ... if this throws, dispose was already called (too early)
+  // or if dispose is at the end, an exception skips it
+  ```
 
 ## Database Conventions
 
