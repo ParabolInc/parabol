@@ -63,6 +63,7 @@ const query = graphql`
         id
         meetingType
         facilitatorUserId
+        endedAt
         meetingSeries {
           cancelledAt
         }
@@ -84,9 +85,10 @@ const MeetingCardOptionsMenu = (props: Props) => {
   const {id: viewerId, team, meeting} = viewer
   const {massInvitation} = team!
   const {id: token} = massInvitation
-  const {id: meetingId, meetingType, facilitatorUserId, meetingSeries} = meeting!
+  const {id: meetingId, meetingType, facilitatorUserId, endedAt, meetingSeries} = meeting!
   const isViewerFacilitator = facilitatorUserId === viewerId
-  const canEndMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
+  const canManageMeeting = meetingType === 'teamPrompt' || isViewerFacilitator
+  const canEndMeeting = canManageMeeting && !endedAt
   const atmosphere = useAtmosphere()
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
@@ -140,7 +142,7 @@ const MeetingCardOptionsMenu = (props: Props) => {
           })
         }}
       />
-      {canEndMeeting && hasRecurrenceEnabled && (
+      {canManageMeeting && hasRecurrenceEnabled && (
         <MenuItem
           key='edit-recurrence'
           label={
