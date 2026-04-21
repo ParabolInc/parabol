@@ -2,7 +2,8 @@ import {Kind} from 'graphql'
 import {Frequency, RRuleSet} from 'rrule-rust'
 import type {RRuleScalarConfig} from '../resolverTypes'
 
-const isRRuleValid = (rrule: RRuleSet) => {
+const validateRRule = (raw: string) => {
+  const rrule = RRuleSet.parse(raw)
   const {tzid, rrules} = rrule
   const [firstRule] = rrules
   if (!firstRule || rrules.length > 1) {
@@ -33,6 +34,7 @@ const isRRuleValid = (rrule: RRuleSet) => {
   } catch {
     throw new Error('RRULE time zone is invalid')
   }
+  return raw
 }
 
 const RRuleScalarType: RRuleScalarConfig = {
@@ -42,20 +44,16 @@ const RRuleScalarType: RRuleScalarConfig = {
     if (typeof value !== 'string') {
       throw new Error(`RRule is not a string, it is a: ${typeof value}`)
     }
-    const rrule = RRuleSet.parse(value)
-    isRRuleValid(rrule)
-    return rrule
+    return validateRRule(value)
   },
   serialize(value: unknown) {
-    return (value as RRuleSet).toString()
+    return String(value)
   },
   parseLiteral(ast) {
     if (ast.kind !== Kind.STRING) {
       throw new Error(`RRule is not a string, it is a: ${ast.kind}`)
     }
-    const rrule = RRuleSet.parse(ast.value)
-    isRRuleValid(rrule)
-    return rrule
+    return validateRRule(ast.value)
   }
 }
 
