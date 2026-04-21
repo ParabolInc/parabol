@@ -62,7 +62,10 @@ export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => 
             ]
           }
         }).catch(Logger.error)
-        if (!newPage) return
+        if (!newPage) {
+          node.unobserve(observer)
+          return
+        }
         const pageCode = CipherId.encrypt(newPage.id)
         node.setAttribute('pageCode', pageCode)
       } else {
