@@ -239,6 +239,25 @@ export const wsHandler = makeBehavior<{token?: string}>({
     const {extra} = ctx
     const {authToken, socketId} = extra
     const {sub: viewerId, tms: teamIds} = authToken
+    // Ensure every active subscription iterator is released.
+    // graphql-ws is supposed to .return() each entry in ctx.subscriptions
+    // before firing onDisconnect, but abnormal closes (socket error, uWS aborts,
+    // process-to-client network drops) can leave entries behind. Those iterators
+    // pin the upstream SubscriptionIterator + Redis pub/sub listener and
+    // context.dataLoader, producing the leaked-generator-closure signature we saw
+    // in heap snapshots. Running .return() here is idempotent and safe.
+    await Promise.all(
+      Object.keys(ctx.subscriptions).map(async (id) => {
+        const sub = ctx.subscriptions[id]
+        delete ctx.subscriptions[id]
+        if (!sub || typeof (sub as {return?: unknown}).return !== 'function') return
+        try {
+          await (sub as AsyncIterator<unknown>).return!(undefined)
+        } catch (e) {
+          Logger.log(`wsHandler.onDisconnect: sub ${id} return threw: ${e}`)
+        }
+      })
+    )
     Object.values(extra.dataLoaders).forEach((dl) => dl.dispose())
     extra.dataLoaders = {}
     extra.resubscribe = {}
