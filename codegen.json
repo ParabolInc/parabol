@@ -8,7 +8,7 @@
     "scalars": {
       "DateTime": "Date",
       "File": "File",
-      "RRule": "RRuleSet"
+      "RRule": "string"
     }
   },
   "generates": {
@@ -38,7 +38,6 @@
           "RemoveAuthIdentitySuccess": "./types/RemoveAuthIdentitySuccess#RemoveAuthIdentitySuccessSource",
           "RemoveFeatureFlagOwnerSuccess": "./types/RemoveFeatureFlagOwnerSuccess#RemoveFeatureFlagOwnerSuccessSource",
           "RetrospectiveMeeting": "../../postgres/types/Meeting#RetrospectiveMeeting as RetrospectiveMeetingDB",
-          "RRule": "rrule-rust#RRuleSet",
           "SAML": "../public/types/SAML#SAMLSource",
           "SetIsFreeMeetingTemplateSuccess": "./types/SetIsFreeMeetingTemplateSuccess#SetIsFreeMeetingTemplateSuccessSource",
           "SignupsPayload": "./types/SignupsPayload#SignupsPayloadSource",
@@ -265,7 +264,6 @@
           "RetrospectiveMeeting": "../../postgres/types/Meeting#RetrospectiveMeeting as RetrospectiveMeetingDB",
           "RetrospectiveMeetingMember": "../../postgres/types/Meeting.d#RetroMeetingMember as RetroMeetingMemberDB",
           "RetrospectiveMeetingSettings": "../../postgres/types/index#RetrospectiveMeetingSettings as RetrospectiveMeetingSettingsDB",
-          "RRule": "rrule-rust#RRuleSet",
           "SAML": "./types/SAML#SAMLSource",
           "SearchResultEdge": "./types/SearchResultEdge#SearchResultEdgeSource",
           "SelectTemplatePayload": "./types/SelectTemplatePayload#SelectTemplatePayloadSource",
