@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -17,12 +18,13 @@ import {startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
-  {teamId, name, rrule, gcalInput, ignoreSuggestedUpgrade},
+  {teamId, name, rrule: rruleString, gcalInput, ignoreSuggestedUpgrade},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
   // AUTH
   const viewerId = getUserId(authToken)
 

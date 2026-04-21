@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.10.6](https://github.com/ParabolInc/parabol/compare/v13.10.5...v13.10.6) (2026-04-21)
+
+
+### Fixed
+
+* recurring meeting regression ([#13010](https://github.com/ParabolInc/parabol/issues/13010)) ([bbafb99](https://github.com/ParabolInc/parabol/commit/bbafb99e1883efe00b6599396f5f982998084c82))
+* unable to end meetings started by recurrence ([#13013](https://github.com/ParabolInc/parabol/issues/13013)) ([236d7ee](https://github.com/ParabolInc/parabol/commit/236d7ee63d3ddd17eb7d99bc96c70abe01fffdef))
+
 ## [13.10.5](https://github.com/ParabolInc/parabol/compare/v13.10.4...v13.10.5) (2026-04-21)
 
 

@@ -124,13 +124,14 @@ const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | 
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
   _source,
-  {meetingId, name, rrule},
+  {meetingId, name, rrule: rruleString},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
 
   // VALIDATION
   const [meeting, viewer] = await Promise.all([

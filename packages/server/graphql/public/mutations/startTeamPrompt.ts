@@ -1,5 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -18,11 +19,12 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, name, rrule, gcalInput, ignoreSuggestedUpgrade},
+  {teamId, name, rrule: rruleString, gcalInput, ignoreSuggestedUpgrade},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+  const rrule = rruleString ? RRuleSet.parse(rruleString) : null
 
   // AUTH
   const viewerId = getUserId(authToken)
