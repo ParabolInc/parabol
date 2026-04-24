@@ -127,7 +127,7 @@ export const useTipTapPageEditor = (
           highestTier: user?.highestTier
         }),
         ImageBlock.configure({
-          editorWidth: 960,
+          editorWidth: 720,
           editorHeight: 400
         }),
         IndentHandler,
