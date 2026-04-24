@@ -54,7 +54,7 @@ export const Page = (props: Props) => {
       <div
         className={cn(
           'relative flex min-h-screen w-full justify-center bg-white pt-28 pb-10 print:pt-0 print:caret-transparent',
-          isDatabase ? 'max-w-9/10' : 'max-w-[960px]'
+          isDatabase ? 'max-w-9/10' : 'max-w-3xl'
         )}
       >
         {synced &&
