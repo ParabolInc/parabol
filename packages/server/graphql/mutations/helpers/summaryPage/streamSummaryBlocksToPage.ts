@@ -33,48 +33,60 @@ export const streamSummaryBlocksToPage = async (
   const documentName = CipherId.toClient(pageId, 'page')
   const unlock = await redisHocusPocus.lockDocument(documentName)
   const conn = await hocuspocus.openDirectConnection(documentName, {})
-  let lastBlock: XmlElement
-  for await (const rawContent of contentGenerator) {
-    if (!rawContent) continue
-    const content = rawContent.filter(Boolean)
-    if (content.length === 0) continue
-    try {
-      const tempYDoc = TiptapTransformer.toYdoc(
-        {
-          type: 'doc',
-          content
-        },
-        undefined,
-        serverTipTapExtensions
-      )
-      const blocks = tempYDoc
-        .getXmlFragment('default')
-        .toArray()
-        .map((block) => cloneBlock(block as XmlElement))
+  try {
+    for await (const rawContent of contentGenerator) {
+      if (!rawContent) continue
+      const content = rawContent.filter(Boolean)
+      if (content.length === 0) continue
+      try {
+        const tempYDoc = TiptapTransformer.toYdoc(
+          {
+            type: 'doc',
+            content
+          },
+          undefined,
+          serverTipTapExtensions
+        )
+        const blocks = tempYDoc
+          .getXmlFragment('default')
+          .toArray()
+          .map((block) => cloneBlock(block as XmlElement))
 
-      await conn.transact((doc) => {
-        const frag = doc.getXmlFragment('default')
-        lastBlock = lastBlock || frag.firstChild
-        frag.insertAfter(lastBlock, blocks)
-        lastBlock = blocks.at(-1)!
-      })
-    } catch (e) {
-      console.error('Invalid block generated', e, JSON.stringify(content))
-    }
-    // not necessary, just to make it look like it is streaming lol
-    await sleep(100)
-  }
-  await conn.transact((doc) => {
-    // remove the thinking block now that we're done
-    const frag = doc.getXmlFragment('default')
-    for (let i = frag.length - 1; i >= 0; i--) {
-      const node = frag.get(i) as XmlElement
-      if (node.nodeName === 'thinkingBlock') {
-        frag.delete(i)
-        break
+        await conn.transact((doc) => {
+          const frag = doc.getXmlFragment('default')
+          // Anchor insertion to the thinkingBlock so user edits at the top of the
+          // doc (e.g. a stray Enter in the auto-focused title) can't displace the
+          // stream target.
+          const thinkingIdx = frag
+            .toArray()
+            .findIndex((n) => n instanceof XmlElement && n.nodeName === 'thinkingBlock')
+          if (thinkingIdx === -1) {
+            frag.push(blocks)
+          } else {
+            frag.insert(thinkingIdx, blocks)
+          }
+        })
+      } catch (e) {
+        console.error('Invalid block generated', e, JSON.stringify(content))
       }
+      // not necessary, just to make it look like it is streaming lol
+      await sleep(100)
     }
-  })
-  await conn.disconnect()
-  unlock()
+  } finally {
+    // Always remove the thinkingBlock and release the connection/lock, even if
+    // the generator threw. Leaving a thinkingBlock in the doc would pin the
+    // client editor to read-only (see useEditablePage.ts).
+    await conn.transact((doc) => {
+      const frag = doc.getXmlFragment('default')
+      for (let i = frag.length - 1; i >= 0; i--) {
+        const node = frag.get(i)
+        if (node instanceof XmlElement && node.nodeName === 'thinkingBlock') {
+          frag.delete(i)
+          break
+        }
+      }
+    })
+    await conn.disconnect()
+    unlock()
+  }
 }
