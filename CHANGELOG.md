@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.11.0](https://github.com/ParabolInc/parabol/compare/v13.10.6...v13.11.0) (2026-04-24)
+
+
+### Added
+
+* Pages typography improvements ([#13017](https://github.com/ParabolInc/parabol/issues/13017)) ([16cb7fb](https://github.com/ParabolInc/parabol/commit/16cb7fb06a7f4c3514a995ffb2dd4ce20ffe5acb))
+
+
+### Fixed
+
+* Pages intermittent newlines ([#13019](https://github.com/ParabolInc/parabol/issues/13019)) ([bb4ad34](https://github.com/ParabolInc/parabol/commit/bb4ad349a79b1050db5be68d5432786c7ef41055))
+
 ## [13.10.6](https://github.com/ParabolInc/parabol/compare/v13.10.5...v13.10.6) (2026-04-21)
 
 
