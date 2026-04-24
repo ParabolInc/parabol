@@ -134,7 +134,7 @@
     "node-loader": "^2.0.0",
     "nx": "^20.8.0",
     "pm2": "^6.0.14",
-    "postcss": "^8.5.1",
+    "postcss": "^8.5.10",
     "postcss-loader": "^8.1.1",
     "react-refresh": "^0.17.0",
     "relay-compiler": "^20.1.1",
