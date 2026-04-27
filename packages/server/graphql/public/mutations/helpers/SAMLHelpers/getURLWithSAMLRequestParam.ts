@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid'
+import {randomUUID} from 'crypto'
 import zlib from 'zlib'
 
 const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
@@ -6,7 +6,7 @@ const getURLWithSAMLRequestParam = (destination: string, slug: string) => {
   const template = `
   <samlp:AuthnRequest
       xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
-      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_${uuid()}" Version="2.0" IssueInstant="${new Date().toISOString()}" Destination="${destination}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="https://${
+      xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="_${randomUUID()}" Version="2.0" IssueInstant="${new Date().toISOString()}" Destination="${destination}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" AssertionConsumerServiceURL="https://${
         process.env.HOST
       }/saml/${slug}">
   <saml:Issuer>${issuer}</saml:Issuer>
