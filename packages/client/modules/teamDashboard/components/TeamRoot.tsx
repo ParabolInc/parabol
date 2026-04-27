@@ -8,9 +8,11 @@ import TeamContainer from '../containers/Team/TeamContainer'
 
 const TeamRoot = () => {
   const {teamId} = useParams()
-  const queryRef = useQueryLoaderNow<TeamContainerQuery>(teamContainerQuery, {
-    teamId: teamId!
-  })
+  const queryRef = useQueryLoaderNow<TeamContainerQuery>(
+    teamContainerQuery,
+    {teamId: teamId!},
+    'network-only'
+  )
   return (
     <Suspense fallback={''}>
       {queryRef && <TeamContainer queryRef={queryRef} teamId={teamId!} />}
