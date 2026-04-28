@@ -320,7 +320,7 @@ class AtlassianServerManager extends AtlassianManager {
       const {headers} = res
       const contentType = headers.get('content-type') || ''
       if (!contentType.includes('application/json')) {
-        await res.arrayBuffer().catch(() => {})
+        await res.body?.cancel()
         return new Error('Received non-JSON Atlassian Response')
       }
       const json = (await res.json()) as AtlassianError | JiraNoAccessError | JiraGetError | T
