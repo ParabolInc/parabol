@@ -59,6 +59,40 @@ Dialog open state can be managed with `useDialogState` from `ui/Dialog/useDialog
 - **Lazy `useState` initialization** for hot-path components: `useState(() => expensiveComputation())` not `useState(expensiveComputation())`. The thunk runs only on mount, not every render.
 - **Provide clear user feedback.** Forms need submit buttons or auto-save — don't rely on implicit Enter-to-save without visual cues.
 
+## Y.js Observer Cleanup
+
+- **Store Y.js observers in refs and clean up via useEffect return.** When attaching Y.js observers (observe/observeDeep) in React components or hooks, store the observer callback in a React ref or named variable, register it inside a useEffect, and unregister it in the useEffect cleanup function. Never create anonymous observers inside useMemo or inline — this makes cleanup impossible and causes handle leaks. For server-side document observers, use a Map keyed by documentName to track and clean up observers.
+
+  **Good:**
+
+  ```typescript
+  const headerBlockObserverRef = useRef<(() => void) | null>(null)
+  useEffect(() => {
+    const frag = provider.document.getXmlFragment('default')
+    const fragObserver = (event: Y.YXmlEvent) => { /* ... */ }
+    frag.observe(fragObserver)
+    return () => {
+      frag.unobserve(fragObserver)
+      if (currentHeaderBlockRef.current && headerBlockObserverRef.current) {
+        currentHeaderBlockRef.current.unobserveDeep(headerBlockObserverRef.current)
+      }
+    }
+  }, [provider])
+  ```
+
+  **Bad:**
+
+  ```typescript
+  const provider = useMemo(() => {
+    const frag = nextProvider.document.getXmlFragment('default')
+    frag.observe((event) => {
+      // anonymous observer — no way to unobserve on cleanup
+      observeFirstInnerXmlText(frag, onChange)
+    })
+    return nextProvider
+  }, [pageId])
+  ```
+
 ## UI/UX Patterns
 
 - **Autocomplete behavior**: Allow Tab and Enter to complete suggestions. Show a visual preview of what will be completed (inline ghost text or bold matching).
