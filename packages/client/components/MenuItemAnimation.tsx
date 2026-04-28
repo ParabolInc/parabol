@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdown?: boolean) => {
+const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdown?: boolean) => {
   const itemDuration = Duration.MENU_OPEN / 3
   if (isDropdown) {
     const fixedDelay = Duration.MENU_OPEN / 4

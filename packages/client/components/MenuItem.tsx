@@ -11,7 +11,7 @@ import {
 import {PALETTE} from '../styles/paletteV3'
 import MenuItemLabel from './MenuItemLabel'
 
-export interface MenuItemProps {
+interface MenuItemProps {
   isActive: boolean
   activate: () => void
   closePortal: () => void

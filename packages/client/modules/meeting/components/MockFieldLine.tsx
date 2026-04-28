@@ -2,7 +2,7 @@ import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import {PALETTE} from '../../../styles/paletteV3'
 
-export const skeletonShine = keyframes`
+const skeletonShine = keyframes`
   0% {
     background-position: -40px;
   }

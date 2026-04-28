@@ -49,15 +49,6 @@ export const emailLinkStyle = {
 export const emailInnerMaxWidth = 536
 export const emailMaxWidth = 600
 
-export const emailRuleColor = PALETTE.SLATE_300
-export const emailRuleHeight = '1px'
-export const emailRuleStyle = {
-  backgroundColor: PALETTE.SLATE_300,
-  border: '0px',
-  height: '1px',
-  margin: '0 auto'
-}
-
 export const emailProductTeamSignature = 'The Parabol Product Team 🙉 🙈 🙊'
 
 export const emailTableBase = {

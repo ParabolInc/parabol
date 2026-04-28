@@ -75,7 +75,7 @@ const ResponseCardFooter = styled('div')({
   paddingTop: 4
 })
 
-export const TeamMemberName = styled('h3')({
+const TeamMemberName = styled('h3')({
   padding: '0 8px',
   margin: 0,
   overflow: 'hidden',

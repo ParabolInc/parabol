@@ -18,7 +18,7 @@ const MIN_WIDTH =
   DashTimeline.TIMELINE_DRAWER_WIDTH +
   DashTimeline.MIN_PADDING * 2
 
-export const RightDrawer = styled('div')({
+const RightDrawer = styled('div')({
   display: 'none',
   minWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
   maxWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
