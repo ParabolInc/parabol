@@ -2,13 +2,13 @@ import styled from '@emotion/styled'
 import {PALETTE} from '../../styles/paletteV3'
 import type {Day} from '../../utils/humanReadableRecurrenceRule'
 
-export const CheckboxRoot = styled('div')({
+const CheckboxRoot = styled('div')({
   position: 'relative',
   width: 46,
   height: 46
 })
 
-export const StyledCheckbox = styled('input')({
+const StyledCheckbox = styled('input')({
   appearance: 'none',
   margin: 0,
   position: 'absolute',
@@ -28,7 +28,7 @@ export const StyledCheckbox = styled('input')({
   }
 })
 
-export const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChecked}) => ({
+const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChecked}) => ({
   position: 'absolute',
   top: 0,
   left: 0,
@@ -44,7 +44,7 @@ export const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChe
   cursor: 'pointer'
 }))
 
-export interface Props {
+interface Props {
   day: Day
   isChecked: boolean
   onToggle: (day: Day) => void

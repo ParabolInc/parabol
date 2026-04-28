@@ -8,7 +8,7 @@ import {modalShadow} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {Radius, ZIndex} from '../../types/constEnums'
 
-export const animateIn = keyframes`
+const animateIn = keyframes`
   0% {
     opacity: 0;
     transform: translate3d(0, -50px, 0);

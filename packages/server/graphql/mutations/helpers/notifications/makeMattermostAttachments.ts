@@ -2,7 +2,7 @@ import {PALETTE} from '~/styles/paletteV3'
 import {ExternalLinks} from '~/types/constEnums'
 import authorIcon from '../../../../../../static/images/brand/mark-color@3x.png'
 
-export interface ButtonSpec {
+interface ButtonSpec {
   label: string
   link: string
 }
@@ -13,7 +13,7 @@ export interface Field {
   value: string
 }
 
-export interface FieldAttachmentHeader {
+interface FieldAttachmentHeader {
   fallback: string
   color?: string
   title?: string

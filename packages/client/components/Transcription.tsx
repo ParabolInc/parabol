@@ -1,6 +1,6 @@
 import type {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 
-export type TranscriptBlock = {
+type TranscriptBlock = {
   speaker: string
   words: string
 }

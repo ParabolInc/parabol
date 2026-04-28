@@ -30,7 +30,7 @@ export const MeetingTopBarStyles = styled('div')({
   }
 })
 
-export const HeadingBlock = styled('div')<{
+const HeadingBlock = styled('div')<{
   isMeetingSidebarCollapsed?: boolean
 }>(({isMeetingSidebarCollapsed = true}) => ({
   alignItems: 'flex-start',

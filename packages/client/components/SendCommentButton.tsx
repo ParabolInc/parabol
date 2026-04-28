@@ -2,7 +2,7 @@ import {ArrowUpward} from '@mui/icons-material'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 
-export type CommentSubmitState = 'idle' | 'typing'
+type CommentSubmitState = 'idle' | 'typing'
 
 interface Props {
   commentSubmitState: CommentSubmitState

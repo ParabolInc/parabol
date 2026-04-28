@@ -3,12 +3,12 @@ import type {Extensions, generateHTML, generateJSON, JSONContent} from '@tiptap/
 import StarterKit from '@tiptap/starter-kit'
 import {createContext, type ReactNode, useContext} from 'react'
 
-export interface TipTapContextValue {
+interface TipTapContextValue {
   generateHTML: (doc: JSONContent, extensions?: Extensions) => string
   generateJSON: (html: string, extensions?: Extensions) => JSONContent
 }
 
-export const TipTapRenderContext = createContext<TipTapContextValue | null>(null)
+const TipTapRenderContext = createContext<TipTapContextValue | null>(null)
 
 export function useTipTapContext(): TipTapContextValue {
   const ctx = useContext(TipTapRenderContext)

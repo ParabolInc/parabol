@@ -31,9 +31,10 @@ const mutation = graphql`
   }
 `
 
-export const addPokerTemplateScaleTeamUpdater: SharedUpdater<
-  AddPokerTemplateScaleMutation_scale$data
-> = (payload, {store}) => {
+const addPokerTemplateScaleTeamUpdater: SharedUpdater<AddPokerTemplateScaleMutation_scale$data> = (
+  payload,
+  {store}
+) => {
   const scale = payload.getLinkedRecord('scale')
   if (!scale) return
   const scaleId = scale.getValue('id')

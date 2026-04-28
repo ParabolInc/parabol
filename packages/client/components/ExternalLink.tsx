@@ -1,4 +1,4 @@
-export interface ExternalLinkProps {
+interface ExternalLinkProps {
   className?: string
   copy: string
   href: string

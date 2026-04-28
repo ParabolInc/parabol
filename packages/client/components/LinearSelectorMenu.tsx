@@ -21,7 +21,7 @@ const getItemLabel = (item: LinearProjectOrTeam): string => {
   }
   return item.name || 'Unknown Team'
 }
-export interface LinearSelectorMenuProps {
+interface LinearSelectorMenuProps {
   items: ReadonlyArray<LinearProjectOrTeam>
   selectedItemIds: ReadonlyArray<string>
   onSelectItem: (itemId: string, currentSelectedState: boolean) => void
