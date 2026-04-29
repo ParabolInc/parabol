@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.11.0",
+  "version": "13.11.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -31,7 +31,6 @@
     "@types/node": "^22.14.0",
     "@types/nodemailer": "^6.4.19",
     "@types/sanitize-html": "^2.11.0",
-    "@types/uuid": "^8.3.3",
     "faker": "^5.5.3",
     "graphql-tag": "^2.12.6",
     "jest-transform-graphql": "^2.1.0"
@@ -103,7 +102,7 @@
     "node-env-flag": "0.1.0",
     "node-html-markdown-cloudflare": "^1.3.0",
     "node-html-parser": "^7.0.1",
-    "nodemailer": "^8.0.4",
+    "nodemailer": "^8.0.5",
     "oauth-1.0a": "^2.2.6",
     "object-hash": "^3.0.0",
     "oy-vey": "^0.12.1",
@@ -119,7 +118,6 @@
     "tseep": "^1.3.1",
     "tslib": "^2.8.1",
     "uWebSockets.js": "uNetworking/uWebSockets.js#v20.57.0",
-    "uuid": "^11.1.0",
     "y-utility": "^0.1.4"
   }
 }
