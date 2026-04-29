@@ -58,7 +58,10 @@ export const downloadAndCacheImage = async (
 
   const contentType = res.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase()
   const ext = contentType ? mime.extension(contentType) : null
-  if (!ext) return null
+  if (!ext) {
+    await res.body?.cancel()
+    return null
+  }
 
   const hash = createImageUrlHash(fetchUrl)
   const partialPath = `Team/${teamId}/assets/${hash}.${ext}` as PartialPath
@@ -66,6 +69,7 @@ export const downloadAndCacheImage = async (
   const fileStoreManager = getFileStoreManager()
   const exists = await fileStoreManager.checkExists(partialPath)
   if (exists) {
+    await res.body?.cancel()
     return makeAppURL(appOrigin, `/assets/${partialPath}`)
   }
 

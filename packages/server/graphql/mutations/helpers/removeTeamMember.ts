@@ -18,7 +18,7 @@ interface Options {
   evictorUserId?: string
 }
 
-const removeTeamMember = async (
+export const removeTeamMember = async (
   teamMemberId: string,
   options: Options,
   dataLoader: DataLoaderWorker

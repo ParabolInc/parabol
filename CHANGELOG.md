@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.11.2](https://github.com/ParabolInc/parabol/compare/v13.11.1...v13.11.2) (2026-04-29)
+
+
+### Fixed
+
+* use Promise.allSettled in removeFromOrg ([#13029](https://github.com/ParabolInc/parabol/issues/13029)) ([b512817](https://github.com/ParabolInc/parabol/commit/b5128176f6b3d96d7608d78d9dce2f9b3188381a))
+
+## [13.11.1](https://github.com/ParabolInc/parabol/compare/v13.11.0...v13.11.1) (2026-04-29)
+
+
+### Fixed
+
+* volume mount for local pg ([#13024](https://github.com/ParabolInc/parabol/issues/13024)) ([efa85a4](https://github.com/ParabolInc/parabol/commit/efa85a46ded028fa7f23b86b4425a418f4099659))
+
+
+### Changed
+
+* update dependencies and replace uuid with native crypto.random ([#13022](https://github.com/ParabolInc/parabol/issues/13022)) ([cadeab1](https://github.com/ParabolInc/parabol/commit/cadeab1e73fcb2c6f5630536c31de9ff93b0de8e))
+
 ## [13.11.0](https://github.com/ParabolInc/parabol/compare/v13.10.6...v13.11.0) (2026-04-24)
 
 
