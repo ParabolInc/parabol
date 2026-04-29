@@ -25,12 +25,15 @@ const removeFromOrg = async (
   const teamMemberIds = teamMembers.map((teamMember) => teamMember.id)
   const teamIds = teamMembers.map((teamMember) => teamMember.teamId)
 
-  const perTeamRes = await Promise.all(
+  // use allSettled so that if one team fails, we still remove the user from other teams
+  const perTeamSettled = await Promise.allSettled(
     teamMemberIds.map((teamMemberId) => {
       return removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     })
   )
-
+  const perTeamRes = perTeamSettled
+    .filter((res) => res.status === 'fulfilled')
+    .map((res) => res.value)
   const taskIds = perTeamRes.reduce((arr: string[], res) => {
     arr.push(...res.archivedTaskIds, ...res.reassignedTaskIds)
     return arr
