@@ -8,7 +8,7 @@ import {selectPersonalAccessToken} from '../../postgres/select'
 import {ResourceGrants} from './ResourceGrants'
 import type {OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
-const PAT_PREFIX = 'pat_'
+export const PAT_PREFIX = 'pat_'
 const PREFIX_LENGTH = 8
 
 /**

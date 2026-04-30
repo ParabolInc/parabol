@@ -12,11 +12,13 @@ import {getIsBusy} from './getIsBusy'
 import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
+import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
 import {useDatadogTracing} from './utils/useDatadogTracing'
@@ -36,6 +38,7 @@ export interface ServerContext {
   res: uws.HttpResponse
   ip: string
   authToken: AuthToken | null
+  docId?: string | null | undefined
 }
 
 export interface UserContext {
@@ -191,7 +194,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         const authToken = getVerifiedAuthToken(token, false)
 
         const isSuperUser = authToken?.rol === 'su'
-        const isPAT = headerToken?.startsWith('pat_') ?? false
+        const isPAT = headerToken?.startsWith(PAT_PREFIX) ?? false
         return isSuperUser || isPAT
       },
       skipDocumentValidation: true,
@@ -224,7 +227,8 @@ export const yoga = createYoga<ServerContext, UserContext>({
         return true
       }
     }),
-    useCookies()
+    useCookies(),
+    useArmor()
   ],
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
   // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook
