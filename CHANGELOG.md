@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.11.3](https://github.com/ParabolInc/parabol/compare/v13.11.2...v13.11.3) (2026-04-29)
+
+
+### Fixed
+
+* User.inactive in csv export ([#13032](https://github.com/ParabolInc/parabol/issues/13032)) ([c531983](https://github.com/ParabolInc/parabol/commit/c5319839fc4e62d5fea3a8111c9af8cc26bae6fb))
+
 ## [13.11.2](https://github.com/ParabolInc/parabol/compare/v13.11.1...v13.11.2) (2026-04-29)
 
 
