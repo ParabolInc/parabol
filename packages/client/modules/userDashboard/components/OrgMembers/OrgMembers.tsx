@@ -50,6 +50,7 @@ const OrgMembers = (props: Props) => {
                     preferredName
                     email
                     lastSeenAt
+                    inactive
                   }
                   ...OrgMemberRow_organizationUser
                   ...RemoveFromOrgModal_organizationUsers
@@ -179,8 +180,7 @@ const OrgMembers = (props: Props) => {
         Row: idx,
         Name: node.user.preferredName,
         Email: node.user.email,
-        // legacy: inactive was removed from the DB, so i removed it from GraphQL
-        Inactive: false,
+        Inactive: node.user.inactive,
         'Billing Lead': node.role === 'BILLING_LEADER',
         'Last Seen At': formattedLastSeenAt
       }
