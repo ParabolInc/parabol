@@ -443,9 +443,22 @@ const permissionMap: PermissionMap<Resolvers> = {
     )
   },
   User: {
+    archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
+    archivedTasksCount: isTeamMember<'User.archivedTasksCount'>('args.teamId'),
+    company: isSuperUser,
+    discussion: isTeamMember<'User.discussion'>('args.id', 'discussions'),
     domains: or(isSuperUser, isUserViewer<'User.id'>('source.id')),
+    meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
+    organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
+    organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
     parseSAMLMetadata: isOrgAdminBySAMLDomain,
-    personalAccessTokens: isUserViewer<'User.id'>('source.id')
+    personalAccessTokens: isUserViewer<'User.id'>('source.id'),
+    team: or(
+      isSuperUser,
+      isTeamMember<'User.team'>('args.teamId'),
+      isViewerBillingLeader<'User.team'>('args.teamId', 'teams')
+    ),
+    teamMember: isTeamMember<'User.teamMember'>('args.teamId')
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')

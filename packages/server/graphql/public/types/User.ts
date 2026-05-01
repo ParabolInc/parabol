@@ -72,25 +72,12 @@ const getValidUserIds = async (
 }
 
 const User: ReqResolvers<'User'> = {
-  organization: async (_source, {orgId}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const [organization, viewerOrganizationUser] = await Promise.all([
-      dataLoader.get('organizations').loadNonNull(orgId),
-      dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})
-    ])
-    if (!isSuperUser(authToken) && !viewerOrganizationUser) return null
-    return organization
+  organization: (_source, {orgId}, {dataLoader}) => {
+    return dataLoader.get('organizations').loadNonNull(orgId)
   },
   invoices,
   archivedTasks: async (_source, {first, after, teamId}, {authToken}) => {
-    // AUTH
     const userId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
-      standardError(new Error('Not organization lead'), {userId})
-      return null
-    }
-
-    // RESOLUTION
     const tasks = await selectTasks()
       .where('teamId', '=', teamId)
       .$if(!!after, (qb) => qb.where('updatedAt', '<=', after!))
@@ -118,16 +105,7 @@ const User: ReqResolvers<'User'> = {
   },
   archivedTasksCount: async (_source, {teamId}, {authToken}) => {
     const pg = getKysely()
-    const viewerId = getUserId(authToken)
-
-    // AUTH
     const userId = getUserId(authToken)
-    if (!isTeamMember(authToken, teamId)) {
-      standardError(new Error('Team not found'), {userId: viewerId})
-      return 0
-    }
-
-    // RESOLUTION
     const taskCount = await pg
       .selectFrom('Task')
       .select(({fn}) => fn.count('id').as('count'))
@@ -137,31 +115,13 @@ const User: ReqResolvers<'User'> = {
       .executeTakeFirstOrThrow()
     return Number(taskCount.count)
   },
-  meeting: async (_source, {meetingId}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const meeting = await dataLoader.get('newMeetings').load(meetingId)
-    if (!meeting) {
-      standardError(new Error('Meeting not found'), {
-        userId: viewerId,
-        tags: {meetingId}
-      })
-      return null
-    }
-    const {teamId} = meeting
-    if (!isTeamMember(authToken, teamId)) {
-      const meetingMemberId = toTeamMemberId(meetingId, viewerId)
-      const meetingMember = await dataLoader.get('meetingMembers').load(meetingMemberId)
-      if (!meetingMember) {
-        // standardError(new Error('Team not found'), {userId: viewerId, tags: {teamId}})
-        return null
-      }
-    }
-    return meeting
+  meeting: async (_source, {meetingId}, {dataLoader}) => {
+    return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
   },
   meetings: async (
     _source,
     {after, first, teamIds, meetingTypes, before},
-    {authToken, dataLoader}
+    {authToken, dataLoader, resourceGrants}
   ) => {
     const viewerId = getUserId(authToken)
     let validTeamIds = teamIds
@@ -169,6 +129,10 @@ const User: ReqResolvers<'User'> = {
       const teamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
       const allTeamIds = teamMembers.map(({teamId}) => teamId)
       validTeamIds = teamIds.filter((teamId) => allTeamIds.includes(teamId))
+    }
+    if (resourceGrants) {
+      const grantChecks = await Promise.all(validTeamIds.map((id) => resourceGrants.hasTeam(id)))
+      validTeamIds = validTeamIds.filter((_, i) => grantChecks[i])
     }
     if (validTeamIds.length < 1) {
       return {
@@ -227,7 +191,7 @@ const User: ReqResolvers<'User'> = {
   tasks: async (
     _source,
     {first, after, userIds, teamIds, archived, statusFilters, filterQuery, includeUnassigned},
-    {authToken, dataLoader}
+    {authToken, dataLoader, resourceGrants}
   ) => {
     // AUTH
     const viewerId = getUserId(authToken)
@@ -254,9 +218,13 @@ const User: ReqResolvers<'User'> = {
     // if archived is true & no userId filter is provided, it should include tasks for ex-team members
     // under no condition should it show tasks for archived teams
     const accessibleTeamIds = authToken.tms
-    const validTeamIds = teamIds
+    let validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
+    if (resourceGrants) {
+      const grantChecks = await Promise.all(validTeamIds.map((id) => resourceGrants.hasTeam(id)))
+      validTeamIds = validTeamIds.filter((_, i) => grantChecks[i])
+    }
     const validUserIds = (await getValidUserIds(userIds, viewerId, validTeamIds, dataLoader)) ?? []
     // RESOLUTION
     const tasks = await dataLoader.get('userTasks').load({
@@ -275,21 +243,7 @@ const User: ReqResolvers<'User'> = {
     })
     return connectionFromTasks(filteredTasks, first)
   },
-  team: async (_source, {teamId}, {authToken, dataLoader}, {operation}) => {
-    // HANDLED_OPS is a list of operations that we gracefully handle on the client, so we don't want to report them the error tracking
-    const HANDLED_OPS = ['TeamRootQuery', 'TeamContainerQuery']
-    const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const {orgId} = team
-    const viewerId = getUserId(authToken)
-    const {role} =
-      (await dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId})) ?? {}
-    const isOrgAdmin = role === 'ORG_ADMIN'
-    if (!isOrgAdmin && !isTeamMember(authToken, teamId) && !isSuperUser(authToken)) {
-      if (!HANDLED_OPS.includes(operation?.name?.value ?? '')) {
-        standardError(new Error('Team not found'), {userId: viewerId})
-      }
-      return null
-    }
+  team: (_source, {teamId}, {dataLoader}) => {
     return dataLoader.get('teams').loadNonNull(teamId)
   },
   createdAt: ({createdAt}) => createdAt || new Date('2016-06-01'),
@@ -354,7 +308,7 @@ const User: ReqResolvers<'User'> = {
   timeline: async (
     {id},
     {after, first, teamIds, eventTypes, archived},
-    {authToken, dataLoader}
+    {authToken, dataLoader, resourceGrants}
   ) => {
     const viewerId = getUserId(authToken)
 
@@ -378,9 +332,13 @@ const User: ReqResolvers<'User'> = {
     }
     const userTeamMembers = await dataLoader.get('teamMembersByUserId').load(viewerId)
     const accessibleTeamIds = userTeamMembers.map(({teamId}) => teamId)
-    const validTeamIds = teamIds
+    let validTeamIds = teamIds
       ? teamIds.filter((teamId: string) => accessibleTeamIds.includes(teamId))
       : accessibleTeamIds
+    if (resourceGrants) {
+      const grantChecks = await Promise.all(validTeamIds.map((id) => resourceGrants.hasTeam(id)))
+      validTeamIds = validTeamIds.filter((_, i) => grantChecks[i])
+    }
     if (validTeamIds.length === 0)
       return {
         error: 'No teams',
@@ -429,14 +387,8 @@ const User: ReqResolvers<'User'> = {
     }
   },
 
-  discussion: async (_source, {id}, {authToken, dataLoader}) => {
-    const discussion = await dataLoader.get('discussions').load(id)
-    if (!discussion) return null
-    const {teamId} = discussion
-    if (!isTeamMember(authToken, teamId)) {
-      return null
-    }
-    return discussion
+  discussion: async (_source, {id}, {dataLoader}) => {
+    return (await dataLoader.get('discussions').load(id)) ?? null
   },
 
   newFeature: ({newFeatureId}, _args, {dataLoader}) => {
@@ -450,14 +402,8 @@ const User: ReqResolvers<'User'> = {
     return meetingId ? dataLoader.get('meetingMembers').loadNonNull(meetingMemberId) : null
   },
 
-  organizationUser: async ({id: userId}, {orgId}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const [viewerOrganizationUser, userOrganizationUser] = await Promise.all([
-      dataLoader.get('organizationUsersByUserIdOrgId').load({userId: viewerId, orgId}),
-      dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})
-    ])
-    if (viewerOrganizationUser || isSuperUser(authToken)) return userOrganizationUser
-    return null
+  organizationUser: async ({id: userId}, {orgId}, {dataLoader}) => {
+    return (await dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})) ?? null
   },
 
   organizationUsers: async ({id: userId}, _args, {authToken, dataLoader}) => {
@@ -598,16 +544,20 @@ const User: ReqResolvers<'User'> = {
     return {teamInvitation, teamId, meetingId}
   },
 
-  teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader}) => {
+  teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
     const user = (await dataLoader.get('users').load(userId))!
     const activeTeamIds =
       viewerId === userId || isSuperUser(authToken)
         ? user.tms
         : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
-    const teamIds = includeArchived
+    let teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
+    if (resourceGrants) {
+      const grantChecks = await Promise.all(teamIds.map((id) => resourceGrants.hasTeam(id)))
+      teamIds = teamIds.filter((_, i) => grantChecks[i])
+    }
     const teams = (
       await Promise.all(
         teamIds.map((teamId) => dataLoader.get('teamsWithUserSort').load({teamId, userId}))
@@ -618,12 +568,7 @@ const User: ReqResolvers<'User'> = {
     return teams
   },
 
-  teamMember: ({id}, {teamId, userId}, {authToken, dataLoader}) => {
-    if (!isTeamMember(authToken, teamId)) {
-      const viewerId = getUserId(authToken)
-      standardError(new Error('Not on team'), {userId: viewerId})
-      return null
-    }
+  teamMember: ({id}, {teamId, userId}, {dataLoader}) => {
     const teamMemberId = toTeamMemberId(teamId, userId || id)
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
@@ -635,16 +580,6 @@ const User: ReqResolvers<'User'> = {
       : tms.filter((teamId: string) => authToken.tms.includes(teamId))
   },
 
-  userOnTeam: async (_source, {userId}, {authToken, dataLoader}) => {
-    const userOnTeam = await dataLoader.get('users').load(userId)
-    if (!userOnTeam) {
-      return null
-    }
-    // const teams = new Set(userOnTeam)
-    const {tms} = userOnTeam
-    if (!authToken.tms.find((teamId) => tms.includes(teamId))) return null
-    return userOnTeam
-  },
   activity: async (_source, {activityId}, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
 
@@ -687,15 +622,9 @@ const User: ReqResolvers<'User'> = {
         return false
     }
   },
-  company: async ({email}, _args, {authToken, dataLoader}) => {
+  company: async ({email}, _args, {dataLoader}) => {
     const domain = getDomainFromEmail(email)
-    if (
-      !domain ||
-      !isSuperUser(authToken) ||
-      !(await dataLoader.get('isCompanyDomain').load(domain))
-    ) {
-      return null
-    }
+    if (!domain || !(await dataLoader.get('isCompanyDomain').load(domain))) return null
     return {id: domain}
   },
   domains: async ({id: userId}, _args, {dataLoader}) => {

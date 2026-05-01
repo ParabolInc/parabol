@@ -378,13 +378,6 @@ type User implements UserPartial {
   The timestamp the user was last updated
   """
   updatedAt: DateTime
-  "Look up another user who shares a team with this user"
-  userOnTeam(
-    """
-    The other user
-    """
-    userId: ID!
-  ): User
 
   """
   The assumed company this organization belongs to
