@@ -47,6 +47,25 @@ export class ResourceGrants {
     return this.grantedOrgIds.includes(orgId)
   }
 
+  getPageGrantCriteria(): null | {
+    pageIds: Set<number> | null
+    teamIds: string[] | null
+    orgIds: string[] | null
+  } {
+    if (
+      this.grantedPageIds === null &&
+      this.grantedTeamIds === null &&
+      this.grantedOrgIds === null
+    ) {
+      return null
+    }
+    return {
+      pageIds: this.grantedPageIds,
+      teamIds: this.grantedTeamIds,
+      orgIds: this.grantedOrgIds
+    }
+  }
+
   async hasPage(pageId: number): Promise<boolean> {
     // Verify user has access to this page
     const userRole = await this.dataLoader
