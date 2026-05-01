@@ -13,11 +13,13 @@ import {getIsShuttingDown} from './getIsShuttingDown'
 import getRateLimiter from './graphql/getRateLimiter'
 import type {MutationResolvers, QueryResolvers, Resolver} from './graphql/private/resolverTypes'
 import {PAT_PREFIX} from './graphql/public/applyScopeDirective'
+import type {ResourceGrants} from './graphql/public/ResourceGrants'
 import rootSchema from './graphql/public/rootSchema'
 import getKysely from './postgres/getKysely'
 import {getAuthTokenFromCookie} from './utils/authCookie'
 import getVerifiedAuthToken from './utils/getVerifiedAuthToken'
 import {Logger} from './utils/Logger'
+import {useAPIAccess} from './utils/useAPIAccess'
 import {useArmor} from './utils/useArmor'
 import {useAuditLogs} from './utils/useAuditLogs'
 import {useCheckBlacklist} from './utils/useCheckBlacklist'
@@ -39,6 +41,10 @@ export interface ServerContext {
   ip: string
   authToken: AuthToken | null
   docId?: string | null | undefined
+  // the cost of the adhoc query. undefined if it is a persisted query
+  apiCost?: number
+  // present if the request is from a Personal Access Token
+  resourceGrants?: ResourceGrants
 }
 
 export interface UserContext {
@@ -85,6 +91,9 @@ export const yoga = createYoga<ServerContext, UserContext>({
   logging: Logger,
   plugins: [
     useRemoveDuplicateTransferEncoding,
+    useDisposeDataloader,
+    useAPIAccess(),
+    useArmor(),
     useAuditLogs({
       excludeArgs: {
         acceptTeamInvitation: ['invitationToken'],
@@ -203,7 +212,6 @@ export const yoga = createYoga<ServerContext, UserContext>({
     }),
     useCheckBlacklist(),
     usePrivateSchemaForSuperUser,
-    useDisposeDataloader,
     useExtendedValidation({
       rules: [OneOfInputObjectsRule],
       onValidationFailed: (params) => {
@@ -227,8 +235,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
         return true
       }
     }),
-    useCookies(),
-    useArmor()
+    useCookies()
   ],
   // There is a bug in graphql-yoga where calling `yoga.getEnveloped` does not work from within graphql-ws when `schema` returns a function
   // As a workaround, we set the schema via `usePrivateSchemaForSuperUser` using the `onEnveloped` hook

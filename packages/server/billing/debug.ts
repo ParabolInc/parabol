@@ -8,6 +8,8 @@ const doDebugStuff = async () => {
   const query = `query {
   viewer {
       id
+      preferredName
+      lastSeenAt
   }
 }`
   const accessToken = 'pat_h6iLjClzbnEOo8d_P56D7b6R91uYLZQ-ByXKxyDCp5k'
@@ -21,7 +23,7 @@ const doDebugStuff = async () => {
     body: JSON.stringify({query})
   })
   const resJSON = await res.json()
-  console.log(JSON.stringify(resJSON))
+  console.log(JSON.stringify(resJSON), res.headers)
 }
 
 doDebugStuff()
