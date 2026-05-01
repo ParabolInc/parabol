@@ -440,7 +440,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       // TODO or rules run in parallel, make it go in serial since org_admin check is rare
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
-    )
+    ),
+    organization: isViewerOnOrg<'Team.organization'>('source.orgId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
