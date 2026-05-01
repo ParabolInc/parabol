@@ -27,5 +27,8 @@ export const isTeamMemberOfMeeting = <T>(
     if (!authToken.tms?.includes(meeting.teamId)) {
       return new GraphQLError(`Viewer is not on team`)
     }
+    if (context.resourceGrants && !(await context.resourceGrants.hasTeam(meeting.teamId))) {
+      return new GraphQLError(`PAT does not grant access to this team`)
+    }
     return true
   })
