@@ -10,9 +10,16 @@ const doDebugStuff = async () => {
       id
       preferredName
       lastSeenAt
+      pages(first: 10) {
+        edges {
+          node {
+            title
+          }
+        }
+      }
   }
 }`
-  const accessToken = 'pat_h6iLjClzbnEOo8d_P56D7b6R91uYLZQ-ByXKxyDCp5k'
+  const accessToken = 'pat_eA31BU_CbCIlNPUAVNJSK4hOjL5m7s_MLtraixy7EHY'
   const res = await fetch('https://localhost:3000/graphql', {
     method: 'POST',
     headers: {

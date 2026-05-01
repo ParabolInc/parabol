@@ -61,7 +61,6 @@ const checkUsage = async (userId: string, cost: number) => {
   for (const countStr of Object.values(allBuckets)) {
     totalCost += parseInt(countStr, 10)
   }
-  console.log({results, allBuckets, currentBucket, cost})
 
   const burstReset = currentBucketTs + bucketSize
   const bucketKeys = Object.keys(allBuckets).map(Number)
