@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.11.4](https://github.com/ParabolInc/parabol/compare/v13.11.3...v13.11.4) (2026-05-01)
+
+
+### Fixed
+
+* case insensitive persistentNameId as SCIM userName ([#13036](https://github.com/ParabolInc/parabol/issues/13036)) ([9d6266a](https://github.com/ParabolInc/parabol/commit/9d6266a119ab67341c4d335c2632702c4610a6f4))
+
 ## [13.11.3](https://github.com/ParabolInc/parabol/compare/v13.11.2...v13.11.3) (2026-04-29)
 
 

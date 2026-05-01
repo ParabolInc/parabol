@@ -22,8 +22,8 @@ const FilterColumnMap: Record<string, WhereExpressionBuilder> = {
   userName: (eb, value) => {
     const normalized = value.toLowerCase().trim()
     return eb.or([
-      eb('scimUserName', '=', value.toLowerCase().trim()),
-      eb.and([eb('scimUserName', 'is', null), eb('persistentNameId', '=', normalized)]),
+      eb('scimUserName', '=', normalized),
+      eb.and([eb('scimUserName', 'is', null), eb('persistentNameId', 'ilike', normalized)]),
       eb.and([
         eb('scimUserName', 'is', null),
         eb('persistentNameId', 'is', null),
