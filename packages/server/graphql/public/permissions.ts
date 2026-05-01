@@ -444,6 +444,7 @@ const permissionMap: PermissionMap<Resolvers> = {
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
+    invoices: isViewerBillingLeader<'User.invoices'>('args.orgId'),
     archivedTasksCount: isTeamMember<'User.archivedTasksCount'>('args.teamId'),
     company: isSuperUser,
     discussion: isTeamMember<'User.discussion'>('args.id', 'discussions'),
@@ -453,6 +454,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
     parseSAMLMetadata: isOrgAdminBySAMLDomain,
     personalAccessTokens: isUserViewer<'User.id'>('source.id'),
+    meetingMember: isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId'),
     team: or(
       isSuperUser,
       isTeamMember<'User.team'>('args.teamId'),

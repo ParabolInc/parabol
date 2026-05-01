@@ -189,11 +189,6 @@ type User implements UserPartial {
   lastSeenAt: DateTime!
 
   """
-  The paths that the user is currently visiting. This is null if the user is not currently online. A URL can also be null if the socket is not in a meeting, e.g. on the timeline.
-  """
-  lastSeenAtURLs: [String]
-
-  """
   The meeting member associated with this user, if a meeting is currently in progress
   """
   meetingMember(

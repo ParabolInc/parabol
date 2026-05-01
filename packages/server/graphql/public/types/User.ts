@@ -395,8 +395,6 @@ const User: ReqResolvers<'User'> = {
     return newFeatureId ? dataLoader.get('newFeatures').loadNonNull(newFeatureId) : null
   },
 
-  lastSeenAtURLs: () => [],
-
   meetingMember: async ({id: userId}, {meetingId}, {dataLoader}) => {
     const meetingMemberId = toTeamMemberId(meetingId, userId)
     return meetingId ? dataLoader.get('meetingMembers').loadNonNull(meetingMemberId) : null
@@ -406,32 +404,44 @@ const User: ReqResolvers<'User'> = {
     return (await dataLoader.get('organizationUsersByUserIdOrgId').load({userId, orgId})) ?? null
   },
 
-  organizationUsers: async ({id: userId}, _args, {authToken, dataLoader}) => {
+  organizationUsers: async ({id: userId}, _args, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
     organizationUsers.sort((a, b) => (a.orgId > b.orgId ? 1 : -1))
-    if (viewerId === userId || isSuperUser(authToken)) {
-      return organizationUsers
+    let visibleOrgUsers = organizationUsers
+    if (viewerId !== userId && !isSuperUser(authToken)) {
+      const viewerOrganizationUsers = await dataLoader
+        .get('organizationUsersByUserId')
+        .load(viewerId)
+      const viewerOrgIds = new Set(viewerOrganizationUsers.map(({orgId}) => orgId))
+      visibleOrgUsers = organizationUsers.filter(({orgId}) => viewerOrgIds.has(orgId))
     }
-    const viewerOrganizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
-    return organizationUsers.filter((organizationUser) =>
-      viewerOrgIds.includes(organizationUser.orgId)
-    )
+    if (resourceGrants) {
+      const grantChecks = await Promise.all(
+        visibleOrgUsers.map(({orgId}) => resourceGrants.hasOrg(orgId))
+      )
+      visibleOrgUsers = visibleOrgUsers.filter((_, i) => grantChecks[i])
+    }
+    return visibleOrgUsers
   },
 
-  organizations: async ({id: userId}, _args, {authToken, dataLoader}) => {
+  organizations: async ({id: userId}, _args, {authToken, dataLoader, resourceGrants}) => {
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(userId)
     const orgIds = organizationUsers.map(({orgId}) => orgId)
     const organizations = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
     const sortedOrgs = sortByTier(organizations)
     const viewerId = getUserId(authToken)
-    if (viewerId === userId || isSuperUser(authToken)) {
-      return sortedOrgs
+    let visibleOrgs = sortedOrgs
+    if (viewerId !== userId && !isSuperUser(authToken)) {
+      const viewerOrganizationUsers = await dataLoader
+        .get('organizationUsersByUserId')
+        .load(viewerId)
+      const viewerOrgIds = new Set(viewerOrganizationUsers.map(({orgId}) => orgId))
+      visibleOrgs = sortedOrgs.filter(({id}) => viewerOrgIds.has(id))
     }
-    const viewerOrganizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
-    const viewerOrgIds = viewerOrganizationUsers.map(({orgId}) => orgId)
-    return sortedOrgs.filter((organization) => viewerOrgIds.includes(organization.id))
+    if (!resourceGrants) return visibleOrgs
+    const grantChecks = await Promise.all(visibleOrgs.map(({id}) => resourceGrants.hasOrg(id)))
+    return visibleOrgs.filter((_, i) => grantChecks[i])
   },
 
   overLimitCopy: async ({id: userId, overLimitCopy}, _args, {dataLoader}) => {
@@ -599,24 +609,29 @@ const User: ReqResolvers<'User'> = {
     }
     return activity || null
   },
-  canAccess: async (_source, {entity, id}, {authToken, dataLoader}) => {
+  canAccess: async (_source, {entity, id}, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
     switch (entity) {
-      case 'Team':
-        return isTeamMember(authToken, id)
+      case 'Team': {
+        if (!isTeamMember(authToken, id)) return false
+        if (resourceGrants && !(await resourceGrants.hasTeam(id))) return false
+        return true
+      }
       case 'Meeting': {
         const meeting = await dataLoader.get('newMeetings').load(id)
-        if (!meeting) {
-          return false
-        }
+        if (!meeting) return false
         const {teamId} = meeting
-        return isTeamMember(authToken, teamId)
+        if (!isTeamMember(authToken, teamId)) return false
+        if (resourceGrants && !(await resourceGrants.hasTeam(teamId))) return false
+        return true
       }
       case 'Organization': {
         const organizationUser = await dataLoader
           .get('organizationUsersByUserIdOrgId')
           .load({userId: viewerId, orgId: id})
-        return !!organizationUser
+        if (!organizationUser) return false
+        if (resourceGrants && !(await resourceGrants.hasOrg(id))) return false
+        return true
       }
       default:
         return false
