@@ -6,7 +6,7 @@ import {Security} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
 import type {MutationResolvers} from '../resolverTypes'
 
-let enabled = false
+let enabled = true
 export const createPersonalAccessToken: MutationResolvers['createPersonalAccessToken'] = async (
   _,
   args,
