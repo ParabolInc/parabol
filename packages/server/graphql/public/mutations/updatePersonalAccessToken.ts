@@ -3,6 +3,7 @@ import ms from 'ms'
 import getKysely from '../../../postgres/getKysely'
 import {selectPersonalAccessToken} from '../../../postgres/select'
 import {getUserId} from '../../../utils/authorization'
+import {PAT_PREFIX} from '../applyScopeDirective'
 import type {MutationResolvers} from '../resolverTypes'
 
 export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessToken'] = async (
@@ -20,7 +21,7 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
   {authToken}
 ) => {
   const viewerId = getUserId(authToken)
-  const prefix = tokenId.slice('pat_'.length)
+  const prefix = tokenId.slice(PAT_PREFIX.length)
 
   const token = await selectPersonalAccessToken()
     .where('prefix', '=', prefix)
