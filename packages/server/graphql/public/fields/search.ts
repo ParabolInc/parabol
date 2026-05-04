@@ -18,8 +18,8 @@ const decodeCursor = (after: string | null | undefined, type: SearchTypeEnum) =>
 }
 export const search: NonNullable<UserResolvers['search']> = async (
   _source,
-  {query, after, alpha: inAlpha, dateField, endAt, first, startAt, teamIds: inTeamIds, type},
-  {authToken, dataLoader, resourceGrants}
+  {query, after, alpha: inAlpha, dateField, endAt, first, startAt, teamIds, type},
+  {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
   const alpha = inAlpha ?? 0.75
@@ -28,17 +28,11 @@ export const search: NonNullable<UserResolvers['search']> = async (
   if (alpha < 0 || alpha > 1) throw new GraphQLError('alpha must be between 0 and 1')
   if (query.length > 5000) throw new GraphQLError('query must be between 1 and 5000 chars')
   if (first < 1 || first > 100) throw new GraphQLError('first must be between 1 and 100')
-  if (inTeamIds) {
-    const hasAccessToTeams = inTeamIds.every((teamId) => authToken.tms.includes(teamId))
+  if (teamIds) {
+    const hasAccessToTeams = teamIds.every((teamId) => authToken.tms.includes(teamId))
     if (!hasAccessToTeams) {
       throw new GraphQLError('Viewer is not a member of all teamIds requested')
     }
-  }
-  let teamIds = inTeamIds
-  if (resourceGrants) {
-    const baseTeamIds = teamIds ?? authToken.tms
-    const grantChecks = await Promise.all(baseTeamIds.map((id) => resourceGrants.hasTeam(id)))
-    teamIds = baseTeamIds.filter((_, i) => grantChecks[i])
   }
   const pg = getKysely()
   const dateRange =
@@ -52,9 +46,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
   // if teamIds is defined for pages, it will limit the search to team pages
   const pageTeamIds = teamIds && teamIds.length > 0 ? (teamIds as [string, ...string[]]) : undefined
   // metadata requires a teamId, whereas pages don't because it uses RBAC
-  const metadataTeamIds: [string, ...string[]] = resourceGrants
-    ? ['aGhostTeam', ...(teamIds ?? [])]
-    : (pageTeamIds ?? ['aGhostTeam', ...authToken.tms])
+  const metadataTeamIds = pageTeamIds || ['aGhostTeam', ...authToken.tms]
 
   if (query.length === 0) {
     const noQueryEdge = {

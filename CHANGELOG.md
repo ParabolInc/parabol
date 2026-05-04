@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.12.2](https://github.com/ParabolInc/parabol/compare/v13.12.1...v13.12.2) (2026-05-04)
+
+
+### Fixed
+
+* revert resource grants ([#13047](https://github.com/ParabolInc/parabol/issues/13047)) ([df41bae](https://github.com/ParabolInc/parabol/commit/df41baed78e83ca96376b6c839d7b3b854bf1937))
+
+## [13.12.1](https://github.com/ParabolInc/parabol/compare/v13.12.0...v13.12.1) (2026-05-02)
+
+
+### Fixed
+
+* allow query access to ghost team and organization resources ([#13043](https://github.com/ParabolInc/parabol/issues/13043)) ([4d16334](https://github.com/ParabolInc/parabol/commit/4d163345cfc7462cda1f1032cf3cb0b87a0c58f4))
+
 ## [13.12.0](https://github.com/ParabolInc/parabol/compare/v13.11.4...v13.12.0) (2026-05-01)
 
 

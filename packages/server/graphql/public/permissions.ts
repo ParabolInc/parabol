@@ -440,28 +440,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       // TODO or rules run in parallel, make it go in serial since org_admin check is rare
       isTeamMember<'Team.massInvitation'>('source.id'),
       hasOrgRole<'Team.massInvitation'>('source.orgId', 'ORG_ADMIN')
-    ),
-    organization: isViewerOnOrg<'Team.organization'>('source.orgId')
+    )
   },
   User: {
-    archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
-    invoices: isViewerBillingLeader<'User.invoices'>('args.orgId'),
-    archivedTasksCount: isTeamMember<'User.archivedTasksCount'>('args.teamId'),
-    company: isSuperUser,
-    discussion: isTeamMember<'User.discussion'>('args.id', 'discussions'),
     domains: or(isSuperUser, isUserViewer<'User.id'>('source.id')),
-    meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
-    organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
-    organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
     parseSAMLMetadata: isOrgAdminBySAMLDomain,
-    personalAccessTokens: isUserViewer<'User.id'>('source.id'),
-    meetingMember: isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId'),
-    team: or(
-      isSuperUser,
-      isTeamMember<'User.team'>('args.teamId'),
-      isViewerBillingLeader<'User.team'>('args.teamId', 'teams')
-    ),
-    teamMember: isTeamMember<'User.teamMember'>('args.teamId')
+    personalAccessTokens: isUserViewer<'User.id'>('source.id')
   },
   Page: {
     parentPage: hasPageAccess<'Page.parentPage'>('source.parentPageId', 'viewer')
