@@ -1,8 +1,15 @@
+import bcrypt from 'bcryptjs'
 import type {GraphQLSchema} from 'graphql'
 import {defaultFieldResolver, GraphQLError, getDirectiveValues, isObjectType} from 'graphql'
+import {sql} from 'kysely'
+import ms from 'ms'
+import AuthToken from '../../database/types/AuthToken'
+import {selectPersonalAccessToken} from '../../postgres/select'
+import {ResourceGrants} from './ResourceGrants'
 import type {OAuthScopeEnum as TOAuthScopeEnum} from './resolverTypes'
 
-export const PAT_PREFIX = 'pat_'
+const PAT_PREFIX = 'pat_'
+const PREFIX_LENGTH = 8
 
 /**
  * Wraps field resolvers that have @scope(name: OAuthScopeEnum!) applied.
@@ -32,6 +39,7 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
 
       field.resolve = async (source, args, context, info) => {
         if (context.authToken?.aud === 'action-pat') {
+          // authToken from PAT already created
           if (context.authToken.scope?.includes(requiredScope)) {
             return originalResolver(source, args, context, info)
           }
@@ -39,6 +47,59 @@ export const applyScopeDirective = (schema: GraphQLSchema): GraphQLSchema => {
             `Personal access token is missing required scope: ${requiredScope}`,
             {extensions: {code: 'FORBIDDEN'}}
           )
+        }
+        const authHeader: string | null | undefined = context.request?.headers?.get('authorization')
+        const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined
+
+        if (bearerToken?.startsWith(PAT_PREFIX)) {
+          const rawToken = bearerToken.slice(PAT_PREFIX.length)
+          const prefix = rawToken.slice(0, PREFIX_LENGTH)
+
+          const possibleTokens = await selectPersonalAccessToken()
+            .select('hashedToken')
+            .where('prefix', '=', prefix)
+            .where('revokedAt', 'is', null)
+            .where('expiresAt', '>', sql<Date>`CURRENT_TIMESTAMP`)
+            .execute()
+
+          const matches = await Promise.all(
+            possibleTokens.map((t) => bcrypt.compare(rawToken, t.hashedToken))
+          )
+          const token = possibleTokens[matches.indexOf(true)]
+
+          if (!token) {
+            throw new GraphQLError('Invalid or revoked personal access token', {
+              extensions: {code: 'UNAUTHORIZED'}
+            })
+          }
+
+          if (!token.scopes.includes(requiredScope)) {
+            throw new GraphQLError(
+              `Personal access token is missing required scope: ${requiredScope}`,
+              {
+                extensions: {code: 'FORBIDDEN'}
+              }
+            )
+          }
+          // All granted resources are untrusted! We must verify before executing a query against them
+          const resourceGrants = new ResourceGrants(
+            token.userId,
+            token.grantedOrgIds,
+            token.grantedTeamIds,
+            token.grantedPageIds,
+            context.dataLoader
+          )
+          context.resourceGrants = resourceGrants
+
+          const teamMembers = await context.dataLoader.get('teamMembersByUserId').load(token.userId)
+          const tms = teamMembers.map(({teamId}: {teamId: string}) => teamId)
+          context.authToken = new AuthToken({
+            sub: token.userId,
+            tms,
+            scope: token.scopes,
+            lifespan_ms: ms('1h'),
+            aud: 'action-pat'
+          })
         }
 
         return originalResolver(source, args, context, info)

@@ -126,8 +126,18 @@ const Team: TeamResolvers = {
     const settings = await dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
     return settings
   },
-  organization: async ({orgId}, _args, {dataLoader}) => {
+  organization: async ({id: teamId, orgId}, _args, {authToken, dataLoader}) => {
     const organization = await dataLoader.get('organizations').loadNonNull(orgId)
+    // TODO this is bad, we should probably just put the perms on each field in the org
+    if (!isTeamMember(authToken, teamId)) {
+      return {
+        id: orgId,
+        name: organization.name,
+        isPaid: organization.isPaid,
+        unpaidMessageHTML: organization.unpaidMessageHTML,
+        useAI: organization.useAI
+      } as any
+    }
     return organization
   },
   retroMeetingsCount: async ({id: teamId}, _args, {dataLoader}) => {

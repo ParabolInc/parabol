@@ -1,4 +1,4 @@
-import {GraphQLError, type GraphQLResolveInfo} from 'graphql'
+import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
 import type {AllPrimaryLoaders} from '../../../dataloader/RootDataLoader'
 import {getUserId} from '../../../utils/authorization'
@@ -10,7 +10,7 @@ export const isViewerOnOrg = <T>(
   dataLoaderName?: AllPrimaryLoaders
 ) =>
   rule(`isViewerOnOrg-${orgIdDotPath}`, {cache: 'strict'})(
-    async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
+    async (source, args, context: GQLContext) => {
       const {authToken, dataLoader} = context
       const argVar = getResolverDotPath(orgIdDotPath, source, args)
       let orgId: string = argVar
@@ -20,9 +20,6 @@ export const isViewerOnOrg = <T>(
           return new GraphQLError(`Permission lookup failed on ${dataLoaderName} for ${argVar}`)
         orgId = subject.orgId
       }
-      // Special case for ghost org so users can view meeting template meta
-      if (info.operation.operation !== 'mutation' && orgId === 'aGhostOrg') return true
-
       const viewerId = getUserId(authToken)
       const organizationUser = await dataLoader
         .get('organizationUsersByUserIdOrgId')
