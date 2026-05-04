@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.12.2](https://github.com/ParabolInc/parabol/compare/v13.12.1...v13.12.2) (2026-05-04)
+
+
+### Fixed
+
+* revert resource grants ([#13047](https://github.com/ParabolInc/parabol/issues/13047)) ([df41bae](https://github.com/ParabolInc/parabol/commit/df41baed78e83ca96376b6c839d7b3b854bf1937))
+
 ## [13.12.1](https://github.com/ParabolInc/parabol/compare/v13.12.0...v13.12.1) (2026-05-02)
 
 
