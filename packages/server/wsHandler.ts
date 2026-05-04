@@ -77,9 +77,7 @@ const dehydrateResult = (result: ExecutionResult) => {
   const dehydratedData = {[subscriptionName]: fields}
   return {...rest, data: dehydratedData}
 }
-
-const documentCache = new Map()
-export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
+export const wsHandler = makeBehavior<{token?: string}>({
   onConnect: async (ctx) => {
     const {connectionParams, extra} = ctx
 
@@ -181,15 +179,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     const {ip, authToken, socketId, resubscribe} = extra
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
-    let document = documentCache.get(docId!)
-    if (!document) {
-      const query = await getPersistedOperation(docId!)
-      // armor requires a docId to allow skipping validation
-      ;(ctx as any).docId = docId
-      document = parse(query)
-      documentCache.set(docId, document)
-    }
-
+    const query = await getPersistedOperation(docId!)
+    const document = parse(query)
     const rateLimiter = getRateLimiter()
     const isSubscription = docId.startsWith('s')
 
