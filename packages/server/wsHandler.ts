@@ -181,11 +181,11 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
     const {ip, authToken, socketId, resubscribe} = extra
     const {schema, execute, subscribe, parse, contextFactory} = yoga.getEnveloped(ctx)
     const docId = extractPersistedOperationId(params as any)
+    // armor requires a docId to know this isn't an adhoc query
+    ;(ctx as any).docId = docId
     let document = documentCache.get(docId!)
     if (!document) {
       const query = await getPersistedOperation(docId!)
-      // armor requires a docId to allow skipping validation
-      ;(ctx as any).docId = docId
       document = parse(query)
       documentCache.set(docId, document)
     }
