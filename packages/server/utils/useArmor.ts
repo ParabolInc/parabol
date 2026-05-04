@@ -12,6 +12,7 @@ import type {ServerContext} from '../yoga'
 import {getUserId} from './authorization'
 import {BoundedCache} from './BoundedCache'
 import getRedis, {type RedisPipelineResponse} from './getRedis'
+import {Logger} from './Logger'
 
 const queryCostCache = new BoundedCache<string, number>(100)
 
@@ -116,7 +117,11 @@ export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker
       const isSuperUser = authTokenRole === 'su'
       if (docId || isSuperUser) return
       const apiCost = contextCost || queryCostCache.get(print(args.document))
-      if (!apiCost) throw new GraphQLError('API Cost for adhoc query not determined')
+      if (!apiCost) {
+        // can remove after 5/20/26 to provide a decent test window
+        Logger.error('API Cost for adhoc query not determined')
+        throw new GraphQLError('API Cost for adhoc query not determined')
+      }
       const viewerId = getUserId(authToken)
       if (!viewerId) throw new GraphQLError('No auth token for PAT')
       const [tier, usage] = await Promise.all([
