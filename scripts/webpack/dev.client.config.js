@@ -18,6 +18,11 @@ const isProxiedDev = HOST !== 'localhost'
 const USE_REFRESH = false
 module.exports = {
   stats: 'errors-warnings',
+  ignoreWarnings: [
+    // framer-motion intentionally uses string concatenation for @emotion/is-prop-valid to
+    // avoid static analysis by bundlers; it works fine at runtime
+    {module: /framer-motion.*filter-props/}
+  ],
   devServer: {
     allowedHosts: ['localhost', 'host.docker.internal', HOST],
     server: isProxiedDev ? 'http' : 'https',
@@ -46,7 +51,6 @@ module.exports = {
         'jira-attachments',
         'stripe',
         'webhooks',
-        'graphql',
         'health',
         'ready',
         'self-hosted',
@@ -64,6 +68,10 @@ module.exports = {
         context: '/components',
         pathRewrite: {'^/components': ''},
         target: `http://localhost:3002`
+      },
+      {
+        context: (path, req) => path === '/graphql' && req.method === 'POST',
+        target: `http://localhost:${SOCKET_PORT}`
       },
       {
         context: (path) => path === '/' || path === '/yjs',

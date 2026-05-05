@@ -40,6 +40,11 @@ module.exports = (config) => {
     stats: {
       assets: false
     },
+    ignoreWarnings: [
+      // framer-motion intentionally uses string concatenation for @emotion/is-prop-valid to
+      // avoid static analysis by bundlers; it works fine at runtime
+      {module: /framer-motion.*filter-props/}
+    ],
     devtool: 'source-map',
     mode: 'production',
     entry: {
