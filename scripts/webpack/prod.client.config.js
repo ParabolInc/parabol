@@ -127,6 +127,26 @@ module.exports = (config) => {
         // name refers to the chunk name, which would create 1 copy for each chunk referencing the css
         chunkFilename: '[contenthash].css'
       }),
+      // Monaco Editor workers (from graphiql/setup-workers/webpack) create separate webpack
+      // runtimes. Any chunk integration that touches a runtime chunk merges its runtime field,
+      // corrupting chunk.runtime from a string to a SortableSet, which causes
+      // RuntimeIdRuntimeModule to throw. Protect all runtime chunks from being merge targets.
+      {
+        apply(compiler) {
+          compiler.hooks.compilation.tap('PreventRuntimeChunkMerge', (compilation) => {
+            compilation.hooks.optimizeChunks.tap(
+              {name: 'PreventRuntimeChunkMerge', stage: -11},
+              (chunks) => {
+                for (const chunk of chunks) {
+                  if (chunk.hasRuntime()) {
+                    chunk.preventIntegration = true
+                  }
+                }
+              }
+            )
+          })
+        }
+      },
       new webpack.optimize.MinChunkSizePlugin({
         // Too many and the extra size from the boostrapping causes bloat
         // Too few & untouched modules will get invalidated between versions
