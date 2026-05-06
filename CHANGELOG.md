@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.14.0](https://github.com/ParabolInc/parabol/compare/v13.13.0...v13.14.0) (2026-05-06)
+
+
+### Added
+
+* add token management toolbar to GraphiQL ([#13066](https://github.com/ParabolInc/parabol/issues/13066)) ([e08003b](https://github.com/ParabolInc/parabol/commit/e08003b1d9372da184af251cb4b4857037f4f89b))
+
 ## [13.13.0](https://github.com/ParabolInc/parabol/compare/v13.12.4...v13.13.0) (2026-05-06)
 
 
