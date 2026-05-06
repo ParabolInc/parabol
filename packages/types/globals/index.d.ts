@@ -26,6 +26,15 @@ declare module 'jest-extended'
 declare module 'object-hash'
 declare module 'string-score'
 
+declare module '*workerManifest.js' {
+  const manifest: {
+    monacoJSONWorker: string[]
+    monacoGraphQLWorker: string[]
+    monacoWorker: string[]
+  }
+  export = manifest
+}
+
 declare let __webpack_public_path__: string
 declare const __PRODUCTION__: boolean
 declare const __APP_VERSION__: string

@@ -1,8 +1,8 @@
 // There's some bug where I can't import .css directly from graphiql. Probably ESM related
+import './monkeyPatchMonacoEnvironment'
 import './style.css'
 import {createGraphiQLFetcher} from '@graphiql/toolkit'
 import {GraphiQL} from 'graphiql'
-import 'graphiql/setup-workers/webpack'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -86,13 +86,15 @@ const GraphqlContainer = () => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-      <GraphiQL fetcher={fetcher}>
-        <GraphiQL.Logo>
-          <Link to={'/'}>
-            <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
-          </Link>
-        </GraphiQL.Logo>
-      </GraphiQL>
+      {!showModal && (
+        <GraphiQL fetcher={fetcher}>
+          <GraphiQL.Logo>
+            <Link to={'/'}>
+              <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
+            </Link>
+          </GraphiQL.Logo>
+        </GraphiQL>
+      )}
     </>
   )
 }

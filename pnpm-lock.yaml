@@ -628,6 +628,12 @@ importers:
       linkify-it:
         specifier: ^2.0.3
         version: 2.2.0
+      monaco-editor:
+        specifier: ^0.52.2
+        version: 0.52.2
+      monaco-graphql:
+        specifier: ^1.7.3
+        version: 1.7.3(graphql@16.13.1)(monaco-editor@0.52.2)(prettier@3.8.3)
       mousetrap:
         specifier: ^1.6.3
         version: 1.6.5
