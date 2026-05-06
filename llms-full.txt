@@ -1,0 +1,309 @@
+# Parabol — Full API Reference for LLMs
+
+Parabol is a collaborative workspace that helps teams run more effective, inclusive, and engaging meetings.
+
+## GraphQL API
+
+**Endpoint:** `https://action.parabol.co/graphql`
+**Schema SDL:** `https://action.parabol.co/graphql/schema.graphql`
+
+## Authentication
+
+Parabol uses Personal Access Tokens (PATs) for API access. Pass the token as a Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer <your-token>
+```
+
+Create and manage tokens at: https://action.parabol.co/me/profile
+
+When creating a token via `createPersonalAccessToken`, you must specify:
+- `name` — human-readable label
+- `scopes` — list of `OAuthScopeEnum` values the token is permitted to use
+- `expiresAt` — expiry date (max 1 year from now)
+- `grantedOrgIds`, `grantedTeamIds`, `grantedPageIds` — optional restrictions (null = all accessible)
+
+## Available Scopes
+
+`users:read`, `users:write`, `teams:read`, `teams:write`, `orgs:read`, `orgs:write`,
+`meetings:read`, `meetings:write`, `tasks:read`, `tasks:write`,
+`templates:read`, `templates:write`, `pages:read`, `pages:write`,
+`comments:read`, `comments:write`
+
+Each mutation and query field is annotated with the required scope in the schema.
+
+---
+
+## Example Operations
+
+### 1. Get the Authenticated User and Their Teams
+
+```graphql
+query GetViewerTeams {
+  viewer {
+    id
+    name
+    email
+    teams {
+      id
+      name
+      orgId
+      isArchived
+    }
+  }
+}
+```
+
+---
+
+### 2. Start a Retrospective Meeting
+
+Requires: `meetings:write`
+
+```graphql
+mutation StartRetro($teamId: ID!) {
+  startRetrospective(teamId: $teamId) {
+    meeting {
+      id
+      name
+      meetingType
+      phases {
+        phaseType
+        stages {
+          id
+          isComplete
+        }
+      }
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "teamId": "team123"
+}
+```
+
+---
+
+### 3. Create a Reflection During a Retrospective
+
+Requires: `meetings:write`
+
+Reflections can only be added during the **reflect phase** of an active retrospective meeting, before the group phase is complete. Each reflection answers a specific prompt (column) on the board.
+
+```graphql
+mutation CreateReflection($input: CreateReflectionInput!) {
+  createReflection(input: $input) {
+    reflectionGroup {
+      id
+      title
+      reflections {
+        id
+        content
+        promptId
+      }
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "input": {
+    "meetingId": "meeting123",
+    "promptId": "prompt456",
+    "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"We shipped the new onboarding flow on time.\"}]}]}",
+    "sortOrder": 0
+  }
+}
+```
+
+> `content` is a stringified [TipTap](https://tiptap.dev/) JSONContent document (max 2000 characters). Omit for an empty reflection.
+> `sortOrder` is a float used for positioning; use `0` to place at the top.
+
+---
+
+### 4. Add an Agenda Item to a Check-In Meeting
+
+Requires: `teams:write`
+
+Agenda items are discussion topics for the team's Check-In (action) meeting. Pinned items are automatically re-added to each subsequent meeting.
+
+```graphql
+mutation AddAgendaItem($newAgendaItem: CreateAgendaItemInput!) {
+  addAgendaItem(newAgendaItem: $newAgendaItem) {
+    agendaItem {
+      id
+      content
+      pinned
+      teamMemberId
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "newAgendaItem": {
+    "teamId": "team123",
+    "teamMemberId": "team123::user456",
+    "content": "Review Q2 roadmap",
+    "pinned": false
+  }
+}
+```
+
+> `teamMemberId` format: `<teamId>::<userId>`
+
+---
+
+### 5. Create a New Team
+
+Requires: `teams:write`
+
+```graphql
+mutation AddTeam($newTeam: NewTeamInput!) {
+  addTeam(newTeam: $newTeam) {
+    team {
+      id
+      name
+      orgId
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "newTeam": {
+    "name": "Platform Team",
+    "orgId": "org123",
+    "isPublic": false
+  }
+}
+```
+
+---
+
+### 6. Start a Sprint Poker Meeting
+
+Requires: `meetings:write`
+
+Sprint Poker is Parabol's estimation meeting type where the team collectively sizes backlog items.
+
+```graphql
+mutation StartSprintPoker($teamId: ID!) {
+  startSprintPoker(teamId: $teamId) {
+    meeting {
+      id
+      name
+      meetingType
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "teamId": "team123"
+}
+```
+
+---
+
+### 7. Create a Task
+
+Requires: `tasks:write`
+
+```graphql
+mutation CreateTask($newTask: CreateTaskInput!) {
+  createTask(newTask: $newTask) {
+    task {
+      id
+      content
+      status
+      teamId
+    }
+    error {
+      message
+    }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "newTask": {
+    "teamId": "team123",
+    "userId": "user456",
+    "teamMemberId": "team123::user456",
+    "status": "active",
+    "content": "{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Update the API documentation\"}]}]}"
+  }
+}
+```
+
+> Task `content` is also a stringified TipTap JSONContent document.
+> Valid `status` values: `active`, `stuck`, `done`, `future`
+
+---
+
+## Error Handling
+
+Most mutations return a payload type with an optional `error` field:
+
+```graphql
+type StandardMutationError {
+  title: String!
+  message: String!
+}
+```
+
+Always check `error` on the payload alongside your expected data fields. If the token lacks the required scope, the API returns a GraphQL error (not a payload error).
+
+## Pagination
+
+List fields on `viewer` (e.g. meetings, tasks) follow the Relay Connections spec with `first`, `after`, `edges`, `node`, and `pageInfo`.
+
+## Rich Text Content
+
+Reflection content, task content, and comment content are all stringified [TipTap](https://tiptap.dev/) JSONContent documents. The minimal valid document for plain text is:
+
+```json
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Your text here" }
+      ]
+    }
+  ]
+}
+```
+
+Pass this object as a JSON-stringified string in the `content` field.
