@@ -10,120 +10,150 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
+const WriteWorkerAssets = require('./utils/WriteWorkerAssets')
+
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
 
-module.exports = {
-  stats: 'minimal',
-  devtool: 'source-map',
-  mode: 'development',
-  cache: {
-    type: 'filesystem',
-    buildDependencies: {
-      config: [__filename]
-    }
-  },
-  node: {
-    __dirname: false
-  },
-  entry: {
-    web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
-    embedder: [
-      DOTENV,
-      INIT_PUBLIC_PATH,
-      // make sure all the extensions (pgvector) exist & are updated
-      path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pgEnsureExtensions.ts'),
-      path.join(EMBEDDER_ROOT, 'embedder.ts')
-    ]
-  },
-  output: {
-    filename: '[name].js',
-    path: path.join(PROJECT_ROOT, 'dev')
-  },
-  resolve: {
-    alias: {
-      '~': path.join(CLIENT_ROOT),
-      'parabol-server': SERVER_ROOT,
-      'parabol-client': CLIENT_ROOT,
-      // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
-      'react/jsx-runtime': require.resolve('react/jsx-runtime')
-    },
-    extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
-    // this is run outside the server dir, but we want to favor using modules from the server dir
-  },
-  target: 'node',
-  externals: [
-    {
-      ...nodeExternals({
-        allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
-      }),
-      sharp: 'commonjs sharp',
-      'string-score': 'commonjs string-score'
-    }
-  ],
-  plugins: [
-    new webpack.DefinePlugin({
-      __PRODUCTION__: false,
-      __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
-    }),
-    // native bindings might be faster, but abandonware & not currently used
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^pg-native$/,
-      contextRegExp: /pg\/lib/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^pg-cloudflare$/,
-      contextRegExp: /pg\/lib/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^exiftool-vendored$/,
-      contextRegExp: /@dicebear/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /^@resvg\/resvg-js$/,
-      contextRegExp: /@dicebear/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /inter-regular.otf$/,
-      contextRegExp: /@dicebear/
-    }),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /inter-bold.otf$/,
-      contextRegExp: /@dicebear/
-    })
-  ],
-  module: {
-    rules: [
-      ...transformRules(PROJECT_ROOT),
-      {
-        test: /\.js$/,
-        include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
-        use: [
-          {
-            loader: '@sucrase/webpack-loader',
-            options: {
-              transforms: ['jsx'],
-              jsxRuntime: 'automatic'
-            }
-          }
-        ]
-      },
-      {
-        test: /\.(png|jpg|jpeg|gif|svg)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: '[name][ext]'
-        }
-      },
-      {
-        include: [/node_modules/],
-        test: /\.node$/,
-        use: [
-          {
-            // use our fork of node-loader to exclude the public path from the script
-            loader: path.resolve(__dirname, './utils/node-loader-private/cjs.js')
-          }
-        ]
+module.exports = [
+  {
+    stats: 'minimal',
+    devtool: 'source-map',
+    mode: 'development',
+    cache: {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename]
       }
-    ]
+    },
+    node: {
+      __dirname: false
+    },
+    entry: {
+      web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
+      embedder: [
+        DOTENV,
+        INIT_PUBLIC_PATH,
+        // make sure all the extensions (pgvector) exist & are updated
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/pgEnsureExtensions.ts'),
+        path.join(EMBEDDER_ROOT, 'embedder.ts')
+      ]
+    },
+    output: {
+      filename: '[name].js',
+      path: path.join(PROJECT_ROOT, 'dev')
+    },
+    resolve: {
+      alias: {
+        '~': path.join(CLIENT_ROOT),
+        'parabol-server': SERVER_ROOT,
+        'parabol-client': CLIENT_ROOT,
+        // this is for radix-ui, we import & transform ESM packages, but they can't find react/jsx-runtime
+        'react/jsx-runtime': require.resolve('react/jsx-runtime')
+      },
+      extensions: ['.mjs', '.js', '.json', '.ts', '.tsx', '.graphql']
+      // this is run outside the server dir, but we want to favor using modules from the server dir
+    },
+    target: 'node',
+    externals: [
+      {
+        ...nodeExternals({
+          allowlist: [/parabol-client/, /parabol-server/, /@dicebear/, 'node:crypto']
+        }),
+        sharp: 'commonjs sharp',
+        'string-score': 'commonjs string-score'
+      }
+    ],
+    plugins: [
+      new webpack.DefinePlugin({
+        __PRODUCTION__: false,
+        __APP_VERSION__: JSON.stringify(process.env.npm_package_version)
+      }),
+      // native bindings might be faster, but abandonware & not currently used
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^pg-native$/,
+        contextRegExp: /pg\/lib/
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^pg-cloudflare$/,
+        contextRegExp: /pg\/lib/
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^exiftool-vendored$/,
+        contextRegExp: /@dicebear/
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /^@resvg\/resvg-js$/,
+        contextRegExp: /@dicebear/
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /inter-regular.otf$/,
+        contextRegExp: /@dicebear/
+      }),
+      new webpack.IgnorePlugin({
+        resourceRegExp: /inter-bold.otf$/,
+        contextRegExp: /@dicebear/
+      })
+    ],
+    module: {
+      rules: [
+        ...transformRules(PROJECT_ROOT),
+        {
+          test: /\.js$/,
+          include: [path.join(SERVER_ROOT), path.join(CLIENT_ROOT)],
+          use: [
+            {
+              loader: '@sucrase/webpack-loader',
+              options: {
+                transforms: ['jsx'],
+                jsxRuntime: 'automatic'
+              }
+            }
+          ]
+        },
+        {
+          test: /\.(png|jpg|jpeg|gif|svg)$/,
+          type: 'asset/resource',
+          generator: {
+            filename: '[name][ext]'
+          }
+        },
+        {
+          include: [/node_modules/],
+          test: /\.node$/,
+          use: [
+            {
+              // use our fork of node-loader to exclude the public path from the script
+              loader: path.resolve(__dirname, './utils/node-loader-private/cjs.js')
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    entry: {
+      monacoJSONWorker: path.join(
+        CLIENT_ROOT,
+        'node_modules',
+        'monaco-editor/esm/vs/language/json/json.worker.js'
+      ),
+      monacoGraphQLWorker: path.join(
+        CLIENT_ROOT,
+        'node_modules',
+        'monaco-graphql/esm/graphql.worker.js'
+      ),
+      monacoWorker: path.join(
+        CLIENT_ROOT,
+        'node_modules',
+        'monaco-editor/esm/vs/editor/editor.worker.js'
+      )
+    },
+    target: 'webworker',
+    output: {
+      path: path.join(PROJECT_ROOT, 'build'),
+      publicPath: 'auto',
+      filename: '[name]_[contenthash].worker.js'
+    },
+    plugins: [new WriteWorkerAssets()]
   }
-}
+]

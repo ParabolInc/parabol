@@ -68,7 +68,8 @@ if (datadogEnabled) {
     service: datadogService,
     version: __APP_VERSION__,
     sessionSampleRate: 100,
-    trackUserInteractions: true,
+    sessionReplaySampleRate: 0,
+    trackUserInteractions: false,
     defaultPrivacyLevel: 'allow'
   })
   datadogRum.startSessionReplayRecording()

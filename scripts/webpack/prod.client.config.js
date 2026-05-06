@@ -40,6 +40,11 @@ module.exports = (config) => {
     stats: {
       assets: false
     },
+    ignoreWarnings: [
+      // framer-motion intentionally uses string concatenation for @emotion/is-prop-valid to
+      // avoid static analysis by bundlers; it works fine at runtime
+      {module: /framer-motion.*filter-props/}
+    ],
     devtool: 'source-map',
     mode: 'production',
     entry: {
@@ -100,7 +105,15 @@ module.exports = (config) => {
         // we'll overwrite this in preDeploy since it depends on process.env.{HOST,CDN_BASE_URL}
         publicPath: '__PUBLIC_PATH__'
       }),
-      new CleanWebpackPlugin(),
+      new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns: [
+          '**/*',
+          '!*worker.js',
+          '!workerManifest.d.ts',
+          '!schema.graphql',
+          '!schema.json'
+        ]
+      }),
       new webpack.DefinePlugin({
         __CLIENT__: true,
         __PRODUCTION__: true,

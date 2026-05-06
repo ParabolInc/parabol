@@ -27,6 +27,7 @@ import {useDatadogTracing} from './utils/useDatadogTracing'
 import {useDisposeDataloader} from './utils/useDisposeDataloader'
 import {usePrivateSchemaForSuperUser} from './utils/usePrivateSchemaForSuperUser'
 import {useRemoveDuplicateTransferEncoding} from './utils/useRemoveDuplicateTransferEncoding'
+import {useSchemaLink} from './utils/useSchemaLink'
 
 type OperationResolvers = QueryResolvers & MutationResolvers
 type ExtractArgs<T> = T extends Resolver<any, any, any, infer Args> ? Args : never
@@ -91,6 +92,7 @@ export const yoga = createYoga<ServerContext, UserContext>({
   logging: Logger,
   plugins: [
     useRemoveDuplicateTransferEncoding,
+    useSchemaLink,
     useDisposeDataloader,
     useAPIAccess(),
     useArmor(),
