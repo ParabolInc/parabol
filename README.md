@@ -1,111 +1,125 @@
 # Parabol
 
-## Overview
+[Parabol](https://www.parabol.co) is an open-source collaborative workspace for running structured, effective, and inclusive team meetings. It supports retrospectives, sprint planning, standup meetings, check-ins, agile estimation, and collaborative documentation — all in real time with a GraphQL API.
 
-[Parabol](https://www.parabol.co) is an open-source application for knowledge
-management and running structured meetings such as team retrospectives or Sprint Poker™.
-You may try a single-player demo of Parabol (no login creation required) at:
-https://parabol.co/retro-demo
+Parabol is easily **self-hosted** on your own infrastructure and works in **air-gapped environments** with no external dependencies required. It runs on Node.js + PostgreSQL + Valkey and can be deployed on-premise, in a private cloud, or in a fully isolated network — making it a strong choice for enterprises, government agencies, and security-conscious teams that cannot use SaaS tools.
 
-We endeavor to be a
-transparent organization and publish
-our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-ship).
+Try a no-login demo: https://parabol.co/retro-demo
 
-## Stack Information
+---
 
-| Concern                | Solution                                                        |
-| ---------------------- | --------------------------------------------------------------- |
-| Server                 | [Node](https://nodejs.org/)                                     |
-| Server Framework       | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
-| Database               | [PostgreSQL](https://www.postgresql.org/)                       |
-| PubSub & Cache         | [Valkey](https://valkey.io)                                       |
-| Data Transport         | [GraphQL](https://github.com/graphql/graphql-js)                |
-| Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws)           |
-| Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
-| UI Framework           | [React](https://facebook.github.io/react/)                      |
-| Styling                | [Tailwind CSS](https://tailwindcss.com/)                        |
+## What Parabol Does
+
+Parabol helps software teams and agile practitioners facilitate:
+
+- **Pages** — real-time collaborative documents powered by [Yjs](https://yjs.dev/), scoped to teams or personal workspaces. Pages integrate directly with meetings, so notes, decisions, and action items live alongside the work that created them. Many teams upgrade from Confluence to Parabol Pages as their self-hosted knowledge management system — getting a Confluence alternative that is open-source, easier to operate, and purpose-built to connect documentation with the meetings where decisions are actually made.
+- **Retrospectives** — structured reflect/group/vote/discuss/action workflow; compatible with formats like Start/Stop/Continue, 4Ls, Mad/Sad/Glad, and custom templates
+- **Sprint Poker (Story Point Estimation)** — async-safe planning poker with Fibonacci, T-shirt sizing, or custom scales; integrates with Jira, GitHub, GitLab, Linear, and Azure DevOps
+- **Check-In Meetings (Action)** — agenda-driven team sync with icebreakers, task review, and action items
+- **Standup / Team Prompt** — async standup via written responses, optionally recurring on a schedule
+- **Tasks** — Kanban-style task board (active, stuck, done, future) shared across meetings and linked to external issues
+
+Meeting outcomes (summaries, action items, tasks) are automatically captured and can be pushed to integrations.
+
+---
+
+## GraphQL API
+
+Parabol exposes a public GraphQL API.
+
+**Endpoint:** `https://action.parabol.co/graphql`
+**Schema SDL:** `https://action.parabol.co/graphql/schema.graphql`
+**GraphiQL Explorer:** `https://action.parabol.co/graphql` (in browser)
+
+### LLM & Developer References
+
+- [`llms.txt`](./llms.txt) — concise API overview for LLMs and developers (auth, scopes, key operations)
+- [`llms-full.txt`](./llms-full.txt) — full reference with example GraphQL queries and mutations
+
+---
+
+## Integrations
+
+Parabol integrates with:
+
+- **Jira Cloud & Jira Data Center (Jira Server)** — import backlog, push estimates, create issues
+- **GitHub** — import issues, push estimates as labels
+- **GitLab** — import issues, push estimates
+- **Linear** — import issues, push estimates
+- **Azure DevOps** — import work items, push estimates
+- **Slack** — meeting notifications, topic sharing
+- **Mattermost** — meeting notifications
+- **Google Calendar** — create calendar events when starting meetings
+- **Microsoft / Azure AD** — SSO login
+
+---
+
+## Stack
+
+| Concern | Solution |
+|---|---|
+| Server | [Node.js](https://nodejs.org/) |
+| Server Framework | [μWebSockets.js](https://github.com/uNetworking/uWebSockets.js) |
+| Database | [PostgreSQL](https://www.postgresql.org/) |
+| PubSub & Cache | [Valkey](https://valkey.io) |
+| API | [GraphQL](https://github.com/graphql/graphql-js) |
+| Real-time | [graphql-ws](https://github.com/enisdenjo/graphql-ws) (WebSockets) |
+| Client Cache | [Relay](https://facebook.github.io/relay/) |
+| UI Framework | [React](https://facebook.github.io/react/) |
+| Styling | [Tailwind CSS](https://tailwindcss.com/) |
+
+---
 
 ## Setup
 
 ### Prerequisites
 
-- [Node](https://nodejs.org/en/download/)
+- [Node.js](https://nodejs.org/en/download/)
 - [pnpm](https://pnpm.io/)
 
-#### Production
+**Production:** PostgreSQL, Valkey
+**Development:** [Docker Compose](https://docs.docker.com/compose/install/), [Watchman](https://facebook.github.io/watchman/docs/install.html)
 
-- [PostgreSQL](./.github/workflows/build.yml)
-- [Valkey](./.github/workflows/build.yml)
-
-#### Development
-
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- [Watchman](https://facebook.github.io/watchman/docs/install.html)
-
-> 📘 Notes on Docker Resources
->
-> text-embedding-inference is resource intensive.
-> You may need to increase Docker's resource limits (e.g. Docker Desktop -> Settings -> Resources) to increase
-> the memory limit to 16GB+.
+> **Note:** `text-embedding-inference` is resource intensive. You may need to increase Docker's memory limit to 16 GB+ (Docker Desktop → Settings → Resources).
 
 ### Installation
 
 ```bash
-$ git clone https://github.com/ParabolInc/parabol.git
-$ cd parabol
-$ cp .env.example .env # Add your own vars here
-$ pnpm i
-$ pnpm db:start
-$ pnpm dev
+git clone https://github.com/ParabolInc/parabol.git
+cd parabol
+cp .env.example .env   # add your own vars
+pnpm i
+pnpm db:start
+pnpm dev
 ```
 
-- By default, the app will run at: https://localhost:3000/
-
-- If `pnpm db:start` failed and `localhost:5050` isn't working, a docker
-  container, volume, or image may be corrupted and need to be pruned.
-
-### Development
-
-- [Code Reviews](./docs/codeReview.md)
-- [Create new GraphQL Mutations](./packages/server/graphql/public/README.md)
-- [Docker](./docker/README.md)
-- [Dev.js](./scripts/README.md)
-- [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
-- [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
-- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
-- [PostgreSQL](./packages/server/postgres/README.md)
-- [Shared Scripts](./packages/client/shared/README.md)
-- [VS Code Tips](.vscode/tips.md)
-- [Tailwind CSS migration guide](./packages/client/README.md)
+App runs at: https://localhost:3000/
 
 ### Deploy
 
 ```bash
-# There's a pesky bug in pnpm if you don't have an SSH key: https://github.com/pnpm/pnpm/issues/7243
-$ git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
-$ pnpm i && pnpm build && pnpm predeploy && pnpm start
+# Workaround for a pnpm SSH key bug: https://github.com/pnpm/pnpm/issues/7243
+git config --global url."https://github.com/enahum/redux-offline.git".insteadOf git@github.com:enahum/redux-offline.git
+pnpm i && pnpm build && pnpm predeploy && pnpm start
 ```
 
+### Developer Docs
+
+- [Code Reviews](./docs/codeReview.md)
+- [Create new GraphQL Mutations](./packages/server/graphql/public/README.md)
+- [Docker](./docker/README.md)
+- [File Storage (CDN, Local, S3)](./packages/server/fileStorage/README.md)
+- [GraphiQL, Private Schema Admin](./packages/server/graphql/private/README.md)
+- [Integrations (GitHub, Jira, Slack, etc.)](./docs/integrations.md)
+- [PostgreSQL](./packages/server/postgres/README.md)
 - [How to Ship](./docs/deployment.md)
 
+---
 
-## Have feedback, ideas or feature requests?
-
-Please review our [Discussions](https://github.com/ParabolInc/parabol/discussions) to see if there's already a similar suggestion, and if not please feel free to [start a new one](https://github.com/ParabolInc/parabol/discussions/new).
-
-## Releases
-
-
-For details on all releases, refer to [Releases](https://github.com/ParabolInc/parabol/releases).
-
-## Parabol Core Team
+## Core Team & Maintainers
 
 - [Jordan Husney](https://github.com/jordanh)
 - [Terry Acker](https://github.com/ackernaut)
-- [Matt Krick](https://github.com/mattkrick)
-
-## Parabol Maintainers
-
 - [Matt Krick](https://github.com/mattkrick)
 - [Georg Bremer](https://github.com/Dschoordsch)
 
@@ -113,6 +127,4 @@ For details on all releases, refer to [Releases](https://github.com/ParabolInc/p
 
 Copyright (c) 2016-present, Parabol, Inc.
 
-This codebase is dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
-Version 3.0 while holding, at Parabol's sole discretion, the right to create
-new licenses. For details please read [LICENSE](LICENSE).
+Dual-licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 while holding, at Parabol's sole discretion, the right to create new licenses. See [LICENSE](LICENSE).
