@@ -4,7 +4,7 @@
   To reduce watched file callback, we only want to write the file if there's a change
 */
 
-import {readFile, writeFile} from 'node:fs/promises'
+import {mkdir, readFile, writeFile} from 'node:fs/promises'
 import {mergeSchemas} from '@graphql-tools/schema'
 import {
   filterSchema,
@@ -27,6 +27,7 @@ const writeIfChanged = async (dataPath: string, data: string) => {
   } catch {
     // file does not exist
   }
+  await mkdir(path.dirname(dataPath), {recursive: true})
   return writeFile(dataPath, data)
 }
 
