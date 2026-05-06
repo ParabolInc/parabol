@@ -1,6 +1,5 @@
 import makeAppURL from '../../../../client/utils/makeAppURL'
 import appOrigin from '../../../appOrigin'
-import {getUserId, isUserBillingLeader} from '../../../utils/authorization'
 import {fromEpochSeconds} from '../../../utils/epochTime'
 import {getStripeManager} from '../../../utils/stripe'
 import type {Invoice, InvoiceStatusEnum, UserResolvers} from '../resolverTypes'
@@ -8,21 +7,8 @@ import type {Invoice, InvoiceStatusEnum, UserResolvers} from '../resolverTypes'
 export const invoices: NonNullable<UserResolvers['invoices']> = async (
   _source,
   {orgId},
-  {authToken, dataLoader}
+  {dataLoader}
 ) => {
-  // AUTH
-  const viewerId = getUserId(authToken)
-  if (!(await isUserBillingLeader(viewerId, orgId, dataLoader))) {
-    return {
-      edges: [],
-      pageInfo: {
-        hasNextPage: false,
-        hasPreviousPage: false
-      }
-    }
-  }
-
-  // RESOLUTION
   const org = await dataLoader.get('organizations').loadNonNull(orgId)
   const {stripeId, stripeSubscriptionId} = org
   if (!stripeId || !stripeSubscriptionId)

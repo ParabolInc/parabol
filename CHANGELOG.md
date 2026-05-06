@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.12.4](https://github.com/ParabolInc/parabol/compare/v13.12.3...v13.12.4) (2026-05-04)
+
+
+### Fixed
+
+* downgrade dd-trace to v5.67.0 to resolve compatibility issues ([#13056](https://github.com/ParabolInc/parabol/issues/13056)) ([1f1c59b](https://github.com/ParabolInc/parabol/commit/1f1c59b3648bbba44ad21980adc621c33cf7164d))
+* xmldom, datadog-ci, pm2 bumps ([#13054](https://github.com/ParabolInc/parabol/issues/13054)) ([7b36945](https://github.com/ParabolInc/parabol/commit/7b369452d9d1f8a6bb65071819bff3a59b6b41d1))
+
+## [13.12.3](https://github.com/ParabolInc/parabol/compare/v13.12.2...v13.12.3) (2026-05-04)
+
+
+### Fixed
+
+* always assign docId from subscriptions on persisted queries ([#13051](https://github.com/ParabolInc/parabol/issues/13051)) ([074a684](https://github.com/ParabolInc/parabol/commit/074a684e26bbc73ece4252b0f95efdd5b8df6b78))
+
 ## [13.12.2](https://github.com/ParabolInc/parabol/compare/v13.12.1...v13.12.2) (2026-05-04)
 
 
