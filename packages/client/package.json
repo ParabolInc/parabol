@@ -42,6 +42,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@floating-ui/dom": "^1.6.13",
+    "@graphiql/react": "^0.37.3",
     "@graphiql/toolkit": "^0.11.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@json2csv/plainjs": "^7.0.6",

@@ -336,7 +336,13 @@
 
   /** Global styles - https://tailwindcss.com/docs/adding-custom-styles#adding-base-styles */
 }
+
 @layer base {
+  /* v3 had this, v4 reverted it based on a 20-year old spec that no one follows: https://github.com/tailwindlabs/tailwindcss/issues/8961 */
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
   /**
     bg is important since we do a slide up animation we don't want the background to slide up, too
     I dislike overflow immensely, but required to
