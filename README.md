@@ -11,9 +11,6 @@ We endeavor to be a
 transparent organization and publish
 our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-ship).
 
-![Dashboard](./docs/images/d2.gif)
-![Discuss](./docs/images/d1.gif)
-
 ## Stack Information
 
 | Concern                | Solution                                                        |
@@ -26,7 +23,6 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 | Real-time Connectivity | [graphql-ws](https://github.com/enisdenjo/graphql-ws)           |
 | Client Cache           | [Relay](https://facebook.github.io/relay/)                      |
 | UI Framework           | [React](https://facebook.github.io/react/)                      |
-| Styling (Legacy)       | [Emotion](https://emotion.sh/)                                  |
 | Styling                | [Tailwind CSS](https://tailwindcss.com/)                        |
 
 ## Setup
@@ -38,19 +34,19 @@ our company's [history and SaaS metrics](https://www.parabol.co/blog/tag/friday-
 
 #### Production
 
-- [PostgreSQL](https://www.postgresql.org/) (current specific version available in the [build action](./.github/workflows/build.yml)) with [pgvector plugin](https://github.com/pgvector/pgvector)
-- [Valkey](https://valkey.io) (current specific version available in the [build action](./.github/workflows/build.yml))
+- [PostgreSQL](./.github/workflows/build.yml)
+- [Valkey](./.github/workflows/build.yml)
 
 #### Development
 
-- [Docker Compose](https://docs.docker.com/compose/install/) (Development only)
-- [Watchman](https://facebook.github.io/watchman/docs/install.html) (Development only)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Watchman](https://facebook.github.io/watchman/docs/install.html)
 
 > 📘 Notes on Docker Resources
 >
-> Some of Parabol's container services can be resource intensive (I'm looking at you, text-embedding-inference!)
+> text-embedding-inference is resource intensive.
 > You may need to increase Docker's resource limits (e.g. Docker Desktop -> Settings -> Resources) to increase
-> the memory limit to ~16GB.
+> the memory limit to 16GB+.
 
 ### Installation
 
@@ -63,7 +59,7 @@ $ pnpm db:start
 $ pnpm dev
 ```
 
-- By default, the app will run at: http://localhost:3000/
+- By default, the app will run at: https://localhost:3000/
 
 - If `pnpm db:start` failed and `localhost:5050` isn't working, a docker
   container, volume, or image may be corrupted and need to be pruned.
@@ -92,12 +88,6 @@ $ pnpm i && pnpm build && pnpm predeploy && pnpm start
 
 - [How to Ship](./docs/deployment.md)
 
-## Getting Involved
-
-Parabol offers equity for qualified contributions.
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on how to
-get involved and how to get compensated.
 
 ## Have feedback, ideas or feature requests?
 
@@ -105,7 +95,8 @@ Please review our [Discussions](https://github.com/ParabolInc/parabol/discussion
 
 ## Releases
 
-For details on all releases, refer to [CHANGELOG.md](./CHANGELOG.md).
+
+For details on all releases, refer to [Releases](https://github.com/ParabolInc/parabol/releases).
 
 ## Parabol Core Team
 
