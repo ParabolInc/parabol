@@ -18,15 +18,26 @@ const relayWatch = async () => {
   const schemaUpdater = runSchemaUpdater(!schemaExists)
   // don't wait if a schema exists. startup fast with a stale schema
   if (!schemaExists) await schemaUpdater
-  const _persistServer = new RelayPersistServer()
+  const persistServer = new RelayPersistServer()
+  await persistServer.ready.catch(() => {
+    console.error(
+      `Port 2999 is already in use. A previous relay watch process may still be running. Kill it and retry.`
+    )
+    process.exit(1)
+  })
   const compiler = cp
     .spawn(relayCompilerPath, ['--watch'], {
       stdio: ['inherit', 'pipe', 'inherit']
     })
     // if relay compiler gets killed, kill this process
     .on('exit', process.exit)
-  // when this process gets killed, kill relay compiler, too
-  process.on('exit', () => compiler.kill())
+  const cleanup = () => {
+    persistServer.close()
+    compiler.kill()
+    process.exit()
+  }
+  process.on('SIGINT', cleanup)
+  process.on('SIGTERM', cleanup)
   await new Promise((resolve) => {
     compiler.stdout.on('data', (data) => {
       // pipe relay messages to the parent process. We can finetune this to keep it quiet

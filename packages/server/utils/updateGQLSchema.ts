@@ -6,6 +6,7 @@
 
 import {readFile, writeFile} from 'node:fs/promises'
 import {mergeSchemas} from '@graphql-tools/schema'
+import {printSchemaWithDirectives} from '@graphql-tools/utils'
 import {printSchema} from 'graphql'
 import path from 'path'
 import getProjectRoot from '../../../scripts/webpack/utils/getProjectRoot'
@@ -30,6 +31,7 @@ const updateGQLSchema = async () => {
   const GQL_ROOT = path.join(projectRoot, 'packages/server/graphql')
   const publicSchemaPath = path.join(GQL_ROOT, 'public/schema.graphql')
   const privateSchemaPath = path.join(GQL_ROOT, 'private/schema.graphql')
+  const parabolSDLPath = path.join(projectRoot, 'build/schema.graphql')
   const publicTypeDefs = mergeSchemas({
     schemas: [],
     typeDefs
@@ -43,7 +45,8 @@ const updateGQLSchema = async () => {
 
   await Promise.all([
     writeIfChanged(publicSchemaPath, printSchema(publicSchema)),
-    writeIfChanged(privateSchemaPath, printSchema(privateSchema))
+    writeIfChanged(privateSchemaPath, printSchema(privateSchema)),
+    writeIfChanged(parabolSDLPath, printSchemaWithDirectives(publicTypeDefs))
   ])
 }
 

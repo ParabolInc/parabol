@@ -106,7 +106,7 @@ module.exports = (config) => {
         publicPath: '__PUBLIC_PATH__'
       }),
       new CleanWebpackPlugin({
-        cleanOnceBeforeBuildPatterns: ['**/*', '!*worker.js', '!workerManifest.d.ts']
+        cleanOnceBeforeBuildPatterns: ['**/*', '!*worker.js', '!workerManifest.d.ts', '!schema.graphql']
       }),
       new webpack.DefinePlugin({
         __CLIENT__: true,
