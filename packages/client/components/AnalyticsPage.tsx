@@ -67,7 +67,8 @@ if (datadogEnabled) {
     site: 'datadoghq.com',
     service: datadogService,
     version: __APP_VERSION__,
-    sessionSampleRate: 0,
+    sessionSampleRate: 100,
+    sessionReplaySampleRate: 0,
     trackUserInteractions: false,
     defaultPrivacyLevel: 'allow'
   })
