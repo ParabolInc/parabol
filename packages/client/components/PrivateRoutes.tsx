@@ -63,6 +63,7 @@ const PrivateRoutes = () => {
         <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
         <Route path='/meeting-series/:meetingId/*' element={<MeetingSeriesRoot />} />
         <Route path='/admin/graphql' element={<Graphql />} />
+        <Route path='/graphql' element={<Graphql />} />
         <Route path='/admin/impersonate' element={<Impersonate />} />
         <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
         <Route path='/signout' element={<Signout />} />

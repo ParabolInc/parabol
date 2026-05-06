@@ -16,6 +16,7 @@
       "!**/packages/client/__generated__/**",
       // biome parser does not yet support selectors level 4 e.g. --color-*: initial;
       "!**/packages/client/styles/theme/global.css",
+      "!**/packages/client/modules/admin/containers/Graphql/style.css",
       "!**/packages/server/types/**",
       "!**/packages/server/graphql/**/resolverTypes.ts",
       "!**/packages/server/graphql/**/resolverTypes.ts",
