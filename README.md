@@ -27,9 +27,9 @@ Meeting outcomes (summaries, action items, tasks) are automatically captured and
 
 Parabol exposes a public GraphQL API.
 
-**Endpoint:** `https://action.parabol.co/graphql`
-**Schema SDL:** `https://action.parabol.co/graphql/schema.graphql`
-**GraphiQL Explorer:** `https://action.parabol.co/graphql` (in browser)
+- **Endpoint:** `https://action.parabol.co/graphql`
+- **Schema SDL:** `https://action.parabol.co/graphql/schema.graphql`
+- **GraphiQL Explorer:** `https://action.parabol.co/graphql` (in browser)
 
 ### LLM & Developer References
 
