@@ -1,7 +1,7 @@
 // There's some bug where I can't import .css directly from graphiql. Probably ESM related
 import './monkeyPatchMonacoEnvironment'
 import './style.css'
-import {createGraphiQLFetcher} from '@graphiql/toolkit'
+import {createGraphiQLFetcher, type FetcherOpts, type FetcherParams} from '@graphiql/toolkit'
 import {GraphiQL} from 'graphiql'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router'
@@ -27,10 +27,24 @@ const GraphqlContainer = () => {
   const [showModal, setShowModal] = useState(!isSuperUser && !accessToken)
 
   const fetcher = useCallback(
-    createGraphiQLFetcher({
-      url: '/graphql',
-      headers: accessToken ? {authorization: `Bearer ${accessToken}`} : undefined
-    }),
+    (() => {
+      const baseFetcher = createGraphiQLFetcher({
+        url: '/graphql',
+        headers: accessToken ? {authorization: `Bearer ${accessToken}`} : undefined
+      })
+      return (params: FetcherParams, opts?: FetcherOpts) => {
+        const isIntrospection =
+          params.operationName === 'IntrospectionQuery' ||
+          params.query.includes('__schema') ||
+          params.query.includes('__type')
+        if (isIntrospection && !isSuperUser) {
+          return fetch('/graphql/schema.json')
+            .then((res) => res.json())
+            .then((data) => ({data}))
+        }
+        return baseFetcher(params, opts)
+      }
+    })(),
     [accessToken]
   )
 

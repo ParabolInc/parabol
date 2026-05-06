@@ -70,7 +70,10 @@ module.exports = {
         target: `http://localhost:3002`
       },
       {
-        context: (path, req) => path === '/graphql' && req.method === 'POST',
+        context: (path, req) =>
+          path === '/graphql'
+            ? req.method === 'POST'
+            : path.startsWith('/graphql/') && path.length > '/graphql/'.length,
         target: `http://localhost:${SOCKET_PORT}`
       },
       {

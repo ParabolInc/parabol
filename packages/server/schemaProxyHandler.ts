@@ -5,19 +5,27 @@ import getFileStoreManager from './fileStorage/getFileStoreManager'
 import uWSAsyncHandler from './graphql/uWSAsyncHandler'
 import {redisStoreOrNetwork} from './utils/redisStoreOrNetwork'
 
-const SCHEMA_PATH = '/build/schema.graphql' as PartialPath
+const SUPPORTED_NAMES = new Set(['schema.graphql', 'schema.json'])
 
-export const schemaProxyHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest) => {
+export const schemaProxyHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
+  const url = req.getUrl()
+  const name = url.slice('/graphql/'.length)
+  if (!SUPPORTED_NAMES.has(name)) {
+    res.writeStatus('404 Not Found').end()
+    return
+  }
+  const schemaPath = `/build/${name}` as PartialPath
   const manager = getFileStoreManager()
   const expiresIn = ms('1h') / 1000
-  const url = await redisStoreOrNetwork(
-    `presignedURL:${SCHEMA_PATH}`,
-    () => manager.presignUrl(SCHEMA_PATH, expiresIn),
+
+  const presignedUrl = await redisStoreOrNetwork(
+    `presignedURL:${schemaPath}`,
+    () => manager.presignUrl(schemaPath, expiresIn),
     expiresIn - ms('30m') / 1000
   )
   res
     .writeStatus('307')
-    .writeHeader('Location', url)
+    .writeHeader('Location', presignedUrl)
     .writeHeader('Cache-Control', `public, max-age=${expiresIn}`)
     .end()
 })

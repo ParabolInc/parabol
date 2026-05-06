@@ -67,7 +67,7 @@ const app = uws
   .get('/self-hosted/*', selfHostedHandler)
   .get('/assets/*', assetProxyHandler)
   .get('/build/*', buildProxyHandler)
-  .get('/graphql/schema.graphql', schemaProxyHandler)
+  .get('/graphql/*', schemaProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
