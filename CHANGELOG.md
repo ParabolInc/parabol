@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.13.0](https://github.com/ParabolInc/parabol/compare/v13.12.4...v13.13.0) (2026-05-06)
+
+
+### Added
+
+* Expose GraphiQL ([#13057](https://github.com/ParabolInc/parabol/issues/13057)) ([a0706a7](https://github.com/ParabolInc/parabol/commit/a0706a73454c5c9c735e2f5693b744bf0fa2d12c))
+* Expose GraphQL Schema ([#13062](https://github.com/ParabolInc/parabol/issues/13062)) ([b560550](https://github.com/ParabolInc/parabol/commit/b560550bd0d6fadea19f1a7f8295dfaf52c94723))
+* llms.txt and readme rewrite ([#13063](https://github.com/ParabolInc/parabol/issues/13063)) ([4f55d97](https://github.com/ParabolInc/parabol/commit/4f55d974c81182f4e3856d0110f9f9e15218e722))
+
+
+### Fixed
+
+* formatting of GraphQL API section in README ([#13064](https://github.com/ParabolInc/parabol/issues/13064)) ([0c82955](https://github.com/ParabolInc/parabol/commit/0c8295503844497b115af6868f1cb9599920662b))
+
+
+### Changed
+
+* disable Datadog session recording and user interaction tracking ([#13060](https://github.com/ParabolInc/parabol/issues/13060)) ([9f12dad](https://github.com/ParabolInc/parabol/commit/9f12dadd036db41c1d2b3ae9f2af598fb67a89a9))
+
 ## [13.12.4](https://github.com/ParabolInc/parabol/compare/v13.12.3...v13.12.4) (2026-05-04)
 
 

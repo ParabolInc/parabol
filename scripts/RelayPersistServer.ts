@@ -7,19 +7,14 @@ import clientConfig from '../relay.config'
 
 export default class RelayPersistServer {
   server: Server
+  ready: Promise<void>
   queryMapPath = path.join(__dirname, '../queryMap.json')
   queryMap: Record<string, string>
   constructor(port = 2999) {
     this.server = http.createServer(this.requestListener)
-    this.server.listen(port)
-    this.server.on('error', (err) => {
-      if ((err as any).code === 'EADDRINUSE') {
-        console.error(`Port ${port} in use, retrying...`)
-        setTimeout(() => {
-          this.server.close()
-          this.server.listen(port)
-        }, 1000)
-      }
+    this.ready = new Promise<void>((resolve, reject) => {
+      this.server.listen(port, resolve)
+      this.server.on('error', reject)
     })
     let flushArtifacts = false
     try {

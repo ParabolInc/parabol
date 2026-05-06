@@ -15,6 +15,7 @@ import {metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
+import {schemaProxyHandler} from './schemaProxyHandler'
 import {registerSCIMHandlers} from './scim/SCIMHandler'
 import selfHostedHandler from './selfHostedHandler'
 import {createStaticFileHandler} from './staticFileHandler'
@@ -66,6 +67,7 @@ const app = uws
   .get('/self-hosted/*', selfHostedHandler)
   .get('/assets/*', assetProxyHandler)
   .get('/build/*', buildProxyHandler)
+  .get('/graphql/*', schemaProxyHandler)
   .get('/health', yoga)
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)

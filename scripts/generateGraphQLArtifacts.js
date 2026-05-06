@@ -11,6 +11,12 @@ const {Logger} = require('../packages/server/utils/Logger')
 const generateGraphQLArtifacts = async () => {
   await runSchemaUpdater(true)
   const persistServer = new RelayPersistServer()
+  const serverStarted = await persistServer.ready
+    .then(() => true)
+    .catch((err) => {
+      if (err.code !== 'EADDRINUSE') throw err
+      return false
+    })
   const runCompiler = (cwd) =>
     new Promise((resolve) => {
       const relayCompiler = cp.exec(relayCompilerPath, {cwd}).on('exit', resolve)
@@ -24,7 +30,7 @@ const generateGraphQLArtifacts = async () => {
   Logger.log('codegen complete')
   await runCompiler(process.cwd())
   Logger.log('relay compiler client complete')
-  persistServer.close()
+  if (serverStarted) persistServer.close()
 }
 
 if (require.main === module) {

@@ -1,0 +1,73 @@
+# Parabol
+
+Parabol is a collaborative workspace that helps teams run more effective, inclusive, and engaging meetings.
+
+## GraphQL API
+
+**Endpoint:** `https://action.parabol.co/graphql`
+**Schema SDL:** `https://action.parabol.co/graphql/schema.graphql`
+**Full examples:** See `llms-full.txt`
+
+## Authentication
+
+Parabol uses Personal Access Tokens (PATs) for API access. Pass the token as a Bearer token in the `Authorization` header:
+
+```
+Authorization: Bearer <your-token>
+```
+
+Create and manage tokens at: https://action.parabol.c/me/profile
+
+Tokens are scoped — you must request only the scopes your integration needs. Available scopes:
+
+| Scope               | Description                        |
+|---------------------|------------------------------------|
+| `users:read`        | Read user data                     |
+| `users:write`       | Update user data                   |
+| `teams:read`        | Read team data                     |
+| `teams:write`       | Create and update teams            |
+| `orgs:read`         | Read organization data             |
+| `orgs:write`        | Update organization data           |
+| `meetings:read`     | Read meeting data                  |
+| `meetings:write`    | Create and update meetings         |
+| `tasks:read`        | Read task data                     |
+| `tasks:write`       | Create and update tasks            |
+| `templates:read`    | Read meeting template data         |
+| `templates:write`   | Create and update meeting templates|
+| `pages:read`        | Read page (document) data          |
+| `pages:write`       | Create and update pages            |
+| `comments:read`     | Read comment data                  |
+| `comments:write`    | Create and update comments         |
+
+## Core Concepts
+
+- **Organization** — top-level billing and membership container
+- **Team** — a group of users within an organization; meetings and tasks belong to teams
+- **Meeting** — one of four types: Retrospective, Check-In (action), Sprint Poker (estimation), or Team Prompt (standup)
+- **Task** — an actionable item, optionally linked to integrations (Jira, GitHub, GitLab, Linear, Azure DevOps)
+- **Reflection** — a card added by a participant during the reflect phase of a retrospective
+- **Agenda Item** — a discussion topic added to a Check-In meeting
+- **Page** — a rich-text collaborative document scoped to a team or personal workspace
+- **Template** — a reusable meeting structure (reflect or poker)
+
+## Key Mutations
+
+| Mutation              | Scope Required    | Description                              |
+|-----------------------|-------------------|------------------------------------------|
+| `startRetrospective`  | `meetings:write`  | Start a new retrospective meeting        |
+| `startSprintPoker`    | `meetings:write`  | Start a new sprint poker meeting         |
+| `startCheckIn`        | `meetings:write`  | Start a new check-in meeting             |
+| `startTeamPrompt`     | `meetings:write`  | Start a new standup meeting              |
+| `createReflection`    | `meetings:write`  | Add a reflection card during a retro     |
+| `addAgendaItem`       | `teams:write`     | Add a topic to a check-in meeting        |
+| `addTeam`             | `teams:write`     | Create a new team                        |
+| `createTask`          | `tasks:write`     | Create a task                            |
+| `endRetrospective`    | `meetings:write`  | End a retrospective meeting              |
+| `endSprintPoker`      | `meetings:write`  | End a sprint poker meeting               |
+| `navigateMeeting`     | `meetings:write`  | Advance to the next meeting stage        |
+| `addComment`          | `comments:write`  | Add a comment to a discussion            |
+| `createPage`          | `pages:write`     | Create a new page document               |
+
+## Key Queries
+
+The API has a single root query field `viewer` which returns the authenticated user and all their associated data (teams, meetings, tasks, etc.) via nested fields. Introspect the schema for the full type graph.
