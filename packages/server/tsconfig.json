@@ -16,6 +16,7 @@
     "../dist",
     "../build",
     "types/githubTypes.ts",
+    "types/gitlabTypes.ts",
     "types/linearTypes.ts",
     "postgres/migrations/**/*",
     "graphql/intranetSchema/sdl/resolverTypes.ts",

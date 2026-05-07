@@ -3,7 +3,7 @@
     "addInterfaceFieldResolverTypes": true,
     "content": "// biome-ignore-all",
     "defaultScalarType": "string",
-    "enumsAsTypes": true,
+    "enumType": "string-literal",
     "optionalResolveType": true,
     "scalars": {
       "DateTime": "Date",
@@ -51,7 +51,7 @@
           "VerifyDomainSuccess": "./types/VerifyDomainSuccess#VerifyDomainSuccessSource"
         }
       },
-      "plugins": ["typescript", "typescript-resolvers", "add"],
+      "plugins": ["typescript-resolvers", "add"],
       "schema": "packages/server/graphql/private/schema.graphql"
     },
     "packages/server/graphql/public/resolverTypes.ts": {
@@ -371,7 +371,7 @@
         },
         "showUnusedMappers": false
       },
-      "plugins": ["typescript", "typescript-resolvers", "add"],
+      "plugins": ["typescript-resolvers", "add"],
       "schema": "packages/server/graphql/public/schema.graphql"
     },
     "packages/server/types/githubTypes.ts": {
@@ -379,7 +379,7 @@
         "assumeValidSDL": true
       },
       "documents": "packages/server/utils/githubQueries/*.graphql",
-      "plugins": ["typescript", "typescript-operations", "add"],
+      "plugins": ["typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },
     "packages/server/types/gitlabTypes.ts": {
@@ -390,7 +390,7 @@
         "packages/server/graphql/nestedSchema/GitLab/queries/*.graphql",
         "packages/server/graphql/nestedSchema/GitLab/mutations/*.graphql"
       ],
-      "plugins": ["typescript", "typescript-operations", "add"],
+      "plugins": ["typescript-operations", "add"],
       "schema": "packages/server/graphql/nestedSchema/GitLab/gitlabSchema.graphql"
     },
     "packages/server/types/linearTypes.ts": {
@@ -401,7 +401,7 @@
         "packages/server/graphql/nestedSchema/Linear/queries/*.graphql",
         "packages/server/graphql/nestedSchema/Linear/mutations/*.graphql"
       ],
-      "plugins": ["typescript", "typescript-operations", "add"],
+      "plugins": ["typescript-operations", "add"],
       "schema": "packages/server/graphql/nestedSchema/Linear/linearSchema.graphql"
     }
   }
