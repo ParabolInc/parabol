@@ -134,16 +134,22 @@ function Component(props: NodeViewProps) {
         {...props.HTMLAttributes}
       />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
-        <DropdownMenu.Trigger asChild>
-          <PlainButton
-            className={cn(
-              '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
-              {hidden: !selected}
-            )}
-          >
-            <EditTableSVG />
-          </PlainButton>
-        </DropdownMenu.Trigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenu.Trigger asChild>
+              <PlainButton
+                onMouseDown={(e) => e.preventDefault()}
+                className={cn(
+                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
+                  {hidden: !selected}
+                )}
+              >
+                <EditTableSVG />
+              </PlainButton>
+            </DropdownMenu.Trigger>
+          </TooltipTrigger>
+          <TooltipContent className='text-xs'>{'Edit Table'}</TooltipContent>
+        </Tooltip>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             side='bottom'
@@ -205,6 +211,7 @@ function Component(props: NodeViewProps) {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+
       <Tooltip>
         <TooltipTrigger asChild>
           <PlainButton

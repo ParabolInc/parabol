@@ -113,6 +113,7 @@ const permissionMap: PermissionMap<Resolvers> = {
     dragDiscussionTopic: isTeamMemberOfMeeting<'Mutation.dragDiscussionTopic'>('args.meetingId'),
     dragEstimatingTask: isTeamMemberOfMeeting<'Mutation.dragEstimatingTask'>('args.meetingId'),
     editCommenting: isMeetingMember<'Mutation.editCommenting'>('args.discussionId', 'discussions'),
+    editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
