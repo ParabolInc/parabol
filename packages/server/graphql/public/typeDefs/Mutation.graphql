@@ -394,6 +394,18 @@ type Mutation {
   ): EditCommentingPayload @scope(name: MEETINGS_WRITE)
 
   """
+  Replace the content of a page. Warning: this deletes the content history.
+  """
+  editPageContent(
+    "The ID of the page to edit"
+    pageId: ID!
+    "The new content of the page, in the format specified by format"
+    content: String!
+    "The format of the content string: markdown or tiptap JSON"
+    format: PageContentFormatEnum!
+  ): EditPageContentSuccess! @scope(name: PAGES_WRITE)
+
+  """
   Finish a sprint poker meeting
   """
   endSprintPoker(

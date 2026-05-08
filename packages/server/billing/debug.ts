@@ -5,21 +5,14 @@ const doDebugStuff = async () => {
   // const manager = getStripeManager()
   // const res = await manager.updateSubscriptionQuantity('foo', 39, 1597966749)
   // Logger.log('res', {res})
-  const query = `query {
-  viewer {
+  const query = `mutation {
+  editPageContent(pageId: "page:59149364", content: "foo", format: json) {
+    page {
       id
-      preferredName
-      lastSeenAt
-      pages(first: 10) {
-        edges {
-          node {
-            title
-          }
-        }
-      }
+    }
   }
 }`
-  const accessToken = 'pat_eA31BU_CbCIlNPUAVNJSK4hOjL5m7s_MLtraixy7EHY'
+  const accessToken = 'pat_J6iIHMSjtWhtmh4J-NIGfdU7gP6rEO0LwVE2odFjJq4'
   const res = await fetch('https://localhost:3000/graphql', {
     method: 'POST',
     headers: {
