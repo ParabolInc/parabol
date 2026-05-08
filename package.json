@@ -60,7 +60,6 @@
     "parse-url": "^8.1.0",
     "fast-xml-parser": "^5.7.2",
     "recursive-readdir": "^2.2.3",
-    "axios": "^1.7.8",
     "redux-offline": "enahum/redux-offline#885024de96b6ec73650c340c8928066585c413df",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
