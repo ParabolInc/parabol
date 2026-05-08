@@ -958,9 +958,6 @@ importers:
       adaptivecards:
         specifier: 2.10.0
         version: 2.10.0
-      axios:
-        specifier: ^1.7.8
-        version: 1.13.2
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3

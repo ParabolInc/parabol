@@ -15,7 +15,6 @@ import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
-import {dumpTranscriptToPage} from './dumpTranscriptToPage'
 import gatherInsights, {gatherRetroInsights} from './gatherInsights'
 import {generateRetroSummary} from './generateRetroSummary'
 import generateWholeMeetingSentimentScore from './generateWholeMeetingSentimentScore'
@@ -27,20 +26,17 @@ import updateQualAIMeetingsCount from './updateQualAIMeetingsCount'
 
 const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: InternalContext) => {
   const {dataLoader} = context
-  const {id: meetingId, teamId, recallBotId} = meeting
+  const {id: meetingId, teamId} = meeting
   const pg = getKysely()
 
-  const [sentimentScore, transcriptResult] = await Promise.all([
+  const [sentimentScore] = await Promise.all([
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
-    dumpTranscriptToPage(recallBotId, meetingId, dataLoader),
     generateRetroSummary(meetingId)
   ])
-  const transcription = transcriptResult?.transcription
   await pg
     .updateTable('NewMeeting')
     .set({
-      sentimentScore,
-      transcription: transcription ? JSON.stringify(transcription) : null
+      sentimentScore
     })
     .where('id', '=', meetingId)
     .execute()
