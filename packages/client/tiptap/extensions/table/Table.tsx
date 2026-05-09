@@ -8,7 +8,7 @@ import {
   NodeViewWrapper,
   ReactNodeViewRenderer
 } from '@tiptap/react'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import PlainButton from '../../../components/PlainButton/PlainButton'
 import {toSlug} from '../../../shared/toSlug'
 import {quickHash} from '../../../shared/utils/quickHash'
@@ -79,7 +79,25 @@ function Component(props: NodeViewProps) {
     }
   }
 
-  const selected = isActive()
+  const [isHovered, setIsHovered] = useState(false)
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleMouseEnter = () => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+    setIsHovered(true)
+  }
+
+  const handleMouseLeave = () => {
+    hideTimerRef.current = setTimeout(() => {
+      setIsHovered(false)
+      hideTimerRef.current = null
+    }, 200)
+  }
+
+  const selected = isActive() || isHovered
 
   const onOpenChange = (open: boolean) => {
     if (open) {
@@ -127,23 +145,34 @@ function Component(props: NodeViewProps) {
     document.body.removeChild(link)
   }
   return (
-    <NodeViewWrapper className='relative' data-highlight={highlight}>
+    <NodeViewWrapper
+      className='relative'
+      data-highlight={highlight}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <NodeViewContent
         as={'table' as 'div'}
         className='w-full table-fixed border-collapse border-slate-300 text-slate-800'
         {...props.HTMLAttributes}
       />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
-        <DropdownMenu.Trigger asChild>
-          <PlainButton
-            className={cn(
-              '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
-              {hidden: !selected}
-            )}
-          >
-            <EditTableSVG />
-          </PlainButton>
-        </DropdownMenu.Trigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenu.Trigger asChild>
+              <PlainButton
+                onMouseDown={(e) => e.preventDefault()}
+                className={cn(
+                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 transition-opacity duration-300 hover:bg-slate-300',
+                  selected ? 'opacity-100' : 'pointer-events-none opacity-0'
+                )}
+              >
+                <EditTableSVG />
+              </PlainButton>
+            </DropdownMenu.Trigger>
+          </TooltipTrigger>
+          <TooltipContent className='text-xs'>{'Edit Table'}</TooltipContent>
+        </Tooltip>
         <DropdownMenu.Portal>
           <DropdownMenu.Content
             side='bottom'
@@ -205,12 +234,13 @@ function Component(props: NodeViewProps) {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
+
       <Tooltip>
         <TooltipTrigger asChild>
           <PlainButton
             className={cn(
-              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 hover:bg-slate-300',
-              {hidden: !selected}
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 transition-opacity duration-300 hover:bg-slate-300',
+              selected ? 'opacity-100' : 'pointer-events-none opacity-0'
             )}
             onClick={exportToCSV}
           >
