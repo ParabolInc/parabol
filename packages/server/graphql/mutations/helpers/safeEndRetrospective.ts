@@ -33,13 +33,15 @@ const summarizeRetroMeeting = async (meeting: RetrospectiveMeeting, context: Int
     generateWholeMeetingSentimentScore(meetingId, dataLoader),
     generateRetroSummary(meetingId)
   ])
-  await pg
-    .updateTable('NewMeeting')
-    .set({
-      sentimentScore
-    })
-    .where('id', '=', meetingId)
-    .execute()
+  if (sentimentScore) {
+    await pg
+      .updateTable('NewMeeting')
+      .set({
+        sentimentScore
+      })
+      .where('id', '=', meetingId)
+      .execute()
+  }
   dataLoader.clearAll('newMeetings')
   // wait for whole meeting summary to be generated before sending summary email and updating qualAIMeetingCount
   updateQualAIMeetingsCount(meetingId, teamId, dataLoader)
