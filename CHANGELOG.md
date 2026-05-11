@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.14.1](https://github.com/ParabolInc/parabol/compare/v13.14.0...v13.14.1) (2026-05-11)
+
+
+### Fixed
+
+* update sentiment score only when a valid value is generated ([#13075](https://github.com/ParabolInc/parabol/issues/13075)) ([6353221](https://github.com/ParabolInc/parabol/commit/6353221918c9e1382ebf716f8abd0545f9181e3d))
+
 ## [13.14.0](https://github.com/ParabolInc/parabol/compare/v13.13.0...v13.14.0) (2026-05-08)
 
 
