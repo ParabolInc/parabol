@@ -197,7 +197,7 @@
     "fast-xml-parser": "^5.7.2",
     "graphql-ws": "^6.0.4",
     "html-minifier-terser": "^5.1.1",
-    "kysely": "^0.28.14",
+    "kysely": "^0.28.17",
     "magic-bytes.js": "^1.13.0",
     "markdown-it": "^14.1.1",
     "ms": "^2.0.0",
