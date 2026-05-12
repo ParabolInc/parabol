@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.14.2](https://github.com/ParabolInc/parabol/compare/v13.14.1...v13.14.2) (2026-05-12)
+
+
+### Fixed
+
+* update useArmor to support extracting docId from multipart/form-data ([#13080](https://github.com/ParabolInc/parabol/issues/13080)) ([533863d](https://github.com/ParabolInc/parabol/commit/533863da504143c9e376e3299f685cb0a273e134))
+
 ## [13.14.1](https://github.com/ParabolInc/parabol/compare/v13.14.0...v13.14.1) (2026-05-11)
 
 
