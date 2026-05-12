@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.14.3](https://github.com/ParabolInc/parabol/compare/v13.14.2...v13.14.3) (2026-05-12)
+
+
+### Fixed
+
+* remove  isOrgAdminBySAMLDomain permission rule for parseSAMLMetadata ([#13082](https://github.com/ParabolInc/parabol/issues/13082)) ([3dca003](https://github.com/ParabolInc/parabol/commit/3dca003ec9982c7ae9e397bbaa55e5791ce3895f))
+
 ## [13.14.2](https://github.com/ParabolInc/parabol/compare/v13.14.1...v13.14.2) (2026-05-12)
 
 
