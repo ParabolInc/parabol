@@ -159,8 +159,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       kysely:
-        specifier: ^0.28.14
-        version: 0.28.14
+        specifier: ^0.29.0
+        version: 0.29.0
       magic-bytes.js:
         specifier: ^1.13.0
         version: 1.13.0
@@ -365,10 +365,10 @@ importers:
         version: 0.5.7
       kysely-codegen:
         specifier: ^0.20.0
-        version: 0.20.0(kysely@0.28.14)(pg@8.16.3)(typescript@5.9.3)
+        version: 0.20.0(kysely@0.29.0)(pg@8.16.3)(typescript@5.9.3)
       kysely-ctl:
         specifier: ^0.19.0
-        version: 0.19.0(kysely@0.28.14)(typescript@5.9.3)
+        version: 0.19.0(kysely@0.29.0)(typescript@5.9.3)
       lint-staged:
         specifier: ^10.1.7
         version: 10.5.4
@@ -9250,9 +9250,9 @@ packages:
       kysely-prisma-postgres:
         optional: true
 
-  kysely@0.28.14:
-    resolution: {integrity: sha512-SU3lgh0rPvq7upc6vvdVrCsSMUG1h3ChvHVOY7wJ2fw4C9QEB7X3d5eyYEyULUX7UQtxZJtZXGuT6U2US72UYA==}
-    engines: {node: '>=20.0.0'}
+  kysely@0.29.0:
+    resolution: {integrity: sha512-LrQfPUeTW7MXbMvT62moEMnpMTuj9TO3lqjCeLKjM975PJ4Alrl/43f2tlDX7xOsNptKgH4LSNGwIbXwEkLg4g==}
+    engines: {node: '>=22.0.0'}
 
   launch-editor@2.12.0:
     resolution: {integrity: sha512-giOHXoOtifjdHqUamwKq6c49GzBdLjvxrd2D+Q4V6uOHopJv7p9VJxikDsQ/CBXZbEITgUqSVHXLTG3VhPP1Dg==}
@@ -22000,14 +22000,14 @@ snapshots:
 
   koalas@1.0.2: {}
 
-  kysely-codegen@0.20.0(kysely@0.28.14)(pg@8.16.3)(typescript@5.9.3):
+  kysely-codegen@0.20.0(kysely@0.29.0)(pg@8.16.3)(typescript@5.9.3):
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.1(typescript@5.9.3)
       diff: 8.0.3
       dotenv: 17.3.1
       dotenv-expand: 12.0.3
-      kysely: 0.28.14
+      kysely: 0.29.0
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
@@ -22017,14 +22017,14 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  kysely-ctl@0.19.0(kysely@0.28.14)(typescript@5.9.3):
+  kysely-ctl@0.19.0(kysely@0.29.0)(typescript@5.9.3):
     dependencies:
       c12: 3.3.3
       citty: 0.1.6
       confbox: 0.2.4
       consola: 3.4.2
       jiti: 2.6.1
-      kysely: 0.28.14
+      kysely: 0.29.0
       nypm: 0.6.5
       ofetch: 1.5.1
       pathe: 2.0.3
@@ -22035,7 +22035,7 @@ snapshots:
       - magicast
       - typescript
 
-  kysely@0.28.14: {}
+  kysely@0.29.0: {}
 
   launch-editor@2.12.0:
     dependencies:
