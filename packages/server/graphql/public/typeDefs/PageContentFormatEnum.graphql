@@ -1,0 +1,7 @@
+"""
+The format of the content string provided to editPageContent
+"""
+enum PageContentFormatEnum {
+  markdown
+  json
+}
