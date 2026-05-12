@@ -9,7 +9,6 @@ import isEnvVarTrue from './rules/isEnvVarTrue'
 import {isMeetingFacilitator} from './rules/isMeetingFacilitator'
 import {isMeetingMember} from './rules/isMeetingMember'
 import {isNull} from './rules/isNull'
-import {isOrgAdminBySAMLDomain} from './rules/isOrgAdminBySAMLDomain'
 import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
@@ -454,7 +453,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     meeting: isTeamMemberOfMeeting<'User.meeting'>('args.meetingId'),
     organization: or(isSuperUser, isViewerOnOrg<'User.organization'>('args.orgId')),
     organizationUser: or(isSuperUser, isViewerOnOrg<'User.organizationUser'>('args.orgId')),
-    parseSAMLMetadata: isOrgAdminBySAMLDomain,
     personalAccessTokens: isUserViewer<'User.id'>('source.id'),
     meetingMember: isTeamMemberOfMeeting<'User.meetingMember'>('args.meetingId'),
     team: or(
