@@ -79,9 +79,20 @@ const checkUsage = async (userId: string, cost: number) => {
 export const useArmor = (): Plugin<ServerContext & {dataLoader: DataLoaderWorker}> => {
   return {
     async onParams({request, context}) {
-      const body = await request.json()
+      const contentType = request.headers.get('content-type') ?? ''
+      let docId: string | undefined
+      if (contentType.includes('multipart/form-data')) {
+        const form = await request.formData()
+        const operations = form.get('operations')
+        if (typeof operations === 'string') {
+          docId = JSON.parse(operations).docId
+        }
+      } else {
+        const body = await request.json()
+        docId = body.docId
+      }
       // set the docId so we know which are persisted (i.e. trusted)
-      ;(context as ServerContext).docId = body.docId
+      ;(context as ServerContext).docId = docId
     },
     onParse({setParseFn, context}) {
       const {authToken, docId} = context

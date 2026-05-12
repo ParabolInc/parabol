@@ -1,8 +1,11 @@
 import type {Document} from '@hocuspocus/server'
-import {applyUpdate, XmlElement} from 'yjs'
+import {TiptapTransformer} from '@hocuspocus/transformer'
+import type {JSONContent} from '@tiptap/core'
+import {applyUpdate, encodeStateAsUpdate, XmlElement} from 'yjs'
 import {createPageLinkElement} from '../../../client/shared/tiptap/createPageLinkElement'
 import type {PageLinkBlockAttrs} from '../../../client/shared/tiptap/extensions/PageLinkBlockBase'
 import {isPageLink} from '../../../client/shared/tiptap/isPageLink'
+import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {hocuspocus} from '../../hocusPocus'
 
 const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
@@ -132,5 +135,19 @@ export const updateUserMention = async (
         el.setAttribute('label', preferredName)
       }
     }
+  })
+}
+
+export const replacePageContent = async (documentName: string, payload: {content: JSONContent}) => {
+  const {content} = payload
+  await withDoc(documentName, (doc) => {
+    doc.transact(() => {
+      const frag = doc.getXmlFragment('default')
+      if (frag.length > 0) {
+        frag.delete(0, frag.length)
+      }
+      const tempDoc = TiptapTransformer.toYdoc(content, 'default', serverTipTapExtensions)
+      applyUpdate(doc, encodeStateAsUpdate(tempDoc))
+    })
   })
 }
