@@ -5,6 +5,31 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.14.1](https://github.com/ParabolInc/parabol/compare/v13.14.0...v13.14.1) (2026-05-11)
+
+
+### Fixed
+
+* update sentiment score only when a valid value is generated ([#13075](https://github.com/ParabolInc/parabol/issues/13075)) ([6353221](https://github.com/ParabolInc/parabol/commit/6353221918c9e1382ebf716f8abd0545f9181e3d))
+
+## [13.14.0](https://github.com/ParabolInc/parabol/compare/v13.13.0...v13.14.0) (2026-05-08)
+
+
+### Added
+
+* add token management toolbar to GraphiQL ([#13066](https://github.com/ParabolInc/parabol/issues/13066)) ([e08003b](https://github.com/ParabolInc/parabol/commit/e08003b1d9372da184af251cb4b4857037f4f89b))
+
+
+### Fixed
+
+* debounce meeting member disconnection status updates ([#13068](https://github.com/ParabolInc/parabol/issues/13068)) ([c1f6309](https://github.com/ParabolInc/parabol/commit/c1f6309adec463fec14169f9a6f36b6dbbff98af))
+* table buttons on hover, editPageContent ([#13071](https://github.com/ParabolInc/parabol/issues/13071)) ([cd5c005](https://github.com/ParabolInc/parabol/commit/cd5c005ee08a429462229febcbc0fa097df94ee4))
+
+
+### Changed
+
+* remove unused axios and @hocuspocus/extension-redis dependencies ([#13073](https://github.com/ParabolInc/parabol/issues/13073)) ([da90f4d](https://github.com/ParabolInc/parabol/commit/da90f4d573d7627f492d03fed7898af9e0bfffba))
+
 ## [13.13.0](https://github.com/ParabolInc/parabol/compare/v13.12.4...v13.13.0) (2026-05-06)
 
 

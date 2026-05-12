@@ -8,7 +8,6 @@ import {Logger} from '../../../utils/Logger'
 import type {DataLoaderWorker} from '../../graphql'
 import addAIGeneratedContentToThreads from './addAIGeneratedContentToThreads'
 import addDiscussionTopics from './addDiscussionTopics'
-import addRecallBot from './addRecallBot'
 import generateDiscussionPrompt from './generateDiscussionPrompt'
 import generateGroups from './generateGroups'
 import {publishToEmbedder} from './publishToEmbedder'
@@ -76,7 +75,7 @@ const handleCompletedRetrospectiveStage = async (
     const data = await addDiscussionTopics(meeting, dataLoader)
     // create new threads
     const {discussPhaseStages} = data
-    const {id: meetingId, teamId, videoMeetingURL} = meeting
+    const {id: meetingId, teamId} = meeting
 
     const discussions = discussPhaseStages.map((stage) => ({
       id: stage.discussionId,
@@ -98,9 +97,6 @@ const handleCompletedRetrospectiveStage = async (
         userId: meeting.facilitatorUserId
       })
     ])
-    if (videoMeetingURL) {
-      addRecallBot(meetingId, videoMeetingURL)
-    }
     return {[VOTE]: data}
   }
   return {}

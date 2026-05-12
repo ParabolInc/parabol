@@ -2,7 +2,6 @@ import {SubscriptionChannel} from '../../../../client/types/constEnums'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import addRecallBot from '../../mutations/helpers/addRecallBot'
 import type {MutationResolvers} from '../resolverTypes'
 
 const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
@@ -20,7 +19,6 @@ const addTranscriptionBot: MutationResolvers['addTranscriptionBot'] = async (
   if (meeting.meetingType !== 'retrospective') {
     return {error: {message: 'Meeting type is not retrospective'}}
   }
-  await addRecallBot(meetingId, videoMeetingURL)
   meeting.videoMeetingURL = videoMeetingURL
 
   const data = {meetingId}

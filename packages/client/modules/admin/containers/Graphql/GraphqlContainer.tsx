@@ -1,7 +1,9 @@
 // There's some bug where I can't import .css directly from graphiql. Probably ESM related
 import './monkeyPatchMonacoEnvironment'
 import './style.css'
+import {ToolbarButton} from '@graphiql/react'
 import {createGraphiQLFetcher, type FetcherOpts, type FetcherParams} from '@graphiql/toolkit'
+import KeyIcon from '@mui/icons-material/Key'
 import {GraphiQL} from 'graphiql'
 import {useCallback, useEffect, useState} from 'react'
 import {Link} from 'react-router'
@@ -24,6 +26,7 @@ const GraphqlContainer = () => {
     return localStorage.getItem(PAT_STORAGE_KEY)
   })
   const [patInput, setPatInput] = useState('')
+  const [patSubmitAttempted, setPatSubmitAttempted] = useState(false)
   const [showModal, setShowModal] = useState(!isSuperUser && !accessToken)
 
   const fetcher = useCallback(
@@ -64,19 +67,36 @@ const GraphqlContainer = () => {
 
   const logo = isDarkMode ? logoMarkDark : logoMarkPrimary
 
+  const isValidPat = patInput.trim().startsWith('pat_')
+
   const handleSubmitPat = () => {
+    setPatSubmitAttempted(true)
     const token = patInput.trim()
-    if (!token) return
+    if (!isValidPat) return
     localStorage.setItem(PAT_STORAGE_KEY, token)
     setAccessToken(token)
+    setPatInput('')
+    setPatSubmitAttempted(false)
     setShowModal(false)
+  }
+
+  const handleOpenChangeToken = () => {
+    setPatInput('')
+    setPatSubmitAttempted(false)
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    if (accessToken) setShowModal(false)
   }
 
   return (
     <>
-      <Dialog isOpen={showModal} onClose={() => {}}>
-        <DialogContent noClose className='max-w-md md:max-w-md'>
-          <DialogTitle>Personal Access Token Required</DialogTitle>
+      <Dialog isOpen={showModal} onClose={handleCloseModal}>
+        <DialogContent noClose={!accessToken} className='max-w-md md:max-w-md'>
+          <DialogTitle>
+            {accessToken ? 'Change Personal Access Token' : 'Personal Access Token Required'}
+          </DialogTitle>
           <p className='mt-3 text-slate-600 text-sm'>
             Enter your personal access token to use GraphiQL
           </p>
@@ -86,10 +106,21 @@ const GraphqlContainer = () => {
             value={patInput}
             onChange={(e) => setPatInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSubmitPat()}
-            placeholder='Enter your personal access token'
+            placeholder='pat_...'
             className='mt-4 w-full rounded border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500'
           />
+          {patSubmitAttempted && !isValidPat && (
+            <p className='mt-1 text-red-600 text-xs'>Token must start with pat_</p>
+          )}
           <DialogActions>
+            {accessToken && (
+              <button
+                onClick={handleCloseModal}
+                className='rounded px-4 py-2 font-medium text-slate-600 text-sm hover:bg-slate-100'
+              >
+                Cancel
+              </button>
+            )}
             <button
               onClick={handleSubmitPat}
               disabled={!patInput.trim()}
@@ -100,15 +131,20 @@ const GraphqlContainer = () => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-      {!showModal && (
-        <GraphiQL fetcher={fetcher}>
-          <GraphiQL.Logo>
-            <Link to={'/'}>
-              <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
-            </Link>
-          </GraphiQL.Logo>
-        </GraphiQL>
-      )}
+      <GraphiQL fetcher={fetcher}>
+        <GraphiQL.Logo>
+          <Link to={'/'}>
+            <img crossOrigin='' alt='Parabol' src={logo} className={'flex'} />
+          </Link>
+        </GraphiQL.Logo>
+        {!isSuperUser && (
+          <GraphiQL.Toolbar>
+            <ToolbarButton label='Change personal access token' onClick={handleOpenChangeToken}>
+              <KeyIcon className='graphiql-toolbar-icon' />
+            </ToolbarButton>
+          </GraphiQL.Toolbar>
+        )}
+      </GraphiQL>
     </>
   )
 }
