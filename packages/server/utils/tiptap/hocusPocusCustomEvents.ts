@@ -14,6 +14,23 @@ const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
   await conn.disconnect()
 }
 
+export const appendPageLinkToPage = async (
+  documentName: string,
+  payload: {
+    title: string
+    pageCode: number
+    isDatabase: boolean
+  }
+) => {
+  const {title, pageCode, isDatabase} = payload
+  await withDoc(documentName, (doc) => {
+    const el = createPageLinkElement(pageCode, title, isDatabase) as XmlElement
+    el.setAttribute('canonical', 'false')
+    const frag = doc.getXmlFragment('default')
+    frag.insert(frag.length, [el])
+  })
+}
+
 export const addCanonicalPageLink = async (
   documentName: string,
   payload: {

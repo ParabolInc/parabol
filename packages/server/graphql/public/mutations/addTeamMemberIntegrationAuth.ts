@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
+import GDriveOAuth2Manager from '../../../integrations/gdrive/GDriveOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
@@ -92,12 +93,16 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
       tokenMetadata = convertExpiresIn(authRes)
     }
-    let manager: GcalOAuth2Manager | LinearManager | GitLabOAuth2Manager | null = null
+    let manager: GcalOAuth2Manager | GDriveOAuth2Manager | LinearManager | GitLabOAuth2Manager | null =
+      null
     const {clientId, clientSecret, serverBaseUrl} = integrationProvider
 
     switch (service) {
       case 'gcal':
         manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
+      case 'gdrive':
+        manager = new GDriveOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
       case 'linear':
         manager = new LinearManager(clientId, clientSecret, serverBaseUrl)

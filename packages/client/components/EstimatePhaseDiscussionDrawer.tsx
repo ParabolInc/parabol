@@ -12,6 +12,7 @@ import {
   GlobalBanner,
   ZIndex
 } from '../types/constEnums'
+import AddGoogleTranscriptButton from './AddGoogleTranscriptButton'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
@@ -77,7 +78,7 @@ const Header = styled('div')({
 
 const HeaderLabel = styled(LabelHeading)({
   textTransform: 'none',
-  width: '100%'
+  flexShrink: 0
 })
 
 const StyledCloseButton = styled(PlainButton)({
@@ -105,6 +106,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
             ...EstimatePhaseDiscussionDrawerEstimateStage @relay(mask: false)
           }
         }
+        ...AddGoogleTranscriptButton_meeting
       }
     `,
     meetingRef
@@ -117,6 +119,7 @@ const EstimatePhaseDiscussionDrawer = (props: Props) => {
     <Drawer isDesktop={isDesktop} isOpen={isOpen}>
       <Header>
         <HeaderLabel>{'Discussion'}</HeaderLabel>
+        <AddGoogleTranscriptButton meetingRef={meeting} />
         <StyledCloseButton onClick={onToggle}>
           <CloseIcon />
         </StyledCloseButton>

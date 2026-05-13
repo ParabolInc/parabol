@@ -1,0 +1,4 @@
+type SetupGoogleDriveWatchPayload {
+  error: StandardMutationError
+  channelId: ID
+}

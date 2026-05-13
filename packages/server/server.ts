@@ -9,6 +9,7 @@ import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import ICSHandler from './ICSHandler'
+import googleDriveWebhookHandler from './integrations/gdrive/googleDriveWebhookHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
@@ -72,6 +73,7 @@ const app = uws
   .get('/ready', yoga)
   .post('/stripe', stripeWebhookHandler)
   .post('/mattermost', mattermostWebhookHandler)
+  .post('/gdrive', googleDriveWebhookHandler)
   .post('/graphql', async (res, req) => {
     // uWS deletes the req before the first await, so we must read it now
     const ip = uwsGetIP(res, req)
