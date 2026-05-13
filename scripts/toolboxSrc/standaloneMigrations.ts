@@ -1,7 +1,7 @@
 // Should roughly match runMigrations.js except it isn't run in PM2 in dev
 // This file is bundled by webpack into a small migrate.js file which includes all migration files & their deps
 // It is used by PPMIs who are only provided with the bundles
-import {Migrator} from 'kysely'
+import {Migrator} from 'kysely/migration'
 import path from 'path'
 import {migrations} from '../../.config/kyselyMigrations'
 import getKysely from '../../packages/server/postgres/getKysely'

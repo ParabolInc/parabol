@@ -24,9 +24,8 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .where('createdAt', '<', createdAt)
       .orderBy('createdAt', 'desc')
       .limit(1)
-      .$narrowType<TeamPromptMeetingSource>()
       .executeTakeFirst()
-    return meeting || null
+    return (meeting as TeamPromptMeetingSource) || null
   },
   nextMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return null
@@ -41,9 +40,8 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
       .where('createdAt', '>', createdAt)
       .orderBy('createdAt', 'asc')
       .limit(1)
-      .$narrowType<TeamPromptMeetingSource>()
       .executeTakeFirst()
-    return meeting || null
+    return (meeting as TeamPromptMeetingSource) || null
   },
   tasks: async ({id: meetingId}, _args: unknown, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
