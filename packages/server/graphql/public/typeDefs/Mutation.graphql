@@ -1790,7 +1790,7 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
-  Update configurable settings for a meeting type, including icebreaker phase, team health phase, reflection anonymity, and video meeting URL
+  Update configurable settings for a meeting type, including icebreaker phase, team health phase, review past tasks phase, reflection anonymity, and video meeting URL
   """
   setMeetingSettings(
     settingsId: ID!
@@ -1804,6 +1804,11 @@ type Mutation {
     true to turn team health phase on, false to turn it off
     """
     teamHealthEnabled: Boolean
+
+    """
+    true to turn the review past tasks (updates) phase on, false to turn it off. Only meaningful for retrospective meetings.
+    """
+    reviewPastTasksEnabled: Boolean
 
     """
     disables anonymity of reflections

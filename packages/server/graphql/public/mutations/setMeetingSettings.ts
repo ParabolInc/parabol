@@ -8,9 +8,28 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers, NewMeetingPhaseTypeEnum} from '../resolverTypes'
 
+// Resolve a phase's enabled state from an explicit flag and the existing phaseTypes
+// array. true/false win outright; undefined/null means "keep current".
+const getFlagState = (
+  phase: NewMeetingPhaseTypeEnum,
+  explicit: boolean | null | undefined,
+  phaseTypes: readonly NewMeetingPhaseTypeEnum[]
+): boolean => {
+  if (explicit === true) return true
+  if (explicit === false) return false
+  return phaseTypes.includes(phase)
+}
+
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
-  {settingsId, checkinEnabled, teamHealthEnabled, disableAnonymity, videoMeetingURL},
+  {
+    settingsId,
+    checkinEnabled,
+    teamHealthEnabled,
+    reviewPastTasksEnabled,
+    disableAnonymity,
+    videoMeetingURL
+  },
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -33,17 +52,29 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     .get('featureFlagByOwnerId')
     .load({ownerId: team.orgId, featureName: 'zoomTranscription'})
 
+  const isRetro = meetingType === 'retrospective'
+
   const firstPhases: NewMeetingPhaseTypeEnum[] = []
-  if (checkinEnabled || (checkinEnabled !== false && phaseTypes.includes('checkin'))) {
+  if (getFlagState('checkin', checkinEnabled, phaseTypes)) {
     firstPhases.push('checkin')
   }
-  if (teamHealthEnabled || (teamHealthEnabled !== false && phaseTypes.includes('TEAM_HEALTH'))) {
+  if (getFlagState('TEAM_HEALTH', teamHealthEnabled, phaseTypes)) {
     firstPhases.push('TEAM_HEALTH')
   }
+  // 'updates' is canonical for retros only. For action meetings, 'updates' lives in the
+  // tail of phaseTypes and is not toggleable via this mutation, so it's preserved by the
+  // filter below (which only strips it when meetingType === 'retrospective').
+  if (isRetro && getFlagState('updates', reviewPastTasksEnabled, phaseTypes)) {
+    firstPhases.push('updates')
+  }
+
   const nextSettings = {
     phaseTypes: [
       ...firstPhases,
-      ...phaseTypes.filter((phase) => phase !== 'checkin' && phase !== 'TEAM_HEALTH')
+      ...phaseTypes.filter(
+        (phase) =>
+          phase !== 'checkin' && phase !== 'TEAM_HEALTH' && !(isRetro && phase === 'updates')
+      )
     ],
     disableAnonymity: isNotNull(disableAnonymity) ? disableAnonymity : settings.disableAnonymity,
     videoMeetingURL: hasTranscriptFlag
@@ -65,7 +96,8 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
     disableAnonymity: nextSettings.disableAnonymity,
     videoMeetingURL: nextSettings.videoMeetingURL,
     hasIcebreaker: nextSettings.phaseTypes.includes('checkin'),
-    hasTeamHealth: nextSettings.phaseTypes.includes('TEAM_HEALTH')
+    hasTeamHealth: nextSettings.phaseTypes.includes('TEAM_HEALTH'),
+    hasReviewPastTasks: isRetro && nextSettings.phaseTypes.includes('updates')
   })
   publish(SubscriptionChannel.TEAM, teamId, 'SetMeetingSettingsPayload', data, subOptions)
   return data
