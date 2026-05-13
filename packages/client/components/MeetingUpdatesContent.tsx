@@ -8,7 +8,6 @@ import MeetingPhaseWrapper from './MeetingPhaseWrapper'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
 import StageTimerDisplay from './StageTimerDisplay'
-import PhaseCompleteTag from './Tag/PhaseCompleteTag'
 import TaskColumns from './TaskColumns/TaskColumns'
 
 const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
@@ -31,7 +30,6 @@ interface Props {
   avatarGroup: ReactElement
   endedAt: Date | string | null | undefined
   headerPrompt: ReactNode
-  isPhaseComplete: boolean
   isViewerStageOwner: boolean
   meetingId: string
   meetingRef: StageTimerDisplay_meeting$key
@@ -46,7 +44,6 @@ const MeetingUpdatesContent = (props: Props) => {
     avatarGroup,
     endedAt,
     headerPrompt,
-    isPhaseComplete,
     isViewerStageOwner,
     meetingId,
     meetingRef,
@@ -66,7 +63,6 @@ const MeetingUpdatesContent = (props: Props) => {
           {headerPrompt}
         </MeetingTopBar>
         <PhaseWrapper>
-          <PhaseCompleteTag isComplete={isPhaseComplete} />
           <StageTimerDisplay meeting={meetingRef} />
           <StyledColumnsWrapper>
             <InnerColumnsWrapper>

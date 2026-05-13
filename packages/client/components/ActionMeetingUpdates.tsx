@@ -24,19 +24,12 @@ const ActionMeetingUpdates = (props: Props) => {
         id
         endedAt
         showSidebar
-        localPhase {
-          stages {
-            isComplete
-          }
-        }
         localStage {
           ...ActionMeetingUpdatesStage @relay(mask: false)
         }
         phases {
           stages {
             ...ActionMeetingUpdatesStage @relay(mask: false)
-            # required so localPhase has access to isComplete
-            isComplete
           }
         }
         team {
@@ -61,7 +54,7 @@ const ActionMeetingUpdates = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team, localPhase} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
   const {teamMember} = localStage!
   const {userId} = teamMember!
@@ -70,15 +63,12 @@ const ActionMeetingUpdates = (props: Props) => {
       .map(({node}) => node)
       .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
   }, [tasks, userId])
-  const {stages} = localPhase
-  const isPhaseComplete = stages.every((stage) => stage.isComplete)
 
   return (
     <MeetingUpdatesContent
       avatarGroup={avatarGroup}
       endedAt={endedAt}
       headerPrompt={<ActionMeetingUpdatesPrompt meeting={meeting} />}
-      isPhaseComplete={isPhaseComplete}
       isViewerStageOwner={userId === viewerId}
       meetingId={meetingId}
       meetingRef={meeting}

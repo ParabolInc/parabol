@@ -23,18 +23,12 @@ const RetroMeetingUpdates = (props: Props) => {
         id
         endedAt
         showSidebar
-        localPhase {
-          stages {
-            isComplete
-          }
-        }
         localStage {
           ...RetroMeetingUpdatesStage @relay(mask: false)
         }
         phases {
           stages {
             ...RetroMeetingUpdatesStage @relay(mask: false)
-            isComplete
           }
         }
         team {
@@ -58,7 +52,7 @@ const RetroMeetingUpdates = (props: Props) => {
   )
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
-  const {id: meetingId, endedAt, localStage, showSidebar, team, localPhase} = meeting
+  const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
   const stageOwner = localStage?.teamMember
   const stageOwnerUserId = stageOwner?.userId ?? viewerId
@@ -67,15 +61,12 @@ const RetroMeetingUpdates = (props: Props) => {
       .map(({node}) => node)
       .filter((task) => task.userId === stageOwnerUserId && !isTaskPrivate(task.tags))
   }, [tasks, stageOwnerUserId])
-  const {stages} = localPhase
-  const isPhaseComplete = stages.every((stage) => stage.isComplete)
 
   return (
     <MeetingUpdatesContent
       avatarGroup={avatarGroup}
       endedAt={endedAt}
       headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
-      isPhaseComplete={isPhaseComplete}
       isViewerStageOwner={stageOwnerUserId === viewerId}
       meetingId={meetingId}
       meetingRef={meeting}
