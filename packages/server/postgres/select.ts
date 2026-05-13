@@ -154,8 +154,8 @@ export const selectOrganizations = () =>
     ])
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
-export const selectTeamPromptResponses = () =>
-  getKysely()
+export const selectTeamPromptResponses = () => {
+  const query = getKysely()
     .selectFrom('TeamPromptResponse')
     .select([
       'id',
@@ -167,9 +167,9 @@ export const selectTeamPromptResponses = () =>
       'content',
       'plaintextContent'
     ])
-    .$narrowType<{content: JSONContent}>()
     .select(({fn}) => [fn<ReactjiDB[]>('to_json', ['reactjis']).as('reactjis')])
-
+  return query as AssertedQuery<typeof query, {content: JSONContent}>
+}
 export const selectMeetingSettings = () => {
   const query = getKysely()
     .selectFrom('MeetingSettings')
@@ -210,8 +210,8 @@ export const selectComments = () => {
 
 export const selectReflectPrompts = () => getKysely().selectFrom('ReflectPrompt').selectAll()
 
-export const selectNewMeetings = () =>
-  getKysely()
+export const selectNewMeetings = () => {
+  const query = getKysely()
     .selectFrom('NewMeeting')
     .select(({fn}) => [
       'id',
@@ -255,7 +255,8 @@ export const selectNewMeetings = () =>
       fn('to_json', ['autogroupReflectionGroups']).as('autogroupReflectionGroups'),
       fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
     ])
-    .$narrowType<AnyMeeting>()
+  return query as AssertedQuery<typeof query, AnyMeeting>
+}
 
 export const selectMeetingMembers = () =>
   getKysely().selectFrom('MeetingMember').selectAll().$narrowType<AnyMeetingMember>()

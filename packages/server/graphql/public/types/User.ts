@@ -147,8 +147,8 @@ const User: ReqResolvers<'User'> = {
     const nodes = await selectNewMeetings()
       .where('teamId', 'in', validTeamIds)
       .where('meetingType', 'in', meetingTypes)
-      .$if(!!after, (qb) => qb.where('createdAt', '>=', after!))
-      .$if(!!before, (qb) => qb.where('createdAt', '<=', before!))
+      .$if<{}>(!!after, (qb) => qb.where('createdAt', '>=', after!))
+      .$if<{}>(!!before, (qb) => qb.where('createdAt', '<=', before!))
       .limit(first + 1)
       .execute()
     return {

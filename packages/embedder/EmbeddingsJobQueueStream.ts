@@ -1,3 +1,4 @@
+import type {CompiledQuery} from 'kysely'
 import {sql} from 'kysely'
 import sleep from 'parabol-client/utils/sleep'
 import 'parabol-server/initLogging'
@@ -34,7 +35,9 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
       }
     })
   }
-  private cachedClaimQuery = getKysely()
+  private cachedClaimQuery: CompiledQuery<
+    EmbeddingsJobQueueV2 & {jobType: JobType; jobData: Record<string, unknown>}
+  > = getKysely()
     .updateTable('EmbeddingsJobQueueV2')
     .set({
       state: 'running',
@@ -53,7 +56,6 @@ export class EmbeddingsJobQueueStream implements AsyncIterableIterator<Embedding
         .skipLocked()
     )
     .returningAll()
-    .$narrowType<{jobType: JobType; jobData: Record<string, any>}>()
     .compile()
   async next(): Promise<IteratorResult<EmbeddingsJobQueueV2>> {
     const pg = getKysely()
