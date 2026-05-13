@@ -35,7 +35,7 @@ const RetroSidebarPhaseListItemChildren = (props: Props) => {
   )
   const {phases} = meeting
   const showDiscussSection = phases && isPhaseComplete('vote', phases)
-  if (phaseType === 'checkin') {
+  if (phaseType === 'checkin' || phaseType === 'updates') {
     return (
       <MeetingSidebarTeamMemberStageItems
         gotoStageId={gotoStageId}

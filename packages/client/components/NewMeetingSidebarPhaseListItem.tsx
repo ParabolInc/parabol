@@ -138,6 +138,7 @@ interface Props {
   isUnsyncedFacilitatorPhase: boolean
   isUnsyncedFacilitatorStage?: boolean
   phaseCount?: number | null
+  phaseLabel?: string
   phaseType: NewMeetingPhaseTypeEnum
   isConfirming?: boolean
 }
@@ -151,10 +152,11 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     isUnsyncedFacilitatorPhase,
     isUnsyncedFacilitatorStage,
     phaseCount,
+    phaseLabel,
     phaseType,
     isConfirming
   } = props
-  const label = phaseLabelLookup[phaseType] as string | undefined
+  const label = phaseLabel ?? (phaseLabelLookup[phaseType] as string | undefined)
   const icon = phaseIconLookup[phaseType] as string | undefined
   const Image = phaseImageLookup[phaseType as keyof typeof phaseImageLookup]
   const showPhaseCount = Boolean(phaseCount || phaseCount === 0)

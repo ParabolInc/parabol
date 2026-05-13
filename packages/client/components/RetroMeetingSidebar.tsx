@@ -25,7 +25,11 @@ interface Props {
   meeting: RetroMeetingSidebar_meeting$key
 }
 
-const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'discuss']
+const collapsiblePhases: NewMeetingPhaseTypeEnum[] = ['checkin', 'updates', 'discuss']
+
+const retroPhaseLabelOverrides: Partial<Record<NewMeetingPhaseTypeEnum, string>> = {
+  updates: 'Review Past Tasks'
+}
 
 const RetroMeetingSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -147,6 +151,7 @@ const RetroMeetingSidebar = (props: Props) => {
                 isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                 key={phaseType}
                 phaseCount={phaseCount}
+                phaseLabel={retroPhaseLabelOverrides[phaseType]}
                 phaseType={phaseType}
                 isConfirming={isViewerFacilitator && confirmingPhase === phaseType}
               />
