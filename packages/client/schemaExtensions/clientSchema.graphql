@@ -12,6 +12,8 @@ extend interface NewMeeting {
 }
 
 extend type ActionMeeting {
+  isCommentUnread: Boolean!
+  isRightDrawerOpen: Boolean!
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!

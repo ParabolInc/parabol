@@ -1,40 +1,34 @@
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {RetroDiscussPhaseDiscussionDrawer_meeting$key} from '~/__generated__/RetroDiscussPhaseDiscussionDrawer_meeting.graphql'
+import type {ActionMeetingAgendaItemsDiscussionDrawer_meeting$key} from '~/__generated__/ActionMeetingAgendaItemsDiscussionDrawer_meeting.graphql'
 import {desktopSidebarShadow} from '~/styles/elevation'
 import {BezierCurve, GlobalBanner, ZIndex} from '../types/constEnums'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
-import DiscussionThreadListEmptyTranscriptState from './DiscussionThreadListEmptyTranscriptState'
 import DiscussionThreadRoot from './DiscussionThreadRoot'
 import PlainButton from './PlainButton/PlainButton'
-import Tab from './Tab/Tab'
-import Tabs from './Tabs/Tabs'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   isOpen: boolean
-  meeting: RetroDiscussPhaseDiscussionDrawer_meeting$key
+  meeting: ActionMeetingAgendaItemsDiscussionDrawer_meeting$key
   onToggle: () => void
 }
 
-const RetroDiscussPhaseDiscussionDrawer = (props: Props) => {
+const ActionMeetingAgendaItemsDiscussionDrawer = (props: Props) => {
   const {isOpen, meeting: meetingRef, onToggle} = props
-  const [activeIdx, setActiveIdx] = useState(0)
   const meeting = useFragment(
     graphql`
-      fragment RetroDiscussPhaseDiscussionDrawer_meeting on RetrospectiveMeeting {
-        ...DiscussionThreadListEmptyTranscriptState_meeting
+      fragment ActionMeetingAgendaItemsDiscussionDrawer_meeting on ActionMeeting {
         endedAt
         localStage {
-          ...RetroDiscussPhaseDiscussionDrawerRetroDiscussStage @relay(mask: false)
+          ...ActionMeetingAgendaItemsDiscussionDrawerAgendaItemsStage @relay(mask: false)
         }
         phases {
           stages {
-            ...RetroDiscussPhaseDiscussionDrawerRetroDiscussStage @relay(mask: false)
+            ...ActionMeetingAgendaItemsDiscussionDrawerAgendaItemsStage @relay(mask: false)
           }
         }
       }
@@ -59,17 +53,10 @@ const RetroDiscussPhaseDiscussionDrawer = (props: Props) => {
       style={drawerStyle}
     >
       {/* Header */}
-      <div className='flex w-full items-center border-slate-300 border-b'>
-        <Tabs activeIdx={activeIdx} className='flex-1'>
-          {tabs.map((tab, idx) => (
-            <Tab
-              key={tab.id}
-              label={tab.label}
-              onClick={() => setActiveIdx(idx)}
-              className='flex-1 text-xs'
-            />
-          ))}
-        </Tabs>
+      <div className='flex w-full items-center justify-between border-slate-300 border-b px-3 py-2'>
+        <span className='font-semibold text-slate-700 text-xs uppercase tracking-wider'>
+          {'Discussion & Takeaway Tasks'}
+        </span>
         <PlainButton onClick={onToggle} className='h-6 shrink-0 px-2'>
           <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
         </PlainButton>
@@ -77,38 +64,23 @@ const RetroDiscussPhaseDiscussionDrawer = (props: Props) => {
 
       {/* Thread content */}
       <div className='relative bottom-0 flex h-full w-full max-w-[700px] flex-1 flex-col items-center justify-end overflow-auto'>
-        {activeIdx === 0 ? (
-          <DiscussionThreadRoot
-            allowedThreadables={allowedThreadables}
-            discussionId={discussionId!}
-            width='100%'
-            emptyState={
-              <DiscussionThreadListEmptyState allowTasks={true} isReadOnly={isReadOnly} />
-            }
-          />
-        ) : (
-          <DiscussionThreadListEmptyTranscriptState
-            allowTasks={true}
-            isReadOnly={isReadOnly}
-            meetingRef={meeting}
-          />
-        )}
+        <DiscussionThreadRoot
+          allowedThreadables={allowedThreadables}
+          discussionId={discussionId!}
+          width='100%'
+          emptyState={<DiscussionThreadListEmptyState allowTasks={true} isReadOnly={isReadOnly} />}
+        />
       </div>
     </div>
   )
 }
 
-const tabs = [
-  {id: 'discussion', label: 'Discussion'},
-  {id: 'transcription', label: 'Transcription'}
-] as const
-
 graphql`
-  fragment RetroDiscussPhaseDiscussionDrawerRetroDiscussStage on NewMeetingStage {
-    ... on RetroDiscussStage {
+  fragment ActionMeetingAgendaItemsDiscussionDrawerAgendaItemsStage on NewMeetingStage {
+    ... on AgendaItemsStage {
       discussionId
     }
   }
 `
 
-export default RetroDiscussPhaseDiscussionDrawer
+export default ActionMeetingAgendaItemsDiscussionDrawer

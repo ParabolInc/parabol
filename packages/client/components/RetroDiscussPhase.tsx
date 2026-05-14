@@ -147,7 +147,6 @@ const RetroDiscussPhase = (props: Props) => {
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
         <RetroDiscussPhaseDiscussionDrawer
-          isDesktop={isDesktop}
           isOpen={isRightDrawerOpen}
           meeting={meeting}
           onToggle={toggleDrawer}
