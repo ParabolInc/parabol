@@ -147,7 +147,8 @@ const CreatedInLink = ({
   onRotate
 }: CreatedInLinkProps) => {
   const title = `${meetingName} — ${topicTitle}`
-  const linkClassName = 'hover:text-slate-700 focus:text-slate-700 group-hover:underline'
+  const linkClassName =
+    'text-slate-600 hover:text-slate-600 focus:text-slate-600 group-hover:underline'
   const onLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation()
   }
