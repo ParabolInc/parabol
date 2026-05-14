@@ -1,15 +1,13 @@
 import {EditorContent, type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import type {TaskStatusEnum} from '../../../__generated__/CreateTaskMutation.graphql'
 import Avatar from '../../../components/Avatar/Avatar'
-import RetroDiscussionLink from '../../../components/RetroDiscussionLink'
 import {useTipTapTaskEditor} from '../../../hooks/useTipTapTaskEditor'
 import OutcomeCardStatusIndicator from '../../../modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
 import type {TaskBlockAttrs} from '../../../shared/tiptap/extensions/TaskBlockBase'
 export const TaskBlockView = (props: NodeViewProps) => {
   const {node} = props
   const attrs = node.attrs as TaskBlockAttrs
-  const {content, status, preferredName, avatar, retroMeetingName, retroTopicTitle, retroUrl} =
-    attrs
+  const {content, status, preferredName, avatar} = attrs
   // the task card should be one giant read-only block, so we render a read-only editor
   const {editor} = useTipTapTaskEditor(content, {readOnly: true})
   return (
@@ -26,15 +24,6 @@ export const TaskBlockView = (props: NodeViewProps) => {
               e.stopPropagation()
             }}
           />
-        )}
-        {retroMeetingName && retroTopicTitle && retroUrl && (
-          <div className='-mx-4 pt-2'>
-            <RetroDiscussionLink
-              meetingName={retroMeetingName}
-              topicTitle={retroTopicTitle}
-              url={retroUrl}
-            />
-          </div>
         )}
         <div className='select-none pt-2'>
           <div className='flex'>

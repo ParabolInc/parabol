@@ -9,12 +9,6 @@ export interface TaskBlockAttrs {
   avatar: string
   service?: string
   content: string
-  // Snapshot of the retro discussion this task was created in, captured at meeting-end
-  // time so summary pages render a stable backlink even after the underlying meeting
-  // is renamed. All three fields are present together or all absent.
-  retroMeetingName?: string
-  retroTopicTitle?: string
-  retroUrl?: string
 }
 
 export const TaskBlockBase = Node.create({
@@ -61,26 +55,6 @@ export const TaskBlockBase = Node.create({
         renderHTML: (attributes) => ({
           'data-service': attributes.service
         })
-      },
-      retroMeetingName: {
-        default: undefined,
-        parseHTML: (element) => element.getAttribute('data-retro-meeting-name') ?? undefined,
-        renderHTML: (attributes) =>
-          attributes.retroMeetingName
-            ? {'data-retro-meeting-name': attributes.retroMeetingName}
-            : {}
-      },
-      retroTopicTitle: {
-        default: undefined,
-        parseHTML: (element) => element.getAttribute('data-retro-topic-title') ?? undefined,
-        renderHTML: (attributes) =>
-          attributes.retroTopicTitle ? {'data-retro-topic-title': attributes.retroTopicTitle} : {}
-      },
-      retroUrl: {
-        default: undefined,
-        parseHTML: (element) => element.getAttribute('data-retro-url') ?? undefined,
-        renderHTML: (attributes) =>
-          attributes.retroUrl ? {'data-retro-url': attributes.retroUrl} : {}
       },
       content: {
         default: ''
