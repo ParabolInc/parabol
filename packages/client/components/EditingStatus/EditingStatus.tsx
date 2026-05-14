@@ -1,3 +1,4 @@
+import LoopIcon from '@mui/icons-material/Loop'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ReactNode, useEffect, useState} from 'react'
@@ -94,7 +95,7 @@ const EditingStatus = (props: Props) => {
       <div className='w-full'>
         {children}
         <span
-          className={cn(isEditing ? 'cursor-default' : 'cursor-pointer')}
+          className={cn('group', isEditing ? 'cursor-default' : 'cursor-pointer')}
           onClick={metaField === 'createdIn' ? undefined : toggleMetaField}
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
@@ -106,6 +107,7 @@ const EditingStatus = (props: Props) => {
               topicTitle={retroDiscussion.topicTitle}
               url={retroDiscussion.url}
               openInNewTab={!!openTopicInNewTab}
+              onRotate={() => setMetaField(nextMetaField(metaField, hasRetro))}
             />
           ) : (
             <EditingStatusText
@@ -134,32 +136,48 @@ interface CreatedInLinkProps {
   topicTitle: string
   url: string
   openInNewTab: boolean
+  onRotate: () => void
 }
 
-const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
+const CreatedInLink = ({
+  meetingName,
+  topicTitle,
+  url,
+  openInNewTab,
+  onRotate
+}: CreatedInLinkProps) => {
   const title = `${meetingName} — ${topicTitle}`
-  const className = 'underline'
-  const onClick = (e: React.MouseEvent) => {
+  const linkClassName = 'group-hover:underline'
+  const onLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation()
   }
-  if (openInNewTab) {
-    return (
-      <a
-        href={url}
-        title={title}
-        className={className}
-        target='_blank'
-        rel='noopener noreferrer'
-        onClick={onClick}
-      >
-        {topicTitle}
-      </a>
-    )
+  const onRotateClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onRotate()
   }
-  return (
-    <Link to={url} title={title} className={className} onClick={onClick}>
+  const iconClassName = 'ml-1 hidden size-3 cursor-pointer align-middle group-hover:inline-block'
+  const link = openInNewTab ? (
+    <a
+      href={url}
+      title={title}
+      className={linkClassName}
+      target='_blank'
+      rel='noopener noreferrer'
+      onClick={onLinkClick}
+    >
+      {topicTitle}
+    </a>
+  ) : (
+    <Link to={url} title={title} className={linkClassName} onClick={onLinkClick}>
       {topicTitle}
     </Link>
+  )
+  return (
+    <>
+      {link}
+      <LoopIcon className={iconClassName} onClick={onRotateClick} titleAccess='Show date instead' />
+    </>
   )
 }
 
