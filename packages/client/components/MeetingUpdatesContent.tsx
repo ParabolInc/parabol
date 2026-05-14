@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type {ReactElement, ReactNode} from 'react'
 import type {StageTimerDisplay_meeting$key} from '~/__generated__/StageTimerDisplay_meeting.graphql'
 import type {TaskColumns_tasks$key} from '~/__generated__/TaskColumns_tasks.graphql'
@@ -9,22 +8,6 @@ import MeetingTopBar from './MeetingTopBar'
 import PhaseWrapper from './PhaseWrapper'
 import StageTimerDisplay from './StageTimerDisplay'
 import TaskColumns from './TaskColumns/TaskColumns'
-
-const StyledColumnsWrapper = styled(MeetingPhaseWrapper)({
-  position: 'relative'
-})
-
-// InnerColumnsWrapper is a patch fix to ensure correct
-// behavior for task columns overflow in small viewports
-const InnerColumnsWrapper = styled('div')({
-  display: 'flex',
-  overflow: 'auto',
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0
-})
 
 interface Props {
   avatarGroup: ReactElement
@@ -64,8 +47,11 @@ const MeetingUpdatesContent = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meetingRef} />
-          <StyledColumnsWrapper>
-            <InnerColumnsWrapper>
+          {/* MeetingPhaseWrapper provides the flex/overflow base; relative + absolute inner
+              keeps task columns from shifting layout when a horizontal scrollbar appears in
+              small viewports. */}
+          <MeetingPhaseWrapper className='relative'>
+            <div className='absolute inset-0 flex overflow-auto'>
               <TaskColumns
                 area='meeting'
                 isViewerMeetingSection={isViewerStageOwner}
@@ -74,8 +60,8 @@ const MeetingUpdatesContent = (props: Props) => {
                 tasks={tasks}
                 teams={null}
               />
-            </InnerColumnsWrapper>
-          </StyledColumnsWrapper>
+            </div>
+          </MeetingPhaseWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroMeetingUpdatesPrompt_meeting$key} from '../__generated__/RetroMeetingUpdatesPrompt_meeting.graphql'
@@ -9,22 +8,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 interface Props {
   meeting: RetroMeetingUpdatesPrompt_meeting$key
 }
-
-const StyledPrompt = styled('div')({
-  display: 'flex'
-})
-
-const PromptText = styled('div')({
-  marginLeft: 16,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center'
-})
-
-const StyledHeader = styled(PhaseHeaderTitle)({
-  fontSize: 18,
-  overflowWrap: 'break-word'
-})
 
 const getQuestion = (isConnected: boolean, taskCount: number, preferredName: string) => {
   if (isConnected) {
@@ -79,13 +62,16 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (
-    <StyledPrompt>
-      <Avatar picture={picture} className={'h-16 w-16'} />
-      <PromptText>
-        <StyledHeader className='max-w-full'>
+    <div className='flex'>
+      <Avatar picture={picture} className='h-16 w-16' />
+      <div className='ml-4 flex flex-col justify-center'>
+        {/* PhaseHeaderTitle's emotion base sets font-size 16/20 across breakpoints; the
+            text-[18px] utility wins because Tailwind utilities are layered after Emotion
+            in the cascade (see global.css comment). */}
+        <PhaseHeaderTitle className='max-w-full break-words text-[18px]'>
           {prefix}
           <i>{getQuestion(!!isConnectedAt, taskCount, preferredName)}</i>
-        </StyledHeader>
+        </PhaseHeaderTitle>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
           {isViewerMeetingSection &&
@@ -93,8 +79,8 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
             'Your turn to share! Quick updates only, please.'}
           {!isViewerMeetingSection && isConnectedAt && `${preferredName} is sharing.`}
         </PhaseHeaderDescription>
-      </PromptText>
-    </StyledPrompt>
+      </div>
+    </div>
   )
 }
 
