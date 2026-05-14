@@ -141,27 +141,44 @@ interface CreatedInLinkProps {
 }
 
 const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
-  const title = `${meetingName} — ${topicTitle}`
+  const label = `${topicTitle} — ${meetingName}`
   const anchorClassName =
     'ml-1 inline-flex align-middle text-slate-600 hover:text-slate-600 focus:text-slate-600'
   const iconClassName = 'size-3 cursor-pointer'
-  if (openInNewTab) {
-    return (
-      <a
-        href={url}
-        title={title}
-        className={anchorClassName}
-        target='_blank'
-        rel='noopener noreferrer'
-      >
-        <LinkIcon className={iconClassName} />
-      </a>
-    )
-  }
-  return (
-    <Link to={url} title={title} className={anchorClassName}>
-      <LinkIcon className={iconClassName} />
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLAnchorElement>(
+    MenuPosition.UPPER_CENTER
+  )
+  const icon = <LinkIcon className={iconClassName} />
+  const link = openInNewTab ? (
+    <a
+      href={url}
+      ref={originRef}
+      aria-label={label}
+      className={anchorClassName}
+      target='_blank'
+      rel='noopener noreferrer'
+      onMouseEnter={openTooltip}
+      onMouseLeave={closeTooltip}
+    >
+      {icon}
+    </a>
+  ) : (
+    <Link
+      to={url}
+      ref={originRef}
+      aria-label={label}
+      className={anchorClassName}
+      onMouseEnter={openTooltip}
+      onMouseLeave={closeTooltip}
+    >
+      {icon}
     </Link>
+  )
+  return (
+    <>
+      {link}
+      {tooltipPortal(<div>{label}</div>)}
+    </>
   )
 }
 
