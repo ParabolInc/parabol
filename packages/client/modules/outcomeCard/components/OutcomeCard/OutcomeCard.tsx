@@ -7,7 +7,6 @@ import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.
 import EditingStatus from '~/components/EditingStatus/EditingStatus'
 import {cn} from '~/ui/cn'
 import IntegratedTaskContent from '../../../../components/IntegratedTaskContent'
-import OutcomeCardRetroLink from '../../../../components/OutcomeCardRetroLink'
 import TaskIntegrationLink from '../../../../components/TaskIntegrationLink'
 import TaskWatermark from '../../../../components/TaskWatermark'
 import {TipTapEditor} from '../../../../components/TipTapEditor/TipTapEditor'
@@ -53,7 +52,6 @@ const OutcomeCard = memo((props: Props) => {
     graphql`
       fragment OutcomeCard_task on Task @argumentDefinitions(meetingId: {type: "ID"}) {
         ...IntegratedTaskContent_task
-        ...OutcomeCardRetroLink_task
         discussionId
         editors {
           userId
@@ -150,6 +148,8 @@ const OutcomeCard = memo((props: Props) => {
           isArchived={isArchived}
           task={task}
           useTaskChild={useTaskChild}
+          defaultMetaField={area === MEETING ? 'createdIn' : 'createdAt'}
+          openTopicInNewTab={area === MEETING}
         >
           <div className='flex' title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />
@@ -178,7 +178,6 @@ const OutcomeCard = memo((props: Props) => {
           </div>
         )}
         <TaskIntegrationLink integration={integration || null} />
-        <OutcomeCardRetroLink taskRef={task} openInNewTab={area === MEETING} />
         <TaskFooter
           area={area}
           cardIsActive={isTaskFocused || isTaskHovered || isEditing}
