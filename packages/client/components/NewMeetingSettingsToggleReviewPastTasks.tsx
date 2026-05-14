@@ -39,7 +39,7 @@ const NewMeetingSettingsToggleReviewPastTasks = (props: Props) => {
     <NewMeetingSettingsToggleRow
       active={hasReviewPastTasks}
       className={className}
-      label={'Review Past Tasks'}
+      label={'Review Tasks'}
       onClick={toggleReviewPastTasks}
     />
   )

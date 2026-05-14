@@ -1,14 +1,18 @@
 import plural from '../../../../../client/utils/plural'
 import type {DataLoaderInstance} from '../../../../dataloader/RootDataLoader'
 import isValid from '../../../isValid'
+import computeRetroDiscussion from '../computeRetroDiscussion'
 
 export const getTaskBlocks = async (meetingId: string, dataLoader: DataLoaderInstance) => {
   const tasks = await dataLoader.get('tasksByMeetingId').load(meetingId)
   const taskBlocks = await Promise.all(
     tasks.map(async (task) => {
-      const {content, userId, status, integration} = task
+      const {content, userId, status, integration, discussionId} = task
       if (!userId) return null
-      const user = await dataLoader.get('users').loadNonNull(userId)
+      const [user, retroDiscussion] = await Promise.all([
+        dataLoader.get('users').loadNonNull(userId),
+        computeRetroDiscussion(meetingId, discussionId, dataLoader)
+      ])
       const {preferredName, picture} = user
       return {
         type: 'taskBlock' as const,
@@ -17,7 +21,10 @@ export const getTaskBlocks = async (meetingId: string, dataLoader: DataLoaderIns
           preferredName,
           avatar: picture,
           service: integration?.service,
-          status
+          status,
+          retroMeetingName: retroDiscussion?.meetingName,
+          retroTopicTitle: retroDiscussion?.topicTitle,
+          retroUrl: retroDiscussion?.url
         }
       }
     })

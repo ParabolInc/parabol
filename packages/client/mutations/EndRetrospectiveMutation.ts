@@ -121,7 +121,7 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
   const updatedTaskIds = payload.getValue('updatedTaskIds')
   handleAddTimelineEvent(meeting, timelineEvent, store)
-  // Tasks archived by the Review Past Tasks phase: remove them from active task
+  // Tasks archived by the Review Tasks phase: remove them from active task
   // connections so the UI immediately reflects the archive (full record stays in the
   // store, so archive views can still load them).
   handleRemoveTasks(updatedTaskIds as any, store)

@@ -30,7 +30,7 @@ type EndRetrospectiveSuccess {
   removedTaskIds: [ID!]!
 
   """
-  IDs of tasks that were updated when the meeting ended (e.g. Done tasks archived because the Review Past Tasks phase ran)
+  IDs of tasks that were updated when the meeting ended (e.g. Done tasks archived because the Review Tasks phase ran)
   """
   updatedTaskIds: [ID!]
 

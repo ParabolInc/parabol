@@ -7,6 +7,7 @@ import getGitHubRequest from '../../../utils/getGitHubRequest'
 import getIssueLabels from '../../../utils/githubQueries/getIssueLabels.graphql'
 import logError from '../../../utils/logError'
 import isValid from '../../isValid'
+import computeRetroDiscussion from '../../mutations/helpers/computeRetroDiscussion'
 import {resolveTaskIntegration} from '../../resolvers/resolveTaskIntegration'
 import type {ReqResolvers} from './ReqResolvers'
 
@@ -149,6 +150,10 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     if (!meetingId) return false
     const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)
     return taskId === highlightedTaskId
+  },
+
+  retroDiscussion: async ({meetingId, discussionId}, _args, {dataLoader}) => {
+    return computeRetroDiscussion(meetingId, discussionId, dataLoader)
   }
 }
 
