@@ -1,40 +1,19 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ReactNode, useState} from 'react'
+import {type ReactNode, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Link} from 'react-router'
 import type {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
-import {PALETTE} from '../../styles/paletteV3'
-import {Card} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import DueDateToggle from '../DueDateToggle'
 import EditingStatusText from './EditingStatusText'
+import nextMetaField, {type TaskMetaField} from './nextMetaField'
 
-const StatusHeader = styled('div')({
-  alignItems: 'flex-start',
-  color: PALETTE.SLATE_600,
-  display: 'flex',
-  fontSize: 11,
-  fontWeight: 400,
-  justifyContent: 'space-between',
-  lineHeight: '20px',
-  minHeight: Card.BUTTON_HEIGHT,
-  padding: `0 ${Card.PADDING} 4px`,
-  textAlign: 'left'
-})
-
-const EditingTextWrapper = styled('div')({
-  width: '100%'
-})
-
-const EditingText = styled('span')<{isEditing: boolean}>(({isEditing}) => ({
-  cursor: isEditing ? 'default' : 'pointer'
-}))
-
-export type TimestampType = 'createdAt' | 'updatedAt'
+export type {TaskMetaField}
 
 interface Props {
   children: ReactNode
@@ -42,15 +21,30 @@ interface Props {
   task: EditingStatus_task$key
   useTaskChild: UseTaskChild
   isArchived?: boolean
+  defaultMetaField?: TaskMetaField
+  openTopicInNewTab?: boolean
 }
 
 const EditingStatus = (props: Props) => {
-  const {children, isTaskHovered, task: taskRef, useTaskChild, isArchived} = props
+  const {
+    children,
+    isTaskHovered,
+    task: taskRef,
+    useTaskChild,
+    isArchived,
+    defaultMetaField,
+    openTopicInNewTab
+  } = props
   const task = useFragment(
     graphql`
       fragment EditingStatus_task on Task {
         createdAt
         updatedAt
+        retroDiscussion {
+          meetingName
+          topicTitle
+          url
+        }
         editors {
           userId
           preferredName
@@ -60,54 +54,109 @@ const EditingStatus = (props: Props) => {
     `,
     taskRef
   )
-  const {createdAt, updatedAt, editors} = task
+  const {createdAt, updatedAt, retroDiscussion, editors} = task
+  const hasRetro = !!retroDiscussion
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
   const isEditing = editors.length > otherEditors.length
-  const [timestampType, setTimestampType] = useState<TimestampType>('createdAt')
-  const toggleTimestamp = (e: React.MouseEvent) => {
-    e.preventDefault()
-    closeTooltip()
-    setTimestampType(timestampType === 'createdAt' ? 'updatedAt' : 'createdAt')
-  }
+
+  const initialField: TaskMetaField =
+    defaultMetaField === 'createdIn' && hasRetro ? 'createdIn' : 'createdAt'
+  const [metaField, setMetaField] = useState<TaskMetaField>(initialField)
+
+  useEffect(() => {
+    if (!hasRetro && metaField === 'createdIn') {
+      setMetaField('createdAt')
+    }
+  }, [hasRetro, metaField])
+
   const {
     tooltipPortal,
     openTooltip,
     closeTooltip,
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {
-    disabled: isEditing
+    disabled: isEditing || metaField === 'createdIn'
   })
-  const timestamp = timestampType === 'createdAt' ? createdAt : updatedAt
+
+  const toggleMetaField = (e: React.MouseEvent) => {
+    e.preventDefault()
+    closeTooltip()
+    setMetaField(nextMetaField(metaField, hasRetro))
+  }
+
   return (
-    <StatusHeader>
-      <EditingTextWrapper>
+    <div className='flex min-h-[20px] items-start justify-between px-4 pb-1 text-left font-semibold text-[11px] text-slate-600 leading-5'>
+      <div className='w-full'>
         {children}
-        <EditingText
-          isEditing={isEditing}
-          onClick={toggleTimestamp}
+        <span
+          className={cn(isEditing ? 'cursor-default' : 'cursor-pointer')}
+          onClick={metaField === 'createdIn' ? undefined : toggleMetaField}
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
           ref={tipRef}
         >
-          <EditingStatusText
-            editors={otherEditors}
-            isArchived={isArchived}
-            isEditing={isEditing}
-            timestamp={timestamp}
-            timestampType={timestampType}
-          />
-        </EditingText>
-        {tooltipPortal(<div>{'Toggle Timestamp'}</div>)}
-      </EditingTextWrapper>
+          {metaField === 'createdIn' && retroDiscussion ? (
+            <CreatedInLink
+              meetingName={retroDiscussion.meetingName}
+              topicTitle={retroDiscussion.topicTitle}
+              url={retroDiscussion.url}
+              openInNewTab={!!openTopicInNewTab}
+            />
+          ) : (
+            <EditingStatusText
+              editors={otherEditors}
+              isArchived={isArchived}
+              isEditing={isEditing}
+              timestamp={metaField === 'createdAt' ? createdAt : updatedAt}
+              timestampType={metaField === 'createdIn' ? 'createdAt' : metaField}
+            />
+          )}
+        </span>
+        {tooltipPortal(<div>{'Toggle View'}</div>)}
+      </div>
       <DueDateToggle
         cardIsActive={isEditing || isTaskHovered}
         isArchived={isArchived}
         task={task}
         useTaskChild={useTaskChild}
       />
-    </StatusHeader>
+    </div>
+  )
+}
+
+interface CreatedInLinkProps {
+  meetingName: string
+  topicTitle: string
+  url: string
+  openInNewTab: boolean
+}
+
+const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
+  const title = `${meetingName} — ${topicTitle}`
+  const className = 'underline hover:underline focus:underline'
+  const onClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+  }
+  if (openInNewTab) {
+    return (
+      <a
+        href={url}
+        title={title}
+        className={className}
+        target='_blank'
+        rel='noopener noreferrer'
+        onClick={onClick}
+      >
+        {topicTitle}
+      </a>
+    )
+  }
+  return (
+    <Link to={url} title={title} className={className} onClick={onClick}>
+      {topicTitle}
+    </Link>
   )
 }
 
