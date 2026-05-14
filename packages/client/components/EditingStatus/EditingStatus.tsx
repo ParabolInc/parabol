@@ -86,6 +86,9 @@ const EditingStatus = (props: Props) => {
     setMetaField(nextMetaField(metaField, hasRetro))
   }
 
+  const effectiveField: 'createdAt' | 'updatedAt' =
+    metaField === 'createdIn' ? 'createdAt' : metaField
+
   return (
     <div className='flex min-h-[20px] items-start justify-between px-4 pb-1 text-left font-semibold text-[11px] text-slate-600 leading-5'>
       <div className='w-full'>
@@ -109,8 +112,8 @@ const EditingStatus = (props: Props) => {
               editors={otherEditors}
               isArchived={isArchived}
               isEditing={isEditing}
-              timestamp={metaField === 'createdAt' ? createdAt : updatedAt}
-              timestampType={metaField === 'createdIn' ? 'createdAt' : metaField}
+              timestamp={effectiveField === 'createdAt' ? createdAt : updatedAt}
+              timestampType={effectiveField}
             />
           )}
         </span>
@@ -135,7 +138,7 @@ interface CreatedInLinkProps {
 
 const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
   const title = `${meetingName} — ${topicTitle}`
-  const className = 'underline hover:underline focus:underline'
+  const className = 'underline'
   const onClick = (e: React.MouseEvent) => {
     e.stopPropagation()
   }
