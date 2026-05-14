@@ -41,6 +41,8 @@ extend type PokerMeeting {
 }
 
 extend type RetrospectiveMeeting {
+  isCommentUnread: Boolean!
+  isRightDrawerOpen: Boolean!
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
