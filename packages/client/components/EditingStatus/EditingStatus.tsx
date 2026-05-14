@@ -1,4 +1,4 @@
-import LoopIcon from '@mui/icons-material/Loop'
+import LinkIcon from '@mui/icons-material/Link'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ReactNode, useEffect, useState} from 'react'
@@ -78,7 +78,7 @@ const EditingStatus = (props: Props) => {
     closeTooltip,
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER, {
-    disabled: isEditing || metaField === 'createdIn'
+    disabled: isEditing
   })
 
   const toggleMetaField = (e: React.MouseEvent) => {
@@ -95,20 +95,14 @@ const EditingStatus = (props: Props) => {
       <div className='w-full'>
         {children}
         <span
-          className={cn('group', isEditing ? 'cursor-default' : 'cursor-pointer')}
-          onClick={metaField === 'createdIn' ? undefined : toggleMetaField}
+          className={cn(isEditing ? 'cursor-default' : 'cursor-pointer')}
+          onClick={toggleMetaField}
           onMouseEnter={openTooltip}
           onMouseLeave={closeTooltip}
           ref={tipRef}
         >
           {metaField === 'createdIn' && retroDiscussion ? (
-            <CreatedInLink
-              meetingName={retroDiscussion.meetingName}
-              topicTitle={retroDiscussion.topicTitle}
-              url={retroDiscussion.url}
-              openInNewTab={!!openTopicInNewTab}
-              onRotate={() => setMetaField(nextMetaField(metaField, hasRetro))}
-            />
+            <span>{retroDiscussion.topicTitle}</span>
           ) : (
             <EditingStatusText
               editors={otherEditors}
@@ -119,6 +113,14 @@ const EditingStatus = (props: Props) => {
             />
           )}
         </span>
+        {metaField === 'createdIn' && retroDiscussion && (
+          <CreatedInLink
+            meetingName={retroDiscussion.meetingName}
+            topicTitle={retroDiscussion.topicTitle}
+            url={retroDiscussion.url}
+            openInNewTab={!!openTopicInNewTab}
+          />
+        )}
         {tooltipPortal(<div>{'Toggle View'}</div>)}
       </div>
       <DueDateToggle
@@ -136,49 +138,30 @@ interface CreatedInLinkProps {
   topicTitle: string
   url: string
   openInNewTab: boolean
-  onRotate: () => void
 }
 
-const CreatedInLink = ({
-  meetingName,
-  topicTitle,
-  url,
-  openInNewTab,
-  onRotate
-}: CreatedInLinkProps) => {
+const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
   const title = `${meetingName} — ${topicTitle}`
-  const linkClassName =
-    'text-slate-600 hover:text-slate-600 focus:text-slate-600 group-hover:underline'
-  const onLinkClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const anchorClassName =
+    'ml-1 inline-flex align-middle text-slate-600 hover:text-slate-600 focus:text-slate-600'
+  const iconClassName = 'size-3 cursor-pointer'
+  if (openInNewTab) {
+    return (
+      <a
+        href={url}
+        title={title}
+        className={anchorClassName}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        <LinkIcon className={iconClassName} />
+      </a>
+    )
   }
-  const onRotateClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    onRotate()
-  }
-  const iconClassName = 'ml-1 hidden size-3 cursor-pointer align-middle group-hover:inline-block'
-  const link = openInNewTab ? (
-    <a
-      href={url}
-      title={title}
-      className={linkClassName}
-      target='_blank'
-      rel='noopener noreferrer'
-      onClick={onLinkClick}
-    >
-      {topicTitle}
-    </a>
-  ) : (
-    <Link to={url} title={title} className={linkClassName} onClick={onLinkClick}>
-      {topicTitle}
-    </Link>
-  )
   return (
-    <>
-      {link}
-      <LoopIcon className={iconClassName} onClick={onRotateClick} titleAccess='Show date instead' />
-    </>
+    <Link to={url} title={title} className={anchorClassName}>
+      <LinkIcon className={iconClassName} />
+    </Link>
   )
 }
 
