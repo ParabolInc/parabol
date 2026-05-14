@@ -1,3 +1,5 @@
+import ms from 'ms'
+import {setupGdriveFileWatcher} from '../../../integrations/gdrive/setupGdriveFileWatcher'
 import type {GdriveIntegrationResolvers} from '../resolverTypes'
 
 export type GdriveIntegrationSource = {
@@ -22,6 +24,20 @@ const GdriveIntegration: GdriveIntegrationResolvers = {
     return !!auth?.isActive
   },
 
+  watchExpiresAt: async ({teamId, userId}, _args, {dataLoader}) => {
+    const auth = await dataLoader.get('freshGdriveAuth').load({teamId, userId})
+    if (!auth) return null
+    const {watchExpiresAt} = auth
+    if (!watchExpiresAt || watchExpiresAt.getTime() - Date.now() < ms('1d')) {
+      try {
+        const newExpiresAt = await setupGdriveFileWatcher(auth, userId, teamId)
+        return newExpiresAt
+      } catch {
+        return null
+      }
+    }
+    return watchExpiresAt ?? null
+  }
 }
 
 export default GdriveIntegration

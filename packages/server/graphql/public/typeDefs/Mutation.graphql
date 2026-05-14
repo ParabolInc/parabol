@@ -1580,7 +1580,7 @@ type Mutation {
     The team to associate the watch channel with
     """
     teamId: ID!
-  ): SetupGoogleDriveWatchPayload! @scope(name: TEAMS_WRITE)
+  ): SetupGoogleDriveWatchSuccess! @scope(name: TEAMS_WRITE)
 
   """
   Link a Mattermost channel to a team to receive meeting notifications

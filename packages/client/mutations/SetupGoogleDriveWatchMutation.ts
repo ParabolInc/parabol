@@ -6,10 +6,10 @@ import type {StandardMutation} from '../types/relayMutations'
 const mutation = graphql`
   mutation SetupGoogleDriveWatchMutation($teamId: ID!) {
     setupGoogleDriveWatch(teamId: $teamId) {
-      error {
-        message
+      integration {
+        isActive
+        watchExpiresAt
       }
-      channelId
     }
   }
 `

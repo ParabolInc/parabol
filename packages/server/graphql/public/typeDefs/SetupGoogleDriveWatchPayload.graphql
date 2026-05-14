@@ -1,4 +1,3 @@
-type SetupGoogleDriveWatchPayload {
-  error: StandardMutationError
-  channelId: ID
+type SetupGoogleDriveWatchSuccess {
+  integration: GdriveIntegration
 }

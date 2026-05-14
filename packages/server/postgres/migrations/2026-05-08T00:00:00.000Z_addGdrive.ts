@@ -8,8 +8,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('teamId', 'varchar(100)', (col) =>
       col.notNull().references('Team.id').onDelete('cascade')
     )
-    .addColumn('meetingId', 'varchar(100)', (col) => col.references('NewMeeting.id').onDelete('set null'))
+    .addColumn('meetingId', 'varchar(100)', (col) =>
+      col.references('NewMeeting.id').onDelete('set null')
+    )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
+    .execute()
+  await db.schema
+    .alterTable('TeamMemberIntegrationAuth')
+    .addColumn('watchExpiresAt', 'timestamptz')
     .execute()
 }
 
@@ -54,4 +60,8 @@ export async function down(db: Kysely<any>): Promise<void> {
 
   await sql`DROP TYPE public."IntegrationProviderServiceEnum_old"`.execute(db)
   await db.schema.dropTable('ExternalMeetingFile').execute()
+  await db.schema
+    .alterTable('TeamMemberIntegrationAuth')
+    .dropColumn('watchExpiresAt', (b) => b.ifExists())
+    .execute()
 }

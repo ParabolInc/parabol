@@ -16,4 +16,9 @@ type GdriveIntegration {
   True if the user has an active gdrive integration for this team
   """
   isActive: Boolean!
+
+  """
+  The time the Google Drive watch channel expires, if one is active
+  """
+  watchExpiresAt: DateTime
 }
