@@ -15,11 +15,11 @@ const NewMeetingSettingsToggleRow = ({active, className, label, onClick}: Props)
     onClick={onClick}
     className={cn(
       'flex w-full select-none items-center rounded-lg bg-slate-200 px-4 py-[22px]',
-      'font-semibold text-[14px] leading-6 hover:bg-slate-300',
+      'font-semibold text-sm leading-6 hover:bg-slate-300',
       className
     )}
   >
-    <span className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[20px] text-slate-900'>
+    <span className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-slate-900 text-xl'>
       {label}
     </span>
     <Checkbox

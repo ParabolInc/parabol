@@ -1,9 +1,7 @@
-import LinkIcon from '@mui/icons-material/Link'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type ReactNode, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
 import type {EditingStatus_task$key} from '~/__generated__/EditingStatus_task.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
@@ -11,6 +9,7 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../hooks/useTaskChildFocus'
 import {cn} from '../../ui/cn'
 import DueDateToggle from '../DueDateToggle'
+import CreatedInLink from './CreatedInLink'
 import EditingStatusText from './EditingStatusText'
 import nextMetaField, {type TaskMetaField} from './nextMetaField'
 
@@ -41,10 +40,21 @@ const EditingStatus = (props: Props) => {
       fragment EditingStatus_task on Task {
         createdAt
         updatedAt
-        retroDiscussion {
-          meetingName
-          topicTitle
-          url
+        meetingId
+        meeting {
+          id
+          name
+        }
+        discussion {
+          stage {
+            ... on RetroDiscussStage {
+              stageIdx
+              reflectionGroup {
+                id
+                title
+              }
+            }
+          }
         }
         editors {
           userId
@@ -55,8 +65,11 @@ const EditingStatus = (props: Props) => {
     `,
     taskRef
   )
-  const {createdAt, updatedAt, retroDiscussion, editors} = task
-  const hasRetro = !!retroDiscussion
+  const {createdAt, updatedAt, meetingId, meeting, discussion, editors} = task
+  const reflectionGroup = discussion?.stage?.reflectionGroup
+  const topicTitle = reflectionGroup?.title ?? 'Untitled topic'
+  const stageIdx = discussion?.stage?.stageIdx
+  const hasRetro = !!(meetingId && meeting && reflectionGroup && stageIdx !== undefined)
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
   const otherEditors = editors.filter((editor) => editor.userId !== viewerId)
@@ -101,8 +114,8 @@ const EditingStatus = (props: Props) => {
           onMouseLeave={closeTooltip}
           ref={tipRef}
         >
-          {metaField === 'createdIn' && retroDiscussion ? (
-            <span>{retroDiscussion.topicTitle}</span>
+          {metaField === 'createdIn' && hasRetro ? (
+            <span>{topicTitle}</span>
           ) : (
             <EditingStatusText
               editors={otherEditors}
@@ -113,11 +126,12 @@ const EditingStatus = (props: Props) => {
             />
           )}
         </span>
-        {metaField === 'createdIn' && retroDiscussion && (
+        {metaField === 'createdIn' && hasRetro && (
           <CreatedInLink
-            meetingName={retroDiscussion.meetingName}
-            topicTitle={retroDiscussion.topicTitle}
-            url={retroDiscussion.url}
+            meetingId={meetingId}
+            meetingName={meeting.name}
+            topicTitle={topicTitle}
+            stageIdx={stageIdx}
             openInNewTab={!!openTopicInNewTab}
           />
         )}
@@ -130,55 +144,6 @@ const EditingStatus = (props: Props) => {
         useTaskChild={useTaskChild}
       />
     </div>
-  )
-}
-
-interface CreatedInLinkProps {
-  meetingName: string
-  topicTitle: string
-  url: string
-  openInNewTab: boolean
-}
-
-const CreatedInLink = ({meetingName, topicTitle, url, openInNewTab}: CreatedInLinkProps) => {
-  const label = `${topicTitle} — ${meetingName}`
-  const anchorClassName =
-    'ml-1 inline-flex align-middle text-slate-600 hover:text-slate-600 focus:text-slate-600'
-  const iconClassName = 'size-3 cursor-pointer'
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLAnchorElement>(
-    MenuPosition.UPPER_CENTER
-  )
-  const icon = <LinkIcon className={iconClassName} />
-  const link = openInNewTab ? (
-    <a
-      href={url}
-      ref={originRef}
-      aria-label={label}
-      className={anchorClassName}
-      target='_blank'
-      rel='noopener noreferrer'
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
-    >
-      {icon}
-    </a>
-  ) : (
-    <Link
-      to={url}
-      ref={originRef}
-      aria-label={label}
-      className={anchorClassName}
-      onMouseEnter={openTooltip}
-      onMouseLeave={closeTooltip}
-    >
-      {icon}
-    </Link>
-  )
-  return (
-    <>
-      {link}
-      {tooltipPortal(<div>{label}</div>)}
-    </>
   )
 }
 
