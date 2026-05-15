@@ -149,6 +149,16 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     if (!meetingId) return false
     const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)
     return taskId === highlightedTaskId
+  },
+
+  meeting: async ({meetingId}, _args, {dataLoader}) => {
+    if (!meetingId) return null
+    return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
+  },
+
+  discussion: async ({discussionId}, _args, {dataLoader}) => {
+    if (!discussionId) return null
+    return (await dataLoader.get('discussions').load(discussionId)) ?? null
   }
 }
 

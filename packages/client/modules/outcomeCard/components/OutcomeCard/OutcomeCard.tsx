@@ -13,6 +13,7 @@ import {TipTapEditor} from '../../../../components/TipTapEditor/TipTapEditor'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
+import {MEETING} from '../../../../utils/constants'
 import isTaskArchived from '../../../../utils/isTaskArchived'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
@@ -147,6 +148,8 @@ const OutcomeCard = memo((props: Props) => {
           isArchived={isArchived}
           task={task}
           useTaskChild={useTaskChild}
+          defaultMetaField={area === MEETING ? 'createdIn' : 'createdAt'}
+          openTopicInNewTab={area === MEETING}
         >
           <div className='flex' title={statusIndicatorTitle}>
             <OutcomeCardStatusIndicator status={isDraggingOver || status} />

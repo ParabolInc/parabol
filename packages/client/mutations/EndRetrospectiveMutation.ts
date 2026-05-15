@@ -16,6 +16,7 @@ import type {
 import {GQLID} from '../utils/GQLID'
 import handleAddTimelineEvent from './handlers/handleAddTimelineEvent'
 import handleRemoveSuggestedActions from './handlers/handleRemoveSuggestedActions'
+import handleRemoveTasks from './handlers/handleRemoveTasks'
 import popEndMeetingToast from './toasts/popEndMeetingToast'
 
 graphql`
@@ -45,6 +46,7 @@ graphql`
     timelineEvent {
       ...TimelineEventCompletedRetroMeeting_timelineEvent @relay(mask: false)
     }
+    updatedTaskIds
   }
 `
 
@@ -117,7 +119,12 @@ export const endRetrospectiveTeamUpdater: SharedUpdater<EndRetrospectiveMutation
 ) => {
   const meeting = payload.getLinkedRecord('meeting') as RecordProxy
   const timelineEvent = payload.getLinkedRecord('timelineEvent') as RecordProxy
+  const updatedTaskIds = payload.getValue('updatedTaskIds')
   handleAddTimelineEvent(meeting, timelineEvent, store)
+  // Tasks archived by the Review Tasks phase: remove them from active task
+  // connections so the UI immediately reflects the archive (full record stays in the
+  // store, so archive views can still load them).
+  handleRemoveTasks(updatedTaskIds as any, store)
 }
 
 const EndRetrospectiveMutation: StandardMutation<

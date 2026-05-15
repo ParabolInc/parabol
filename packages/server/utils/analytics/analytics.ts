@@ -345,7 +345,7 @@ class Analytics {
     user: AnalyticsUser,
     teamId: string,
     meetingType: MeetingTypeEnum,
-    meetingSettings: MeetingSettings
+    meetingSettings: Partial<MeetingSettings> & Record<string, unknown>
   ) => {
     this.track(user, 'Meeting Settings Changed', {
       teamId,

@@ -98,6 +98,11 @@ type AgendaItemsStage implements NewMeetingStage & DiscussionThreadStage {
   timeRemaining: Float
 
   """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
+
+  """
   The ID to find the discussion that goes in the stage
   """
   discussionId: ID!
