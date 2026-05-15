@@ -9,8 +9,9 @@ import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeadi
 import {DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import type {ActionMeetingPhaseProps} from './ActionMeeting'
-import ActionMeetingAgendaItemsDiscussionDrawer from './ActionMeetingAgendaItemsDiscussionDrawer'
 import Avatar from './Avatar/Avatar'
+import DiscussionDrawer from './DiscussionDrawer'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
@@ -39,7 +40,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
       fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
-        ...ActionMeetingAgendaItemsDiscussionDrawer_meeting
         id
         showSidebar
         endedAt
@@ -66,13 +66,14 @@ const ActionMeetingAgendaItems = (props: Props) => {
     isCommentUnread,
     isRightDrawerOpen
   } = meeting
-  const {agendaItem} = localStage
+  const {agendaItem, discussionId} = localStage
   const toggleDrawer = useRightDrawer(meetingId)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
   const {user} = teamMember
   const {picture, preferredName} = user
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
 
   const headerAndPhaseWidth = isRightDrawerOpen
     ? `w-[calc(100%_-_${DiscussionThreadEnum.WIDTH}px)] poker-discussion-fullscreen-drawer:w-full`
@@ -107,10 +108,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <ActionMeetingAgendaItemsDiscussionDrawer
+        <DiscussionDrawer
+          discussionId={discussionId!}
           isOpen={isRightDrawerOpen}
-          meeting={meeting}
           onToggle={toggleDrawer}
+          allowedThreadables={allowedThreadables}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>
@@ -119,6 +121,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
 
 graphql`
   fragment ActionMeetingAgendaItemsStage on AgendaItemsStage {
+    discussionId
     agendaItem {
       content
       teamMember {

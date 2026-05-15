@@ -1,4 +1,3 @@
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -24,11 +23,10 @@ import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
-  onToggleDrawer: () => void
 }
 
 const TeamPromptWorkDrawer = (props: Props) => {
-  const {meetingRef, onToggleDrawer} = props
+  const {meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
@@ -147,15 +145,6 @@ const TeamPromptWorkDrawer = (props: Props) => {
     <>
       <div className='pt-4'>
         <div className='border-slate-300 border-b border-solid'>
-          <div className='flex justify-between px-4'>
-            <div className='font-semibold text-base'>Your Work</div>
-            <div
-              className='cursor-pointer text-slate-600 hover:opacity-50'
-              onClick={onToggleDrawer}
-            >
-              <Close />
-            </div>
-          </div>
           <Tabs activeIdx={activeIdx} className='max-w-sm'>
             {baseTabs.map((tab, idx) => (
               <Tab

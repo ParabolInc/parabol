@@ -1,69 +1,26 @@
-import styled from '@emotion/styled'
+import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptDrawer_meeting$key} from '~/__generated__/TeamPromptDrawer_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useBreakpoint from '../../hooks/useBreakpoint'
-import {desktopSidebarShadow} from '../../styles/elevation'
-import {
-  BezierCurve,
-  Breakpoint,
-  DiscussionThreadEnum,
-  GlobalBanner,
-  ZIndex
-} from '../../types/constEnums'
+import useMutationProps from '../../hooks/useMutationProps'
+import AddReactjiToReactableMutation from '../../mutations/AddReactjiToReactableMutation'
+import ReactjiId from '../../shared/gqlIds/ReactjiId'
+import {DiscussionThreadEnum} from '../../types/constEnums'
 import findStageById from '../../utils/meetings/findStageById'
-import SendClientSideEvent from '../../utils/SendClientSideEvent'
+import DiscussionDrawer from '../DiscussionDrawer'
 import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
-import TeamPromptDiscussionDrawer from './TeamPromptDiscussionDrawer'
+import TeamPromptDiscussionThreadHeader from './TeamPromptDiscussionThreadHeader'
 import TeamPromptWorkDrawer from './TeamPromptWorkDrawer'
-
-const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
-
-export const Drawer = styled('div')<{
-  isDesktop: boolean
-  isMobile: boolean
-  isOpen: boolean
-}>(({isDesktop, isMobile, isOpen}) => ({
-  boxShadow: isDesktop ? desktopSidebarShadow : undefined,
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  overflow: 'hidden',
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
-  position: isDesktop ? 'fixed' : 'static',
-  bottom: 0,
-  top: 0,
-  right: isDesktop ? 0 : undefined,
-  userSelect: isDesktop ? undefined : 'none',
-  transition: `all 200ms ${BezierCurve.DECELERATE}`,
-  transform: `translateX(${
-    isOpen
-      ? isMobile
-        ? `calc(${DiscussionThreadEnum.WIDTH}px - 100vw)`
-        : 0
-      : `${DiscussionThreadEnum.WIDTH}px`
-  })`,
-  width: isMobile ? '100vw' : `min(${DiscussionThreadEnum.WIDTH}px, 100vw)`,
-  zIndex: ZIndex.SIDEBAR,
-  height: '100%',
-  '@supports (height: 1svh) and (height: 1lvh)': {
-    height: isDesktop ? '100lvh' : '100svh'
-  }
-}))
 
 interface Props {
   meetingRef: TeamPromptDrawer_meeting$key
-  isDesktop: boolean
 }
 
-const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
+const TeamPromptDrawer = ({meetingRef}: Props) => {
   const meeting = useFragment(
     graphql`
       fragment TeamPromptDrawer_meeting on TeamPromptMeeting {
-        ...TeamPromptDiscussionDrawer_meeting
         ...TeamPromptWorkDrawer_meeting
         id
         teamId
@@ -76,6 +33,21 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
               discussionId
               teamMember {
                 id
+                user {
+                  picture
+                  preferredName
+                }
+              }
+              response {
+                id
+                content
+                updatedAt
+                createdAt
+                reactjis {
+                  ...ReactjiSection_reactjis
+                  id
+                  isViewerReactji
+                }
               }
             }
           }
@@ -85,43 +57,47 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
     meetingRef
   )
 
-  const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
-  const {id: meetingId, isRightDrawerOpen} = meeting
-
-  const shouldRenderDiscussionDrawer = () => {
-    const {localStageId} = meeting
-    if (!localStageId) return false
-
-    const stage = findStageById(meeting.phases, localStageId)
-    if (!stage) return false
-
-    const {discussionId, teamMember} = stage.stage
-    if (!discussionId || !teamMember) return false
-
-    return true
-  }
+  const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const {id: meetingId, isRightDrawerOpen, localStageId} = meeting
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
-      const isRightDrawerOpen = meetingProxy.getValue('isRightDrawerOpen')
-
-      if (!shouldRenderDiscussionDrawer()) {
-        SendClientSideEvent(
-          atmosphere,
-          isRightDrawerOpen ? 'Your Work Drawer Closed' : 'Your Work Drawer Opened',
-          {
-            teamId: meeting.teamId,
-            meetingId: meeting.id,
-            source: 'drawer'
-          }
-        )
-      }
-
-      meetingProxy.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
+      meetingProxy.setValue(!meetingProxy.getValue('isRightDrawerOpen'), 'isRightDrawerOpen')
     })
+  }
+
+  const allStages = meeting.phases.flatMap((p) => p.stages)
+  const selectedStage = localStageId ? findStageById(meeting.phases, localStageId)?.stage : null
+  const activeStage =
+    selectedStage?.discussionId && selectedStage?.teamMember
+      ? selectedStage
+      : allStages.find((s) => s.discussionId && s.teamMember)
+
+  const {discussionId, teamMember, response} = activeStage ?? {}
+
+  const reactjis = response?.reactjis ?? []
+  const contentJSON: JSONContent | null = response ? JSON.parse(response.content) : null
+
+  const onToggleReactji = (emojiId: string) => {
+    if (submitting || !reactjis || !response) return
+    const isRemove = !!reactjis.find(
+      (reactji) => reactji.isViewerReactji && ReactjiId.split(reactji.id).name === emojiId
+    )
+    submitMutation()
+    AddReactjiToReactableMutation(
+      atmosphere,
+      {
+        reactableId: response.id,
+        reactableType: 'RESPONSE',
+        isRemove,
+        reactji: emojiId,
+        meetingId
+      },
+      {onCompleted, onError}
+    )
   }
 
   return (
@@ -131,13 +107,22 @@ const TeamPromptDrawer = ({meetingRef, isDesktop}: Props) => {
       onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
     >
-      <Drawer isDesktop={isDesktop} isMobile={isMobile} isOpen={isRightDrawerOpen}>
-        {shouldRenderDiscussionDrawer() ? (
-          <TeamPromptDiscussionDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
-        ) : (
-          <TeamPromptWorkDrawer meetingRef={meeting} onToggleDrawer={onToggleDrawer} />
-        )}
-      </Drawer>
+      <DiscussionDrawer
+        discussionId={discussionId}
+        isOpen={isRightDrawerOpen}
+        onToggle={onToggleDrawer}
+        allowedThreadables={['comment', 'task']}
+        threadHeader={
+          <TeamPromptDiscussionThreadHeader
+            teamMember={teamMember}
+            response={response}
+            contentJSON={contentJSON}
+            stageId={activeStage?.id}
+            onToggleReactji={onToggleReactji}
+          />
+        }
+        workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
+      />
     </ResponsiveDashSidebar>
   )
 }

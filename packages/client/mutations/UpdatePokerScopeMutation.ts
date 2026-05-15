@@ -26,7 +26,9 @@ graphql`
       ...EstimatePhaseAreaStage
       ...JiraFieldDimensionDropdown_stage
       ...EstimateDimensionColumn_stage
-      ...EstimatePhaseDiscussionDrawerEstimateStage
+      ... on EstimateStage {
+        discussionId
+      }
       id
       isNavigableByFacilitator
       isVoting

@@ -10,6 +10,8 @@ import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/Edi
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
+import DiscussionDrawer from './DiscussionDrawer'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
@@ -20,7 +22,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
-import RetroDiscussPhaseDiscussionDrawer from './RetroDiscussPhaseDiscussionDrawer'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 
@@ -37,7 +38,6 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
-        ...RetroDiscussPhaseDiscussionDrawer_meeting
         id
         endedAt
         isCommentUnread
@@ -64,7 +64,8 @@ const RetroDiscussPhase = (props: Props) => {
     isCommentUnread,
     isRightDrawerOpen
   } = meeting
-  const {reflectionGroup} = localStage
+  const {reflectionGroup, discussionId} = localStage
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const toggleDrawer = useRightDrawer(meetingId)
   const title = reflectionGroup?.title ?? ''
@@ -146,10 +147,11 @@ const RetroDiscussPhase = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <RetroDiscussPhaseDiscussionDrawer
+        <DiscussionDrawer
+          discussionId={discussionId!}
           isOpen={isRightDrawerOpen}
-          meeting={meeting}
           onToggle={toggleDrawer}
+          allowedThreadables={allowedThreadables}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>
