@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.15.0](https://github.com/ParabolInc/parabol/compare/v13.14.3...v13.15.0) (2026-05-15)
+
+
+### Added
+
+* Jira getIssues extend timeout ([#13088](https://github.com/ParabolInc/parabol/issues/13088)) ([2f36620](https://github.com/ParabolInc/parabol/commit/2f3662075732d77ffb7c8cae02d1fc97ed32edea))
+
+
+### Fixed
+
+* bump kysely ([#13085](https://github.com/ParabolInc/parabol/issues/13085)) ([6c41fae](https://github.com/ParabolInc/parabol/commit/6c41fae6795716af5bf74fce0209b8e864d2b147))
+
 ## [13.14.3](https://github.com/ParabolInc/parabol/compare/v13.14.2...v13.14.3) (2026-05-12)
 
 
