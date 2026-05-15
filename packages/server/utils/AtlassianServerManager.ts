@@ -234,6 +234,7 @@ interface JiraSearchResponse<
     description: string
     issuetype: {id: string; iconUrl: string}
     created: string
+    updated: string
     lastViewed: string
   }
 > {
@@ -250,11 +251,6 @@ interface JiraSearchResponse<
     fields: T
     renderedFields: {
       description: string
-    }
-    changelog: {
-      histories: {
-        created: string
-      }[]
     }
   }[]
 }
@@ -332,6 +328,38 @@ class AtlassianServerManager extends AtlassianManager {
       }
       if (isJiraNoAccessError(json)) {
         return new Error(json.errorMessages[0])
+      }
+      return json as T
+    } catch (error) {
+      if (error instanceof Error) return error
+      return new Error('Atlassian is down')
+    }
+  }
+
+  protected override readonly post = async <T extends object>(url: string, payload: unknown) => {
+    const deadline = new Date(Date.now() + 30_000)
+    try {
+      const res = await fetchWithRetry(url, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(payload),
+        deadline
+      })
+      const json = (await res.json()) as
+        | AtlassianError
+        | JiraNoAccessError
+        | Record<string, unknown>
+        | T
+      if ('message' in json) {
+        return new Error((json as AtlassianError).message)
+      }
+      if (isJiraNoAccessError(json)) {
+        return new Error(json.errorMessages[0])
+      }
+      if ('errors' in json && json.errors && typeof json.errors === 'object') {
+        const errors = json.errors as Record<string, string>
+        const errorFieldName = Object.keys(errors)[0] || 'Unknown'
+        return new Error(`${errorFieldName}: ${errors[errorFieldName]}`)
       }
       return json as T
     } catch (error) {
@@ -574,8 +602,8 @@ class AtlassianServerManager extends AtlassianManager {
       jql,
       maxResults,
       nextPageToken,
-      fields: ['summary', 'description', 'issuetype', 'created', 'lastViewed'],
-      expand: 'renderedFields,changelog'
+      fields: ['summary', 'description', 'issuetype', 'created', 'updated', 'lastViewed'],
+      expand: 'renderedFields'
     }
 
     const res = await this.post<JiraSearchResponse>(url, payload)
@@ -586,10 +614,10 @@ class AtlassianServerManager extends AtlassianManager {
       return {error: res, issues: null, nextPageToken: null, isLast: false}
     }
     const issues = res.issues.map((issue) => {
-      const {key: issueKey, fields, renderedFields, changelog} = issue
-      const {description, summary, issuetype, created, lastViewed} = fields
+      const {key: issueKey, fields, renderedFields} = issue
+      const {description, summary, issuetype, created, updated, lastViewed} = fields
       const {description: descriptionHTML} = renderedFields
-      const lastUpdated = changelog.histories[0]?.created ?? created
+      const lastUpdated = updated ?? created
       return {
         issuetype,
         summary,
