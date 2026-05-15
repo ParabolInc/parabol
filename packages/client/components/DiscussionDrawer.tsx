@@ -17,9 +17,6 @@ interface Props {
   isOpen: boolean
   onToggle: () => void
   allowedThreadables: DiscussionThreadables[]
-  // Optional label shown in the header (default: 'Discussion').
-  // Ignored when tabs are present (tabs take over the header).
-  label?: string
   // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
   // The close button is always appended after this by DiscussionDrawer.
   headerContent?: ReactNode

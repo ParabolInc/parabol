@@ -1,18 +1,9 @@
-import styled from '@emotion/styled'
 import type {JSONContent} from '@tiptap/react'
 import type {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import Avatar from '../Avatar/Avatar'
 import ReactjiSection from '../ReflectionCard/ReactjiSection'
 import PromptResponseEditor from './PromptResponseEditor'
 import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
-
-const Wrapper = styled('div')({
-  padding: '16px 12px 20px 12px'
-})
-
-const StyledReactjis = styled(ReactjiSection)({
-  paddingTop: '16px'
-})
 
 interface Props {
   teamMember: {user: {picture: string; preferredName: string}} | null | undefined
@@ -37,7 +28,7 @@ const TeamPromptDiscussionThreadHeader = ({
   onToggleReactji
 }: Props) => {
   return (
-    <Wrapper>
+    <div className='px-3 pt-4 pb-5'>
       {teamMember && (
         <div className='flex items-center px-0 pb-3'>
           <Avatar picture={teamMember.user.picture} className='h-12 w-12' />
@@ -53,12 +44,13 @@ const TeamPromptDiscussionThreadHeader = ({
         </div>
       )}
       <PromptResponseEditor content={contentJSON} readOnly={true} teamId='' />
-      <StyledReactjis
+      <ReactjiSection
+        className='pt-4'
         key={stageId}
         reactjis={response?.reactjis ?? []}
         onToggle={onToggleReactji}
       />
-    </Wrapper>
+    </div>
   )
 }
 
