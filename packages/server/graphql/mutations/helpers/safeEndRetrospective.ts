@@ -8,6 +8,7 @@ import TimelineEventRetroComplete from '../../../database/types/TimelineEventRet
 import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
+import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -103,13 +104,17 @@ const safeEndRetrospective = async ({
   }
   // remove any empty tasks
   const {templateId} = completedRetrospective
-  const [meetingMembers, team, teamMembers, removedTaskIds, template] = await Promise.all([
-    dataLoader.get('meetingMembersByMeetingId').load(meetingId),
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('teamMembersByTeamId').load(teamId),
-    removeEmptyTasks(meetingId),
-    dataLoader.get('meetingTemplates').loadNonNull(templateId)
-  ])
+  const isKill = !!(phase && phase.phaseType !== DISCUSS)
+  const hasUpdatesPhase = phases.some((p) => p.phaseType === 'updates')
+  const [meetingMembers, team, teamMembers, removedTaskIds, template, updatedTaskIds] =
+    await Promise.all([
+      dataLoader.get('meetingMembersByMeetingId').load(meetingId),
+      dataLoader.get('teams').loadNonNull(teamId),
+      dataLoader.get('teamMembersByTeamId').load(teamId),
+      removeEmptyTasks(meetingId),
+      dataLoader.get('meetingTemplates').loadNonNull(templateId),
+      hasUpdatesPhase && !isKill ? archiveDoneTasksForMeeting(teamId, meetingId) : []
+    ])
   const events = teamMembers.map(
     (teamMember) =>
       new TimelineEventRetroComplete({
@@ -143,8 +148,9 @@ const safeEndRetrospective = async ({
   const data = {
     meetingId,
     teamId,
-    isKill: !!(phase && phase.phaseType !== DISCUSS),
-    removedTaskIds
+    isKill,
+    removedTaskIds,
+    updatedTaskIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndRetrospectiveSuccess', data, subOptions)
   // wait for removeEmptyTasks before summarizeRetroMeeting

@@ -13,7 +13,7 @@ import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
 import type {AgendaItem, Task} from '../../../postgres/types'
 import type {CheckInMeeting} from '../../../postgres/types/Meeting'
-import archiveTasksForDB from '../../../safeMutations/archiveTasksForDB'
+import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
 import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -115,7 +115,7 @@ const summarizeCheckInMeeting = async (meeting: CheckInMeeting, dataLoader: Data
   ).filter(isValid)
   const commentCount = commentCounts.reduce((cumSum, count) => cumSum + count, 0)
   await Promise.all([
-    isKill ? undefined : archiveTasksForDB(doneTasks, meetingId),
+    isKill ? undefined : archiveDoneTasksForMeeting(teamId, meetingId),
     isKill ? undefined : clonePinnedAgendaItems(pinnedAgendaItems, dataLoader),
     updateTaskSortOrders(userIds, tasks),
     pg

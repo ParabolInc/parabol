@@ -1,35 +1,34 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import type {ActionMeetingUpdates_meeting$key} from '../__generated__/ActionMeetingUpdates_meeting.graphql'
+import type {RetroMeetingUpdates_meeting$key} from '../__generated__/RetroMeetingUpdates_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import isTaskPrivate from '../utils/isTaskPrivate'
 import toTeamMemberId from '../utils/relay/toTeamMemberId'
-import type {ActionMeetingPhaseProps} from './ActionMeeting'
-import ActionMeetingUpdatesPrompt from './ActionMeetingUpdatesPrompt'
 import MeetingUpdatesContent from './MeetingUpdatesContent'
+import type {RetroMeetingPhaseProps} from './RetroMeeting'
+import RetroMeetingUpdatesPrompt from './RetroMeetingUpdatesPrompt'
 
-interface Props extends ActionMeetingPhaseProps {
-  meeting: ActionMeetingUpdates_meeting$key
+interface Props extends RetroMeetingPhaseProps {
+  meeting: RetroMeetingUpdates_meeting$key
 }
 
-const ActionMeetingUpdates = (props: Props) => {
+const RetroMeetingUpdates = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment ActionMeetingUpdates_meeting on ActionMeeting {
+      fragment RetroMeetingUpdates_meeting on RetrospectiveMeeting {
         ...StageTimerDisplay_meeting
-        ...StageTimerControl_meeting
-        ...ActionMeetingUpdatesPrompt_meeting
+        ...RetroMeetingUpdatesPrompt_meeting
         id
         endedAt
         showSidebar
         localStage {
-          ...ActionMeetingUpdatesStage @relay(mask: false)
+          ...RetroMeetingUpdatesStage @relay(mask: false)
         }
         phases {
           stages {
-            ...ActionMeetingUpdatesStage @relay(mask: false)
+            ...RetroMeetingUpdatesStage @relay(mask: false)
           }
         }
         team {
@@ -38,7 +37,6 @@ const ActionMeetingUpdates = (props: Props) => {
             edges {
               node {
                 ...TaskColumns_tasks @arguments(meetingId: $meetingId)
-                # grab these so we can sort correctly
                 id
                 status
                 sortOrder
@@ -56,20 +54,20 @@ const ActionMeetingUpdates = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
-  const {teamMember} = localStage!
-  const {userId} = teamMember!
+  const stageOwner = localStage?.teamMember
+  const stageOwnerUserId = stageOwner?.userId ?? viewerId
   const teamMemberTasks = useMemo(() => {
     return tasks.edges
       .map(({node}) => node)
-      .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
-  }, [tasks, userId])
+      .filter((task) => task.userId === stageOwnerUserId && !isTaskPrivate(task.tags))
+  }, [tasks, stageOwnerUserId])
 
   return (
     <MeetingUpdatesContent
       avatarGroup={avatarGroup}
       endedAt={endedAt}
-      headerPrompt={<ActionMeetingUpdatesPrompt meeting={meeting} />}
-      isViewerStageOwner={userId === viewerId}
+      headerPrompt={<RetroMeetingUpdatesPrompt meeting={meeting} />}
+      isViewerStageOwner={stageOwnerUserId === viewerId}
       meetingId={meetingId}
       meetingRef={meeting}
       myTeamMemberId={toTeamMemberId(teamId, viewerId)}
@@ -81,11 +79,11 @@ const ActionMeetingUpdates = (props: Props) => {
 }
 
 graphql`
-  fragment ActionMeetingUpdatesStage on UpdatesStage {
+  fragment RetroMeetingUpdatesStage on UpdatesStage {
     teamMember {
       userId
     }
   }
 `
 
-export default ActionMeetingUpdates
+export default RetroMeetingUpdates

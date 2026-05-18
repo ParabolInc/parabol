@@ -98,6 +98,11 @@ type EstimateStage implements NewMeetingStage & DiscussionThreadStage {
   timeRemaining: Float
 
   """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
+
+  """
   Foreign key linking to the Discussion thread associated with this stage
   """
   discussionId: ID!

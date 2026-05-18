@@ -88,6 +88,18 @@ type Task implements Threadable {
   "The ID of the meeting the task was created in, if any"
   meetingId: ID
 
+  """
+  The meeting the task was created in, if any.
+  """
+  meeting: NewMeeting @scope(name: MEETINGS_READ)
+
+  """
+  The discussion this task was created in, if any. For retrospective tasks, this resolves
+  the reflection-group discussion via discussionId; use task.discussion.stage to reach the
+  RetroDiscussStage with its reflectionGroup and stageIdx.
+  """
+  discussion: Discussion @scope(name: MEETINGS_READ)
+
   "The ID of the meeting in which this task was marked as done, if any"
   doneMeetingId: ID
 

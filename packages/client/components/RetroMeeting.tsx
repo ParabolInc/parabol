@@ -26,6 +26,9 @@ const phaseLookup: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponen
     () => import(/* webpackChunkName: 'NewMeetingCheckIn' */ './NewMeetingCheckIn')
   ),
   TEAM_HEALTH: lazyPreload(() => import(/* webpackChunkName: 'TeamHealth' */ './TeamHealth')),
+  updates: lazyPreload(
+    () => import(/* webpackChunkName: 'RetroMeetingUpdates' */ './RetroMeetingUpdates')
+  ),
   reflect: lazyPreload(
     () =>
       import(/* webpackChunkName: 'RetroReflectPhase' */ './RetroReflectPhase/RetroReflectPhase')
@@ -53,6 +56,7 @@ const RetroMeeting = (props: Props) => {
         ...RetroMeetingSidebar_meeting
         ...NewMeetingCheckIn_meeting
         ...TeamHealth_meeting
+        ...RetroMeetingUpdates_meeting
         ...RetroReflectPhase_meeting
         ...RetroGroupPhase_meeting
         ...RetroVotePhase_meeting

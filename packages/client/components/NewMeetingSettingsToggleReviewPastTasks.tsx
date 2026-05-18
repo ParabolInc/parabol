@@ -1,21 +1,21 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {NewMeetingSettingsToggleCheckIn_settings$key} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+import type {NewMeetingSettingsToggleReviewPastTasks_settings$key} from '~/__generated__/NewMeetingSettingsToggleReviewPastTasks_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
 import NewMeetingSettingsToggleRow from './NewMeetingSettingsToggleRow'
 
 interface Props {
-  settingsRef: NewMeetingSettingsToggleCheckIn_settings$key
+  settingsRef: NewMeetingSettingsToggleReviewPastTasks_settings$key
   className?: string
 }
 
-const NewMeetingSettingsToggleCheckIn = (props: Props) => {
+const NewMeetingSettingsToggleReviewPastTasks = (props: Props) => {
   const {settingsRef, className} = props
   const settings = useFragment(
     graphql`
-      fragment NewMeetingSettingsToggleCheckIn_settings on TeamMeetingSettings {
+      fragment NewMeetingSettingsToggleReviewPastTasks_settings on TeamMeetingSettings {
         id
         phaseTypes
       }
@@ -23,26 +23,26 @@ const NewMeetingSettingsToggleCheckIn = (props: Props) => {
     settingsRef
   )
   const {id: settingsId, phaseTypes} = settings
-  const hasCheckIn = phaseTypes.includes('checkin')
+  const hasReviewPastTasks = phaseTypes.includes('updates')
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, submitting, submitMutation} = useMutationProps()
-  const toggleCheckIn = () => {
+  const toggleReviewPastTasks = () => {
     if (submitting) return
     submitMutation()
     SetMeetingSettingsMutation(
       atmosphere,
-      {checkinEnabled: !hasCheckIn, settingsId},
+      {reviewPastTasksEnabled: !hasReviewPastTasks, settingsId},
       {onError, onCompleted}
     )
   }
   return (
     <NewMeetingSettingsToggleRow
-      active={hasCheckIn}
+      active={hasReviewPastTasks}
       className={className}
-      label={'Include Icebreaker'}
-      onClick={toggleCheckIn}
+      label={'Review Tasks'}
+      onClick={toggleReviewPastTasks}
     />
   )
 }
 
-export default NewMeetingSettingsToggleCheckIn
+export default NewMeetingSettingsToggleReviewPastTasks
