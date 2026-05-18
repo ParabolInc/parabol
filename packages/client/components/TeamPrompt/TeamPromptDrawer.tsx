@@ -22,6 +22,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
     graphql`
       fragment TeamPromptDrawer_meeting on TeamPromptMeeting {
         ...TeamPromptWorkDrawer_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         teamId
         isRightDrawerOpen
@@ -112,6 +113,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
         isOpen={isRightDrawerOpen}
         onToggle={onToggleDrawer}
         allowedThreadables={['comment', 'task']}
+        meetingRef={meeting}
         threadHeader={
           <TeamPromptDiscussionThreadHeader
             teamMember={teamMember}

@@ -37,7 +37,8 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
 
   azureDevOps: (source) => source,
   msTeams: (source) => source,
-  linear: (source) => source
+  linear: (source) => source,
+  gdrive: ({teamId, userId}) => ({teamId, userId})
 }
 
 export default TeamMemberIntegrations

@@ -38,6 +38,7 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         endedAt
         isCommentUnread
@@ -152,6 +153,7 @@ const RetroDiscussPhase = (props: Props) => {
           isOpen={isRightDrawerOpen}
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
+          meetingRef={meeting}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

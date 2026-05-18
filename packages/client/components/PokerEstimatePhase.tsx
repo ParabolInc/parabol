@@ -56,6 +56,7 @@ const PokerEstimatePhase = (props: Props) => {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
         ...EstimatePhaseArea_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         endedAt
         isCommentUnread
@@ -127,6 +128,7 @@ const PokerEstimatePhase = (props: Props) => {
           isOpen={isRightDrawerOpen}
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
+          meetingRef={meeting}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

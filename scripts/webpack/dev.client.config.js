@@ -24,7 +24,7 @@ module.exports = {
     {module: /framer-motion.*filter-props/}
   ],
   devServer: {
-    allowedHosts: ['localhost', 'host.docker.internal', HOST],
+    allowedHosts: process.env.DEV_WEBHOOK_URL ? 'all' : ['localhost', 'host.docker.internal', HOST],
     server: isProxiedDev ? 'http' : 'https',
     client: {
       logging: 'warn'
@@ -50,6 +50,7 @@ module.exports = {
       ...[
         'jira-attachments',
         'stripe',
+        'gdrive',
         'webhooks',
         'health',
         'ready',

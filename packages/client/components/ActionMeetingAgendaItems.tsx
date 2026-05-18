@@ -40,6 +40,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
       fragment ActionMeetingAgendaItems_meeting on ActionMeeting {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         showSidebar
         endedAt
@@ -113,6 +114,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           isOpen={isRightDrawerOpen}
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
+          meetingRef={meeting}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

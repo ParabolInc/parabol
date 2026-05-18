@@ -1,11 +1,12 @@
 import {Close} from '@mui/icons-material'
 import {type ReactNode, useState} from 'react'
 import {desktopSidebarShadow} from '~/styles/elevation'
+import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {BezierCurve, Breakpoint, GlobalBanner, ZIndex} from '../types/constEnums'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
+import DiscussionDrawerTranscripts from './DiscussionDrawerTranscripts'
 import type {DiscussionThreadables} from './DiscussionThreadList'
-import DiscussionThreadListEmptyTranscriptState from './DiscussionThreadListEmptyTranscriptState'
 import PlainButton from './PlainButton/PlainButton'
 import Tab from './Tab/Tab'
 import Tabs from './Tabs/Tabs'
@@ -17,6 +18,7 @@ interface Props {
   isOpen: boolean
   onToggle: () => void
   allowedThreadables: DiscussionThreadables[]
+  meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
   // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
   // The close button is always appended after this by DiscussionDrawer.
   headerContent?: ReactNode
@@ -31,6 +33,7 @@ const DiscussionDrawer = ({
   isOpen,
   onToggle,
   allowedThreadables,
+  meetingRef,
   headerContent,
   threadHeader,
   workContent
@@ -87,7 +90,7 @@ const DiscussionDrawer = ({
       {activeTabId === 'work' ? (
         workContent
       ) : activeTabId === 'transcription' ? (
-        <DiscussionThreadListEmptyTranscriptState allowTasks={false} />
+        <DiscussionDrawerTranscripts meetingRef={meetingRef} />
       ) : activeTabId === 'discussion' && discussionId ? (
         <DiscussionDrawerThread
           discussionId={discussionId}
