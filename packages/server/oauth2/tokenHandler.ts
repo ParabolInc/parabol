@@ -61,7 +61,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
 
     const scopes = ['scim']
     const authToken = new AuthToken({
-      sub: saml.orgId,
+      sub: saml.id,
       tms: [],
       scope: scopes,
       lifespan_ms: ms('30d'),

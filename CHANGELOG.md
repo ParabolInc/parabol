@@ -5,6 +5,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.16.0](https://github.com/ParabolInc/parabol/compare/v13.15.0...v13.16.0) (2026-05-18)
+
+
+### Added
+
+* adds task review to retro ([#13087](https://github.com/ParabolInc/parabol/issues/13087)) ([2b9fb6b](https://github.com/ParabolInc/parabol/commit/2b9fb6bc75345be6f8653222856193b75c53c8c6))
+
+
+### Fixed
+
+* SCIM OAuth Client Credentials sub mapping ([#13092](https://github.com/ParabolInc/parabol/issues/13092)) ([43503da](https://github.com/ParabolInc/parabol/commit/43503da228589e17291737b57cca660d5cbe9a12))
+
+## [13.15.0](https://github.com/ParabolInc/parabol/compare/v13.14.3...v13.15.0) (2026-05-15)
+
+
+### Added
+
+* Jira getIssues extend timeout ([#13088](https://github.com/ParabolInc/parabol/issues/13088)) ([2f36620](https://github.com/ParabolInc/parabol/commit/2f3662075732d77ffb7c8cae02d1fc97ed32edea))
+
+
+### Fixed
+
+* bump kysely ([#13085](https://github.com/ParabolInc/parabol/issues/13085)) ([6c41fae](https://github.com/ParabolInc/parabol/commit/6c41fae6795716af5bf74fce0209b8e864d2b147))
+
 ## [13.14.3](https://github.com/ParabolInc/parabol/compare/v13.14.2...v13.14.3) (2026-05-12)
 
 
