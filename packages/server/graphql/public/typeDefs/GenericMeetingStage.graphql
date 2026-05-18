@@ -96,4 +96,9 @@ type GenericMeetingStage implements NewMeetingStage {
   The number of milliseconds left before the scheduled end time. Useful for unsynced client clocks. null if scheduledEndTime is null
   """
   timeRemaining: Float
+
+  """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
 }

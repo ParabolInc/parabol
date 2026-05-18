@@ -98,6 +98,11 @@ type CheckInStage implements NewMeetingStage & NewMeetingTeamMemberStage {
   timeRemaining: Float
 
   """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
+
+  """
   The meeting member that is the focus for this phase item
   """
   meetingMember: MeetingMember!

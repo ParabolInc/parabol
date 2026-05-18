@@ -24,6 +24,7 @@ import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
+import NewMeetingSettingsToggleReviewPastTasks from '../NewMeetingSettingsToggleReviewPastTasks'
 import NewMeetingSettingsToggleTeamHealth from '../NewMeetingSettingsToggleTeamHealth'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 import StartMeetingUpgradeModal from '../StartMeetingUpgradeModal'
@@ -80,6 +81,7 @@ const ActivityDetailsSidebar = (props: Props) => {
         retroSettings: meetingSettings(meetingType: retrospective) {
           ...NewMeetingSettingsToggleCheckIn_settings
           ...NewMeetingSettingsToggleTeamHealth_settings
+          ...NewMeetingSettingsToggleReviewPastTasks_settings
           ...NewMeetingSettingsToggleAnonymity_settings
         }
         pokerSettings: meetingSettings(meetingType: poker) {
@@ -302,6 +304,9 @@ const ActivityDetailsSidebar = (props: Props) => {
                   <NewMeetingSettingsToggleTeamHealth
                     settingsRef={selectedTeam.retroSettings}
                     teamRef={selectedTeam}
+                  />
+                  <NewMeetingSettingsToggleReviewPastTasks
+                    settingsRef={selectedTeam.retroSettings}
                   />
                   <NewMeetingSettingsToggleAnonymity settingsRef={selectedTeam.retroSettings} />
                 </>

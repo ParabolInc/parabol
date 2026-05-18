@@ -6,6 +6,7 @@ export type EndRetrospectiveSuccessSource = {
   teamId: string
   isKill: boolean
   removedTaskIds: string[]
+  updatedTaskIds: string[]
 }
 
 const EndRetrospectiveSuccess: EndRetrospectiveSuccessResolvers = {

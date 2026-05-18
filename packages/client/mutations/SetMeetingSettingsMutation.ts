@@ -21,6 +21,7 @@ const mutation = graphql`
     $settingsId: ID!
     $checkinEnabled: Boolean
     $teamHealthEnabled: Boolean
+    $reviewPastTasksEnabled: Boolean
     $disableAnonymity: Boolean
     $videoMeetingURL: String
   ) {
@@ -28,6 +29,7 @@ const mutation = graphql`
       settingsId: $settingsId
       checkinEnabled: $checkinEnabled
       teamHealthEnabled: $teamHealthEnabled
+      reviewPastTasksEnabled: $reviewPastTasksEnabled
       disableAnonymity: $disableAnonymity
       videoMeetingURL: $videoMeetingURL
     ) {
@@ -40,6 +42,19 @@ type Settings = NonNullable<
   TSetMeetingSettingsMutation['response']['setMeetingSettings']['settings']
 >
 
+// Inserts `'updates'` into a phaseTypes array immediately after the last index of
+// 'checkin' / 'TEAM_HEALTH' (or at index 0 if neither present). Mirrors the server's
+// canonicalization in setMeetingSettings.ts so the optimistic UI matches the post-write state.
+const insertUpdatesAfterAnchor = (phaseTypes: readonly string[]): string[] => {
+  if (phaseTypes.includes('updates')) return [...phaseTypes]
+  let anchor = -1
+  phaseTypes.forEach((phase, idx) => {
+    if (phase === 'checkin' || phase === 'TEAM_HEALTH') anchor = idx
+  })
+  const insertAt = anchor + 1
+  return [...phaseTypes.slice(0, insertAt), 'updates', ...phaseTypes.slice(insertAt)]
+}
+
 const SetMeetingSettingsMutation: StandardMutation<TSetMeetingSettingsMutation> = (
   atmosphere,
   variables,
@@ -51,7 +66,7 @@ const SetMeetingSettingsMutation: StandardMutation<TSetMeetingSettingsMutation> 
     onCompleted,
     onError,
     optimisticUpdater: (store) => {
-      const {checkinEnabled, disableAnonymity, settingsId} = variables
+      const {checkinEnabled, reviewPastTasksEnabled, disableAnonymity, settingsId} = variables
       const settings = store.get<Settings>(settingsId)
       if (!settings) return
 
@@ -62,6 +77,18 @@ const SetMeetingSettingsMutation: StandardMutation<TSetMeetingSettingsMutation> 
         } else if (!checkinEnabled && phaseTypes.includes('checkin')) {
           settings.setValue(
             phaseTypes.filter((type) => type !== 'checkin'),
+            'phaseTypes'
+          )
+        }
+      }
+
+      if (reviewPastTasksEnabled !== undefined) {
+        const phaseTypes = settings.getValue('phaseTypes')
+        if (reviewPastTasksEnabled && !phaseTypes.includes('updates')) {
+          settings.setValue(insertUpdatesAfterAnchor(phaseTypes), 'phaseTypes')
+        } else if (!reviewPastTasksEnabled && phaseTypes.includes('updates')) {
+          settings.setValue(
+            phaseTypes.filter((type) => type !== 'updates'),
             'phaseTypes'
           )
         }
