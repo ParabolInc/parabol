@@ -3,7 +3,6 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 import relativeDate from '../../utils/date/relativeDate'
 import getRefreshPeriod from '../../utils/getRefreshPeriod'
 import Ellipsis from '../Ellipsis/Ellipsis'
-import type {TimestampType} from './EditingStatus'
 
 const StyledWrapper = styled('span')({
   display: 'block',
@@ -15,7 +14,7 @@ interface Props {
   editors: {preferredName: string}[]
   isEditing: boolean
   timestamp: string
-  timestampType: TimestampType
+  timestampType: 'createdAt' | 'updatedAt'
   isArchived?: boolean
 }
 

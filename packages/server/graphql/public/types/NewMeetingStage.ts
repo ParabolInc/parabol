@@ -34,6 +34,13 @@ const NewMeetingStage: NewMeetingStageResolvers = {
     const coercedDate = new Date(scheduledEndTime)
     if (!isValidDate(coercedDate)) return null
     return coercedDate.getTime() - Date.now()
+  },
+
+  stageIdx: async ({id: stageId, meetingId, phaseType}, _args, {dataLoader}) => {
+    const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
+    const phase = meeting.phases.find((p) => p.phaseType === phaseType)
+    if (!phase) return 0
+    return phase.stages.findIndex((stage) => stage.id === stageId)
   }
 }
 

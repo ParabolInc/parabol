@@ -90,6 +90,11 @@ type TeamHealthStage implements NewMeetingStage {
   timeRemaining: Float
 
   """
+  The 0-based position of this stage within its phase, ordered by sortOrder.
+  """
+  stageIdx: Int!
+
+  """
   Team health question of the stage
   """
   question: String!
