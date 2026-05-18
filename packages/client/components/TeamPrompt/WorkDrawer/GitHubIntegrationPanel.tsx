@@ -120,7 +120,7 @@ const GitHubIntegrationPanel = (props: Props) => {
           />
         </>
       ) : (
-        <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
+        <div className='flex flex-col items-center gap-2 pt-12'>
           <div className='h-10 w-10'>
             <img className='h-10 w-10' src={gitHubSVG} />
           </div>
