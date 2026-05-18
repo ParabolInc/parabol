@@ -2765,6 +2765,118 @@ describe('Pagination', () => {
   })
 })
 
+describe('SCIM OAuth Client Credentials authentication', () => {
+  const OAUTH_TOKEN_URL = `${PROTOCOL}://${HOST}/oauth/token`
+
+  const enableSCIMOAuth = async (orgId: string, cookie: string) => {
+    const res = await sendPublic({
+      query: `
+        mutation UpdateSCIM(
+          $orgId: ID!
+          $authenticationType: SCIMAuthenticationTypeEnum
+        ) {
+          updateSCIM(orgId: $orgId, authenticationType: $authenticationType) {
+            scimOAuthClientId
+            scimOAuthClientSecret
+          }
+        }
+      `,
+      variables: {
+        orgId,
+        authenticationType: 'oauthClientCredentials'
+      },
+      cookie
+    })
+
+    expect(res).toMatchObject({
+      data: {
+        updateSCIM: {
+          scimOAuthClientId: expect.any(String),
+          scimOAuthClientSecret: expect.any(String)
+        }
+      }
+    })
+
+    return res.data.updateSCIM as {scimOAuthClientId: string; scimOAuthClientSecret: string}
+  }
+
+  const getAccessToken = async (clientId: string, clientSecret: string) => {
+    const res = await fetch(OAUTH_TOKEN_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: clientId,
+        client_secret: clientSecret
+      }).toString()
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      access_token: expect.any(String),
+      token_type: 'Bearer'
+    })
+    return data.access_token as string
+  }
+
+  test('can obtain access token and use it for SCIM requests', async () => {
+    const domain = faker.internet.domainName()
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    const {scimOAuthClientId, scimOAuthClientSecret} = await enableSCIMOAuth(orgId, cookie)
+
+    const accessToken = await getAccessToken(scimOAuthClientId, scimOAuthClientSecret)
+
+    const res = await fetch(`${SCIM_URL}/Users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/scim+json',
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    expect(res.status).toBe(200)
+    const data = await res.json()
+    expect(data).toMatchObject({
+      schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse']
+    })
+  })
+
+  test('invalid client_id returns 401', async () => {
+    const res = await fetch(OAUTH_TOKEN_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: 'prbl-scim-cid-invalid',
+        client_secret: 'wrong-secret'
+      }).toString()
+    })
+    expect(res.status).toBe(401)
+    const data = await res.json()
+    expect(data).toMatchObject({error: 'invalid_client'})
+  })
+
+  test('wrong client_secret returns 401', async () => {
+    const domain = faker.internet.domainName()
+    const {orgId, cookie} = await createOrgAdmin(`admin@${domain}`)
+    await verifyDomain(domain, orgId)
+    const {scimOAuthClientId} = await enableSCIMOAuth(orgId, cookie)
+
+    const res = await fetch(OAUTH_TOKEN_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+        client_id: scimOAuthClientId,
+        client_secret: 'wrong-secret'
+      }).toString()
+    })
+    expect(res.status).toBe(401)
+    const data = await res.json()
+    expect(data).toMatchObject({error: 'invalid_client'})
+  })
+})
+
 describe('SCIM Bearer Token authentication', () => {
   test('Refreshing creates a new token', async () => {
     const domain = faker.internet.domainName()
