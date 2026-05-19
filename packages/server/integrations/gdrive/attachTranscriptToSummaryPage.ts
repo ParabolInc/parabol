@@ -21,7 +21,7 @@ export const attachTranscriptToSummaryPage = async (
       userId
     })
     const pageCode = CipherId.encrypt(childPage.id)
-    await redisHocusPocus.handleEvent('appendPageLinkToPage', documentName, {
+    await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
       title,
       pageCode,
       isDatabase: false
