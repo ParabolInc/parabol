@@ -10,6 +10,7 @@ import {PageDropTarget} from '../../modules/pages/PageDropTarget'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {cn} from '../../ui/cn'
 import {GQLID} from '../../utils/GQLID'
+import {getPageEmoji, stripPageEmoji} from '../../utils/getPageEmoji'
 import {ExpandPageChildrenButton} from './ExpandPageChildrenButton'
 import {LeftNavItem} from './LeftNavItem'
 import {PageActions} from './PageActions'
@@ -87,6 +88,7 @@ export const LeftNavPageLink = (props: Props) => {
 
   const [pageCode] = GQLID.fromKey(id)
   const slug = getPageSlug(Number(pageCode), title)
+  const emoji = getPageEmoji(title ?? '')
   const isViewerPageEditor = ['owner', 'editor'].includes(viewerAccess!)
   const isViewerParentPageEditor = ['owner', 'editor'].includes(parentPageViewerAccess!)
 
@@ -186,10 +188,13 @@ export const LeftNavPageLink = (props: Props) => {
               showChildren={showChildren}
               expandChildPages={expandChildPages}
               draggingPageId={isSelf ? null : draggingPageId}
+              emoji={emoji}
             />
           )}
           <LeftNavItem>
-            <span className='pl-1'>{title || '<Untitled>'}</span>
+            <span className='pl-1'>
+              {(emoji ? stripPageEmoji(title ?? '', emoji) : title) || '<Untitled>'}
+            </span>
           </LeftNavItem>
           <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
         </Link>

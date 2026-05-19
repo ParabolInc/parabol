@@ -194,7 +194,7 @@ const TeamPromptMeeting = (props: Props) => {
                 </ResponsesGridContainer>
               </ErrorBoundary>
             </StyledMeetingHeaderAndPhase>
-            <TeamPromptDrawer meetingRef={meeting} isDesktop={isDesktop} />
+            <TeamPromptDrawer meetingRef={meeting} />
           </MeetingContent>
         </Suspense>
       </MeetingArea>

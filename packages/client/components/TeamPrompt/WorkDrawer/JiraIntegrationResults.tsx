@@ -87,7 +87,7 @@ const JiraIntegrationResults = (props: Props) => {
             return <JiraObjectCard key={idx} resultRef={result} />
           })
         ) : (
-          <div className='-mt-14 flex h-full flex-col items-center justify-center'>
+          <div className='flex flex-col items-center pt-12'>
             <img className='w-20' src={halloweenRetrospectiveTemplate} />
             <div className='mt-7 w-2/3 text-center'>
               {error?.message ? error.message : `Looks like you don’t have any issues to display.`}

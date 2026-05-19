@@ -5,6 +5,7 @@ import {
   type ReactElement,
   type ReactNode,
   useCallback,
+  useEffect,
   useRef,
   useState
 } from 'react'
@@ -68,6 +69,16 @@ const Tabs = (props: Props) => {
       moveInkBar(c, activeChildRef.current)
     }
     parentRef.current = c
+  }, [])
+
+  useEffect(() => {
+    const parent = parentRef.current
+    if (!parent) return
+    const observer = new ResizeObserver(() => {
+      moveInkBar(parentRef.current, activeChildRef.current)
+    })
+    observer.observe(parent)
+    return () => observer.disconnect()
   }, [])
 
   const properChildren = Children.map(children, (child, idx) => {

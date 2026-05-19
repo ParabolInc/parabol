@@ -6,7 +6,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {Breakpoint, DiscussionThreadEnum, MeetingControlBarEnum} from '~/types/constEnums'
 import type {DiscussionThreadQuery} from '../__generated__/DiscussionThreadQuery.graphql'
-import type {RetroDiscussPhase_meeting$data} from '../__generated__/RetroDiscussPhase_meeting.graphql'
 import {Elevation} from '../styles/elevation'
 import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DiscussionThreadInput from './DiscussionThreadInput'
@@ -36,21 +35,10 @@ interface Props {
   queryRef: PreloadedQuery<DiscussionThreadQuery>
   header?: ReactNode
   emptyState?: ReactNode
-  transcription?: RetroDiscussPhase_meeting$data['transcription']
-  showTranscription?: boolean
 }
 
 const DiscussionThread = (props: Props) => {
-  const {
-    meetingContentRef,
-    allowedThreadables,
-    width,
-    queryRef,
-    header,
-    emptyState,
-    transcription,
-    showTranscription
-  } = props
+  const {meetingContentRef, allowedThreadables, width, queryRef, header, emptyState} = props
   const {viewerId} = useAtmosphere()
   const isDrawer = !!width // hack to say this is in a poker meeting
   const ref = useRef<HTMLDivElement>(null)
@@ -126,19 +114,15 @@ const DiscussionThread = (props: Props) => {
         viewer={viewer}
         header={header}
         emptyState={emptyState}
-        transcription={transcription}
-        showTranscription={showTranscription}
       />
-      {!showTranscription && (
-        <DiscussionThreadInput
-          allowedThreadables={allowedThreadables}
-          isDisabled={!!replyingTo?.id}
-          getMaxSortOrder={getMaxSortOrder}
-          discussion={discussion}
-          viewer={viewer}
-          isCreatingPoll={isCreatingPoll}
-        />
-      )}
+      <DiscussionThreadInput
+        allowedThreadables={allowedThreadables}
+        isDisabled={!!replyingTo?.id}
+        getMaxSortOrder={getMaxSortOrder}
+        discussion={discussion}
+        viewer={viewer}
+        isCreatingPoll={isCreatingPoll}
+      />
     </Wrapper>
   )
 }

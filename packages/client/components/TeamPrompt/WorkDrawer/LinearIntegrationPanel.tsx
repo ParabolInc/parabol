@@ -102,13 +102,13 @@ const LinearIntegrationPanel = (props: Props) => {
             teamId={teamMember.teamId}
           />
         </>
-      ) : !linearViewerId ? (
-        <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
+      ) : isActive && !linearViewerId ? (
+        <div className='flex flex-col items-center gap-2 pt-12'>
           <b>Error: Linear Integration API Not Responding</b>
           <div className='w-1/2 text-center text-sm'>Please try your request again later.</div>
         </div>
       ) : (
-        <div className='-mt-14 flex h-full flex-col items-center justify-center gap-2'>
+        <div className='flex flex-col items-center gap-2 pt-12'>
           <div className='h-10 w-10'>
             <img className='h-10 w-10' src={linearSVG} />
           </div>

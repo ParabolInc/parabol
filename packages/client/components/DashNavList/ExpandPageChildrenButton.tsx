@@ -9,9 +9,10 @@ interface Props {
   showChildren: boolean
   draggingPageId: string | null | undefined
   icon?: typeof DescriptionIcon
+  emoji?: string | null
 }
 export const ExpandPageChildrenButton = memo((props: Props) => {
-  const {draggingPageId, showChildren, expandChildPages, icon} = props
+  const {draggingPageId, showChildren, expandChildPages, icon, emoji} = props
   const timeoutRef = useRef<number | null>(null)
   const isDraggingOverExpandButton = useRef(false)
   const DefaultIcon = icon ?? DescriptionIcon
@@ -40,7 +41,11 @@ export const ExpandPageChildrenButton = memo((props: Props) => {
         draggingPageId && 'bg-inherit hover:bg-sky-300 group-hover:bg-sky-300'
       )}
     >
-      <DefaultIcon className='no-hover:hidden size-5 group-hover:hidden' />
+      {emoji ? (
+        <span className='no-hover:hidden text-base leading-none group-hover:hidden'>{emoji}</span>
+      ) : (
+        <DefaultIcon className='no-hover:hidden size-5 group-hover:hidden' />
+      )}
       <ChevronRightIcon
         className={cn(
           'sm no-hover:block hidden size-5 transition-transform group-hover:block',
