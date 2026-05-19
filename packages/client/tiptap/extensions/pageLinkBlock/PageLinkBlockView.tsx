@@ -2,6 +2,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import DescriptionIcon from '@mui/icons-material/Description'
 import FileOpenIcon from '@mui/icons-material/FileOpen'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import NorthEastIcon from '@mui/icons-material/NorthEast'
 import StorageIcon from '@mui/icons-material/Storage'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
@@ -23,6 +24,7 @@ import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import {GQLID} from '../../../utils/GQLID'
+import {getPageEmoji, stripPageEmoji} from '../../../utils/getPageEmoji'
 import {getPageSlug} from '../../getPageSlug'
 
 export const PageLinkBlockView = (props: NodeViewProps) => {
@@ -30,7 +32,15 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const attrs = node.attrs as PageLinkBlockAttrs
   const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
-  const Icon = canonical ? (database ? StorageIcon : DescriptionIcon) : FileOpenIcon
+  const emoji = getPageEmoji(title ?? '')
+  console.log({emoji})
+  const Icon = !emoji
+    ? canonical
+      ? database
+        ? StorageIcon
+        : DescriptionIcon
+      : FileOpenIcon
+    : null
   const [executeArchive] = useArchivePageMutation()
   const atmosphere = useAtmosphere()
   const data = useClientQuery<PageDropTargetQuery>(pageDropTargetQuery, {})
@@ -97,8 +107,19 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
             isOptimistic && 'pointer-events-none'
           )}
         >
-          <Icon />
-          <div className='flex-1 pl-1'>{title || '<Untitled>'}</div>
+          {emoji ? (
+            <span className='relative inline-flex size-6 shrink-0 items-center justify-center'>
+              <span className='text-base leading-none'>{emoji}</span>
+              {!canonical && (
+                <NorthEastIcon className='absolute right-0 bottom-0 size-3 text-slate-500' />
+              )}
+            </span>
+          ) : (
+            Icon && <Icon className='text-slate-600' />
+          )}
+          <div className='flex-1 pl-1'>
+            {(emoji ? stripPageEmoji(title, emoji) : title) || '<Untitled>'}
+          </div>
           <Menu
             onOpenChange={(open) => {
               if (open) {

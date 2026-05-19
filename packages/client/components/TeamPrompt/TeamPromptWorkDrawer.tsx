@@ -1,10 +1,10 @@
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
+import {cn} from '../../ui/cn'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
@@ -13,8 +13,6 @@ import JiraServerSVG from '../JiraServerSVG'
 import JiraSVG from '../JiraSVG'
 import LinearSVG from '../LinearSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
-import Tab from '../Tab/Tab'
-import Tabs from '../Tabs/Tabs'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
@@ -24,11 +22,10 @@ import ParabolTasksPanel from './WorkDrawer/ParabolTasksPanel'
 
 interface Props {
   meetingRef: TeamPromptWorkDrawer_meeting$key
-  onToggleDrawer: () => void
 }
 
 const TeamPromptWorkDrawer = (props: Props) => {
-  const {meetingRef, onToggleDrawer} = props
+  const {meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment TeamPromptWorkDrawer_meeting on TeamPromptMeeting {
@@ -144,38 +141,35 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const {Component} = baseTabs[activeIdx]!
 
   return (
-    <>
-      <div className='pt-4'>
-        <div className='border-slate-300 border-b border-solid'>
-          <div className='flex justify-between px-4'>
-            <div className='font-semibold text-base'>Your Work</div>
-            <div
-              className='cursor-pointer text-slate-600 hover:opacity-50'
-              onClick={onToggleDrawer}
+    <div className='flex flex-1 flex-col bg-slate-50'>
+      <div className='flex justify-center pt-3 pb-2'>
+        <div className='flex gap-1'>
+          {baseTabs.map((tab, idx) => (
+            <button
+              key={tab.label}
+              title={tab.label}
+              onClick={() => {
+                SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
+                  teamId: meeting.teamId,
+                  meetingId: meeting.id,
+                  service: baseTabs[idx]?.service
+                })
+                setActiveIdx(idx)
+              }}
+              className={cn(
+                'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',
+                idx === activeIdx
+                  ? 'bg-grape-700/10 text-grape-700'
+                  : 'cursor-pointer text-slate-500 hover:bg-slate-200'
+              )}
             >
-              <Close />
-            </div>
-          </div>
-          <Tabs activeIdx={activeIdx} className='max-w-sm'>
-            {baseTabs.map((tab, idx) => (
-              <Tab
-                key={tab.label}
-                onClick={() => {
-                  SendClientSideEvent(atmosphere, 'Your Work Integration Clicked', {
-                    teamId: meeting.teamId,
-                    meetingId: meeting.id,
-                    service: baseTabs[idx]?.service
-                  })
-                  setActiveIdx(idx)
-                }}
-                label={<div className='flex items-center justify-center'>{tab.icon}</div>}
-              />
-            ))}
-          </Tabs>
+              {tab.icon}
+            </button>
+          ))}
         </div>
       </div>
       <Component meetingRef={meeting} />
-    </>
+    </div>
   )
 }
 

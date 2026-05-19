@@ -1,15 +1,15 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import useBreakpoint from '~/hooks/useBreakpoint'
 import type useGotoStageId from '~/hooks/useGotoStageId'
 import useRightDrawer from '~/hooks/useRightDrawer'
 import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
 import type {PokerEstimatePhase_meeting$key} from '../__generated__/PokerEstimatePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
+import DiscussionDrawer from './DiscussionDrawer'
+import type {DiscussionThreadables} from './DiscussionThreadList'
 import ErrorBoundary from './ErrorBoundary'
 import EstimatePhaseArea from './EstimatePhaseArea'
-import EstimatePhaseDiscussionDrawer from './EstimatePhaseDiscussionDrawer'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
@@ -56,22 +56,28 @@ const PokerEstimatePhase = (props: Props) => {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
         ...EstimatePhaseArea_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         endedAt
         isCommentUnread
         isRightDrawerOpen
         localStage {
           ...PokerEstimateHeaderCard_stage
+          ... on EstimateStage {
+            discussionId
+          }
         }
         phases {
           ... on EstimatePhase {
             stages {
               ...PokerEstimateHeaderCard_stage
+              ... on EstimateStage {
+                discussionId
+              }
             }
           }
         }
         showSidebar
-        ...EstimatePhaseDiscussionDrawer_meeting
       }
     `,
     meetingRef
@@ -84,9 +90,9 @@ const PokerEstimatePhase = (props: Props) => {
     isRightDrawerOpen,
     showSidebar
   } = meeting
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const toggleDrawer = useRightDrawer(meetingId)
   if (!localStage) return null
+  const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment']
   return (
     <MeetingContent>
       <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
@@ -117,11 +123,12 @@ const PokerEstimatePhase = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <EstimatePhaseDiscussionDrawer
-          isDesktop={isDesktop}
+        <DiscussionDrawer
+          discussionId={localStage.discussionId!}
           isOpen={isRightDrawerOpen}
-          meeting={meeting}
           onToggle={toggleDrawer}
+          allowedThreadables={allowedThreadables}
+          meetingRef={meeting}
         />
       </ResponsiveDashSidebar>
     </MeetingContent>

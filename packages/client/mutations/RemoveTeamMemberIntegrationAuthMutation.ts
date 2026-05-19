@@ -14,6 +14,9 @@ graphql`
         ...MattermostProviderRowTeamMemberIntegrations
         ...MSTeamsProviderRowTeamMemberIntegrations
         ...LinearProviderRowTeamMemberIntegrations
+        gdrive {
+          isActive
+        }
       }
     }
   }

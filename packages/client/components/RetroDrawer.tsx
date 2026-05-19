@@ -2,11 +2,12 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
-import useBreakpoint from '../hooks/useBreakpoint'
-import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
+import {DiscussionThreadEnum} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import RetroDrawerTemplateCard from './RetroDrawerTemplateCard'
-import {Drawer} from './TeamPrompt/TeamPromptDrawer'
+
+const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   queryRef: PreloadedQuery<RetroDrawerQuery>
@@ -47,8 +48,6 @@ const RetroDrawer = (props: Props) => {
 
   const templates = viewer.availableTemplates?.edges
   const meeting = viewer.meeting
-  const isMobile = !useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const toggleDrawer = () => {
     setShowDrawer(!showDrawer)
@@ -66,11 +65,20 @@ const RetroDrawer = (props: Props) => {
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <Drawer
-          className='overflow-scroll'
-          isDesktop={isDesktop}
-          isMobile={isMobile}
-          isOpen={showDrawer}
+        <div
+          className={cn(
+            'flex flex-1 flex-col justify-stretch overflow-scroll bg-white',
+            'z-sidebar h-full',
+            'fuzzy-tablet:w-[min(360px,100vw)] w-screen',
+            'static sidebar-left:fixed sidebar-left:top-0 sidebar-left:right-0 sidebar-left:bottom-0',
+            'select-none sidebar-left:select-auto',
+            'sidebar-left:shadow-discussion-thread',
+            'transition-all duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+            isGlobalBannerEnabled ? 'pt-6' : '',
+            showDrawer
+              ? 'fuzzy-tablet:translate-x-0 translate-x-[calc(360px_-_100vw)]'
+              : 'translate-x-[360px]'
+          )}
         >
           <div className='py-4'>
             <div className='flex justify-between px-4'>
@@ -91,7 +99,7 @@ const RetroDrawer = (props: Props) => {
               />
             ))}
           </div>
-        </Drawer>
+        </div>
       </ResponsiveDashSidebar>
     </>
   )

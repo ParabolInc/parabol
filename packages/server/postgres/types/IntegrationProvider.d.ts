@@ -52,6 +52,9 @@ export type IntegrationProviderMattermost =
 export interface IntegrationProviderGcalOAuth2 extends IntegrationProviderOAuth2 {
   service: 'gcal'
 }
+export interface IntegrationProviderGdriveOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'gdrive'
+}
 export interface IntegrationProviderGitLabOAuth2 extends IntegrationProviderOAuth2 {
   service: 'gitlab'
 }
@@ -83,4 +86,5 @@ export type TIntegrationProvider =
   | IntegrationProviderAzureDevOps
   | IntegrationProviderMSTeams
   | IntegrationProviderGcalOAuth2
+  | IntegrationProviderGdriveOAuth2
   | IntegrationProviderLinear

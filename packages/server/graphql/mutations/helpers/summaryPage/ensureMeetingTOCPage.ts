@@ -25,7 +25,6 @@ export const ensureMeetingTOCPage = async (
         },
         teamId
       },
-      dataLoader,
       mutatorId
     )
     await getKysely()

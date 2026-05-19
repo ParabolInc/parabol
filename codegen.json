@@ -146,6 +146,7 @@
           "FixedActivity": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
           "FlagReadyToAdvanceSuccess": "./types/FlagReadyToAdvanceSuccess#FlagReadyToAdvanceSuccessSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
+          "GdriveIntegration": "./types/GdriveIntegration#GdriveIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GifResponse": "./types/GifResponse#GifResponseSource",
