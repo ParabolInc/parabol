@@ -5,7 +5,7 @@ import type {MutationResolvers} from '../resolverTypes'
 const createPage: MutationResolvers['createPage'] = async (
   _source,
   {teamId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {authToken, socketId: mutatorId}
 ) => {
   const viewerId = getUserId(authToken)
   const page = await createNewPage(
@@ -23,7 +23,6 @@ const createPage: MutationResolvers['createPage'] = async (
         ]
       }
     },
-    dataLoader,
     mutatorId
   )
   return {page}

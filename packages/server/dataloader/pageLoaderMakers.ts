@@ -6,8 +6,10 @@ import {selectPageAccess, selectPageUserSortOrder} from '../postgres/select'
 import type {PageAccess, Pageroleenum} from '../postgres/types/pg'
 import {pageAccessByUserIdBatchFn} from './pageAccessByUserIdBatchFn'
 import type RootDataLoader from './RootDataLoader'
+import type {RegisterDependsOn} from './RootDataLoader'
 
-export const pageAccessByPageId = (parent: RootDataLoader) => {
+export const pageAccessByPageId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
   return new DataLoader<number, Selectable<PageAccess>[], number>(
     async (pageIds) => {
       const res = await selectPageAccess()
@@ -32,7 +34,8 @@ export const pageAccessByPageId = (parent: RootDataLoader) => {
   )
 }
 
-export const pageAccessByPageIdUserId = (parent: RootDataLoader) => {
+export const pageAccessByPageIdUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
   return new DataLoader<{pageId: number; userId: string}, Pageroleenum | null, string>(
     pageAccessByUserIdBatchFn,
     {
@@ -42,7 +45,8 @@ export const pageAccessByPageIdUserId = (parent: RootDataLoader) => {
   )
 }
 
-export const pageAccessByUserId = (parent: RootDataLoader) => {
+export const pageAccessByUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
   return new DataLoader<string, Selectable<PageAccess>[], string>(
     async (userIds) => {
       const res = await selectPageAccess().where('userId', 'in', userIds).execute()
@@ -54,7 +58,8 @@ export const pageAccessByUserId = (parent: RootDataLoader) => {
   )
 }
 
-export const pageUserSortOrder = (parent: RootDataLoader) => {
+export const pageUserSortOrder = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
   return new DataLoader<{pageId: number; userId: string}, string | null, string>(
     async (keys) => {
       const res = await selectPageUserSortOrder()
@@ -78,7 +83,8 @@ export const pageUserSortOrder = (parent: RootDataLoader) => {
   )
 }
 
-export const pageUserSection = (parent: RootDataLoader) => {
+export const pageUserSection = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn('pages')
   return new DataLoader<{pageId: number; userId: string}, PageSectionEnum, string>(
     async (keys) => {
       return Promise.all(

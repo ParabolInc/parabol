@@ -4,7 +4,6 @@ import {encodeStateAsUpdate} from 'yjs'
 import {__START__} from '../../../client/shared/sortOrder'
 import {serverTipTapExtensions} from '../../../client/shared/tiptap/serverTipTapExtensions'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
-import type {DataLoaderWorker} from '../../graphql/graphql'
 import {getPageNextSortOrder} from '../../graphql/public/mutations/helpers/getPageNextSortOrder'
 import getKysely from '../../postgres/getKysely'
 import {updatePageAccessTable} from '../../postgres/updatePageAccessTable'
@@ -22,11 +21,7 @@ type CreateNewPageOptions = {
   userId: string
 }
 
-export const createNewPage = async (
-  options: CreateNewPageOptions,
-  existingDataLoader?: DataLoaderWorker,
-  mutatorId?: string | null
-) => {
+export const createNewPage = async (options: CreateNewPageOptions, mutatorId?: string | null) => {
   const {content, parentPageId, isDatabase, teamId, summaryMeetingId, userId} = options
 
   const pg = getKysely()
@@ -122,8 +117,7 @@ export const createNewPage = async (
       pg.insertInto('PageTeamAccess').values({teamId, pageId, role: 'editor'}).execute()
     )
   }
-
-  const dataLoader = existingDataLoader ?? getNewDataLoader('createNewPage')
+  const dataLoader = getNewDataLoader('createNewPage')
   const operationId = dataLoader.share()
   const [viewer] = await Promise.all([
     dataLoader.get('users').loadNonNull(userId),
@@ -136,6 +130,6 @@ export const createNewPage = async (
   const subOptions = {mutatorId: mutatorId ?? undefined, operationId}
   const data = {page}
   await publishPageNotification(pageId, 'CreatePagePayload', data, subOptions, dataLoader)
-  if (!existingDataLoader) dataLoader.dispose()
+  dataLoader.dispose()
   return page
 }

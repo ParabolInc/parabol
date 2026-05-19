@@ -8,9 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('teamId', 'varchar(100)', (col) =>
       col.notNull().references('Team.id').onDelete('cascade')
     )
-    .addColumn('meetingId', 'varchar(100)', (col) =>
-      col.references('NewMeeting.id').onDelete('set null')
-    )
+    .addColumn('summaryPageId', 'integer', (col) => col.references('Page.id').onDelete('set null'))
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .execute()
   await db.schema
@@ -20,6 +18,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+  await db.deleteFrom('IntegrationProvider').where('service', '=', 'gdrive').execute()
   await sql`DELETE FROM public."TeamMemberIntegrationAuth" WHERE service = 'gdrive'`.execute(db)
 
   await sql`ALTER TYPE public."IntegrationProviderServiceEnum" RENAME TO "IntegrationProviderServiceEnum_old"`.execute(

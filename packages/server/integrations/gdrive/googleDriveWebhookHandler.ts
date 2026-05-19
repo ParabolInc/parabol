@@ -98,6 +98,11 @@ const processNewFiles = async ({
       const {summaryPageId} = meeting
       if (summaryPageId) {
         await attachTranscriptToSummaryPage(summaryPageId, pages, userId)
+        await pg
+          .updateTable('ExternalMeetingFile')
+          .set({summaryPageId})
+          .where('id', '=', externalId)
+          .execute()
       }
     }
   } finally {
