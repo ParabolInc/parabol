@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.17.0](https://github.com/ParabolInc/parabol/compare/v13.16.0...v13.17.0) (2026-05-19)
+
+
+### Added
+
+* Google Meet Transcripts in Drawer ([#13096](https://github.com/ParabolInc/parabol/issues/13096)) ([c52cc62](https://github.com/ParabolInc/parabol/commit/c52cc6218075e97904071973eb8f0b4ae2518251))
+
 ## [13.16.0](https://github.com/ParabolInc/parabol/compare/v13.15.0...v13.16.0) (2026-05-18)
 
 
