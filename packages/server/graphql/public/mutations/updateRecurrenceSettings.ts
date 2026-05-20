@@ -79,7 +79,7 @@ const updateMeetingSeries = async (
     .updateTable('MeetingSeries')
     .set({recurrenceRule: newRecurrenceRule.toString()})
     .where('id', '=', meetingSeriesId)
-    .where('cancelledAt', '=', null)
+    .where('cancelledAt', 'is', null)
     .execute()
   // lets close all active meetings at the time when
   // a new meeting will be created (tomorrow at 9 AM, same as date start of new recurrence rule)
