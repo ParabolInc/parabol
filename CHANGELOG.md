@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.17.1](https://github.com/ParabolInc/parabol/compare/v13.17.0...v13.17.1) (2026-05-20)
+
+
+### Fixed
+
+* add error handling and logging to plaintext generation ([#13103](https://github.com/ParabolInc/parabol/issues/13103)) ([1cf843f](https://github.com/ParabolInc/parabol/commit/1cf843f595cecd20269aa9e4339e89f3e0516b26))
+* remove resize-observer-polyfill in favor of native ([#13106](https://github.com/ParabolInc/parabol/issues/13106)) ([5e72b12](https://github.com/ParabolInc/parabol/commit/5e72b12d079cccf003fa8775425bed4189522abb))
+
 ## [13.17.0](https://github.com/ParabolInc/parabol/compare/v13.16.0...v13.17.0) (2026-05-19)
 
 

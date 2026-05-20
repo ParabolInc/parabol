@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
-import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
   colWidth: number
@@ -12,7 +11,7 @@ const Grid = styled('div')<GridProps>(({colWidth, gap, maxCols}) => ({
   display: 'grid',
   gridColumnGap: gap,
   gridAutoRows: gap / 2,
-  gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, minmax(${colWidth}px, 1fr))`
+  gridTemplateColumns: `repeat(${maxCols || 'auto-fill'}, ${colWidth}px)`
 }))
 
 type SetItemRef = (id: string) => (c: HTMLElement | null) => any
@@ -27,7 +26,7 @@ interface ItemRefs {
   [id: string]: HTMLElement
 }
 
-const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
+const ResizeObserver = window.ResizeObserver
 
 const MasonryCSSGrid = (props: Props) => {
   const {children, gap, colWidth, maxCols, items} = props
