@@ -5,7 +5,7 @@ import {useFragment} from 'react-relay'
 import type {DiscussPhaseReflectionGrid_meeting$key} from '~/__generated__/DiscussPhaseReflectionGrid_meeting.graphql'
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {MeetingControlBarEnum} from '~/types/constEnums'
-import {meetingGridMinWidth} from '../styles/meeting'
+import {ElementWidth} from '../types/constEnums'
 import MasonryCSSGrid from './MasonryCSSGrid'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
 
@@ -60,7 +60,7 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
   if (!reflections) return null
   return (
     <GridWrapper ref={ref} isExpanded={isExpanded}>
-      <MasonryCSSGrid colWidth={meetingGridMinWidth} gap={12}>
+      <MasonryCSSGrid colWidth={ElementWidth.REFLECTION_CARD} gap={12}>
         {(setItemRef) => {
           return reflections.map((reflection) => {
             return (

@@ -7,7 +7,6 @@ import type {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeet
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
 import useTransition from '~/hooks/useTransition'
-import {DiscussionThreadEnum} from '~/types/constEnums'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
@@ -48,12 +47,6 @@ const ResponsesGrid = styled('div')({
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
 }
-
-const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{
-  isOpen: boolean
-}>(({isOpen}) => ({
-  width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%'
-}))
 
 const TeamPromptMeeting = (props: Props) => {
   const {meeting: meetingRef} = props
@@ -124,9 +117,9 @@ const TeamPromptMeeting = (props: Props) => {
     })
   }, [phase])
   const transitioningStages = useTransition(stages)
-  const {safeRoute, isDesktop} = useMeeting(meeting)
+  const {safeRoute} = useMeeting(meeting)
   const location = useLocation()
-  const {isRightDrawerOpen, id: meetingId, localStageId} = meeting
+  const {id: meetingId, localStageId} = meeting
   const params = new URLSearchParams(location.search)
   const responseId = params.get('responseId')
   useEffect(() => {
@@ -167,10 +160,7 @@ const TeamPromptMeeting = (props: Props) => {
       <MeetingArea>
         <Suspense fallback={''}>
           <MeetingContent>
-            <StyledMeetingHeaderAndPhase
-              isOpen={isRightDrawerOpen && isDesktop}
-              hideBottomBar={true}
-            >
+            <MeetingHeaderAndPhase hideBottomBar={true}>
               <TeamPromptTopBar meetingRef={meeting} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
@@ -193,7 +183,7 @@ const TeamPromptMeeting = (props: Props) => {
                   </ResponsesGrid>
                 </ResponsesGridContainer>
               </ErrorBoundary>
-            </StyledMeetingHeaderAndPhase>
+            </MeetingHeaderAndPhase>
             <TeamPromptDrawer meetingRef={meeting} />
           </MeetingContent>
         </Suspense>

@@ -9,6 +9,7 @@ const MeetingHeaderAndPhase = styled('div')<{hideBottomBar: boolean}>(({hideBott
   height: '100%',
   position: 'relative',
   minHeight: 0, // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
+  minWidth: 0, // prevent flex-row children from overflowing
   paddingBottom: hideBottomBar ? undefined : 56,
   [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
     paddingBottom: 0
