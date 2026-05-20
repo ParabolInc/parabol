@@ -1,3 +1,4 @@
+import TeamMemberId from 'parabol-client/shared/gqlIds/TeamMemberId'
 import TeamPromptResponsesPhase from '../database/types/TeamPromptResponsesPhase'
 import generateUID from '../generateUID'
 import getKysely from '../postgres/getKysely'
@@ -44,7 +45,7 @@ test('updateRecurrenceSettings updates the rrule of an active (non-cancelled) Me
     .executeTakeFirstOrThrow()
 
   const meetingId = generateUID()
-  const phase = new TeamPromptResponsesPhase([])
+  const phase = new TeamPromptResponsesPhase([TeamMemberId.join(teamId, userId)])
   await pg
     .insertInto('NewMeeting')
     .values({
