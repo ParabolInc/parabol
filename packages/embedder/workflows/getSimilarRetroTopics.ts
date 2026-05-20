@@ -17,7 +17,9 @@ export const getSimilarRetroTopics: JobQueueStepRun<
   const SIMILARITY_THRESHOLD = 0.67
   const pg = getKysely()
   const metadata = await dataLoader.get('embeddingsMetadata').loadNonNull(embeddingsMetadataId)
-  const {teamId} = metadata
+  const {teamId, refId: discussionId} = metadata
+  const discussion = await dataLoader.get('discussions').loadNonNull(discussionId)
+  const {meetingId} = discussion
   const tableName = getEmbeddingsTableName(modelId)
   const similarEmbeddings = await pg
     .with('Vector', (qc) =>
@@ -38,9 +40,11 @@ export const getSimilarRetroTopics: JobQueueStepRun<
           'EmbeddingsMetadata.id',
           `${tableName}.embeddingsMetadataId`
         )
+        .innerJoin('Discussion', 'Discussion.id', 'EmbeddingsMetadata.refId')
         .where('teamId', '=', teamId)
         .where('objectType', '=', 'retrospectiveDiscussionTopic')
         .where('embeddingsMetadataId', '!=', embeddingsMetadataId)
+        .where('Discussion.meetingId', '!=', meetingId)
     )
     .with('CosineSimilarity', (pg) =>
       pg
