@@ -39,14 +39,14 @@ const composeConfig = () => {
           pass: process.env.MAIL_SMTP_PASSWORD
         }
       : undefined,
-    secure: false,
+    secure: process.env.MAIL_SMTP_USE_TLS === 'true',
     pool: true,
     maxConnections: 10,
     rateLimit: 50,
     tls:
-      process.env.MAIL_SMTP_USE_TLS === '1'
+      process.env.MAIL_SMTP_USE_TLS === 'true'
         ? {
-            rejectUnauthorized: false,
+            rejectUnauthorized: true,
             ciphers: process.env.MAIL_SMTP_CIPHERS
           }
         : undefined
