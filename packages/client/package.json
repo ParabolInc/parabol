@@ -103,7 +103,6 @@
     "react-router": "^7.13.1",
     "react-textarea-autosize": "^8.5.9",
     "react-transition-group": "^4.3.0",
-    "resize-observer-polyfill": "^1.5.0",
     "rrule": "^2.7.2",
     "sanitize-html": "^2.13.0",
     "tailwind-merge": "^3.3.1",

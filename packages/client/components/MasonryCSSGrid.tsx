@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {type ReactNode, useCallback, useEffect, useRef} from 'react'
-import ResizeObserverPolyfill from 'resize-observer-polyfill'
 
 interface GridProps {
   colWidth: number
@@ -27,7 +26,7 @@ interface ItemRefs {
   [id: string]: HTMLElement
 }
 
-const ResizeObserver = window.ResizeObserver || ResizeObserverPolyfill
+const ResizeObserver = window.ResizeObserver
 
 const MasonryCSSGrid = (props: Props) => {
   const {children, gap, colWidth, maxCols, items} = props
