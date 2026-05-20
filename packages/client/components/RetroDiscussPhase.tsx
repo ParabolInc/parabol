@@ -1,20 +1,17 @@
 import {datadogRum} from '@datadog/browser-rum'
-import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
+import useRightDrawer from '~/hooks/useRightDrawer'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
-import {PALETTE} from '../styles/paletteV3'
-import {Breakpoint} from '../types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
+import DiscussionDrawer from './DiscussionDrawer'
 import type {DiscussionThreadables} from './DiscussionThreadList'
-import DiscussionThreadListEmptyState from './DiscussionThreadListEmptyState'
-import DiscussionThreadListEmptyTranscriptState from './DiscussionThreadListEmptyTranscriptState'
-import DiscussionThreadRoot from './DiscussionThreadRoot'
 import DiscussPhaseReflectionGrid from './DiscussPhaseReflectionGrid'
 import LabelHeading from './LabelHeading/LabelHeading'
 import MeetingContent from './MeetingContent'
@@ -24,116 +21,13 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
-import RetroDiscussionThreadHeader from './RetroDiscussionThreadHeader'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroDiscussPhase_meeting$key
 }
-
-const maxWidth = '114rem'
-
-const HeaderContainer = styled('div')({
-  margin: '0 auto',
-  maxWidth,
-  padding: '0 1.25rem',
-  userSelect: 'none'
-})
-
-const LabelContainer = styled(LabelHeading)<{isDesktop: boolean}>(({isDesktop}) => ({
-  background: PALETTE.SLATE_200,
-  margin: '0 16px',
-  padding: isDesktop ? '0 0 8px' : undefined,
-  position: 'sticky',
-  textTransform: 'none',
-  top: 0,
-  zIndex: 2
-}))
-
-const DiscussHeader = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  margin: '0 0 12px'
-})
-
-const ColumnsContainer = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'flex',
-  flexDirection: isDesktop ? undefined : 'column',
-  flex: 1,
-  height: '100%',
-  margin: '0 auto',
-  maxWidth,
-  overflow: 'hidden',
-  padding: 0,
-  width: '100%'
-}))
-
-const TopicHeading = styled('div')({
-  fontSize: 24,
-  position: 'relative',
-  '& > span': {
-    right: '100%',
-    position: 'absolute'
-  }
-})
-
-const VoteMeta = styled('div')({
-  alignItems: 'center',
-  backgroundColor: PALETTE.SLATE_600,
-  borderRadius: '5em',
-  color: '#FFFFFF',
-  display: 'flex',
-  fontSize: 16,
-  fontWeight: 600,
-  margin: '0 0 0 16px',
-  padding: '2px 12px'
-})
-
-const VoteIcon = styled(ThumbUp)({
-  color: '#FFFFFF',
-  height: 18,
-  width: 18,
-  marginRight: '.125rem'
-})
-
-const DiscussPhaseWrapper = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  overflow: 'hidden',
-  width: '100%'
-})
-
-const ReflectionColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  height: isDesktop ? '100%' : undefined,
-  flex: isDesktop ? 1 : undefined,
-  overflow: 'hidden',
-  width: '100%'
-}))
-
-const ThreadColumn = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  overflow: 'auto',
-  paddingTop: 4,
-  paddingBottom: isDesktop ? 16 : 8,
-  width: '100%'
-}))
-
-const ColumnInner = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: isDesktop ? undefined : 'flex',
-  justifyContent: 'center',
-  height: '100%',
-  padding: isDesktop ? '0 0 16px' : undefined,
-  paddingBottom: isDesktop ? undefined : 8,
-  width: '100%'
-}))
 
 const RetroDiscussPhase = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
@@ -144,17 +38,11 @@ const RetroDiscussPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...ReflectionGroup_meeting
         ...StageTimerDisplay_meeting
-        ...DiscussionThreadListEmptyTranscriptState_meeting
+        ...DiscussionDrawerTranscripts_meeting
         id
         endedAt
-        showTranscription
-        transcription {
-          speaker
-          words
-        }
-        organization {
-          ...RetroDiscussionThreadHeader_organization
-        }
+        isCommentUnread
+        isRightDrawerOpen
         showSidebar
         phases {
           stages {
@@ -174,14 +62,14 @@ const RetroDiscussPhase = (props: Props) => {
     endedAt,
     localStage,
     showSidebar,
-    organization,
-    showTranscription,
-    transcription
+    isCommentUnread,
+    isRightDrawerOpen
   } = meeting
   const {reflectionGroup, discussionId} = localStage
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const title = reflectionGroup?.title ?? ''
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
+  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
+  const toggleDrawer = useRightDrawer(meetingId)
+  const title = reflectionGroup?.title ?? ''
 
   // Uncomment below code to enable Easter Egg:
   // bugs shown on screen when the discussion group title contains "bug"
@@ -196,16 +84,24 @@ const RetroDiscussPhase = (props: Props) => {
 
   const reflections = reflectionGroup.reflections ?? []
   if (!reflectionGroup.reflections) {
-    const errObj = {id: reflectionGroup.id} as any
+    const errObj = {id: reflectionGroup.id} as Parameters<typeof JSON.stringify>[0]
     datadogRum.addError(new Error(`NO REFLECTIONS ${JSON.stringify(errObj)}`))
   }
+
+  const headerAndPhaseWidth = isRightDrawerOpen
+    ? `w-[calc(100%_-_${DiscussionThreadEnum.WIDTH}px)] poker-discussion-fullscreen-drawer:w-full`
+    : 'w-full'
+
   return (
     <MeetingContent ref={callbackRef}>
-      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
+      <MeetingHeaderAndPhase className={headerAndPhaseWidth} hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
+          isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
+          isRightDrawerOpen={isRightDrawerOpen}
           toggleSidebar={toggleSidebar}
+          toggleDrawer={toggleDrawer}
         >
           <PhaseHeaderTitle>{phaseLabelLookup.discuss}</PhaseHeaderTitle>
           <PhaseHeaderDescription>
@@ -214,22 +110,22 @@ const RetroDiscussPhase = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <StageTimerDisplay meeting={meeting} />
-          <DiscussPhaseWrapper>
-            <HeaderContainer>
-              <DiscussHeader>
-                <TopicHeading>{`“${title}”`}</TopicHeading>
-                <VoteMeta>
-                  <VoteIcon />
+          <div className='flex w-full flex-1 flex-col overflow-hidden'>
+            <div className='mx-auto max-w-456 select-none px-5'>
+              <div className='mb-3 flex items-center'>
+                <div className='relative text-2xl'>{`"${title}"`}</div>
+                <div className='ml-4 flex items-center rounded-[5em] bg-slate-600 px-3 py-0.5 font-semibold text-base text-white'>
+                  <ThumbUp sx={{fontSize: 18}} className='mr-0.5' />
                   {voteCount || 0}
-                </VoteMeta>
-              </DiscussHeader>
-            </HeaderContainer>
-            <ColumnsContainer isDesktop={isDesktop}>
-              <ReflectionColumn isDesktop={isDesktop}>
-                <LabelContainer isDesktop={isDesktop}>
+                </div>
+              </div>
+            </div>
+            <div className='mx-auto flex h-full w-full max-w-456 flex-1 single-reflection-column:flex-row flex-col overflow-hidden'>
+              <div className='flex single-reflection-column:h-full w-full single-reflection-column:flex-1 flex-col overflow-hidden'>
+                <LabelHeading className='normal-case! sticky top-0 z-2 mx-4 bg-slate-200 single-reflection-column:pb-2'>
                   {reflections.length} {plural(reflections.length, 'Reflection')}
-                </LabelContainer>
-                <ColumnInner isDesktop={isDesktop}>
+                </LabelHeading>
+                <div className='single-reflection-column:block flex h-full w-full justify-center single-reflection-column:p-0 pb-2 single-reflection-column:pb-4'>
                   {isDesktop ? (
                     <DiscussPhaseReflectionGrid meeting={meeting} />
                   ) : (
@@ -239,43 +135,27 @@ const RetroDiscussPhase = (props: Props) => {
                       reflectionGroupRef={reflectionGroup}
                     />
                   )}
-                </ColumnInner>
-              </ReflectionColumn>
-              <ThreadColumn isDesktop={isDesktop}>
-                <DiscussionThreadRoot
-                  allowedThreadables={allowedThreadables}
-                  meetingContentRef={phaseRef}
-                  discussionId={discussionId!}
-                  showTranscription={showTranscription}
-                  transcription={transcription}
-                  header={
-                    <RetroDiscussionThreadHeader
-                      meetingId={meetingId}
-                      showTranscription={showTranscription}
-                      organizationRef={organization}
-                    />
-                  }
-                  emptyState={
-                    showTranscription ? (
-                      <DiscussionThreadListEmptyTranscriptState
-                        allowTasks={true}
-                        isReadOnly={allowedThreadables.length === 0}
-                        meetingRef={meeting}
-                      />
-                    ) : (
-                      <DiscussionThreadListEmptyState
-                        allowTasks={true}
-                        isReadOnly={allowedThreadables.length === 0}
-                      />
-                    )
-                  }
-                />
-              </ThreadColumn>
-            </ColumnsContainer>
-          </DiscussPhaseWrapper>
+                </div>
+              </div>
+            </div>
+          </div>
         </PhaseWrapper>
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
+      <ResponsiveDashSidebar
+        isOpen={isRightDrawerOpen}
+        isRightDrawer
+        onToggle={toggleDrawer}
+        sidebarWidth={DiscussionThreadEnum.WIDTH}
+      >
+        <DiscussionDrawer
+          discussionId={discussionId!}
+          isOpen={isRightDrawerOpen}
+          onToggle={toggleDrawer}
+          allowedThreadables={allowedThreadables}
+          meetingRef={meeting}
+        />
+      </ResponsiveDashSidebar>
     </MeetingContent>
   )
 }

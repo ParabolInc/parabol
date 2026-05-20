@@ -6,6 +6,7 @@ import * as customLoaderMakers from './customLoaderMakers'
 import DataLoaderCache from './DataLoaderCache'
 import * as foreignKeyLoaderMakers from './foreignKeyLoaderMakers'
 import * as gcalLoaders from './gcalLoaders'
+import * as gdriveLoaders from './gdriveLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
@@ -33,6 +34,7 @@ const loaderMakers = {
   ...githubLoaders,
   ...gitlabLoaders,
   ...gcalLoaders,
+  ...gdriveLoaders,
   ...integrationAuthLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,

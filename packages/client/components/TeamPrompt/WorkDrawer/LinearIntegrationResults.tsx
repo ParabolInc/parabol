@@ -106,7 +106,7 @@ const LinearIntegrationResults = (props: Props) => {
             return <LinearObjectCard key={issue.id} issueRef={issue} />
           })
         ) : (
-          <div className='-mt-14 flex h-full flex-col items-center justify-center text-center'>
+          <div className='flex flex-col items-center pt-12 text-center'>
             <img
               className='w-20'
               src={halloweenRetrospectiveTemplate}

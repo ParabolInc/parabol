@@ -1,20 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
 import useInitialRender from '~/hooks/useInitialRender'
 import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {Threshold} from '~/types/constEnums'
+import {cn} from '~/ui/cn'
 import AddReactjiButton from './AddReactjiButton'
 import ReactjiCount from './ReactjiCount'
-
-const Wrapper = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyItems: 'center',
-  justifyContent: 'start'
-})
 
 interface Props {
   className?: string
@@ -45,7 +37,7 @@ const ReactjiSection = (props: Props) => {
   const reactjiById = new Map(reactjis.map((r) => [r.id, r]))
 
   return (
-    <Wrapper className={className}>
+    <div className={cn('flex flex-wrap items-start justify-start', className)}>
       {tranChildren.map((transChild) => {
         const currentReactji = reactjiById.get(transChild.child.key as string)
         if (!currentReactji) {
@@ -72,7 +64,7 @@ const ReactjiSection = (props: Props) => {
       {tranChildren.length <= Threshold.MAX_REACTJIS - 1 && (
         <AddReactjiButton onToggle={onToggle} />
       )}
-    </Wrapper>
+    </div>
   )
 }
 

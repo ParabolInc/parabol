@@ -46,4 +46,9 @@ enum IntegrationProviderServiceEnum {
   Linear issue tracker
   """
   linear
+
+  """
+  Google Drive (Meet Recordings transcript import)
+  """
+  gdrive
 }
