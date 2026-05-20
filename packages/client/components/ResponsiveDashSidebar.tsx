@@ -27,7 +27,7 @@ const ResponsiveDashSidebar = (props: Props) => {
   const showDesktopView = isDesktop ?? isDesktopDefault
   if (showDesktopView) {
     return (
-      <StaticSidebar isOpen={isOpen} isRightDrawer={isRightDrawer}>
+      <StaticSidebar isOpen={isOpen} isRightDrawer={isRightDrawer} sidebarWidth={sidebarWidth}>
         <Sidebar isOpen={isOpen}>{children}</Sidebar>
       </StaticSidebar>
     )

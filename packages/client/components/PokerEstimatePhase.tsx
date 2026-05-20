@@ -3,7 +3,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type useGotoStageId from '~/hooks/useGotoStageId'
 import useRightDrawer from '~/hooks/useRightDrawer'
-import {Breakpoint, DiscussionThreadEnum} from '~/types/constEnums'
+import {DiscussionThreadEnum} from '~/types/constEnums'
 import type {PokerEstimatePhase_meeting$key} from '../__generated__/PokerEstimatePhase_meeting.graphql'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import DiscussionDrawer from './DiscussionDrawer'
@@ -19,15 +19,6 @@ import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
 import type {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import StageTimerDisplay from './StageTimerDisplay'
-
-const StyledMeetingHeaderAndPhase = styled(MeetingHeaderAndPhase)<{
-  isOpen: boolean
-}>(({isOpen}) => ({
-  width: isOpen ? `calc(100% - ${DiscussionThreadEnum.WIDTH}px)` : '100%',
-  [`@media screen and (max-width: ${Breakpoint.POKER_DISCUSSION_FULLSCREEN_DRAWER}px)`]: {
-    width: '100%'
-  }
-}))
 
 const StoryAndEstimateWrapper = styled('div')({
   display: 'flex',
@@ -95,7 +86,7 @@ const PokerEstimatePhase = (props: Props) => {
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment']
   return (
     <MeetingContent>
-      <StyledMeetingHeaderAndPhase isOpen={isRightDrawerOpen} hideBottomBar={!!endedAt}>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
@@ -116,7 +107,7 @@ const PokerEstimatePhase = (props: Props) => {
             <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
           </EstimateAreaWrapper>
         </StoryAndEstimateWrapper>
-      </StyledMeetingHeaderAndPhase>
+      </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
         isOpen={isRightDrawerOpen}
         isRightDrawer
@@ -125,7 +116,6 @@ const PokerEstimatePhase = (props: Props) => {
       >
         <DiscussionDrawer
           discussionId={localStage.discussionId!}
-          isOpen={isRightDrawerOpen}
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
           meetingRef={meeting}

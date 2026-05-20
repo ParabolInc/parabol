@@ -76,13 +76,9 @@ const ActionMeetingAgendaItems = (props: Props) => {
   const {picture, preferredName} = user
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
 
-  const headerAndPhaseWidth = isRightDrawerOpen
-    ? `w-[calc(100%_-_${DiscussionThreadEnum.WIDTH}px)] poker-discussion-fullscreen-drawer:w-full`
-    : 'w-full'
-
   return (
     <MeetingContent>
-      <MeetingHeaderAndPhase className={headerAndPhaseWidth} hideBottomBar={!!endedAt}>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
         <MeetingTopBar
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
@@ -111,7 +107,6 @@ const ActionMeetingAgendaItems = (props: Props) => {
       >
         <DiscussionDrawer
           discussionId={discussionId!}
-          isOpen={isRightDrawerOpen}
           onToggle={toggleDrawer}
           allowedThreadables={allowedThreadables}
           meetingRef={meeting}
