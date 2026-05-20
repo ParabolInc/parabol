@@ -5,6 +5,33 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.17.2](https://github.com/ParabolInc/parabol/compare/v13.17.1...v13.17.2) (2026-05-20)
+
+
+### Fixed
+
+* update recurrence settings ([#13110](https://github.com/ParabolInc/parabol/issues/13110)) ([573aed8](https://github.com/ParabolInc/parabol/commit/573aed8705c7744c33bf5ab691edea2f38643ba3))
+
+
+### Changed
+
+* upgrade release-please-action to v5, hoist sanitize-html ([#13108](https://github.com/ParabolInc/parabol/issues/13108)) ([1202bc1](https://github.com/ParabolInc/parabol/commit/1202bc179fb0879b084177ab91a171b5d11ce410))
+
+## [13.17.1](https://github.com/ParabolInc/parabol/compare/v13.17.0...v13.17.1) (2026-05-20)
+
+
+### Fixed
+
+* add error handling and logging to plaintext generation ([#13103](https://github.com/ParabolInc/parabol/issues/13103)) ([1cf843f](https://github.com/ParabolInc/parabol/commit/1cf843f595cecd20269aa9e4339e89f3e0516b26))
+* remove resize-observer-polyfill in favor of native ([#13106](https://github.com/ParabolInc/parabol/issues/13106)) ([5e72b12](https://github.com/ParabolInc/parabol/commit/5e72b12d079cccf003fa8775425bed4189522abb))
+
+## [13.17.0](https://github.com/ParabolInc/parabol/compare/v13.16.0...v13.17.0) (2026-05-19)
+
+
+### Added
+
+* Google Meet Transcripts in Drawer ([#13096](https://github.com/ParabolInc/parabol/issues/13096)) ([c52cc62](https://github.com/ParabolInc/parabol/commit/c52cc6218075e97904071973eb8f0b4ae2518251))
+
 ## [13.16.0](https://github.com/ParabolInc/parabol/compare/v13.15.0...v13.16.0) (2026-05-18)
 
 

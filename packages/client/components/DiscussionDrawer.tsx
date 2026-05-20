@@ -1,9 +1,7 @@
 import {Close} from '@mui/icons-material'
 import {type ReactNode, useState} from 'react'
-import {desktopSidebarShadow} from '~/styles/elevation'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
-import useBreakpoint from '../hooks/useBreakpoint'
-import {BezierCurve, Breakpoint, GlobalBanner, ZIndex} from '../types/constEnums'
+import {GlobalBanner} from '../types/constEnums'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
 import DiscussionDrawerTranscripts from './DiscussionDrawerTranscripts'
 import type {DiscussionThreadables} from './DiscussionThreadList'
@@ -15,7 +13,6 @@ const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
 
 interface Props {
   discussionId?: string
-  isOpen: boolean
   onToggle: () => void
   allowedThreadables: DiscussionThreadables[]
   meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
@@ -30,7 +27,6 @@ interface Props {
 
 const DiscussionDrawer = ({
   discussionId,
-  isOpen,
   onToggle,
   allowedThreadables,
   meetingRef,
@@ -47,19 +43,13 @@ const DiscussionDrawer = ({
   const hasTabs = tabs.length > 1
   const activeTabId = tabs[activeIdx]?.id ?? 'discussion'
 
-  const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-
   const drawerStyle: React.CSSProperties = {
-    boxShadow: desktopSidebarShadow,
-    paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
-    transition: `transform 200ms ${BezierCurve.DECELERATE}`,
-    transform: isDesktop ? (isOpen ? 'translateX(0)' : 'translateX(100%)') : undefined,
-    zIndex: ZIndex.SIDEBAR
+    paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
   }
 
   return (
     <div
-      className='static single-reflection-column:fixed single-reflection-column:top-0 single-reflection-column:right-0 single-reflection-column:bottom-0 flex h-screen w-[360px] select-none flex-col justify-start overflow-hidden bg-white'
+      className='flex h-screen w-[360px] select-none flex-col justify-start overflow-hidden bg-white'
       style={drawerStyle}
     >
       <div className='flex w-full items-center border-slate-300 border-b'>
