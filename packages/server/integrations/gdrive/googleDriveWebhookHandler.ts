@@ -5,9 +5,9 @@ import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
+import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {attachTranscriptToSummaryPage} from './attachTranscriptToSummaryPage'
 import {verifyGdriveToken} from './gdriveWebhookToken'
-import {matchGoogleMeetToMeeting} from './matchGoogleMeetToMeeting'
 import {splitMarkdownIntoPages} from './processGoogleMeetFile'
 
 const googleDriveWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
@@ -75,7 +75,7 @@ const processNewFiles = async ({
         .executeTakeFirst()
       if (insertResult.numInsertedOrUpdatedRows === 0n) continue
       const fileCreatedTime = new Date(file.createdTime)
-      const meeting = await matchGoogleMeetToMeeting(fileCreatedTime, teamId)
+      const meeting = await matchExternalMeetingToMeeting(fileCreatedTime, teamId)
       // Meeting hasn't ended yet or doesn't exist in Parabol. Exit
       if (!meeting) continue
 

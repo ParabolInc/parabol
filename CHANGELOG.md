@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.17.2](https://github.com/ParabolInc/parabol/compare/v13.17.1...v13.17.2) (2026-05-20)
+
+
+### Fixed
+
+* update recurrence settings ([#13110](https://github.com/ParabolInc/parabol/issues/13110)) ([573aed8](https://github.com/ParabolInc/parabol/commit/573aed8705c7744c33bf5ab691edea2f38643ba3))
+
+
+### Changed
+
+* upgrade release-please-action to v5, hoist sanitize-html ([#13108](https://github.com/ParabolInc/parabol/issues/13108)) ([1202bc1](https://github.com/ParabolInc/parabol/commit/1202bc179fb0879b084177ab91a171b5d11ce410))
+
 ## [13.17.1](https://github.com/ParabolInc/parabol/compare/v13.17.0...v13.17.1) (2026-05-20)
 
 
