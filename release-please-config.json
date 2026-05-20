@@ -19,6 +19,11 @@
       "hidden": false
     },
     {
+      "type": "refactor",
+      "section": "Changed",
+      "hidden": false
+    },
+    {
       "type": "chore",
       "section": "Changed",
       "hidden": false
