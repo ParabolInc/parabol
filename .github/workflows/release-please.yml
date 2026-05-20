@@ -21,11 +21,9 @@ jobs:
           app-id: ${{ vars.RELEASE_BOT_APP_ID }}
           private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
-      - uses: googleapis/release-please-action@v3
+      - uses: googleapis/release-please-action@v5
         with:
-          command: manifest
-          default-branch: ${{ github.ref_name}}
-          release-type: node
+          target-branch: ${{ github.ref_name }}
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Report Status
