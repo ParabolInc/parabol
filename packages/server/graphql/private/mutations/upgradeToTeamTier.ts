@@ -47,19 +47,16 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
     userId ? dataLoader.get('users').load(userId) : null
   ])
 
-  const {tier, activeDomain, name: orgName, trialStartDate} = organization
+  const {tier: oldTier, activeDomain, name: orgName, trialStartDate} = organization
 
-  if (tier === 'enterprise') {
+  if (oldTier === 'enterprise') {
     return standardError(new Error("Can not change an org's plan from enterprise to team"), {
-      userId
-    })
-  } else if (tier === 'team') {
-    return standardError(new Error('Org is already on team tier'), {
       userId
     })
   }
 
   // RESOLUTION
+  // the customer could've changed CCs, so go through the whole update process
   const creditCard = await getCCFromCustomer(customer)
   await Promise.all([
     pg
@@ -92,6 +89,12 @@ const upgradeToTeamTier: MutationResolvers['upgradeToTeamTier'] = async (
   }
   // do this after the billing user update to avoid having to invalidate the dataloader
   await identifyHighestUserTierForOrgId(orgId, dataLoader)
+
+  if (oldTier === 'team') {
+    return standardError(new Error('Org is already on team tier'), {
+      userId
+    })
+  }
 
   const teams = await dataLoader.get('teamsByOrgIds').load(orgId)
   const teamIds = teams.map(({id}) => id)
