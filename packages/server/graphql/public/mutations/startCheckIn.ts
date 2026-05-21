@@ -1,4 +1,3 @@
-import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import MeetingAction from '../../../database/types/MeetingAction'
 import generateUID from '../../../generateUID'
@@ -7,7 +6,6 @@ import type {CheckInMeeting, MeetingTypeEnum} from '../../../postgres/types/Meet
 import type {CheckInPhase} from '../../../postgres/types/NewMeetingPhase'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -19,7 +17,7 @@ import {createMeetingMember} from './joinMeeting'
 
 const startCheckIn: MutationResolvers['startCheckIn'] = async (
   _source,
-  {teamId, name, gcalInput, ignoreSuggestedUpgrade},
+  {teamId, name, gcalInput},
   context
 ) => {
   const pg = getKysely()
@@ -28,20 +26,11 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   const subOptions = {mutatorId, operationId}
   // AUTH
   const viewerId = getUserId(authToken)
-  const [unpaidError, viewer, overLimitError] = await Promise.all([
+  const [unpaidError, viewer] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId),
-    isCompanyOverLimit(teamId, dataLoader)
+    dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
-  if (overLimitError) {
-    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
-      const {teamCount, meetingCount, errorCode} = overLimitError
-      throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
-        extensions: {code: errorCode, teamCount, meetingCount}
-      })
-    }
-  }
 
   const meetingType: MeetingTypeEnum = 'action'
 
