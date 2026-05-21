@@ -86,7 +86,7 @@
     "graphiql": "^5.2.2",
     "hoist-non-react-statics": "^3.3.0",
     "humanize-duration": "^3.32.0",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "^3.0.7",
     "jszip": "^3.10.1",
     "jwt-decode": "^2.1.0",
     "linkify-it": "^2.0.3",
