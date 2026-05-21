@@ -24,7 +24,9 @@ export const RecurrenceTimePicker = (props: Props) => {
       defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
     >
       {OPTIONS.map((n, idx) => {
-        const proposedTime = dayjs.tz(dayjs().add(1, 'day').startOf('day').add(n, 'ms'), timeZone)
+        // schedule today if the chosen time of day is still ahead; otherwise tomorrow
+        const todayAtTime = dayjs.tz(dayjs().startOf('day').add(n, 'ms'), timeZone)
+        const proposedTime = todayAtTime.isAfter(dayjs()) ? todayAtTime : todayAtTime.add(1, 'day')
 
         return (
           <MenuItem
