@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.18.1](https://github.com/ParabolInc/parabol/compare/v13.18.0...v13.18.1) (2026-05-21)
+
+
+### Fixed
+
+* disable trial expiration limits  ([#13125](https://github.com/ParabolInc/parabol/issues/13125)) ([07dd9e1](https://github.com/ParabolInc/parabol/commit/07dd9e160bca61272b713aaea729b3ed35a631ea))
+
+
+### Changed
+
+* **deps:** bump samlify from 2.10.2 to 2.13.0 ([#13122](https://github.com/ParabolInc/parabol/issues/13122)) ([4fa968d](https://github.com/ParabolInc/parabol/commit/4fa968dd307a1ebc1397e5c245391a4d6730730a))
+* update CC whenever a payment succeeds ([#13123](https://github.com/ParabolInc/parabol/issues/13123)) ([4db817b](https://github.com/ParabolInc/parabol/commit/4db817b0ec7932d496835627d0b079a2fee169e3))
+
 ## [13.18.0](https://github.com/ParabolInc/parabol/compare/v13.17.1...v13.18.0) (2026-05-20)
 
 
