@@ -35,7 +35,8 @@ const startCheckIn: MutationResolvers['startCheckIn'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
   if (overLimitError) {
-    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
+    if (!ignoreSuggestedUpgrade) {
+      // Temporarily ignoring MAX_TEAM_UPGRADE_REQUIRED
       const {teamCount, meetingCount, errorCode} = overLimitError
       throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
         extensions: {code: errorCode, teamCount, meetingCount}

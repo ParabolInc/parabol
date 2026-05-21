@@ -90,7 +90,7 @@ const startSprintPoker: MutationResolvers['startSprintPoker'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
   if (overLimitError) {
-    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
+    if (!ignoreSuggestedUpgrade) {
       const {teamCount, meetingCount, errorCode} = overLimitError
       throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
         extensions: {code: errorCode, teamCount, meetingCount}
