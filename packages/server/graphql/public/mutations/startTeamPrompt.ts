@@ -3,6 +3,7 @@ import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
@@ -11,7 +12,7 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
-import {startNewMeetingSeries} from './updateRecurrenceSettings'
+import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -33,6 +34,31 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
+  const meetingName = name || 'Standup'
+  const eventName = rrule ? name || 'Standup' : meetingName
+
+  // schedule-only path: rrule provided and its first occurrence is in the future
+  const nextRRuleDate = rrule ? getNextRRuleDate(rrule) : null
+  const isScheduledForFuture = !!(rrule && nextRRuleDate && nextRRuleDate.getTime() > Date.now())
+  if (rrule && isScheduledForFuture) {
+    const meetingSeries = await createMeetingSeries({
+      meetingType: 'teamPrompt',
+      title: name || meetingName,
+      recurrenceRule: rrule,
+      teamId,
+      facilitatorId: viewerId
+    })
+    analytics.recurrenceStarted(viewer, meetingSeries)
+    const data = {
+      teamId,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      hasGcalError: false
+    }
+    publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+    return data
+  }
+
   const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
   try {
     await redisLock.lock(0)
@@ -42,8 +68,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  const meetingName = name || 'Standup'
-  const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
   if (!meeting) {
     return {error: {message: 'Meeting already started'}}
@@ -74,7 +98,12 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       .where('id', '=', meetingSeries.id)
       .execute()
   }
-  const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
+  const data = {
+    teamId,
+    meetingId: meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
+    hasGcalError: !!error?.message
+  }
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data
 }

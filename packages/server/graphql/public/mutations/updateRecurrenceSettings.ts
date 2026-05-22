@@ -15,6 +15,33 @@ import standardError from '../../../utils/standardError'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
 import type {MutationResolvers} from '../resolverTypes'
 
+export const createMeetingSeries = async (params: {
+  meetingType: MeetingTypeEnum
+  title: string
+  recurrenceRule: RRuleSet
+  teamId: string
+  facilitatorId: string
+}) => {
+  const pg = getKysely()
+  const newMeetingSeriesParams = {
+    meetingType: params.meetingType,
+    title: params.title,
+    recurrenceRule: params.recurrenceRule.toString(),
+    duration: 0,
+    teamId: params.teamId,
+    facilitatorId: params.facilitatorId
+  } as const
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values(newMeetingSeriesParams)
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return {
+    id: newMeetingSeries.id,
+    ...newMeetingSeriesParams
+  }
+}
+
 export const startNewMeetingSeries = async (
   meeting: {
     id: string
@@ -33,38 +60,26 @@ export const startNewMeetingSeries = async (
     name: meetingName,
     facilitatorUserId: facilitatorId
   } = meeting
-  const pg = getKysely()
   if (!facilitatorId) {
     throw new Error('No facilitatorId')
   }
-  const newMeetingSeriesParams = {
+  const newMeetingSeries = await createMeetingSeries({
     meetingType,
-    title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date
-    recurrenceRule: recurrenceRule.toString(),
-    // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
-    duration: 0,
+    title: meetingSeriesName || meetingName.split('-')[0]!.trim(),
+    recurrenceRule,
     teamId,
     facilitatorId
-  } as const
-  const newMeetingSeries = await pg
-    .insertInto('MeetingSeries')
-    .values(newMeetingSeriesParams)
-    .returning('id')
-    .executeTakeFirstOrThrow()
-  const newMeetingSeriesId = newMeetingSeries.id
+  })
   const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
-  await pg
+  await getKysely()
     .updateTable('NewMeeting')
     .set({
-      meetingSeriesId: newMeetingSeriesId,
+      meetingSeriesId: newMeetingSeries.id,
       scheduledEndTime: nextMeetingStartDate
     })
     .where('id', '=', meetingId)
     .execute()
-  return {
-    id: newMeetingSeriesId,
-    ...newMeetingSeriesParams
-  }
+  return newMeetingSeries
 }
 
 const updateMeetingSeries = async (
