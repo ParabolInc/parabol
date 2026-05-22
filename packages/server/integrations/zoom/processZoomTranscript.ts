@@ -1,6 +1,6 @@
-import {generateJSON} from '@tiptap/html'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
+import {generateJSON} from '../../utils/tiptap/generateJSON'
 import type {TranscriptPageInput} from '../gdrive/attachTranscriptToSummaryPage'
 
 type VttCue = {

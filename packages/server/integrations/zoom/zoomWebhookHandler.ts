@@ -1,10 +1,14 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {Editor} from '@tiptap/core'
 import {fetch} from '@whatwg-node/fetch'
 import {createHmac, timingSafeEqual} from 'crypto'
+import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
+import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
+import {createNewPage} from '../../utils/tiptap/createNewPage'
 import {attachTranscriptToSummaryPage} from '../gdrive/attachTranscriptToSummaryPage'
 import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
@@ -18,7 +22,7 @@ type ZoomRecordingFile = {
 }
 
 type ZoomRecordingCompletedPayload = {
-  event: string
+  event: 'recording.transcript_completed'
   payload: {
     object: {
       uuid: string
@@ -29,6 +33,22 @@ type ZoomRecordingCompletedPayload = {
       recording_files: ZoomRecordingFile[]
     }
   }
+  download_token: string
+}
+
+type ZoomSummaryCompletedPayload = {
+  event: 'meeting.summary_completed'
+  payload: {
+    object: {
+      meeting_host_id: string
+      meeting_uuid: string
+      meeting_topic: string
+      meeting_start_time: string
+      meeting_end_time: string
+      summary_title: string
+      summary_content: string
+    }
+  }
 }
 
 type ZoomUrlValidationPayload = {
@@ -36,7 +56,10 @@ type ZoomUrlValidationPayload = {
   payload: {plainToken: string}
 }
 
-type ZoomWebhookPayload = ZoomRecordingCompletedPayload | ZoomUrlValidationPayload
+type ZoomWebhookPayload =
+  | ZoomRecordingCompletedPayload
+  | ZoomSummaryCompletedPayload
+  | ZoomUrlValidationPayload
 
 const verifyZoomSignature = (
   secret: string,
@@ -53,6 +76,7 @@ const verifyZoomSignature = (
 
 const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
   const secret = process.env.ZOOM_WEBHOOK_SECRET_TOKEN
+
   if (!secret) {
     res.writeStatus('500').end()
     return
@@ -75,9 +99,8 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
     res.writeStatus('400').end()
     return
   }
-
   if (payload.event === 'endpoint.url_validation') {
-    const {plainToken} = (payload as ZoomUrlValidationPayload).payload
+    const {plainToken} = payload.payload
     const encryptedToken = createHmac('sha256', secret).update(plainToken).digest('hex')
     res
       .writeStatus('200 OK')
@@ -93,44 +116,68 @@ const zoomWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRe
   }
 
   res.writeStatus('200 OK').end()
-
-  if (payload.event === 'recording.completed') {
-    processRecording(payload as ZoomRecordingCompletedPayload).catch(Logger.log)
-  }
+  dispatchZoomEvent(payload).catch(Logger.log)
 })
 
-const processRecording = async (payload: ZoomRecordingCompletedPayload) => {
-  const {host_id, uuid, start_time, duration, recording_files} = payload.payload.object
-
-  const transcriptFile = recording_files.find(
-    (f) => f.file_type === 'TRANSCRIPT' && f.file_extension === 'VTT' && f.status === 'completed'
-  )
-  if (!transcriptFile) return
-
+const dispatchZoomEvent = async (payload: ZoomWebhookPayload) => {
   const pg = getKysely()
 
-  // Find which Parabol user/team owns this Zoom host
+  let hostId: string
+  let meetingUuid: string
+  let eventType: 'transcript' | 'summary'
+
+  if (payload.event === 'recording.transcript_completed') {
+    hostId = payload.payload.object.host_id
+    meetingUuid = payload.payload.object.uuid
+    eventType = 'transcript'
+  } else if (payload.event === 'meeting.summary_completed') {
+    hostId = payload.payload.object.meeting_host_id
+    meetingUuid = payload.payload.object.meeting_uuid
+    eventType = 'summary'
+  } else {
+    return
+  }
+
   const authRow = await pg
     .selectFrom('TeamMemberIntegrationAuth')
     .selectAll()
-    .where('providerUserId', '=', host_id)
+    .where('providerUserId', '=', hostId)
     .where('service', '=', 'zoom')
     .where('isActive', '=', true)
     .orderBy('updatedAt', 'desc')
     .executeTakeFirst()
 
   if (!authRow) return
+  const {userId, teamId} = authRow
 
-  const {userId, teamId, accessToken} = authRow
-  if (!accessToken) return
-
-  const externalId = `zoom:${uuid}`
+  const externalId = `zoom:${eventType}:${meetingUuid}`
   const insertResult = await pg
     .insertInto('ExternalMeetingFile')
     .values({id: externalId, teamId})
     .onConflict((oc) => oc.column('id').doNothing())
     .executeTakeFirst()
   if (insertResult.numInsertedOrUpdatedRows === 0n) return
+  if (payload.event === 'recording.transcript_completed') {
+    await processTranscriptCompleted(payload, userId, teamId, externalId)
+  } else {
+    await processSummaryCompleted(payload, userId, teamId, externalId)
+  }
+}
+
+const processTranscriptCompleted = async (
+  payload: ZoomRecordingCompletedPayload,
+  userId: string,
+  teamId: string,
+  externalId: string
+) => {
+  const {download_token} = payload
+  const {start_time, duration, recording_files} = payload.payload.object
+  const transcriptFile = recording_files.find(
+    (f) => f.file_type === 'TRANSCRIPT' && f.file_extension === 'VTT' && f.status === 'completed'
+  )
+  if (!transcriptFile) return
+
+  const pg = getKysely()
 
   // Meeting end time = start_time + duration (minutes)
   const startMs = new Date(start_time).getTime()
@@ -141,8 +188,9 @@ const processRecording = async (payload: ZoomRecordingCompletedPayload) => {
     return
   }
 
-  // Fetch the VTT transcript using the host's access token
-  const vttRes = await fetch(`${transcriptFile.download_url}?access_token=${accessToken}`)
+  const vttRes = await fetch(transcriptFile.download_url, {
+    headers: {Authorization: `Bearer ${download_token}`}
+  })
   if (!vttRes.ok) {
     await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
     return
@@ -168,6 +216,55 @@ const processRecording = async (payload: ZoomRecordingCompletedPayload) => {
       .where('id', '=', externalId)
       .execute()
   }
+}
+
+const processSummaryCompleted = async (
+  payload: ZoomSummaryCompletedPayload,
+  userId: string,
+  teamId: string,
+  externalId: string
+) => {
+  const {meeting_topic, meeting_end_time, summary_title, summary_content} = payload.payload.object
+  const trimmed = summary_content.trim()
+  if (!trimmed) return
+
+  const pg = getKysely()
+  const endedAt = new Date(meeting_end_time)
+  const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
+  if (!meeting) {
+    await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+    return
+  }
+
+  const title = summary_title || meeting_topic
+  const markdown = title ? `# ${title}\n\n${trimmed}` : trimmed
+  const editor = new Editor({
+    element: undefined,
+    content: markdown,
+    contentType: 'markdown',
+    extensions: serverTipTapExtensions
+  })
+
+  const page = await createNewPage({
+    content: editor.getJSON() as unknown as TipTapSerializedPageContent,
+    teamId,
+    summaryMeetingId: meeting.id,
+    userId
+  })
+
+  await Promise.all([
+    pg
+      .updateTable('NewMeeting')
+      .set({summaryPageId: page.id})
+      .where('id', '=', meeting.id)
+      .where('summaryPageId', 'is', null)
+      .execute(),
+    pg
+      .updateTable('ExternalMeetingFile')
+      .set({summaryPageId: page.id})
+      .where('id', '=', externalId)
+      .execute()
+  ])
 }
 
 export default zoomWebhookHandler

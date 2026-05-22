@@ -33,7 +33,6 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
   const {pageCode, title, canonical, database} = attrs
   const pageSlug = getPageSlug(pageCode, title)
   const emoji = getPageEmoji(title ?? '')
-  console.log({emoji})
   const Icon = !emoji
     ? canonical
       ? database

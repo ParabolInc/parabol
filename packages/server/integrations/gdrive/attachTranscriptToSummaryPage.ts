@@ -24,7 +24,8 @@ export const attachTranscriptToSummaryPage = async (
     await redisHocusPocus.handleEvent('addCanonicalPageLink', documentName, {
       title,
       pageCode,
-      isDatabase: false
+      isDatabase: false,
+      append: true
     })
   }
 }

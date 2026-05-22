@@ -5,7 +5,7 @@ import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class ZoomClientManager {
-  static SCOPES = 'cloud_recording:read:meeting_transcript user:read:user'
+  static SCOPES = 'meeting:read:summary cloud_recording:read:recording user:read:user'
 
   static openOAuth(
     atmosphere: Atmosphere,

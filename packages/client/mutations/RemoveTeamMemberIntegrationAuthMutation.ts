@@ -17,6 +17,9 @@ graphql`
         gdrive {
           isActive
         }
+        zoom {
+          isActive
+        }
       }
     }
   }
@@ -33,6 +36,7 @@ const mutation = graphql`
           message
         }
       }
+
       ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false)
     }
   }
