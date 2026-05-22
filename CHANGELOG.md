@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.20.0](https://github.com/ParabolInc/parabol/compare/v13.19.0...v13.20.0) (2026-05-22)
+
+
+### Added
+
+* display GDrive integration errors, enable Zoom connection for debug ([#13137](https://github.com/ParabolInc/parabol/issues/13137)) ([58abb87](https://github.com/ParabolInc/parabol/commit/58abb87d1747a96cee7987eab66a3b90fadc9b28))
+
 ## [13.19.0](https://github.com/ParabolInc/parabol/compare/v13.18.2...v13.19.0) (2026-05-22)
 
 
