@@ -13,6 +13,7 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
@@ -128,7 +129,9 @@ const safeEndRetrospective = async ({
   await pg.insertInto('TimelineEvent').values(events).execute()
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
   const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
-    Logger.log(`safeEndRetrospective: publishSummaryPage failed for ${meetingId}: ${e}`)
+    logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
+      tags: {meetingId, op: 'publishSummaryPage'}
+    })
     return null
   })
   if (page) completedRetrospective.summaryPageId = page.id

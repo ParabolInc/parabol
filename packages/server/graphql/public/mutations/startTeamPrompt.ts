@@ -38,6 +38,12 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const eventName = rrule ? name || 'Standup' : meetingName
 
   if (rrule && !isImmediateOccurrence(rrule)) {
+    const scheduleLock = new RedisLockQueue(`newMeetingSeries:${teamId}`, MEETING_START_DELAY_MS)
+    try {
+      await scheduleLock.lock(0)
+    } catch {
+      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+    }
     const meetingSeries = await createMeetingSeries({
       meetingType: 'teamPrompt',
       title: name || meetingName,

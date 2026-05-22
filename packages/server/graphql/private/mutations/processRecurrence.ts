@@ -13,7 +13,7 @@ import type {MeetingSeries} from '../../../postgres/types'
 import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
-import {Logger} from '../../../utils/Logger'
+import logError from '../../../utils/logError'
 import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
@@ -86,8 +86,9 @@ const startRecurringMeeting = async (
       const disableAnonymity =
         retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
       if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
-        Logger.warn(
-          `processRecurrence: seeding retrospective for series ${meetingSeriesId} with defaults (no prior meeting and incomplete MeetingSettings for team ${teamId})`
+        logError(
+          new Error('processRecurrence: seeding retrospective with defaults'),
+          {tags: {meetingSeriesId, teamId}}
         )
       }
       const meeting = await safeCreateRetrospective(

@@ -30,14 +30,18 @@ const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery
   return <Navigate replace to='/meetings' />
 }
 
-const MeetingSeriesAttendRedirect = () => {
-  const {slug} = useParams()
+const WithSlug = ({slug}: {slug: string}) => {
   const queryRef = useQueryLoaderNow<MeetingSeriesAttendRedirectQuery>(
     meetingSeriesAttendRedirectQuery,
-    {slug: slug!}
+    {slug}
   )
-  if (!slug) return <Navigate replace to='/meetings' />
   return <Suspense fallback={''}>{queryRef && <Inner queryRef={queryRef} />}</Suspense>
+}
+
+const MeetingSeriesAttendRedirect = () => {
+  const {slug} = useParams()
+  if (!slug) return <Navigate replace to='/meetings' />
+  return <WithSlug slug={slug} />
 }
 
 export default MeetingSeriesAttendRedirect

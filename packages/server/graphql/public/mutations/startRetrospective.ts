@@ -6,6 +6,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
+import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -50,6 +51,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingSeriesName = name || meetingName
 
   if (rrule && !isImmediateOccurrence(rrule)) {
+    const scheduleLock = new RedisLockQueue(`newMeetingSeries:${teamId}`, 3000)
+    try {
+      await scheduleLock.lock(0)
+    } catch {
+      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+    }
     const meetingSeries = await createMeetingSeries({
       meetingType,
       title: meetingSeriesName,

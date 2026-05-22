@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
@@ -240,7 +241,7 @@ const ScheduledSeriesCard = (props: Props) => {
     e.preventDefault()
     setIsEditOpen(true)
   }
-  const seriesLink = `/meeting-series/manage/${id}`
+  const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
 
   return (
     <CardWrapper

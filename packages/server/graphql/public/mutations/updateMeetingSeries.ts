@@ -47,14 +47,21 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
   } else if (cancelledAt) {
     await pg
       .updateTable('MeetingSeries')
-      .set({cancelledAt: null, recurrenceRule: rrule.toString()})
+      .set({
+        cancelledAt: null,
+        recurrenceRule: rrule.toString(),
+        ...(name ? {title: name} : null)
+      })
       .where('id', '=', numericId)
       .execute()
     analytics.recurrenceStarted(viewer, meetingSeries)
   } else {
     await pg
       .updateTable('MeetingSeries')
-      .set({recurrenceRule: rrule.toString()})
+      .set({
+        recurrenceRule: rrule.toString(),
+        ...(name ? {title: name} : null)
+      })
       .where('id', '=', numericId)
       .where('cancelledAt', 'is', null)
       .execute()
@@ -87,14 +94,6 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
       userId: facilitatorId,
       dataLoader
     })
-  }
-
-  if (name) {
-    await pg
-      .updateTable('MeetingSeries')
-      .set({title: name})
-      .where('id', '=', numericId)
-      .execute()
   }
 
   dataLoader.clearAll(['meetingSeries', 'newMeetings'])

@@ -69,22 +69,35 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
   useLayoutEffect(() => {
     setAnimatedItems((prev) => {
       const keys = currentKeysRef.current
-      const filteredPrev = prev.filter((tChild) => tChild.status !== TransitionStatus.EXITING)
-      const prevKeys = filteredPrev.map((tChild) => tChild.child.key)
+      const aliveByKey = new Map(
+        prev
+          .filter((tc) => tc.status !== TransitionStatus.EXITING)
+          .map((tc) => [tc.child.key, tc])
+      )
+      const aliveKeys = Array.from(aliveByKey.keys())
       const keysSame =
-        keys.length === prevKeys.length && keys.every((k, i) => k === prevKeys[i])
+        keys.length === aliveKeys.length && keys.every((k, i) => k === aliveKeys[i])
       if (keysSame) return prev
 
+      const currentKeySet = new Set(keys)
       const next: TransitionChild<T>[] = []
       const newlyAdded: Key[] = []
+
+      // preserve in-flight EXITING items so a children-change mid-animation
+      // doesn't unmount them before their transition completes
+      prev.forEach((tc) => {
+        if (tc.status === TransitionStatus.EXITING && !currentKeySet.has(tc.child.key)) {
+          next.push(tc)
+        }
+      })
+
       keys.forEach((key) => {
-        const child = latestChildByKeyRef.current.get(key)!
-        const existing = filteredPrev.find((tChild) => tChild.child.key === key)
+        const existing = aliveByKey.get(key)
         if (existing) {
           next.push(existing)
         } else {
           next.push({
-            child,
+            child: latestChildByKeyRef.current.get(key)!,
             status: TransitionStatus.MOUNTED,
             onTransitionEnd: transitionEndFactory(key)
           })
@@ -92,9 +105,9 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
         }
       })
 
-      filteredPrev.forEach((tChild, i) => {
-        if (!keys.includes(tChild.child.key)) {
-          next.splice(i, 0, {...tChild, status: TransitionStatus.EXITING})
+      prev.forEach((tc, i) => {
+        if (tc.status !== TransitionStatus.EXITING && !currentKeySet.has(tc.child.key)) {
+          next.splice(i, 0, {...tc, status: TransitionStatus.EXITING})
         }
       })
 
