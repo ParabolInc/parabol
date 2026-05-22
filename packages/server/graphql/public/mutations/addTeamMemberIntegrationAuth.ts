@@ -8,6 +8,7 @@ import JiraServerOAuth1Manager, {
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import LinearManager from '../../../integrations/linear/LinearManager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
+import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
@@ -75,6 +76,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   }
 
   let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined
+  let providerUserId: string | null = null
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
@@ -98,6 +100,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       | GDriveOAuth2Manager
       | LinearManager
       | GitLabOAuth2Manager
+      | ZoomOAuth2Manager
       | null = null
     const {clientId, clientSecret, serverBaseUrl} = integrationProvider
 
@@ -114,11 +117,24 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       case 'gitlab':
         manager = new GitLabOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
+      case 'zoom':
+        manager = new ZoomOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
     }
 
     if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
       tokenMetadata = convertExpiresIn(authRes)
+    }
+
+    if (
+      service === 'zoom' &&
+      manager instanceof ZoomOAuth2Manager &&
+      tokenMetadata &&
+      !(tokenMetadata instanceof Error)
+    ) {
+      const {accessToken} = tokenMetadata as {accessToken: string}
+      providerUserId = await manager.getProviderUserId(accessToken)
     }
   }
   if (authStrategy === 'oauth1') {
@@ -145,13 +161,15 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       providerId: providerDbId,
       service,
       teamId,
-      userId: viewerId
+      userId: viewerId,
+      ...(providerUserId !== null && {providerUserId})
     })
     .onConflict((oc) =>
       oc.columns(['userId', 'teamId', 'service']).doUpdateSet({
         ...tokenMetadata,
         providerId: providerDbId,
-        isActive: true
+        isActive: true,
+        ...(providerUserId !== null && {providerUserId})
       })
     )
     .returning('id')

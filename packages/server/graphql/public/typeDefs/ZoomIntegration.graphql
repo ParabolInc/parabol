@@ -1,0 +1,14 @@
+"""
+Zoom integration info for a team member, used for meeting transcript imports
+"""
+type ZoomIntegration {
+  """
+  The global provider configuration for Zoom OAuth
+  """
+  cloudProvider: IntegrationProviderOAuth2
+
+  """
+  True if the user has an active Zoom integration for this team
+  """
+  isActive: Boolean!
+}

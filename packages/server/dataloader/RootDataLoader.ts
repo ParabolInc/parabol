@@ -16,6 +16,7 @@ import * as pageLoaderMakers from './pageLoaderMakers'
 import * as pollLoaders from './pollsLoaders'
 import * as primaryKeyLoaderMakers from './primaryKeyLoaderMakers'
 import * as teamLoaderMakers from './teamLoaderMakers'
+import * as zoomLoaders from './zoomLoaders'
 
 interface LoaderDict {
   [loaderName: string]: DataLoader<any, any>
@@ -38,7 +39,8 @@ const loaderMakers = {
   ...integrationAuthLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
-  ...linearLoaders
+  ...linearLoaders,
+  ...zoomLoaders
 } as const
 
 export type LoaderTypes = typeof loaderMakers

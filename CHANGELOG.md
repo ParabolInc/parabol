@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.19.0](https://github.com/ParabolInc/parabol/compare/v13.18.2...v13.19.0) (2026-05-22)
+
+
+### Added
+
+* add support for Zoom integration ([#13098](https://github.com/ParabolInc/parabol/issues/13098)) ([5eee3c5](https://github.com/ParabolInc/parabol/commit/5eee3c5f53b3839801d8e8a3cf121b6ec809a5bb))
+
+
+### Fixed
+
+* update Tiptap dependencies to 3.23.6. ([#13134](https://github.com/ParabolInc/parabol/issues/13134)) ([f3db9bd](https://github.com/ParabolInc/parabol/commit/f3db9bdf351b9ddba8ec0cce4fbde53fcdf43ddb))
+
 ## [13.18.2](https://github.com/ParabolInc/parabol/compare/v13.18.1...v13.18.2) (2026-05-22)
 
 

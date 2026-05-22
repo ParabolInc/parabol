@@ -39,6 +39,9 @@ const mutation = graphql`
             gdrive {
               isActive
             }
+            zoom {
+              isActive
+            }
           }
         }
       }

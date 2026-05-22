@@ -59,4 +59,9 @@ type TeamMemberIntegrations {
   All things associated with a Google Drive (Meet transcript) integration for a team member
   """
   gdrive: GdriveIntegration!
+
+  """
+  All things associated with a Zoom integration for a team member
+  """
+  zoom: ZoomIntegration!
 }
