@@ -147,6 +147,7 @@
           "FlagReadyToAdvanceSuccess": "./types/FlagReadyToAdvanceSuccess#FlagReadyToAdvanceSuccessSource",
           "GcalIntegration": "./types/GcalIntegration#GcalIntegrationSource",
           "GdriveIntegration": "./types/GdriveIntegration#GdriveIntegrationSource",
+          "ZoomIntegration": "./types/ZoomIntegration#ZoomIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GifResponse": "./types/GifResponse#GifResponseSource",

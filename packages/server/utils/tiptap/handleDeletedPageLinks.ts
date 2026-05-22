@@ -17,7 +17,7 @@ export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) =
   deleted.forEach(async (item) => {
     const [node] = item.content.getContent()
     if (!isPageLink(node)) return
-    const isMoving = getUnsafeDeletedAttribute(node, 'isMoving')
+    const isMoving = getUnsafeDeletedAttribute(node, 'isMoving', true)
     // don't delete it here, it'll get removed as a side effect when it gets added to its new page
     if (isMoving) return
     const pageCode = getUnsafeDeletedAttribute(node, 'pageCode')

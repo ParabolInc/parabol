@@ -60,7 +60,8 @@ module.exports = {
         // important terminating / so saml-redirect doesn't get targeted, too
         'saml/',
         'scim',
-        'oauth'
+        'oauth',
+        'zoom'
       ].map((name) => ({
         context: [`/${name}`],
         target: `http://localhost:${SOCKET_PORT}`
