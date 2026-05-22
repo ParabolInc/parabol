@@ -210,7 +210,7 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(yjs@13.6.29)
       yjs:
-        specifier: 13.6.29
+        specifier: ^13.6.29
         version: 13.6.29
     devDependencies:
       '@babel/core':
