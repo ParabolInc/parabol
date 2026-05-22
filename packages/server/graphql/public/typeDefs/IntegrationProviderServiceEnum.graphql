@@ -51,4 +51,9 @@ enum IntegrationProviderServiceEnum {
   Google Drive (Meet Recordings transcript import)
   """
   gdrive
+
+  """
+  Zoom video conferencing (meeting transcript import)
+  """
+  zoom
 }

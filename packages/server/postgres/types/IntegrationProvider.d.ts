@@ -78,6 +78,10 @@ export interface IntegrationProviderAzureDevOps extends IntegrationProviderOAuth
   tenantId: string
 }
 
+export interface IntegrationProviderZoomOAuth2 extends IntegrationProviderOAuth2 {
+  service: 'zoom'
+}
+
 export type TIntegrationProvider =
   | IntegrationProviderMattermost
   | IntegrationProviderGitLabOAuth2
@@ -88,3 +92,4 @@ export type TIntegrationProvider =
   | IntegrationProviderGcalOAuth2
   | IntegrationProviderGdriveOAuth2
   | IntegrationProviderLinear
+  | IntegrationProviderZoomOAuth2
