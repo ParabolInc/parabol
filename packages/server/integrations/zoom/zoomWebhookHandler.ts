@@ -8,7 +8,6 @@ import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
 import parseBody from '../../parseBody'
 import getKysely from '../../postgres/getKysely'
 import {Logger} from '../../utils/Logger'
-import {createNewPage} from '../../utils/tiptap/createNewPage'
 import {attachTranscriptToSummaryPage} from '../gdrive/attachTranscriptToSummaryPage'
 import {matchExternalMeetingToMeeting} from '../matchExternalMeetingToMeeting'
 import {processZoomTranscript} from './processZoomTranscript'
@@ -183,7 +182,7 @@ const processTranscriptCompleted = async (
   const startMs = new Date(start_time).getTime()
   const endedAt = new Date(startMs + duration * 60 * 1000)
   const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting) {
+  if (!meeting || !meeting.summaryPageId) {
     await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
     return
   }
@@ -201,21 +200,19 @@ const processTranscriptCompleted = async (
     return
   }
 
-  const pages = processZoomTranscript(vtt)
-  if (pages.length === 0) {
+  const pageContent = processZoomTranscript(vtt)
+  if (!pageContent) {
     await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
     return
   }
 
   const {summaryPageId} = meeting
-  if (summaryPageId) {
-    await attachTranscriptToSummaryPage(summaryPageId, pages, userId)
-    await pg
-      .updateTable('ExternalMeetingFile')
-      .set({summaryPageId})
-      .where('id', '=', externalId)
-      .execute()
-  }
+  await attachTranscriptToSummaryPage(
+    summaryPageId,
+    [{title: `Zoom Transcript for ${meeting.name}`, content: pageContent}],
+    userId,
+    externalId
+  )
 }
 
 const processSummaryCompleted = async (
@@ -224,47 +221,33 @@ const processSummaryCompleted = async (
   teamId: string,
   externalId: string
 ) => {
-  const {meeting_topic, meeting_end_time, summary_title, summary_content} = payload.payload.object
+  const {meeting_end_time, summary_content} = payload.payload.object
   const trimmed = summary_content.trim()
   if (!trimmed) return
 
   const pg = getKysely()
   const endedAt = new Date(meeting_end_time)
   const meeting = await matchExternalMeetingToMeeting(endedAt, teamId)
-  if (!meeting) {
+  if (!meeting || !meeting.summaryPageId) {
     await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
     return
   }
 
-  const title = summary_title || meeting_topic
-  const markdown = title ? `# ${title}\n\n${trimmed}` : trimmed
   const editor = new Editor({
     element: undefined,
-    content: markdown,
+    content: trimmed,
     contentType: 'markdown',
     extensions: serverTipTapExtensions
   })
+  const content = editor.getJSON() as unknown as TipTapSerializedPageContent
 
-  const page = await createNewPage({
-    content: editor.getJSON() as unknown as TipTapSerializedPageContent,
-    teamId,
-    summaryMeetingId: meeting.id,
-    userId
-  })
-
-  await Promise.all([
-    pg
-      .updateTable('NewMeeting')
-      .set({summaryPageId: page.id})
-      .where('id', '=', meeting.id)
-      .where('summaryPageId', 'is', null)
-      .execute(),
-    pg
-      .updateTable('ExternalMeetingFile')
-      .set({summaryPageId: page.id})
-      .where('id', '=', externalId)
-      .execute()
-  ])
+  const {summaryPageId} = meeting
+  await attachTranscriptToSummaryPage(
+    summaryPageId,
+    [{title: `Zoom Summary for ${meeting.name}`, content}],
+    userId,
+    externalId
+  )
 }
 
 export default zoomWebhookHandler

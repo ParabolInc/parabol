@@ -1,7 +1,6 @@
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
 import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {generateJSON} from '../../utils/tiptap/generateJSON'
-import type {TranscriptPageInput} from '../gdrive/attachTranscriptToSummaryPage'
 
 type VttCue = {
   speaker: string
@@ -67,13 +66,13 @@ const cuesToHtml = (cues: VttCue[]): string => {
   return parts.join('')
 }
 
-export const processZoomTranscript = (vtt: string): TranscriptPageInput[] => {
+export const processZoomTranscript = (vtt: string) => {
   const cues = parseVtt(vtt)
-  if (cues.length === 0) return []
+  if (cues.length === 0) return null
   const html = cuesToHtml(cues)
   const content = generateJSON(
     `<h1>Zoom Transcript</h1>${html}`,
     serverTipTapExtensions
   ) as TipTapSerializedPageContent
-  return [{title: 'Zoom Transcript', content}]
+  return content
 }
