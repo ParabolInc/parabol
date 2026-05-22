@@ -1,5 +1,6 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {DiscussionDrawerZoomRow_zoom$key} from '../__generated__/DiscussionDrawerZoomRow_zoom.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -18,6 +19,8 @@ interface Props {
 }
 
 const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
+  const [clickCount, setClickCount] = useState(0)
+
   const zoom = useFragment(
     graphql`
       fragment DiscussionDrawerZoomRow_zoom on ZoomIntegration {
@@ -84,11 +87,11 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
         </div>
       ) : (
         <button
-          className='cursor-not-allowed whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
-          // onClick={handleConnect}
+          className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
+          onClick={clickCount >= 3 ? handleConnect : () => setClickCount((c) => c + 1)}
           disabled={submitting}
         >
-          {'Coming Soon'}
+          {clickCount >= 3 ? 'Connect' : 'Coming Soon'}
         </button>
       )}
     </div>
