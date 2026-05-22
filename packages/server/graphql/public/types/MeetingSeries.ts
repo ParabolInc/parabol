@@ -1,5 +1,7 @@
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
+import {RRuleSet} from 'rrule-rust'
 import {selectNewMeetings} from '../../../postgres/select'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import type {MeetingSeriesResolvers} from '../resolverTypes'
 
 const MeetingSeries: MeetingSeriesResolvers = {
@@ -18,6 +20,10 @@ const MeetingSeries: MeetingSeriesResolvers = {
       .limit(1)
       .executeTakeFirstOrThrow()
     return meeting
+  },
+  nextMeetingDate: ({recurrenceRule, cancelledAt}) => {
+    if (cancelledAt) return null
+    return getNextRRuleDate(RRuleSet.parse(recurrenceRule))
   }
 }
 

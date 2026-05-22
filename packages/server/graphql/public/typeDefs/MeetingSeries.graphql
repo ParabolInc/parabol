@@ -52,4 +52,10 @@ type MeetingSeries {
   meetings.
   """
   mostRecentMeeting: NewMeeting!
+
+  """
+  The next scheduled occurrence of the recurrence rule, computed server-side from
+  recurrenceRule. Null if the series is cancelled or has no future occurrences.
+  """
+  nextMeetingDate: DateTime
 }
