@@ -116,7 +116,7 @@
     "concurrently": "^8.0.1",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
-    "graphql": "^16.13.1",
+    "graphql": "16.13.1",
     "html-webpack-plugin": "^5.5.0",
     "husky": "^7.0.4",
     "ignore-loader": "^0.1.2",
