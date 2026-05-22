@@ -1,4 +1,4 @@
-import type {HocuspocusProvider} from '@hocuspocus/provider'
+import type {AuthorizedScope, HocuspocusProvider} from '@hocuspocus/provider'
 import type {Editor} from '@tiptap/core'
 import {useEffect, useState} from 'react'
 import type * as Y from 'yjs'
@@ -16,7 +16,7 @@ export const useEditablePage = (provider: HocuspocusProvider, editor: Editor) =>
   const [isStreaming, setIsStreaming] = useState(() => hasThinkingBlock(provider.document))
 
   useEffect(() => {
-    const handler = ({scope}: {scope: string}) => setAuthorizedScope(scope)
+    const handler = ({scope}: {scope: AuthorizedScope}) => setAuthorizedScope(scope)
     provider.on('authenticated', handler)
     return () => {
       provider.off('authenticated', handler)

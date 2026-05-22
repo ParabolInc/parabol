@@ -22,7 +22,7 @@ export const shouldRefreshMetadata = (doc: {metadata: string | null; updatedAt: 
       localPath: ['EntityDescriptor'],
       attributes: ['cacheDuration']
     }
-  ])
+  ]) as {validUntil: string; cacheDuration: number}
 
   if (validUntil) {
     const nearFuture = dayjs().add(dayjs.duration(ms('30d')))

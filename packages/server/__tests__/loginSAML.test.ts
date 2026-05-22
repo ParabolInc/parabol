@@ -1,6 +1,7 @@
 import base64url from 'base64url'
 import faker from 'faker'
 import * as samlify from 'samlify'
+import type {RequestInfo} from 'samlify/types/src/types'
 import getKysely from '../postgres/getKysely'
 import {samlXMLValidator} from '../utils/samlXMLValidator'
 import {sendIntranet} from './common'
@@ -149,7 +150,7 @@ test('SAML', async () => {
   const id = `_test${Date.now()}`
   const {context: samlResponseBase64} = await idp.createLoginResponse(
     sp,
-    {},
+    {} as unknown as RequestInfo,
     'post',
     {email: testEmail},
     (template: string) => ({
