@@ -5,12 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
-## [13.17.2](https://github.com/ParabolInc/parabol/compare/v13.17.1...v13.17.2) (2026-05-20)
+## [13.18.2](https://github.com/ParabolInc/parabol/compare/v13.18.1...v13.18.2) (2026-05-22)
 
 
 ### Fixed
 
-* update recurrence settings ([#13110](https://github.com/ParabolInc/parabol/issues/13110)) ([573aed8](https://github.com/ParabolInc/parabol/commit/573aed8705c7744c33bf5ab691edea2f38643ba3))
+* bump nodejs ([#13130](https://github.com/ParabolInc/parabol/issues/13130)) ([4cc3beb](https://github.com/ParabolInc/parabol/commit/4cc3beb9775172088f75ba135183ac24d5796e95))
+
+## [13.18.1](https://github.com/ParabolInc/parabol/compare/v13.18.0...v13.18.1) (2026-05-21)
+
+
+### Fixed
+
+* disable trial expiration limits  ([#13125](https://github.com/ParabolInc/parabol/issues/13125)) ([07dd9e1](https://github.com/ParabolInc/parabol/commit/07dd9e160bca61272b713aaea729b3ed35a631ea))
+
+
+### Changed
+
+* **deps:** bump samlify from 2.10.2 to 2.13.0 ([#13122](https://github.com/ParabolInc/parabol/issues/13122)) ([4fa968d](https://github.com/ParabolInc/parabol/commit/4fa968dd307a1ebc1397e5c245391a4d6730730a))
+* update CC whenever a payment succeeds ([#13123](https://github.com/ParabolInc/parabol/issues/13123)) ([4db817b](https://github.com/ParabolInc/parabol/commit/4db817b0ec7932d496835627d0b079a2fee169e3))
+
+## [13.18.0](https://github.com/ParabolInc/parabol/compare/v13.17.1...v13.18.0) (2026-05-20)
+
+
+### Added
+
+* related discussions gate ([#13116](https://github.com/ParabolInc/parabol/issues/13116)) ([25628b4](https://github.com/ParabolInc/parabol/commit/25628b4e5ed385e42f2173cb532b96fddc0077af))
+
+
+### Fixed
+
+* update recurrence settings ([#13115](https://github.com/ParabolInc/parabol/issues/13115)) ([8c88004](https://github.com/ParabolInc/parabol/commit/8c88004742741fc0ee78424484d424fc9714007a))
 
 
 ### Changed
