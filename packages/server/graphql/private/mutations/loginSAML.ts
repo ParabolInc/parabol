@@ -146,7 +146,8 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
   }
 
   const {extract} = loginResponse
-  const {attributes, nameID} = extract
+  const attributes = extract.attributes ?? {}
+  const nameID = extract.nameID!
   const normalizedAttributes = Object.fromEntries(
     Object.entries(attributes).map(([key, value]) => {
       const normalizedKey = CLAIM_SPEC[key as keyof typeof CLAIM_SPEC] ?? key.toLowerCase()
