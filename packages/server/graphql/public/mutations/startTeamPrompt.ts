@@ -1,10 +1,8 @@
-import {GraphQLError} from 'graphql'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import isCompanyOverLimit from '../../../utils/isCompanyOverLimit'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
@@ -19,7 +17,7 @@ const MEETING_START_DELAY_MS = 3000
 
 const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   _source,
-  {teamId, name, rrule: rruleString, gcalInput, ignoreSuggestedUpgrade},
+  {teamId, name, rrule: rruleString, gcalInput},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -29,20 +27,11 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   // AUTH
   const viewerId = getUserId(authToken)
 
-  const [unpaidError, viewer, overLimitError] = await Promise.all([
+  const [unpaidError, viewer] = await Promise.all([
     isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(viewerId),
-    isCompanyOverLimit(teamId, dataLoader)
+    dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
-  if (overLimitError) {
-    if (overLimitError.errorCode === 'MAX_TEAM_UPGRADE_REQUIRED' || !ignoreSuggestedUpgrade) {
-      const {teamCount, meetingCount, errorCode} = overLimitError
-      throw new GraphQLError(`Your company has exceeded the free tier. Please upgrade`, {
-        extensions: {code: errorCode, teamCount, meetingCount}
-      })
-    }
-  }
 
   const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
   try {
