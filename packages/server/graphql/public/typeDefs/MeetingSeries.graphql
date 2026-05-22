@@ -8,6 +8,11 @@ type MeetingSeries {
   id: ID!
 
   """
+  The team that owns the meeting series
+  """
+  teamId: ID!
+
+  """
   The type of the recurring meeting
   """
   meetingType: MeetingTypeEnum!
@@ -59,4 +64,12 @@ type MeetingSeries {
   recurrenceRule. Null if the series is cancelled or has no future occurrences.
   """
   nextMeetingDate: DateTime
+
+  """
+  URL-safe slug identifying the series in invitee-facing links (e.g., gcal descriptions).
+  Format: <kebab-title>-<cipher>, mirroring the Pages convention. The trailing cipher hides
+  the DB id; the leading title slug is decorative. Use with the /meeting-series/:slug route,
+  which redirects an invitee into any active meeting for the series or back to /meetings.
+  """
+  urlSlug: String!
 }

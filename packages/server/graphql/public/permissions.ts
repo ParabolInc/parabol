@@ -381,6 +381,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.meetingId',
       'newMeetings'
     ),
+    // updateMeetingSeries: auth lives in the resolver (args.meetingSeriesId is a global ID
+    // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     updateReflectionContent: isMeetingMember<'Mutation.updateReflectionContent'>(
       'args.reflectionId',
       'retroReflections'

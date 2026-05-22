@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
-import {memo, useEffect, useLayoutEffect, useRef} from 'react'
+import {memo, useEffect, useLayoutEffect, useRef, useState} from 'react'
 import {useLocation} from 'react-router'
-import useForceUpdate from '~/hooks/useForceUpdate'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'
@@ -53,8 +52,7 @@ export interface Snack {
 
 const Snackbar = memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
-  const activeSnacksRef = useRef<Snack[]>([])
-  const forceUpdate = useForceUpdate()
+  const [activeSnacks, setActiveSnacks] = useState<Snack[]>([])
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({
     id: 'snackbar',
@@ -64,7 +62,7 @@ const Snackbar = memo(() => {
   const hasSidebar =
     location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const transitionChildren = useTransition(activeSnacksRef.current)
+  const transitionChildren = useTransition(activeSnacks)
   // used to ensure the snack isn't dismissed when the cursor is on it
   const hoveredSnackRef = useRef<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
@@ -72,11 +70,10 @@ const Snackbar = memo(() => {
   const filterSnacks = useEventCallback((removeFn: SnackbarRemoveFn) => {
     const filterFn = (snack: Snack) => !removeFn(snack)
     snackQueueRef.current = snackQueueRef.current.filter(filterFn)
-    const nextSnacks = activeSnacksRef.current.filter(filterFn)
-    if (nextSnacks.length !== activeSnacksRef.current.length) {
-      activeSnacksRef.current = nextSnacks
-      forceUpdate()
-    }
+    setActiveSnacks((prev) => {
+      const next = prev.filter(filterFn)
+      return next.length !== prev.length ? next : prev
+    })
   })
 
   const dismissSnack = useEventCallback((snackToDismiss: Snack) => {
@@ -85,7 +82,7 @@ const Snackbar = memo(() => {
   })
 
   const showSnack = useEventCallback((snack: Snack) => {
-    activeSnacksRef.current = [...activeSnacksRef.current, snack]
+    setActiveSnacks((prev) => [...prev, snack])
     if (snack.autoDismiss !== 0) {
       setTimeout(() => {
         if (hoveredSnackRef.current === snack) {
@@ -95,7 +92,6 @@ const Snackbar = memo(() => {
         }
       }, snack.autoDismiss * 1000)
     }
-    forceUpdate()
     snack.onShow?.()
   })
 
@@ -114,7 +110,7 @@ const Snackbar = memo(() => {
   const handleAdd = useEventCallback((snack) => {
     const dupeFilter = ({key}: Snack) => key === snack.key
     const snackInQueue = snackQueueRef.current.find(dupeFilter)
-    const snackIsActive = activeSnacksRef.current.find(dupeFilter)
+    const snackIsActive = activeSnacks.find(dupeFilter)
     if (snackInQueue || snackIsActive) return
     if (typeof snack.message !== 'string') {
       console.error(`Bad snack message: ${snack.key}`)

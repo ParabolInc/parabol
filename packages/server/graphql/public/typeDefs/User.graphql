@@ -209,6 +209,30 @@ type User implements UserPartial {
   ): NewMeeting @scope(name: MEETINGS_READ)
 
   """
+  A meeting series the viewer can access. Used to manage scheduled-only series
+  (where no meeting has spawned yet) and to deep-link to series-level configuration.
+  Returns null when the series does not exist or the viewer is not on the team.
+  """
+  meetingSeries(
+    """
+    The meeting series ID
+    """
+    meetingSeriesId: ID!
+  ): MeetingSeries @scope(name: MEETINGS_READ)
+
+  """
+  Resolve a meeting series from its invitee-facing URL slug (cipher-id + title slug).
+  Returns null when the slug is malformed, the series does not exist, or the viewer
+  is not on the team. Used by the /meeting-series/:slug attendee redirect.
+  """
+  meetingSeriesBySlug(
+    """
+    The URL slug, e.g. "our-weekly-standup-2876359442"
+    """
+    slug: String!
+  ): MeetingSeries @scope(name: MEETINGS_READ)
+
+  """
   all the notifications for a single user
   """
   notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!

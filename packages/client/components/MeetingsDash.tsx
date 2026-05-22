@@ -15,6 +15,7 @@ import DemoMeetingCard from './DemoMeetingCard'
 import MeetingCard from './MeetingCard'
 import MeetingsDashEmpty from './MeetingsDashEmpty'
 import MeetingsDashHeader from './MeetingsDashHeader'
+import ScheduledSeriesCard from './ScheduledSeriesCard'
 import StartMeetingFAB from './StartMeetingFAB'
 import TutorialMeetingCard from './TutorialMeetingCard'
 
@@ -59,11 +60,13 @@ const MeetingsDash = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {teamIds: teamFilterIds} = useQueryParameterParser(atmosphere.viewerId)
   const {teams = [], preferredName = '', dashSearch} = viewer ?? {}
+  const allSeries = useMemo(
+    () => teams.flatMap((team) => team.activeMeetingSeries).filter((s) => !s.cancelledAt),
+    [teams]
+  )
   const activeMeetings = useMemo(() => {
-    const meetingSeriesMeetings = teams
-      .flatMap((team) => team.activeMeetingSeries)
-      // exclude scheduled-only series whose first meeting has not spawned yet
-      .filter((meetingSeries) => !meetingSeries.cancelledAt && !!meetingSeries.mostRecentMeeting)
+    const meetingSeriesMeetings = allSeries
+      .filter((meetingSeries) => !!meetingSeries.mostRecentMeeting)
       .sort((a, b) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
@@ -76,7 +79,14 @@ const MeetingsDash = (props: Props) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
     return [...meetingSeriesMeetings, ...otherActiveMeetings]
-  }, [teams])
+  }, [teams, allSeries])
+  const scheduledSeries = useMemo(
+    () =>
+      allSeries
+        .filter((s) => !s.mostRecentMeeting)
+        .sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1)),
+    [allSeries]
+  )
   const filteredMeetings = useMemo(() => {
     const searchedMeetings = dashSearch
       ? activeMeetings.filter(({name}) => name && name.match(getSafeRegex(dashSearch, 'i')))
@@ -90,10 +100,24 @@ const MeetingsDash = (props: Props) => {
       displayIdx
     }))
   }, [activeMeetings, dashSearch, teamFilterIds])
+  const filteredScheduledSeries = useMemo(() => {
+    const searched = dashSearch
+      ? scheduledSeries.filter(({title}) => title && title.match(getSafeRegex(dashSearch, 'i')))
+      : scheduledSeries
+    const teamFiltered = teamFilterIds
+      ? searched.filter((s) => teamFilterIds.includes(s.teamId))
+      : searched
+    return teamFiltered.map((series, displayIdx) => ({
+      ...series,
+      key: `series-${series.id}`,
+      displayIdx
+    }))
+  }, [scheduledSeries, dashSearch, teamFilterIds])
   const transitioningMeetings = useTransition(filteredMeetings)
+  const transitioningSeries = useTransition(filteredScheduledSeries)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const cardsPerRow = useCardsPerRow(meetingsDashRef)
-  const hasFilteredMeetings = filteredMeetings.length > 0
+  const hasFilteredMeetings = filteredMeetings.length > 0 || filteredScheduledSeries.length > 0
   useDocumentTitle('Meetings | Parabol', 'Meetings')
   if (!viewer || !cardsPerRow) return null
 
@@ -102,6 +126,19 @@ const MeetingsDash = (props: Props) => {
       <MeetingsDashHeader viewerRef={viewer} />
       {hasFilteredMeetings ? (
         <Wrapper maybeTabletPlus={maybeTabletPlus}>
+          {transitioningSeries.map((series) => {
+            const {child} = series
+            const {id, displayIdx} = child
+            return (
+              <ScheduledSeriesCard
+                key={`series-${id}`}
+                displayIdx={displayIdx}
+                series={series.child}
+                onTransitionEnd={series.onTransitionEnd}
+                status={series.status}
+              />
+            )
+          })}
           {transitioningMeetings.map((meeting) => {
             const {child} = meeting
             const {id, displayIdx} = child
@@ -164,11 +201,14 @@ graphql`
     }
     activeMeetingSeries {
       id
+      title
+      teamId
       createdAt
       cancelledAt
       mostRecentMeeting {
         ...MeetingsDash_meeting @relay(mask: false)
       }
+      ...ScheduledSeriesCard_series
     }
   }
 `

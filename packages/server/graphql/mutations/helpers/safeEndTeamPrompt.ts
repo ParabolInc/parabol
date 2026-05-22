@@ -86,8 +86,6 @@ const safeEndTeamPrompt = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
-  // summary generation (AI) and publishSummaryPage (Yjs/hocuspocus) can each fail without
-  // invalidating the end-meeting result; degrade gracefully rather than failing the mutation
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       Logger.log(`safeEndTeamPrompt: publishSummaryPage failed for ${meetingId}: ${e}`)
@@ -112,7 +110,7 @@ const safeEndTeamPrompt = async ({
     {operationId}
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
-  // do not await sending the email; skip when the summary page failed to publish
+  // do not await sending the email
   if (page) sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   return data
 }

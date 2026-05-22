@@ -3,7 +3,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
 import * as React from 'react'
-import {type ChangeEvent, useState} from 'react'
+import {type ChangeEvent, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {RRule} from 'rrule'
 import type {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
@@ -24,6 +24,7 @@ import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
 import PrimaryButton from './PrimaryButton'
+import {fromRRuleDateTime} from '../shared/rruleUtil'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
 import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
@@ -53,6 +54,20 @@ export const ScheduleDialog = (props: Props) => {
     invitees: [],
     videoType: null
   })
+
+  const rruleString = rrule?.toString()
+  useEffect(() => {
+    if (!rrule) return
+    const newStart = fromRRuleDateTime(rrule)
+    setGcalInput((prev) => {
+      const durationMs = prev.end.diff(prev.start)
+      return {
+        ...prev,
+        start: newStart,
+        end: newStart.add(durationMs, 'millisecond')
+      }
+    })
+  }, [rruleString])
 
   const team = useFragment(
     graphql`

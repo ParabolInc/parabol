@@ -4,6 +4,7 @@ export type StartTeamPromptSuccessSource = {
   meetingId: string | null
   meetingSeriesId?: number | null
   teamId: string
+  hasGcalError?: boolean
 }
 
 const StartTeamPromptSuccess: StartTeamPromptSuccessResolvers = {

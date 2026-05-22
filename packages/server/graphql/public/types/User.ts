@@ -3,6 +3,8 @@ import {GraphQLError} from 'graphql'
 import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
+import {parseMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
@@ -117,6 +119,22 @@ const User: ReqResolvers<'User'> = {
   },
   meeting: async (_source, {meetingId}, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
+  },
+  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
+    const numericId = MeetingSeriesId.split(meetingSeriesId)
+    if (!Number.isFinite(numericId)) return null
+    const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
+    if (!meetingSeries) return null
+    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
+    return meetingSeries
+  },
+  meetingSeriesBySlug: async (_source, {slug}, {authToken, dataLoader}) => {
+    const numericId = parseMeetingSeriesSlug(slug)
+    if (numericId === null) return null
+    const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
+    if (!meetingSeries) return null
+    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
+    return meetingSeries
   },
   meetings: async (
     _source,

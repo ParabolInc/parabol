@@ -20,11 +20,17 @@ export type MenuMutationProps = {
 }
 
 export const getOnCompletedError = (
-  res?: null | {[operationNames: string]: {error?: MutationServerError}},
+  res?: unknown,
   errors?: readonly PayloadError[] | null
-) => {
-  const payload = res && Object.values(res)[0]
-  return (payload && payload.error) || (errors && errors[0]) || undefined
+): MutationServerError | PayloadError | undefined => {
+  if (res && typeof res === 'object') {
+    const payload = Object.values(res as Record<string, unknown>)[0]
+    if (payload && typeof payload === 'object' && 'error' in payload) {
+      const err = (payload as {error?: MutationServerError}).error
+      if (err) return err
+    }
+  }
+  return (errors && errors[0]) || undefined
 }
 
 const useMutationProps = () => {
@@ -39,12 +45,7 @@ const useMutationProps = () => {
   }, [])
 
   const onCompleted = useCallback(
-    (
-      res?: null | {
-        [operationNames: string]: {error?: MutationServerError}
-      },
-      errors?: readonly PayloadError[] | null
-    ) => {
+    (res?: unknown, errors?: readonly PayloadError[] | null) => {
       if (isMountedRef.current) {
         setSubmitting(false)
         setError(getOnCompletedError(res, errors))

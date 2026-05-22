@@ -20,8 +20,17 @@ const Signout = lazy(
 )
 const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ './DashboardRoot'))
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
-const MeetingSeriesRoot = lazy(
-  () => import(/* webpackChunkName: 'MeetingSeriesRoot' */ './MeetingSeriesRoot')
+const MeetingSeriesAttendRedirect = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'MeetingSeriesAttendRedirect' */ './MeetingSeriesAttendRedirect'
+    )
+)
+const MeetingSeriesManagementRoot = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'MeetingSeriesManagementRoot' */ './MeetingSeriesManagementRoot'
+    )
 )
 const ViewerNotOnTeamRoot = lazy(
   () => import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')
@@ -61,7 +70,11 @@ const PrivateRoutes = () => {
         <Route path='/activity-library/*' element={<ActivityLibraryRoutes />} />
         <Route path='/new-meeting' element={<Navigate to='/activity-library' replace />} />
         <Route path='/meet/:meetingId/*' element={<MeetingRoot />} />
-        <Route path='/meeting-series/:meetingId/*' element={<MeetingSeriesRoot />} />
+        <Route
+          path='/meeting-series/manage/:meetingSeriesId'
+          element={<MeetingSeriesManagementRoot />}
+        />
+        <Route path='/meeting-series/:slug' element={<MeetingSeriesAttendRedirect />} />
         <Route path='/admin/graphql' element={<Graphql />} />
         <Route path='/graphql' element={<Graphql />} />
         <Route path='/admin/impersonate' element={<Impersonate />} />

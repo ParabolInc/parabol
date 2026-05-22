@@ -3,7 +3,7 @@ import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
@@ -37,10 +37,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   const meetingName = name || 'Standup'
   const eventName = rrule ? name || 'Standup' : meetingName
 
-  // schedule-only path: rrule provided and its first occurrence is in the future
-  const nextRRuleDate = rrule ? getNextRRuleDate(rrule) : null
-  const isScheduledForFuture = !!(rrule && nextRRuleDate && nextRRuleDate.getTime() > Date.now())
-  if (rrule && isScheduledForFuture) {
+  if (rrule && !isImmediateOccurrence(rrule)) {
     const meetingSeries = await createMeetingSeries({
       meetingType: 'teamPrompt',
       title: name || meetingName,
@@ -53,6 +50,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       name: eventName,
       gcalInput,
       meetingId: null,
+      meetingSeriesId: meetingSeries.id,
       teamId,
       viewerId,
       rrule,
@@ -101,6 +99,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     name: eventName,
     gcalInput,
     meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     teamId,
     viewerId,
     rrule,

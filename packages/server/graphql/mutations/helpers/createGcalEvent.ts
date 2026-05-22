@@ -3,12 +3,23 @@ import makeAppURL from 'parabol-client/utils/makeAppURL'
 import type {RRuleSet} from 'rrule-rust'
 import appOrigin from '../../../appOrigin'
 import generateUID from '../../../generateUID'
+import {buildMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import type {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
 
 const emailRemindMinsBeforeMeeting = 24 * 60
 const popupRemindMinsBeforeMeeting = 10
+
+const buildSeriesEventDescription = (meetingSeriesId: number, name: string) => {
+  const meetingUrl = makeAppURL(
+    appOrigin,
+    `meeting-series/${buildMeetingSeriesSlug(meetingSeriesId, name)}`
+  )
+  return `Here's the link to your Parabol meeting: ${meetingUrl}
+
+`
+}
 
 const convertRruleToGcal = (rrule: RRuleSet | null | undefined) => {
   if (!rrule) {
@@ -26,9 +37,8 @@ const convertRruleToGcal = (rrule: RRuleSet | null | undefined) => {
 type Input = {
   name: string
   gcalInput?: CreateGcalEventInput | null
-  // null when scheduling a recurring series with no immediate meeting; the gcal event
-  // links to the user's meetings dashboard instead of a specific meeting URL
   meetingId: string | null
+  meetingSeriesId?: number | null
   viewerId: string
   teamId: string
   rrule?: RRuleSet | null
@@ -38,7 +48,7 @@ type Input = {
 const createGcalEvent = async (
   input: Input
 ): Promise<{gcalSeriesId?: string; error?: StandardMutationError}> => {
-  const {name, gcalInput, meetingId, viewerId, dataLoader, teamId, rrule} = input
+  const {name, gcalInput, meetingId, meetingSeriesId, viewerId, dataLoader, teamId, rrule} = input
   if (!gcalInput) {
     return {}
   }
@@ -63,15 +73,16 @@ const createGcalEvent = async (
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
   oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
-  const meetingUrl = meetingId
-    ? makeAppURL(appOrigin, `meet/${meetingId}`)
-    : makeAppURL(appOrigin, 'meetings')
   const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
-  const description = `Here's the link to your Parabol meeting: ${meetingUrl}
+  const description = meetingSeriesId
+    ? buildSeriesEventDescription(meetingSeriesId, name)
+    : `Here's the link to your Parabol meeting: ${
+        meetingId ? makeAppURL(appOrigin, `meet/${meetingId}`) : makeAppURL(appOrigin, 'meetings')
+      }
 
-` // add a newline to separate the link from the rest of the description
+`
 
-  // requestId is a Google Meet dedupe key; any unique value works when there is no meeting yet
+  // requestId is a Google Meet dedupe key; any unique value works when no meeting exists yet
   const conferenceData =
     videoType === 'meet'
       ? {
@@ -124,13 +135,14 @@ const createGcalEvent = async (
 export type UpdateGcalSeriesInput = {
   gcalSeriesId: string
   name?: string
+  meetingSeriesId?: number
   rrule: RRuleSet | null
   userId: string
   teamId: string
   dataLoader: DataLoaderWorker
 }
 export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
-  const {gcalSeriesId, name, rrule, userId, teamId, dataLoader} = input
+  const {gcalSeriesId, name, meetingSeriesId, rrule, userId, teamId, dataLoader} = input
 
   const gcalAuth = await dataLoader.get('freshGcalAuth').load({teamId, userId})
   if (!gcalAuth) {
@@ -150,13 +162,19 @@ export const updateGcalSeries = async (input: UpdateGcalSeriesInput) => {
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
   const recurrence = convertRruleToGcal(rrule)
 
+  const description =
+    name && meetingSeriesId !== undefined
+      ? buildSeriesEventDescription(meetingSeriesId, name)
+      : undefined
+
   try {
     const event = await calendar.events.patch({
       calendarId: 'primary',
       eventId: gcalSeriesId,
       requestBody: {
         recurrence,
-        summary: name
+        summary: name,
+        description
       },
       conferenceDataVersion: 1
     })

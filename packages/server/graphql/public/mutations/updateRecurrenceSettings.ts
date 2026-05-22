@@ -128,13 +128,17 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .execute()
 }
 
-const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | undefined) => {
+export const updateGCalRecurrenceRule = (
+  oldRule: RRuleSet,
+  newRule: RRuleSet | null | undefined
+) => {
   // null newRule means end the series
   if (newRule) return newRule
+  // rrule-rust's setX methods return new instances; mutating in place would silently no-op.
   const {tzid} = oldRule
   const now = DateTime.fromString(toDateTime(dayjs(), tzid))
-  oldRule.rrules.forEach((rrule) => rrule.setUntil(now))
-  return oldRule
+  const updatedRrules = oldRule.rrules.map((rrule) => rrule.setUntil(now))
+  return oldRule.setRrules(updatedRrules)
 }
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
@@ -194,6 +198,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       await updateGcalSeries({
         gcalSeriesId,
         name: name ?? undefined,
+        meetingSeriesId,
         rrule: newRrule,
         teamId,
         userId: facilitatorId,

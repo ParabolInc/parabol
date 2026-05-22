@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import tracer from 'dd-trace'
 import {sql} from 'kysely'
 import ms from 'ms'
-import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import {toDateTime} from '../../../../client/shared/rruleUtil'
@@ -13,6 +13,7 @@ import type {MeetingSeries} from '../../../postgres/types'
 import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
+import {Logger} from '../../../utils/Logger'
 import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
@@ -68,11 +69,27 @@ const startRecurringMeeting = async (
       publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
       return meeting
     } else if (meetingSeries.meetingType === 'retrospective') {
-      const {totalVotes, maxVotesPerGroup, disableAnonymity, templateId} =
-        (lastMeeting as RetrospectiveMeeting) ?? {
-          templateId: meetingSettings?.selectedTemplateId,
-          ...meetingSettings
-        }
+      // Field-by-field fallback: prior meeting > MeetingSettings (nullable, may be missing) > defaults.
+      const retroLastMeeting = lastMeeting as RetrospectiveMeeting | null
+      const templateId =
+        retroLastMeeting?.templateId ??
+        meetingSettings?.selectedTemplateId ??
+        'workingStuckTemplate'
+      const totalVotes =
+        retroLastMeeting?.totalVotes ??
+        meetingSettings?.totalVotes ??
+        MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
+      const maxVotesPerGroup =
+        retroLastMeeting?.maxVotesPerGroup ??
+        meetingSettings?.maxVotesPerGroup ??
+        MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
+      const disableAnonymity =
+        retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
+      if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
+        Logger.warn(
+          `processRecurrence: seeding retrospective for series ${meetingSeriesId} with defaults (no prior meeting and incomplete MeetingSettings for team ${teamId})`
+        )
+      }
       const meeting = await safeCreateRetrospective(
         {
           teamId,

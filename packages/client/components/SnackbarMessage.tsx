@@ -92,13 +92,17 @@ const SnackbarMessage = (props: Props) => {
         status={status}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        onClick={dismissSnack}
       >
         <Text>{message}</Text>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />
         {showDismissButton && (
-          <DismissButton onClick={dismissSnack}>
+          <DismissButton
+            onClick={(e) => {
+              e.stopPropagation()
+              dismissSnack()
+            }}
+          >
             <StyledIcon />
           </DismissButton>
         )}

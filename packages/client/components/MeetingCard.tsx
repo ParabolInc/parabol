@@ -281,7 +281,7 @@ const MeetingCard = (props: Props) => {
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
-  const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
+  const meetingLink = `/meet/${meetingId}`
 
   return (
     <CardWrapper

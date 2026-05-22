@@ -66,7 +66,6 @@ const StartRetrospectiveMutation: StandardMutation<
       if (!startRetrospective) return
       const {meeting, meetingSeries, hasGcalError} = startRetrospective
       if (!meeting) {
-        // schedule-only: no meeting was started; the cron will spawn the next one
         if (meetingSeries) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: `meetingScheduled:${meetingSeries.id}`,
@@ -74,6 +73,14 @@ const StartRetrospectiveMutation: StandardMutation<
             showDismissButton: true,
             message: `🗓️ "${meetingSeries.title}" is scheduled to start at the next recurrence.`
           })
+          if (hasGcalError) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: `gcalError:scheduled:${meetingSeries.id}`,
+              autoDismiss: 0,
+              showDismissButton: true,
+              message: `Sorry, we couldn't create your Google Calendar event`
+            })
+          }
         }
         return
       }

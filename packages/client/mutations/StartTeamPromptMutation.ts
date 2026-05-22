@@ -60,7 +60,6 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Naviga
       if (!startTeamPrompt) return
       const {meeting, meetingSeries, hasGcalError} = startTeamPrompt
       if (!meeting) {
-        // schedule-only: no meeting was started; the cron will spawn the next one
         if (meetingSeries) {
           atmosphere.eventEmitter.emit('addSnackbar', {
             key: `meetingScheduled:${meetingSeries.id}`,
@@ -68,6 +67,14 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Naviga
             showDismissButton: true,
             message: `🗓️ "${meetingSeries.title}" is scheduled to start at the next recurrence.`
           })
+          if (hasGcalError) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: `gcalError:scheduled:${meetingSeries.id}`,
+              autoDismiss: 0,
+              showDismissButton: true,
+              message: `Sorry, we couldn't create your Google Calendar event`
+            })
+          }
         }
         return
       }

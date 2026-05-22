@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react'
+import {useLayoutEffect, useRef, useState} from 'react'
 import requestDoubleAnimationFrame from '../components/RetroReflectPhase/requestDoubleAnimationFrame'
 import useEventCallback from './useEventCallback'
 
@@ -18,15 +18,7 @@ interface TransitionChild<T = {key: Key}> {
 }
 
 const useTransition = <T extends {key: Key}>(children: T[]) => {
-  // Use useState instead of useRef for transition children.
-  // React properly handles useState in StrictMode — both render invocations
-  // see the same committed state, preventing the double-invocation corruption
-  // that occurred when useMemo mutated refs.
   const [animatedItems, setAnimatedItems] = useState<TransitionChild<T>[]>([])
-  const pendingKeysRef = useRef<Key[]>([])
-
-  // Always keep latest child data in a ref so we can merge fresh references
-  // into the return value without triggering extra re-renders
   const latestChildByKeyRef = useRef(new Map<Key, T>())
   latestChildByKeyRef.current = new Map(children.map((c) => [c.key, c]))
 
@@ -52,7 +44,7 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
   })
 
   const beginTransition = useEventCallback((keys: Key[]) => {
-    // double required to ensure entering animations get called
+    // double rAF: ensures the browser commits the MOUNTED styles before transitioning to ENTERING
     requestDoubleAnimationFrame(() => {
       setAnimatedItems((prev) => {
         let doUpdate = false
@@ -68,73 +60,51 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     })
   })
 
-  // Detect children changes using key comparison.
-  // Uses "set state during render" — React's recommended pattern for deriving
-  // state from props. React restarts the render with the updated state before
-  // painting, so there's no visual flicker. Crucially, useState returns the
-  // committed state in both StrictMode invocations, preventing the
-  // double-invocation corruption that occurred with ref mutation in useMemo.
-  const [prevKeys, setPrevKeys] = useState<Key[]>([])
+  // useLayoutEffect (not set-state-during-render): StrictMode's verification render
+  // reverts mid-render setState, which can roll EXITING back to ENTERED and trap items visible.
   const currentKeys = children.map((c) => c.key)
-  const keysChanged =
-    currentKeys.length !== prevKeys.length || currentKeys.some((k, i) => k !== prevKeys[i])
+  const currentKeysRef = useRef<Key[]>(currentKeys)
+  currentKeysRef.current = currentKeys
 
-  if (keysChanged) {
-    setPrevKeys(currentKeys)
-    const filteredPrevTChildren = animatedItems.filter(
-      (prevTChild) => prevTChild.status !== TransitionStatus.EXITING
-    )
+  useLayoutEffect(() => {
+    setAnimatedItems((prev) => {
+      const keys = currentKeysRef.current
+      const filteredPrev = prev.filter((tChild) => tChild.status !== TransitionStatus.EXITING)
+      const prevKeys = filteredPrev.map((tChild) => tChild.child.key)
+      const keysSame =
+        keys.length === prevKeys.length && keys.every((k, i) => k === prevKeys[i])
+      if (keysSame) return prev
 
-    const currentTChildren = [] as TransitionChild<T>[]
-    const updatedKeys = [] as Key[]
-    let touched = false
-
-    // add mounted nodes + update new orderings
-    children.forEach((nextChild, idxInNext) => {
-      const idxInPrev = filteredPrevTChildren.findIndex(({child}) => child.key === nextChild.key)
-      const status =
-        idxInPrev === -1 ? TransitionStatus.MOUNTED : filteredPrevTChildren[idxInPrev]!.status
-      currentTChildren.push({
-        status,
-        child: nextChild,
-        onTransitionEnd: transitionEndFactory(nextChild.key)
+      const next: TransitionChild<T>[] = []
+      const newlyAdded: Key[] = []
+      keys.forEach((key) => {
+        const child = latestChildByKeyRef.current.get(key)!
+        const existing = filteredPrev.find((tChild) => tChild.child.key === key)
+        if (existing) {
+          next.push(existing)
+        } else {
+          next.push({
+            child,
+            status: TransitionStatus.MOUNTED,
+            onTransitionEnd: transitionEndFactory(key)
+          })
+          newlyAdded.push(key)
+        }
       })
-      if (idxInPrev === -1 || idxInPrev !== idxInNext) {
-        touched = true
-        updatedKeys.push(nextChild.key)
+
+      filteredPrev.forEach((tChild, i) => {
+        if (!keys.includes(tChild.child.key)) {
+          next.splice(i, 0, {...tChild, status: TransitionStatus.EXITING})
+        }
+      })
+
+      if (newlyAdded.length > 0) {
+        beginTransition(newlyAdded)
       }
+      return next
     })
+  }, [children])
 
-    // add exiting nodes
-    filteredPrevTChildren.forEach((prevTChild, i) => {
-      const {child} = prevTChild
-      const {key} = child
-      const idxInNext = children.findIndex((child) => child.key === key)
-      if (idxInNext === -1) {
-        touched = true
-        currentTChildren.splice(i, 0, {
-          ...prevTChild,
-          status: TransitionStatus.EXITING
-        })
-      }
-    })
-
-    setAnimatedItems(currentTChildren)
-    pendingKeysRef.current = touched ? updatedKeys : []
-  }
-
-  // Defer the beginTransition side effect to after mount/commit
-  useEffect(() => {
-    const keys = pendingKeysRef.current
-    if (keys.length > 0) {
-      pendingKeysRef.current = []
-      beginTransition(keys)
-    }
-  })
-
-  // Merge latest child data into transition children.
-  // This keeps child references fresh (e.g., updated props) without
-  // triggering extra re-renders via setState.
   return animatedItems.map((tc) => {
     if (tc.status === TransitionStatus.EXITING) return tc
     const latest = latestChildByKeyRef.current.get(tc.child.key)

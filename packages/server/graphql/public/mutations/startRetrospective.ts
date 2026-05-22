@@ -4,7 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -49,10 +49,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
 
-  // schedule-only path: rrule provided and its first occurrence is in the future
-  const nextRRuleDate = rrule ? getNextRRuleDate(rrule) : null
-  const isScheduledForFuture = !!(rrule && nextRRuleDate && nextRRuleDate.getTime() > Date.now())
-  if (rrule && isScheduledForFuture) {
+  if (rrule && !isImmediateOccurrence(rrule)) {
     const meetingSeries = await createMeetingSeries({
       meetingType,
       title: meetingSeriesName,
@@ -65,6 +62,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       name: meetingSeriesName,
       gcalInput,
       meetingId: null,
+      meetingSeriesId: meetingSeries.id,
       teamId,
       viewerId,
       rrule,
@@ -140,6 +138,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     name: meetingSeriesName,
     gcalInput,
     meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     teamId,
     viewerId,
     rrule,
