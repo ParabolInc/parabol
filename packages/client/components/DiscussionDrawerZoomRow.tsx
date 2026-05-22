@@ -84,11 +84,11 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
         </div>
       ) : (
         <button
-          className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
-          onClick={handleConnect}
+          className='cursor-not-allowed whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
+          // onClick={handleConnect}
           disabled={submitting}
         >
-          {'Connect'}
+          {'Coming Soon'}
         </button>
       )}
     </div>
