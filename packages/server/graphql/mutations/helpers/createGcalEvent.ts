@@ -2,6 +2,7 @@ import {google} from 'googleapis'
 import makeAppURL from 'parabol-client/utils/makeAppURL'
 import type {RRuleSet} from 'rrule-rust'
 import appOrigin from '../../../appOrigin'
+import generateUID from '../../../generateUID'
 import standardError from '../../../utils/standardError'
 import type {DataLoaderWorker} from '../../graphql'
 import type {CreateGcalEventInput, StandardMutationError} from '../../public/resolverTypes'
@@ -25,7 +26,9 @@ const convertRruleToGcal = (rrule: RRuleSet | null | undefined) => {
 type Input = {
   name: string
   gcalInput?: CreateGcalEventInput | null
-  meetingId: string
+  // null when scheduling a recurring series with no immediate meeting; the gcal event
+  // links to the user's meetings dashboard instead of a specific meeting URL
+  meetingId: string | null
   viewerId: string
   teamId: string
   rrule?: RRuleSet | null
@@ -60,17 +63,20 @@ const createGcalEvent = async (
   const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
   oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
   const calendar = google.calendar({version: 'v3', auth: oauth2Client})
-  const meetingUrl = makeAppURL(appOrigin, `meet/${meetingId}`)
+  const meetingUrl = meetingId
+    ? makeAppURL(appOrigin, `meet/${meetingId}`)
+    : makeAppURL(appOrigin, 'meetings')
   const attendeesWithEmailObjects = invitees?.map((email) => ({email}))
   const description = `Here's the link to your Parabol meeting: ${meetingUrl}
 
 ` // add a newline to separate the link from the rest of the description
 
+  // requestId is a Google Meet dedupe key; any unique value works when there is no meeting yet
   const conferenceData =
     videoType === 'meet'
       ? {
           createRequest: {
-            requestId: meetingId,
+            requestId: meetingId ?? generateUID(),
             conferenceSolutionKey: {
               type: 'hangoutsMeet'
             }

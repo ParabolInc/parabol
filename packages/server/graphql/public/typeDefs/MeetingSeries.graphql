@@ -49,9 +49,10 @@ type MeetingSeries {
 
   """
   The most recent meeting in the series. Any active meeting takes precendence over inactive
-  meetings.
+  meetings. Null when the series has been scheduled for the future and no meeting has
+  spawned from the recurrence cron yet.
   """
-  mostRecentMeeting: NewMeeting!
+  mostRecentMeeting: NewMeeting
 
   """
   The next scheduled occurrence of the recurrence rule, computed server-side from

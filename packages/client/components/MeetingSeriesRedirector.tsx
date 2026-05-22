@@ -55,6 +55,11 @@ const MeetingSeriesRedirector = (props: Props) => {
       return <Navigate replace to={`/meet/${meetingId}`} />
     }
     const {mostRecentMeeting} = meetingSeries
+    // mostRecentMeeting is null for a scheduled-only series whose first meeting has not
+    // spawned yet; fall back to the meetings dashboard
+    if (!mostRecentMeeting) {
+      return <Navigate replace to='/meetings' />
+    }
     const {id: activeMeetingId} = mostRecentMeeting
 
     return <Navigate replace to={`/meet/${activeMeetingId}`} />

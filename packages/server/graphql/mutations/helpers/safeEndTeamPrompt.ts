@@ -86,17 +86,20 @@ const safeEndTeamPrompt = async ({
   )
   await pg.insertInto('TimelineEvent').values(events).execute()
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
-  // publishSummaryPage uses Yjs / hocuspocus and can throw on document schema mismatches;
-  // a missing summary page should not block ending the meeting
+  // summary generation (AI) and publishSummaryPage (Yjs/hocuspocus) can each fail without
+  // invalidating the end-meeting result; degrade gracefully rather than failing the mutation
   const [page, summary] = await Promise.all([
     publishSummaryPage(meetingId, context, info).catch((e) => {
       Logger.log(`safeEndTeamPrompt: publishSummaryPage failed for ${meetingId}: ${e}`)
       return null
     }),
-    summarizeTeamPrompt(completedTeamPrompt, context)
+    summarizeTeamPrompt(completedTeamPrompt, context).catch((e) => {
+      Logger.log(`safeEndTeamPrompt: summarizeTeamPrompt failed for ${meetingId}: ${e}`)
+      return null
+    })
   ])
   if (page) completedTeamPrompt.summaryPageId = page.id
-  completedTeamPrompt.summary = summary
+  if (summary) completedTeamPrompt.summary = summary
   const data = {
     meetingId,
     teamId

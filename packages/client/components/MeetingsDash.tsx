@@ -62,11 +62,12 @@ const MeetingsDash = (props: Props) => {
   const activeMeetings = useMemo(() => {
     const meetingSeriesMeetings = teams
       .flatMap((team) => team.activeMeetingSeries)
-      .filter((meetingSeries) => !meetingSeries.cancelledAt)
+      // exclude scheduled-only series whose first meeting has not spawned yet
+      .filter((meetingSeries) => !meetingSeries.cancelledAt && !!meetingSeries.mostRecentMeeting)
       .sort((a, b) => {
         return a.createdAt > b.createdAt ? -1 : 1
       })
-      .map((meetingSeries) => meetingSeries.mostRecentMeeting)
+      .map((meetingSeries) => meetingSeries.mostRecentMeeting!)
     const otherActiveMeetings = teams
       .flatMap((team) => team.activeMeetings)
       .filter(Boolean)

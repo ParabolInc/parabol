@@ -49,11 +49,27 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       facilitatorId: viewerId
     })
     analytics.recurrenceStarted(viewer, meetingSeries)
+    const {error: gcalError, gcalSeriesId} = await createGcalEvent({
+      name: eventName,
+      gcalInput,
+      meetingId: null,
+      teamId,
+      viewerId,
+      rrule,
+      dataLoader
+    })
+    if (gcalSeriesId) {
+      await getKysely()
+        .updateTable('MeetingSeries')
+        .set({gcalSeriesId})
+        .where('id', '=', meetingSeries.id)
+        .execute()
+    }
     const data = {
       teamId,
       meetingId: null,
       meetingSeriesId: meetingSeries.id,
-      hasGcalError: false
+      hasGcalError: !!gcalError?.message
     }
     publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
     return data

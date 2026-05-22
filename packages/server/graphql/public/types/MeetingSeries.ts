@@ -18,8 +18,8 @@ const MeetingSeries: MeetingSeriesResolvers = {
       .orderBy('endedAt', 'desc')
       .orderBy('createdAt', 'desc')
       .limit(1)
-      .executeTakeFirstOrThrow()
-    return meeting
+      .executeTakeFirst()
+    return meeting ?? null
   },
   nextMeetingDate: ({recurrenceRule, cancelledAt}) => {
     if (cancelledAt) return null

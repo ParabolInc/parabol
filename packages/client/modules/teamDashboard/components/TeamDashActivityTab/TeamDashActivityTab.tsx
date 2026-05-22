@@ -42,7 +42,7 @@ const TeamDashActivityTab = (props: Props) => {
     const meetingSeriesMeetings = activeMeetingSeries
       .filter((series) => !series.cancelledAt)
       .map(({mostRecentMeeting}) => mostRecentMeeting)
-      .filter(Boolean)
+      .filter((meeting): meeting is NonNullable<typeof meeting> => !!meeting)
     const otherActiveMeetings = activeMeetings.filter(
       (meeting) => !meeting.meetingSeries || meeting.meetingSeries.cancelledAt
     )

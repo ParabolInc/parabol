@@ -61,11 +61,27 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       facilitatorId: viewerId
     })
     analytics.recurrenceStarted(viewer, meetingSeries)
+    const {error: gcalError, gcalSeriesId} = await createGcalEvent({
+      name: meetingSeriesName,
+      gcalInput,
+      meetingId: null,
+      teamId,
+      viewerId,
+      rrule,
+      dataLoader
+    })
+    if (gcalSeriesId) {
+      await pg
+        .updateTable('MeetingSeries')
+        .set({gcalSeriesId})
+        .where('id', '=', meetingSeries.id)
+        .execute()
+    }
     const data = {
       teamId,
       meetingId: null,
       meetingSeriesId: meetingSeries.id,
-      hasGcalError: false
+      hasGcalError: !!gcalError?.message
     }
     publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
     return data
