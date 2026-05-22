@@ -4,6 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
@@ -12,7 +13,7 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
 import {createMeetingMember} from './joinMeeting'
-import {startNewMeetingSeries} from './updateRecurrenceSettings'
+import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
@@ -47,6 +48,28 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
+
+  // schedule-only path: rrule provided and its first occurrence is in the future
+  const nextRRuleDate = rrule ? getNextRRuleDate(rrule) : null
+  const isScheduledForFuture = !!(rrule && nextRRuleDate && nextRRuleDate.getTime() > Date.now())
+  if (rrule && isScheduledForFuture) {
+    const meetingSeries = await createMeetingSeries({
+      meetingType,
+      title: meetingSeriesName,
+      recurrenceRule: rrule,
+      teamId,
+      facilitatorId: viewerId
+    })
+    analytics.recurrenceStarted(viewer, meetingSeries)
+    const data = {
+      teamId,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      hasGcalError: false
+    }
+    publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+    return data
+  }
 
   const meeting = await safeCreateRetrospective(
     {
@@ -113,7 +136,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       .where('id', '=', meetingSeries.id)
       .execute()
   }
-  const data = {teamId, meetingId, hasGcalError: !!error?.message}
+  const data = {
+    teamId,
+    meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
+    hasGcalError: !!error?.message
+  }
   publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
   return data
 }
