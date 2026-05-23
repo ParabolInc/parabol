@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import {sql} from 'kysely'
-import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
@@ -135,8 +134,8 @@ export const updateGCalRecurrenceRule = (
   // null newRule means end the series
   if (newRule) return newRule
   // rrule-rust's setX methods return new instances; mutating in place would silently no-op.
-  const {tzid} = oldRule
-  const now = DateTime.fromString(toDateTime(dayjs(), tzid))
+  // UNTIL must be UTC (Z suffix) — Google rejects local-time UNTIL with 400 "Invalid recurrence rule".
+  const now = DateTime.fromString(dayjs().utc().format('YYYYMMDD[T]HHmmss[Z]'))
   const updatedRrules = oldRule.rrules.map((rrule) => rrule.setUntil(now))
   return oldRule.setRrules(updatedRrules)
 }

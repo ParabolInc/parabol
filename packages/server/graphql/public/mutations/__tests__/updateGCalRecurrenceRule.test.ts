@@ -47,11 +47,10 @@ RRULE:FREQ=DAILY`)
     expect(oldRule.toString()).not.toContain('UNTIL=')
     expect(result.toString()).toContain('UNTIL=')
 
-    // UNTIL should be roughly "now" — within a 60s window of dayjs().
-    const untilMatch = result.toString().match(/UNTIL=(\d{8}T\d{6})/)
+    // UNTIL must end with Z (UTC); Google rejects local-time UNTIL with 400.
+    const untilMatch = result.toString().match(/UNTIL=(\d{8}T\d{6})Z/)
     expect(untilMatch).not.toBeNull()
     const untilStr = untilMatch![1]!
-    // Format YYYYMMDDTHHMMSS - parse to a Dayjs (UTC since tzid was UTC)
     const parsed = dayjs.utc(untilStr, 'YYYYMMDDTHHmmss')
     const driftSeconds = Math.abs(parsed.diff(dayjs.utc(), 'seconds'))
     expect(driftSeconds).toBeLessThan(60)
@@ -60,6 +59,6 @@ RRULE:FREQ=DAILY`)
   test('treats undefined the same as null (cancel)', () => {
     const oldRule = buildRRuleSet()
     const result = updateGCalRecurrenceRule(oldRule, undefined)
-    expect(result.toString()).toContain('UNTIL=')
+    expect(result.toString()).toMatch(/UNTIL=\d{8}T\d{6}Z/)
   })
 })
