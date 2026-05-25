@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
@@ -11,16 +10,12 @@ import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAnimatedCard from '../hooks/useAnimatedCard'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import {TransitionStatus} from '../hooks/useTransition'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import CardButton from './CardButton'
@@ -30,128 +25,24 @@ import Menu from './Menu'
 import MenuItem from './MenuItem'
 import Tooltip from './Tooltip'
 
-const CardWrapper = styled('div')<{
-  maybeTabletPlus: boolean
-  status: TransitionStatus
-}>(({maybeTabletPlus, status}) => ({
-  position: 'relative',
-  flexShrink: 0,
-  maxWidth: '100%',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  marginBottom: maybeTabletPlus ? 0 : 16,
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
-  userSelect: 'none'
-}))
-
-const InnerCardWrapper = styled('div')({
-  position: 'relative',
-  ':hover': {
-    boxShadow: Elevation.CARD_SHADOW_HOVER
-  }
-})
-
-const STACK_DEGREES = {0: 1, 1: -2}
-const STACK_OFFSET_LEFT = {0: 4, 1: 2}
-const STACK_OFFSET_TOP = {0: 3, 1: 2}
-
-const StackedCard = styled('div')<{stackIndex: 0 | 1}>(({stackIndex}) => ({
-  content: '""',
-  display: 'block',
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  left: `${STACK_OFFSET_LEFT[stackIndex]}px`,
-  top: `${STACK_OFFSET_TOP[stackIndex]}px`,
-  transform: `rotate(${STACK_DEGREES[stackIndex]}deg)`,
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW
-}))
-
-const InnerCard = styled('div')({
-  position: 'relative',
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW
-})
-
-const MeetingInfo = styled('div')({
-  padding: '4px 8px 12px 16px'
-})
-
-const Name = styled('span')({
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 20,
-  lineHeight: '24px',
-  padding: '4px 32px 0 0',
-  wordBreak: 'break-word'
-})
-
-const BACKGROUND_COLORS = {
-  retrospective: PALETTE.GRAPE_500,
-  action: PALETTE.AQUA_400,
-  poker: PALETTE.TOMATO_400,
-  teamPrompt: PALETTE.JADE_400
+const STACK_CLASSES = {
+  0: 'rotate-1 top-[3px] left-1',
+  1: '-rotate-2 top-0.5 left-0.5'
 }
+
+const MEETING_TYPE_BG = {
+  retrospective: 'bg-grape-500',
+  action: 'bg-aqua-400',
+  poker: 'bg-tomato-400',
+  teamPrompt: 'bg-jade-400'
+}
+
 const RECURRING_LABEL_COLORS = {
   retrospective: 'text-grape-600',
   action: 'text-aqua-600',
   poker: 'text-tomato-600',
   teamPrompt: 'text-jade-600'
 }
-const MeetingImgBackground = styled.div<{
-  meetingType: keyof typeof BACKGROUND_COLORS
-}>(({meetingType}) => ({
-  background: BACKGROUND_COLORS[meetingType],
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'absolute',
-  top: 0,
-  bottom: '6px',
-  width: '100%'
-}))
-
-const MeetingImgWrapper = styled('div')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'relative'
-})
-
-const MeetingTypeLabel = styled('span')({
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const Options = styled(CardButton)({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  color: PALETTE.SLATE_700,
-  height: 32,
-  width: 32,
-  opacity: 1,
-  ':hover': {
-    backgroundColor: PALETTE.SLATE_200
-  }
-})
-
-const MeetingImg = styled('img')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  position: 'relative',
-  display: 'block',
-  overflow: 'hidden',
-  paddingTop: 24,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  height: '180px'
-})
 
 const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt}
 const MEETING_TYPE_LABEL = {
@@ -160,6 +51,11 @@ const MEETING_TYPE_LABEL = {
   poker: 'Sprint Poker',
   teamPrompt: 'Standup'
 }
+
+const STACKED_CARD_BASE =
+  'absolute block h-full w-full rounded-card bg-white shadow-card content-[""]'
+const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
+const MEETING_IMG = 'relative mx-auto block h-[180px] overflow-hidden rounded-t-card pt-6'
 
 const timeFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
@@ -201,7 +97,6 @@ const ScheduledSeriesCard = (props: Props) => {
   )
 
   const {id, title, meetingType, nextMeetingDate} = series
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const ref = useAnimatedCard(displayIdx, status)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
@@ -242,31 +137,38 @@ const ScheduledSeriesCard = (props: Props) => {
     setIsEditOpen(true)
   }
   const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
+  const isHidden = status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
+  const bgClass = MEETING_TYPE_BG[meetingType]
+  const illustration = ILLUSTRATIONS[meetingType]
 
   return (
-    <CardWrapper
+    <div
       ref={ref}
-      maybeTabletPlus={maybeTabletPlus}
-      status={status}
+      className={cn(
+        'relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none [transition:box-shadow_100ms_ease-out,opacity_300ms_ease-out]',
+        isHidden ? 'opacity-0' : 'opacity-100'
+      )}
       onTransitionEnd={onTransitionEnd}
     >
-      <InnerCardWrapper>
-        <StackedCard stackIndex={0}>
-          <MeetingImgWrapper>
-            <MeetingImgBackground meetingType={meetingType} />
-            <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
-          </MeetingImgWrapper>
-        </StackedCard>
-        <StackedCard stackIndex={1}>
-          <MeetingImgWrapper>
-            <MeetingImgBackground meetingType={meetingType} />
-            <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
-          </MeetingImgWrapper>
-        </StackedCard>
-        <InnerCard>
-          <MeetingImgWrapper>
-            <MeetingImgBackground meetingType={meetingType} />
-            <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
+      <div className='relative hover:shadow-card-hover'>
+        <div className={cn(STACKED_CARD_BASE, STACK_CLASSES[0])}>
+          <div className={MEETING_IMG_WRAPPER}>
+            <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
+            <img className={MEETING_IMG} src={illustration} alt='' />
+          </div>
+        </div>
+        <div className={cn(STACKED_CARD_BASE, STACK_CLASSES[1])}>
+          <div className={MEETING_IMG_WRAPPER}>
+            <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
+            <img className={MEETING_IMG} src={illustration} alt='' />
+          </div>
+        </div>
+        <div className='relative rounded-card bg-white shadow-card'>
+          <div className={MEETING_IMG_WRAPPER}>
+            <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
+            <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
+              {MEETING_TYPE_LABEL[meetingType]}
+            </span>
             <span
               className={cn(
                 'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
@@ -276,27 +178,33 @@ const ScheduledSeriesCard = (props: Props) => {
               Scheduled
             </span>
             <Link to={seriesLink} onClick={openEdit}>
-              <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
+              <img className={MEETING_IMG} src={illustration} alt='' />
             </Link>
-          </MeetingImgWrapper>
-          <MeetingInfo>
+          </div>
+          <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
               <Link to={seriesLink} onClick={openEdit}>
-                <Name>{title}</Name>
+                <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                  {title}
+                </span>
                 <Tooltip text={tooltip}>
                   <div className='text-sm'>{label}</div>
                 </Tooltip>
               </Link>
-              <Options ref={originRef} onClick={togglePortal}>
+              <CardButton
+                ref={originRef}
+                onClick={togglePortal}
+                className='absolute top-0 right-0 h-8 w-8 opacity-100'
+              >
                 <IconLabel icon='more_vert' />
-              </Options>
+              </CardButton>
             </div>
             <Link to={seriesLink} onClick={openEdit}>
               <span className='block pt-1 pb-2 text-slate-600 text-sm'>
                 {MEETING_TYPE_LABEL[meetingType]} • Awaiting first meeting
               </span>
             </Link>
-          </MeetingInfo>
+          </div>
           {menuPortal(
             <Menu ariaLabel='Scheduled meeting options' {...menuProps}>
               <MenuItem
@@ -323,9 +231,9 @@ const ScheduledSeriesCard = (props: Props) => {
             onClose={() => setIsEditOpen(false)}
             seriesRef={series}
           />
-        </InnerCard>
-      </InnerCardWrapper>
-    </CardWrapper>
+        </div>
+      </div>
+    </div>
   )
 }
 
