@@ -216,7 +216,7 @@ const ReflectionCard = (props: Props) => {
   }, [])
 
   useEffect(() => {
-    if (!editor) return
+    if (!editor || editor.isDestroyed) return
     editor.commands.setSearchTerm(spotlightSearchQuery || '')
   }, [spotlightSearchQuery])
 
