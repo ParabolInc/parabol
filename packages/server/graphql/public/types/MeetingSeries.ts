@@ -28,7 +28,9 @@ const MeetingSeries: MeetingSeriesResolvers = {
     try {
       return getNextRRuleDate(RRuleSet.parse(recurrenceRule))
     } catch (e) {
-      logError(e instanceof Error ? e : new Error(`Failed to parse recurrenceRule for meetingSeries ${id}`))
+      logError(
+        e instanceof Error ? e : new Error(`Failed to parse recurrenceRule for meetingSeries ${id}`)
+      )
       return null
     }
   },

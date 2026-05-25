@@ -44,15 +44,12 @@ const useMutationProps = () => {
     }
   }, [])
 
-  const onCompleted = useCallback(
-    (res?: unknown, errors?: readonly PayloadError[] | null) => {
-      if (isMountedRef.current) {
-        setSubmitting(false)
-        setError(getOnCompletedError(res, errors))
-      }
-    },
-    []
-  )
+  const onCompleted = useCallback((res?: unknown, errors?: readonly PayloadError[] | null) => {
+    if (isMountedRef.current) {
+      setSubmitting(false)
+      setError(getOnCompletedError(res, errors))
+    }
+  }, [])
 
   const onError = useCallback((error: Error | MutationServerError | RelayMustFixError) => {
     setSubmitting(false)

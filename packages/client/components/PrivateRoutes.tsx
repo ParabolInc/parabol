@@ -22,15 +22,11 @@ const DashboardRoot = lazy(() => import(/* webpackChunkName: 'DashboardRoot' */ 
 const MeetingRoot = lazy(() => import(/* webpackChunkName: 'MeetingRoot' */ './MeetingRoot'))
 const MeetingSeriesAttendRedirect = lazy(
   () =>
-    import(
-      /* webpackChunkName: 'MeetingSeriesAttendRedirect' */ './MeetingSeriesAttendRedirect'
-    )
+    import(/* webpackChunkName: 'MeetingSeriesAttendRedirect' */ './MeetingSeriesAttendRedirect')
 )
 const MeetingSeriesManagementRoot = lazy(
   () =>
-    import(
-      /* webpackChunkName: 'MeetingSeriesManagementRoot' */ './MeetingSeriesManagementRoot'
-    )
+    import(/* webpackChunkName: 'MeetingSeriesManagementRoot' */ './MeetingSeriesManagementRoot')
 )
 const ViewerNotOnTeamRoot = lazy(
   () => import(/* webpackChunkName: 'ViewerNotOnTeamRoot' */ './ViewerNotOnTeamRoot')

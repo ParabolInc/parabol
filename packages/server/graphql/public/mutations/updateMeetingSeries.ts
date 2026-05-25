@@ -65,9 +65,7 @@ const updateMeetingSeries: MutationResolvers['updateMeetingSeries'] = async (
       .where('id', '=', numericId)
       .where('cancelledAt', 'is', null)
       .execute()
-    const activeMeetings = await dataLoader
-      .get('activeMeetingsByMeetingSeriesId')
-      .load(numericId)
+    const activeMeetings = await dataLoader.get('activeMeetingsByMeetingSeriesId').load(numericId)
     if (activeMeetings.length > 0) {
       const nextMeetingStartDate = getNextRRuleDate(rrule)
       await pg

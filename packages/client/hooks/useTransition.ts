@@ -70,13 +70,10 @@ const useTransition = <T extends {key: Key}>(children: T[]) => {
     setAnimatedItems((prev) => {
       const keys = currentKeysRef.current
       const aliveByKey = new Map(
-        prev
-          .filter((tc) => tc.status !== TransitionStatus.EXITING)
-          .map((tc) => [tc.child.key, tc])
+        prev.filter((tc) => tc.status !== TransitionStatus.EXITING).map((tc) => [tc.child.key, tc])
       )
       const aliveKeys = Array.from(aliveByKey.keys())
-      const keysSame =
-        keys.length === aliveKeys.length && keys.every((k, i) => k === aliveKeys[i])
+      const keysSame = keys.length === aliveKeys.length && keys.every((k, i) => k === aliveKeys[i])
       if (keysSame) return prev
 
       const currentKeySet = new Set(keys)

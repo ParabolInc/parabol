@@ -88,11 +88,7 @@ const SnackbarMessage = (props: Props) => {
   useTransitionEnd(300, status, onTransitionEnd)
   return (
     <div className='pb-2 print:hidden'>
-      <MessageStyles
-        status={status}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
-      >
+      <MessageStyles status={status} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         <Text>{message}</Text>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />

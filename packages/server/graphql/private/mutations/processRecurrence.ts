@@ -86,10 +86,9 @@ const startRecurringMeeting = async (
       const disableAnonymity =
         retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
       if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
-        logError(
-          new Error('processRecurrence: seeding retrospective with defaults'),
-          {tags: {meetingSeriesId, teamId}}
-        )
+        logError(new Error('processRecurrence: seeding retrospective with defaults'), {
+          tags: {meetingSeriesId, teamId}
+        })
       }
       const meeting = await safeCreateRetrospective(
         {

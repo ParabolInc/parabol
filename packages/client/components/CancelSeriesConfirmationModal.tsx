@@ -16,8 +16,8 @@ export const CancelSeriesConfirmationModal = (props: Props) => {
     <DialogContainer className='p-4'>
       <div className='mb-2 font-semibold text-xl'>Cancel scheduled meeting?</div>
       <p className='mb-4 text-slate-700 text-sm'>
-        “{seriesTitle}” will not recur and the first meeting will not start automatically.
-        You can re-schedule it later.
+        “{seriesTitle}” will not recur and the first meeting will not start automatically. You can
+        re-schedule it later.
       </p>
       <div className='flex justify-end gap-2.5'>
         <button
