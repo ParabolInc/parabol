@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.20.1](https://github.com/ParabolInc/parabol/compare/v13.20.0...v13.20.1) (2026-05-25)
+
+
+### Fixed
+
+* ambiguous teamId column that broke related discussions ([#13142](https://github.com/ParabolInc/parabol/issues/13142)) ([c54d6d2](https://github.com/ParabolInc/parabol/commit/c54d6d29d310fac66268a001c05198cc1ab7fb89))
+* drag handle shortcuts now work when menu is open ([#13143](https://github.com/ParabolInc/parabol/issues/13143)) ([ffad4c5](https://github.com/ParabolInc/parabol/commit/ffad4c5917b3956bdc04788413f66fb5f7a5004d))
+* guard against null commandManager after Editor.destroy() ([#13141](https://github.com/ParabolInc/parabol/issues/13141)) ([427c818](https://github.com/ParabolInc/parabol/commit/427c818a1867176aad4bce1c52895b3c0a923451))
+* invitation required on extant team after deleting a team ([#13000](https://github.com/ParabolInc/parabol/issues/13000)) ([3571ca5](https://github.com/ParabolInc/parabol/commit/3571ca5db7cfda95fdc8dd867d0e5a90705b933f))
+
 ## [13.20.0](https://github.com/ParabolInc/parabol/compare/v13.19.0...v13.20.0) (2026-05-22)
 
 
