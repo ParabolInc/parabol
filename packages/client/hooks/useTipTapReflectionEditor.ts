@@ -113,7 +113,7 @@ export const useTipTapReflectionEditor = (
     []
   )
   useEffect(() => {
-    if (!editor) return
+    if (!editor || editor.isDestroyed) return
     const oldDoc = editor.getJSON()
     const newDoc = JSON.parse(content)
     if (isEqualWhenSerialized(oldDoc, newDoc)) return
@@ -121,7 +121,7 @@ export const useTipTapReflectionEditor = (
   }, [content])
 
   useEffect(() => {
-    if (!editor) return
+    if (!editor || editor.isDestroyed) return
     editor.setEditable(!readOnly)
   }, [readOnly])
 

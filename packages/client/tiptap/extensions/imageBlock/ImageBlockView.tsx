@@ -21,7 +21,7 @@ export const ImageBlockView = (props: NodeViewProps) => {
     const pos = getPos()
     if (!pos) return
     editor.commands.setNodeSelection(pos)
-  }, [getPos, editor.commands])
+  }, [getPos, editor])
 
   const [maxHeight, setMaxHeight] = useState(
     // if no height is provided (first load), make sure the image is no taller than the editor

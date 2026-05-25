@@ -1,0 +1,106 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index b4710ebe1f48d4f5bdf24cdb566ecd2f455e0a96..181b3cbcc00b9b9584ae31b6080a376289fcfad2 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -5020,18 +5020,33 @@ var Editor = class extends EventEmitter {
+    * An object of all registered commands.
+    */
+   get commands() {
++    if (!this.commandManager) {
++      return new Proxy({}, { get: () => () => false });
++    }
+     return this.commandManager.commands;
+   }
+   /**
+    * Create a command chain to call multiple commands at once.
+    */
+   chain() {
++    if (!this.commandManager) {
++      const noopChain = new Proxy({ run: () => false }, {
++        get(target, prop) {
++          if (prop === "run") return target.run;
++          return () => noopChain;
++        }
++      });
++      return noopChain;
++    }
+     return this.commandManager.chain();
+   }
+   /**
+    * Check if a command or a command chain can be executed. Without executing it.
+    */
+   can() {
++    if (!this.commandManager) {
++      return new Proxy({}, { get: () => () => false });
++    }
+     return this.commandManager.can();
+   }
+   /**
+@@ -5390,12 +5405,14 @@ var Editor = class extends EventEmitter {
+    * Get the document as HTML.
+    */
+   getHTML() {
++    if (!this.schema) return "";
+     return getHTMLFromFragment(this.state.doc.content, this.schema);
+   }
+   /**
+    * Get the document as text.
+    */
+   getText(options) {
++    if (!this.schema) return "";
+     const { blockSeparator = "\n\n", textSerializers = {} } = options || {};
+     return getText(this.state.doc, {
+       blockSeparator,
+diff --git a/dist/index.js b/dist/index.js
+index 0fd21c34f92b817efbeb47548d4a667861b4b272..fd8804730164b80e854bc9e572706db9ff74936d 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -4883,18 +4883,33 @@ var Editor = class extends EventEmitter {
+    * An object of all registered commands.
+    */
+   get commands() {
++    if (!this.commandManager) {
++      return new Proxy({}, { get: () => () => false });
++    }
+     return this.commandManager.commands;
+   }
+   /**
+    * Create a command chain to call multiple commands at once.
+    */
+   chain() {
++    if (!this.commandManager) {
++      const noopChain = new Proxy({ run: () => false }, {
++        get(target, prop) {
++          if (prop === "run") return target.run;
++          return () => noopChain;
++        }
++      });
++      return noopChain;
++    }
+     return this.commandManager.chain();
+   }
+   /**
+    * Check if a command or a command chain can be executed. Without executing it.
+    */
+   can() {
++    if (!this.commandManager) {
++      return new Proxy({}, { get: () => () => false });
++    }
+     return this.commandManager.can();
+   }
+   /**
+@@ -5253,12 +5268,14 @@ var Editor = class extends EventEmitter {
+    * Get the document as HTML.
+    */
+   getHTML() {
++    if (!this.schema) return "";
+     return getHTMLFromFragment(this.state.doc.content, this.schema);
+   }
+   /**
+    * Get the document as text.
+    */
+   getText(options) {
++    if (!this.schema) return "";
+     const { blockSeparator = "\n\n", textSerializers = {} } = options || {};
+     return getText(this.state.doc, {
+       blockSeparator,

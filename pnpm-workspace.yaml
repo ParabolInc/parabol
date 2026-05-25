@@ -25,3 +25,5 @@ onlyBuiltDependencies:
   - sharp
   - ssh2
   - styled-components
+patchedDependencies:
+  '@tiptap/core@3.23.6': patches/@tiptap__core@3.23.6.patch
