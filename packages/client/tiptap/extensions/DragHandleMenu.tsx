@@ -52,9 +52,15 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
   }
 
   const handleContentKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Delete' && showDelete) {
+    if ((e.key === 'Delete' || e.key === 'Backspace') && showDelete) {
       e.preventDefault()
       handleDelete()
+      queueMicrotask(onClose)
+      return
+    }
+    if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault()
+      handleDuplicate()
       queueMicrotask(onClose)
     }
   }
