@@ -41,7 +41,7 @@ export const getSimilarRetroTopics: JobQueueStepRun<
           `${tableName}.embeddingsMetadataId`
         )
         .innerJoin('Discussion', 'Discussion.id', 'EmbeddingsMetadata.refId')
-        .where('teamId', '=', teamId)
+        .where('EmbeddingsMetadata.teamId', '=', teamId)
         .where('objectType', '=', 'retrospectiveDiscussionTopic')
         .where('embeddingsMetadataId', '!=', embeddingsMetadataId)
         .where('Discussion.meetingId', '!=', meetingId)
