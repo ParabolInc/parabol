@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.20.2](https://github.com/ParabolInc/parabol/compare/v13.20.1...v13.20.2) (2026-05-25)
+
+
+### Fixed
+
+* avatar images in emails ([#13144](https://github.com/ParabolInc/parabol/issues/13144)) ([71a51b2](https://github.com/ParabolInc/parabol/commit/71a51b2f014b47f0425b66945ac267526b64a72c))
+
 ## [13.20.1](https://github.com/ParabolInc/parabol/compare/v13.20.0...v13.20.1) (2026-05-25)
 
 
