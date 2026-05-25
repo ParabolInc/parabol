@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {commitLocalUpdate} from 'relay-runtime'
 import type {InvalidateSessionsMutation_notification$data} from '~/__generated__/InvalidateSessionsMutation_notification.graphql'
 import type {NotificationSubscription_meetingStageTimeLimitEnd$data} from '~/__generated__/NotificationSubscription_meetingStageTimeLimitEnd.graphql'
 import type {NotificationSubscription_paymentRejected$data} from '~/__generated__/NotificationSubscription_paymentRejected.graphql'
@@ -266,6 +267,11 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
 
 const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
   atmosphere.refreshSession()
+  // The new auth token's tms has changed, so every viewer.canAccess(...) result
+  // cached in the store may be wrong. Mark viewer stale so the next read refetches.
+  commitLocalUpdate(atmosphere, (store) => {
+    store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+  })
 }
 
 const invalidateSessionsNotificationOnNext: OnNextHandler<

@@ -36,7 +36,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
 
   const atmosphere = useAtmosphere()
   const mutationProps = useMutationProps()
-  const {submitting, onError, onCompleted} = mutationProps
+  const {submitting, onError, onCompleted, error} = mutationProps
 
   const cloudProvider = gdrive.cloudProvider
   if (!cloudProvider) return null
@@ -67,36 +67,39 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
   }
 
   return (
-    <div className='flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5'>
-      <div className='flex items-center gap-2.5'>
-        <GoogleMeetProviderLogo />
-        <span className='font-medium text-slate-700 text-sm'>Google Meet</span>
-      </div>
-      {isConnected ? (
-        <div className='flex items-center gap-1'>
-          <span className='font-semibold text-jade-500 text-xs'>Connected</span>
-          <Menu
-            trigger={
-              <Button variant='ghost' className='h-6 w-6 p-0'>
-                <MoreVert className='text-base text-slate-500' />
-              </Button>
-            }
-          >
-            <MenuContent align='end' sideOffset={4}>
-              <MenuItem onSelect={handleRemove}>{'Remove integration'}</MenuItem>
-              <MenuItem onSelect={handleConnect}>{'Refresh auth token'}</MenuItem>
-            </MenuContent>
-          </Menu>
+    <div className='flex flex-col gap-1.5 rounded-lg border border-slate-200 px-3 py-2.5'>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-2.5'>
+          <GoogleMeetProviderLogo />
+          <span className='font-medium text-slate-700 text-sm'>Google Meet</span>
         </div>
-      ) : (
-        <button
-          className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
-          onClick={handleConnect}
-          disabled={submitting}
-        >
-          {'Connect'}
-        </button>
-      )}
+        {isConnected ? (
+          <div className='flex items-center gap-1'>
+            <span className='font-semibold text-jade-500 text-xs'>Connected</span>
+            <Menu
+              trigger={
+                <Button variant='ghost' className='h-6 w-6 p-0'>
+                  <MoreVert className='text-base text-slate-500' />
+                </Button>
+              }
+            >
+              <MenuContent align='end' sideOffset={4}>
+                <MenuItem onSelect={handleRemove}>{'Remove integration'}</MenuItem>
+                <MenuItem onSelect={handleConnect}>{'Refresh auth token'}</MenuItem>
+              </MenuContent>
+            </Menu>
+          </div>
+        ) : (
+          <button
+            className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
+            onClick={handleConnect}
+            disabled={submitting}
+          >
+            {'Connect'}
+          </button>
+        )}
+      </div>
+      {error && <div className='text-tomato-500 text-xs'>{error.message}</div>}
     </div>
   )
 }

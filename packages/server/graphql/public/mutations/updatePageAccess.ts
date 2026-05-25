@@ -318,7 +318,9 @@ const updatePageAccess: MutationResolvers['updatePageAccess'] = async (
       const {html, subject, body} = pageSharedEmailCreator({
         ownerName: trustworthy ? viewer.preferredName : null,
         ownerEmail: viewer.email,
-        ownerAvatar: viewer.picture,
+        ownerAvatar: viewer.picture.startsWith('/')
+          ? `${appOrigin}${viewer.picture}`
+          : viewer.picture,
         pageName: trustworthy ? (page.title ?? 'Untitled') : null,
         pageLink,
         role,
