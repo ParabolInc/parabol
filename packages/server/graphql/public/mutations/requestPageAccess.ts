@@ -87,7 +87,9 @@ const requestPageAccess: MutationResolvers['requestPageAccess'] = async (
   const {html, subject, body} = pageAccessRequestEmailCreator({
     requesterName: viewer.preferredName,
     requesterEmail: viewer.email,
-    requesterAvatar: viewer.picture,
+    requesterAvatar: viewer.picture.startsWith('/')
+      ? `${appOrigin}${viewer.picture}`
+      : viewer.picture,
     reason,
     pageName: page.title ?? 'Untitled',
     pageLink,

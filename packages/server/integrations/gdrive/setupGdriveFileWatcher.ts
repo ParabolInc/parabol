@@ -34,7 +34,7 @@ export const setupGdriveFileWatcher = async (
   const folderId = folderRes.data.files?.[0]?.id
   if (!folderId) {
     throw new GraphQLError(
-      'Could not find a "Meet Recordings" folder in your Google Drive. Make sure Google Meet is configured to save recordings to Drive.'
+      'Could not find a "Meet Recordings" folder in your Google Drive. Manually add the folder in your Drive or record one Google Meet and try again.'
     )
   }
 

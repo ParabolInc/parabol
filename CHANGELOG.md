@@ -5,6 +5,37 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.20.3](https://github.com/ParabolInc/parabol/compare/v13.20.2...v13.20.3) (2026-05-25)
+
+
+### Fixed
+
+* [#12222](https://github.com/ParabolInc/parabol/issues/12222) text selection in estimation phase ([#13146](https://github.com/ParabolInc/parabol/issues/13146)) ([338cf75](https://github.com/ParabolInc/parabol/commit/338cf75054c6364a07bfec2fb002daa67d1559a1))
+
+## [13.20.2](https://github.com/ParabolInc/parabol/compare/v13.20.1...v13.20.2) (2026-05-25)
+
+
+### Fixed
+
+* avatar images in emails ([#13144](https://github.com/ParabolInc/parabol/issues/13144)) ([71a51b2](https://github.com/ParabolInc/parabol/commit/71a51b2f014b47f0425b66945ac267526b64a72c))
+
+## [13.20.1](https://github.com/ParabolInc/parabol/compare/v13.20.0...v13.20.1) (2026-05-25)
+
+
+### Fixed
+
+* ambiguous teamId column that broke related discussions ([#13142](https://github.com/ParabolInc/parabol/issues/13142)) ([c54d6d2](https://github.com/ParabolInc/parabol/commit/c54d6d29d310fac66268a001c05198cc1ab7fb89))
+* drag handle shortcuts now work when menu is open ([#13143](https://github.com/ParabolInc/parabol/issues/13143)) ([ffad4c5](https://github.com/ParabolInc/parabol/commit/ffad4c5917b3956bdc04788413f66fb5f7a5004d))
+* guard against null commandManager after Editor.destroy() ([#13141](https://github.com/ParabolInc/parabol/issues/13141)) ([427c818](https://github.com/ParabolInc/parabol/commit/427c818a1867176aad4bce1c52895b3c0a923451))
+* invitation required on extant team after deleting a team ([#13000](https://github.com/ParabolInc/parabol/issues/13000)) ([3571ca5](https://github.com/ParabolInc/parabol/commit/3571ca5db7cfda95fdc8dd867d0e5a90705b933f))
+
+## [13.20.0](https://github.com/ParabolInc/parabol/compare/v13.19.0...v13.20.0) (2026-05-22)
+
+
+### Added
+
+* display GDrive integration errors, enable Zoom connection for debug ([#13137](https://github.com/ParabolInc/parabol/issues/13137)) ([58abb87](https://github.com/ParabolInc/parabol/commit/58abb87d1747a96cee7987eab66a3b90fadc9b28))
+
 ## [13.19.0](https://github.com/ParabolInc/parabol/compare/v13.18.2...v13.19.0) (2026-05-22)
 
 
