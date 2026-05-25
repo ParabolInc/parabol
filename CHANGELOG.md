@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.20.3](https://github.com/ParabolInc/parabol/compare/v13.20.2...v13.20.3) (2026-05-25)
+
+
+### Fixed
+
+* [#12222](https://github.com/ParabolInc/parabol/issues/12222) text selection in estimation phase ([#13146](https://github.com/ParabolInc/parabol/issues/13146)) ([338cf75](https://github.com/ParabolInc/parabol/commit/338cf75054c6364a07bfec2fb002daa67d1559a1))
+
 ## [13.20.2](https://github.com/ParabolInc/parabol/compare/v13.20.1...v13.20.2) (2026-05-25)
 
 
