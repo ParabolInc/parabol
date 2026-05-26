@@ -161,7 +161,8 @@ module.exports = {
             : process.env.TENOR_SECRET
               ? 'tenor'
               : '',
-        GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL
+        GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL,
+        IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
       })
     }),
     new ReactRefreshWebpackPlugin(),

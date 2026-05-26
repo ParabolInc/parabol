@@ -40,17 +40,24 @@ const Organizations = (props: Props) => {
   const gotoNewTeam = () => {
     navigate('/newteam')
   }
-  const addNewOrg = () => (
-    <LinkButton aria-label='Tap to create a new organzation' onClick={gotoNewTeam} palette='blue'>
-      {'Add New Organization'}
-    </LinkButton>
-  )
+  const isSingleOrg = window.__ACTION__.IS_SINGLE_ORG
+  const addNewOrg = isSingleOrg
+    ? undefined
+    : () => (
+        <LinkButton
+          aria-label='Tap to create a new organzation'
+          onClick={gotoNewTeam}
+          palette='blue'
+        >
+          {'Add New Organization'}
+        </LinkButton>
+      )
   useDocumentTitle('My Organizations | Parabol', 'Organizations')
   return (
     <UserSettingsWrapper>
       <SettingsWrapper>
         {organizations.length ? (
-          <Panel label='Organizations' controls={addNewOrg()}>
+          <Panel label='Organizations' controls={addNewOrg?.()}>
             {organizations.map((organization) => (
               <OrganizationRow key={`orgRow${organization.id}`} organization={organization} />
             ))}

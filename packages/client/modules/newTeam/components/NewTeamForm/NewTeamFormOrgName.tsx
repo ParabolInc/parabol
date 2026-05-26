@@ -15,6 +15,7 @@ interface Props {
 
 const NewTeamFormOrgName = (props: Props) => {
   const {error, isNewOrg, onChange, onTypeChange, orgName, placeholder} = props
+  if (window.__ACTION__.IS_SINGLE_ORG) return null
   return (
     <NewTeamFormBlock>
       <Radio
