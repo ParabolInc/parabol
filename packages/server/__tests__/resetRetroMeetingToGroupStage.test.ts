@@ -45,6 +45,11 @@ const startRetro = async (teamId: string, cookie: string) => {
                   id
                   isNavigableByFacilitator
                 }
+                ... on ReflectPhase {
+                  reflectPrompts {
+                    id
+                  }
+                }
               }
             }
           }
@@ -60,23 +65,28 @@ const startRetro = async (teamId: string, cookie: string) => {
   return res.data.startRetrospective.meeting
 }
 
-const navigateToPhase = async (meetingId: string, stageId: string, cookie: string) => {
+interface Phase {
+  phaseType: string
+  stages: {id: string; isNavigableByFacilitator: boolean}[]
+  reflectPrompts?: {id: string}[]
+}
+
+const navigate = async (
+  meetingId: string,
+  completedStageId: string,
+  facilitatorStageId: string,
+  cookie: string
+) => {
   return sendPublic({
     query: `
-      mutation Navigate($meetingId: ID!, $stageId: ID!) {
-        navigateToMeetingStage(meetingId: $meetingId, stageId: $stageId, facilitatorStageId: $stageId) {
-          ... on NavigateToMeetingStagePayload {
-            meeting {
-              id
-              phases {
-                phaseType
-                stages {
-                  id
-                  isComplete
-                  isNavigableByFacilitator
-                }
-              }
-            }
+      mutation Nav($meetingId: ID!, $completedStageId: ID, $facilitatorStageId: ID) {
+        navigateMeeting(
+          meetingId: $meetingId,
+          completedStageId: $completedStageId,
+          facilitatorStageId: $facilitatorStageId
+        ) {
+          ... on NavigateMeetingPayload {
+            meeting { id }
           }
           ... on ErrorPayload {
             error { message }
@@ -84,7 +94,32 @@ const navigateToPhase = async (meetingId: string, stageId: string, cookie: strin
         }
       }
     `,
-    variables: {meetingId, stageId},
+    variables: {meetingId, completedStageId, facilitatorStageId},
+    cookie
+  })
+}
+
+const createReflection = async (meetingId: string, promptId: string, cookie: string) => {
+  return sendPublic({
+    query: `
+      mutation CreateReflection($input: CreateReflectionInput!) {
+        createReflection(input: $input) {
+          ... on CreateReflectionPayload {
+            reflectionId
+          }
+          ... on ErrorPayload {
+            error { message }
+          }
+        }
+      }
+    `,
+    variables: {
+      input: {
+        meetingId,
+        promptId,
+        content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"test reflection"}]}]}'
+      }
+    },
     cookie
   })
 }
@@ -118,6 +153,11 @@ const resetRetroMeeting = async (meetingId: string, cookie: string) => {
   })
 }
 
+const getStageId = (phases: Phase[], phaseType: string) => {
+  const phase = phases.find((p) => p.phaseType === phaseType)!
+  return phase.stages[0]!.id
+}
+
 test('resetRetroMeetingToGroupStage succeeds when retro has updates phase', async () => {
   const {userId, cookie} = await signUp()
   const {id: teamId} = (await getUserTeams(userId))[0]
@@ -125,22 +165,28 @@ test('resetRetroMeetingToGroupStage succeeds when retro has updates phase', asyn
   await enableUpdatesPhase(teamId, cookie)
 
   const meeting = await startRetro(teamId, cookie)
-  expect(meeting.phases.map((p: {phaseType: string}) => p.phaseType)).toContain('updates')
+  const phases = meeting.phases as Phase[]
+  expect(phases.map((p) => p.phaseType)).toContain('updates')
 
-  const phases = meeting.phases as {
-    phaseType: string
-    stages: {id: string; isNavigableByFacilitator: boolean}[]
-  }[]
-  const votePhase = phases.find((p) => p.phaseType === 'vote')!
-  const discussPhase = phases.find((p) => p.phaseType === 'discuss')!
+  const meetingId = meeting.id
+  const reflectPhase = phases.find((p) => p.phaseType === 'reflect')!
+  const promptId = reflectPhase.reflectPrompts![0]!.id
 
-  // navigate to vote (completes group)
-  await navigateToPhase(meeting.id, votePhase.stages[0]!.id, cookie)
-  // navigate to discuss (completes vote)
-  await navigateToPhase(meeting.id, discussPhase.stages[0]!.id, cookie)
+  // Walk through each phase sequentially: checkin → TEAM_HEALTH → updates → reflect
+  await navigate(meetingId, getStageId(phases, 'checkin'), getStageId(phases, 'TEAM_HEALTH'), cookie)
+  await navigate(meetingId, getStageId(phases, 'TEAM_HEALTH'), getStageId(phases, 'updates'), cookie)
+  await navigate(meetingId, getStageId(phases, 'updates'), getStageId(phases, 'reflect'), cookie)
 
-  // reset — this should NOT throw "Unhandled phaseType: updates"
-  const resetRes = await resetRetroMeeting(meeting.id, cookie)
+  // Create a reflection to unlock the GROUP phase
+  await createReflection(meetingId, promptId, cookie)
+
+  // Continue: reflect → group → vote → discuss
+  await navigate(meetingId, getStageId(phases, 'reflect'), getStageId(phases, 'group'), cookie)
+  await navigate(meetingId, getStageId(phases, 'group'), getStageId(phases, 'vote'), cookie)
+  await navigate(meetingId, getStageId(phases, 'vote'), getStageId(phases, 'discuss'), cookie)
+
+  // Reset — this should NOT throw "Unhandled phaseType: updates"
+  const resetRes = await resetRetroMeeting(meetingId, cookie)
 
   expect(resetRes.data.resetRetroMeetingToGroupStage.meeting).toBeTruthy()
   expect(
