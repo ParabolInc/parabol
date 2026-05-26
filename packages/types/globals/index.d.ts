@@ -69,6 +69,7 @@ interface Window {
     GLOBAL_BANNER_COLOR: string
     GIF_PROVIDER: 'gifabol' | 'tenor' | ''
     GOOGLE_ERROR_FORM_URL: string
+    IS_SINGLE_ORG: boolean
   }
 }
 declare type Json = null | boolean | number | string | Json[] | {[key: string]: Json}
