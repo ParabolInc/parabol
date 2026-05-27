@@ -1,3 +1,4 @@
+import getKysely from '../postgres/getKysely'
 import {getUserTeams, sendPublic, signUp} from './common'
 
 const enableUpdatesPhase = async (teamId: string, cookie: string) => {
@@ -8,7 +9,6 @@ const enableUpdatesPhase = async (teamId: string, cookie: string) => {
           team(teamId: $teamId) {
             meetingSettings(meetingType: retrospective) {
               id
-              phaseTypes
             }
           }
         }
@@ -43,12 +43,6 @@ const startRetro = async (teamId: string, cookie: string) => {
                 phaseType
                 stages {
                   id
-                  isNavigableByFacilitator
-                }
-                ... on ReflectPhase {
-                  reflectPrompts {
-                    id
-                  }
                 }
               }
             }
@@ -65,64 +59,53 @@ const startRetro = async (teamId: string, cookie: string) => {
   return res.data.startRetrospective.meeting
 }
 
-interface Phase {
-  phaseType: string
-  stages: {id: string; isNavigableByFacilitator: boolean}[]
-  reflectPrompts?: {id: string}[]
-}
+test('resetRetroMeetingToGroupStage succeeds when retro has updates phase', async () => {
+  const {userId, cookie} = await signUp()
+  const {id: teamId} = (await getUserTeams(userId))[0]!
 
-const navigate = async (
-  meetingId: string,
-  completedStageId: string,
-  facilitatorStageId: string,
-  cookie: string
-) => {
-  return sendPublic({
-    query: `
-      mutation Nav($meetingId: ID!, $completedStageId: ID, $facilitatorStageId: ID) {
-        navigateMeeting(
-          meetingId: $meetingId,
-          completedStageId: $completedStageId,
-          facilitatorStageId: $facilitatorStageId
-        ) {
-          ... on NavigateMeetingPayload {
-            meeting { id }
-          }
-          ... on ErrorPayload {
-            error { message }
-          }
-        }
-      }
-    `,
-    variables: {meetingId, completedStageId, facilitatorStageId},
-    cookie
-  })
-}
+  await enableUpdatesPhase(teamId, cookie)
 
-const createReflection = async (meetingId: string, promptId: string, cookie: string) => {
-  return sendPublic({
-    query: `
-      mutation CreateReflection($input: CreateReflectionInput!) {
-        createReflection(input: $input) {
-          ... on CreateReflectionPayload {
-            reflectionId
-          }
-          ... on ErrorPayload {
-            error { message }
-          }
-        }
-      }
-    `,
-    variables: {
-      input: {
-        meetingId,
-        promptId,
-        content: '{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"test reflection"}]}]}'
-      }
-    },
-    cookie
-  })
-}
+  const meeting = await startRetro(teamId, cookie)
+  expect(meeting).toBeTruthy()
+  const phaseTypes = meeting.phases.map((p: {phaseType: string}) => p.phaseType)
+  expect(phaseTypes).toContain('updates')
+  expect(phaseTypes).toContain('group')
+
+  const meetingId = meeting.id as string
+
+  // Directly mark the group stage as complete and navigable in the DB.
+  // This avoids the complex multi-step navigation flow and focuses the test
+  // on what we're actually fixing: the reset switch statement handling 'updates'.
+  const pg = getKysely()
+  const meetingRow = await pg
+    .selectFrom('NewMeeting')
+    .select('phases')
+    .where('id', '=', meetingId)
+    .executeTakeFirstOrThrow()
+
+  const phases = JSON.parse(meetingRow.phases as string)
+  for (const phase of phases) {
+    for (const stage of phase.stages) {
+      stage.isNavigable = true
+      stage.isNavigableByFacilitator = true
+      stage.isComplete = true
+    }
+  }
+  await pg
+    .updateTable('NewMeeting')
+    .set({phases: JSON.stringify(phases)})
+    .where('id', '=', meetingId)
+    .execute()
+
+  const resetRes = await resetRetroMeeting(meetingId, cookie)
+
+  expect(resetRes.data.resetRetroMeetingToGroupStage.meeting).toBeTruthy()
+  expect(
+    resetRes.data.resetRetroMeetingToGroupStage.meeting.phases.map(
+      (p: {phaseType: string}) => p.phaseType
+    )
+  ).toContain('updates')
+})
 
 const resetRetroMeeting = async (meetingId: string, cookie: string) => {
   return sendPublic({
@@ -134,11 +117,6 @@ const resetRetroMeeting = async (meetingId: string, cookie: string) => {
               id
               phases {
                 phaseType
-                stages {
-                  id
-                  isComplete
-                  isNavigableByFacilitator
-                }
               }
             }
           }
@@ -152,46 +130,3 @@ const resetRetroMeeting = async (meetingId: string, cookie: string) => {
     cookie
   })
 }
-
-const getStageId = (phases: Phase[], phaseType: string) => {
-  const phase = phases.find((p) => p.phaseType === phaseType)!
-  return phase.stages[0]!.id
-}
-
-test('resetRetroMeetingToGroupStage succeeds when retro has updates phase', async () => {
-  const {userId, cookie} = await signUp()
-  const {id: teamId} = (await getUserTeams(userId))[0]
-
-  await enableUpdatesPhase(teamId, cookie)
-
-  const meeting = await startRetro(teamId, cookie)
-  const phases = meeting.phases as Phase[]
-  expect(phases.map((p) => p.phaseType)).toContain('updates')
-
-  const meetingId = meeting.id
-  const reflectPhase = phases.find((p) => p.phaseType === 'reflect')!
-  const promptId = reflectPhase.reflectPrompts![0]!.id
-
-  // Walk through each phase sequentially: checkin → TEAM_HEALTH → updates → reflect
-  await navigate(meetingId, getStageId(phases, 'checkin'), getStageId(phases, 'TEAM_HEALTH'), cookie)
-  await navigate(meetingId, getStageId(phases, 'TEAM_HEALTH'), getStageId(phases, 'updates'), cookie)
-  await navigate(meetingId, getStageId(phases, 'updates'), getStageId(phases, 'reflect'), cookie)
-
-  // Create a reflection to unlock the GROUP phase
-  await createReflection(meetingId, promptId, cookie)
-
-  // Continue: reflect → group → vote → discuss
-  await navigate(meetingId, getStageId(phases, 'reflect'), getStageId(phases, 'group'), cookie)
-  await navigate(meetingId, getStageId(phases, 'group'), getStageId(phases, 'vote'), cookie)
-  await navigate(meetingId, getStageId(phases, 'vote'), getStageId(phases, 'discuss'), cookie)
-
-  // Reset — this should NOT throw "Unhandled phaseType: updates"
-  const resetRes = await resetRetroMeeting(meetingId, cookie)
-
-  expect(resetRes.data.resetRetroMeetingToGroupStage.meeting).toBeTruthy()
-  expect(
-    resetRes.data.resetRetroMeetingToGroupStage.meeting.phases.map(
-      (p: {phaseType: string}) => p.phaseType
-    )
-  ).toContain('updates')
-})
