@@ -53,6 +53,7 @@ export interface Snack {
 const Snackbar = memo(() => {
   const snackQueueRef = useRef<Snack[]>([])
   const [activeSnacks, setActiveSnacks] = useState<Snack[]>([])
+  const activeSnackKeysRef = useRef(new Set<string>())
   const atmosphere = useAtmosphere()
   const {openPortal, terminatePortal, portal} = usePortal({
     id: 'snackbar',
@@ -72,7 +73,11 @@ const Snackbar = memo(() => {
     snackQueueRef.current = snackQueueRef.current.filter(filterFn)
     setActiveSnacks((prev) => {
       const next = prev.filter(filterFn)
-      return next.length !== prev.length ? next : prev
+      if (next.length !== prev.length) {
+        activeSnackKeysRef.current = new Set(next.map((s) => s.key))
+        return next
+      }
+      return prev
     })
   })
 
@@ -82,6 +87,7 @@ const Snackbar = memo(() => {
   })
 
   const showSnack = useEventCallback((snack: Snack) => {
+    activeSnackKeysRef.current.add(snack.key)
     setActiveSnacks((prev) => [...prev, snack])
     if (snack.autoDismiss !== 0) {
       setTimeout(() => {
@@ -108,9 +114,8 @@ const Snackbar = memo(() => {
   }
 
   const handleAdd = useEventCallback((snack) => {
-    const dupeFilter = ({key}: Snack) => key === snack.key
-    const snackInQueue = snackQueueRef.current.find(dupeFilter)
-    const snackIsActive = activeSnacks.find(dupeFilter)
+    const snackInQueue = snackQueueRef.current.find(({key}) => key === snack.key)
+    const snackIsActive = activeSnackKeysRef.current.has(snack.key)
     if (snackInQueue || snackIsActive) return
     if (typeof snack.message !== 'string') {
       console.error(`Bad snack message: ${snack.key}`)

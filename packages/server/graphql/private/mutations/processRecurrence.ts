@@ -220,7 +220,7 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             ? new Date(
                 Math.max(lastMeeting.createdAt.getTime() + ms('10m'), now.getTime() - ms('24h'))
               )
-            : new Date(0)
+            : meetingSeries.createdAt
           const newMeetingsStartTimes = rrule.between(
             DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
             DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
