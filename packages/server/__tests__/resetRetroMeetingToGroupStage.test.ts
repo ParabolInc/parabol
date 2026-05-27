@@ -83,7 +83,7 @@ test('resetRetroMeetingToGroupStage succeeds when retro has updates phase', asyn
     .where('id', '=', meetingId)
     .executeTakeFirstOrThrow()
 
-  const phases = JSON.parse(meetingRow.phases as string)
+  const phases = meetingRow.phases as {stages: Record<string, unknown>[]}[]
   for (const phase of phases) {
     for (const stage of phase.stages) {
       stage.isNavigable = true
