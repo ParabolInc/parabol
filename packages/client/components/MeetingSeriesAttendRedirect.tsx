@@ -1,18 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
+import {parseMeetingSeriesIdFromSlug} from 'parabol-client/shared/meetingSeriesSlug'
 import {Suspense} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Navigate, useParams} from 'react-router'
 import type {MeetingSeriesAttendRedirectQuery} from '../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
 import meetingSeriesAttendRedirectQuery from '../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
-
-const parseMeetingSeriesIdFromSlug = (slug: string): string | null => {
-  const dashIdx = slug.lastIndexOf('-')
-  const idStr = dashIdx === -1 ? slug : slug.slice(dashIdx + 1)
-  if (!/^\d+$/.test(idStr)) return null
-  return MeetingSeriesId.join(Number(idStr))
-}
 
 const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery>}) => {
   const {queryRef} = props
@@ -40,7 +34,8 @@ const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery
 
 const MeetingSeriesAttendRedirect = () => {
   const {slug} = useParams()
-  const meetingSeriesId = slug ? parseMeetingSeriesIdFromSlug(slug) : null
+  const rawId = slug ? parseMeetingSeriesIdFromSlug(slug) : null
+  const meetingSeriesId = rawId != null ? MeetingSeriesId.join(rawId) : null
   const queryRef = useQueryLoaderNow<MeetingSeriesAttendRedirectQuery>(
     meetingSeriesAttendRedirectQuery,
     {meetingSeriesId: meetingSeriesId ?? ''}
