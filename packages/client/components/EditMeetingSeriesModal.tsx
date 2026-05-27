@@ -15,7 +15,11 @@ export const EditMeetingSeriesModal = (props: Props) => {
   // modal={false} disables radix focus trap so the embedded RecurrenceTimePicker portal can receive input.
   return (
     <Dialog isOpen={isOpen} onClose={onClose} modal={false}>
-      <DialogContent className='md:max-w-md'>
+      <DialogContent
+        className='md:max-w-md'
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogTitle className='mb-1'>Edit scheduled meeting</DialogTitle>
         <p className='mb-4 text-slate-600 text-sm'>
           Change the schedule, rename the series, or cancel it.
