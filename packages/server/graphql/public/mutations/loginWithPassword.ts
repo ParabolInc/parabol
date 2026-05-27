@@ -8,7 +8,8 @@ const loginWithPassword: MutationResolvers['loginWithPassword'] = async (
   {email, password},
   context
 ) => {
-  const loginAttempt = await attemptLogin(email, password, context.ip, context.dataLoader)
+  const {dataLoader, ip} = context
+  const loginAttempt = await attemptLogin(email, password, ip, dataLoader)
   if (loginAttempt.userId) {
     context.authToken = loginAttempt.authToken
     setAuthCookie(context, loginAttempt.authToken)
