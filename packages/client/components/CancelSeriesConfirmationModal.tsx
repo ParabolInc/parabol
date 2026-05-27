@@ -1,41 +1,40 @@
-import {cn} from '../ui/cn'
-import DialogContainer from './DialogContainer'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogActions} from '../ui/Dialog/DialogActions'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 
 interface Props {
+  isOpen: boolean
+  onClose: () => void
   seriesTitle: string
   onConfirm: () => void
-  closeModal: () => void
 }
 
-const ACTION_BUTTON_CLASSES =
-  'font-sans text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
-
 export const CancelSeriesConfirmationModal = (props: Props) => {
-  const {seriesTitle, onConfirm, closeModal} = props
+  const {isOpen, onClose, seriesTitle, onConfirm} = props
   return (
-    <DialogContainer className='p-4'>
-      <div className='mb-2 font-semibold text-xl'>Cancel scheduled meeting?</div>
-      <p className='mb-4 text-slate-700 text-sm'>
-        “{seriesTitle}” will not recur and the first meeting will not start automatically. You can
-        re-schedule it later.
-      </p>
-      <div className='flex justify-end gap-2.5'>
-        <button
-          className={cn(
-            'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-100',
-            ACTION_BUTTON_CLASSES
-          )}
-          onClick={closeModal}
-        >
-          Keep series
-        </button>
-        <button
-          className={cn('bg-tomato-500 text-white hover:bg-tomato-600', ACTION_BUTTON_CLASSES)}
-          onClick={onConfirm}
-        >
-          Cancel series
-        </button>
-      </div>
-    </DialogContainer>
+    <Dialog isOpen={isOpen} onClose={onClose}>
+      <DialogContent className='md:max-w-sm'>
+        <DialogTitle>Cancel scheduled meeting?</DialogTitle>
+        <p className='mt-2 mb-4 text-slate-700 text-sm'>
+          "{seriesTitle}" will not recur and the first meeting will not start automatically. You can
+          re-schedule it later.
+        </p>
+        <DialogActions>
+          <button
+            className='cursor-pointer rounded-full border border-slate-400 border-solid bg-white px-4 py-2 font-medium font-sans text-base text-slate-700 hover:bg-slate-100'
+            onClick={onClose}
+          >
+            Keep series
+          </button>
+          <button
+            className='cursor-pointer rounded-full bg-tomato-500 px-4 py-2 font-medium font-sans text-base text-white hover:bg-tomato-600'
+            onClick={onConfirm}
+          >
+            Cancel series
+          </button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
   )
 }

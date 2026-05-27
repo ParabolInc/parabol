@@ -1,6 +1,6 @@
 import {buildMeetingSeriesSlug, parseMeetingSeriesSlug} from '../meetingSeriesSlug'
 
-// The gcal description URL embeds `<title-slug>-<cipher>` for a meeting series.
+// The gcal description URL embeds `<title-slug>-<id>` for a meeting series.
 // `parseMeetingSeriesSlug` must always recover the original DB id regardless of
 // what the title looks like, otherwise the link breaks after a rename and any
 // historical slug becomes unreachable. These tests pin that round-trip invariant.
@@ -8,7 +8,7 @@ import {buildMeetingSeriesSlug, parseMeetingSeriesSlug} from '../meetingSeriesSl
 describe('buildMeetingSeriesSlug / parseMeetingSeriesSlug', () => {
   test('round-trips a simple id+title', () => {
     const slug = buildMeetingSeriesSlug(42, 'Weekly Standup')
-    expect(slug).toMatch(/^weekly-standup-\d+$/)
+    expect(slug).toBe('weekly-standup-42')
     expect(parseMeetingSeriesSlug(slug)).toBe(42)
   })
 
@@ -38,12 +38,9 @@ describe('buildMeetingSeriesSlug / parseMeetingSeriesSlug', () => {
     expect(parseMeetingSeriesSlug(slug)).toBe(id)
   })
 
-  test('emits a slug-less form when the title produces no slug chars', () => {
-    // When title is empty/whitespace-only/punctuation-only the function omits the
-    // leading dash to avoid `-1234567890` (which parseMeetingSeriesSlug would still
-    // accept, but is uglier). Verify the shape explicitly.
+  test('emits a bare id when the title produces no slug chars', () => {
     const slug = buildMeetingSeriesSlug(7, '   ')
-    expect(slug).toMatch(/^\d+$/)
+    expect(slug).toBe('7')
     expect(parseMeetingSeriesSlug(slug)).toBe(7)
   })
 
@@ -52,13 +49,12 @@ describe('buildMeetingSeriesSlug / parseMeetingSeriesSlug', () => {
     const oldSlug = buildMeetingSeriesSlug(id, 'Weekly Standup')
     const newSlug = buildMeetingSeriesSlug(id, 'Sprint Retro')
 
-    // Both slugs share the trailing cipher (the only field that matters for routing).
     expect(parseMeetingSeriesSlug(oldSlug)).toBe(id)
     expect(parseMeetingSeriesSlug(newSlug)).toBe(id)
 
-    const cipherFromOld = oldSlug.slice(oldSlug.lastIndexOf('-') + 1)
-    const cipherFromNew = newSlug.slice(newSlug.lastIndexOf('-') + 1)
-    expect(cipherFromOld).toBe(cipherFromNew)
+    const idFromOld = oldSlug.slice(oldSlug.lastIndexOf('-') + 1)
+    const idFromNew = newSlug.slice(newSlug.lastIndexOf('-') + 1)
+    expect(idFromOld).toBe(idFromNew)
   })
 })
 
@@ -71,7 +67,7 @@ describe('parseMeetingSeriesSlug — rejects malformed input', () => {
     expect(parseMeetingSeriesSlug('')).toBeNull()
   })
 
-  test('returns null for slug with no cipher portion', () => {
+  test('returns null for slug with no numeric portion', () => {
     expect(parseMeetingSeriesSlug('only-words-no-number')).toBeNull()
   })
 

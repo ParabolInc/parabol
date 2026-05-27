@@ -34,7 +34,6 @@ import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
 import logError from '../../../utils/logError'
-import {parseMeetingSeriesSlug} from '../../../utils/meetingSeriesSlug'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
 import type {DataLoaderWorker} from '../../graphql'
@@ -123,14 +122,6 @@ const User: ReqResolvers<'User'> = {
   meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
     const numericId = MeetingSeriesId.split(meetingSeriesId)
     if (!Number.isFinite(numericId)) return null
-    const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
-    if (!meetingSeries) return null
-    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
-    return meetingSeries
-  },
-  meetingSeriesBySlug: async (_source, {slug}, {authToken, dataLoader}) => {
-    const numericId = parseMeetingSeriesSlug(slug)
-    if (numericId === null) return null
     const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
     if (!meetingSeries) return null
     if (!isTeamMember(authToken, meetingSeries.teamId)) return null

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,60 +5,12 @@ import {RRule} from 'rrule'
 import type {MeetingSeriesEditForm_series$key} from '../__generated__/MeetingSeriesEditForm_series.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
-import useModal from '../hooks/useModal'
 import useMutationProps, {getOnCompletedError} from '../hooks/useMutationProps'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
-import {PALETTE} from '../styles/paletteV3'
+import {useDialogState} from '../ui/Dialog/useDialogState'
 import Legitity from '../validation/Legitity'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
-import PlainButton from './PlainButton/PlainButton'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
-import StyledError from './StyledError'
-
-const TitleInput = styled('input')({
-  width: '100%',
-  border: 'none',
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-  padding: '8px 0',
-  fontSize: 18,
-  fontFamily: 'inherit',
-  outline: 'none',
-  '&:focus': {borderBottom: `2px solid ${PALETTE.SKY_500}`}
-})
-
-const ActionsContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: 24,
-  paddingTop: 16,
-  borderTop: `1px solid ${PALETTE.SLATE_200}`
-})
-
-const ActionButton = styled(PlainButton)({
-  height: 36,
-  padding: '0px 16px',
-  textAlign: 'center',
-  borderRadius: 32
-})
-
-const UpdateButton = styled(ActionButton)({
-  backgroundColor: PALETTE.SKY_500,
-  color: PALETTE.WHITE,
-  '&:hover': {backgroundColor: PALETTE.SKY_600},
-  '&:disabled': {backgroundColor: PALETTE.SLATE_300, cursor: 'not-allowed'}
-})
-
-const CancelSeriesButton = styled(ActionButton)({
-  color: PALETTE.TOMATO_500,
-  border: `1px solid ${PALETTE.SLATE_300}`,
-  '&:hover': {backgroundColor: PALETTE.SLATE_100}
-})
-
-const ErrorContainer = styled('div')({
-  color: PALETTE.TOMATO_500,
-  marginTop: 12
-})
 
 const validateTitle = (title: string) =>
   new Legitity(title).trim().min(2, "C'mon, you call that a title?")
@@ -94,9 +45,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
     title: {getDefault: () => meetingSeries.title || ''}
   })
 
-  const {togglePortal: toggleCancelModal, modalPortal: cancelModalPortal} = useModal({
-    id: 'cancelSeriesConfirmationModal'
-  })
+  const cancelDialog = useDialogState()
 
   const onTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (fields.title.error) fields.title.setError('')
@@ -165,7 +114,8 @@ export const MeetingSeriesEditForm = (props: Props) => {
 
   return (
     <>
-      <TitleInput
+      <input
+        className='w-full border-0 border-b border-solid border-slate-300 py-2 text-lg outline-hidden focus:border-b-2 focus:border-sky-500'
         type='text'
         name='title'
         placeholder='Meeting title'
@@ -173,31 +123,38 @@ export const MeetingSeriesEditForm = (props: Props) => {
         onChange={onTitleChange}
         maxLength={50}
       />
-      {titleErr && <StyledError>{titleErr}</StyledError>}
+      {titleErr && <div className='mt-1 text-sm text-tomato-500'>{titleErr}</div>}
       <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
-      <ActionsContainer>
+      <div className='mt-6 flex items-center justify-between border-t border-slate-200 pt-4'>
         {isActive ? (
-          <CancelSeriesButton onClick={toggleCancelModal} disabled={submitting}>
+          <button
+            className='h-9 cursor-pointer rounded-full border border-slate-300 border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-slate-100 disabled:cursor-not-allowed'
+            onClick={cancelDialog.open}
+            disabled={submitting}
+          >
             Cancel series
-          </CancelSeriesButton>
+          </button>
         ) : (
           <span className='text-slate-500 text-sm'>Series cancelled</span>
         )}
-        <UpdateButton onClick={onUpdate} disabled={!canUpdate}>
+        <button
+          className='h-9 cursor-pointer rounded-full bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-slate-300'
+          onClick={onUpdate}
+          disabled={!canUpdate}
+        >
           Update
-        </UpdateButton>
-      </ActionsContainer>
-      {error && <ErrorContainer>{error.message}</ErrorContainer>}
-      {cancelModalPortal(
-        <CancelSeriesConfirmationModal
-          seriesTitle={meetingSeries.title}
-          onConfirm={() => {
-            toggleCancelModal()
-            onCancelSeries()
-          }}
-          closeModal={toggleCancelModal}
-        />
-      )}
+        </button>
+      </div>
+      {error && <div className='mt-3 text-tomato-500'>{error.message}</div>}
+      <CancelSeriesConfirmationModal
+        isOpen={cancelDialog.isOpen}
+        onClose={cancelDialog.close}
+        seriesTitle={meetingSeries.title}
+        onConfirm={() => {
+          cancelDialog.close()
+          onCancelSeries()
+        }}
+      />
     </>
   )
 }

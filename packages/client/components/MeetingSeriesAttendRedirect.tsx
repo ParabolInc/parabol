@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {Suspense} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Navigate, useParams} from 'react-router'
@@ -6,13 +7,20 @@ import type {MeetingSeriesAttendRedirectQuery} from '../__generated__/MeetingSer
 import meetingSeriesAttendRedirectQuery from '../__generated__/MeetingSeriesAttendRedirectQuery.graphql'
 import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 
+const parseMeetingSeriesIdFromSlug = (slug: string): string | null => {
+  const dashIdx = slug.lastIndexOf('-')
+  const idStr = dashIdx === -1 ? slug : slug.slice(dashIdx + 1)
+  if (!/^\d+$/.test(idStr)) return null
+  return MeetingSeriesId.join(Number(idStr))
+}
+
 const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery>}) => {
   const {queryRef} = props
   const data = usePreloadedQuery<MeetingSeriesAttendRedirectQuery>(
     graphql`
-      query MeetingSeriesAttendRedirectQuery($slug: String!) {
+      query MeetingSeriesAttendRedirectQuery($meetingSeriesId: ID!) {
         viewer {
-          meetingSeriesBySlug(slug: $slug) {
+          meetingSeries(meetingSeriesId: $meetingSeriesId) {
             activeMeetings {
               id
             }
@@ -22,7 +30,7 @@ const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery
     `,
     queryRef
   )
-  const series = data.viewer.meetingSeriesBySlug
+  const series = data.viewer.meetingSeries
   const activeMeeting = series?.activeMeetings[0]
   if (activeMeeting) {
     return <Navigate replace to={`/meet/${activeMeeting.id}`} />
@@ -30,18 +38,15 @@ const Inner = (props: {queryRef: PreloadedQuery<MeetingSeriesAttendRedirectQuery
   return <Navigate replace to='/meetings' />
 }
 
-const WithSlug = ({slug}: {slug: string}) => {
-  const queryRef = useQueryLoaderNow<MeetingSeriesAttendRedirectQuery>(
-    meetingSeriesAttendRedirectQuery,
-    {slug}
-  )
-  return <Suspense fallback={''}>{queryRef && <Inner queryRef={queryRef} />}</Suspense>
-}
-
 const MeetingSeriesAttendRedirect = () => {
   const {slug} = useParams()
-  if (!slug) return <Navigate replace to='/meetings' />
-  return <WithSlug slug={slug} />
+  const meetingSeriesId = slug ? parseMeetingSeriesIdFromSlug(slug) : null
+  const queryRef = useQueryLoaderNow<MeetingSeriesAttendRedirectQuery>(
+    meetingSeriesAttendRedirectQuery,
+    {meetingSeriesId: meetingSeriesId ?? ''}
+  )
+  if (!meetingSeriesId) return <Navigate replace to='/meetings' />
+  return <Suspense fallback={''}>{queryRef && <Inner queryRef={queryRef} />}</Suspense>
 }
 
 export default MeetingSeriesAttendRedirect

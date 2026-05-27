@@ -1,3 +1,4 @@
+import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
@@ -10,20 +11,19 @@ import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
 import useAnimatedCard from '../hooks/useAnimatedCard'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
-import useModal from '../hooks/useModal'
 import useMutationProps from '../hooks/useMutationProps'
 import {TransitionStatus} from '../hooks/useTransition'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
+import {useDialogState} from '../ui/Dialog/useDialogState'
+import {Menu} from '../ui/Menu/Menu'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import {cn} from '../ui/cn'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
-import CardButton from './CardButton'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
-import IconLabel from './IconLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import Tooltip from './Tooltip'
 
 const STACK_CLASSES = {
   0: 'rotate-1 top-[3px] left-1',
@@ -52,8 +52,7 @@ const MEETING_TYPE_LABEL = {
   teamPrompt: 'Standup'
 }
 
-const STACKED_CARD_BASE =
-  'absolute block h-full w-full rounded-card bg-white shadow-card content-[""]'
+const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-white shadow-card'
 const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
 const MEETING_IMG = 'relative mx-auto block h-[180px] overflow-hidden rounded-t-card pt-6'
 
@@ -100,11 +99,8 @@ const ScheduledSeriesCard = (props: Props) => {
   const ref = useAnimatedCard(displayIdx, status)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   const [isEditOpen, setIsEditOpen] = useState(false)
-  const {togglePortal: toggleCancelModal, modalPortal: cancelModalPortal} = useModal({
-    id: 'cancelSeriesConfirmationModal'
-  })
+  const cancelDialog = useDialogState()
 
   const onCancelConfirmed = () => {
     if (submitting) return
@@ -125,7 +121,7 @@ const ScheduledSeriesCard = (props: Props) => {
         }
       }
     )
-    toggleCancelModal()
+    cancelDialog.close()
   }
 
   const nextDate = nextMeetingDate ? new Date(nextMeetingDate) : null
@@ -187,17 +183,25 @@ const ScheduledSeriesCard = (props: Props) => {
                 <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
                   {title}
                 </span>
-                <Tooltip text={tooltip}>
-                  <div className='text-sm'>{label}</div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className='text-sm'>{label}</div>
+                  </TooltipTrigger>
+                  {tooltip && <TooltipContent>{tooltip}</TooltipContent>}
                 </Tooltip>
               </Link>
-              <CardButton
-                ref={originRef}
-                onClick={togglePortal}
-                className='absolute top-0 right-0 h-8 w-8 opacity-100'
+              <Menu
+                trigger={
+                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent opacity-50 outline-hidden hover:bg-slate-200 hover:opacity-100'>
+                    <MoreVert className='text-lg text-slate-700' />
+                  </button>
+                }
               >
-                <IconLabel icon='more_vert' />
-              </CardButton>
+                <MenuContent align='end' sideOffset={4}>
+                  <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
+                  <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
+                </MenuContent>
+              </Menu>
             </div>
             <Link to={seriesLink} onClick={openEdit}>
               <span className='block pt-1 pb-2 text-slate-600 text-sm'>
@@ -205,27 +209,12 @@ const ScheduledSeriesCard = (props: Props) => {
               </span>
             </Link>
           </div>
-          {menuPortal(
-            <Menu ariaLabel='Scheduled meeting options' {...menuProps}>
-              <MenuItem
-                key='edit'
-                label={<div className='flex items-center px-2 py-1'>Edit schedule</div>}
-                onClick={() => setIsEditOpen(true)}
-              />
-              <MenuItem
-                key='cancel'
-                label={<div className='flex items-center px-2 py-1'>Cancel series</div>}
-                onClick={toggleCancelModal}
-              />
-            </Menu>
-          )}
-          {cancelModalPortal(
-            <CancelSeriesConfirmationModal
-              seriesTitle={title}
-              onConfirm={onCancelConfirmed}
-              closeModal={toggleCancelModal}
-            />
-          )}
+          <CancelSeriesConfirmationModal
+            isOpen={cancelDialog.isOpen}
+            onClose={cancelDialog.close}
+            seriesTitle={title}
+            onConfirm={onCancelConfirmed}
+          />
           <EditMeetingSeriesModal
             isOpen={isEditOpen}
             onClose={() => setIsEditOpen(false)}

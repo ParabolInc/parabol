@@ -1,32 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Navigate, useNavigate} from 'react-router'
 import type {MeetingSeriesManagementPageQuery} from '../__generated__/MeetingSeriesManagementPageQuery.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import {MeetingSeriesEditForm} from './MeetingSeriesEditForm'
-
-const PageRoot = styled('div')({
-  maxWidth: 560,
-  margin: '32px auto',
-  padding: 24,
-  backgroundColor: PALETTE.WHITE,
-  borderRadius: 8,
-  boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-})
-
-const PageHeader = styled('h1')({
-  fontSize: 22,
-  fontWeight: 600,
-  margin: '0 0 8px 0',
-  color: PALETTE.SLATE_900
-})
-
-const Subhead = styled('p')({
-  margin: '0 0 16px 0',
-  color: PALETTE.SLATE_600,
-  fontSize: 14
-})
 
 interface Props {
   queryRef: PreloadedQuery<MeetingSeriesManagementPageQuery>
@@ -64,17 +40,17 @@ const MeetingSeriesManagementPage = (props: Props) => {
   }
 
   return (
-    <PageRoot>
-      <PageHeader>Scheduled meeting</PageHeader>
-      <Subhead>
+    <div className='mx-auto mt-8 max-w-xl rounded-lg bg-white p-6 shadow-md'>
+      <h1 className='m-0 mb-2 font-semibold text-xl text-slate-900'>Scheduled meeting</h1>
+      <p className='m-0 mb-4 text-slate-600 text-sm'>
         Edit the schedule, rename the series, or cancel it. The first meeting hasn't started yet.
-      </Subhead>
+      </p>
       <MeetingSeriesEditForm
         seriesRef={meetingSeries}
         onClose={() => navigate('/meetings')}
         onCancelled={() => navigate('/meetings')}
       />
-    </PageRoot>
+    </div>
   )
 }
 
