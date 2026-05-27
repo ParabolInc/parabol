@@ -83,7 +83,7 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
     context.authToken = new AuthToken({
       sub: viewerId,
       rol,
-      tms: existingUser.tms
+      tms: await dataLoader.get('teamIdsByUserId').load(viewerId)
     })
     setAuthCookie(context, context.authToken)
     return {

@@ -28,9 +28,10 @@ const createImposterToken: MutationResolvers['createImposterToken'] = async (
   // RESOLUTION
   // For just graphql it would be sufficient to just give enough time to initalize the websocket connection
   // For pages though, each page opens a new websocket connection, so the token needs to be valid for longer
+  const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
   setAuthCookie(
     context,
-    new AuthToken({sub: user.id, tms: user.tms, rol: 'impersonate', lifespan_ms: ms('5m')})
+    new AuthToken({sub: user.id, tms, rol: 'impersonate', lifespan_ms: ms('5m')})
   )
   return {userId: user.id}
 }

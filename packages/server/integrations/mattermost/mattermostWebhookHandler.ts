@@ -116,7 +116,8 @@ const mattermostWebhookHandler = uWSAsyncHandler(async (res, req) => {
       res.writeStatus('401').end('Unknown user')
       return
     }
-    const {id: userId, tms} = user
+    const {id: userId} = user
+    const tms = await dataLoader.get('teamIdsByUserId').load(userId)
     const authToken = encodeAuthToken(new AuthToken({sub: userId, tms}))
     res
       .writeStatus('200')

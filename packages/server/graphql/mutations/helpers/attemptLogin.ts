@@ -9,6 +9,7 @@ import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import type {DataLoaderWorker} from '../../graphql'
 
 const logFailedLogin = async (ip: string, email: string) => {
   const pg = getKysely()
@@ -18,7 +19,12 @@ const logFailedLogin = async (ip: string, email: string) => {
   }
 }
 
-const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
+const attemptLogin = async (
+  denormEmail: string,
+  password: string,
+  ip = '',
+  dataLoader: DataLoaderWorker
+) => {
   const pg = getKysely()
   const yesterday = new Date(Date.now() - ms('1d'))
   const email = denormEmail.toLowerCase().trim()
@@ -84,10 +90,11 @@ const attemptLogin = async (denormEmail: string, password: string, ip = '') => {
   // check password
   const isCorrectPassword = await bcrypt.compare(password, hashedPassword)
   if (isCorrectPassword) {
+    const tms = await dataLoader.get('teamIdsByUserId').load(viewerId)
     return {
       userId: viewerId,
-      // create a brand new auth token using the tms in our DB
-      authToken: new AuthToken({sub: viewerId, rol, tms: existingUser.tms})
+      // create a brand new auth token using the tms from the DB
+      authToken: new AuthToken({sub: viewerId, rol, tms})
     }
   }
   await logFailedLogin(ip, email)

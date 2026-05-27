@@ -1011,3 +1011,26 @@ export const massInvitationsByTeamIdUserId = (parent: RootDataLoader) => {
     }
   )
 }
+
+export const teamIdsByUserId = (parent: RootDataLoader, dependsOn: RegisterDependsOn) => {
+  dependsOn(['teamMembers', 'teams'])
+  return new DataLoader<string, string[], string>(
+    async (userIds) => {
+      const teamMembersByUserId = await Promise.all(
+        userIds.map((userId) => parent.get('teamMembersByUserId').load(userId))
+      )
+      const allTeamIds = [...new Set(teamMembersByUserId.flat().map(({teamId}) => teamId))]
+      const teams = await Promise.all(allTeamIds.map((teamId) => parent.get('teams').load(teamId)))
+      const activeTeamIds = new Set(
+        allTeamIds.filter((_, i) => {
+          const team = teams[i]
+          return !!team && !team.isArchived
+        })
+      )
+      return teamMembersByUserId.map((members) =>
+        members.filter(({teamId}) => activeTeamIds.has(teamId)).map(({teamId}) => teamId)
+      )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}

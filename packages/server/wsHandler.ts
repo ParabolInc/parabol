@@ -38,7 +38,6 @@ declare module 'graphql-ws/use/uWebSockets' {
       inactive: boolean
       lastSeenAt: Date
       email: string
-      tms: string[]
     }
   }
   interface Extra {
@@ -104,7 +103,7 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
       extra.socket.user ??
         getKysely()
           .selectFrom('User')
-          .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+          .select(['id', 'inactive', 'lastSeenAt', 'email'])
           .where('id', '=', viewerId)
           .where('isRemoved', '=', false)
           .executeTakeFirst()
@@ -345,18 +344,26 @@ wsHandler.upgrade = async (res, req, context) => {
   if (typeof token === 'string') {
     const authToken = getVerifiedAuthToken(token)
     const viewerId = authToken?.sub
-    const [isBlacklistedJWT, user] =
+    const [isBlacklistedJWT, user, tmsRows] =
       authToken && viewerId
         ? await Promise.all([
             checkBlacklistJWT(authToken),
             getKysely()
               .selectFrom('User')
-              .select(['id', 'inactive', 'lastSeenAt', 'email', 'tms'])
+              .select(['id', 'inactive', 'lastSeenAt', 'email'])
               .where('id', '=', viewerId)
               .where('isRemoved', '=', false)
-              .executeTakeFirst()
+              .executeTakeFirst(),
+            getKysely()
+              .selectFrom('TeamMember')
+              .innerJoin('Team', 'Team.id', 'TeamMember.teamId')
+              .select('TeamMember.teamId')
+              .where('TeamMember.userId', '=', viewerId)
+              .where('TeamMember.isNotRemoved', '=', true)
+              .where('Team.isArchived', '=', false)
+              .execute()
           ])
-        : [true, null]
+        : ([true, null, []] as const)
 
     if (isAborted) {
       return
@@ -368,7 +375,10 @@ wsHandler.upgrade = async (res, req, context) => {
       upgradeData.authToken = {} as AuthToken
     } else {
       upgradeData.user = user
-      freshToken = getFreshTokenIfNeeded(authToken, user.tms)
+      freshToken = getFreshTokenIfNeeded(
+        authToken,
+        tmsRows.map((r) => r.teamId)
+      )
       upgradeData.authToken = freshToken || authToken
     }
   }

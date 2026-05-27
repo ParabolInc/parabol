@@ -17,7 +17,6 @@ interface Input {
   createdAt?: Date
   pseudoId?: string | null
   sendSummaryEmail?: boolean
-  tms?: string[]
   persistentNameId?: string
 }
 
@@ -38,13 +37,11 @@ export default class User {
   createdAt: Date
   pseudoId?: string
   sendSummaryEmail?: boolean
-  tms: string[]
   reasonRemoved?: string
   rol?: AuthTokenRole.SUPER_USER
   persistentNameId: string | null
   constructor(input: Input) {
     const {
-      tms,
       email,
       id,
       createdAt,
@@ -62,7 +59,6 @@ export default class User {
     } = input
     const now = new Date()
     this.id = id ?? `local|${generateUID()}`
-    this.tms = tms || []
     this.email = email
     this.createdAt = createdAt || now
     this.picture = picture

@@ -41,7 +41,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   const pg = getKysely()
   const isOrganic = !invitationToken
   const {ip, dataLoader} = context
-  const loginAttempt = await attemptLogin(email, password, ip)
+  const loginAttempt = await attemptLogin(email, password, ip, dataLoader)
   if (loginAttempt.userId) {
     context.authToken = loginAttempt.authToken
     setAuthCookie(context, context.authToken)

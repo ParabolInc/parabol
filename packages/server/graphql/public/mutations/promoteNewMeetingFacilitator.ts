@@ -1,4 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
+import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
@@ -20,11 +21,10 @@ const promoteNewMeetingFacilitator: MutationResolvers['promoteNewMeetingFacilita
   const {facilitatorUserId: oldFacilitatorUserId, teamId, endedAt} = meeting
 
   // VALIDATION
-  const newFacilitator = await dataLoader.get('users').load(facilitatorUserId)
-  if (!newFacilitator) {
-    return standardError(new Error('New facilitator does not exist'), {userId: viewerId})
-  }
-  if (!newFacilitator.tms.includes(teamId)) {
+  const facilitatorTeamMember = await dataLoader
+    .get('teamMembers')
+    .load(TeamMemberId.join(teamId, facilitatorUserId))
+  if (!facilitatorTeamMember?.isNotRemoved) {
     return standardError(new Error('Team not found'), {userId: viewerId})
   }
   if (endedAt) {
