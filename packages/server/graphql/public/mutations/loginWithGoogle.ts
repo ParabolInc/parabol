@@ -80,11 +80,8 @@ const loginWithGoogle: MutationResolvers['loginWithGoogle'] = async (
       await updateUser({identities: identities.map((id) => JSON.stringify(id))}, viewerId)
     }
     // MUTATIVE
-    context.authToken = new AuthToken({
-      sub: viewerId,
-      rol,
-      tms: existingUser.tms
-    })
+    const tms = await dataLoader.get('teamIdsByUserId').load(viewerId)
+    context.authToken = new AuthToken({sub: viewerId, rol, tms})
     setAuthCookie(context, context.authToken)
     return {
       userId: viewerId,

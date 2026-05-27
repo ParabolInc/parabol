@@ -4,10 +4,11 @@ import {selectNotifications} from '../../../postgres/select'
 
 const handleTeamInviteToken = async (
   invitationToken: string,
-  viewer: {id: string; email: string; tms: string[]},
+  viewer: {id: string; email: string},
+  tms: string[],
   notificationId?: string
 ) => {
-  const {id: viewerId, email, tms} = viewer
+  const {id: viewerId, email} = viewer
   const pg = getKysely()
   const invitation = await pg
     .selectFrom('TeamInvitation')

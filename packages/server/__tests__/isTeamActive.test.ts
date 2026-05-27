@@ -64,8 +64,7 @@ describe('isTeamActive', () => {
           preferredName: 'Test User 1',
           lastSeenAt: new Date(),
           createdAt: new Date(),
-          updatedAt: new Date(),
-          tms: [mockTeamId]
+          updatedAt: new Date()
         },
         {
           id: mockUserId2,
@@ -75,8 +74,7 @@ describe('isTeamActive', () => {
           preferredName: 'Test User 2',
           lastSeenAt: new Date(),
           createdAt: new Date(),
-          updatedAt: new Date(),
-          tms: [mockTeamId]
+          updatedAt: new Date()
         }
       ])
       .execute()
