@@ -41,7 +41,7 @@ const MeetingSeriesManagementPage = (props: Props) => {
 
   return (
     <div className='mx-auto mt-8 max-w-xl rounded-lg bg-white p-6 shadow-md'>
-      <h1 className='m-0 mb-2 font-semibold text-xl text-slate-900'>Scheduled meeting</h1>
+      <h1 className='m-0 mb-2 font-semibold text-slate-900 text-xl'>Scheduled meeting</h1>
       <p className='m-0 mb-4 text-slate-600 text-sm'>
         Edit the schedule, rename the series, or cancel it. The first meeting hasn't started yet.
       </p>

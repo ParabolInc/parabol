@@ -115,7 +115,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
   return (
     <>
       <input
-        className='w-full border-0 border-b border-solid border-slate-300 py-2 text-lg outline-hidden focus:border-b-2 focus:border-sky-500'
+        className='w-full border-0 border-slate-300 border-b border-solid py-2 text-lg outline-hidden focus:border-sky-500 focus:border-b-2'
         type='text'
         name='title'
         placeholder='Meeting title'
@@ -125,7 +125,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
       />
       {titleErr && <div className='mt-1 text-sm text-tomato-500'>{titleErr}</div>}
       <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
-      <div className='mt-6 flex items-center justify-between border-t border-slate-200 pt-4'>
+      <div className='mt-6 flex items-center justify-between border-slate-200 border-t pt-4'>
         {isActive ? (
           <button
             className='h-9 cursor-pointer rounded-full border border-slate-300 border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-slate-100 disabled:cursor-not-allowed'
