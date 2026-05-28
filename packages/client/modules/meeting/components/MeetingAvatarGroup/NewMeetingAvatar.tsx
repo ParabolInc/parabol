@@ -1,53 +1,19 @@
-import styled from '@emotion/styled'
+import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingAvatar_user$key} from '../../../../__generated__/NewMeetingAvatar_user.graphql'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useTooltip from '../../../../hooks/useTooltip'
-import {TransitionStatus} from '../../../../hooks/useTransition'
-import {DECELERATE} from '../../../../styles/animation'
-import {meetingAvatarMediaQueries} from '../../../../styles/meeting'
-
-const Item = styled('div')({
-  position: 'relative'
-})
-
-const Picture = styled('img')({
-  borderRadius: '100%',
-  height: '100%',
-  objectFit: 'cover', // fill will squish it, cover cuts off the edges
-  minHeight: '100%', // needed to not pancake in firefox
-  width: '100%'
-})
-
-const AvatarBlock = styled('div')<{status: TransitionStatus}>(({status}) => ({
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  transition: `all 300ms ${DECELERATE}`,
-  borderRadius: '100%',
-  height: 32,
-  maxWidth: 32,
-  width: 32,
-  [meetingAvatarMediaQueries[0]]: {
-    height: 48,
-    maxWidth: 48,
-    width: 48
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    height: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56,
-    maxWidth: 56,
-    width: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 8 : 56
-  }
-}))
+import AvatarPopoverContent from './AvatarPopoverContent'
+import MeetingAvatarCard from './MeetingAvatarCard'
+import {useHoverPopover} from './useHoverPopover'
 
 interface Props {
-  onTransitionEnd: () => void
-  status: TransitionStatus
   userRef: NewMeetingAvatar_user$key
 }
 
 const NewMeetingAvatar = (props: Props) => {
-  const {onTransitionEnd, status, userRef} = props
+  const {userRef} = props
+  const {open, onOpenChange, hoverTriggerProps, hoverContentProps} = useHoverPopover()
 
   const user = useFragment(
     graphql`
@@ -55,29 +21,32 @@ const NewMeetingAvatar = (props: Props) => {
         id
         picture
         preferredName
+        email
       }
     `,
     userRef
   )
 
-  const {preferredName, picture} = user
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
-    MenuPosition.UPPER_CENTER
-  )
+  const {email, preferredName, picture} = user
   return (
     <ErrorBoundary>
-      <Item>
-        <AvatarBlock
-          ref={originRef}
-          onMouseOver={openTooltip}
-          onMouseLeave={closeTooltip}
-          status={status}
-          onTransitionEnd={onTransitionEnd}
-        >
-          <Picture src={picture} />
-          {tooltipPortal(preferredName)}
-        </AvatarBlock>
-      </Item>
+      <Popover.Root open={open} onOpenChange={onOpenChange}>
+        <Popover.Trigger asChild>
+          <div
+            className='relative h-8 w-8 max-w-8 cursor-pointer rounded-full xl:h-12 xl:w-12 xl:max-w-12 min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:max-w-14'
+            {...hoverTriggerProps}
+          >
+            <img
+              className='h-full min-h-full w-full rounded-full object-cover'
+              src={picture}
+              alt={preferredName}
+            />
+          </div>
+        </Popover.Trigger>
+        <AvatarPopoverContent open={open} {...hoverContentProps}>
+          <MeetingAvatarCard picture={picture} preferredName={preferredName} email={email} />
+        </AvatarPopoverContent>
+      </Popover.Root>
     </ErrorBoundary>
   )
 }

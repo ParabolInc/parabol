@@ -174,6 +174,7 @@ export interface UpdatesPhase extends GenericMeetingPhase {
 export type RetroMeetingPhase =
   | CheckInPhase
   | TeamHealthPhase
+  | UpdatesPhase
   | ReflectPhase
   | GroupPhase
   | VotePhase

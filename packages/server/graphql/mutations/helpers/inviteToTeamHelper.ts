@@ -98,9 +98,13 @@ const inviteToTeamHelper = async (
   const {tier, name: orgName} = organization
   const uniqueInvitees = Array.from(new Set(validInvitees))
   // filter out emails already on team
+  const existingTeamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
+  const existingMemberUserIds = new Set(
+    existingTeamMembers.filter((tm) => tm.isNotRemoved).map((tm) => tm.userId)
+  )
   const newInvitees = uniqueInvitees.filter((email) => {
     const user = users.find((user) => user.email === email)
-    return !(user && user.tms && user.tms.includes(teamId))
+    return !(user && existingMemberUserIds.has(user.id))
   })
 
   // filter out invitees that aren't approved by the org

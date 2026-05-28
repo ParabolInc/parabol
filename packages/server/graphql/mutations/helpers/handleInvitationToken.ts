@@ -9,11 +9,14 @@ const handleInvitationToken = async (
   dataLoader: DataLoaderWorker,
   notificationId?: string
 ) => {
-  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
-  const {email, tms} = viewer
+  const [viewer, tms] = await Promise.all([
+    dataLoader.get('users').loadNonNull(viewerId),
+    dataLoader.get('teamIdsByUserId').load(viewerId)
+  ])
+  const {email} = viewer
   const isMassInviteToken = getIsMassInviteToken(invitationToken)
   if (isMassInviteToken) return handleMassInviteToken(invitationToken, email, tms, dataLoader)
-  return handleTeamInviteToken(invitationToken, viewer, notificationId)
+  return handleTeamInviteToken(invitationToken, viewer, tms, notificationId)
 }
 
 export default handleInvitationToken

@@ -108,8 +108,9 @@ const removeFromOrg = async (
     highestTier
   })
 
+  const tms = await dataLoader.get('teamIdsByUserId').load(userId)
   return {
-    tms: user?.tms ?? [],
+    tms,
     taskIds,
     kickOutNotificationIds,
     teamIds,

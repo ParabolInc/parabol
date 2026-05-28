@@ -21,11 +21,8 @@ const refreshSession: MutationResolvers['refreshSession'] = async (_source, {}, 
     await blacklistJWTSession(jti, exp)
   }
 
-  context.authToken = new AuthToken({
-    sub,
-    rol: user.rol,
-    tms: user.tms
-  })
+  const tms = await dataLoader.get('teamIdsByUserId').load(sub)
+  context.authToken = new AuthToken({sub, rol: user.rol, tms})
   setAuthCookie(context, context.authToken!)
   return true
 }

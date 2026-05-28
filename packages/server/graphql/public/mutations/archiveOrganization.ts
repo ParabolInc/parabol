@@ -78,13 +78,12 @@ const archiveOrganization: MutationResolvers['archiveOrganization'] = async (
   }
   publish(SubscriptionChannel.ORGANIZATION, orgId, 'ArchiveOrganizationPayload', data, subOptions)
   const users = await dataLoader.get('users').loadMany(uniqueUserIds)
-  users.filter(isValid).forEach((user) => {
-    if (!user) return
-    const {id, tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
-      tms
+  await Promise.all(
+    users.filter(isValid).map(async (user) => {
+      const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
+      publish(SubscriptionChannel.NOTIFICATION, user.id, 'AuthTokenPayload', {tms})
     })
-  })
+  )
 
   return data
 }

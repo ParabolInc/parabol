@@ -5,6 +5,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.21.0](https://github.com/ParabolInc/parabol/compare/v13.20.3...v13.21.0) (2026-05-28)
+
+
+### Added
+
+* IS_SINGLE_ORG ([#13151](https://github.com/ParabolInc/parabol/issues/13151)) ([cfc5764](https://github.com/ParabolInc/parabol/commit/cfc57647d9759d8db48c19446b0d1fbf0be14435))
+* Meeting avatars to motion ([#13157](https://github.com/ParabolInc/parabol/issues/13157)) ([c393758](https://github.com/ParabolInc/parabol/commit/c393758fc7ead964fc8b2bd6797af3d6f6b657e5))
+
+
+### Fixed
+
+* can reset retro with updates phase ([#13153](https://github.com/ParabolInc/parabol/issues/13153)) ([381c4bc](https://github.com/ParabolInc/parabol/commit/381c4bc098708d27e179ba3cb65d5cd8fe73d324))
+* check for invalid scope key before it goes to postgres ([#13156](https://github.com/ParabolInc/parabol/issues/13156)) ([a11108f](https://github.com/ParabolInc/parabol/commit/a11108f9eb1562865dca4065aa62053189ad1315))
+* invitations race condition ([#13155](https://github.com/ParabolInc/parabol/issues/13155)) ([2638436](https://github.com/ParabolInc/parabol/commit/263843649b62ffb4bc33d42ae065b73a4da56f5e))
+
+
+### Changed
+
+* drop User.tms ([#13154](https://github.com/ParabolInc/parabol/issues/13154)) ([8a4de20](https://github.com/ParabolInc/parabol/commit/8a4de2070ef54dcde8a1a53804e80c357f32bf2f))
+
 ## [13.20.3](https://github.com/ParabolInc/parabol/compare/v13.20.2...v13.20.3) (2026-05-25)
 
 

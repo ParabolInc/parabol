@@ -30,18 +30,23 @@ const EmptyOrgsCallOut = () => {
     navigate('/newteam')
   }
 
+  const isSingleOrg = window.__ACTION__.IS_SINGLE_ORG
   return (
     <Panel>
       <Body>
-        <Heading>{'You aren’t in any organizations!'}</Heading>
-        <Copy>
-          {'You can create a new organization'}
-          <br />
-          {'and manage your own teams and tasks.'}
-        </Copy>
-        <StyledButton onClick={gotoNewTeam} size='medium'>
-          {'Start a New Organization'}
-        </StyledButton>
+        <Heading>{"You aren't in any organizations!"}</Heading>
+        {!isSingleOrg && (
+          <>
+            <Copy>
+              {'You can create a new organization'}
+              <br />
+              {'and manage your own teams and tasks.'}
+            </Copy>
+            <StyledButton onClick={gotoNewTeam} size='medium'>
+              {'Start a New Organization'}
+            </StyledButton>
+          </>
+        )}
       </Body>
     </Panel>
   )

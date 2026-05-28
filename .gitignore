@@ -13,6 +13,7 @@
 .nx/
 .yarn/
 .claude/settings.local.json
+.claude/worktrees/
 pgBackup/
 build/
 coverage/

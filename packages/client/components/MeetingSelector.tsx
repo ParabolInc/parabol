@@ -1,7 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
-import {Navigate} from 'react-router'
+import {useNavigate} from 'react-router'
+import {commitLocalUpdate} from 'relay-runtime'
 import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'
 import NotificationSubscription from '../subscriptions/NotificationSubscription'
@@ -26,6 +29,8 @@ const meetingLookup = {
 
 const MeetingSelector = (props: Props) => {
   const {meetingId, queryRef} = props
+  const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
 
   const data = usePreloadedQuery<MeetingSelectorQuery>(
     graphql`
@@ -43,22 +48,32 @@ const MeetingSelector = (props: Props) => {
 
   const {viewer} = data
   const {meeting, canAccessMeeting} = viewer
-
+  const hasNavigatedAway = useRef(false)
   useSubscription('MeetingSelector', NotificationSubscription)
   useSubscription('MeetingSelector', OrganizationSubscription)
   useSubscription('MeetingSelector', TaskSubscription)
   useSubscription('MeetingSelector', TeamSubscription)
   useConnectedMeetingMembers(meeting ? meetingId : null, true)
-  if (!canAccessMeeting && !meeting) {
-    return (
-      <Navigate
-        replace
-        to={{
-          pathname: `/invitation-required`,
+
+  useEffect(() => {
+    if (!canAccessMeeting && !meeting) {
+      if (hasNavigatedAway.current) return
+      hasNavigatedAway.current = true
+      commitLocalUpdate(atmosphere, (store) => {
+        store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+      })
+      navigate(
+        {
+          pathname: '/invitation-required',
           search: `?redirectTo=${window.location.pathname}&meetingId=${meetingId}`
-        }}
-      />
-    )
+        },
+        {replace: true}
+      )
+    }
+  }, [canAccessMeeting, meeting])
+
+  if (!canAccessMeeting && !meeting) {
+    return null
   } else if (!meeting) {
     // We know that a null meeting while we should have access is an error.
     // We could render here an error component here. For that we'd need to create an error, store it in state, log it to the error tracking and render the component.

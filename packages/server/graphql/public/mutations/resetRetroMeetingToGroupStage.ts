@@ -1,5 +1,5 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
-import {CHECKIN, DISCUSS, GROUP, REFLECT, VOTE} from '../../../../client/utils/constants'
+import {CHECKIN, DISCUSS, GROUP, REFLECT, UPDATES, VOTE} from '../../../../client/utils/constants'
 import DiscussPhase from '../../../database/types/DiscussPhase'
 import GenericMeetingPhase from '../../../database/types/GenericMeetingPhase'
 import getKysely from '../../../postgres/getKysely'
@@ -50,6 +50,7 @@ const resetRetroMeetingToGroupStage: MutationResolvers['resetRetroMeetingToGroup
     switch (phase.phaseType) {
       case CHECKIN:
       case 'TEAM_HEALTH':
+      case UPDATES:
       case REFLECT:
         return phase
       case GROUP: {
