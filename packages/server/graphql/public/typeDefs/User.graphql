@@ -209,6 +209,18 @@ type User implements UserPartial {
   ): NewMeeting @scope(name: MEETINGS_READ)
 
   """
+  A meeting series the viewer can access. Used to manage scheduled-only series
+  (where no meeting has spawned yet) and to deep-link to series-level configuration.
+  Returns null when the series does not exist or the viewer is not on the team.
+  """
+  meetingSeries(
+    """
+    The meeting series ID
+    """
+    meetingSeriesId: ID!
+  ): MeetingSeries @scope(name: MEETINGS_READ)
+
+  """
   all the notifications for a single user
   """
   notifications(first: Int!, after: DateTime, types: [NotificationEnum!]): NotificationConnection!

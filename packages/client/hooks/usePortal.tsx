@@ -40,6 +40,7 @@ export type PortalId =
   | 'updateRecurrenceSettingsModal'
   | 'recurrenceStartTimePicker'
   | 'endRecurringMeetingModal'
+  | 'cancelSeriesConfirmationModal'
   | 'templateTeamPickerModal'
   | 'reviewRequestToJoinOrgModal'
   | 'topBarNotificationsMenu'

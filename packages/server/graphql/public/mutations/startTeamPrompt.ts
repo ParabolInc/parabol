@@ -3,6 +3,7 @@ import {RRuleSet} from 'rrule-rust'
 import getKysely from '../../../postgres/getKysely'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
 import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
@@ -11,7 +12,7 @@ import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateTeamPrompt from '../../mutations/helpers/safeCreateTeamPrompt'
 import type {MutationResolvers} from '../resolverTypes'
-import {startNewMeetingSeries} from './updateRecurrenceSettings'
+import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const MEETING_START_DELAY_MS = 3000
 
@@ -33,6 +34,51 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
   ])
   if (unpaidError) return standardError(new Error(unpaidError), {userId: viewerId})
 
+  const meetingName = name || 'Standup'
+  const eventName = rrule ? name || 'Standup' : meetingName
+
+  if (rrule && !isImmediateOccurrence(rrule)) {
+    const scheduleLock = new RedisLockQueue(`newMeetingSeries:${teamId}`, MEETING_START_DELAY_MS)
+    try {
+      await scheduleLock.lock(0)
+    } catch {
+      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+    }
+    const meetingSeries = await createMeetingSeries({
+      meetingType: 'teamPrompt',
+      title: name || meetingName,
+      recurrenceRule: rrule,
+      teamId,
+      facilitatorId: viewerId
+    })
+    analytics.recurrenceStarted(viewer, meetingSeries)
+    const {error: gcalError, gcalSeriesId} = await createGcalEvent({
+      name: eventName,
+      gcalInput,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      teamId,
+      viewerId,
+      rrule,
+      dataLoader
+    })
+    if (gcalSeriesId) {
+      await getKysely()
+        .updateTable('MeetingSeries')
+        .set({gcalSeriesId})
+        .where('id', '=', meetingSeries.id)
+        .execute()
+    }
+    const data = {
+      teamId,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      hasGcalError: !!gcalError?.message
+    }
+    publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
+    return data
+  }
+
   const redisLock = new RedisLockQueue(`newTeamPromptMeeting:${teamId}`, MEETING_START_DELAY_MS)
   try {
     await redisLock.lock(0)
@@ -42,8 +88,6 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     })
   }
 
-  const meetingName = name || 'Standup'
-  const eventName = rrule ? name || 'Standup' : meetingName
   const meeting = await safeCreateTeamPrompt(meetingName, teamId, viewerId, dataLoader)
   if (!meeting) {
     return {error: {message: 'Meeting already started'}}
@@ -61,6 +105,7 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
     name: eventName,
     gcalInput,
     meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     teamId,
     viewerId,
     rrule,
@@ -74,7 +119,12 @@ const startTeamPrompt: MutationResolvers['startTeamPrompt'] = async (
       .where('id', '=', meetingSeries.id)
       .execute()
   }
-  const data = {teamId, meetingId: meetingId, hasGcalError: !!error?.message}
+  const data = {
+    teamId,
+    meetingId: meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
+    hasGcalError: !!error?.message
+  }
   publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
   return data
 }

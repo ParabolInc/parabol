@@ -13,6 +13,7 @@ import removeSuggestedAction from '../../../safeMutations/removeSuggestedAction'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
@@ -127,8 +128,13 @@ const safeEndRetrospective = async ({
   const pg = getKysely()
   await pg.insertInto('TimelineEvent').values(events).execute()
   // the promise only creates the initial page, the page blocks are generated and sent after resolving
-  const page = await publishSummaryPage(meetingId, context, info)
-  completedRetrospective.summaryPageId = page.id
+  const page = await publishSummaryPage(meetingId, context, info).catch((e) => {
+    logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
+      tags: {meetingId, op: 'publishSummaryPage'}
+    })
+    return null
+  })
+  if (page) completedRetrospective.summaryPageId = page.id
   if (team.isOnboardTeam) {
     const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
     const teamLead = teamMembers.find((teamMember) => teamMember.isLead)!
@@ -157,7 +163,7 @@ const safeEndRetrospective = async ({
   // don't await these, but put them after both "publish" calls so the dataloader has the same data
   summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
   // do not await sending the email
-  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  if (page) sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   analytics
     .retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
     .catch(Logger.log)

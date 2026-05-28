@@ -226,7 +226,7 @@ const MeetingCard = (props: Props) => {
           id
           title
           cancelledAt
-          recurrenceRule
+          nextMeetingDate
         }
       }
     `,
@@ -281,7 +281,7 @@ const MeetingCard = (props: Props) => {
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
-  const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
+  const meetingLink = `/meet/${meetingId}`
 
   return (
     <CardWrapper
@@ -370,7 +370,7 @@ const MeetingCard = (props: Props) => {
             endRecurringMeetingModal(
               <EndRecurringMeetingModal
                 meetingRef={meeting}
-                recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
+                nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
                 closeModal={toggleEndRecurringMeetingModal}
               />
             )}

@@ -109,7 +109,7 @@ const TeamPromptTopBar = (props: Props) => {
         meetingSeries {
           id
           cancelledAt
-          recurrenceRule
+          nextMeetingDate
         }
         ...MeetingDateLabel_meeting
         ...TeamPromptOptions_meeting
@@ -242,7 +242,7 @@ const TeamPromptTopBar = (props: Props) => {
         {endRecurringMeetingModal(
           <EndRecurringMeetingModal
             meetingRef={meeting}
-            recurrenceRule={isRecurrenceEnabled ? meetingSeries.recurrenceRule : undefined}
+            nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
             closeModal={toggleEndRecurringMeetingModal}
           />
         )}

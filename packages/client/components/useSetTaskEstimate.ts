@@ -32,7 +32,7 @@ const useSetTaskEstimate = () => {
       res: TSetTaskEstimateMutation['response'],
       errors
     ) => {
-      onCompleted(res as any, errors)
+      onCompleted(res, errors)
       // Check for UPGRADE_REQUIRED error
       if (errors) {
         const upgradeError = errors.find((e) => e.extensions?.code === 'UPGRADE_REQUIRED')

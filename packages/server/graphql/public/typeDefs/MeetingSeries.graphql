@@ -8,6 +8,11 @@ type MeetingSeries {
   id: ID!
 
   """
+  The team that owns the meeting series
+  """
+  teamId: ID!
+
+  """
   The type of the recurring meeting
   """
   meetingType: MeetingTypeEnum!
@@ -49,7 +54,22 @@ type MeetingSeries {
 
   """
   The most recent meeting in the series. Any active meeting takes precendence over inactive
-  meetings.
+  meetings. Null when the series has been scheduled for the future and no meeting has
+  spawned from the recurrence cron yet.
   """
-  mostRecentMeeting: NewMeeting!
+  mostRecentMeeting: NewMeeting
+
+  """
+  The next scheduled occurrence of the recurrence rule, computed server-side from
+  recurrenceRule. Null if the series is cancelled or has no future occurrences.
+  """
+  nextMeetingDate: DateTime
+
+  """
+  URL-safe slug identifying the series in invitee-facing links (e.g., gcal descriptions).
+  Format: <kebab-title>-<cipher>, mirroring the Pages convention. The trailing cipher hides
+  the DB id; the leading title slug is decorative. Use with the /meeting-series/:slug route,
+  which redirects an invitee into any active meeting for the series or back to /meetings.
+  """
+  urlSlug: String!
 }

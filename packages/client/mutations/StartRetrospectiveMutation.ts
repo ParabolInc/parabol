@@ -8,6 +8,11 @@ graphql`
     meeting {
       id
     }
+    meetingSeries {
+      id
+      title
+      nextMeetingDate
+    }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
       meetingSettings(meetingType: retrospective) {
@@ -57,10 +62,28 @@ const StartRetrospectiveMutation: StandardMutation<
     onError,
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      const {startRetrospective} = res
+      const startRetrospective = res?.startRetrospective
       if (!startRetrospective) return
-      const {meeting, hasGcalError} = startRetrospective
-      if (!meeting) return
+      const {meeting, meetingSeries, hasGcalError} = startRetrospective
+      if (!meeting) {
+        if (meetingSeries) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: `meetingScheduled:${meetingSeries.id}`,
+            autoDismiss: 10,
+            showDismissButton: true,
+            message: `🗓️ "${meetingSeries.title}" is scheduled to start at the next recurrence.`
+          })
+          if (hasGcalError) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: `gcalError:scheduled:${meetingSeries.id}`,
+              autoDismiss: 0,
+              showDismissButton: true,
+              message: `Sorry, we couldn't create your Google Calendar event`
+            })
+          }
+        }
+        return
+      }
       const {id: meetingId} = meeting
       if (hasGcalError) {
         atmosphere.eventEmitter.emit('addSnackbar', {

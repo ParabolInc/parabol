@@ -4,6 +4,7 @@ import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -117,6 +118,14 @@ const User: ReqResolvers<'User'> = {
   },
   meeting: async (_source, {meetingId}, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
+  },
+  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
+    const numericId = MeetingSeriesId.split(meetingSeriesId)
+    if (!Number.isFinite(numericId)) return null
+    const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
+    if (!meetingSeries) return null
+    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
+    return meetingSeries
   },
   meetings: async (
     _source,

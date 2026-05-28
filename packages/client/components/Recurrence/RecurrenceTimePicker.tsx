@@ -22,9 +22,11 @@ export const RecurrenceTimePicker = (props: Props) => {
       {...menuProps}
       ariaLabel={'Select the time when a recurring meeting will be created'}
       defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
+      className='overflow-y-auto'
     >
       {OPTIONS.map((n, idx) => {
-        const proposedTime = dayjs.tz(dayjs().add(1, 'day').startOf('day').add(n, 'ms'), timeZone)
+        const todayAtTime = dayjs.tz(dayjs().startOf('day').add(n, 'ms'), timeZone)
+        const proposedTime = todayAtTime.isAfter(dayjs()) ? todayAtTime : todayAtTime.add(1, 'day')
 
         return (
           <MenuItem
