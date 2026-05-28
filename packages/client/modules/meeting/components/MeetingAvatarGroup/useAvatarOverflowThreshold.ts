@@ -1,4 +1,4 @@
-import {type RefObject, useEffect, useState} from 'react'
+import {type RefObject, useEffect, useLayoutEffect, useState} from 'react'
 
 // These match the CSS defined in NewMeetingAvatar and MeetingOverflowMenu
 const getSlotDimensions = (containerWidth: number) => {
@@ -10,10 +10,15 @@ const getSlotDimensions = (containerWidth: number) => {
 export const useAvatarOverflowThreshold = (ref: RefObject<HTMLElement | null>) => {
   const [containerWidth, setContainerWidth] = useState(0)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
     setContainerWidth(el.getBoundingClientRect().width)
+  }, [ref])
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
     const ro = new ResizeObserver(([entry]) => setContainerWidth(entry!.contentRect.width))
     ro.observe(el)
     return () => ro.disconnect()
