@@ -33,18 +33,23 @@ export const useConnectedMeetingMembers = (meetingId: string | null, addViewer: 
       // Update Relay
       const oldUserIds = oldUserIdsRef.current
       const pendingRemovals = pendingRemovalsRef.current
+
+      // cancel pending removals for anyone still present, regardless of whether
+      // they're newly added (oldUserIds still contains them during the grace period)
+      nextUserIds.forEach((userId) => {
+        const timer = pendingRemovals.get(userId)
+        if (timer !== undefined) {
+          clearTimeout(timer)
+          pendingRemovals.delete(userId)
+        }
+      })
+
       const add = [...nextUserIds].filter((userId) => !oldUserIds.has(userId))
       const remove = [...oldUserIds].filter((userId) => !nextUserIds.has(userId))
 
       if (add.length) {
         commitLocalUpdate(atmosphere, (store) => {
           add.forEach((userId) => {
-            // cancel any pending removal if the user re-appeared within 1s
-            const timer = pendingRemovals.get(userId)
-            if (timer !== undefined) {
-              clearTimeout(timer)
-              pendingRemovals.delete(userId)
-            }
             const meetingMember = store.get(MeetingMemberId.join(meetingId, userId))
             if (meetingMember) {
               meetingMember.setValue(new Date().toJSON(), 'isConnectedAt')

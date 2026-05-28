@@ -1,78 +1,20 @@
-import styled from '@emotion/styled'
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {AddTeamMemberAvatarButton_teamMembers$key} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
-import {MenuPosition} from '../hooks/useCoords'
 import useModal from '../hooks/useModal'
-import useTooltip from '../hooks/useTooltip'
-import {meetingAvatarMediaQueries} from '../styles/meeting'
+import {cn} from '../ui/cn'
+import {Tooltip} from '../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
 import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
-import OutlinedButton from './OutlinedButton'
 
 interface Props {
   meetingId?: string
   teamId: string
   teamMembers: AddTeamMemberAvatarButton_teamMembers$key
 }
-
-const AddButton = styled(OutlinedButton)<{isMeeting: boolean | undefined}>(
-  {
-    borderWidth: 2,
-    fontSize: 24,
-    fontWeight: 400,
-    height: 32,
-    maxWidth: 32,
-    padding: 0,
-    width: 32,
-    ':hover, :focus, :active': {
-      borderColor: PALETTE.SKY_600,
-      color: PALETTE.SKY_600
-    }
-  },
-  ({isMeeting}) =>
-    isMeeting && {
-      height: 32,
-      maxWidth: 32,
-      width: 32,
-      [meetingAvatarMediaQueries[0]]: {
-        borderWidth: 2,
-        height: 48,
-        maxWidth: 48,
-        width: 48
-      },
-      [meetingAvatarMediaQueries[1]]: {
-        height: 56,
-        maxWidth: 56,
-        width: 56
-      }
-    }
-)
-
-const StyledIcon = styled(PersonAdd, {
-  shouldForwardProp: (prop) => !['isMeeting'].includes(prop)
-})<{isMeeting: boolean}>(
-  {
-    height: 18,
-    width: 18,
-    marginLeft: -1
-  },
-  ({isMeeting}) =>
-    isMeeting && {
-      height: 18,
-      width: 18,
-      [meetingAvatarMediaQueries[0]]: {
-        height: 24,
-        width: 24
-      },
-      [meetingAvatarMediaQueries[1]]: {
-        height: 36,
-        width: 36
-      }
-    }
-)
 
 const AddTeamMemberModal = lazyPreload(
   () => import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
@@ -93,9 +35,6 @@ const AddTeamMemberAvatarButton = (props: Props) => {
     teamMembersRef
   )
   const isMeeting = !!meetingId
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLButtonElement>(
-    MenuPosition.UPPER_CENTER
-  )
   const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
   const modal = isDemoRoute() ? (
     <AddTeamMemberModalDemo />
@@ -109,17 +48,22 @@ const AddTeamMemberAvatarButton = (props: Props) => {
   )
   return (
     <>
-      <AddButton
-        onMouseEnter={openTooltip}
-        onMouseLeave={closeTooltip}
-        onClick={toggleModal}
-        ref={originRef}
-        isMeeting={isMeeting}
-        palette='blue'
-      >
-        <StyledIcon isMeeting={Boolean(isMeeting)} />
-      </AddButton>
-      {tooltipPortal('Invite to Team')}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={toggleModal}
+            className={cn(
+              'flex cursor-pointer items-center justify-center rounded-full border-2 border-current bg-transparent p-0 text-sky-500 hover:text-sky-600 focus:text-sky-600 active:text-sky-600',
+              isMeeting
+                ? 'h-8 w-8 text-lg xl:h-12 xl:w-12 xl:text-2xl min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:text-[36px]'
+                : 'h-8 w-8 text-lg'
+            )}
+          >
+            <PersonAdd fontSize='inherit' sx={{marginLeft: '-1px'}} />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>Invite to Team</TooltipContent>
+      </Tooltip>
       {modalPortal(modal)}
     </>
   )
