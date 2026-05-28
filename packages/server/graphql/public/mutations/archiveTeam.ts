@@ -7,6 +7,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import isValid from '../../isValid'
 import type {MutationResolvers} from '../resolverTypes'
 
 const archiveTeam: MutationResolvers['archiveTeam'] = async (
@@ -58,13 +59,12 @@ const archiveTeam: MutationResolvers['archiveTeam'] = async (
   }
   publish(SubscriptionChannel.TEAM, teamId, 'ArchiveTeamPayload', data, subOptions)
 
-  users.forEach((user) => {
-    if (!user) return
-    const {id, tms} = user
-    publish(SubscriptionChannel.NOTIFICATION, id, 'AuthTokenPayload', {
-      tms
+  await Promise.all(
+    users.filter(isValid).map(async (user) => {
+      const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
+      publish(SubscriptionChannel.NOTIFICATION, user.id, 'AuthTokenPayload', {tms})
     })
-  })
+  )
 
   return data
 }

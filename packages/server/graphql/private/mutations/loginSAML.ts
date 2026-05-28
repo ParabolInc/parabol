@@ -227,9 +227,10 @@ const loginSAML: MutationResolvers['loginSAML'] = async (
     if (persistentNameId && !user.persistentNameId) {
       await pg.updateTable('User').set({persistentNameId}).where('id', '=', user.id).execute()
     }
+    const tms = await dataLoader.get('teamIdsByUserId').load(user.id)
     return {
       userId: user.id,
-      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms: user.tms, rol: user.rol})),
+      authToken: encodeAuthToken(new AuthToken({sub: user.id, tms, rol: user.rol})),
       isNewUser: false
     }
   }

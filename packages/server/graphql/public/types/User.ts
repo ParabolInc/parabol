@@ -556,11 +556,11 @@ const User: ReqResolvers<'User'> = {
 
   teams: async ({id: userId}, {includeArchived}, {authToken, dataLoader, resourceGrants}) => {
     const viewerId = getUserId(authToken)
-    const user = (await dataLoader.get('users').load(userId))!
+    const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const activeTeamIds =
       viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        ? allTms
+        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
     let teamIds = includeArchived
       ? (await dataLoader.get('teamMembersByUserId').load(userId)).map(({teamId}) => teamId)
       : activeTeamIds
@@ -583,8 +583,9 @@ const User: ReqResolvers<'User'> = {
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
 
-  tms: ({id: userId, tms}, _args, {authToken}) => {
+  tms: async ({id: userId}, _args, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
+    const tms = await dataLoader.get('teamIdsByUserId').load(userId)
     return viewerId === userId
       ? tms
       : tms.filter((teamId: string) => authToken.tms.includes(teamId))
@@ -672,11 +673,11 @@ const User: ReqResolvers<'User'> = {
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)
-    const user = await dataLoader.get('users').loadNonNull(userId)
+    const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
       viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        ? allTms
+        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = organizationUsers.map(({orgId}) => orgId)
@@ -741,11 +742,11 @@ const User: ReqResolvers<'User'> = {
   templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {
     if (!search) return []
     const viewerId = getUserId(authToken)
-    const user = await dataLoader.get('users').loadNonNull(userId)
+    const allTms = await dataLoader.get('teamIdsByUserId').load(userId)
     const teamIds =
       viewerId === userId || isSuperUser(authToken)
-        ? user.tms
-        : user.tms.filter((teamId: string) => authToken.tms.includes(teamId))
+        ? allTms
+        : allTms.filter((teamId: string) => authToken.tms.includes(teamId))
 
     const organizationUsers = await dataLoader.get('organizationUsersByUserId').load(viewerId)
     const userOrgIds = organizationUsers.map(({orgId}) => orgId)

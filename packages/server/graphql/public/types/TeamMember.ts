@@ -39,8 +39,7 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const user = await dataLoader.get('users').loadNonNull(userId)
-      const {tms} = user
+      const tms = await dataLoader.get('teamIdsByUserId').load(userId)
       const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {
@@ -61,8 +60,7 @@ const TeamMember: TeamMemberResolvers = {
     const {authToken, dataLoader} = context
     const viewerId = getUserId(authToken)
     if (userId !== viewerId) {
-      const user = await dataLoader.get('users').loadNonNull(userId)
-      const {tms} = user
+      const tms = await dataLoader.get('teamIdsByUserId').load(userId)
       const onTeam = authToken.tms.find((teamId) => tms.includes(teamId))
       if (!onTeam) {
         return standardError(new Error('Not on same team as user'), {

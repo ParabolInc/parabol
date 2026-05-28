@@ -59,16 +59,21 @@ export const validateScope = async (
       return {error: {message: 'PAT does not grant access to this organization'}}
     }
   } else if (scope === 'Page') {
-    const [pageId, pageCode] = CipherId.fromClient(scopeKey)
-    scopeCode = `${pageCode}`
-    const pageAccess = await dataLoader
-      .get('pageAccessByPageIdUserId')
-      .load({pageId, userId: viewerId})
-    if (!pageAccess || pageAccess === 'viewer') {
-      return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
-    }
-    if (resourceGrants && !(await resourceGrants.hasPage(pageId))) {
-      return {error: {message: 'PAT does not grant access to this page'}}
+    try {
+      const [pageId, pageCode] = CipherId.fromClient(scopeKey)
+
+      scopeCode = `${pageCode}`
+      const pageAccess = await dataLoader
+        .get('pageAccessByPageIdUserId')
+        .load({pageId, userId: viewerId})
+      if (!pageAccess || pageAccess === 'viewer') {
+        return {error: {message: 'You must be a page commentor or higher to use the page scope'}}
+      }
+      if (resourceGrants && !(await resourceGrants.hasPage(pageId))) {
+        return {error: {message: 'PAT does not grant access to this page'}}
+      }
+    } catch {
+      return {error: {message: 'Invalid pageId'}}
     }
   }
   return scopeCode

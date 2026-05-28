@@ -20,8 +20,7 @@ const DomainJoinRequest: DomainJoinRequestResolvers = {
   },
   teams: async ({id}, _args, {authToken, dataLoader}: GQLContext) => {
     const viewerId = getUserId(authToken)
-    const user = (await dataLoader.get('users').loadNonNull(viewerId))!
-    const teamIds = user.tms
+    const teamIds = await dataLoader.get('teamIdsByUserId').load(viewerId)
 
     const request = await dataLoader.get('domainJoinRequests').loadNonNull(id)
 

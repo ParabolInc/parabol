@@ -50,7 +50,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addComment: isMeetingMember<'Mutation.addComment'>('args.comment.discussionId', 'discussions'),
     addGitHubAuth: isTeamMember<'Mutation.addGitHubAuth'>('args.teamId'),
-    addOrg: rateLimit({perMinute: 2, perHour: 5}),
+    addOrg: and(
+      not(and(isEnvVarTrue('IS_SINGLE_ORG'), isEnvVarTrue('IS_ENTERPRISE'))),
+      rateLimit({perMinute: 2, perHour: 5})
+    ),
     addPokerTemplate: isTeamMember<'Mutation.addPokerTemplate'>('args.teamId'),
     addPokerTemplateDimension: isTeamMember<'Mutation.addPokerTemplateDimension'>(
       'args.templateId',
