@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.21.1](https://github.com/ParabolInc/parabol/compare/v13.21.0...v13.21.1) (2026-05-28)
+
+
+### Fixed
+
+* re-add arr_append_uniq SQL function ([#13160](https://github.com/ParabolInc/parabol/issues/13160)) ([f26a7a0](https://github.com/ParabolInc/parabol/commit/f26a7a036de30341489a06893dbb3920d1680a3c))
+
 ## [13.21.0](https://github.com/ParabolInc/parabol/compare/v13.20.3...v13.21.0) (2026-05-28)
 
 
