@@ -36,7 +36,7 @@ export const useTipTapReflectionEditor = (
   }
 ) => {
   const {atmosphere, teamId, readOnly, placeholder, onModEnter} = options
-  const [contentJSON] = useState(() => JSON.parse(content))
+  const [contentJSON] = useState(() => (content ? JSON.parse(content) : undefined))
   const placeholderRef = useRef(placeholder)
   const [commit] = useUploadUserAsset()
   placeholderRef.current = placeholder
