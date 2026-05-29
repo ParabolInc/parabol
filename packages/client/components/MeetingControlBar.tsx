@@ -1,5 +1,4 @@
 import graphql from 'babel-plugin-relay/macro'
-import {AnimatePresence, motion} from 'motion/react'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {MeetingControlBar_meeting$key} from '~/__generated__/MeetingControlBar_meeting.graphql'
@@ -183,20 +182,7 @@ const MeetingControlBar = (props: Props) => {
       onClickCapture={onClickCapture}
       onTouchStart={onMouseDown}
     >
-      <AnimatePresence initial={false}>
-        {buttons.map(({key}) => (
-          <motion.div
-            key={key}
-            style={{overflow: 'hidden', display: 'flex'}}
-            initial={{width: 0, opacity: 0}}
-            animate={{width: ElementWidth.CONTROL_BAR_BUTTON, opacity: 1}}
-            exit={{width: 0, opacity: 0}}
-            transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
-          >
-            {renderButton(key)}
-          </motion.div>
-        ))}
-      </AnimatePresence>
+      {buttons.map(({key}) => renderButton(key))}
     </div>
   )
 }
