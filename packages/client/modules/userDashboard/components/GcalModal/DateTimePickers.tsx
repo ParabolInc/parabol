@@ -64,7 +64,7 @@ const DateTimePickers = (props: Props) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='w flex flex-col justify-between space-y-6 pt-3'>
+      <div className='flex flex-col justify-between space-y-6 pt-3'>
         <div className='flex space-x-2' onMouseDown={handleMouseDown}>
           <DatePicker
             label={`Meeting Start Date`}
@@ -72,6 +72,7 @@ const DateTimePickers = (props: Props) => {
             onChange={(date) => handleChangeStart(date, startValue)}
             format='MMMM D, YYYY'
             sx={customStyles}
+            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
           />
           <TimePicker
             timeSteps={{minutes: 15}}
@@ -79,6 +80,7 @@ const DateTimePickers = (props: Props) => {
             value={startValue}
             onChange={(time) => handleChangeStart(startValue, time)}
             sx={timePickerStyles}
+            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
           />
         </div>
         <div className='flex space-x-2' onMouseDown={handleMouseDown}>
@@ -88,6 +90,7 @@ const DateTimePickers = (props: Props) => {
             onChange={(date) => handleChangeEnd(date, endValue)}
             format='MMMM D, YYYY'
             sx={customStyles}
+            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
           />
           <TimePicker
             timeSteps={{minutes: 15}}
@@ -95,6 +98,7 @@ const DateTimePickers = (props: Props) => {
             value={endValue}
             onChange={(time) => handleChangeEnd(endValue, time)}
             sx={timePickerStyles}
+            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
           />
         </div>
       </div>
