@@ -7,13 +7,14 @@ import useQueryLoaderNow from '../hooks/useQueryLoaderNow'
 import {Loader} from '../utils/relay/renderLoader'
 
 interface Props {
+  isOpen: boolean
   onClose: () => void
   stageId: string
   meetingId: string
 }
 
 const ShareTopicRoot = (props: Props) => {
-  const {stageId, meetingId, onClose} = props
+  const {isOpen, stageId, meetingId, onClose} = props
 
   const queryRef = useQueryLoaderNow<ShareTopicModalQuery>(
     shareTopicModalQuery,
@@ -27,7 +28,7 @@ const ShareTopicRoot = (props: Props) => {
         <ShareTopicModal
           stageId={stageId}
           meetingId={meetingId}
-          isOpen={true}
+          isOpen={isOpen}
           onClose={onClose}
           queryRef={queryRef}
         />
