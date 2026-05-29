@@ -1,5 +1,6 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {motion} from 'motion/react'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,10 +10,8 @@ import retrospective from '../../../static/images/illustrations/retrospective.pn
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSeriesCard_series.graphql'
-import useAnimatedCard from '../hooks/useAnimatedCard'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {TransitionStatus} from '../hooks/useTransition'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
 import {cn} from '../ui/cn'
 import {useDialogState} from '../ui/Dialog/useDialogState'
@@ -75,13 +74,10 @@ const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
 
 interface Props {
   series: ScheduledSeriesCard_series$key
-  status: TransitionStatus
-  onTransitionEnd: () => void
-  displayIdx: number
 }
 
 const ScheduledSeriesCard = (props: Props) => {
-  const {series: seriesRef, status, onTransitionEnd, displayIdx} = props
+  const {series: seriesRef} = props
   const series = useFragment(
     graphql`
       fragment ScheduledSeriesCard_series on MeetingSeries {
@@ -96,7 +92,6 @@ const ScheduledSeriesCard = (props: Props) => {
   )
 
   const {id, title, meetingType, nextMeetingDate} = series
-  const ref = useAnimatedCard(displayIdx, status)
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -133,18 +128,17 @@ const ScheduledSeriesCard = (props: Props) => {
     setIsEditOpen(true)
   }
   const seriesLink = `/meeting-series/manage/${MeetingSeriesId.split(id)}`
-  const isHidden = status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
   const bgClass = MEETING_TYPE_BG[meetingType]
   const illustration = ILLUSTRATIONS[meetingType]
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none [transition:box-shadow_100ms_ease-out,opacity_300ms_ease-out]',
-        isHidden ? 'opacity-0' : 'opacity-100'
-      )}
-      onTransitionEnd={onTransitionEnd}
+    <motion.div
+      layout
+      className='relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none'
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
     >
       <div className='relative hover:shadow-card-hover'>
         <div className={cn(STACKED_CARD_BASE, STACK_CLASSES[0])}>
@@ -222,7 +216,7 @@ const ScheduledSeriesCard = (props: Props) => {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

@@ -1,75 +1,35 @@
-import styled from '@emotion/styled'
+import {motion} from 'motion/react'
 import {useRef} from 'react'
-import {TransitionStatus} from '~/hooks/useTransition'
 import useResizeFontForElement from '../../hooks/useResizeFontForElement'
-import {BezierCurve} from '../../types/constEnums'
-
-const Wrapper = styled('div')<{offset: number}>(({offset}) => ({
-  position: 'absolute',
-  transform: `translateX(${offset}px)`,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`
-}))
-
-const OverflowCount = styled('div')<{
-  status?: TransitionStatus
-  isAnimated: boolean
-  width: number
-  borderColor?: string
-}>(({status, isAnimated, width, borderColor = '#fff'}) => ({
-  alignItems: 'center',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  border: `2px solid ${borderColor}`,
-  borderRadius: '50%',
-  display: 'flex',
-  height: width,
-  justifyContent: 'center',
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 600,
-  opacity: !isAnimated
-    ? undefined
-    : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 0
-      : 1,
-  overflow: 'hidden',
-  transform: !isAnimated
-    ? undefined
-    : status === TransitionStatus.EXITING || status === TransitionStatus.MOUNTED
-      ? 'scale(0)'
-      : 'scale(1)',
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none',
-  width
-}))
 
 interface Props {
   offset: number
-  isAnimated: boolean
-  status: TransitionStatus
-  onTransitionEnd: () => void
   overflowCount: number
   width: number
   borderColor?: string
 }
 
 const TeamPromptOverflowAvatar = (props: Props) => {
-  const {overflowCount, offset, status, onTransitionEnd, isAnimated, width, borderColor} = props
+  const {overflowCount, offset, width, borderColor} = props
   const ref = useRef<HTMLDivElement>(null)
   const label = overflowCount >= 99 ? 99 : overflowCount
   useResizeFontForElement<HTMLDivElement>(ref, label, 11, 12, 4)
   return (
-    <Wrapper offset={offset}>
-      <OverflowCount
-        width={width}
+    <motion.div
+      style={{position: 'absolute'}}
+      initial={{x: offset, scale: 0, opacity: 0}}
+      animate={{x: offset, scale: 1, opacity: 1}}
+      exit={{scale: 0, opacity: 0}}
+      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+    >
+      <div
         ref={ref}
-        status={status}
-        onTransitionEnd={onTransitionEnd}
-        isAnimated={isAnimated}
-        borderColor={borderColor}
+        className='flex select-none items-center justify-center overflow-hidden rounded-full bg-black/50 font-semibold text-white text-xs'
+        style={{width, height: width, border: `2px solid ${borderColor ?? '#fff'}`}}
       >
         +{label}
-      </OverflowCount>
-    </Wrapper>
+      </div>
+    </motion.div>
   )
 }
 

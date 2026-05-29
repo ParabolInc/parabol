@@ -1,24 +1,20 @@
-import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import type {Editor} from '@tiptap/core'
 import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
+import {motion} from 'motion/react'
 import {useMemo} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
-import useAnimatedCard from '~/hooks/useAnimatedCard'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
-import {TransitionStatus} from '~/hooks/useTransition'
-import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV3'
-import {BezierCurve, Card} from '~/types/constEnums'
 import plural from '~/utils/plural'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import useTooltip from '../../hooks/useTooltip'
 import UpsertTeamPromptResponseMutation from '../../mutations/UpsertTeamPromptResponseMutation'
+import {cn} from '../../ui/cn'
 import makeAppURL from '../../utils/makeAppURL'
 import {mergeRefs} from '../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
@@ -30,75 +26,12 @@ import TeamPromptLastUpdatedTime from './TeamPromptLastUpdatedTime'
 import TeamPromptRepliesAvatarList from './TeamPromptRepliesAvatarList'
 import {TeamPromptResponseEmojis} from './TeamPromptResponseEmojis'
 
-const ResponseWrapper = styled('div')<{
-  status: TransitionStatus
-}>(({status}) => ({
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  maxWidth: '600px',
-  margin: '0 auto'
-}))
-
-const ResponseHeader = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  padding: '0 8px',
-  marginBottom: 12
-})
-
-const ResponseCard = styled('div')<{
-  isEmpty: boolean
-  isHighlighted?: boolean
-}>(({isEmpty = false, isHighlighted = false}) => ({
-  background: isEmpty ? PALETTE.SLATE_300 : Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: isEmpty ? undefined : Elevation.CARD_SHADOW,
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  color: isEmpty ? PALETTE.SLATE_600 : undefined,
-  padding: Card.PADDING,
-  minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT,
-  outline: isHighlighted ? `2px solid ${PALETTE.SKY_300}` : 'none'
-}))
-
-const ResponseCardFooter = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-  justifyContent: 'flex-start',
-  paddingTop: 4
-})
-
-export const TeamMemberName = styled('h3')({
-  padding: '0 8px',
-  margin: 0,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis'
-})
-
-const ReplyButton = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'flex-start',
-  fontWeight: 600,
-  lineHeight: '24px',
-  paddingTop: '8px',
-  color: PALETTE.SKY_500,
-  ':hover, :focus': {
-    color: PALETTE.SKY_400
-  }
-})
+export const TeamMemberName = ({children}: {children: React.ReactNode}) => (
+  <h3 className='m-0 overflow-hidden text-ellipsis px-2'>{children}</h3>
+)
 
 interface Props {
   stageRef: TeamPromptResponseCard_stage$key
-  status: TransitionStatus
-  displayIdx: number
-  onTransitionEnd: () => void
 }
 
 graphql`
@@ -114,7 +47,7 @@ graphql`
 `
 
 const TeamPromptResponseCard = (props: Props) => {
-  const {stageRef, status, onTransitionEnd, displayIdx} = props
+  const {stageRef} = props
   const responseStage = useFragment(
     graphql`
       fragment TeamPromptResponseCard_stage on TeamPromptResponseStage {
@@ -206,8 +139,6 @@ const TeamPromptResponseCard = (props: Props) => {
     )
   })
 
-  const ref = useAnimatedCard(displayIdx, status)
-
   const responsePermalink = makeAppURL(window.location.origin, `/meet/${meetingId}/responses`, {
     searchParams: {
       utm_source: 'sharing',
@@ -238,8 +169,15 @@ const TeamPromptResponseCard = (props: Props) => {
   }
 
   return (
-    <ResponseWrapper ref={ref} status={status} onTransitionEnd={onTransitionEnd}>
-      <ResponseHeader>
+    <motion.div
+      layout
+      className='mx-auto flex w-full max-w-[600px] flex-col'
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+    >
+      <div className='mb-3 flex flex-row items-center px-2'>
         <Avatar picture={picture} className='h-12 w-12' />
         <TeamMemberName>
           {preferredName}
@@ -262,10 +200,16 @@ const TeamPromptResponseCard = (props: Props) => {
             </div>
           </CopyToClipboard>
         )}
-      </ResponseHeader>
-      <ResponseCard
-        isEmpty={isEmptyResponse}
-        isHighlighted={meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id}
+      </div>
+      <div
+        className={cn(
+          'flex flex-1 flex-col justify-between rounded-card p-4',
+          isEmptyResponse ? 'bg-slate-300 text-slate-600' : 'bg-white shadow-card',
+          meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id
+            ? 'outline-2 outline-sky-300'
+            : 'outline-none'
+        )}
+        style={{minHeight: ResponseCardDimensions.MIN_CARD_HEIGHT}}
       >
         {isEmptyResponse ? (
           nonViewerEmptyResponsePlaceholder
@@ -281,9 +225,12 @@ const TeamPromptResponseCard = (props: Props) => {
               draftStorageKey={`draftResponse:${stageId}`}
             />
             {!!response && (
-              <ResponseCardFooter>
+              <div className='flex flex-wrap items-center justify-start pt-1'>
                 <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
-                <ReplyButton onClick={() => onSelectDiscussion()}>
+                <PlainButton
+                  className='flex items-start pt-2 font-semibold text-sky-500 leading-6 hover:text-sky-400 focus:text-sky-400'
+                  onClick={() => onSelectDiscussion()}
+                >
                   {replyCount > 0 ? (
                     <>
                       <TeamPromptRepliesAvatarList edgesRef={discussionEdges} />
@@ -292,15 +239,15 @@ const TeamPromptResponseCard = (props: Props) => {
                   ) : (
                     'Reply'
                   )}
-                </ReplyButton>
-              </ResponseCardFooter>
+                </PlainButton>
+              </div>
             )}
           </>
         )}
-      </ResponseCard>
+      </div>
       {tooltipPortal('Copy permalink')}
       {copiedTooltipPortal('Copied!')}
-    </ResponseWrapper>
+    </motion.div>
   )
 }
 

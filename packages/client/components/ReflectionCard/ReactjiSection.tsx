@@ -1,12 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {useFragment} from 'react-relay'
 import type {ReactjiSection_reactjis$key} from '~/__generated__/ReactjiSection_reactjis.graphql'
-import useInitialRender from '~/hooks/useInitialRender'
-import useTransition, {TransitionStatus} from '~/hooks/useTransition'
 import {Threshold} from '~/types/constEnums'
 import {cn} from '~/ui/cn'
 import AddReactjiButton from './AddReactjiButton'
-import ReactjiCount from './ReactjiCount'
+import ReactjiCountWrapper from './ReactjiCountWrapper'
 
 interface Props {
   className?: string
@@ -28,42 +27,14 @@ const ReactjiSection = (props: Props) => {
     reactjisRef
   )
 
-  // Only pass keys to useTransition — never Relay fragment references
-  const animatedKeys = reactjis.map((reactji) => ({key: reactji.id}))
-  const tranChildren = useTransition(animatedKeys)
-  const isInit = useInitialRender()
-
-  // Build a lookup map so we always pass CURRENT fragment refs to ReactjiCount
-  const reactjiById = new Map(reactjis.map((r) => [r.id, r]))
-
   return (
     <div className={cn('flex flex-wrap items-start justify-start', className)}>
-      {tranChildren.map((transChild) => {
-        const currentReactji = reactjiById.get(transChild.child.key as string)
-        if (!currentReactji) {
-          // Item is exiting and no longer in the Relay store — render a collapsing wrapper
-          // instead of ReactjiCount which would call useFragment with a stale reference
-          return (
-            <div
-              key={transChild.child.key}
-              className='h-0 max-w-0 select-none overflow-hidden px-0 opacity-0 transition-all duration-300 ease-[cubic-bezier(0,0,.21,1)]'
-              onTransitionEnd={transChild.onTransitionEnd}
-            />
-          )
-        }
-        return (
-          <ReactjiCount
-            key={transChild.child.key}
-            reactjiRef={currentReactji}
-            onTransitionEnd={transChild.onTransitionEnd}
-            status={isInit ? TransitionStatus.ENTERED : transChild.status}
-            onToggle={onToggle}
-          />
-        )
-      })}
-      {tranChildren.length <= Threshold.MAX_REACTJIS - 1 && (
-        <AddReactjiButton onToggle={onToggle} />
-      )}
+      <AnimatePresence initial={false}>
+        {reactjis.map((reactji) => (
+          <ReactjiCountWrapper key={reactji.id} reactjiRef={reactji} onToggle={onToggle} />
+        ))}
+      </AnimatePresence>
+      {reactjis.length <= Threshold.MAX_REACTJIS - 1 && <AddReactjiButton onToggle={onToggle} />}
     </div>
   )
 }

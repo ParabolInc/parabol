@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,7 +5,6 @@ import type {BottomControlBarTips_meeting$key} from '~/__generated__/BottomContr
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useTimeout from '~/hooks/useTimeout'
-import type {TransitionStatus} from '~/hooks/useTransition'
 import type LocalAtmosphere from '~/modules/demo/LocalAtmosphere'
 import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
 import type {NewMeetingPhaseTypeEnum} from '../__generated__/BottomControlBarTips_meeting.graphql'
@@ -15,10 +13,6 @@ import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
 import Menu from './Menu'
-
-const TallMenu = styled(Menu)({
-  maxHeight: 320
-})
 
 const CheckInHelpMenu = lazyPreload(
   async () => import(/* webpackChunkName: 'CheckInHelpMenu' */ './MeetingHelp/CheckInHelpMenu')
@@ -110,12 +104,10 @@ const helps: Partial<Record<NewMeetingPhaseTypeEnum, LazyPreloadedComponent>> = 
 interface Props {
   cancelConfirm: (() => void) | undefined
   meeting: BottomControlBarTips_meeting$key
-  status: TransitionStatus
-  onTransitionEnd: () => void
 }
 
 const BottomControlBarTips = (props: Props) => {
-  const {cancelConfirm, meeting: meetingRef, status, onTransitionEnd} = props
+  const {cancelConfirm, meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
@@ -170,14 +162,12 @@ const BottomControlBarTips = (props: Props) => {
       confirming={!!cancelConfirm}
       onClick={cancelConfirm || togglePortal}
       ref={originRef}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
     >
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
-        <TallMenu ariaLabel='Meeting tips' {...menuProps}>
+        <Menu ariaLabel='Meeting tips' {...menuProps} className='max-h-80'>
           <MenuContent meetingType={meetingType} stageRef={localStage} meetingRef={meeting} />
-        </TallMenu>
+        </Menu>
       )}
     </BottomNavControl>
   )
