@@ -1,41 +1,53 @@
+import * as RadixSelect from '@radix-ui/react-select'
 import dayjs, {type Dayjs} from 'dayjs'
 import ms from 'ms'
-import type {MenuProps} from '../../hooks/useMenu'
-import Menu from '../Menu'
-import MenuItem from '../MenuItem'
+import {Select} from '../../ui/Select/Select'
+import {SelectContent} from '../../ui/Select/SelectContent'
+import {SelectItem} from '../../ui/Select/SelectItem'
+import {SelectTrigger} from '../../ui/Select/SelectTrigger'
+import {SelectValue} from '../../ui/Select/SelectValue'
 
 interface Props {
-  menuProps: MenuProps
-  onClick: (n: Dayjs) => void
+  value: Dayjs
+  onValueChange: (value: Dayjs) => void
 }
 
-const OPTIONS = [...Array(96).keys()].map((n) => n * ms('15m'))
-// by default, we'll suggest 6:00 AM
-const DEFAULT_MEETING_START_TIME_IDX = OPTIONS.findIndex((n) => n === ms('6h'))
+const MS_PER_SLOT = ms('15m')
+const OPTIONS = [...Array(96).keys()].map((n) => n * MS_PER_SLOT)
 
-export const RecurrenceTimePicker = (props: Props) => {
-  const {menuProps, onClick} = props
+const toSlotMs = (d: Dayjs) => {
+  const totalMs = (d.hour() * 60 + d.minute()) * 60_000
+  return Math.round(totalMs / MS_PER_SLOT) * MS_PER_SLOT
+}
+
+export const RecurrenceTimePicker = ({value, onValueChange}: Props) => {
   const {timeZone} = Intl.DateTimeFormat().resolvedOptions()
+  const slotMs = toSlotMs(value)
+
+  const handleChange = (val: string) => {
+    const n = Number(val)
+    const todayAtTime = dayjs.tz(dayjs().startOf('day').add(n, 'ms'), timeZone)
+    const proposedTime = todayAtTime.isAfter(dayjs()) ? todayAtTime : todayAtTime.add(1, 'day')
+    onValueChange(proposedTime)
+  }
 
   return (
-    <Menu
-      {...menuProps}
-      ariaLabel={'Select the time when a recurring meeting will be created'}
-      defaultActiveIdx={DEFAULT_MEETING_START_TIME_IDX}
-      className='overflow-y-auto'
-    >
-      {OPTIONS.map((n, idx) => {
-        const todayAtTime = dayjs.tz(dayjs().startOf('day').add(n, 'ms'), timeZone)
-        const proposedTime = todayAtTime.isAfter(dayjs()) ? todayAtTime : todayAtTime.add(1, 'day')
-
-        return (
-          <MenuItem
-            key={idx}
-            label={proposedTime.format('h:mm A')}
-            onClick={() => onClick(proposedTime)}
-          />
-        )
-      })}
-    </Menu>
+    <Select value={String(slotMs)} onValueChange={handleChange}>
+      <SelectTrigger className='w-full text-sm'>
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent position='item-aligned' className='max-h-60 overflow-y-auto'>
+        <RadixSelect.ScrollUpButton className='flex cursor-default items-center justify-center py-1' />
+        {OPTIONS.map((n) => {
+          const label = dayjs().startOf('day').add(n, 'ms').format('h:mm A')
+          return (
+            <SelectItem key={n} value={String(n)}>
+              {label}
+            </SelectItem>
+          )
+        })}
+        <RadixSelect.ScrollDownButton className='flex cursor-default items-center justify-center py-1' />
+      </SelectContent>
+    </Select>
   )
 }

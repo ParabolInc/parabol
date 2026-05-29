@@ -74,6 +74,7 @@ const DateTimePickers = (props: Props) => {
             sx={customStyles}
           />
           <TimePicker
+            timeSteps={{minutes: 15}}
             label={`Start Time (${timeZoneShort})`}
             value={startValue}
             onChange={(time) => handleChangeStart(startValue, time)}
@@ -89,6 +90,7 @@ const DateTimePickers = (props: Props) => {
             sx={customStyles}
           />
           <TimePicker
+            timeSteps={{minutes: 15}}
             label={`End Time (${timeZoneShort})`}
             value={endValue}
             onChange={(time) => handleChangeEnd(endValue, time)}

@@ -1,11 +1,13 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {RRule} from 'rrule'
 import type {ScheduleMeetingButton_team$key} from '~/__generated__/ScheduleMeetingButton_team.graphql'
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
-import useModal from '../../hooks/useModal'
 import type {MenuMutationProps} from '../../hooks/useMutationProps'
-import DialogContainer from '../DialogContainer'
+import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import {ScheduleDialog} from '../ScheduleDialog'
 import SecondaryButton from '../SecondaryButton'
 
@@ -19,13 +21,7 @@ type Props = {
 
 const ScheduleMeetingButton = (props: Props) => {
   const {mutationProps, handleStartActivity, teamRef, placeholder, withRecurrence} = props
-  const {
-    togglePortal: toggleModal,
-    closePortal: closeModal,
-    modalPortal
-  } = useModal({
-    id: 'createGcalEventModal'
-  })
+  const [open, setOpen] = useState(false)
   const {submitting} = mutationProps
 
   const team = useFragment(
@@ -51,33 +47,30 @@ const ScheduleMeetingButton = (props: Props) => {
   const viewerGcalIntegration = viewerTeamMember?.integrations.gcal
   const cloudProvider = viewerGcalIntegration?.cloudProvider
 
-  const handleClick = () => {
-    toggleModal()
-  }
   const onStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     handleStartActivity(name, rrule, gcalInput)
-    closeModal()
+    setOpen(false)
   }
 
   if (!cloudProvider && !withRecurrence) return null
   return (
-    <>
-      <SecondaryButton onClick={handleClick} waiting={submitting} className='h-14'>
-        <div className='text-lg'>Schedule</div>
-      </SecondaryButton>
-      {modalPortal(
-        <DialogContainer className='bg-white'>
-          <ScheduleDialog
-            teamRef={team}
-            placeholder={placeholder}
-            onStartActivity={onStartActivity}
-            onCancel={closeModal}
-            mutationProps={mutationProps}
-            withRecurrence={withRecurrence}
-          />
-        </DialogContainer>
-      )}
-    </>
+    <Dialog isOpen={open} onClose={() => setOpen(false)}>
+      <DialogTrigger>
+        <SecondaryButton waiting={submitting} className='h-14' onClick={() => setOpen(true)}>
+          <div className='text-lg'>Schedule</div>
+        </SecondaryButton>
+      </DialogTrigger>
+      <DialogContent noClose>
+        <ScheduleDialog
+          teamRef={team}
+          placeholder={placeholder}
+          onStartActivity={onStartActivity}
+          onCancel={() => setOpen(false)}
+          mutationProps={mutationProps}
+          withRecurrence={withRecurrence}
+        />
+      </DialogContent>
+    </Dialog>
   )
 }
 
