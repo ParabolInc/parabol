@@ -28,7 +28,16 @@ const SnackbarMessageAction = (props: Props) => {
   const {action} = props
   if (!action) return null
   const {label, callback} = action
-  return <Action onClick={callback}>{label}</Action>
+  return (
+    <Action
+      onClick={(e) => {
+        e.stopPropagation()
+        callback()
+      }}
+    >
+      {label}
+    </Action>
+  )
 }
 
 export default SnackbarMessageAction

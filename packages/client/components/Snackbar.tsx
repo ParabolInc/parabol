@@ -1,34 +1,15 @@
-import styled from '@emotion/styled'
-import {memo, useEffect, useLayoutEffect, useRef, useState} from 'react'
+import * as Toast from '@radix-ui/react-toast'
+import {AnimatePresence, motion} from 'motion/react'
+import {memo, useEffect, useRef, useState} from 'react'
 import {useLocation} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useEventCallback from '../hooks/useEventCallback'
-import usePortal from '../hooks/usePortal'
-import useTransition from '../hooks/useTransition'
 import {Breakpoint, NavSidebar, ZIndex} from '../types/constEnums'
 import clientTempId from '../utils/relay/clientTempId'
 import SnackbarMessage from './SnackbarMessage'
 
 const MAX_SNACKS = 1
-
-const Modal = styled('div')<{hasSidebar: boolean; isDesktop: boolean}>(
-  ({hasSidebar, isDesktop}) => ({
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100vh',
-    justifyContent: 'flex-end',
-    left: 0,
-    padding: 8,
-    paddingBottom: hasSidebar ? 64 : 8,
-    position: 'fixed',
-    top: 0,
-    width: hasSidebar && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
-    pointerEvents: 'none',
-    zIndex: ZIndex.SNACKBAR
-  })
-)
 
 export type SnackbarRemoveFn = (snack: Snack) => boolean
 
@@ -55,16 +36,10 @@ const Snackbar = memo(() => {
   const [activeSnacks, setActiveSnacks] = useState<Snack[]>([])
   const activeSnackKeysRef = useRef(new Set<string>())
   const atmosphere = useAtmosphere()
-  const {openPortal, terminatePortal, portal} = usePortal({
-    id: 'snackbar',
-    noClose: true
-  })
   const location = useLocation()
   const hasSidebar =
     location.pathname.startsWith('/meet/') || !!location.pathname.match(/\/meet\/.*\/responses/g)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const transitionChildren = useTransition(activeSnacks)
-  // used to ensure the snack isn't dismissed when the cursor is on it
   const hoveredSnackRef = useRef<Snack | null>(null)
   const dismissOnLeaveRef = useRef<Snack>()
 
@@ -126,14 +101,13 @@ const Snackbar = memo(() => {
       }
     }
     const keyedSnack = {key: clientTempId(), ...snack}
-    if (transitionChildren.length < MAX_SNACKS) {
+    if (activeSnacks.length < MAX_SNACKS) {
       showSnack(keyedSnack)
     } else {
       snackQueueRef.current.push(keyedSnack)
     }
   })
 
-  // handle events
   useEffect(() => {
     atmosphere.eventEmitter.on('addSnackbar', handleAdd)
     atmosphere.eventEmitter.on('removeSnackbar', filterSnacks)
@@ -143,46 +117,73 @@ const Snackbar = memo(() => {
     }
   }, [])
 
-  // handle portal
-  useLayoutEffect(() => {
-    if (transitionChildren.length === 0 && snackQueueRef.current.length === 0) {
-      terminatePortal()
-    } else {
-      openPortal()
-    }
-  }, [openPortal, terminatePortal, transitionChildren])
-
-  // handle queue
   useEffect(() => {
-    if (snackQueueRef.current.length > 0 && transitionChildren.length < MAX_SNACKS) {
+    if (snackQueueRef.current.length > 0 && activeSnacks.length < MAX_SNACKS) {
       showSnack(snackQueueRef.current.shift()!)
     }
-  }, [showSnack, transitionChildren])
+  }, [showSnack, activeSnacks])
 
-  return portal(
-    <Modal hasSidebar={hasSidebar} isDesktop={isDesktop}>
-      {transitionChildren.map(({child, onTransitionEnd, status}) => {
-        const dismiss = () => {
-          if (child.noDismissOnClick) return
-          dismissSnack(child)
-          child.onManualDismiss?.()
-        }
-        return (
-          <SnackbarMessage
-            key={child.key}
-            message={child.message}
-            action={child.action}
-            secondaryAction={child.secondaryAction}
-            status={status}
-            onTransitionEnd={onTransitionEnd}
-            dismissSnack={dismiss}
-            onMouseEnter={onMouseEnter(child)}
-            onMouseLeave={onMouseLeave}
-            showDismissButton={child.showDismissButton}
-          />
-        )
-      })}
-    </Modal>
+  return (
+    <Toast.Provider>
+      <AnimatePresence>
+        {activeSnacks.map((snack) => {
+          const dismiss = () => {
+            if (snack.noDismissOnClick) return
+            dismissSnack(snack)
+            snack.onManualDismiss?.()
+          }
+          return (
+            <Toast.Root
+              key={snack.key}
+              asChild
+              open
+              duration={Infinity}
+              onOpenChange={(open) => {
+                if (!open) dismissSnack(snack)
+              }}
+            >
+              <motion.li
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                exit={{opacity: 0, y: -20}}
+                transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+                onMouseEnter={onMouseEnter(snack)}
+                onMouseLeave={onMouseLeave}
+                style={{listStyle: 'none'}}
+              >
+                <SnackbarMessage
+                  message={snack.message}
+                  action={snack.action}
+                  secondaryAction={snack.secondaryAction}
+                  dismissSnack={dismiss}
+                  showDismissButton={snack.showDismissButton}
+                />
+              </motion.li>
+            </Toast.Root>
+          )
+        })}
+      </AnimatePresence>
+      <Toast.Viewport
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          height: '100vh',
+          width: hasSidebar && isDesktop ? `calc(100% + ${NavSidebar.WIDTH}px)` : '100%',
+          padding: 8,
+          paddingBottom: hasSidebar ? 64 : 8,
+          pointerEvents: 'none',
+          zIndex: ZIndex.SNACKBAR,
+          listStyle: 'none',
+          margin: 0,
+          outline: 'none'
+        }}
+      />
+    </Toast.Provider>
   )
 })
 

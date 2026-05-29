@@ -1,8 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import {useEffect} from 'react'
-import {TransitionStatus} from '../hooks/useTransition'
-import {DECELERATE} from '../styles/animation'
+import * as Toast from '@radix-ui/react-toast'
 import {snackbarShadow} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius, ZIndex} from '../types/constEnums'
@@ -10,14 +8,10 @@ import type {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
 
 interface Props {
-  onTransitionEnd: () => void
   message: string
-  status: TransitionStatus
   dismissSnack: () => void
   action?: SnackAction
   secondaryAction?: SnackAction
-  onMouseEnter: () => void
-  onMouseLeave: () => void
   showDismissButton?: boolean
 }
 
@@ -27,22 +21,17 @@ const Text = styled('div')({
   padding: '6px 8px'
 })
 
-const MessageStyles = styled('div')<{status: TransitionStatus}>(({status}) => ({
+const MessageStyles = styled('div')({
   alignItems: 'center',
   background: PALETTE.SLATE_700,
   borderRadius: Radius.SNACKBAR,
   boxShadow: snackbarShadow,
   display: 'flex',
   padding: 8,
-  transition: `all 300ms ${DECELERATE}`,
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  transform: `translateY(${
-    status === TransitionStatus.MOUNTED ? 20 : status === TransitionStatus.EXITING ? -20 : 0
-  }px)`,
   pointerEvents: 'auto',
   userSelect: 'none',
   zIndex: ZIndex.SNACKBAR
-}))
+})
 
 const DismissButton = styled('button')({
   border: 'none',
@@ -63,33 +52,15 @@ const StyledIcon = styled(Close)({
     opacity: 0.5
   }
 })
-const useTransitionEnd = (
-  timeout: number,
-  status: TransitionStatus,
-  onTransitionEnd: () => void
-) => {
-  useEffect(() => {
-    setTimeout(onTransitionEnd, timeout)
-  }, [status])
-}
 
 const SnackbarMessage = (props: Props) => {
-  const {
-    action,
-    secondaryAction,
-    status,
-    message,
-    onTransitionEnd,
-    dismissSnack,
-    onMouseEnter,
-    onMouseLeave,
-    showDismissButton
-  } = props
-  useTransitionEnd(300, status, onTransitionEnd)
+  const {action, secondaryAction, message, dismissSnack, showDismissButton} = props
   return (
     <div className='pb-2 print:hidden'>
-      <MessageStyles status={status} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <Text>{message}</Text>
+      <MessageStyles onClick={dismissSnack}>
+        <Toast.Description asChild>
+          <Text>{message}</Text>
+        </Toast.Description>
         <SnackbarMessageAction action={action} />
         <SnackbarMessageAction action={secondaryAction} />
         {showDismissButton && (
