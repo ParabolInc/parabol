@@ -62,7 +62,7 @@ const ShareTopic = (props: Props) => {
         {label}
       </span>
 
-      {isOpen && <ShareTopicRoot onClose={close} stageId={stageId} meetingId={meetingId} />}
+      <ShareTopicRoot isOpen={isOpen} onClose={close} stageId={stageId} meetingId={meetingId} />
     </>
   )
 }

@@ -102,16 +102,14 @@ export const OrgTeamMembers = (props: Props) => {
         ))}
       </div>
 
-      {isDeleteTeamDialogOpened ? (
-        <DeleteTeamDialog
-          isOpen={isDeleteTeamDialogOpened}
-          teamId={team.id}
-          teamName={team.name}
-          teamOrgId={team.orgId}
-          onDeleteTeam={closeDeleteTeamDialog}
-          onClose={closeDeleteTeamDialog}
-        />
-      ) : null}
+      <DeleteTeamDialog
+        isOpen={isDeleteTeamDialogOpened}
+        teamId={team.id}
+        teamName={team.name}
+        teamOrgId={team.orgId}
+        onDeleteTeam={closeDeleteTeamDialog}
+        onClose={closeDeleteTeamDialog}
+      />
     </div>
   )
 }
