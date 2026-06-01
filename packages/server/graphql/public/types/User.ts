@@ -674,8 +674,25 @@ const User: ReqResolvers<'User'> = {
     }
     return request
   },
-  favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
+  favoriteTemplates: async ({favoriteTemplateIds}, _args, {authToken, dataLoader}) => {
+    const templates = (
+      await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)
+    ).filter(isValid)
+    const accessible = await Promise.all(
+      templates.map(async (template) => {
+        const {scope, teamId, orgId} = template
+        if (scope === 'PUBLIC') return true
+        if (scope === 'TEAM') return authToken.tms.includes(teamId)
+        if (scope === 'ORGANIZATION') {
+          const organizationUsers = await dataLoader
+            .get('organizationUsersByUserId')
+            .load(getUserId(authToken))
+          return organizationUsers.some((ou) => ou.orgId === orgId)
+        }
+        return false
+      })
+    )
+    return templates.filter((_, i) => accessible[i])
   },
   featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName})
