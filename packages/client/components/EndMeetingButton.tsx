@@ -1,24 +1,17 @@
-import styled from '@emotion/styled'
 import {Flag} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
 import {useNavigate} from 'react-router'
-import type {TransitionStatus} from '~/hooks/useTransition'
 import EndCheckInMutation from '~/mutations/EndCheckInMutation'
 import EndRetrospectiveMutation from '~/mutations/EndRetrospectiveMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
 import useTooltip from '../hooks/useTooltip'
 import EndSprintPokerMutation from '../mutations/EndSprintPokerMutation'
-import {ElementWidth, Times} from '../types/constEnums'
+import {Times} from '../types/constEnums'
 import isDemoRoute from '../utils/isDemoRoute'
 import BottomNavControl from './BottomNavControl'
 import BottomNavIconLabel from './BottomNavIconLabel'
-
-const FlagIcon = styled(Flag)({
-  color: PALETTE.SKY_500
-})
 
 interface Props {
   cancelConfirm: undefined | (() => void)
@@ -27,25 +20,10 @@ interface Props {
   meetingId: string
   meetingType: string
   isEnded: boolean
-  status: TransitionStatus
-  onTransitionEnd: () => void
 }
 
-const EndMeetingButtonStyles = styled(BottomNavControl)({
-  width: ElementWidth.CONTROL_BAR_BUTTON
-})
-
 const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {
-    cancelConfirm,
-    isConfirming,
-    setConfirmingButton,
-    isEnded,
-    meetingType,
-    meetingId,
-    status,
-    onTransitionEnd
-  } = props
+  const {cancelConfirm, isConfirming, setConfirmingButton, isEnded, meetingType, meetingId} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {submitMutation, onCompleted, onError, submitting} = useMutationProps()
@@ -77,20 +55,18 @@ const EndMeetingButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
   const label = isDemoRoute() ? 'End Demo' : 'End Meeting'
   return (
     <>
-      <EndMeetingButtonStyles
+      <BottomNavControl
         confirming={!!cancelConfirm}
         dataCy='end-button'
         onClick={cancelConfirm || endMeeting}
         waiting={submitting}
         ref={ref}
         disabled={isEnded}
-        status={status}
-        onTransitionEnd={onTransitionEnd}
       >
         <BottomNavIconLabel label={label} ref={originRef}>
-          <FlagIcon />
+          <Flag className='text-sky-500' />
         </BottomNavIconLabel>
-      </EndMeetingButtonStyles>
+      </BottomNavControl>
       {tooltipPortal(`Tap '${label}' again to Confirm`)}
     </>
   )

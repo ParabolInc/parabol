@@ -1,18 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptRepliesAvatarList_edges$key} from '~/__generated__/TeamPromptRepliesAvatarList_edges.graphql'
 import useOverflowAvatars from '~/hooks/useOverflowAvatars'
-import {TransitionStatus} from '~/hooks/useTransition'
 import AvatarListUser from '../AvatarListUser'
 import TeamPromptOverflowAvatar from './TeamPromptOverflowAvatar'
-
-const Wrapper = styled('div')<{minHeight: number; width: number}>(({minHeight, width}) => ({
-  position: 'relative',
-  minHeight,
-  width,
-  marginRight: '8px'
-}))
 
 interface Props {
   edgesRef: TeamPromptRepliesAvatarList_edges$key
@@ -44,58 +36,38 @@ const TeamPromptRepliesAvatarList = (props: Props) => {
     Object.fromEntries(discussionUsers.map((user) => [user!.id, user!]))
   )
 
-  const transitionChildren = useOverflowAvatars(distinctDiscussionUsers, MAX_AVATARS)
-
+  const avatars = useOverflowAvatars(distinctDiscussionUsers, MAX_AVATARS)
   const offsetSize = AVATAR_SIZE - AVATAR_OVERLAP
-
-  const activeTChildren = transitionChildren.filter(
-    (child) => child.status !== TransitionStatus.EXITING
-  )
-  const minHeight = activeTChildren.length === 0 ? 0 : AVATAR_SIZE
-  const width = activeTChildren.length * AVATAR_SIZE - AVATAR_OVERLAP
+  const minHeight = avatars.length === 0 ? 0 : AVATAR_SIZE
+  const width = avatars.length * AVATAR_SIZE - AVATAR_OVERLAP
 
   return (
-    <Wrapper minHeight={minHeight} width={width}>
-      {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
-        const {id: userId} = child
-        if ('overflowCount' in child) {
-          const {overflowCount} = child
-          return (
-            <>
-              <AvatarListUser
-                key={userId}
-                isAnimated={true}
-                user={child.overflowChild}
-                onTransitionEnd={onTransitionEnd}
-                status={status}
-                offset={offsetSize * displayIdx}
-                className='h-6 w-6'
-              />
+    <div className='relative mr-2' style={{minHeight, width}}>
+      <AnimatePresence initial={false}>
+        {avatars.map((child, idx) => {
+          const {id: userId} = child
+          if ('overflowCount' in child) {
+            const {overflowCount, displayIdx} = child
+            return (
               <TeamPromptOverflowAvatar
-                key={`${userId}:overflowCount`}
-                isAnimated={true}
-                onTransitionEnd={onTransitionEnd}
-                status={status}
+                key={userId}
                 offset={offsetSize * displayIdx}
                 overflowCount={overflowCount}
                 width={AVATAR_SIZE}
               />
-            </>
+            )
+          }
+          return (
+            <AvatarListUser
+              key={userId}
+              user={child}
+              offset={offsetSize * idx}
+              className='h-6 w-6'
+            />
           )
-        }
-        return (
-          <AvatarListUser
-            key={userId}
-            isAnimated={true}
-            user={child}
-            onTransitionEnd={onTransitionEnd}
-            status={status}
-            offset={offsetSize * displayIdx}
-            className='h-6 w-6'
-          />
-        )
-      })}
-    </Wrapper>
+        })}
+      </AnimatePresence>
+    </div>
   )
 }
 
