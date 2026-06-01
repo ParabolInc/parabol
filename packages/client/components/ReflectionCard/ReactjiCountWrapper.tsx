@@ -18,7 +18,7 @@ const ReactjiCountWrapper = ({reactjiRef, onToggle}: Props) => {
           ? {height: 24, maxWidth: 68, opacity: 1, paddingRight: 12}
           : {height: 0, maxWidth: 0, opacity: 0, paddingRight: 0}
       }
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
       style={{overflow: 'hidden', userSelect: 'none'}}
       onAnimationComplete={isPresent ? undefined : safeToRemove}
     >

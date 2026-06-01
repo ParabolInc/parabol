@@ -181,13 +181,12 @@ const MeetingCard = (props: Props) => {
 
   return (
     <motion.div
-      layout
       className='relative m-2 max-w-full shrink-0 select-none'
       style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)'}}
       initial={{opacity: 0}}
       animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
     >
       <div className='relative hover:shadow-[rgba(0,0,0,.2)_0px_3px_3px_-2px,rgba(0,0,0,.14)_0px_3px_4px_0px,rgba(0,0,0,.12)_0px_1px_8px_0px]'>
         {isRecurring && (

@@ -133,12 +133,11 @@ const ScheduledSeriesCard = (props: Props) => {
 
   return (
     <motion.div
-      layout
       className='relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
     >
       <div className='relative hover:shadow-card-hover'>
         <div className={cn(STACKED_CARD_BASE, STACK_CLASSES[0])}>

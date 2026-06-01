@@ -174,8 +174,8 @@ const TeamPromptResponseCard = (props: Props) => {
       className='mx-auto flex w-full max-w-[600px] flex-col'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
     >
       <div className='mb-3 flex flex-row items-center px-2'>
         <Avatar picture={picture} className='h-12 w-12' />

@@ -38,8 +38,8 @@ const AvatarListUser = (props: Props) => {
       style={{position: 'absolute'}}
       initial={isColumn ? {y: offset, scale: 0, opacity: 0} : {x: offset, scale: 0, opacity: 0}}
       animate={isColumn ? {y: offset, scale: 1, opacity: 1} : {x: offset, scale: 1, opacity: 1}}
-      exit={{scale: 0, opacity: 0}}
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      exit={{scale: 0, opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
       onClick={onClick}
       onMouseOver={openTooltip}
       onMouseLeave={closeTooltip}

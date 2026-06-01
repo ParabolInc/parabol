@@ -20,8 +20,8 @@ const OverflowAvatar = (props: Props) => {
       style={{position: 'absolute'}}
       initial={{x: offset, scale: 0, opacity: 0}}
       animate={{x: offset, scale: 1, opacity: 1}}
-      exit={{scale: 0, opacity: 0}}
-      transition={{duration: 0.3, ease: [0, 0, 0.2, 1]}}
+      exit={{scale: 0, opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
       onClick={onClick}
     >
       <div
