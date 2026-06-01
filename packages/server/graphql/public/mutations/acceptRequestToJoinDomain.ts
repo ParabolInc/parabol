@@ -51,15 +51,19 @@ const acceptRequestToJoinDomain: MutationResolvers['acceptRequestToJoinDomain'] 
     return standardError(new Error('Not a team leader'))
   }
 
+  const validTeamIds = validTeamMembers.map(({teamId}) => teamId)
+
   if (context.resourceGrants) {
-    const hasAccess = await Promise.all(teamIds.map((id) => context.resourceGrants!.hasTeam(id)))
+    const hasAccess = await Promise.all(
+      validTeamIds.map((id) => context.resourceGrants!.hasTeam(id))
+    )
     if (hasAccess.some((v) => !v)) {
       return standardError(new Error('PAT does not grant access to this team'))
     }
   }
 
   // Provided request domain should match team's organizations activeDomain
-  const leadTeams = (await dataLoader.get('teams').loadMany(teamIds)).filter(isValid)
+  const leadTeams = (await dataLoader.get('teams').loadMany(validTeamIds)).filter(isValid)
   const orgIds = leadTeams.map((team) => team.orgId)
   const teamOrgs = (await dataLoader.get('organizations').loadMany(orgIds)).filter(isValid)
 
