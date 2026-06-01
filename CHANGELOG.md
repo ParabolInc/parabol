@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.22.1](https://github.com/ParabolInc/parabol/compare/v13.22.0...v13.22.1) (2026-06-01)
+
+
+### Fixed
+
+* audit scope perms ([#13172](https://github.com/ParabolInc/parabol/issues/13172)) ([66dffc9](https://github.com/ParabolInc/parabol/commit/66dffc952fe6b5880af8dfcbd48c603b418271ea))
+
 ## [13.22.0](https://github.com/ParabolInc/parabol/compare/v13.21.1...v13.22.0) (2026-06-01)
 
 
