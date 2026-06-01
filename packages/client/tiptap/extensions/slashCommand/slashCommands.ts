@@ -226,7 +226,7 @@ export const slashCommands = [
       {
         title: 'Image',
         description: 'Upload any image from your device',
-        searchTerms: ['gif', 'giphy', 'image', 'media', 'photo', 'picture', 'tenor'],
+        searchTerms: ['gif', 'giphy', 'image', 'media', 'photo', 'picture', 'tenor', 'klipy'],
         icon: ImageIcon,
         // shouldHide: () => true,
         action: (editor: Editor) => {

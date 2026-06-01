@@ -1,4 +1,4 @@
-import {TenorManager} from '../../../utils/TenorManager'
+import {KlipyManager} from '../../../utils/KlipyManager'
 import type {QueryResolvers} from '../resolverTypes'
 
 export interface SSORelayState {
@@ -7,9 +7,9 @@ export interface SSORelayState {
 }
 
 const searchGifs: QueryResolvers['searchGifs'] = async (_source, {query, first, after}) => {
-  const service = process.env.GIF_PROVIDER || 'tenor'
-  if (service === 'tenor') {
-    const manager = new TenorManager()
+  const service = process.env.GIF_PROVIDER || 'klipy'
+  if (service === 'klipy') {
+    const manager = new KlipyManager()
     const request =
       query === ''
         ? manager.featured({limit: first, pos: after})

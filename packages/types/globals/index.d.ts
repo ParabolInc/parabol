@@ -67,7 +67,7 @@ interface Window {
     GLOBAL_BANNER_TEXT: string
     GLOBAL_BANNER_BG_COLOR: string
     GLOBAL_BANNER_COLOR: string
-    GIF_PROVIDER: 'gifabol' | 'tenor' | ''
+    GIF_PROVIDER: 'gifabol' | 'klipy' | ''
     GOOGLE_ERROR_FORM_URL: string
     IS_SINGLE_ORG: boolean
   }

@@ -54,8 +54,8 @@ export const ImageSelectorSearchTab = (props: Props) => {
   const {edges} = searchGifs!
   const service = window.__ACTION__?.GIF_PROVIDER
   // Per attribution spec, the exact wording is required
-  // https://developers.google.com/tenor/guides/attribution
-  const placeholder = service === 'tenor' ? 'Search Tenor' : 'Search Gifs'
+  // https://docs.klipy.com/attribution
+  const placeholder = service === 'klipy' ? 'Search Klipy' : 'Search Gifs'
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = e.target.value
     setSearchQuery(nextValue)
