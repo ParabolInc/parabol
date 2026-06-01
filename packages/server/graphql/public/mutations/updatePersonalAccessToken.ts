@@ -30,6 +30,15 @@ export const updatePersonalAccessToken: MutationResolvers['updatePersonalAccessT
   if (!token) throw new GraphQLError('Token not found')
   if (token.revokedAt) throw new GraphQLError('Token has been revoked')
   if (scopes && scopes.length === 0) throw new GraphQLError('Must have at least 1 scope')
+  if (scopes && authToken.aud === 'action-pat') {
+    const callerScopes = authToken.scope ?? []
+    const forbidden = scopes.filter((s) => !callerScopes.includes(s))
+    if (forbidden.length > 0) {
+      throw new GraphQLError(
+        `Cannot grant scopes not held by calling token: ${forbidden.join(', ')}`
+      )
+    }
+  }
   if (tokenName && tokenName.length > 255) {
     throw new GraphQLError('Name cannot be more than 255 characters')
   }

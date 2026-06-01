@@ -15,11 +15,6 @@ graphql`
 const mutation = graphql`
   mutation ToggleFavoriteTemplateMutation($templateId: ID!) {
     toggleFavoriteTemplate(templateId: $templateId) {
-      ... on ErrorPayload {
-        error {
-          message
-        }
-      }
       ...ToggleFavoriteTemplateMutation_viewer @relay(mask: false)
     }
   }

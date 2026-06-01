@@ -1993,7 +1993,7 @@ type Mutation {
     The ID of the template to be toggled as a favorite
     """
     templateId: ID!
-  ): ToggleFavoriteTemplatePayload! @scope(name: TEMPLATES_WRITE)
+  ): ToggleFavoriteTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
