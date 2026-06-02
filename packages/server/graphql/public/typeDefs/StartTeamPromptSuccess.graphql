@@ -1,8 +1,14 @@
 type StartTeamPromptSuccess {
   """
-  The started meeting
+  The started meeting. Null when the operation only scheduled a recurring series with no
+  meeting starting now (rrule first occurrence is in the future).
   """
-  meeting: TeamPromptMeeting!
+  meeting: TeamPromptMeeting
+
+  """
+  The recurring meeting series, if one was created.
+  """
+  meetingSeries: MeetingSeries
 
   """
   The team that started the meeting

@@ -204,7 +204,7 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
   }
 
   return (
-    <Dialog onClose={onClose} open>
+    <Dialog onClose={onClose} isOpen>
       <DialogContent className='flex flex-col overflow-hidden p-0!'>
         <div className='shrink-0 px-6 pt-6 pb-4'>
           <DialogTitle>

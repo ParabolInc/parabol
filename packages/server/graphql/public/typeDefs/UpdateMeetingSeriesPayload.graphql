@@ -1,0 +1,14 @@
+"""
+Return value for updateMeetingSeries, which could be an error
+"""
+union UpdateMeetingSeriesPayload = UpdateMeetingSeriesSuccess | ErrorPayload
+
+"""
+Success result for updateMeetingSeries mutation
+"""
+type UpdateMeetingSeriesSuccess {
+  """
+  The updated meeting series
+  """
+  meetingSeries: MeetingSeries!
+}

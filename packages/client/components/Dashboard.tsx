@@ -81,6 +81,7 @@ const DashMain = styled('main')({
   height: '100%',
   minHeight: 0,
   overflow: 'auto',
+  overscrollBehavior: 'none',
   position: 'relative'
 })
 

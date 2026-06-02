@@ -4,10 +4,10 @@ import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptM
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import RaisedButton from '../../../../components/RaisedButton'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-import {MenuPosition} from '../../../../hooks/useCoords'
-import useMenu from '../../../../hooks/useMenu'
 import {Elevation} from '../../../../styles/elevation'
-import VideoConferencingMenu from './VideoConferencingMenu'
+import {Menu} from '../../../../ui/Menu/Menu'
+import {MenuContent} from '../../../../ui/Menu/MenuContent'
+import {MenuItem} from '../../../../ui/Menu/MenuItem'
 
 type Props = {
   videoType: GcalVideoTypeEnum | null
@@ -16,7 +16,6 @@ type Props = {
 
 const VideoConferencing = (props: Props) => {
   const {videoType, handleChangeVideoType} = props
-  const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_CENTER)
 
   const selectedOptionLabel = videoType === 'meet' ? 'Google Meet' : 'Zoom'
 
@@ -35,22 +34,33 @@ const VideoConferencing = (props: Props) => {
         </div>
       ) : (
         <div className='py-3'>
-          <RaisedButton
-            onClick={togglePortal}
-            ref={originRef}
-            className='rounded-sm px-4 py-1.5'
-            elevationHovered={Elevation.Z3}
+          <Menu
+            trigger={
+              <RaisedButton className='rounded-sm px-4 py-1.5' elevationHovered={Elevation.Z3}>
+                {'Add Video Conferencing'} <ArrowDropDownIcon />
+              </RaisedButton>
+            }
           >
-            {'Add Video Conferencing'} <ArrowDropDownIcon />
-          </RaisedButton>
+            <MenuContent className='z-30'>
+              <MenuItem onClick={() => handleChangeVideoType('meet')}>
+                <div className='flex items-center p-1'>
+                  <GoogleMeetProviderLogo />
+                  <label className='cursor-pointer pl-2 font-normal text-gray-500 text-sm'>
+                    Google Meet
+                  </label>
+                </div>
+              </MenuItem>
+              <MenuItem isDisabled>
+                <div className='flex items-center p-1'>
+                  <ZoomProviderLogo />
+                  <label className='cursor-not-allowed pl-2 font-normal text-gray-500 text-sm'>
+                    Zoom (Coming Soon!)
+                  </label>
+                </div>
+              </MenuItem>
+            </MenuContent>
+          </Menu>
         </div>
-      )}
-      {menuPortal(
-        <VideoConferencingMenu
-          menuProps={menuProps}
-          videoType={videoType}
-          handleChangeVideoType={handleChangeVideoType}
-        />
       )}
     </div>
   )

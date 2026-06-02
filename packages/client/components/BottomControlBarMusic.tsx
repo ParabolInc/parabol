@@ -3,22 +3,15 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
-import {TransitionStatus} from '~/hooks/useTransition'
 import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
 
 interface Props {
-  status?: TransitionStatus
-  onTransitionEnd?: () => void
   meetingId: string
 }
 
-const BottomControlBarMusic = ({
-  status = TransitionStatus.ENTERED,
-  onTransitionEnd,
-  meetingId
-}: Props) => {
+const BottomControlBarMusic = ({meetingId}: Props) => {
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -50,8 +43,6 @@ const BottomControlBarMusic = ({
       <RadixPopover.Trigger asChild>
         <BottomNavControl
           ref={buttonRef}
-          status={status}
-          onTransitionEnd={onTransitionEnd}
           aria-label='Background music'
           onClick={() => setOpen((prev) => !prev)}
         >

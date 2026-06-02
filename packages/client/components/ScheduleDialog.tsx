@@ -201,7 +201,11 @@ export const ScheduleDialog = (props: Props) => {
             <ExpandMore className={cn(openRecurrence && 'rotate-180')} />
           </Collapsible.Trigger>
           <Collapsible.Content className='space-y-4'>
-            <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
+            <RecurrenceSettings
+              rrule={rrule}
+              onRruleUpdated={setRrule}
+              gcalStartTime={addedInvite && gcal?.auth ? gcalInput.start : undefined}
+            />
           </Collapsible.Content>
         </Collapsible.Root>
       )}

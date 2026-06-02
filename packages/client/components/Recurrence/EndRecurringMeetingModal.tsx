@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
-import {RRule} from 'rrule'
 import type {EndRecurringMeetingModal_meeting$key} from '../../__generated__/EndRecurringMeetingModal_meeting.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -54,7 +53,7 @@ const RadioToggle = (props: RadioToggleProps) => {
 
 interface Props {
   meetingRef: EndRecurringMeetingModal_meeting$key
-  recurrenceRule?: string
+  nextMeetingDate?: string | null
   closeModal: () => void
 }
 
@@ -62,7 +61,7 @@ const ACTION_BUTTON_CLASSES =
   'font-sans text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
-  const {meetingRef, recurrenceRule, closeModal} = props
+  const {meetingRef, nextMeetingDate, closeModal} = props
 
   const meeting = useFragment(
     graphql`
@@ -104,13 +103,9 @@ export const EndRecurringMeetingModal = (props: Props) => {
   }
 
   const fromNow = useMemo(() => {
-    if (!recurrenceRule) return null
-    const now = new Date()
-    const nextMeetingDate = RRule.fromString(recurrenceRule).after(now)
     if (!nextMeetingDate) return null
-
-    return humanReadableCountdown(nextMeetingDate)
-  }, [recurrenceRule])
+    return humanReadableCountdown(new Date(nextMeetingDate))
+  }, [nextMeetingDate])
 
   return (
     <DialogContainer className='p-4'>

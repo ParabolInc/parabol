@@ -18,6 +18,7 @@ interface Props {
 
 const Sidebar = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
   boxShadow: isOpen ? desktopSidebarShadow : Elevation.Z0,
+  height: '100%',
   transition: `box-shadow 200ms ${DECELERATE}`
 }))
 

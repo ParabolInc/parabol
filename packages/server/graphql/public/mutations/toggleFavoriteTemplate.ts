@@ -1,5 +1,6 @@
+import {GraphQLError} from 'graphql'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
+import {getUserId, isTeamMember} from '../../../utils/authorization'
 import type {MutationResolvers} from '../resolverTypes'
 
 const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = async (
@@ -11,26 +12,38 @@ const toggleFavoriteTemplate: MutationResolvers['toggleFavoriteTemplate'] = asyn
   const pg = getKysely()
 
   const favoriteTemplateIds = await dataLoader.get('favoriteTemplateIds').load(viewerId)
-
-  let updatedFavoriteTemplateIds
-
   const isCurrentlyFavorite = favoriteTemplateIds.includes(templateId)
 
-  if (isCurrentlyFavorite) {
-    updatedFavoriteTemplateIds = favoriteTemplateIds.filter((id) => id !== templateId)
-  } else {
-    updatedFavoriteTemplateIds = [...favoriteTemplateIds, templateId]
+  if (!isCurrentlyFavorite) {
+    const template = await dataLoader.get('meetingTemplates').load(templateId)
+    if (!template || !template.isActive) {
+      throw new GraphQLError('Template not found')
+    }
+    const {scope} = template
+    if (scope === 'TEAM') {
+      if (!isTeamMember(authToken, template.teamId)) {
+        throw new GraphQLError('Template is not accessible')
+      }
+    } else if (scope === 'ORGANIZATION') {
+      const viewerTeams = await dataLoader.get('teamsByOrgIds').load(template.orgId)
+      const viewerInOrg = viewerTeams.some((t) => authToken.tms.includes(t.id))
+      if (!viewerInOrg) {
+        throw new GraphQLError('Template is not accessible')
+      }
+    }
   }
+
+  const updatedFavoriteTemplateIds = isCurrentlyFavorite
+    ? favoriteTemplateIds.filter((id) => id !== templateId)
+    : [...favoriteTemplateIds, templateId]
 
   await pg
     .updateTable('User')
-    .set({
-      favoriteTemplateIds: updatedFavoriteTemplateIds
-    })
+    .set({favoriteTemplateIds: updatedFavoriteTemplateIds})
     .where('id', '=', viewerId)
     .execute()
 
-  return true
+  return {userId: viewerId}
 }
 
 export default toggleFavoriteTemplate

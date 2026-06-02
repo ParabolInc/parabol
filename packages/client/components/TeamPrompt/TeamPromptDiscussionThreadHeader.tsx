@@ -28,7 +28,7 @@ const TeamPromptDiscussionThreadHeader = ({
   onToggleReactji
 }: Props) => {
   return (
-    <div className='px-3 pt-4 pb-5'>
+    <div className='self-start px-3 pt-4 pb-5'>
       {teamMember && (
         <div className='flex items-center px-0 pb-3'>
           <Avatar picture={teamMember.user.picture} className='h-12 w-12' />
@@ -43,13 +43,17 @@ const TeamPromptDiscussionThreadHeader = ({
           </h3>
         </div>
       )}
-      <PromptResponseEditor content={contentJSON} readOnly={true} teamId='' />
-      <ReactjiSection
-        className='pt-4'
-        key={stageId}
-        reactjis={response?.reactjis ?? []}
-        onToggle={onToggleReactji}
-      />
+      {contentJSON && (
+        <>
+          <PromptResponseEditor content={contentJSON} readOnly={true} teamId='' />
+          <ReactjiSection
+            className='pt-4'
+            key={stageId}
+            reactjis={response?.reactjis ?? []}
+            onToggle={onToggleReactji}
+          />
+        </>
+      )}
     </div>
   )
 }

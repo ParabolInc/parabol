@@ -2,10 +2,15 @@
 Success result for startRetrospective mutation
 """
 type StartRetrospectiveSuccess {
-  "The newly started retrospective meeting"
-  meeting: RetrospectiveMeeting!
+  """
+  The newly started retrospective meeting. Null when the operation only scheduled a recurring
+  series with no meeting starting now (rrule first occurrence is in the future).
+  """
+  meeting: RetrospectiveMeeting
   "ID of the newly started meeting"
-  meetingId: ID!
+  meetingId: ID
+  "The recurring meeting series, if one was created"
+  meetingSeries: MeetingSeries
   "The team the meeting was started for"
   team: Team!
   "True if creating the Google Calendar event failed"

@@ -6,10 +6,11 @@ import {cn} from '../cn'
 
 interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Trigger> {
   isLoading?: boolean
+  iconClassName?: string
 }
 
 export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerProps>(
-  ({className, children, isLoading, ...props}, ref) => (
+  ({className, children, isLoading, iconClassName, ...props}, ref) => (
     <RadixSelect.Trigger
       ref={ref}
       className={cn(
@@ -20,7 +21,7 @@ export const SelectTrigger = React.forwardRef<HTMLButtonElement, SelectTriggerPr
     >
       {children}
       {isLoading && <div className='w-full pt-1'>{<Loader />}</div>}
-      <RadixSelect.Icon asChild>
+      <RadixSelect.Icon className={iconClassName}>
         <KeyboardArrowDown className='h-5 w-5' />
       </RadixSelect.Icon>
     </RadixSelect.Trigger>

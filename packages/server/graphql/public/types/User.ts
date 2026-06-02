@@ -4,6 +4,7 @@ import {sql} from 'kysely'
 import ms from 'ms'
 import DomainJoinRequestId from 'parabol-client/shared/gqlIds/DomainJoinRequestId'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import {isNotNull} from 'parabol-client/utils/predicates'
 import toTeamMemberId from 'parabol-client/utils/relay/toTeamMemberId'
@@ -117,6 +118,14 @@ const User: ReqResolvers<'User'> = {
   },
   meeting: async (_source, {meetingId}, {dataLoader}) => {
     return (await dataLoader.get('newMeetings').load(meetingId)) ?? null
+  },
+  meetingSeries: async (_source, {meetingSeriesId}, {authToken, dataLoader}) => {
+    const numericId = MeetingSeriesId.split(meetingSeriesId)
+    if (!Number.isFinite(numericId)) return null
+    const meetingSeries = await dataLoader.get('meetingSeries').load(numericId)
+    if (!meetingSeries) return null
+    if (!isTeamMember(authToken, meetingSeries.teamId)) return null
+    return meetingSeries
   },
   meetings: async (
     _source,
@@ -665,8 +674,25 @@ const User: ReqResolvers<'User'> = {
     }
     return request
   },
-  favoriteTemplates: async ({favoriteTemplateIds}, _args, {dataLoader}) => {
-    return (await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)).filter(isValid)
+  favoriteTemplates: async ({favoriteTemplateIds}, _args, {authToken, dataLoader}) => {
+    const templates = (
+      await dataLoader.get('meetingTemplates').loadMany(favoriteTemplateIds)
+    ).filter(isValid)
+    const accessible = await Promise.all(
+      templates.map(async (template) => {
+        const {scope, teamId, orgId} = template
+        if (scope === 'PUBLIC') return true
+        if (scope === 'TEAM') return authToken.tms.includes(teamId)
+        if (scope === 'ORGANIZATION') {
+          const organizationUsers = await dataLoader
+            .get('organizationUsersByUserId')
+            .load(getUserId(authToken))
+          return organizationUsers.some((ou) => ou.orgId === orgId)
+        }
+        return false
+      })
+    )
+    return templates.filter((_, i) => accessible[i])
   },
   featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
     return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName})

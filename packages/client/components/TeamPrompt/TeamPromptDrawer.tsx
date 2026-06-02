@@ -75,7 +75,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
   const activeStage =
     selectedStage?.discussionId && selectedStage?.teamMember
       ? selectedStage
-      : allStages.find((s) => s.discussionId && s.teamMember)
+      : allStages.find((s) => s.discussionId && s.teamMember && s.response?.content)
 
   const {discussionId, teamMember, response} = activeStage ?? {}
 

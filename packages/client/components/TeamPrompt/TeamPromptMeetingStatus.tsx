@@ -1,7 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
-import {RRule} from 'rrule'
 import type {TeamPromptMeetingStatus_meeting$key} from '~/__generated__/TeamPromptMeetingStatus_meeting.graphql'
 import {TimeLeftBadge} from '../Recurrence/TimeLeftBadge'
 import {TeamPromptEndedBadge} from './TeamPromptEndedBadge'
@@ -20,8 +18,8 @@ export const TeamPromptMeetingStatus = (props: Props) => {
         endedAt
         meetingSeries {
           id
-          recurrenceRule
           cancelledAt
+          nextMeetingDate
           activeMeetings {
             id
             createdAt
@@ -37,12 +35,8 @@ export const TeamPromptMeetingStatus = (props: Props) => {
   const isRecurring = !!meetingSeries && !meetingSeries.cancelledAt
   const hasActiveMeetings = isRecurring && meetingSeries.activeMeetings?.length > 0
   const closestActiveMeetingId = hasActiveMeetings ? meetingSeries.activeMeetings[0]!.id : null
-  const nextMeetingDate = useMemo(() => {
-    if (!isRecurring) return null
-    const recurrenceRule = meetingSeries.recurrenceRule!
-    const now = new Date()
-    return RRule.fromString(recurrenceRule).after(now)
-  }, [meetingSeries])
+  const nextMeetingDate =
+    isRecurring && meetingSeries.nextMeetingDate ? new Date(meetingSeries.nextMeetingDate) : null
 
   if (!isMeetingEnded) {
     if (scheduledEndTime) {

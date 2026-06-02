@@ -9,6 +9,7 @@ import type {TeamPromptMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {Logger} from '../../../utils/Logger'
+import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {InternalContext} from '../../graphql'
@@ -87,11 +88,21 @@ const safeEndTeamPrompt = async ({
   await pg.insertInto('TimelineEvent').values(events).execute()
   analytics.teamPromptEnd(completedTeamPrompt, meetingMembers, responses, dataLoader)
   const [page, summary] = await Promise.all([
-    publishSummaryPage(meetingId, context, info),
-    summarizeTeamPrompt(completedTeamPrompt, context)
+    publishSummaryPage(meetingId, context, info).catch((e) => {
+      logError(e instanceof Error ? e : new Error(`publishSummaryPage failed: ${e}`), {
+        tags: {meetingId, op: 'publishSummaryPage'}
+      })
+      return null
+    }),
+    summarizeTeamPrompt(completedTeamPrompt, context).catch((e) => {
+      logError(e instanceof Error ? e : new Error(`summarizeTeamPrompt failed: ${e}`), {
+        tags: {meetingId, op: 'summarizeTeamPrompt'}
+      })
+      return null
+    })
   ])
-  completedTeamPrompt.summaryPageId = page.id
-  completedTeamPrompt.summary = summary
+  if (page) completedTeamPrompt.summaryPageId = page.id
+  if (summary) completedTeamPrompt.summary = summary
   const data = {
     meetingId,
     teamId
@@ -105,7 +116,7 @@ const safeEndTeamPrompt = async ({
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamPromptSuccess', data, subOptions)
   // do not await sending the email
-  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  if (page) sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
   return data
 }
 

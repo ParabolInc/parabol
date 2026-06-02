@@ -9,6 +9,11 @@ graphql`
       id
       ...TeamPromptMeetingStatus_meeting
     }
+    meetingSeries {
+      id
+      title
+      nextMeetingDate
+    }
     team {
       ...MeetingsDashActiveMeetings @relay(mask: false)
     }
@@ -51,9 +56,28 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Naviga
     variables,
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
-      const {startTeamPrompt} = res
-      const {meeting, hasGcalError} = startTeamPrompt
-      if (!meeting) return
+      const startTeamPrompt = res?.startTeamPrompt
+      if (!startTeamPrompt) return
+      const {meeting, meetingSeries, hasGcalError} = startTeamPrompt
+      if (!meeting) {
+        if (meetingSeries) {
+          atmosphere.eventEmitter.emit('addSnackbar', {
+            key: `meetingScheduled:${meetingSeries.id}`,
+            autoDismiss: 10,
+            showDismissButton: true,
+            message: `🗓️ "${meetingSeries.title}" is scheduled to start at the next recurrence.`
+          })
+          if (hasGcalError) {
+            atmosphere.eventEmitter.emit('addSnackbar', {
+              key: `gcalError:scheduled:${meetingSeries.id}`,
+              autoDismiss: 0,
+              showDismissButton: true,
+              message: `Sorry, we couldn't create your Google Calendar event`
+            })
+          }
+        }
+        return
+      }
       const {id: meetingId} = meeting
       if (hasGcalError) {
         atmosphere.eventEmitter.emit('addSnackbar', {

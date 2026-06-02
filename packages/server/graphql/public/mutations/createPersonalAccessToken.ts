@@ -17,6 +17,15 @@ export const createPersonalAccessToken: MutationResolvers['createPersonalAccessT
   if (scopes.length === 0) {
     throw new GraphQLError('Must pick at least one scope')
   }
+  if (authToken.aud === 'action-pat') {
+    const callerScopes = authToken.scope ?? []
+    const forbidden = scopes.filter((s) => !callerScopes.includes(s))
+    if (forbidden.length > 0) {
+      throw new GraphQLError(
+        `Cannot grant scopes not held by calling token: ${forbidden.join(', ')}`
+      )
+    }
+  }
 
   const maxExpiry = new Date(Date.now() + ms('1y'))
   if (expiresAt > maxExpiry) {

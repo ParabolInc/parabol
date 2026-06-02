@@ -23,7 +23,7 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
   }
 
   return (
-    <Dialog open={true} onClose={onClose}>
+    <Dialog isOpen onClose={onClose}>
       <DialogContent className='flex flex-col gap-4'>
         <DialogTitle>Token Created</DialogTitle>
         <p className='text-slate-600 text-sm'>Copy your new token now — it won't be shown again.</p>
