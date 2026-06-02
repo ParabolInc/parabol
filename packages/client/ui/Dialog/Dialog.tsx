@@ -10,7 +10,8 @@ export const DialogStateContext = React.createContext<DialogStateContextValue>({
 })
 export const useDialogState = () => React.useContext(DialogStateContext)
 
-interface DialogProps extends React.ComponentPropsWithoutRef<typeof RadixDialog.Root> {
+interface DialogProps
+  extends Omit<React.ComponentPropsWithoutRef<typeof RadixDialog.Root>, 'open'> {
   isOpen?: boolean
   onClose?: () => void
   children: React.ReactNode
