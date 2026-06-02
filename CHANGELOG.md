@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.23.0](https://github.com/ParabolInc/parabol/compare/v13.22.4...v13.23.0) (2026-06-02)
+
+
+### Added
+
+* replace tenor with klipy ([#13171](https://github.com/ParabolInc/parabol/issues/13171)) ([b98707a](https://github.com/ParabolInc/parabol/commit/b98707ac76422b4a2f0b4bdc9b0f147d05ab1cd4))
+
 ## [13.22.4](https://github.com/ParabolInc/parabol/compare/v13.22.3...v13.22.4) (2026-06-02)
 
 
