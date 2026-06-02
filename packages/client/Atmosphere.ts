@@ -532,10 +532,11 @@ export default class Atmosphere extends Environment {
       }
     })
   }
-  refreshSession() {
+  refreshSession(onCompleted?: () => void) {
     commitMutation<AtmosphereSignOutMutation>(this, {
       mutation: refreshSessionMutation,
-      variables: {}
+      variables: {},
+      onCompleted
     })
   }
   close() {
