@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.22.4](https://github.com/ParabolInc/parabol/compare/v13.22.3...v13.22.4) (2026-06-02)
+
+
+### Fixed
+
+* support no teams in create meeting ([#13180](https://github.com/ParabolInc/parabol/issues/13180)) ([f662fc6](https://github.com/ParabolInc/parabol/commit/f662fc68a7ae30924906f2d0854c797cc9631b61))
+
 ## [13.22.3](https://github.com/ParabolInc/parabol/compare/v13.22.2...v13.22.3) (2026-06-02)
 
 
