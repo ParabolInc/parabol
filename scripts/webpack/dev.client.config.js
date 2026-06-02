@@ -156,10 +156,10 @@ module.exports = {
         GLOBAL_BANNER_BG_COLOR: process.env.GLOBAL_BANNER_BG_COLOR,
         GLOBAL_BANNER_COLOR: process.env.GLOBAL_BANNER_COLOR,
         GIF_PROVIDER:
-          process.env.GIF_PROVIDER !== 'tenor'
+          process.env.GIF_PROVIDER !== 'klipy'
             ? process.env.GIF_PROVIDER
-            : process.env.TENOR_SECRET
-              ? 'tenor'
+            : process.env.GIF_SECRET
+              ? 'klipy'
               : '',
         GOOGLE_ERROR_FORM_URL: process.env.GOOGLE_ERROR_FORM_URL,
         IS_SINGLE_ORG: process.env.IS_SINGLE_ORG === 'true' && process.env.IS_ENTERPRISE === 'true'
