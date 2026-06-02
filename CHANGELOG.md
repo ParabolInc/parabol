@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.22.3](https://github.com/ParabolInc/parabol/compare/v13.22.2...v13.22.3) (2026-06-02)
+
+
+### Fixed
+
+* dialog open prop Page scroll behavior ([#13177](https://github.com/ParabolInc/parabol/issues/13177)) ([43c9253](https://github.com/ParabolInc/parabol/commit/43c9253ac60dc3f39251f19f2ef46f1c45656b5c))
+
 ## [13.22.2](https://github.com/ParabolInc/parabol/compare/v13.22.1...v13.22.2) (2026-06-01)
 
 
