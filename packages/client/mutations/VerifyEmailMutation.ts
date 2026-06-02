@@ -34,7 +34,7 @@ const VerifyEmailMutation: StandardMutation<TSignUpWithPasswordMutation, Navigat
     onCompleted: (res, errors) => {
       const {acceptTeamInvitation, verifyEmail} = res
       onCompleted({verifyEmail}, errors)
-      if (!errors) {
+      if (!errors && !verifyEmail.error) {
         handleSuccessfulLogin(atmosphere, verifyEmail)
         const redirectPath = '/meetings'
 

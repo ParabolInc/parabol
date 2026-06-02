@@ -138,7 +138,14 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
       // contextValue.authToken with a new tms array. Without this sync,
       // subsequent queries on the same connection would use stale tms.
       const mutationToken = (contextValue as ServerContext).authToken
-      if (mutationToken && mutationToken !== context.extra.authToken) {
+      const initialToken = (contextValue as any)._wsAuthTokenAtStart as AuthToken | undefined
+      // Only sync if the mutation itself changed authToken (not just extra.authToken being
+      // updated externally by an AuthTokenPayload subscription event after this op started).
+      if (
+        mutationToken &&
+        mutationToken !== initialToken &&
+        mutationToken !== context.extra.authToken
+      ) {
         context.extra.authToken = mutationToken
       }
       return result
@@ -227,7 +234,8 @@ export const wsHandler = makeBehavior<{token?: string; docId?: string}>({
         rateLimiter,
         ip,
         authToken,
-        socketId
+        socketId,
+        _wsAuthTokenAtStart: authToken
       },
       rootValue: {
         execute,
