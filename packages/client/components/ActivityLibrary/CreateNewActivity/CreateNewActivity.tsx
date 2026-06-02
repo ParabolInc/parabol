@@ -142,11 +142,15 @@ export const CreateNewActivity = (props: Props) => {
     freeCustomRetroTemplatesRemaining,
     freeCustomPokerTemplatesRemaining
   } = viewer
+  const sortedTeams = sortByTier(teams)
   const [selectedTeam, setSelectedTeam] = useState(
-    teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]!
+    teams.find((team) => team.id === preferredTeamId) ?? sortedTeams[0]
   )
+
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
   const navigate = useNavigate()
+
+  if (!selectedTeam) return null
   const freeCustomTemplatesRemaining =
     selectedActivity.type === 'retrospective'
       ? freeCustomRetroTemplatesRemaining
