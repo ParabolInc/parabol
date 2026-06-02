@@ -43,7 +43,6 @@ const validatePassword = (password: string) => {
     .required('Please enter a password')
     .min(Security.MIN_PASSWORD_LENGTH, `${Security.MIN_PASSWORD_LENGTH} character minimum`)
     .max(1000, `That's a book, not a password`)
-    .test((value) => passwordStrength(value))
 }
 
 const SetNewPassword = () => {
@@ -71,6 +70,11 @@ const SetNewPassword = () => {
     setDirtyField()
     const {password: passwordRes} = validateField()
     if (passwordRes.error) return
+    const strengthError = passwordStrength(passwordRes.value)
+    if (strengthError) {
+      fields.password.setError(strengthError)
+      return
+    }
     const {value: newPassword} = passwordRes
     submitMutation()
     ResetPasswordMutation(

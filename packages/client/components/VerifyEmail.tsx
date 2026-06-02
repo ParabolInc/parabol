@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useEffect, useRef} from 'react'
 import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
@@ -18,8 +18,11 @@ const VerifyEmail = () => {
   const {verificationToken, invitationToken} = useParams()
   const atmosphere = useAtmosphere()
   const {onCompleted, onError, error, submitMutation} = useMutationProps()
+  const calledRef = useRef(false)
   useCanonical('verify-email')
   useEffect(() => {
+    if (calledRef.current) return
+    calledRef.current = true
     submitMutation()
     VerifyEmailMutation(
       atmosphere,

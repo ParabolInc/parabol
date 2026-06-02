@@ -82,12 +82,11 @@ const validateEmail = (email: string) => {
     .matches(emailRegex, 'Please enter a valid email address')
 }
 
-const validatePassword = (password: string, {email}: {email: string}) => {
+const validatePassword = (password: string) => {
   return new Legitity(password)
     .required('Please enter a password')
     .min(Security.MIN_PASSWORD_LENGTH, `${Security.MIN_PASSWORD_LENGTH} character minimum`)
     .max(1000, `That's a book, not a password`)
-    .test((value) => passwordStrength(value, email))
 }
 
 const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
@@ -241,6 +240,11 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
       return
     }
     if (signInWithSSOSucceeded || passwordRes.error) return
+    const strengthError = passwordStrength(passwordRes.value, email)
+    if (strengthError) {
+      fields.password.setError(strengthError)
+      return
+    }
     const {value: password} = passwordRes
     submitMutation()
     if (isSignin) {

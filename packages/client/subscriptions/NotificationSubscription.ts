@@ -266,11 +266,14 @@ const addNewFeatureNotificationUpdater: SharedUpdater<any> = (payload, {store}) 
 }
 
 const authTokenNotificationOnNext: NextHandler = (_payload, {atmosphere}) => {
-  atmosphere.refreshSession()
-  // The new auth token's tms has changed, so every viewer.canAccess(...) result
-  // cached in the store may be wrong. Mark viewer stale so the next read refetches.
-  commitLocalUpdate(atmosphere, (store) => {
-    store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+  // Invalidate viewer only after refreshSession completes so the server has already
+  // updated extra.authToken to the new token. Invalidating immediately would trigger
+  // a Relay refetch while the old token's jti is being blacklisted mid-mutation,
+  // causing useCheckBlacklist to null out authToken on the concurrent query.
+  atmosphere.refreshSession(() => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.getRoot().getLinkedRecord('viewer')?.invalidateRecord()
+    })
   })
 }
 
