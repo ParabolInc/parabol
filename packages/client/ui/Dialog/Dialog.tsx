@@ -1,5 +1,14 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
-import type * as React from 'react'
+import * as React from 'react'
+
+interface DialogStateContextValue {
+  isOpen: boolean | undefined
+}
+
+export const DialogStateContext = React.createContext<DialogStateContextValue>({
+  isOpen: undefined
+})
+export const useDialogState = () => React.useContext(DialogStateContext)
 
 interface DialogProps extends React.ComponentPropsWithoutRef<typeof RadixDialog.Root> {
   isOpen?: boolean
@@ -10,16 +19,18 @@ interface DialogProps extends React.ComponentPropsWithoutRef<typeof RadixDialog.
 export const Dialog = (props: DialogProps) => {
   const {isOpen, onClose, children, ...other} = props
   return (
-    <RadixDialog.Root
-      open={isOpen}
-      onOpenChange={(newOpen) => {
-        if (!newOpen) {
-          onClose?.()
-        }
-      }}
-      {...other}
-    >
-      {children}
-    </RadixDialog.Root>
+    <DialogStateContext.Provider value={{isOpen}}>
+      <RadixDialog.Root
+        open={isOpen}
+        onOpenChange={(newOpen) => {
+          if (!newOpen) {
+            onClose?.()
+          }
+        }}
+        {...other}
+      >
+        {children}
+      </RadixDialog.Root>
+    </DialogStateContext.Provider>
   )
 }

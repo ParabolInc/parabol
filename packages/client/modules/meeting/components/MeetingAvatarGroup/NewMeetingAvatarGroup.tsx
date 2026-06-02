@@ -20,7 +20,7 @@ const AvatarSlot = forwardRef<HTMLDivElement, {children: React.ReactNode}>(({chi
     layout
     initial={{opacity: 0, scale: 1}}
     animate={{opacity: 1, scale: 1}}
-    exit={{opacity: 0, scale: 0.5, width: 0}}
+    exit={{opacity: 0, scale: 0.5, width: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
     transition={MOTION_TRANSITION}
   >
     {children}

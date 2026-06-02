@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import {sql} from 'kysely'
-import {toDateTime} from 'parabol-client/shared/rruleUtil'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
@@ -14,6 +13,33 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import {updateGcalSeries} from '../../mutations/helpers/createGcalEvent'
 import type {MutationResolvers} from '../resolverTypes'
+
+export const createMeetingSeries = async (params: {
+  meetingType: MeetingTypeEnum
+  title: string
+  recurrenceRule: RRuleSet
+  teamId: string
+  facilitatorId: string
+}) => {
+  const pg = getKysely()
+  const newMeetingSeriesParams = {
+    meetingType: params.meetingType,
+    title: params.title,
+    recurrenceRule: params.recurrenceRule.toString(),
+    duration: 0,
+    teamId: params.teamId,
+    facilitatorId: params.facilitatorId
+  } as const
+  const newMeetingSeries = await pg
+    .insertInto('MeetingSeries')
+    .values(newMeetingSeriesParams)
+    .returning('id')
+    .executeTakeFirstOrThrow()
+  return {
+    id: newMeetingSeries.id,
+    ...newMeetingSeriesParams
+  }
+}
 
 export const startNewMeetingSeries = async (
   meeting: {
@@ -33,38 +59,26 @@ export const startNewMeetingSeries = async (
     name: meetingName,
     facilitatorUserId: facilitatorId
   } = meeting
-  const pg = getKysely()
   if (!facilitatorId) {
     throw new Error('No facilitatorId')
   }
-  const newMeetingSeriesParams = {
+  const newMeetingSeries = await createMeetingSeries({
     meetingType,
-    title: meetingSeriesName || meetingName.split('-')[0]!.trim(), // if no name is provided, we use the name of the first meeting without the date
-    recurrenceRule: recurrenceRule.toString(),
-    // TODO: once we have to UI ready, we should set and handle it properly, for now meeting will last till the new meeting starts
-    duration: 0,
+    title: meetingSeriesName || meetingName.split('-')[0]!.trim(),
+    recurrenceRule,
     teamId,
     facilitatorId
-  } as const
-  const newMeetingSeries = await pg
-    .insertInto('MeetingSeries')
-    .values(newMeetingSeriesParams)
-    .returning('id')
-    .executeTakeFirstOrThrow()
-  const newMeetingSeriesId = newMeetingSeries.id
+  })
   const nextMeetingStartDate = getNextRRuleDate(recurrenceRule)
-  await pg
+  await getKysely()
     .updateTable('NewMeeting')
     .set({
-      meetingSeriesId: newMeetingSeriesId,
+      meetingSeriesId: newMeetingSeries.id,
       scheduledEndTime: nextMeetingStartDate
     })
     .where('id', '=', meetingId)
     .execute()
-  return {
-    id: newMeetingSeriesId,
-    ...newMeetingSeriesParams
-  }
+  return newMeetingSeries
 }
 
 const updateMeetingSeries = async (
@@ -113,13 +127,17 @@ export const stopMeetingSeries = async (meetingSeries: MeetingSeries) => {
     .execute()
 }
 
-const updateGCalRecurrenceRule = (oldRule: RRuleSet, newRule: RRuleSet | null | undefined) => {
+export const updateGCalRecurrenceRule = (
+  oldRule: RRuleSet,
+  newRule: RRuleSet | null | undefined
+) => {
   // null newRule means end the series
   if (newRule) return newRule
-  const {tzid} = oldRule
-  const now = DateTime.fromString(toDateTime(dayjs(), tzid))
-  oldRule.rrules.forEach((rrule) => rrule.setUntil(now))
-  return oldRule
+  // rrule-rust's setX methods return new instances; mutating in place would silently no-op.
+  // UNTIL must be UTC (Z suffix) — Google rejects local-time UNTIL with 400 "Invalid recurrence rule".
+  const now = DateTime.fromString(dayjs().utc().format('YYYYMMDD[T]HHmmss[Z]'))
+  const updatedRrules = oldRule.rrules.map((rrule) => rrule.setUntil(now))
+  return oldRule.setRrules(updatedRrules)
 }
 
 const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = async (
@@ -179,6 +197,7 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
       await updateGcalSeries({
         gcalSeriesId,
         name: name ?? undefined,
+        meetingSeriesId,
         rrule: newRrule,
         teamId,
         userId: facilitatorId,

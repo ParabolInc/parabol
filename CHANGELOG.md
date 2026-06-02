@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.22.2](https://github.com/ParabolInc/parabol/compare/v13.22.1...v13.22.2) (2026-06-01)
+
+
+### Fixed
+
+* migration order ([#13174](https://github.com/ParabolInc/parabol/issues/13174)) ([ae91ac7](https://github.com/ParabolInc/parabol/commit/ae91ac7df46a404c4f9e34c58b1854b71a310297))
+
+## [13.22.1](https://github.com/ParabolInc/parabol/compare/v13.22.0...v13.22.1) (2026-06-01)
+
+
+### Fixed
+
+* audit scope perms ([#13172](https://github.com/ParabolInc/parabol/issues/13172)) ([66dffc9](https://github.com/ParabolInc/parabol/commit/66dffc952fe6b5880af8dfcbd48c603b418271ea))
+
+## [13.22.0](https://github.com/ParabolInc/parabol/compare/v13.21.1...v13.22.0) (2026-06-01)
+
+
+### Added
+
+* recurrence no longer must start meeting immediately ([#13140](https://github.com/ParabolInc/parabol/issues/13140)) ([10ecf17](https://github.com/ParabolInc/parabol/commit/10ecf17f11267b9606119accd75dee2e6b5df59b))
+
+
+### Fixed
+
+* avatar fallbacks and delay opening in meeting ([#13166](https://github.com/ParabolInc/parabol/issues/13166)) ([4477e1b](https://github.com/ParabolInc/parabol/commit/4477e1bf968cae801f8a2c81f03a679a72ec489c))
+* bugs from datadog: deadlock, parsing, etc ([#13163](https://github.com/ParabolInc/parabol/issues/13163)) ([2a6501c](https://github.com/ParabolInc/parabol/commit/2a6501ccda4e70ff4fc95ef5f60a70835f0710d3))
+* remove useTransition ([#13169](https://github.com/ParabolInc/parabol/issues/13169)) ([d137d7b](https://github.com/ParabolInc/parabol/commit/d137d7b10abbb91d5ba71713c9dd7ef0e5dc496c))
+* updating radix dialogs ([#13167](https://github.com/ParabolInc/parabol/issues/13167)) ([67f0a03](https://github.com/ParabolInc/parabol/commit/67f0a037be117d3ef42bc06e4965cf7e245a428e))
+
 ## [13.21.1](https://github.com/ParabolInc/parabol/compare/v13.21.0...v13.21.1) (2026-05-28)
 
 

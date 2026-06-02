@@ -1,12 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {Suspense, useEffect, useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {TeamPromptMeeting_meeting$key} from '~/__generated__/TeamPromptMeeting_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMeeting from '~/hooks/useMeeting'
-import useTransition from '~/hooks/useTransition'
 import {isNotNull} from '~/utils/predicates'
 import sortByISO8601Date from '~/utils/sortByISO8601Date'
 import getPhaseByTypename from '../utils/getPhaseByTypename'
@@ -18,31 +17,8 @@ import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import TeamPromptDrawer from './TeamPrompt/TeamPromptDrawer'
 import TeamPromptEditablePrompt from './TeamPrompt/TeamPromptEditablePrompt'
-import {
-  GRID_PADDING_LEFT_RIGHT_PERCENT,
-  ResponsesGridBreakpoints
-} from './TeamPrompt/TeamPromptGridDimensions'
 import TeamPromptResponseCard from './TeamPrompt/TeamPromptResponseCard'
 import TeamPromptTopBar from './TeamPrompt/TeamPromptTopBar'
-
-const twoColumnResponseMediaQuery = `@media screen and (min-width: ${ResponsesGridBreakpoints.TWO_RESPONSE_COLUMN}px)`
-
-const ResponsesGridContainer = styled('div')({
-  height: '100%',
-  overflow: 'auto',
-  padding: 16,
-  [twoColumnResponseMediaQuery]: {
-    padding: `32px ${GRID_PADDING_LEFT_RIGHT_PERCENT * 100}%`
-  }
-})
-const ResponsesGrid = styled('div')({
-  flex: 1,
-  display: 'flex',
-  flexWrap: 'wrap',
-  flexDirection: 'column',
-  position: 'relative',
-  gap: 32
-})
 
 interface Props {
   meeting: TeamPromptMeeting_meeting$key
@@ -108,15 +84,8 @@ const TeamPromptMeeting = (props: Props) => {
       orderedStages = [viewerCard, ...orderedStages]
     }
 
-    return orderedStages.map((stage, displayIdx) => {
-      return {
-        ...stage,
-        key: stage.id,
-        displayIdx
-      }
-    })
+    return orderedStages.map((stage) => ({...stage, key: stage.id}))
   }, [phase])
-  const transitioningStages = useTransition(stages)
   const {safeRoute} = useMeeting(meeting)
   const location = useLocation()
   const {id: meetingId, localStageId} = meeting
@@ -164,24 +133,16 @@ const TeamPromptMeeting = (props: Props) => {
               <TeamPromptTopBar meetingRef={meeting} />
               <TeamPromptEditablePrompt meetingRef={meeting} />
               <ErrorBoundary>
-                <ResponsesGridContainer>
-                  <ResponsesGrid>
-                    {transitioningStages.map((transitioningStage) => {
-                      const {child: stage, onTransitionEnd, status} = transitioningStage
-                      const {key, displayIdx} = stage
-
-                      return (
-                        <TeamPromptResponseCard
-                          key={key}
-                          status={status}
-                          onTransitionEnd={onTransitionEnd}
-                          displayIdx={displayIdx}
-                          stageRef={stage}
-                        />
-                      )
-                    })}
-                  </ResponsesGrid>
-                </ResponsesGridContainer>
+                {/* twoColumnBreakpoint=880px, padding=10% of screen */}
+                <div className='h-full overflow-auto p-4 min-[880px]:px-[10%] min-[880px]:py-8'>
+                  <div className='relative flex flex-1 flex-col flex-wrap gap-8'>
+                    <AnimatePresence initial={false}>
+                      {stages.map((stage) => (
+                        <TeamPromptResponseCard key={stage.key} stageRef={stage} />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </div>
               </ErrorBoundary>
             </MeetingHeaderAndPhase>
             <TeamPromptDrawer meetingRef={meeting} />

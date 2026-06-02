@@ -1,26 +1,13 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {type ReactElement, useLayoutEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useResizeObserver from '~/hooks/useResizeObserver'
 import type {AvatarList_users$key} from '../__generated__/AvatarList_users.graphql'
 import useOverflowAvatars from '../hooks/useOverflowAvatars'
-import {TransitionStatus} from '../hooks/useTransition'
 import {BezierCurve} from '../types/constEnums'
 import AvatarListUser from './AvatarListUser'
 import OverflowAvatar from './OverflowAvatar'
-
-const Wrapper = styled('div')<{minHeight: number; size: number}>(({minHeight, size}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  // This left margin accounts for the border on the avatar
-  // giving us tighter vertical alignment on the left edge
-  marginLeft: size >= 40 ? -3 : -2,
-  position: 'relative',
-  width: '100%',
-  transition: `min-height 100ms ${BezierCurve.DECELERATE}`,
-  minHeight
-}))
 
 const widthToOverlap = {
   28: 8,
@@ -47,15 +34,7 @@ interface Props {
 }
 
 const AvatarList = (props: Props) => {
-  const {
-    users: usersRef,
-    onUserClick,
-    onOverflowClick,
-    size,
-    emptyEl,
-    isAnimated,
-    borderColor
-  } = props
+  const {users: usersRef, onUserClick, onOverflowClick, size, emptyEl, borderColor} = props
   const users = useFragment(
     graphql`
       fragment AvatarList_users on User @relay(plural: true) {
@@ -81,48 +60,48 @@ const AvatarList = (props: Props) => {
   useLayoutEffect(checkOverflow, [])
   useResizeObserver(checkOverflow, rowRef)
 
-  const transitionChildren = useOverflowAvatars(users, maxAvatars)
-  const showAnimated = isAnimated ?? true
-  const activeTChildren = transitionChildren.filter(
-    (child) => child.status !== TransitionStatus.EXITING
-  )
-  const minHeight = activeTChildren.length === 0 ? 0 : size + sizeToHeightBump[size]
+  const avatars = useOverflowAvatars(users, maxAvatars)
+  const minHeight = avatars.length === 0 ? 0 : size + sizeToHeightBump[size]
   return (
-    <Wrapper ref={rowRef} minHeight={minHeight} size={size}>
-      {transitionChildren.length === 0 && emptyEl}
-      {transitionChildren.map(({onTransitionEnd, child, status, displayIdx}) => {
-        const {id: userId} = child
-        if ('overflowCount' in child) {
-          const {overflowCount} = child
+    <div
+      ref={rowRef}
+      className='relative flex w-full items-center'
+      style={{
+        marginLeft: size >= 40 ? -3 : -2,
+        minHeight,
+        transition: `min-height 100ms ${BezierCurve.DECELERATE}`
+      }}
+    >
+      {avatars.length === 0 && emptyEl}
+      <AnimatePresence initial={false}>
+        {avatars.map((child, idx) => {
+          const {id: userId} = child
+          if ('overflowCount' in child) {
+            const {overflowCount, displayIdx} = child
+            return (
+              <OverflowAvatar
+                key={userId}
+                offset={offsetSize * displayIdx}
+                overflowCount={overflowCount}
+                onClick={onOverflowClick}
+                width={size}
+                borderColor={borderColor}
+              />
+            )
+          }
           return (
-            <OverflowAvatar
+            <AvatarListUser
               key={userId}
-              isAnimated={showAnimated}
-              onTransitionEnd={onTransitionEnd}
-              status={status}
-              offset={offsetSize * (displayIdx - overflowCount)}
-              overflowCount={overflowCount}
-              onClick={onOverflowClick}
-              width={size}
+              user={child}
+              onClick={onUserClick ? () => onUserClick(userId) : undefined}
+              offset={offsetSize * idx}
+              className={`${size === 28 ? 'h-7 w-7' : size === 46 ? 'h-11.5 w-11.5' : ''}`}
               borderColor={borderColor}
             />
           )
-        }
-        return (
-          <AvatarListUser
-            key={userId}
-            isAnimated={showAnimated}
-            user={child}
-            onClick={onUserClick ? () => onUserClick(userId) : undefined}
-            onTransitionEnd={onTransitionEnd}
-            status={status}
-            offset={offsetSize * displayIdx}
-            className={`${size === 28 ? 'h-7 w-7' : size === 46 ? 'h-[46px] w-[46px]' : ''}`}
-            borderColor={borderColor}
-          />
-        )
-      })}
-    </Wrapper>
+        })}
+      </AnimatePresence>
+    </div>
   )
 }
 

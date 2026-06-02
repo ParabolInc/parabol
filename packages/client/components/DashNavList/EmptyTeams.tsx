@@ -82,13 +82,12 @@ const EmptyTeams = (props: Props) => {
           </DialogActions>
         }
       />
-      {showAddTeamDialog && (
-        <AddTeamDialogRoot
-          onTeamAdded={() => setShowAddTeamDialog(false)}
-          onClose={() => setShowAddTeamDialog(false)}
-          orgId={orgId}
-        />
-      )}
+      <AddTeamDialogRoot
+        isOpen={showAddTeamDialog}
+        onTeamAdded={() => setShowAddTeamDialog(false)}
+        onClose={() => setShowAddTeamDialog(false)}
+        orgId={orgId}
+      />
     </>
   )
 }

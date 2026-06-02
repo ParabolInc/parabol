@@ -1,25 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingTeamPickerAvatars_team$key} from '../__generated__/NewMeetingTeamPickerAvatars_team.graphql'
+import {cn} from '../ui/cn'
 import getShuffledArr from '../utils/getShuffledArr'
 import Avatar from './Avatar/Avatar'
-import ErrorBoundary from './ErrorBoundary'
-
-const Container = styled('div')<{count: number}>(({count}) => ({
-  width: 44,
-  display: 'flex',
-  justifyContent: count > 1 ? 'flex-start' : 'center',
-  flexWrap: 'wrap',
-  bottom: count > 2 ? 4 : 0,
-  position: 'relative'
-}))
-
-const AvatarWrapper = styled('div')<{count: number}>(({count}) => ({
-  width: count > 1 ? 20 : 'auto',
-  height: count > 2 ? 20 : 'auto'
-}))
 
 interface Props {
   teamRef: NewMeetingTeamPickerAvatars_team$key
@@ -37,48 +22,34 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
             picture
           }
           isLead
-          isSelf
         }
       }
     `,
     teamRef
   )
 
-  const {teamMembers} = team
-
-  const randomAvatars = useMemo(() => {
-    const randomTeamMembers = getShuffledArr(teamMembers)
-
-    const filteredMembers = [] as typeof randomTeamMembers
-    randomTeamMembers.forEach((member) => {
-      // Always show the lead first
-      if (member.isLead) {
-        filteredMembers.unshift(member)
-      } else if (teamMembers.length <= 4 || !member.isSelf) {
-        filteredMembers.push(member)
-      }
-    })
-
-    return filteredMembers.slice(0, 4)
-  }, [teamMembers])
+  const avatars = useMemo(() => {
+    const lead = team.teamMembers.find((m) => m.isLead)
+    const others = getShuffledArr(team.teamMembers.filter((m) => !m.isLead))
+    return (lead ? [lead, ...others] : others).slice(0, 4)
+  }, [team.teamMembers])
 
   return (
-    <Container count={randomAvatars.length}>
-      {randomAvatars.map((teamMember) => {
-        const {user} = teamMember
-        const {picture} = user
-        return (
-          <ErrorBoundary key={`pickerAvatar${teamMember.id}`}>
-            <AvatarWrapper count={randomAvatars.length}>
-              <Avatar
-                picture={picture}
-                className={`h-7 w-7 border-2 border-slate-200 border-solid`}
-              />
-            </AvatarWrapper>
-          </ErrorBoundary>
-        )
-      })}
-    </Container>
+    <div className='flex max-w-11 flex-wrap'>
+      {avatars.map((member, i) => (
+        <Avatar
+          key={member.id}
+          picture={member.user.picture}
+          className={cn(
+            'flex-wrap border border-slate-200 border-solid',
+            avatars.length < 2 ? 'h-7 w-7' : 'h-6 w-6',
+            i % 2 && '-ml-2',
+            i > 1 && '-mt-2',
+            avatars.length === 3 && i === 2 && 'mx-auto'
+          )}
+        />
+      ))}
+    </div>
   )
 }
 

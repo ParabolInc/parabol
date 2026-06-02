@@ -4,7 +4,9 @@ import getKysely from '../../../postgres/getKysely'
 import updateMeetingTemplateLastUsedAt from '../../../postgres/queries/updateMeetingTemplateLastUsedAt'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {isImmediateOccurrence} from '../../../utils/isImmediateOccurrence'
 import publish from '../../../utils/publish'
+import RedisLockQueue from '../../../utils/RedisLockQueue'
 import standardError from '../../../utils/standardError'
 import createGcalEvent from '../../mutations/helpers/createGcalEvent'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
@@ -12,7 +14,7 @@ import {IntegrationNotifier} from '../../mutations/helpers/notifications/Integra
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
 import type {MutationResolvers} from '../resolverTypes'
 import {createMeetingMember} from './joinMeeting'
-import {startNewMeetingSeries} from './updateRecurrenceSettings'
+import {createMeetingSeries, startNewMeetingSeries} from './updateRecurrenceSettings'
 
 const startRetrospective: MutationResolvers['startRetrospective'] = async (
   _source,
@@ -47,6 +49,48 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
   const selectedTemplateId = meetingSettings.selectedTemplateId || 'workingStuckTemplate'
   const meetingName = !name ? `Retro #${meetingCount + 1}` : name
   const meetingSeriesName = name || meetingName
+
+  if (rrule && !isImmediateOccurrence(rrule)) {
+    const scheduleLock = new RedisLockQueue(`newMeetingSeries:${teamId}`, 3000)
+    try {
+      await scheduleLock.lock(0)
+    } catch {
+      return standardError(new Error('Meeting already scheduled'), {userId: viewerId})
+    }
+    const meetingSeries = await createMeetingSeries({
+      meetingType,
+      title: meetingSeriesName,
+      recurrenceRule: rrule,
+      teamId,
+      facilitatorId: viewerId
+    })
+    analytics.recurrenceStarted(viewer, meetingSeries)
+    const {error: gcalError, gcalSeriesId} = await createGcalEvent({
+      name: meetingSeriesName,
+      gcalInput,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      teamId,
+      viewerId,
+      rrule,
+      dataLoader
+    })
+    if (gcalSeriesId) {
+      await pg
+        .updateTable('MeetingSeries')
+        .set({gcalSeriesId})
+        .where('id', '=', meetingSeries.id)
+        .execute()
+    }
+    const data = {
+      teamId,
+      meetingId: null,
+      meetingSeriesId: meetingSeries.id,
+      hasGcalError: !!gcalError?.message
+    }
+    publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
+    return data
+  }
 
   const meeting = await safeCreateRetrospective(
     {
@@ -101,6 +145,7 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
     name: meetingSeriesName,
     gcalInput,
     meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
     teamId,
     viewerId,
     rrule,
@@ -113,7 +158,12 @@ const startRetrospective: MutationResolvers['startRetrospective'] = async (
       .where('id', '=', meetingSeries.id)
       .execute()
   }
-  const data = {teamId, meetingId, hasGcalError: !!error?.message}
+  const data = {
+    teamId,
+    meetingId,
+    meetingSeriesId: meetingSeries ? meetingSeries.id : null,
+    hasGcalError: !!error?.message
+  }
   publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
   return data
 }

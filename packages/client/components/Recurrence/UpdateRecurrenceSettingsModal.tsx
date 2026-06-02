@@ -129,8 +129,8 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   const onRecurrenceSettingsUpdated: CompletedHandler<
     TUpdateRecurrenceSettingsMutation['response']
   > = (res, errors) => {
-    onCompleted(res as any, errors)
-    const error = getOnCompletedError(res as any, errors)
+    onCompleted(res, errors)
+    const error = getOnCompletedError(res, errors)
     if (error) {
       return
     }
