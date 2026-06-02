@@ -7,13 +7,14 @@ import {Loader} from '../utils/relay/renderLoader'
 import AddTeamDialog from './AddTeamDialog'
 
 interface Props {
+  isOpen: boolean
   onClose: () => void
   onTeamAdded: (teamId: string) => void
   orgId: string
 }
 
 const AddTeamDialogRoot = (props: Props) => {
-  const {onClose, onTeamAdded, orgId} = props
+  const {isOpen, onClose, onTeamAdded, orgId} = props
 
   const queryRef = useQueryLoaderNow<AddTeamDialogQuery>(addTeamDialogQuery, {
     orgId
@@ -24,7 +25,7 @@ const AddTeamDialogRoot = (props: Props) => {
       {queryRef && (
         <AddTeamDialog
           onTeamAdded={onTeamAdded}
-          isOpen={true}
+          isOpen={isOpen}
           onClose={onClose}
           queryRef={queryRef}
         />

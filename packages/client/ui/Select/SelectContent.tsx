@@ -20,7 +20,7 @@ export const SelectContent = React.forwardRef<
         className={twMerge(
           'p-0',
           position === 'popper' &&
-            'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]'
+            'min-h-(--radix-select-trigger-height) w-full min-w-(--radix-select-trigger-width)'
         )}
       >
         {children}

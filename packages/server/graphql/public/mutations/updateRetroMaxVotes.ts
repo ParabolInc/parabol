@@ -78,23 +78,21 @@ const updateRetroMaxVotes: MutationResolvers['updateRetroMaxVotes'] = async (
         if (min < -delta) throw new Error('Your team has already spent their votes')
       }
       await trx
-        .with('MeetingMemberUpdates', (qb) =>
-          qb
-            .updateTable('MeetingMember')
-            .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
-            .where('meetingId', '=', meetingId)
-        )
-        .with('NewMeetingUpdates', (qb) =>
-          qb
-            .updateTable('NewMeeting')
-            .set({totalVotes, maxVotesPerGroup})
-            .where('id', '=', meetingId)
-        )
+        .updateTable('MeetingMember')
+        .set((eb) => ({votesRemaining: eb('votesRemaining', '+', delta)}))
+        .where('meetingId', '=', meetingId)
+        .execute()
+      await trx
+        .updateTable('NewMeeting')
+        .set({totalVotes, maxVotesPerGroup})
+        .where('id', '=', meetingId)
+        .execute()
+      await trx
         .updateTable('MeetingSettings')
         .set({totalVotes, maxVotesPerGroup})
         .where('teamId', '=', teamId)
         .where('meetingType', '=', 'retrospective')
-        .executeTakeFirstOrThrow()
+        .execute()
     })
   } catch (e) {
     return {error: {message: (e as Error).message}}

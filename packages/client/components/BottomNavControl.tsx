@@ -1,39 +1,32 @@
-import styled from '@emotion/styled'
-import {TransitionStatus} from '~/hooks/useTransition'
-import {BezierCurve, ElementWidth} from '~/types/constEnums'
-import {PALETTE} from '../styles/paletteV3'
+import {forwardRef, type Ref} from 'react'
+import {BezierCurve} from '~/types/constEnums'
+import {cn} from '../ui/cn'
 import FlatButton, {type FlatButtonProps} from './FlatButton'
 
 interface Props extends FlatButtonProps {
   confirming?: boolean
   disabled?: boolean
-  status: TransitionStatus
   waiting?: boolean
 }
 
-const BottomNavControl = styled(FlatButton)<Props>((props) => {
-  const {confirming, disabled, status, waiting} = props
+const BottomNavControl = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
+  const {confirming, disabled, waiting, className, style, ...rest} = props
   const visuallyDisabled = disabled || waiting
-  return {
-    border: 0,
-    borderRadius: 0,
-    minHeight: 56,
-    width:
-      status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
-        ? 0
-        : ElementWidth.CONTROL_BAR_BUTTON,
-    opacity: confirming
-      ? 0.5
-      : status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING
-        ? 0
-        : 1,
-    padding: 0,
-    transformOrigin: 'center bottom',
-    transition: `all 300ms ${BezierCurve.DECELERATE}`,
-    ':hover,:focus,:active': {
-      backgroundColor: !visuallyDisabled ? PALETTE.SLATE_100 : undefined
-    }
-  }
+  return (
+    <FlatButton
+      {...rest}
+      disabled={disabled}
+      waiting={waiting}
+      ref={ref}
+      className={cn(
+        'min-h-14 w-24 origin-bottom rounded-none border-0 p-0',
+        confirming ? 'opacity-50' : 'opacity-100',
+        !visuallyDisabled && 'hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100',
+        className
+      )}
+      style={{transition: `opacity 300ms ${BezierCurve.DECELERATE}`, ...style}}
+    />
+  )
 })
 
 export default BottomNavControl

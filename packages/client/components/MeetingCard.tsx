@@ -1,7 +1,7 @@
 import {datadogRum} from '@datadog/browser-rum'
-import styled from '@emotion/styled'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {motion} from 'motion/react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import action from '../../../static/images/illustrations/action.png'
@@ -9,7 +9,6 @@ import retrospective from '../../../static/images/illustrations/retrospective.pn
 import poker from '../../../static/images/illustrations/sprintPoker.png'
 import teamPrompt from '../../../static/images/illustrations/teamPrompt.png'
 import type {MeetingCard_meeting$key} from '../__generated__/MeetingCard_meeting.graphql'
-import useAnimatedCard from '../hooks/useAnimatedCard'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
@@ -17,10 +16,7 @@ import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
 import useMenu from '../hooks/useMenu'
 import useModal from '../hooks/useModal'
 import useTooltip from '../hooks/useTooltip'
-import {TransitionStatus} from '../hooks/useTransition'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
+import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import getMeetingPhase from '../utils/getMeetingPhase'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -32,157 +28,29 @@ import {EndRecurringMeetingModal} from './Recurrence/EndRecurringMeetingModal'
 import {UpdateRecurrenceSettingsModal} from './Recurrence/UpdateRecurrenceSettingsModal'
 import Tooltip from './Tooltip'
 
-const CardWrapper = styled('div')<{
-  maybeTabletPlus: boolean
-  status: TransitionStatus
-}>(({maybeTabletPlus, status}) => ({
-  position: 'relative',
-  flexShrink: 0,
-  maxWidth: '100%',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  marginBottom: maybeTabletPlus ? 0 : 16,
-  opacity: status === TransitionStatus.MOUNTED || status === TransitionStatus.EXITING ? 0 : 1,
-  margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
-  userSelect: 'none'
-}))
+const BACKGROUND_CLASSES = {
+  retrospective: 'bg-grape-500',
+  action: 'bg-aqua-400',
+  poker: 'bg-tomato-400',
+  teamPrompt: 'bg-jade-400'
+} as const
 
-const InnerCardWrapper = styled('div')({
-  position: 'relative',
-  ':hover': {
-    boxShadow: Elevation.CARD_SHADOW_HOVER
-  }
-})
-
-const STACK_DEGREES = {
-  0: 1,
-  1: -2
-}
-
-const STACK_OFFSET_LEFT = {
-  0: 4,
-  1: 2
-}
-
-const STACK_OFFSET_TOP = {
-  0: 3,
-  1: 2
-}
-
-const StackedCard = styled('div')<{stackIndex: 0 | 1}>(({stackIndex}) => ({
-  content: '""',
-  display: 'block',
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  left: `${STACK_OFFSET_LEFT[stackIndex]}px`,
-  top: `${STACK_OFFSET_TOP[stackIndex]}px`,
-  transform: `rotate(${STACK_DEGREES[stackIndex]}deg)`,
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW
-}))
-
-const InnerCard = styled('div')({
-  position: 'relative',
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW
-})
-
-const MeetingInfo = styled('div')({
-  // tighter padding for options, meta, avatars
-  // keep a nice left edge
-  padding: '4px 8px 12px 16px'
-})
-
-const Name = styled('span')({
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 20,
-  lineHeight: '24px',
-  // add right padding to keep a long name from falling under the options button
-  // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 0 0',
-  wordBreak: 'break-word'
-})
-
-const BACKGROUND_COLORS = {
-  retrospective: PALETTE.GRAPE_500,
-  action: PALETTE.AQUA_400,
-  poker: PALETTE.TOMATO_400,
-  teamPrompt: PALETTE.JADE_400
-}
 const RECURRING_LABEL_COLORS = {
   retrospective: 'text-grape-600',
   action: 'text-aqua-600',
   poker: 'text-tomato-600',
   teamPrompt: 'text-jade-600'
 }
-const MeetingImgBackground = styled.div<{
-  meetingType: keyof typeof BACKGROUND_COLORS
-}>(({meetingType}) => ({
-  background: BACKGROUND_COLORS[meetingType],
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'absolute',
-  top: 0,
-  bottom: '6px',
-  width: '100%'
-}))
 
-const MeetingImgWrapper = styled('div')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'relative'
-})
-
-const MeetingTypeLabel = styled('span')({
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const MeetingImg = styled('img')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  position: 'relative',
-  display: 'block',
-  overflow: 'hidden',
-  paddingTop: 24,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  height: '180px'
-})
-
-const Options = styled(CardButton)({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  color: PALETTE.SLATE_700,
-  height: 32,
-  width: 32,
-  opacity: 1,
-  ':hover': {
-    backgroundColor: PALETTE.SLATE_200
-  }
-})
+const STACK_DEGREES = {0: 1, 1: -2} as const
+const STACK_OFFSET_LEFT = {0: 4, 1: 2} as const
+const STACK_OFFSET_TOP = {0: 3, 1: 2} as const
 
 interface Props {
-  onTransitionEnd: () => void
   meeting: MeetingCard_meeting$key
-  status: TransitionStatus
-  displayIdx: number
 }
 
-const ILLUSTRATIONS = {
-  retrospective,
-  action,
-  poker,
-  teamPrompt
-}
+const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt}
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
@@ -191,7 +59,7 @@ const MEETING_TYPE_LABEL = {
 }
 
 const MeetingCard = (props: Props) => {
-  const {meeting: meetingRef, status, onTransitionEnd, displayIdx} = props
+  const {meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment MeetingCard_meeting on NewMeeting {
@@ -226,7 +94,7 @@ const MeetingCard = (props: Props) => {
           id
           title
           cancelledAt
-          recurrenceRule
+          nextMeetingDate
         }
       }
     `,
@@ -247,7 +115,6 @@ const MeetingCard = (props: Props) => {
   const {label: dateLabel, tooltip: readableNextMeetingDate} = useMeetingSeriesDate(meeting)
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const ref = useAnimatedCard(displayIdx, status)
   const popTooltip = () => {
     openTooltip()
     setTimeout(() => {
@@ -281,36 +148,82 @@ const MeetingCard = (props: Props) => {
     ? 'Completed'
     : (meetingPhase && phaseLabelLookup[meetingPhase.phaseType]) || 'Complete'
 
-  const meetingLink = isRecurring ? `/meeting-series/${meetingId}` : `/meet/${meetingId}`
+  const meetingLink = `/meet/${meetingId}`
+
+  const imgSection = (
+    <div className='relative block rounded-t-card'>
+      <div
+        className={cn(
+          'absolute top-0 bottom-1.5 block w-full rounded-t-card',
+          BACKGROUND_CLASSES[meetingType]
+        )}
+      />
+      <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
+        {MEETING_TYPE_LABEL[meetingType]}
+      </span>
+      {isRecurring && (
+        <span
+          className={cn(
+            'absolute top-2 right-2 rounded-[64px] bg-[#fffc] px-2 py-1 font-medium text-[11px] leading-3',
+            RECURRING_LABEL_COLORS[meetingType]
+          )}
+        >
+          Recurring
+        </span>
+      )}
+      <img
+        src={ILLUSTRATIONS[meetingType]}
+        alt=''
+        className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6'
+      />
+    </div>
+  )
 
   return (
-    <CardWrapper
-      ref={ref}
-      maybeTabletPlus={maybeTabletPlus}
-      status={status}
-      onTransitionEnd={onTransitionEnd}
+    <motion.div
+      className='relative m-2 max-w-full shrink-0 select-none'
+      style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)'}}
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
+      transition={{duration: 0.25, ease: 'easeIn'}}
     >
-      <InnerCardWrapper>
+      <div className='relative hover:shadow-[rgba(0,0,0,.2)_0px_3px_3px_-2px,rgba(0,0,0,.14)_0px_3px_4px_0px,rgba(0,0,0,.12)_0px_1px_8px_0px]'>
         {isRecurring && (
           <>
-            <StackedCard stackIndex={0}>
-              <MeetingImgWrapper>
-                <MeetingImgBackground meetingType={meetingType} />
-                <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
-              </MeetingImgWrapper>
-            </StackedCard>
-            <StackedCard stackIndex={1}>
-              <MeetingImgWrapper>
-                <MeetingImgBackground meetingType={meetingType} />
-                <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
-              </MeetingImgWrapper>
-            </StackedCard>
+            <div
+              className='absolute block h-full w-full rounded-card bg-white shadow-card'
+              style={{
+                left: STACK_OFFSET_LEFT[0],
+                top: STACK_OFFSET_TOP[0],
+                transform: `rotate(${STACK_DEGREES[0]}deg)`
+              }}
+            >
+              {imgSection}
+            </div>
+            <div
+              className='absolute block h-full w-full rounded-card bg-white shadow-card'
+              style={{
+                left: STACK_OFFSET_LEFT[1],
+                top: STACK_OFFSET_TOP[1],
+                transform: `rotate(${STACK_DEGREES[1]}deg)`
+              }}
+            >
+              {imgSection}
+            </div>
           </>
         )}
-        <InnerCard>
-          <MeetingImgWrapper>
-            <MeetingImgBackground meetingType={meetingType} />
-            <MeetingTypeLabel>{MEETING_TYPE_LABEL[meetingType]}</MeetingTypeLabel>
+        <div className='relative rounded-card bg-white shadow-card'>
+          <div className='relative block rounded-t-card'>
+            <div
+              className={cn(
+                'absolute top-0 bottom-1.5 block w-full rounded-t-card',
+                BACKGROUND_CLASSES[meetingType]
+              )}
+            />
+            <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
+              {MEETING_TYPE_LABEL[meetingType]}
+            </span>
             {isRecurring && (
               <span
                 className={cn(
@@ -322,10 +235,14 @@ const MeetingCard = (props: Props) => {
               </span>
             )}
             <Link to={meetingLink}>
-              <MeetingImg src={ILLUSTRATIONS[meetingType]} alt='' />
+              <img
+                src={ILLUSTRATIONS[meetingType]}
+                alt=''
+                className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6'
+              />
             </Link>
-          </MeetingImgWrapper>
-          <MeetingInfo>
+          </div>
+          <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
               {locked && (
                 <Link to={`/me/organizations/${orgId}/billing`}>
@@ -335,18 +252,26 @@ const MeetingCard = (props: Props) => {
               <Link to={meetingLink}>
                 {isRecurring ? (
                   <>
-                    <Name>{meetingSeries.title}</Name>
+                    <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                      {meetingSeries.title}
+                    </span>
                     <Tooltip text={readableNextMeetingDate}>
                       <div className='text-sm'>{dateLabel}</div>
                     </Tooltip>
                   </>
                 ) : (
-                  <Name>{name}</Name>
+                  <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                    {name}
+                  </span>
                 )}
               </Link>
-              <Options ref={originRef} onClick={togglePortal}>
+              <CardButton
+                className='absolute top-0 right-0 h-8 w-8 text-slate-700 opacity-100 hover:bg-slate-200'
+                ref={originRef}
+                onClick={togglePortal}
+              >
                 <IconLabel ref={tooltipRef} icon='more_vert' />
-              </Options>
+              </CardButton>
             </div>
             <Link to={meetingLink}>
               <span className='wrap-break-word block pt-1 pb-2 text-slate-600 text-sm'>
@@ -354,7 +279,7 @@ const MeetingCard = (props: Props) => {
               </span>
             </Link>
             <AvatarList users={connectedUsers} size={28} />
-          </MeetingInfo>
+          </div>
           {menuPortal(
             <MeetingCardOptionsMenuRoot
               meetingId={meetingId}
@@ -370,7 +295,7 @@ const MeetingCard = (props: Props) => {
             endRecurringMeetingModal(
               <EndRecurringMeetingModal
                 meetingRef={meeting}
-                recurrenceRule={isRecurring ? meetingSeries.recurrenceRule : undefined}
+                nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
                 closeModal={toggleEndRecurringMeetingModal}
               />
             )}
@@ -381,9 +306,9 @@ const MeetingCard = (props: Props) => {
                 closeModal={toggleRecurrenceSettingsModal}
               />
             )}
-        </InnerCard>
-      </InnerCardWrapper>
-    </CardWrapper>
+        </div>
+      </div>
+    </motion.div>
   )
 }
 

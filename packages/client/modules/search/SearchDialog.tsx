@@ -38,7 +38,7 @@ export const GlobalSearchDialog = () => {
   useHotkey('mod+k', () => openSearch())
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         className={
           'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-white p-0 duration-200 focus:outline-none'

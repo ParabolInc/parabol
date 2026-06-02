@@ -1993,7 +1993,7 @@ type Mutation {
     The ID of the template to be toggled as a favorite
     """
     templateId: ID!
-  ): ToggleFavoriteTemplatePayload! @scope(name: TEMPLATES_WRITE)
+  ): ToggleFavoriteTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Toggles the sendSummaryEmail value on the User object which determines whether summary emails are sent to the user
@@ -2199,6 +2199,30 @@ type Mutation {
     """
     rrule: RRule
   ): UpdateRecurrenceSettingsPayload! @scope(name: MEETINGS_WRITE)
+
+  """
+  Updates a meeting series directly by its ID. Used for managing scheduled-only series
+  (where no meeting has spawned yet) and editing/cancelling a series from the dashboard
+  rather than from inside a meeting.
+  - Pass a non-null rrule to update the recurrence (also restarts a cancelled series)
+  - Pass null rrule to cancel the series
+  """
+  updateMeetingSeries(
+    """
+    ID of the meeting series to update
+    """
+    meetingSeriesId: ID!
+
+    """
+    New meeting series name
+    """
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format; null cancels the series
+    """
+    rrule: RRule
+  ): UpdateMeetingSeriesPayload! @scope(name: MEETINGS_WRITE)
 
   """
   Updates the mainCategory for the given template

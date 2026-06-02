@@ -18,12 +18,12 @@ export const PageEditor = (props: Props) => {
   const isEditable = useEditablePage(provider, editor)
   if (!editor) return <div>No editor</div>
   return (
-    <>
+    <div className='flex w-full flex-col'>
       <TipTapEditor
         editor={editor}
         className={cn('page-editor relative flex w-full px-6 delay-300')}
       />
       {isEditable && <StarterActions editor={editor} />}
-    </>
+    </div>
   )
 }

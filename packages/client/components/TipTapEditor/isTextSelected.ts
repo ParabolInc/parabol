@@ -13,7 +13,7 @@ export const isTextSelected = (editor: Editor) => {
   // So we check also for an empty text size.
 
   // when deleting a pageLinkBlock from the first line, from:4, to:6, but the selection is a Node, not text
-  const hasEditorFocus = editor.view.hasFocus()
+  const hasEditorFocus = editor.view?.hasFocus() ?? false
   const isEmptyBlock = !doc.textBetween(from, to).length // && isTextSelection(selection)
   return !(empty || isEmptyBlock || !editor.isEditable || !hasEditorFocus)
 }

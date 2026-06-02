@@ -2,6 +2,7 @@ import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingAvatar_user$key} from '../../../../__generated__/NewMeetingAvatar_user.graphql'
+import Avatar from '../../../../components/Avatar/Avatar'
 import ErrorBoundary from '../../../../components/ErrorBoundary'
 import AvatarPopoverContent from './AvatarPopoverContent'
 import MeetingAvatarCard from './MeetingAvatarCard'
@@ -36,11 +37,7 @@ const NewMeetingAvatar = (props: Props) => {
             className='relative h-8 w-8 max-w-8 cursor-pointer rounded-full xl:h-12 xl:w-12 xl:max-w-12 min-[1600px]:h-14 min-[1600px]:w-14 min-[1600px]:max-w-14'
             {...hoverTriggerProps}
           >
-            <img
-              className='h-full min-h-full w-full rounded-full object-cover'
-              src={picture}
-              alt={preferredName}
-            />
+            <Avatar picture={picture} alt={preferredName} className='h-full w-full' />
           </div>
         </Popover.Trigger>
         <AvatarPopoverContent open={open} {...hoverContentProps}>

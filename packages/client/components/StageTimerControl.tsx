@@ -1,7 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {StageTimerControl_meeting$key} from '~/__generated__/StageTimerControl_meeting.graphql'
-import type {TransitionStatus} from '~/hooks/useTransition'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {MeetingLabels} from '../types/constEnums'
@@ -13,8 +12,6 @@ interface Props {
   cancelConfirm: (() => void) | undefined
   defaultTimeLimit: number
   meeting: StageTimerControl_meeting$key
-  onTransitionEnd: () => void
-  status: TransitionStatus
 }
 
 const StageTimerModal = lazyPreload(
@@ -22,7 +19,7 @@ const StageTimerModal = lazyPreload(
 )
 
 const StageTimerControl = (props: Props) => {
-  const {cancelConfirm, defaultTimeLimit, meeting: meetingRef, status, onTransitionEnd} = props
+  const {cancelConfirm, defaultTimeLimit, meeting: meetingRef} = props
   const meeting = useFragment(
     graphql`
       fragment StageTimerControl_meeting on NewMeeting {
@@ -64,8 +61,6 @@ const StageTimerControl = (props: Props) => {
         confirming={!!cancelConfirm}
         onMouseEnter={StageTimerModal.preload}
         onClick={cancelConfirm || togglePortal}
-        status={status}
-        onTransitionEnd={onTransitionEnd}
       >
         <BottomNavIconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
       </BottomNavControl>

@@ -1,5 +1,3 @@
-import useTransition from './useTransition'
-
 class OverflowAvatar<T> {
   id = 'overflow'
   key = 'overflow'
@@ -20,7 +18,6 @@ const useOverflowAvatars = <T extends {id: string}>(items: readonly T[], maxAvat
   const visibleAvatars = visibleUsers.map((user, displayIdx) => ({
     ...user,
     key: user.id,
-    // we are setting the avatars using a transform & we want the new ones to appear where they eventually will be
     displayIdx
   })) as ((T & {key: string; displayIdx: number}) | OverflowAvatar<T>)[]
 
@@ -30,15 +27,7 @@ const useOverflowAvatars = <T extends {id: string}>(items: readonly T[], maxAvat
     )
   }
 
-  const transitioningAvatars = useTransition(visibleAvatars)
-  return transitioningAvatars.map((transitionChild, idx) => {
-    const visibleIdx = visibleUsers.findIndex((user) => user.id === transitionChild.child.id)
-    const displayIdx = visibleIdx === -1 ? idx : visibleIdx
-    return {
-      ...transitionChild,
-      displayIdx
-    }
-  })
+  return visibleAvatars
 }
 
 export default useOverflowAvatars
