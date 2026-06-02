@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.22.2](https://github.com/ParabolInc/parabol/compare/v13.22.1...v13.22.2) (2026-06-01)
+
+
+### Fixed
+
+* migration order ([#13174](https://github.com/ParabolInc/parabol/issues/13174)) ([ae91ac7](https://github.com/ParabolInc/parabol/commit/ae91ac7df46a404c4f9e34c58b1854b71a310297))
+
 ## [13.22.1](https://github.com/ParabolInc/parabol/compare/v13.22.0...v13.22.1) (2026-06-01)
 
 
