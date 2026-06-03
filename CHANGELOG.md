@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.24.0](https://github.com/ParabolInc/parabol/compare/v13.23.0...v13.24.0) (2026-06-03)
+
+
+### Added
+
+* add parabol label to jira issues ([#13185](https://github.com/ParabolInc/parabol/issues/13185)) ([89e4f6e](https://github.com/ParabolInc/parabol/commit/89e4f6e614c7a1809a76565782d8e1b4fbfa4328))
+* MR PPMI repos on docker-external (untested) ([#13187](https://github.com/ParabolInc/parabol/issues/13187)) ([23edea5](https://github.com/ParabolInc/parabol/commit/23edea5462f19fa2be70762c43ed0909031753db))
+
 ## [13.23.0](https://github.com/ParabolInc/parabol/compare/v13.22.4...v13.23.0) (2026-06-02)
 
 
