@@ -111,6 +111,7 @@ interface CreateIssueFields {
   reporter?: Reporter // probably can't use, it throws a lot of errors
   project?: Partial<JiraProject>
   issuetype?: Partial<JiraIssueType>
+  labels?: string[]
 }
 
 interface IssueCreateMetadata {
