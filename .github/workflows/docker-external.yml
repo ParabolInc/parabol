@@ -72,7 +72,7 @@ jobs:
             cd ..
             rm -rf repo
 
-          done < <(echo "$PPMI_REPO_URLS" | jq -r '.[]')
+          done < <(echo "$PPMI_REPO_NAMES" | jq -r '.[]')
 
       - name: Report Status
         if: failure()
