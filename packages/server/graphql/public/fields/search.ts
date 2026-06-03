@@ -125,7 +125,7 @@ export const search: NonNullable<UserResolvers['search']> = async (
       edges: results
         .map((page) => ({
           ...noQueryEdge,
-          nodeTypeName: page.objectType,
+          nodeTypeName: page.objectType as SearchTypeEnum,
           nodeId: page.refId
         }))
         .slice(0, first)

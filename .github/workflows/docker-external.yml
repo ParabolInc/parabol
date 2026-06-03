@@ -31,6 +31,49 @@ jobs:
           ${{ secrets.GCP_AR_PARABOL }}:${{ github.ref_name }}  \
           ${{ secrets.GCP_AR_PARABOL_EXTERNAL }}:${{ github.ref_name }}
 
+      - name: Open GitLab MRs
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          PPMI_REPO_NAMES: ${{ secrets.PPMI_REPO_NAMES }}
+        run: |
+          set -euo pipefail
+          VERSION_NUMBER="${GITHUB_REF_NAME#v}"
+          BRANCH_NAME="feat/v${VERSION_NUMBER}"
+          COMMIT_MESSAGE="Upgrade to v${VERSION_NUMBER}"
+
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+
+          while IFS= read -r REPO_NAME; do
+            echo "Processing: ${REPO_NAME}"
+
+            PROJECT_PATH="parabol1/ppmi/${REPO_NAME}"
+            AUTH_URL="https://oauth2:${GITLAB_TOKEN}@gitlab.com/${PROJECT_PATH}.git"
+            API_BASE="https://gitlab.com/api/v4/projects/parabol1/ppmi/${REPO_NAME}"
+
+            DEFAULT_BRANCH=$(curl -sf --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "${API_BASE}" | jq -r '.default_branch')
+
+            git clone --branch "${DEFAULT_BRANCH}" "${AUTH_URL}" repo
+            cd repo
+
+            git checkout -b "${BRANCH_NAME}"
+            sed -i "4s|.*|applicationVersion: \&applicationVersion v${VERSION_NUMBER}|" parabol/version.yaml
+            git add parabol/version.yaml
+            git commit -m "${COMMIT_MESSAGE}"
+            git push "${AUTH_URL}" "${BRANCH_NAME}"
+
+            curl --silent --fail --request POST \
+              --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+              --header "Content-Type: application/json" \
+              "${API_BASE}/merge_requests" \
+              --data "{\"source_branch\": \"${BRANCH_NAME}\", \"target_branch\": \"${DEFAULT_BRANCH}\", \"title\": \"${COMMIT_MESSAGE}\"}"
+
+            echo "MR created for ${REPO_NAME}"
+            cd ..
+            rm -rf repo
+
+          done < <(echo "$PPMI_REPO_NAMES" | jq -r '.[]')
+
       - name: Report Status
         if: failure()
         uses: ravsamhq/notify-slack-action@v2

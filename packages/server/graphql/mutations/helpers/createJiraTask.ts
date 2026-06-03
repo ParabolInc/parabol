@@ -35,7 +35,8 @@ const createJiraTask = async (
     },
     issuetype: {
       id: bestType.id
-    }
+    },
+    labels: ['parabol']
   }
   const res = await manager.createIssue(cloudId, projectKey, payload)
   if (res instanceof Error) return {error: res}
