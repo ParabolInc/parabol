@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.24.2](https://github.com/ParabolInc/parabol/compare/v13.24.1...v13.24.2) (2026-06-04)
+
+
+### Fixed
+
+* escape ([#13193](https://github.com/ParabolInc/parabol/issues/13193)) ([0da2365](https://github.com/ParabolInc/parabol/commit/0da236543715c1577ea3bdd30e5145a40cc42618))
+
+## [13.24.1](https://github.com/ParabolInc/parabol/compare/v13.24.0...v13.24.1) (2026-06-03)
+
+
+### Fixed
+
+* MR3 ([#13190](https://github.com/ParabolInc/parabol/issues/13190)) ([ddf7cb5](https://github.com/ParabolInc/parabol/commit/ddf7cb55f748aabb42ac330feca2a1fcb080e2c1))
+
 ## [13.24.0](https://github.com/ParabolInc/parabol/compare/v13.23.0...v13.24.0) (2026-06-03)
 
 
