@@ -274,7 +274,12 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <div
-          className={cn('relative', similarityScore != null && 'rounded ring-2 ring-grape-500')}
+          className={cn(
+            'relative',
+            similarityScore != null &&
+              (similarityScore === -1 || similarityScore > 0) &&
+              'rounded ring-2 ring-grape-500'
+          )}
           style={{
             paddingBottom:
               isSpotlightSrcGroup && !isBehindSpotlight
@@ -288,10 +293,14 @@ const ReflectionGroup = (props: Props) => {
           <div
             className={cn(
               '-top-2 pointer-events-none absolute right-2 z-10 rounded-full bg-grape-500 p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-opacity duration-150',
-              similarityScore === 1 ? 'opacity-100' : 'opacity-0'
+              similarityScore != null && similarityScore !== -1 ? 'opacity-100' : 'opacity-0'
             )}
           >
-            <AddToPhotosIcon className='size-3' />
+            {similarityScore != null && similarityScore !== -1 && similarityScore !== 1 ? (
+              Math.abs(similarityScore).toFixed(2)
+            ) : (
+              <AddToPhotosIcon className='size-3' />
+            )}
           </div>
           <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
             {visibleReflections.map((reflection) => {

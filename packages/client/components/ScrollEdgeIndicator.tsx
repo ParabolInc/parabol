@@ -62,8 +62,7 @@ const ScrollEdgeIndicator = ({scrollRef, similarGroupIds}: Props) => {
     return () => scrollEl.removeEventListener('scroll', update)
   }, [scrollRef, similarGroupIds])
 
-  // if (counts.above === 0 && counts.below === 0) return null
-  console.log(counts, similarGroupIds)
+  if (counts.above === 0 && counts.below === 0) return null
   return (
     <>
       {counts.above > 0 && (

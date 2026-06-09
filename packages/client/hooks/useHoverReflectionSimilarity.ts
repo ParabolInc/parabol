@@ -1,17 +1,19 @@
-import {useCallback, useRef} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {cosineSimilarity} from '../utils/cosineSimilarity'
 import useAtmosphere from './useAtmosphere'
+import useHotkey from './useHotkey'
 
 type ReflectionGroup = {
   readonly id: string
+  readonly promptId: string
   reflections: readonly {
     readonly id: string
     readonly embeddingVector?: ReadonlyArray<number> | null
   }[]
 }
-
-const SIMILARITY_THRESHOLD = 0.75
+const SAME_COLUMN_BONUS = 0.03
+const SIMILARITY_THRESHOLD = 0.78 + SAME_COLUMN_BONUS
 const MAX_SIMILAR_GROUPS = 2
 
 const useHoverReflectionSimilarity = (
@@ -20,6 +22,8 @@ const useHoverReflectionSimilarity = (
 ) => {
   const atmosphere = useAtmosphere()
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [showVectorDebug, setShowVectorDebug] = useState(false)
+  useHotkey('v e c t o r s', () => setShowVectorDebug((v) => !v))
 
   return useCallback(
     (reflectionId: string | null) => {
@@ -79,28 +83,44 @@ const useHoverReflectionSimilarity = (
           groupVec = mag > 0 ? centroid.map((x) => x / mag) : centroid
         }
 
-        groupScores.push({groupId: group.id, score: cosineSimilarity(sourceArr, groupVec)})
+        const sameColumn = group.promptId === sourceGroup?.promptId ? SAME_COLUMN_BONUS : 0
+        groupScores.push({
+          groupId: group.id,
+          score: cosineSimilarity(sourceArr, groupVec) + sameColumn
+        })
       }
 
       groupScores.sort((a, b) => b.score - a.score)
-      const selected = groupScores
-        .filter((g) => g.score >= SIMILARITY_THRESHOLD)
-        .slice(0, MAX_SIMILAR_GROUPS)
 
       commitLocalUpdate(atmosphere, (store) => {
         for (const group of reflectionGroups) {
           store.get(group.id)?.setValue(null, 'activeReflectionGroupSimilarity')
         }
-        if (selected.length > 0) {
+        const selected = new Set(
+          groupScores
+            .filter((g) => g.score >= SIMILARITY_THRESHOLD)
+            .slice(0, MAX_SIMILAR_GROUPS)
+            .map((g) => g.groupId)
+        )
+        if (showVectorDebug || selected.size > 0) {
           // -1 sentinel marks the hovered source group (shows ring, no badge)
           store.get(sourceGroupId!)?.setValue(-1, 'activeReflectionGroupSimilarity')
-          for (const {groupId} of selected) {
+        }
+        if (showVectorDebug) {
+          // Positive score = would be ringed; negative = badge-only in debug view
+          for (const {groupId, score} of groupScores) {
+            store
+              .get(groupId)
+              ?.setValue(selected.has(groupId) ? score : -score, 'activeReflectionGroupSimilarity')
+          }
+        } else {
+          for (const groupId of selected) {
             store.get(groupId)?.setValue(1, 'activeReflectionGroupSimilarity')
           }
         }
       })
     },
-    [reflectionGroups, atmosphere, isGroupPhase]
+    [reflectionGroups, atmosphere, isGroupPhase, showVectorDebug]
   )
 }
 
