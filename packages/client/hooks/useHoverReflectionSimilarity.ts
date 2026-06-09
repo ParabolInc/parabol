@@ -15,6 +15,7 @@ type ReflectionGroup = {
 const SAME_COLUMN_BONUS = 0.03
 const SIMILARITY_THRESHOLD = 0.78 + SAME_COLUMN_BONUS
 const MAX_SIMILAR_GROUPS = 2
+const MARGINAL_CARD_PENALTY = 0.05
 
 const useHoverReflectionSimilarity = (
   reflectionGroups: readonly ReflectionGroup[],
@@ -77,7 +78,8 @@ const useHoverReflectionSimilarity = (
       }
 
       // Compute group-level similarities using centroid for multi-reflection groups
-      const groupScores: {groupId: string; score: number}[] = []
+      const sourceSize = sourceGroup.reflections.length
+      const groupScores: {groupId: string; score: number; targetSize: number}[] = []
       for (const group of reflectionGroups) {
         if (group.id === sourceGroupId) continue
 
@@ -101,10 +103,11 @@ const useHoverReflectionSimilarity = (
           groupVec = mag > 0 ? centroid.map((x) => x / mag) : centroid
         }
 
-        const sameColumn = group.promptId === sourceGroup?.promptId ? SAME_COLUMN_BONUS : 0
+        const sameColumn = group.promptId === sourceGroup.promptId ? SAME_COLUMN_BONUS : 0
         groupScores.push({
           groupId: group.id,
-          score: cosineSimilarity(sourceArr, groupVec) + sameColumn
+          score: cosineSimilarity(sourceArr, groupVec) + sameColumn,
+          targetSize: group.reflections.length
         })
       }
 
@@ -116,7 +119,12 @@ const useHoverReflectionSimilarity = (
         }
         const selected = new Set(
           groupScores
-            .filter((g) => g.score >= SIMILARITY_THRESHOLD)
+            .filter((g) => {
+              const resultingSize = sourceSize + g.targetSize
+              const threshold =
+                SIMILARITY_THRESHOLD + Math.max(0, resultingSize - 3) * MARGINAL_CARD_PENALTY
+              return g.score >= threshold
+            })
             .slice(0, MAX_SIMILAR_GROUPS)
             .map((g) => g.groupId)
         )
