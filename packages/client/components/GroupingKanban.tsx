@@ -7,6 +7,7 @@ import useCallbackRef from '~/hooks/useCallbackRef'
 import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
+import useHoverReflectionSimilarity from '../hooks/useHoverReflectionSimilarity'
 import useModal from '../hooks/useModal'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
@@ -61,6 +62,7 @@ const GroupingKanban = (props: Props) => {
             id
             isViewerDragging
             isEditing
+            embeddingVector
           }
         }
         spotlightReflectionId
@@ -92,6 +94,9 @@ const GroupingKanban = (props: Props) => {
   const reflectPrompts = reflectPhase.reflectPrompts!
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
+  const isGroupPhase = !isComplete && phaseType === 'group'
+  const onHoverReflection = useHoverReflectionSimilarity(reflectionGroups, isGroupPhase)
+
   useHideBodyScroll()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
@@ -164,7 +169,6 @@ const GroupingKanban = (props: Props) => {
     (sum, {reflections}) => sum + reflections.length,
     0
   )
-  const isGroupPhase = !isComplete && phaseType === 'group'
   const isRetrospectiveBeginner = meetingNumber < 3 // If the meeting number is low, the user is probably new to retrospectives
   const hasNoGroup = !reflectionGroups.some((group) => group.reflections.length > 1)
   const isNotInteracting =
@@ -200,6 +204,7 @@ const GroupingKanban = (props: Props) => {
               isDesktop={isDesktop}
               key={prompt.id}
               meeting={meeting}
+              onHoverReflection={onHoverReflection}
               openSpotlight={openSpotlight}
               phaseRef={phaseRef}
               prompt={prompt}

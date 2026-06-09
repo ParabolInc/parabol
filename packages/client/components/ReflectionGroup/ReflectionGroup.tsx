@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import graphql from 'babel-plugin-relay/macro'
 import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -13,6 +14,7 @@ import {
   ReflectionStackPerspective,
   Times
 } from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {GROUP} from '../../utils/constants'
 import type {SwipeColumn} from '../GroupingKanban'
 import type {OpenSpotlight} from '../GroupingKanbanColumn'
@@ -29,19 +31,12 @@ export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
 
-const Group = styled('div')<{
-  staticReflectionCount: number
-  isSpotlightSource: boolean
-  skipTransition: boolean
-}>(({staticReflectionCount, isSpotlightSource, skipTransition}) => ({
+const Group = styled('div')({
   height: 'max-content',
   position: 'relative',
   paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-  paddingBottom: isSpotlightSource
-    ? ElementWidth.REFLECTION_CARD_PADDING
-    : ElementWidth.REFLECTION_CARD_PADDING + getCardStackPadding(staticReflectionCount),
-  transition: skipTransition ? undefined : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms`
-}))
+  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING
+})
 
 const ReflectionWrapper = styled('div')<{
   staticIdx: number
@@ -72,6 +67,7 @@ const ReflectionWrapper = styled('div')<{
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meetingRef: ReflectionGroup_meeting$key
+  onHoverReflection?: (reflectionId: string | null) => void
   openSpotlight?: OpenSpotlight
   reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
@@ -84,6 +80,7 @@ interface Props {
 const ReflectionGroup = (props: Props) => {
   const {
     meetingRef,
+    onHoverReflection,
     openSpotlight,
     phaseRef,
     reflectionGroupRef,
@@ -128,6 +125,7 @@ const ReflectionGroup = (props: Props) => {
         sortOrder
         titleIsUserDefined
         title
+        activeReflectionGroupSimilarity
         reflections {
           ...DraggableReflectionCard_reflection
           ...DraggableReflectionCard_staticReflections
@@ -153,7 +151,11 @@ const ReflectionGroup = (props: Props) => {
   const {localPhase, localStage, spotlightGroup} = meeting
   const {phaseType} = localPhase
   const {isComplete} = localStage
-  const {id: reflectionGroupId, titleIsUserDefined} = reflectionGroup
+  const {
+    id: reflectionGroupId,
+    titleIsUserDefined,
+    activeReflectionGroupSimilarity: similarityScore
+  } = reflectionGroup
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
@@ -259,9 +261,6 @@ const ReflectionGroup = (props: Props) => {
       <Group
         {...(disableDrop ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
-        staticReflectionCount={staticReflections.length}
-        isSpotlightSource={isSpotlightSrcGroup && !isBehindSpotlight}
-        skipTransition={skipTransition}
         data-cy={dataCy}
       >
         {showHeader && (
@@ -274,38 +273,60 @@ const ReflectionGroup = (props: Props) => {
             titleInputRef={titleInputRef}
           />
         )}
-        <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
-          {visibleReflections.map((reflection) => {
-            const staticIdx = staticReflections.indexOf(reflection)
-            const {id: reflectionId, isDropping} = reflection
-            return (
-              <ReflectionWrapper
-                data-cy={`${dataCy}-card-${staticIdx}`}
-                key={reflectionId}
-                groupCount={visibleReflections.length}
-                staticIdx={staticIdx}
-                isDropping={isDropping}
-                isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
-                skipTransition={skipTransition}
-              >
-                <DraggableReflectionCard
-                  dataCy={`${dataCy}-card-${staticIdx}`}
-                  key={reflection.id}
+        <div
+          className={cn('relative', similarityScore != null && 'rounded ring-2 ring-grape-500')}
+          style={{
+            paddingBottom:
+              isSpotlightSrcGroup && !isBehindSpotlight
+                ? 0
+                : getCardStackPadding(staticReflections.length),
+            transition: skipTransition
+              ? 'box-shadow 150ms ease'
+              : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms, box-shadow 150ms ease`
+          }}
+        >
+          <div
+            className={cn(
+              '-top-2 pointer-events-none absolute right-2 z-10 rounded-full bg-grape-500 p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-opacity duration-150',
+              similarityScore === 1 ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            <AddToPhotosIcon className='size-3' />
+          </div>
+          <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
+            {visibleReflections.map((reflection) => {
+              const staticIdx = staticReflections.indexOf(reflection)
+              const {id: reflectionId, isDropping} = reflection
+              return (
+                <ReflectionWrapper
+                  data-cy={`${dataCy}-card-${staticIdx}`}
+                  key={reflectionId}
+                  groupCount={visibleReflections.length}
                   staticIdx={staticIdx}
-                  isClipped={staticIdx > 0 || isRemoteSpotlightSrc}
-                  isDraggable={staticIdx === 0 && !isRemoteSpotlightSrc}
-                  meeting={meeting}
-                  openSpotlight={openSpotlight}
-                  reflection={reflection}
-                  staticReflections={staticReflections}
-                  swipeColumn={swipeColumn}
-                  isSpotlightEntering={!!isSpotlightEntering}
-                  showDragHintAnimation={showDragHintAnimation}
-                />
-              </ReflectionWrapper>
-            )
-          })}
-        </CardStack>
+                  isDropping={isDropping}
+                  isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
+                  skipTransition={skipTransition}
+                >
+                  <DraggableReflectionCard
+                    dataCy={`${dataCy}-card-${staticIdx}`}
+                    key={reflection.id}
+                    staticIdx={staticIdx}
+                    isClipped={staticIdx > 0 || isRemoteSpotlightSrc}
+                    isDraggable={staticIdx === 0 && !isRemoteSpotlightSrc}
+                    meeting={meeting}
+                    onHoverReflection={onHoverReflection}
+                    openSpotlight={openSpotlight}
+                    reflection={reflection}
+                    staticReflections={staticReflections}
+                    swipeColumn={swipeColumn}
+                    isSpotlightEntering={!!isSpotlightEntering}
+                    showDragHintAnimation={showDragHintAnimation}
+                  />
+                </ReflectionWrapper>
+              )
+            })}
+          </CardStack>
+        </div>
       </Group>
     </>
   )

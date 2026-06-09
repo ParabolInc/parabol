@@ -11,6 +11,7 @@ import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
+import {embedRetroReflection} from '../../mutations/helpers/embedRetroReflection'
 import updateGroupTitle from '../../mutations/helpers/updateGroupTitle'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -86,6 +87,7 @@ const createReflection: MutationResolvers['createReflection'] = async (
   }).catch((e) => {
     console.error('Error generating AI title for new reflection:', e)
   })
+  embedRetroReflection(reflection.id, meetingId, teamId, new Date()).catch(console.error)
 
   await pg
     .with('Group', (qc) => qc.insertInto('RetroReflectionGroup').values(reflectionGroup))
