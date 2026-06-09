@@ -1,6 +1,6 @@
 import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
-import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
+import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
@@ -95,7 +95,34 @@ const GroupingKanban = (props: Props) => {
   const reflectPromptsCount = reflectPrompts.length
   const [callbackRef, columnsRef] = useCallbackRef()
   const isGroupPhase = !isComplete && phaseType === 'group'
-  const onHoverReflection = useHoverReflectionSimilarity(reflectionGroups, isGroupPhase)
+  const rawOnHoverReflection = useHoverReflectionSimilarity(reflectionGroups, isGroupPhase)
+
+  const draggedReflectionId = useMemo(() => {
+    for (const group of reflectionGroups) {
+      const dragging = group.reflections.find((r) => r.isViewerDragging)
+      if (dragging) return dragging.id
+    }
+    return null
+  }, [reflectionGroups])
+
+  // Keep a ref so the drag effect always calls the latest version without being in its deps
+  const rawOnHoverRef = useRef(rawOnHoverReflection)
+  useEffect(() => {
+    rawOnHoverRef.current = rawOnHoverReflection
+  }, [rawOnHoverReflection])
+
+  // When a drag starts or ends, re-run similarity for the dragged card (or clear on end)
+  useEffect(() => {
+    rawOnHoverRef.current(draggedReflectionId)
+  }, [draggedReflectionId])
+
+  const onHoverReflection = useCallback(
+    (reflectionId: string | null) => {
+      if (draggedReflectionId) return
+      rawOnHoverReflection(reflectionId)
+    },
+    [draggedReflectionId, rawOnHoverReflection]
+  )
 
   useHideBodyScroll()
   const dragIdRef = useRef<string>()

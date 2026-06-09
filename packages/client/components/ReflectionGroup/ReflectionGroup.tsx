@@ -154,8 +154,10 @@ const ReflectionGroup = (props: Props) => {
   const {
     id: reflectionGroupId,
     titleIsUserDefined,
-    activeReflectionGroupSimilarity: similarityScore
+    activeReflectionGroupSimilarity: similarityScore,
+    reflections
   } = reflectionGroup
+  const isSourceBeingDragged = reflections.some((r) => r.isViewerDragging)
   const spotlightGroupId = spotlightGroup?.id
   const isSpotlightSrcGroup = spotlightGroupId === reflectionGroupId
   const isBehindSpotlight = !!(spotlightGroupId && openSpotlight)
@@ -277,7 +279,7 @@ const ReflectionGroup = (props: Props) => {
           className={cn(
             'relative',
             similarityScore != null &&
-              (similarityScore === -1 || similarityScore > 0) &&
+              (similarityScore > 0 || (!isSourceBeingDragged && similarityScore === -1)) &&
               'rounded ring-2 ring-grape-500'
           )}
           style={{
@@ -290,18 +292,6 @@ const ReflectionGroup = (props: Props) => {
               : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms, box-shadow 150ms ease`
           }}
         >
-          <div
-            className={cn(
-              '-top-2 pointer-events-none absolute right-2 z-10 rounded-full bg-grape-500 p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-opacity duration-150',
-              similarityScore != null && similarityScore !== -1 ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            {similarityScore != null && similarityScore !== -1 && similarityScore !== 1 ? (
-              Math.abs(similarityScore).toFixed(2)
-            ) : (
-              <AddToPhotosIcon className='size-3' />
-            )}
-          </div>
           <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
             {visibleReflections.map((reflection) => {
               const staticIdx = staticReflections.indexOf(reflection)
@@ -335,6 +325,18 @@ const ReflectionGroup = (props: Props) => {
               )
             })}
           </CardStack>
+          <div
+            className={cn(
+              '-top-2 pointer-events-none absolute right-2 z-10 rounded-full bg-grape-500 p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-opacity duration-150',
+              similarityScore != null && similarityScore !== -1 ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            {similarityScore != null && similarityScore !== -1 && similarityScore !== 1 ? (
+              Math.abs(similarityScore).toFixed(2)
+            ) : (
+              <AddToPhotosIcon className='size-3' />
+            )}
+          </div>
         </div>
       </Group>
     </>

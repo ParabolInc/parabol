@@ -47,16 +47,34 @@ const useHoverReflectionSimilarity = (
       const sourceGroup = reflectionGroups.find((group) =>
         group.reflections.some((r) => r.id === reflectionId)
       )
-      const sourceReflection = sourceGroup?.reflections.find((r) => r.id === reflectionId)
-      const sourceVec = sourceReflection?.embeddingVector
       const sourceGroupId = sourceGroup?.id
 
-      if (!sourceVec || sourceVec.length === 0) {
+      if (!sourceGroup) {
         clearAll()
         return
       }
 
-      const sourceArr = sourceVec as number[]
+      const sourceVecs = sourceGroup.reflections
+        .map((r) => r.embeddingVector)
+        .filter((v): v is ReadonlyArray<number> => Array.isArray(v) && v.length > 0)
+
+      if (sourceVecs.length === 0) {
+        clearAll()
+        return
+      }
+
+      let sourceArr: number[]
+      if (sourceVecs.length === 1) {
+        sourceArr = sourceVecs[0] as number[]
+      } else {
+        const dim = sourceVecs[0]!.length
+        const centroid = new Array<number>(dim).fill(0)
+        for (const v of sourceVecs) {
+          for (let i = 0; i < dim; i++) centroid[i] = (centroid[i] ?? 0) + (v[i] ?? 0)
+        }
+        const mag = Math.sqrt(centroid.reduce((sum, x) => sum + x * x, 0))
+        sourceArr = mag > 0 ? centroid.map((x) => x / mag) : centroid
+      }
 
       // Compute group-level similarities using centroid for multi-reflection groups
       const groupScores: {groupId: string; score: number}[] = []
