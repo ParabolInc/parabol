@@ -69,7 +69,7 @@ export type RSAMessage =
 export type SerializedHTTPRequest = {
   method: string
   url: string
-  headers: IncomingHttpHeaders
+  headers: Omit<IncomingHttpHeaders, 'sec-websocket-key'> & {'sec-websocket-key': string}
   socket: {remoteAddress: string}
 }
 export type Pack = (msg: RSAMessage) => string | Buffer<ArrayBufferLike>
@@ -105,12 +105,17 @@ const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
   const webHeaders = new Headers()
   Object.entries(headers).forEach(([name, value]) => {
     if (Array.isArray(value)) {
-      value.forEach((v) => webHeaders.append(name, v))
+      value.forEach((v) => {
+        webHeaders.append(name, v)
+      })
     } else if (value !== undefined) {
       webHeaders.set(name, value)
     }
   })
-  return new Request(new URL(url, 'http://localhost'), {method, headers: webHeaders})
+  return new Request(new URL(url, 'http://localhost'), {
+    method,
+    headers: webHeaders
+  })
 }
 
 export class RedisServerAffinity<TCE extends CustomEvents> implements Extension {
@@ -131,7 +136,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private lockTTL: number
   private instance!: Hocuspocus
   private customEvents: TCE
-  private replyIdCounter: number = 0
+  private replyIdCounter = 0
   private pendingReplies: Record<number, PromiseWithResolvers<any>['resolve']> = {}
   private deriveContext: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
   constructor(configuration: Configuration<TCE>) {
@@ -181,7 +186,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   ) {
     const {replyTo, message, serializedHTTPRequest} = msg
     const {headers} = serializedHTTPRequest
-    const socketId = headers['sec-websocket-key']!
+    const socketId = headers['sec-websocket-key']
     let entry = this.proxyConnections[socketId]
     if (!entry) {
       const socket = new HocusPocusProxySocket(this.pub, this.pack, replyTo, socketId)
@@ -358,7 +363,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
 
   /* WebSocket Server Hooks */
   onSocketOpen(ws: WebSocketLike, serializedHTTPRequest: SerializedHTTPRequest) {
-    const socketId = serializedHTTPRequest.headers['sec-websocket-key']!
+    const socketId = serializedHTTPRequest.headers['sec-websocket-key']
     const clientConnection = this.instance.handleConnection(
       ws,
       toWebRequest(serializedHTTPRequest),
@@ -376,7 +381,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     const documentName =
       sepIdx === -1 ? documentNameAndSessionId : documentNameAndSessionId.slice(0, sepIdx)
     const isDocLoadedOnInstance = this.instance.documents.has(documentName)
-    const socketId = serializedHTTPRequest.headers['sec-websocket-key']!
+    const socketId = serializedHTTPRequest.headers['sec-websocket-key']
     const entry = this.originConnections[socketId]
     if (!entry) return
     const {clientConnection} = entry
