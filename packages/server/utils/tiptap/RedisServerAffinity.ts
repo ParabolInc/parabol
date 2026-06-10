@@ -1,4 +1,3 @@
-import type EventEmitter from 'node:events'
 import type {IncomingHttpHeaders} from 'node:http2'
 import {
   type afterUnloadDocumentPayload,
@@ -6,7 +5,8 @@ import {
   type Hocuspocus,
   IncomingMessage,
   type onConfigurePayload,
-  type onLoadDocumentPayload
+  type onLoadDocumentPayload,
+  type WebSocketLike
 } from '@hocuspocus/server'
 import type RedisClient from 'ioredis'
 import {HocusPocusProxySocket} from '../../HocusPocusProxySocket'
@@ -36,17 +36,6 @@ export type RSAMessageClose = {
   socketId: string
 }
 
-export type RSAMessagePing = {
-  type: 'ping'
-  socketId: string
-  replyTo: string
-}
-
-export type RSAMessagePong = {
-  type: 'pong'
-  socketId: string
-}
-
 export type RSAMessageSend = {
   type: 'send'
   message: Uint8Array<ArrayBufferLike>
@@ -73,8 +62,6 @@ export type RSAMessage =
   | RSAMessageCloseProxy
   | RSAMessageUnload
   | RSAMessageClose
-  | RSAMessagePing
-  | RSAMessagePong
   | RSAMessageSend
   | RSAMessageCustomEventStart
   | RSAMessageCustomEventComplete
@@ -92,6 +79,10 @@ type DocumentName = string
 type SocketId = string
 type CustomEventName = string
 type CustomEvents = Record<CustomEventName, (documentName: string, payload: any) => Promise<any>>
+// Not exported by @hocuspocus/server
+type ClientConnection = ReturnType<Hocuspocus['handleConnection']>
+type OriginConnection = {clientConnection: ClientConnection; socket: WebSocketLike}
+type ProxyConnection = {clientConnection: ClientConnection; socket: HocusPocusProxySocket}
 
 interface Configuration<TCE> {
   redis: RedisClient
@@ -102,13 +93,24 @@ interface Configuration<TCE> {
   customEventTTL?: number
   prefix?: string
   customEvents?: TCE
+  // Derive the hocuspocus context once per socket instead of re-deriving it in a
+  // per-document hook like onConnect/onAuthenticate. Runs on the origin server when
+  // the socket opens and on the doc owner when the first proxied message arrives.
+  deriveContext?: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
 }
 
-interface BaseWebSocket extends EventEmitter {
-  readyState: number
-  close(code?: number, reason?: string | ArrayBufferLike): void
-  ping(): void
-  send(message: Uint8Array): void
+// Hocuspocus expects a web-standard Request, so rehydrate one from what crossed the wire
+const toWebRequest = (serializedHTTPRequest: SerializedHTTPRequest) => {
+  const {method, url, headers} = serializedHTTPRequest
+  const webHeaders = new Headers()
+  Object.entries(headers).forEach(([name, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach((v) => webHeaders.append(name, v))
+    } else if (value !== undefined) {
+      webHeaders.set(name, value)
+    }
+  })
+  return new Request(new URL(url, 'http://localhost'), {method, headers: webHeaders})
 }
 
 export class RedisServerAffinity<TCE extends CustomEvents> implements Extension {
@@ -117,10 +119,10 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private sub: RedisClient
   private pack: Pack
   private unpack: Unpack
-  private originSockets: Record<SocketId, BaseWebSocket> = {}
+  private originConnections: Record<SocketId, OriginConnection> = {}
   private locks: Record<DocumentName, NodeJS.Timeout> = {}
   private lockPromises: Record<DocumentName, Promise<ServerId | null>> = {}
-  private proxySockets: Record<SocketId, HocusPocusProxySocket> = {}
+  private proxyConnections: Record<SocketId, ProxyConnection> = {}
   private prefix: string
   private lockPrefix: string
   private msgChannel: string
@@ -131,9 +133,19 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   private customEvents: TCE
   private replyIdCounter: number = 0
   private pendingReplies: Record<number, PromiseWithResolvers<any>['resolve']> = {}
+  private deriveContext: (serializedHTTPRequest: SerializedHTTPRequest) => Record<string, any>
   constructor(configuration: Configuration<TCE>) {
-    const {redis, pack, unpack, serverId, lockTTL, prefix, customEvents, customEventTTL} =
-      configuration
+    const {
+      redis,
+      pack,
+      unpack,
+      serverId,
+      lockTTL,
+      prefix,
+      customEvents,
+      customEventTTL,
+      deriveContext
+    } = configuration
     this.pub = redis.duplicate()
     this.sub = redis.duplicate()
     this.pack = pack
@@ -145,6 +157,7 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     this.lockPrefix = `${this.prefix}Lock`
     this.msgChannel = `${this.prefix}Msg`
     this.customEvents = (customEvents as any) ?? ({} as any as CustomEvents)
+    this.deriveContext = deriveContext ?? (() => ({}))
     this.sub.subscribe(this.msgChannel, `${this.msgChannel}:${this.serverId}`)
     this.sub.on('messageBuffer', this.handleRedisMessage)
   }
@@ -153,15 +166,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   private closeProxy(socketId: string) {
-    const proxySocket = this.proxySockets[socketId]
-    if (proxySocket) {
-      proxySocket.emit('close', 1000, Buffer.from('provider_initiated', 'utf-8'))
-      delete this.proxySockets[socketId]
+    const entry = this.proxyConnections[socketId]
+    if (entry) {
+      delete this.proxyConnections[socketId]
+      const {socket, clientConnection} = entry
+      // The origin socket is already gone; don't echo a close message back
+      socket.markClosed()
+      clientConnection.handleClose({code: 1000, reason: 'provider_initiated'})
     }
-  }
-
-  private pongProxy(socketId: string) {
-    this.proxySockets[socketId]?.emit('pong')
   }
 
   private handleProxyMessage(
@@ -170,19 +182,18 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
     const {replyTo, message, serializedHTTPRequest} = msg
     const {headers} = serializedHTTPRequest
     const socketId = headers['sec-websocket-key']!
-    let socket = this.proxySockets[socketId]
-    if (!socket) {
-      socket = new HocusPocusProxySocket(
-        this.pub,
-        this.pack,
-        replyTo,
-        `${this.msgChannel}:${this.serverId}`,
-        socketId
+    let entry = this.proxyConnections[socketId]
+    if (!entry) {
+      const socket = new HocusPocusProxySocket(this.pub, this.pack, replyTo, socketId)
+      const clientConnection = this.instance.handleConnection(
+        socket,
+        toWebRequest(serializedHTTPRequest),
+        this.deriveContext(serializedHTTPRequest)
       )
-      this.proxySockets[socketId] = socket
-      this.instance.handleConnection(socket as any, serializedHTTPRequest as any, {})
+      entry = {clientConnection, socket}
+      this.proxyConnections[socketId] = entry
     }
-    socket.emit('message', message)
+    entry.clientConnection.handleMessage(message)
   }
 
   private getLock(documentName: string) {
@@ -225,10 +236,6 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       this.closeProxy(msg.socketId)
       return
     }
-    if (type === 'pong') {
-      this.pongProxy(msg.socketId)
-      return
-    }
     if (type === 'unload') {
       delete this.lockPromises[msg.documentName]
       return
@@ -257,22 +264,14 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       return
     }
     const {socketId} = msg
-    const socket = this.originSockets[socketId]
-    if (!socket) {
+    const entry = this.originConnections[socketId]
+    if (!entry) {
       // origin socket already cleaned up
       return
     }
+    const {socket} = entry
     if (type === 'close') {
       socket.close(msg.code, msg.reason)
-    } else if (type === 'ping') {
-      // Reply instantly to the proxy socket, without forwarding to client
-      // The origin socket handles heartbeat for itself
-      const {replyTo, socketId} = msg
-      const reply: RSAMessagePong = {
-        type: 'pong',
-        socketId
-      }
-      this.pub.publish(`${replyTo}`, this.pack(reply))
     } else if (type === 'send') {
       socket.send(msg.message)
     }
@@ -358,24 +357,32 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   /* WebSocket Server Hooks */
-  onSocketOpen(ws: BaseWebSocket, serializedHTTPRequest: SerializedHTTPRequest, context = {}) {
+  onSocketOpen(ws: WebSocketLike, serializedHTTPRequest: SerializedHTTPRequest) {
     const socketId = serializedHTTPRequest.headers['sec-websocket-key']!
-    this.originSockets[socketId] = ws
-    this.instance.handleConnection(ws as any, serializedHTTPRequest as any, context)
+    const clientConnection = this.instance.handleConnection(
+      ws,
+      toWebRequest(serializedHTTPRequest),
+      this.deriveContext(serializedHTTPRequest)
+    )
+    this.originConnections[socketId] = {clientConnection, socket: ws}
   }
 
-  async onSocketMessage(
-    ws: BaseWebSocket,
-    serializedHTTPRequest: SerializedHTTPRequest,
-    detachableMsg: ArrayBuffer
-  ) {
+  async onSocketMessage(serializedHTTPRequest: SerializedHTTPRequest, detachableMsg: ArrayBuffer) {
     const message = new Uint8Array(detachableMsg.slice())
     const tmpMsg = new IncomingMessage(detachableMsg)
-    const documentName = tmpMsg.readVarString()
+    const documentNameAndSessionId = tmpMsg.readVarString()
+    // session-aware providers suffix the documentName with \0sessionId
+    const sepIdx = documentNameAndSessionId.indexOf('\0')
+    const documentName =
+      sepIdx === -1 ? documentNameAndSessionId : documentNameAndSessionId.slice(0, sepIdx)
     const isDocLoadedOnInstance = this.instance.documents.has(documentName)
+    const socketId = serializedHTTPRequest.headers['sec-websocket-key']!
+    const entry = this.originConnections[socketId]
+    if (!entry) return
+    const {clientConnection} = entry
 
     if (isDocLoadedOnInstance) {
-      ws.emit('message', message)
+      clientConnection.handleMessage(message)
       return
     }
 
@@ -393,16 +400,17 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
       return
     }
     // This server owns the document, but hocuspocus hasn't loaded it yet
-    ws.emit('message', message)
+    clientConnection.handleMessage(message)
   }
 
   onSocketClose(socketId: string, code?: number, reason?: ArrayBuffer) {
-    const socket = this.originSockets[socketId]
-    if (!socket) return
-    // at this point the socket is considered GC'd and we cannot call close
-    // The origin socket did not set up any connections for the proxy, so none of the hooks will work if we just emit
-    socket?.emit('close', code, reason)
-    delete this.originSockets[socketId]
+    const entry = this.originConnections[socketId]
+    if (!entry) return
+    delete this.originConnections[socketId]
+    entry.clientConnection.handleClose({
+      code: code ?? 1000,
+      reason: reason ? Buffer.from(reason).toString() : ''
+    })
     const msg: RSAMessageCloseProxy = {type: 'closeProxy', socketId}
     this.pub.publish(this.msgChannel, this.pack(msg)).catch(() => {})
   }

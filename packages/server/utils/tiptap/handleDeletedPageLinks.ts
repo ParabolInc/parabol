@@ -6,13 +6,14 @@ import getKysely from '../../postgres/getKysely'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
 import {getUnsafeDeletedAttribute} from './getUnsafeDeletedAttribute'
+import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {removeAllBacklinkedPageLinkBlocks} from './hocusPocusHub'
 import {updateBacklinks} from './updateBacklinks'
 
 export const handleDeletedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const {changes, transaction} = e
   const {deleted} = changes
-  const userId = transaction.origin?.context?.userId
+  const userId = getUserIdFromTransaction(transaction)
   const pg = getKysely()
   deleted.forEach(async (item) => {
     const [node] = item.content.getContent()

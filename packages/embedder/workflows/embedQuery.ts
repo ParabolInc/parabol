@@ -9,7 +9,7 @@ export interface EmbedQueryData {
   query: string
   modelId: ModelId
   requestId: number
-  channelName: `userQueryEmbedding:${string}`
+  channelName: `embedderResponse:${string}`
 }
 
 const packr = new Packr({

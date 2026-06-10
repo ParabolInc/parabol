@@ -3,7 +3,7 @@
   "description": "An open-source app for building smarter, more agile teams.",
   "author": "Parabol Inc. <love@parabol.co> (http://github.com/ParabolInc)",
   "license": "AGPL-3.0",
-  "version": "13.24.0",
+  "version": "13.25.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/ParabolInc/parabol"
@@ -52,9 +52,9 @@
     "@graphql-tools/schema": "^10.0.31",
     "@graphql-yoga/plugin-defer-stream": "^3.13.2",
     "@graphql-yoga/plugin-persisted-operations": "^3.13.3",
-    "@hocuspocus/extension-database": "3.2.3",
-    "@hocuspocus/extension-throttle": "3.2.3",
-    "@hocuspocus/server": "3.2.3",
+    "@hocuspocus/extension-database": "^4.1.0",
+    "@hocuspocus/extension-throttle": "^4.1.0",
+    "@hocuspocus/server": "^4.1.0",
     "@mattkrick/sanitize-svg": "0.4.1",
     "@octokit/graphql-schema": "^10.36.0",
     "@react-email/body": "^0.1.0",

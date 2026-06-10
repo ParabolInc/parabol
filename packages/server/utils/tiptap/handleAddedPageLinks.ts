@@ -7,13 +7,14 @@ import {Logger} from '../Logger'
 import logError from '../logError'
 import {NEW_PAGE_SENTINEL_CODE} from './constants'
 import {createNewPage} from './createNewPage'
+import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {movePageToNewParent} from './movePageToNewParent'
 import {updateBacklinks} from './updateBacklinks'
 
 export const handleAddedPageLinks = (e: Y.YEvent<any>, parentPageId: number) => {
   const {changes, transaction} = e
   const {added} = changes
-  const userId = transaction.origin?.context?.userId
+  const userId = getUserIdFromTransaction(transaction)!
   added.forEach(async (item) => {
     const [node] = item.content.getContent()
     if (!isPageLink(node)) return

@@ -49,7 +49,7 @@ jobs:
 
             PROJECT_PATH="parabol1/ppmi/${REPO_NAME}"
             AUTH_URL="https://oauth2:${GITLAB_TOKEN}@gitlab.com/${PROJECT_PATH}.git"
-            API_BASE="https://gitlab.com/api/v4/projects/parabol1/ppmi/${REPO_NAME}"
+            API_BASE="https://gitlab.com/api/v4/projects/parabol1%2Fppmi%2F${REPO_NAME}"
 
             DEFAULT_BRANCH=$(curl -sf --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "${API_BASE}" | jq -r '.default_branch')
 
@@ -72,7 +72,7 @@ jobs:
             cd ..
             rm -rf repo
 
-          done < <(echo "$PPMI_REPO_URLS" | jq -r '.[]')
+          done < <(echo "$PPMI_REPO_NAMES" | jq -r '.[]')
 
       - name: Report Status
         if: failure()
