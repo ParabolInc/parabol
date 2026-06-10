@@ -27,7 +27,7 @@ const NewMeetingAvatar = (props: Props) => {
     `,
     userRef
   )
-
+  if (!user) return null
   const {email, preferredName, picture} = user
   return (
     <ErrorBoundary>

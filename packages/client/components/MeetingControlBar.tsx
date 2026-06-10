@@ -122,13 +122,14 @@ const MeetingControlBar = (props: Props) => {
   const renderButton = (key: string) => {
     switch (key) {
       case 'music':
-        return <BottomControlBarMusic meetingId={meetingId} />
+        return <BottomControlBarMusic key={key} meetingId={meetingId} />
       case 'tips':
-        return <BottomControlBarTips meeting={meeting} cancelConfirm={cancelConfirm} />
+        return <BottomControlBarTips key={key} meeting={meeting} cancelConfirm={cancelConfirm} />
       case 'ready':
       case 'next':
         return (
           <BottomControlBarReady
+            key={key}
             isNext={isPoker ? true : isFacilitating}
             isFacilitating={isFacilitating}
             isPoker={isPoker}
@@ -143,10 +144,11 @@ const MeetingControlBar = (props: Props) => {
           />
         )
       case 'rejoin':
-        return <BottomControlBarRejoin onClick={() => gotoStageId(facilitatorStageId)} />
+        return <BottomControlBarRejoin key={key} onClick={() => gotoStageId(facilitatorStageId)} />
       case 'timer':
         return (
           <StageTimerControl
+            key={key}
             cancelConfirm={cancelConfirm}
             defaultTimeLimit={DEFAULT_TIME_LIMIT[phaseType] ?? 1}
             meeting={meeting}
@@ -155,6 +157,7 @@ const MeetingControlBar = (props: Props) => {
       case 'end':
         return (
           <EndMeetingButton
+            key={key}
             cancelConfirm={confirmingButton === 'end' ? undefined : cancelConfirm}
             isConfirming={confirmingButton === 'end'}
             setConfirmingButton={setConfirmingButton}
