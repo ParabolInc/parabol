@@ -53,11 +53,11 @@ importers:
         specifier: ^6.8.5
         version: 6.16.0(@envelop/core@5.5.1)(graphql-yoga@5.21.0(graphql@16.13.1))(graphql@16.13.1)(prom-client@15.1.3)
       '@hocuspocus/provider':
-        specifier: ^3.4.3
-        version: 3.4.4(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        specifier: ^4.1.0
+        version: 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@hocuspocus/transformer':
-        specifier: ^3.4.3
-        version: 3.4.4(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
+        specifier: ^4.1.0
+        version: 4.1.0(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
       '@module-federation/enhanced':
         specifier: ^0.18.3
         version: 0.18.4(@rspack/core@1.7.11(@swc/helpers@0.5.21))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3)(webpack@5.107.0)
@@ -888,14 +888,14 @@ importers:
         specifier: ^3.13.3
         version: 3.21.0(graphql-yoga@5.21.0(graphql@16.13.1))(graphql@16.13.1)
       '@hocuspocus/extension-database':
-        specifier: 3.2.3
-        version: 3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        specifier: ^4.1.0
+        version: 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@hocuspocus/extension-throttle':
-        specifier: 3.2.3
-        version: 3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        specifier: ^4.1.0
+        version: 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@hocuspocus/server':
-        specifier: 3.2.3
-        version: 3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+        specifier: ^4.1.0
+        version: 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@mattkrick/sanitize-svg':
         specifier: 0.4.1
         version: 0.4.1(tslib@2.8.1)
@@ -2186,11 +2186,20 @@ packages:
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
 
+  '@emnapi/core@1.11.0':
+    resolution: {integrity: sha512-l9Oo58x0HOP5znGzVhYW9U3e5wVuA4LAZU2AGezTmkhO1CgQRFDhDg4nneHsu/t3WniXg9QrG2nIXL/ZS8ln8Q==}
+
   '@emnapi/runtime@1.10.0':
     resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
 
+  '@emnapi/runtime@1.11.0':
+    resolution: {integrity: sha512-55coeOFKHv1ywEcUXJtWU5f+Jr/W5tZDvZig8DLKSwUN1JpROQ4rk/SNOQiFWmaR/VKF4zuFyW1B8JduOSv6Pg==}
+
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
+
+  '@emnapi/wasi-threads@1.2.2':
+    resolution: {integrity: sha512-c95qOXkHdydNKhscBTebqEC1CVAZpyqOfVfBzQ1qgzyl3gfeldUjIggDbIZgDKsHLgnsM+igH7TJ/eAasaVuMA==}
 
   '@emoji-mart/data@1.2.1':
     resolution: {integrity: sha512-no2pQMWiBy6gpBEiqGeU77/bFejDqUTRY7KX+0+iur13op3bqUsXdnwoZs6Xb1zbv0gAj5VvS1PWoUUckSr5Dw==}
@@ -2891,31 +2900,32 @@ packages:
       react: ^18.3.1
       react-dom: ^18.3.1
 
-  '@hocuspocus/common@3.4.4':
-    resolution: {integrity: sha512-RykIJ0tsHHMP4Xk+4UCbc7SO5LgGxGUSTdbh6anJEsaALAyqinf1Nn5HYuMjLPolAmsar1v++m9zufR09NLpXA==}
+  '@hocuspocus/common@4.1.0':
+    resolution: {integrity: sha512-SOBbu0GcBMbLo7IYRDZC6gvEcoATbEFIC5KqzvLanC6dZZLkv91pYEBli+Exs/G71ELL3iUjSwnaf+gksxcjFA==}
 
-  '@hocuspocus/extension-database@3.2.3':
-    resolution: {integrity: sha512-RenCXDy6Qy/wqA2PSBOS4AcQHZZohUXTa9Mv5Mucsi1qqKsGsSLstbWpiugg556AG2gWq0vl/zmBTsn4eoeVag==}
+  '@hocuspocus/extension-database@4.1.0':
+    resolution: {integrity: sha512-jH70FcWxIVcN++IYuSfS4JPAJgowEjFXWU/59yNlSYHEl0tWNqtR4/JBpVVAJQd1gV1kV/EXsrlnoNzV8SeCuw==}
     peerDependencies:
       yjs: ^13.6.8
 
-  '@hocuspocus/extension-throttle@3.2.3':
-    resolution: {integrity: sha512-mqxWVRn0l/seEH+afgw05MJP9qBR7j4qBd74iIhCQFWRXbGro/a5esCmwKulWJS8kK2075rPRsy9xme3e2XQ9g==}
+  '@hocuspocus/extension-throttle@4.1.0':
+    resolution: {integrity: sha512-qdiLneXtkrzSRf5zfrz4rRhuwDAHzrpIThW2KUaWfSBn3O/Cjtm6KgUuq1VBio9gj8BFB5eiYTDcbrHO8cXgag==}
 
-  '@hocuspocus/provider@3.4.4':
-    resolution: {integrity: sha512-KbsMAfdYcIJD8eMU/5QnpXcSOvIWAcCNI33FSRSaKCIpYBFtAwkYIwWnZJmPZ8a1BMAtqQc+uvy9+UQf7GHnGQ==}
-    peerDependencies:
-      y-protocols: ^1.0.6
-      yjs: ^13.6.8
-
-  '@hocuspocus/server@3.2.3':
-    resolution: {integrity: sha512-JVidUfVWQJXC2ngDAMvrAK99V5NoGo/5/R/VvJU6bkOwHKfvl/UpFQjP9FwIiDQ/Uwj9P0mQr1gyWs2Tx4k7/w==}
+  '@hocuspocus/provider@4.1.0':
+    resolution: {integrity: sha512-K80V2yX4AMdpqgjIkexJioyI2Oq8pu8hjdFqY0INXKSpH8TQv9NMaDzJmlrZMYmUeKyRO2t7VhGyFK9jZQPnNw==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
 
-  '@hocuspocus/transformer@3.4.4':
-    resolution: {integrity: sha512-X0EJ863LV97YbL5m8WTt4NDSC6uHi6ZCq/teIH5aholdjdhdTmFrzMemdhha/ZqPUZyaKhOoAmZzwR55HZLPpQ==}
+  '@hocuspocus/server@4.1.0':
+    resolution: {integrity: sha512-mp0Of76kRkK/u+9pKXPLNV4NI2Cyjql/jVnudVb0z6xAd/i7mBDTK88p1I1sNoX9yvCvhY7lQlrvVx6sMcl8Xw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      y-protocols: ^1.0.6
+      yjs: ^13.6.8
+
+  '@hocuspocus/transformer@4.1.0':
+    resolution: {integrity: sha512-zjobRWsSipRM0hQvAZ65zPR0jrDcXgVHSFyuePtaNIZTBBeUbn1y6cLyBVQTIazE96UsuNwsZsBsMyFM7WdMUQ==}
     peerDependencies:
       '@tiptap/core': ^3.0.1
       '@tiptap/pm': ^3.0.1
@@ -6423,8 +6433,8 @@ packages:
     resolution: {integrity: sha512-hsU18Ae8CDTR6Kgu9DYf0EbCr/a5iGL0rytQDobUcdpYOKokk8LEjVphnXkDkgpi0wYVsqrXuP0bZxJaTqdgoA==}
     engines: {node: '>= 0.4'}
 
-  async-lock@1.4.1:
-    resolution: {integrity: sha512-Az2ZTpuytrtqENulXwO3GGv1Bztugx6TT37NIo7imr/Qo0gsYiGtSdBa2B6fsXhTpVZDNfu1Qn3pk531e3q+nQ==}
+  async-mutex@0.5.0:
+    resolution: {integrity: sha512-1A94B18jkJ3DYq284ohPxoXbfTA5HsQ7/Mf4DEhcyLx3Bz27Rh59iScbB6EPiP+B+joue6YCxcMXSbFC1tZKwA==}
 
   async@2.6.4:
     resolution: {integrity: sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==}
@@ -7012,6 +7022,14 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crossws@0.4.5:
+    resolution: {integrity: sha512-wUR89x/Rw7/8t+vn0CmGDYM9TD6VtARGb0LD5jq2wjtMy1vCP4M+sm6N6TigWeTYvnA8MoW29NqqXD0ep0rfBA==}
+    peerDependencies:
+      srvx: '>=0.11.5'
+    peerDependenciesMeta:
+      srvx:
+        optional: true
 
   crypto-random-string@2.0.0:
     resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
@@ -11455,10 +11473,6 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uuid@11.1.1:
-    resolution: {integrity: sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==}
-    hasBin: true
-
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
@@ -13502,13 +13516,29 @@ snapshots:
       '@emnapi/wasi-threads': 1.2.1
       tslib: 2.8.1
 
+  '@emnapi/core@1.11.0':
+    dependencies:
+      '@emnapi/wasi-threads': 1.2.2
+      tslib: 2.8.1
+    optional: true
+
   '@emnapi/runtime@1.10.0':
     dependencies:
       tslib: 2.8.1
 
+  '@emnapi/runtime@1.11.0':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
       tslib: 2.8.1
+
+  '@emnapi/wasi-threads@1.2.2':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
 
   '@emoji-mart/data@1.2.1': {}
 
@@ -14420,55 +14450,47 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
 
-  '@hocuspocus/common@3.4.4':
+  '@hocuspocus/common@4.1.0':
     dependencies:
       lib0: 0.2.117
 
-  '@hocuspocus/extension-database@3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/extension-database@4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@hocuspocus/server': 3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@hocuspocus/server': 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       yjs: 13.6.30
     transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
+      - srvx
       - y-protocols
 
-  '@hocuspocus/extension-throttle@3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/extension-throttle@4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@hocuspocus/server': 3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
+      '@hocuspocus/server': 4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
     transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
+      - srvx
       - y-protocols
       - yjs
 
-  '@hocuspocus/provider@3.4.4(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/provider@4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@hocuspocus/common': 3.4.4
+      '@hocuspocus/common': 4.1.0
       '@lifeomic/attempt': 3.1.0
       lib0: 0.2.117
-      ws: 8.20.1
       y-protocols: 1.0.7(yjs@13.6.30)
       yjs: 13.6.30
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
 
-  '@hocuspocus/server@3.2.3(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/server@4.1.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
-      '@hocuspocus/common': 3.4.4
-      async-lock: 1.4.1
+      '@hocuspocus/common': 4.1.0
+      async-mutex: 0.5.0
+      crossws: 0.4.5
       kleur: 4.1.5
       lib0: 0.2.117
-      uuid: 11.1.1
-      ws: 8.20.1
       y-protocols: 1.0.7(yjs@13.6.30)
       yjs: 13.6.30
     transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
+      - srvx
 
-  '@hocuspocus/transformer@3.4.4(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
+  '@hocuspocus/transformer@4.1.0(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(y-prosemirror@1.3.7(prosemirror-model@1.25.7)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)':
     dependencies:
       '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
       '@tiptap/pm': 3.23.6
@@ -15455,8 +15477,8 @@ snapshots:
 
   '@napi-rs/wasm-runtime@1.0.7':
     dependencies:
-      '@emnapi/core': 1.10.0
-      '@emnapi/runtime': 1.10.0
+      '@emnapi/core': 1.11.0
+      '@emnapi/runtime': 1.11.0
       '@tybys/wasm-util': 0.10.2
     optional: true
 
@@ -18010,7 +18032,9 @@ snapshots:
 
   async-function@1.0.0: {}
 
-  async-lock@1.4.1: {}
+  async-mutex@0.5.0:
+    dependencies:
+      tslib: 2.8.1
 
   async@2.6.4:
     dependencies:
@@ -18681,6 +18705,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crossws@0.4.5: {}
 
   crypto-random-string@2.0.0: {}
 
@@ -23617,8 +23643,6 @@ snapshots:
   utila@0.4.0: {}
 
   utils-merge@1.0.1: {}
-
-  uuid@11.1.1: {}
 
   uuid@8.3.2: {}
 
