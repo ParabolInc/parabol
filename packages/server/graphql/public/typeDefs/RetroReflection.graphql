@@ -97,4 +97,10 @@ type RetroReflection implements Reactable {
   The user that created the reflection, only visible if anonymity is disabled
   """
   creator: User
+
+  """
+  The embedding vector for this reflection. Only populated when the embedder is enabled.
+  Used client-side during the group phase to compute similarity between reflections.
+  """
+  embeddingVector: [Float!]
 }

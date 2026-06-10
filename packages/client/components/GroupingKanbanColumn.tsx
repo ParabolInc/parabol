@@ -16,6 +16,7 @@ import getNextSortOrder from '../utils/getNextSortOrder'
 import type {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
+import ScrollEdgeIndicator from './ScrollEdgeIndicator'
 
 const ColumnScrollContainer = styled('div')({
   display: 'flex',
@@ -52,6 +53,7 @@ interface Props {
   isAnyEditing: boolean
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting$key
+  onHoverReflection: (reflectionId: string | null) => void
   openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt$key
@@ -67,6 +69,7 @@ const GroupingKanbanColumn = (props: Props) => {
     isAnyEditing,
     isDesktop,
     meeting: meetingRef,
+    onHoverReflection,
     openSpotlight,
     reflectionGroups: reflectionGroupsRef,
     phaseRef,
@@ -100,6 +103,7 @@ const GroupingKanbanColumn = (props: Props) => {
       fragment GroupingKanbanColumn_reflectionGroups on RetroReflectionGroup @relay(plural: true) {
         ...ReflectionGroup_reflectionGroup
         id
+        activeReflectionGroupSimilarity
         reflections {
           id
         }
@@ -127,6 +131,16 @@ const GroupingKanbanColumn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const columnRef = useRef<HTMLDivElement>(null)
   const columnBodyRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const similarGroupIds = useMemo(() => {
+    const ids = new Set<string>()
+    for (const group of reflectionGroups) {
+      if (group.activeReflectionGroupSimilarity != null) ids.add(group.id)
+    }
+    return ids
+  }, [reflectionGroups])
+
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) ||
     !!endedAt
@@ -158,7 +172,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   return (
     <div
-      className={`relative mr-2 ml-2 flex h-full min-w-[320px] single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'} max-w-min`}
+      className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'} max-w-min`}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
@@ -172,7 +186,8 @@ const GroupingKanbanColumn = (props: Props) => {
         submitting={submitting}
         toggleWidth={toggleWidth}
       />
-      <ColumnScrollContainer>
+      <ScrollEdgeIndicator scrollRef={scrollContainerRef} similarGroupIds={similarGroupIds} />
+      <ColumnScrollContainer ref={scrollContainerRef}>
         {subColumnIndexes.map((subColumnIdx) => {
           return (
             <ColumnBody
@@ -191,6 +206,7 @@ const GroupingKanbanColumn = (props: Props) => {
                       dataCy={`${question}-group-${idx}`}
                       key={reflectionGroup.id}
                       meetingRef={meeting}
+                      onHoverReflection={onHoverReflection}
                       openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
                       reflectionGroupRef={reflectionGroup}
