@@ -1,6 +1,5 @@
 import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
-import type {IncomingHttpHeaders} from 'node:http2'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
 import {redisHocusPocus} from './hocusPocus'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
@@ -15,7 +14,7 @@ export type HocusPocusSocketData = {
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   maxPayloadLength: 1024 * 1024 * 64,
   upgrade(res, req, context) {
-    const headers: IncomingHttpHeaders = {}
+    const headers = {} as SerializedHTTPRequest['headers']
     req.forEach((key, value) => {
       headers[key] = value
     })

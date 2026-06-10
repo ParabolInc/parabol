@@ -44,7 +44,7 @@ type YjsContext = {userId?: string; tms?: string[]; isUnauthenticated?: boolean}
 // instead of once per document in onConnect/onAuthenticate
 const deriveContext = (serializedHTTPRequest: SerializedHTTPRequest): YjsContext => {
   const {headers, url} = serializedHTTPRequest
-  const cookieToken = getAuthTokenFromCookie(headers['cookie'])
+  const cookieToken = getAuthTokenFromCookie(headers['cookie'] as string)
   const queryToken = new URL(url, 'http://localhost').searchParams.get('token')
   const token = cookieToken || queryToken
   const authToken = getVerifiedAuthToken(token)
