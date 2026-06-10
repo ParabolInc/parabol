@@ -1,8 +1,10 @@
 import type {Extension} from '@hocuspocus/server'
+import * as Y from 'yjs'
 import {getData, getRowData} from '../../../client/tiptap/extensions/database/data'
 import {updateChangedAt} from '../../../client/tiptap/extensions/database/utils'
 import {CipherId} from '../CipherId'
 import {Logger} from '../Logger'
+import {getUserIdFromTransaction} from './getUserIdFromTransaction'
 import {handleAddedPageLinks} from './handleAddedPageLinks'
 import {handleDeletedPageLinks} from './handleDeletedPageLinks'
 import {syncPageUserMentionNames} from './syncPageUserMentionNames'
@@ -33,8 +35,8 @@ export const afterLoadDocument: Extension['afterLoadDocument'] = async ({
   root.observeDeep(rootObserver)
 
   const data = getData(document)
-  const dataObserver = (events: any[], transaction: any) => {
-    const userId = transaction.origin?.context?.userId ?? undefined
+  const dataObserver = (events: Y.YEvent<any>[], transaction: Y.Transaction) => {
+    const userId = getUserIdFromTransaction(transaction)
     if (!userId) {
       return
     }
