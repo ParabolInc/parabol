@@ -141,7 +141,7 @@ async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
 // preventing DNS rebinding between validation and connection.
 function createPinnedAgent(protocol: string, addresses: string[]) {
   const Mod = protocol === 'https:' ? https : http
-  const lookup: net.LookupFunction = (
+  const lookup = (
     _hostname: string,
     _options: dnsSync.LookupOptions,
     cb: (
