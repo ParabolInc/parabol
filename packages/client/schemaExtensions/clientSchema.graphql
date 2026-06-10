@@ -120,6 +120,7 @@ extend type Task {
 extend type RetroReflectionGroup {
   isExpanded: Boolean
   subColumnIdx: Int
+  activeReflectionGroupSimilarity: Float
 }
 
 extend type RetroReflection {
