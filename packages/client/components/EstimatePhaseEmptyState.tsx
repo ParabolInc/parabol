@@ -8,12 +8,6 @@ const StyledHeading = styled(MeetingPhaseHeading)({
   textAlign: 'center'
 })
 
-const StyledCopy = styled(MeetingCopy)({
-  margin: 0,
-  padding: '12px 0',
-  textAlign: 'center'
-})
-
 const Link = styled(StyledLink)({
   fontWeight: 600
 })
@@ -35,11 +29,13 @@ const EstimatePhaseEmptyState = (props: Props) => {
   return (
     <EmptyStateContainer>
       <StyledHeading>No items to estimate?</StyledHeading>
-      <StyledCopy>It looks like you haven't added any items yet.</StyledCopy>
-      <StyledCopy>
+      <MeetingCopy className='m-0 py-3 text-center'>
+        It looks like you haven't added any items yet.
+      </MeetingCopy>
+      <MeetingCopy className='m-0 py-3 text-center'>
         Try adding them
         <Link to={`/meet/${meetingId}/scope`}>{' here.'}</Link>
-      </StyledCopy>
+      </MeetingCopy>
     </EmptyStateContainer>
   )
 }

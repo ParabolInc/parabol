@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
@@ -14,24 +13,16 @@ import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
 import type {ActionMeetingPhaseProps} from './ActionMeeting'
-import ErrorBoundary from './ErrorBoundary'
 import MeetingContent from './MeetingContent'
+import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
+import PhaseWrapper from './PhaseWrapper'
 import PrimaryButton from './PrimaryButton'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingLastCall_meeting$key
 }
-
-const LastCallWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  justifyContent: 'center',
-  marginLeft: 64,
-  height: '100%'
-})
 
 const ActionMeetingLastCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
@@ -81,7 +72,7 @@ const ActionMeetingLastCall = (props: Props) => {
   const getHeadingText = () => {
     if (endedAt && agendaItemsCompleted === 0) return <span>Nothing to see here</span>
     else if (agendaItemsCompleted === 0) return <span>{`No ${labelAgendaItems}?`}</span>
-    else return <span>{'Last Call:'}</span>
+    else return <span>{'Last Call'}</span>
   }
 
   const getMeetingCopy = () => {
@@ -110,34 +101,36 @@ const ActionMeetingLastCall = (props: Props) => {
 
   return (
     <MeetingContent>
-      <MeetingTopBar
-        avatarGroup={avatarGroup}
-        isMeetingSidebarCollapsed={!showSidebar}
-        toggleSidebar={toggleSidebar}
-      >
-        <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
-      </MeetingTopBar>
-      <ErrorBoundary>
-        <LastCallWrapper>
-          <MeetingPhaseHeading>{getHeadingText()}</MeetingPhaseHeading>
-          <MeetingCopy>{getMeetingCopy()}</MeetingCopy>
-          {!endedAt && <AgendaShortcutHint />}
-          {isFacilitating ? (
-            <PrimaryButton
-              aria-label='End Meeting'
-              size='large'
-              onClick={endMeeting}
-              disabled={!!endedAt}
-            >
-              End Check-in Meeting
-            </PrimaryButton>
-          ) : !endedAt ? (
-            <MeetingFacilitationHint>
-              {'Waiting for'} <b>{preferredName}</b> {`to end the meeting`}
-            </MeetingFacilitationHint>
-          ) : null}
-        </LastCallWrapper>
-      </ErrorBoundary>
+      <MeetingHeaderAndPhase hideBottomBar={!!endedAt}>
+        <MeetingTopBar
+          avatarGroup={avatarGroup}
+          isMeetingSidebarCollapsed={!showSidebar}
+          toggleSidebar={toggleSidebar}
+        >
+          <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
+        </MeetingTopBar>
+        <PhaseWrapper>
+          <div className='ml-16 flex h-full flex-col items-start justify-center'>
+            <MeetingPhaseHeading>{getHeadingText()}</MeetingPhaseHeading>
+            <MeetingCopy className='mb-0'>{getMeetingCopy()}</MeetingCopy>
+            {!endedAt && <AgendaShortcutHint />}
+            {isFacilitating ? (
+              <PrimaryButton
+                aria-label='End Meeting'
+                size='large'
+                onClick={endMeeting}
+                disabled={!!endedAt}
+              >
+                End Check-in Meeting
+              </PrimaryButton>
+            ) : !endedAt ? (
+              <MeetingFacilitationHint>
+                {'Waiting for'} <b>{preferredName}</b> {`to end the meeting`}
+              </MeetingFacilitationHint>
+            ) : null}
+          </div>
+        </PhaseWrapper>
+      </MeetingHeaderAndPhase>
     </MeetingContent>
   )
 }

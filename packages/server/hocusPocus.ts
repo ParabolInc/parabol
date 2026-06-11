@@ -1,7 +1,6 @@
-import type {IncomingMessage} from 'node:http'
 import {Database} from '@hocuspocus/extension-database'
 import {Throttle} from '@hocuspocus/extension-throttle'
-import {Document, Hocuspocus, onStoreDocumentPayload} from '@hocuspocus/server'
+import {Hocuspocus} from '@hocuspocus/server'
 import {TiptapTransformer} from '@hocuspocus/transformer'
 import type {JSONContent} from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
@@ -24,7 +23,7 @@ import {afterLoadDocument, afterUnloadDocument} from './utils/tiptap/afterLoadDo
 import * as hocusPocusCustomEvents from './utils/tiptap/hocusPocusCustomEvents'
 import {updateAllBacklinkedPageLinkTitles} from './utils/tiptap/hocusPocusHub'
 import {RedisPublisher} from './utils/tiptap/hocusPocusRedisPublisher'
-import {RedisServerAffinity} from './utils/tiptap/RedisServerAffinity'
+import {RedisServerAffinity, type SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 import {updatePageContent} from './utils/tiptap/updatePageContent'
 
 const SERVER_ID = process.env.SERVER_ID!
@@ -39,7 +38,21 @@ const pushGQLTitleUpdates = async (pageId: number) => {
   dataLoader.dispose()
 }
 
-type Req = IncomingMessage & {userId?: string; tms: string[]; cookie?: string; startAt?: number}
+type YjsContext = {userId?: string; tms?: string[]; isUnauthenticated?: boolean}
+
+// Verify the JWT once per socket (and once per proxied socket on the doc owner)
+// instead of once per document in onConnect/onAuthenticate
+const deriveContext = (serializedHTTPRequest: SerializedHTTPRequest): YjsContext => {
+  const {headers, url} = serializedHTTPRequest
+  const cookieToken = getAuthTokenFromCookie(headers['cookie'] as string)
+  const queryToken = new URL(url, 'http://localhost').searchParams.get('token')
+  const token = cookieToken || queryToken
+  const authToken = getVerifiedAuthToken(token)
+  const userId = authToken?.sub
+  // Unauthenticated users are allowed for public pages, but a bad token is rejected in onAuthenticate
+  const res = {userId, tms: authToken?.tms ?? [], isUnauthenticated: !!token && !userId}
+  return res
+}
 
 const getMeetingTeamId = async (meetingId: string) => {
   // This is a top 15 query in terms of total time because of call frequency, so caching is necessary
@@ -62,34 +75,20 @@ export const redisHocusPocus = new RedisServerAffinity({
   redis: getRedis(),
   serverId: SERVER_ID,
   unpack,
-  customEvents: hocusPocusCustomEvents
+  customEvents: hocusPocusCustomEvents,
+  deriveContext
 })
-export const hocuspocus = new Hocuspocus({
-  quiet: true,
-  async onConnect(data) {
-    const request = data.request as Req
-    // handle authentication once onConnect vs. on every onAuthenticate
-    const cookieToken = getAuthTokenFromCookie(request.headers['cookie'])
-    const queryToken = new URL(request.url!, 'http://localhost').searchParams.get('token')
-    const token = cookieToken || queryToken
-    const authToken = getVerifiedAuthToken(token)
-    const userId = authToken?.sub
-    if (token && !userId) {
-      const err = new Error('Unauthenticated')
-      ;(err as any).reason = 'Unauthenticated'
-      throw err
-    }
-    // Unauthenticated users are allowed for public pages
-    // put the userId on the request because context isn't available until onAuthenticate
-    request.userId = authToken?.sub
-    request.tms = authToken?.tms ?? []
-  },
 
+export const hocuspocus = new Hocuspocus<YjsContext>({
+  quiet: true,
   async onAuthenticate(data) {
-    const {documentName, request, connectionConfig} = data
-    let userId = (request as Req).userId
+    const {documentName, context, connectionConfig} = data
+    if (context.isUnauthenticated) {
+      throw Object.assign(new Error('Unauthenticated'), {reason: 'Unauthenticated'})
+    }
+    const userId = context.userId
     if (documentName.startsWith('meeting:')) {
-      const tms = (request as Req).tms
+      const tms = context.tms ?? []
       const [, meetingId] = documentName.split(':')
       if (!meetingId) throw new Error(`Invalid meetingId: ${meetingId}`)
       if (!userId) {
@@ -210,8 +209,8 @@ export const hocuspocus = new Hocuspocus({
             updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
           ])
         }
-        const firstConnection = document.connections.values().next().value
-        const userId = firstConnection?.connection.context.userId as string | undefined
+        const firstConnection = document.getConnections()[0]
+        const userId = firstConnection?.context.userId as string | undefined
         publishToEmbedder({jobType: 'embedPage:start', pageId: dbId, userId}).catch(Logger.log)
       }
     }),
@@ -223,42 +222,3 @@ export const hocuspocus = new Hocuspocus({
     new RedisPublisher()
   ]
 })
-
-// patch hocuspocus to not crash on store errors
-hocuspocus.storeDocumentHooks = (
-  document: Document,
-  hookPayload: onStoreDocumentPayload,
-  immediately?: boolean
-) => {
-  const self = hocuspocus
-  return self.debouncer.debounce(
-    `onStoreDocument-${document.name}`,
-    () => {
-      return self
-        .hooks('onStoreDocument', hookPayload)
-        .then(() => {
-          self.hooks('afterStoreDocument', hookPayload).then(async () => {
-            // Remove document from memory.
-
-            if (document.getConnectionsCount() > 0) {
-              return
-            }
-
-            await self.unloadDocument(document)
-          })
-        })
-        .catch((error) => {
-          logError(error, {tags: {documentName: document.name}})
-          // TODO report error to client so it can retry saving
-
-          if (document.getConnectionsCount() > 0) {
-            return
-          }
-
-          self.unloadDocument(document)
-        })
-    },
-    immediately ? 0 : self.configuration.debounce,
-    self.configuration.maxDebounce
-  )
-}

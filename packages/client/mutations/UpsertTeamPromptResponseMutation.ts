@@ -89,6 +89,7 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
     optimisticResponse,
     updater: (store) => {
       const payload = store.getRootField('upsertTeamPromptResponse')
+      if (!payload) return
       upsertTeamPromptResponseUpdater(payload as any, {atmosphere, store})
     },
     onCompleted,

@@ -247,6 +247,7 @@
           "RemovePokerTemplatePayload": "./types/RemovePokerTemplatePayload#RemovePokerTemplatePayloadSource",
           "RemovePokerTemplateScalePayload": "./types/RemovePokerTemplateScalePayload#RemovePokerTemplateScalePayloadSource",
           "RemovePokerTemplateScaleValuePayload": "./types/RemovePokerTemplateScaleValuePayload#RemovePokerTemplateScaleValuePayloadSource",
+          "ReflectionEmbeddingSuccess": "./types/ReflectionEmbeddingSuccess#ReflectionEmbeddingSuccessSource",
           "RemoveReflectionPayload": "./types/RemoveReflectionPayload#RemoveReflectionPayloadSource",
           "RemoveReflectTemplatePayload": "./types/RemoveReflectTemplatePayload#RemoveReflectTemplatePayloadSource",
           "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",

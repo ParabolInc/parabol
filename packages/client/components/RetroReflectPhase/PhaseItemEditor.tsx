@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -12,8 +11,6 @@ import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
 import CreateReflectionMutation from '../../mutations/CreateReflectionMutation'
 import EditReflectionMutation from '../../mutations/EditReflectionMutation'
-import {Elevation} from '../../styles/elevation'
-import {BezierCurve, ZIndex} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
@@ -28,18 +25,6 @@ const FLIGHT_TIME = 500
 
 const PLACEHOLDERS = ['Share your thoughts', 'Hit / for commands', `Press ${modEnter} to submit`]
 let initialPlaceHolderIndex = 0
-
-const CardInFlightStyles = styled(ReflectionCardRoot)<{
-  transform: string
-  isStart: boolean
-}>(({isStart, transform}) => ({
-  boxShadow: isStart ? Elevation.Z8 : Elevation.Z0,
-  position: 'absolute',
-  top: 0,
-  transform,
-  transition: `all ${FLIGHT_TIME}ms ${BezierCurve.DECELERATE}`,
-  zIndex: ZIndex.REFLECTION_IN_FLIGHT
-}))
 
 interface Props {
   cardsInFlightRef: MutableRefObject<ReflectColumnCardInFlight[]>
@@ -273,10 +258,13 @@ const PhaseItemEditor = (props: Props) => {
         <>
           {cardsInFlightRef.current.map((card) => {
             return (
-              <CardInFlightStyles
+              <ReflectionCardRoot
                 key={card.key}
-                transform={card.transform}
-                isStart={card.isStart}
+                className={cn(
+                  'absolute top-0 z-8 transition-all duration-500 ease-out',
+                  card.isStart ? 'shadow-card-raised' : 'shadow-card-grounded'
+                )}
+                style={{transform: card.transform}}
                 onTransitionEnd={removeCardInFlight(card.key)}
               >
                 <HTMLReflection html={card.html} disableAnonymity={disableAnonymity} />
@@ -287,7 +275,7 @@ const PhaseItemEditor = (props: Props) => {
                     </ReflectionCardAuthor>
                   </div>
                 )}
-              </CardInFlightStyles>
+              </ReflectionCardRoot>
             )
           })}
         </>

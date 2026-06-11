@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useMemo, useState} from 'react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useSpotlightResults from '~/hooks/useSpotlightResults'
 import type {DraggableReflectionCard_meeting$key} from '../../__generated__/DraggableReflectionCard_meeting.graphql'
@@ -50,6 +50,7 @@ interface Props {
   isClipped?: boolean
   isDraggable?: boolean
   meeting: DraggableReflectionCard_meeting$key
+  onHoverReflection?: (reflectionId: string | null) => void
   openSpotlight?: OpenSpotlight
   reflection: DraggableReflectionCard_reflection$key
   staticIdx?: number
@@ -76,6 +77,7 @@ const DraggableReflectionCard = (props: Props) => {
     staticIdx = 0,
     staticReflections: staticReflectionsRef,
     meeting: meetingRef,
+    onHoverReflection,
     openSpotlight,
     isDraggable,
     isExpanded,
@@ -151,17 +153,12 @@ const DraggableReflectionCard = (props: Props) => {
   const staticReflectionCount = staticReflections?.length || 0
   const [drag] = useState(makeDragState)
   const spotlightResultGroups = useSpotlightResults(meeting)
-  const isReflectionIdInSpotlight = useMemo(() => {
-    return (
-      reflectionId === spotlightReflectionId ||
-      !!(
-        reflectionId &&
-        spotlightResultGroups?.find(({reflections}) =>
-          reflections?.find(({id}) => id === reflectionId)
-        )
-      )
-    )
-  }, [spotlightResultGroups, reflectionId, spotlightReflectionId])
+  const isReflectionIdInSpotlight =
+    spotlightResultGroups != null &&
+    (reflectionId === spotlightReflectionId ||
+      spotlightResultGroups.some(({reflections}) =>
+        reflections?.some(({id}) => id === reflectionId)
+      ))
   const {onMouseDown} = useDraggableReflectionCard(
     meeting,
     reflection,
@@ -175,7 +172,6 @@ const DraggableReflectionCard = (props: Props) => {
   const showDragCursor = isDraggable && canHandleDrag && !isEditing && !isDropping
   // slow state updates can mean we miss an onMouseDown event
   const handleDrag = canHandleDrag ? onMouseDown : undefined
-
   return (
     <DragWrapper
       ref={(c) => {
@@ -192,6 +188,8 @@ const DraggableReflectionCard = (props: Props) => {
       }}
       onMouseDown={handleDrag}
       onTouchStart={handleDrag}
+      onMouseEnter={() => onHoverReflection?.(reflectionId)}
+      onMouseLeave={() => onHoverReflection?.(null)}
       showDragCursor={showDragCursor}
     >
       <ReflectionCard

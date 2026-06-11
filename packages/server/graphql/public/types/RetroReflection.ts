@@ -54,6 +54,10 @@ const RetroReflection: RetroReflectionResolvers = {
   team: async ({meetingId}, _args, {dataLoader}) => {
     const meeting = await dataLoader.get('newMeetings').loadNonNull(meetingId)
     return dataLoader.get('teams').loadNonNull(meeting.teamId)
+  },
+
+  embeddingVector: ({id}, _args, {dataLoader}) => {
+    return dataLoader.get('retroReflectionEmbeddingByReflectionId').load(id)
   }
 }
 
