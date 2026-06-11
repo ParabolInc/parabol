@@ -1,22 +1,22 @@
 import {unpack} from 'msgpackr'
 import RedisInstance from './RedisInstance'
 
-type UserQueryEmbeddingResponse = {
+type EmbeddingResponse = {
   vector: Float32Array
   requestId: number
 }
+
 class EmbeddingResponder {
   private sub: RedisInstance
-  private pending = new Map<number, (data: any) => void>()
+  private pending = new Map<number, (vector: Float32Array) => void>()
+
+  readonly channelName = `embedderResponse:${process.env.SERVER_ID}`
 
   constructor() {
     this.sub = new RedisInstance('EmbeddingDispatcher_sub')
-    const channelName = `userQueryEmbedding:${process.env.SERVER_ID}`
-    this.sub.subscribe(channelName)
+    this.sub.subscribe(this.channelName)
     this.sub.on('messageBuffer', (_channel, message) => {
-      const data = unpack(message) as UserQueryEmbeddingResponse
-      const {requestId, vector} = data
-
+      const {requestId, vector} = unpack(message) as EmbeddingResponse
       const resolve = this.pending.get(requestId)
       if (resolve) {
         resolve(vector)

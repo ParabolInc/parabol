@@ -29,7 +29,8 @@ export class RedisPublisher implements Extension {
 
       const payload = unpack(message) as PublicPageNotificationPayload<'UpdatePageAccessPayload'>
       const {data, subOptions, type, userIdsToIgnore} = payload
-      document.connections.forEach(({connection}) => {
+      const connections = document.getConnections()
+      connections.forEach((connection) => {
         const userId = connection.context.userId as string | undefined
         if (!userId || userIdsToIgnore.includes(userId)) return
         publish(SubscriptionChannel.NOTIFICATION, userId, type, data, subOptions)
@@ -39,13 +40,11 @@ export class RedisPublisher implements Extension {
         const [dbId] = CipherId.fromClient(document.name)
         const pg = getKysely()
 
-        const connectedUserIds = [...document.connections.values()]
-          .map(({connection}) => connection.context.userId as string | undefined)
+        const connectedUserIds = connections
+          .map((connection) => connection.context.userId as string | undefined)
           .filter((userId): userId is string => !!userId)
 
-        const hasPublicUsers = [...document.connections.values()].some(
-          ({connection}) => !connection.context.userId
-        )
+        const hasPublicUsers = connections.some((connection) => !connection.context.userId)
 
         const [accessRecords, publicAccess] = await Promise.all([
           connectedUserIds.length > 0
@@ -67,7 +66,7 @@ export class RedisPublisher implements Extension {
         ])
 
         const roleByUserId = new Map(accessRecords.map(({userId, role}) => [userId, role]))
-        document.connections.forEach(({connection}) => {
+        connections.forEach((connection) => {
           const userId = connection.context.userId as string | undefined
           const role = userId ? roleByUserId.get(userId) : publicAccess?.role
           const newReadOnly = role === 'viewer' || role === 'commenter'

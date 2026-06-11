@@ -164,6 +164,12 @@ const subscription = graphql`
       UpsertTeamPromptResponseSuccess {
         ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
       }
+      ReflectionEmbeddingSuccess {
+        reflection {
+          id
+          embeddingVector
+        }
+      }
     }
   }
 `

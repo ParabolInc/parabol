@@ -7,6 +7,7 @@ import {getUserId} from '../../../utils/authorization'
 import {convertToTipTap} from '../../../utils/convertToTipTap'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
+import {embedRetroReflection} from '../../mutations/helpers/embedRetroReflection'
 import updateGroupTitle from '../../mutations/helpers/updateGroupTitle'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -59,6 +60,7 @@ const updateReflectionContent: MutationResolvers['updateReflectionContent'] = as
     teamId,
     dataLoader
   })
+  embedRetroReflection(reflectionId, meetingId, teamId, new Date()).catch(console.error)
 
   const data = {meetingId, reflectionId}
   publish(
