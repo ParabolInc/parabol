@@ -3,6 +3,7 @@ import type {DB} from 'parabol-server/postgres/types/pg'
 
 import type {DataLoaderInstance} from '../../server/dataloader/RootDataLoader'
 import {createTextFromMeetingTemplate} from './meetingTemplate'
+import {createTextFromRetroReflection} from './retroReflection'
 import {createTextFromRetrospectiveDiscussionTopic} from './retrospectiveDiscussionTopic'
 
 export const createEmbeddingTextFrom = async (
@@ -16,6 +17,8 @@ export const createEmbeddingTextFrom = async (
       return createTextFromRetrospectiveDiscussionTopic(refId, dataLoader, isRerank)
     case 'meetingTemplate':
       return createTextFromMeetingTemplate(refId, dataLoader)
+    case 'retroReflection':
+      return createTextFromRetroReflection(refId, dataLoader)
     default:
       throw new Error(`Unexcepted objectType: ${embeddingsMetadata.objectType}`)
   }
@@ -34,6 +37,10 @@ export const isEmbeddingOutdated = async (
     case 'meetingTemplate': {
       const template = await dataLoader.get('meetingTemplates').load(refId)
       return !template || template?.updatedAt > refUpdatedAt
+    }
+    case 'retroReflection': {
+      const reflection = await dataLoader.get('retroReflections').load(refId)
+      return !reflection || reflection.updatedAt > refUpdatedAt
     }
     default:
       throw new Error(`Unexcepted objectType: ${embeddingsMetadata.objectType}`)

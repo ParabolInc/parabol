@@ -1,9 +1,7 @@
 import './hocusPocus'
-import type {IncomingHttpHeaders} from 'node:http2'
-import {redisHocusPocus} from './hocusPocus'
-import './hocusPocus'
 import type {WebSocketBehavior} from 'uWebSockets.js'
 import {HocusPocusWebSocket} from './HocusPocusWebSocket'
+import {redisHocusPocus} from './hocusPocus'
 import type {SerializedHTTPRequest} from './utils/tiptap/RedisServerAffinity'
 
 export type HocusPocusSocketData = {
@@ -16,7 +14,7 @@ export type HocusPocusSocketData = {
 export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
   maxPayloadLength: 1024 * 1024 * 64,
   upgrade(res, req, context) {
-    const headers: IncomingHttpHeaders = {}
+    const headers = {} as SerializedHTTPRequest['headers']
     req.forEach((key, value) => {
       headers[key] = value
     })
@@ -49,17 +47,14 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     userData.socket = new HocusPocusWebSocket(ws)
     redisHocusPocus.onSocketOpen(userData.socket, userData.serializedHTTPRequest)
   },
-  pong(ws, message) {
-    ws.getUserData().socket.emit('pong', message)
-  },
   async message(ws, message) {
-    const socketData = ws.getUserData()
-    const {socket, serializedHTTPRequest} = socketData
-    redisHocusPocus.onSocketMessage(socket, serializedHTTPRequest, message)
+    const {serializedHTTPRequest} = ws.getUserData()
+    redisHocusPocus.onSocketMessage(serializedHTTPRequest, message)
   },
   close(ws, code, reason) {
     const userData = ws.getUserData()
     userData.closed = true
+    userData.socket.readyState = 3
     const socketId = userData.serializedHTTPRequest.headers['sec-websocket-key']!
     redisHocusPocus.onSocketClose(socketId, code, reason)
   }

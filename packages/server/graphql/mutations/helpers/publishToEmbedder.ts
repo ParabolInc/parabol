@@ -36,13 +36,18 @@ interface MessageToEmbedderEmbed extends BaseMessageToEmbedder {
   data?: {}
 }
 
+interface MessageToEmbedderEmbedWithResponse extends BaseMessageToEmbedder {
+  jobType: 'embed:start'
+  embeddingsMetadataId: number
+  data: {requestId: number; channelName: string}
+}
+
 interface MessageToEmbedderRelatedDiscussions extends BaseMessageToEmbedder {
   jobType: 'relatedDiscussions:start'
   data: RelatedDiscussionsJobData
 }
 
 const IS_EMBEDDER_ENALBED = !!parseInt(process.env.AI_EMBEDDER_WORKERS!)
-const SERVER_ID = process.env.SERVER_ID
 
 const jobTypeToKind = {
   'relatedDiscussions:start': 'relatedDiscussion',
@@ -56,7 +61,7 @@ export const getUserQueryJobData = (query: string) => {
   return {
     query,
     requestId: ++nextRequestId,
-    channelName: `userQueryEmbedding:${SERVER_ID}`
+    channelName: embeddingResponder.channelName
   }
 }
 
@@ -69,11 +74,15 @@ export async function publishToEmbedder(
 export async function publishToEmbedder(payload: MessageToEmbedderEmbedPage): Promise<undefined>
 export async function publishToEmbedder(payload: MessageToEmbedderEmbed): Promise<undefined>
 export async function publishToEmbedder(
+  payload: MessageToEmbedderEmbedWithResponse
+): Promise<Float32Array | Error>
+export async function publishToEmbedder(
   payload:
     | MessageToEmbedderUserQuery
     | MessageToEmbedderRelatedDiscussions
     | MessageToEmbedderEmbedPage
     | MessageToEmbedderEmbed
+    | MessageToEmbedderEmbedWithResponse
 ) {
   if (!IS_EMBEDDER_ENALBED) return
   const {jobType, userId, dataLoader, data} = payload

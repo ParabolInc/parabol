@@ -1,6 +1,8 @@
 import DataLoader from 'dataloader'
 import {type SqlBool, sql} from 'kysely'
 import {PARABOL_AI_USER_ID} from '../../client/utils/constants'
+import {activeEmbeddingModelId} from '../../embedder/activeEmbeddingModel'
+import {getEmbeddingsTableName} from '../../embedder/getEmbeddingsTableName'
 import type MeetingTemplate from '../database/types/MeetingTemplate'
 import isValid from '../graphql/isValid'
 import type {ReactableEnum} from '../graphql/public/resolverTypes'
@@ -1030,6 +1032,33 @@ export const teamIdsByUserId = (parent: RootDataLoader, dependsOn: RegisterDepen
       return teamMembersByUserId.map((members) =>
         members.filter(({teamId}) => activeTeamIds.has(teamId)).map(({teamId}) => teamId)
       )
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// Returns the embedding vector (as a number[]) for a retroReflection by its ID.
+// Returns null if no embedding exists yet or the embedder is not enabled.
+export const retroReflectionEmbeddingByReflectionId = (parent: RootDataLoader) => {
+  return new DataLoader<string, number[] | null, string>(
+    async (reflectionIds) => {
+      const tableName = getEmbeddingsTableName(activeEmbeddingModelId)
+      if (!tableName) return reflectionIds.map(() => null)
+      const pg = getKysely()
+      const rows = await pg
+        .selectFrom('EmbeddingsMetadata')
+        .innerJoin(tableName, `${tableName}.embeddingsMetadataId`, 'EmbeddingsMetadata.id')
+        .select([`${tableName}.embedding`, 'EmbeddingsMetadata.refId'])
+        .where('EmbeddingsMetadata.refId', 'in', reflectionIds as readonly string[])
+        .where('EmbeddingsMetadata.objectType', '=', 'retroReflection')
+        .where(`${tableName}.chunkNumber`, 'is', null)
+        .execute()
+      const vectorByReflectionId = new Map(
+        rows
+          .filter((r) => r.embedding)
+          .map((r) => [r.refId, r.embedding!.slice(1, -1).split(',').map(Number)])
+      )
+      return reflectionIds.map((id) => vectorByReflectionId.get(id) ?? null)
     },
     {...parent.dataLoaderOptions}
   )

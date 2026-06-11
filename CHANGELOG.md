@@ -5,6 +5,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.1](https://github.com/ParabolInc/parabol/compare/v13.25.0...v13.25.1) (2026-06-11)
+
+
+### Fixed
+
+* better hocuspocus typings ([#13203](https://github.com/ParabolInc/parabol/issues/13203)) ([76bb2f5](https://github.com/ParabolInc/parabol/commit/76bb2f507aa52277d264c1fc26f94467b0beff05))
+* reflection card animation ([#13205](https://github.com/ParabolInc/parabol/issues/13205)) ([eba12e7](https://github.com/ParabolInc/parabol/commit/eba12e793033ff0421001761361439fcd9d1c457))
+
+## [13.25.0](https://github.com/ParabolInc/parabol/compare/v13.24.2...v13.25.0) (2026-06-10)
+
+
+### Added
+
+* bump to hocuspocus v4 ([#13201](https://github.com/ParabolInc/parabol/issues/13201)) ([b34bb35](https://github.com/ParabolInc/parabol/commit/b34bb35db26aa0d150b42a41060e49a63e08da9e))
+* outline reflections on hover ([#13197](https://github.com/ParabolInc/parabol/issues/13197)) ([b43a9f0](https://github.com/ParabolInc/parabol/commit/b43a9f0ae2846952c8aa9bfc87815b7befa85ad6))
+
+
+### Fixed
+
+* small errors MeetingControlBar Keys, NewMeetingAvatar user null,… ([#13198](https://github.com/ParabolInc/parabol/issues/13198)) ([e81c311](https://github.com/ParabolInc/parabol/commit/e81c3119cc0ecd12cecd0e39c14f406c5b12bc6f))
+
+## [13.24.2](https://github.com/ParabolInc/parabol/compare/v13.24.1...v13.24.2) (2026-06-04)
+
+
+### Fixed
+
+* escape ([#13193](https://github.com/ParabolInc/parabol/issues/13193)) ([0da2365](https://github.com/ParabolInc/parabol/commit/0da236543715c1577ea3bdd30e5145a40cc42618))
+
+## [13.24.1](https://github.com/ParabolInc/parabol/compare/v13.24.0...v13.24.1) (2026-06-03)
+
+
+### Fixed
+
+* MR3 ([#13190](https://github.com/ParabolInc/parabol/issues/13190)) ([ddf7cb5](https://github.com/ParabolInc/parabol/commit/ddf7cb55f748aabb42ac330feca2a1fcb080e2c1))
+
 ## [13.24.0](https://github.com/ParabolInc/parabol/compare/v13.23.0...v13.24.0) (2026-06-03)
 
 

@@ -1,5 +1,7 @@
 import {sql} from 'kysely'
+import {pack} from 'msgpackr'
 import getKysely from 'parabol-server/postgres/getKysely'
+import getRedis from 'parabol-server/utils/getRedis'
 import getModelManager from '../ai_models/ModelManager'
 import type {ModelId} from '../ai_models/modelIdDefinitions'
 import type {JobQueueStepRun, ParentJob} from '../custom'
@@ -14,12 +16,14 @@ export const embedMetadata: JobQueueStepRun<
     embeddingsMetadataId: number
     modelId: ModelId
     forceBuildText?: boolean
+    requestId?: number
+    channelName?: `embedderResponse:${string}`
   },
   ParentJob<typeof getSimilarRetroTopics>
 > = async (context) => {
   const {data, dataLoader} = context
   const pg = getKysely()
-  const {embeddingsMetadataId, modelId, forceBuildText} = data
+  const {embeddingsMetadataId, modelId, forceBuildText, requestId, channelName} = data
   const modelManager = getModelManager()
 
   const metadata = await dataLoader.get('embeddingsMetadata').load(embeddingsMetadataId)
@@ -69,6 +73,7 @@ export const embedMetadata: JobQueueStepRun<
   }
   // Cannot use summarization strategy if generation model has same context length as embedding model
   // We must split the text & not tokens because BERT tokenizer is not trained for linebreaks e.g. \n\n
+  let firstChunkVector: number[] | undefined
   const errors = await Promise.all(
     chunks.map(async (chunk, chunkNumber) => {
       const embeddingVector = await embeddingModel.getEmbedding(chunk)
@@ -77,6 +82,7 @@ export const embedMetadata: JobQueueStepRun<
           forceBuildText: true
         })
       }
+      if (chunkNumber === 0) firstChunkVector = embeddingVector
       await pg
         // cast to any because these types won't be available in CI
         .insertInto(embeddingModel.tableName)
@@ -99,6 +105,12 @@ export const embedMetadata: JobQueueStepRun<
     })
   )
   const firstError = errors.find((error) => error instanceof JobQueueError)
+  if (!firstError && firstChunkVector && channelName && requestId) {
+    const msg = pack({vector: new Float32Array(firstChunkVector), requestId})
+    getRedis()
+      .publish(channelName, msg)
+      .catch(() => {})
+  }
   // Logger.log(`Embedded ${embeddingsMetadataId} -> ${model}`)
   return firstError || data
 }
