@@ -29,10 +29,6 @@ const StyledHeading = styled(MeetingPhaseHeading)({
   fontSize: 24
 })
 
-const StyledCopy = styled(MeetingCopy)({
-  margin: '16px 0 0'
-})
-
 const ActionMeetingAgendaItems = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
   const meeting = useFragment(
@@ -94,7 +90,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
             <Avatar picture={picture} className={'h-16 w-16'} />
             <StyledHeading>{content}</StyledHeading>
           </div>
-          <StyledCopy>{`${preferredName}, what do you need?`}</StyledCopy>
+          <MeetingCopy className='mt-4 mb-0'>{`${preferredName}, what do you need?`}</MeetingCopy>
           <StageTimerDisplay meeting={meeting} />
           <EditorHelpModalContainer />
         </PhaseWrapper>

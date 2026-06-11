@@ -1,19 +1,22 @@
-import styled from '@emotion/styled'
-import {Breakpoint} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
+import type {ReactNode} from 'react'
+import {cn} from '../ui/cn'
 
-const MeetingHeaderAndPhase = styled('div')<{hideBottomBar: boolean}>(({hideBottomBar}) => ({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  position: 'relative',
-  minHeight: 0, // FF68 hack to allow discuss tasks to scroll & facilitatorbar to stay visible when shrinking viewpoint height
-  minWidth: 0, // prevent flex-row children from overflowing
-  paddingBottom: hideBottomBar ? undefined : 56,
-  [makeMinWidthMediaQuery(Breakpoint.SINGLE_REFLECTION_COLUMN)]: {
-    paddingBottom: 0
-  }
-}))
+interface Props {
+  children: ReactNode
+  hideBottomBar: boolean
+}
+
+const MeetingHeaderAndPhase = ({children, hideBottomBar}: Props) => {
+  return (
+    <div
+      className={cn(
+        'relative flex h-full min-h-0 min-w-0 flex-1 flex-col single-reflection-column:pb-0',
+        !hideBottomBar && 'pb-14'
+      )}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default MeetingHeaderAndPhase
