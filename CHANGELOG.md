@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.1](https://github.com/ParabolInc/parabol/compare/v13.25.0...v13.25.1) (2026-06-11)
+
+
+### Fixed
+
+* better hocuspocus typings ([#13203](https://github.com/ParabolInc/parabol/issues/13203)) ([76bb2f5](https://github.com/ParabolInc/parabol/commit/76bb2f507aa52277d264c1fc26f94467b0beff05))
+* reflection card animation ([#13205](https://github.com/ParabolInc/parabol/issues/13205)) ([eba12e7](https://github.com/ParabolInc/parabol/commit/eba12e793033ff0421001761361439fcd9d1c457))
+
 ## [13.25.0](https://github.com/ParabolInc/parabol/compare/v13.24.2...v13.25.0) (2026-06-10)
 
 
