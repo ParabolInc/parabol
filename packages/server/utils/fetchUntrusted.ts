@@ -141,24 +141,25 @@ async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
 // preventing DNS rebinding between validation and connection.
 function createPinnedAgent(protocol: string, addresses: string[]) {
   const Mod = protocol === 'https:' ? https : http
-  const lookup: net.LookupFunction = (
-    _hostname: string,
-    _options: dnsSync.LookupOptions,
-    cb: (
-      err: NodeJS.ErrnoException | null,
-      address: string | dnsSync.LookupAddress[],
-      family?: number
-    ) => void
-  ) => {
-    cb(
-      null,
-      addresses.map((addr) => ({
-        address: addr,
-        family: net.isIPv4(addr) ? 4 : 6
-      }))
-    )
-  }
-  return new Mod.Agent({lookup: lookup as any})
+  return new Mod.Agent({
+    lookup: (
+      _hostname: string,
+      _options: dnsSync.LookupOptions,
+      cb: (
+        err: NodeJS.ErrnoException | null,
+        address: string | dnsSync.LookupAddress[],
+        family?: number
+      ) => void
+    ) => {
+      cb(
+        null,
+        addresses.map((addr) => ({
+          address: addr,
+          family: net.isIPv4(addr) ? 4 : 6
+        }))
+      )
+    }
+  })
 }
 
 interface PinnedResponse {
