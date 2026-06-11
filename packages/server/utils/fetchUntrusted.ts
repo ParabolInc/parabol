@@ -147,7 +147,7 @@ function createPinnedAgent(protocol: string, addresses: string[]) {
       _options: dnsSync.LookupOptions,
       cb: (
         err: NodeJS.ErrnoException | null,
-        address: string | dnsSync.LookupAddress[],
+        address: dnsSync.LookupAddress[],
         family?: number
       ) => void
     ) => {
