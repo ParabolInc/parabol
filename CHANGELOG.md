@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.4](https://github.com/ParabolInc/parabol/compare/v13.25.3...v13.25.4) (2026-06-12)
+
+
+### Fixed
+
+* support redirects in saml ([#13215](https://github.com/ParabolInc/parabol/issues/13215)) ([c8527d1](https://github.com/ParabolInc/parabol/commit/c8527d1057995530b5705de4ee2965b593d9d9cd))
+
 ## [13.25.3](https://github.com/ParabolInc/parabol/compare/v13.25.2...v13.25.3) (2026-06-12)
 
 
