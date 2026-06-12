@@ -24,7 +24,7 @@ class NullableDataLoader<Key, Value, CacheKey = Key> extends UpdatableCacheDataL
   async loadNonNull<NarrowType = Value>(key: Key) {
     const value = await this.load(key)
     if (value === undefined) {
-      throw new Error('Non-nullable value is undefined')
+      throw new Error(`Non-nullable value is undefined for key: ${JSON.stringify(key)}`)
     }
     return value as NarrowType
   }
