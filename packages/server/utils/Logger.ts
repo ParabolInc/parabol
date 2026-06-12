@@ -24,6 +24,13 @@ const LogFun = {
   debug: console.debug
 } satisfies Record<LogLevel, Console[keyof Console]>
 
+// An Error instance may reach the Logger from multiple layers (e.g. enriched in useDatadogTracing,
+// then again by yoga's maskedErrors). Only the first log wins; later ones are dropped.
+const loggedErrors = new WeakSet<Error>()
+export const markErrorAsLogged = (error: Error) => {
+  loggedErrors.add(error)
+}
+
 function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
   if (process.env.DD_LOGS_INJECTION !== 'true') {
     return LogFun[level](message, ...optionalParameters)
@@ -43,12 +50,32 @@ function trace(level: LogLevel, message: any, ...optionalParameters: any[]) {
   if (ip) {
     tags['ip'] = ip
   }
+  const extras = optionalParameters.find((param) => param?.extras)?.extras
+  const error =
+    message instanceof Error ? message : optionalParameters.find((param) => param instanceof Error)
+  if (error) {
+    if (loggedErrors.has(error)) return
+    loggedErrors.add(error)
+  }
 
   const record = {
     time,
     level,
-    message: util.format(message, ...optionalParameters),
-    tags
+    // `status` is what Datadog reads for the log level; Error Tracking requires it to be `error`
+    status: level,
+    message: error ? error.message : util.format(message, ...optionalParameters),
+    tags,
+    ...(extras && {extras}),
+    // Datadog standard user attribute, correlates with APM's usr.id
+    ...(userId && {usr: {id: userId}}),
+    // Datadog standard error attributes; error.stack is required for Error Tracking to ingest the log
+    ...(error && {
+      error: {
+        kind: error.name,
+        message: error.message,
+        stack: error.stack
+      }
+    })
   }
 
   if (span) {
