@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.3](https://github.com/ParabolInc/parabol/compare/v13.25.2...v13.25.3) (2026-06-12)
+
+
+### Fixed
+
+* add more metadata to dd logs ([#13212](https://github.com/ParabolInc/parabol/issues/13212)) ([0863c6f](https://github.com/ParabolInc/parabol/commit/0863c6f12eabcca56fe8af67b632941037d9ffb2))
+
 ## [13.25.2](https://github.com/ParabolInc/parabol/compare/v13.25.1...v13.25.2) (2026-06-11)
 
 
