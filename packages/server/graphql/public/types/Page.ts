@@ -11,7 +11,9 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     if (!parentPageId) return null
     const [parentPage, access] = await Promise.all([
       dataLoader.get('pages').load(parentPageId),
-      dataLoader.get('pageAccessByPageIdUserId').load({userId: authToken?.sub ?? '', pageId: parentPageId})
+      dataLoader
+        .get('pageAccessByPageIdUserId')
+        .load({userId: authToken?.sub ?? '', pageId: parentPageId})
     ])
     if (!parentPage) throw new GraphQLError('Parent page not found')
     return {
