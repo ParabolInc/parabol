@@ -11,11 +11,10 @@ import SpotlightResults from './SpotlightResults'
 interface Props {
   meetingRef: SpotlightResultsRoot_meeting$key
   phaseRef: RefObject<HTMLDivElement>
-  isSpotlightEntering: boolean
 }
 
 const SpotlightResultsRoot = (props: Props) => {
-  const {meetingRef, phaseRef, isSpotlightEntering} = props
+  const {meetingRef, phaseRef} = props
   const meeting = useFragment(
     graphql`
       fragment SpotlightResultsRoot_meeting on RetrospectiveMeeting {
@@ -52,13 +51,7 @@ const SpotlightResultsRoot = (props: Props) => {
 
   return (
     <Suspense fallback={''}>
-      {queryRef && (
-        <SpotlightResults
-          phaseRef={phaseRef}
-          queryRef={queryRef}
-          isSpotlightEntering={isSpotlightEntering}
-        />
-      )}
+      {queryRef && <SpotlightResults phaseRef={phaseRef} queryRef={queryRef} />}
     </Suspense>
   )
 }

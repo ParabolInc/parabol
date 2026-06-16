@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
+import {useState} from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
-import useModal from '~/hooks/useModal'
 import {
   isExtensionError,
   isIgnoredError,
@@ -37,7 +37,7 @@ const ErrorComponent = (props: Props) => {
   if (!isIgnoredError(error)) {
     console.error(error)
   }
-  const {modalPortal, openPortal, closePortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
 
   if (isExtensionError(error)) {
     return (
@@ -78,10 +78,15 @@ const ErrorComponent = (props: Props) => {
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {ERROR_FEEDBACK_ENABLED && eventId && <Button onClick={openPortal}>Report Feedback</Button>}
-      {modalPortal(
-        <ReportErrorFeedback closePortal={closePortal} error={error} eventId={eventId} />
+      {ERROR_FEEDBACK_ENABLED && eventId && (
+        <Button onClick={() => setIsOpen(true)}>Report Feedback</Button>
       )}
+      <ReportErrorFeedback
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        error={error}
+        eventId={eventId}
+      />
     </ErrorBlock>
   )
 }

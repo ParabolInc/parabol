@@ -1,6 +1,6 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 import {forwardRef} from 'react'
-import {twMerge} from 'tailwind-merge'
+import {cn} from '../cn'
 
 export const DialogDescription = forwardRef<
   HTMLDivElement,
@@ -8,7 +8,7 @@ export const DialogDescription = forwardRef<
 >(({className, children, ...props}, ref) => (
   <RadixDialog.Description
     ref={ref}
-    className={twMerge('mt-3 mb-5 text-base leading-normal', className)}
+    className={cn('mt-3 mb-5 text-base leading-normal', className)}
     {...props}
   >
     {children}

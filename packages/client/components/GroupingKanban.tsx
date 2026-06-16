@@ -1,5 +1,6 @@
 import {datadogRum} from '@datadog/browser-rum'
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {type RefObject, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {GroupingKanban_meeting$key} from '~/__generated__/GroupingKanban_meeting.graphql'
@@ -8,7 +9,6 @@ import useAnimatedSpotlightSource from '../hooks/useAnimatedSpotlightSource'
 import useBreakpoint from '../hooks/useBreakpoint'
 import useHideBodyScroll from '../hooks/useHideBodyScroll'
 import useHoverReflectionSimilarity from '../hooks/useHoverReflectionSimilarity'
-import useModal from '../hooks/useModal'
 import useSpotlightSimulatedDrag from '../hooks/useSpotlightSimulatedDrag'
 import useThrottledEvent from '../hooks/useThrottledEvent'
 import {Breakpoint, Times} from '../types/constEnums'
@@ -127,31 +127,25 @@ const GroupingKanban = (props: Props) => {
   useHideBodyScroll()
   const dragIdRef = useRef<string>()
   const {onOpenSpotlight, onCloseSpotlight} = useSpotlightSimulatedDrag(meeting, dragIdRef)
+
+  const isSpotlightOpen = !!spotlightGroup
+
   const closeSpotlight = () => {
     sourceCloneRef.current = null
     onCloseSpotlight()
   }
-  const {closePortal, openPortal, modalPortal, portalStatus} = useModal({
-    onClose: closeSpotlight,
-    id: 'spotlight'
-  })
+
   const {sourceRef, sourceCloneRef} = useAnimatedSpotlightSource(
-    portalStatus,
+    isSpotlightOpen,
     spotlightReflectionId,
     dragIdRef
   )
 
-  // Open and close the portal as an effect since on dragging conflict the spotlight reflection may be unset which should also close the portal.
   useEffect(() => {
     window.onbeforeunload = () => {
-      closePortal()
+      closeSpotlight()
     }
-    if (spotlightGroup) {
-      openPortal()
-    } else {
-      closePortal()
-    }
-  }, [!spotlightGroup])
+  }, [])
 
   const openSpotlight = (reflectionId: string, reflectionRef: RefObject<HTMLDivElement>) => {
     sourceCloneRef.current = reflectionRef.current
@@ -243,14 +237,15 @@ const GroupingKanban = (props: Props) => {
           ))}
         </ColumnWrapper>
       </div>
-      {modalPortal(
-        <SpotlightModal
-          closeSpotlight={closePortal}
-          meetingRef={meeting}
-          sourceRef={sourceRef}
-          portalStatus={portalStatus}
-        />
-      )}
+      <AnimatePresence>
+        {isSpotlightOpen && (
+          <SpotlightModal
+            closeSpotlight={closeSpotlight}
+            meetingRef={meeting}
+            sourceRef={sourceRef}
+          />
+        )}
+      </AnimatePresence>
     </PortalProvider>
   )
 }

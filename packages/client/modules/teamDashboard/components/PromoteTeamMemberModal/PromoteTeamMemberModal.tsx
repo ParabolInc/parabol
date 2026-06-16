@@ -2,16 +2,17 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {PromoteTeamMemberModal_teamMember$key} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
-import DialogContainer from '../../../../components/DialogContainer'
-import DialogContent from '../../../../components/DialogContent'
-import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
+import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogContent} from '../../../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 import {upperFirst} from '../../../../utils/upperFirst'
 
 interface Props {
+  isOpen: boolean
   closePortal: () => void
   teamMember: PromoteTeamMemberModal_teamMember$key
 }
@@ -19,7 +20,7 @@ interface Props {
 const PromoteTeamMemberModal = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
-  const {closePortal, teamMember: teamMemberRef} = props
+  const {isOpen, closePortal, teamMember: teamMemberRef} = props
   const teamMember = useFragment(
     graphql`
       fragment PromoteTeamMemberModal_teamMember on TeamMember {
@@ -61,10 +62,10 @@ const PromoteTeamMemberModal = (props: Props) => {
   const copy = `${copyStart} ${copyEnd}`
 
   return (
-    <DialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+    <Dialog isOpen={isOpen} onClose={closePortal}>
       <DialogContent>
-        {copy}
+        <DialogTitle>Are you sure?</DialogTitle>
+        <p>{copy}</p>
         <PrimaryButton
           size='medium'
           className='mx-auto mt-6 mb-0'
@@ -78,7 +79,7 @@ const PromoteTeamMemberModal = (props: Props) => {
           />
         </PrimaryButton>
       </DialogContent>
-    </DialogContainer>
+    </Dialog>
   )
 }
 

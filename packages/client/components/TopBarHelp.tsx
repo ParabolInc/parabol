@@ -1,8 +1,9 @@
-import {lazy} from 'react'
+import {lazy, Suspense, useState} from 'react'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import useModal from '~/hooks/useModal'
 import lazyPreload from '~/utils/lazyPreload'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
 import TopBarIcon from './TopBarIcon'
 
 const TopBarHelpMenu = lazyPreload(
@@ -21,7 +22,7 @@ const TopBarHelp = () => {
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
     MenuPosition.UPPER_RIGHT
   )
-  const {togglePortal: toggleShortcuts, closePortal: closeShortcuts, modalPortal} = useModal()
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false)
   return (
     <>
       <TopBarIcon
@@ -32,9 +33,19 @@ const TopBarHelp = () => {
         ariaLabel={'Help menu'}
       />
       {menuPortal(
-        <TopBarHelpMenu dataCy='top-bar' menuProps={menuProps} toggleShortcuts={toggleShortcuts} />
+        <TopBarHelpMenu
+          dataCy='top-bar'
+          menuProps={menuProps}
+          toggleShortcuts={() => setIsShortcutsOpen((v) => !v)}
+        />
       )}
-      {modalPortal(<EditorHelpModal handleCloseModal={closeShortcuts} />)}
+      <Dialog isOpen={isShortcutsOpen} onClose={() => setIsShortcutsOpen(false)}>
+        <DialogContent className='w-[564px] max-w-[95vw]' noClose>
+          <Suspense fallback=''>
+            <EditorHelpModal handleCloseModal={() => setIsShortcutsOpen(false)} />
+          </Suspense>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

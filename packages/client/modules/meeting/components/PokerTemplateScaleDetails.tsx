@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import FlatButton from '../../../components/FlatButton'
@@ -107,17 +106,17 @@ const PokerTemplateScaleDetails = (props: Props) => {
     `,
     teamRef
   )
-  const {id: teamId, scales, editingScaleId} = team
-  const scale = scales.find((scale) => scale.id === editingScaleId)!
-  const {values} = scale
-  const isOwner = scale.teamId === teamId
   const atmosphere = useAtmosphere()
   const gotoTemplateDetail = () => {
     commitLocalUpdate(atmosphere, (store) => {
       store.get(teamId)?.setValue(null, 'editingScaleId')
     })
   }
-  useEffect(() => gotoTemplateDetail, [])
+  const {id: teamId, scales, editingScaleId} = team
+  const scale = scales.find((scale) => scale.id === editingScaleId)
+  if (!scale) return null
+  const {values} = scale
+  const isOwner = scale.teamId === teamId
 
   return (
     <ScaleValueEditor>

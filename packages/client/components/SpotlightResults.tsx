@@ -36,11 +36,10 @@ const Column = styled('div')({
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
   queryRef: PreloadedQuery<SpotlightResultsQuery>
-  isSpotlightEntering: boolean
 }
 
 const SpotlightResults = (props: Props) => {
-  const {phaseRef, queryRef, isSpotlightEntering} = props
+  const {phaseRef, queryRef} = props
 
   const data = usePreloadedQuery<SpotlightResultsQuery>(
     graphql`
@@ -104,7 +103,6 @@ const SpotlightResults = (props: Props) => {
                   meetingRef={meeting!}
                   phaseRef={phaseRef}
                   reflectionGroupRef={group}
-                  isSpotlightEntering={isSpotlightEntering}
                 />
               ))}
             </Column>

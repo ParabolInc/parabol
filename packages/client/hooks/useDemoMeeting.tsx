@@ -1,18 +1,13 @@
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+import BeginDemoModal from '../components/BeginDemoModal'
 import type LocalAtmosphere from '../modules/demo/LocalAtmosphere'
-import lazyPreload from '../utils/lazyPreload'
 import useAtmosphere from './useAtmosphere'
 import useForceUpdate from './useForceUpdate'
-import useModal from './useModal'
-
-const BeginDemoModal = lazyPreload(
-  () => import(/* webpackChunkName: 'BeginDemoModal' */ '../components/BeginDemoModal')
-)
 
 const useDemoMeeting = () => {
   const atmosphere = useAtmosphere()
   const forceUpdate = useForceUpdate()
-  const {modalPortal, openPortal, closePortal} = useModal({noClose: true})
+  const [isOpen, setIsOpen] = useState(false)
   const {clientGraphQLServer} = atmosphere as unknown as LocalAtmosphere
 
   useEffect(() => {
@@ -22,22 +17,20 @@ const useDemoMeeting = () => {
         forceUpdate()
       })
       if (!clientGraphQLServer.db._started) {
-        openPortal()
+        setIsOpen(true)
       }
     }
   }, [atmosphere, forceUpdate])
 
   const startDemo = useCallback(() => {
     clientGraphQLServer.startDemo()
-
-    closePortal()
-
+    setIsOpen(false)
     setTimeout(() => {
       clientGraphQLServer.emit('startDemo')
     }, 1000)
   }, [])
 
-  return () => modalPortal(<BeginDemoModal startDemo={startDemo} />)
+  return () => <BeginDemoModal isOpen={isOpen} startDemo={startDemo} />
 }
 
 export default useDemoMeeting

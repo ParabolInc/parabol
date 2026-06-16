@@ -1,8 +1,8 @@
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {AddTeamMemberAvatarButton_teamMembers$key} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
-import useModal from '../hooks/useModal'
 import {cn} from '../ui/cn'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
@@ -35,23 +35,13 @@ const AddTeamMemberAvatarButton = (props: Props) => {
     teamMembersRef
   )
   const isMeeting = !!meetingId
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
-  const modal = isDemoRoute() ? (
-    <AddTeamMemberModalDemo />
-  ) : (
-    <AddTeamMemberModal
-      closePortal={closeModal}
-      meetingId={meetingId}
-      teamId={teamId}
-      teamMembers={teamMembers}
-    />
-  )
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <>
       <Tooltip>
         <TooltipTrigger asChild>
           <button
-            onClick={toggleModal}
+            onClick={() => setIsOpen(true)}
             className={cn(
               'flex cursor-pointer items-center justify-center rounded-full border-2 border-current bg-transparent p-0 text-sky-500 hover:text-sky-600 focus:text-sky-600 active:text-sky-600',
               isMeeting
@@ -64,7 +54,17 @@ const AddTeamMemberAvatarButton = (props: Props) => {
         </TooltipTrigger>
         <TooltipContent>Invite to Team</TooltipContent>
       </Tooltip>
-      {modalPortal(modal)}
+      {isDemoRoute() ? (
+        <AddTeamMemberModalDemo isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      ) : (
+        <AddTeamMemberModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          meetingId={meetingId}
+          teamId={teamId}
+          teamMembers={teamMembers}
+        />
+      )}
     </>
   )
 }
