@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type ChangeEvent, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -12,38 +11,17 @@ import useForm from '../../hooks/useForm'
 import useMutationProps, {getOnCompletedError} from '../../hooks/useMutationProps'
 import {PALETTE} from '../../styles/paletteV3'
 import type {CompletedHandler} from '../../types/relayMutations'
+import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogContent} from '../../ui/Dialog/DialogContent'
 import Legitity from '../../validation/Legitity'
-import DialogContainer from '../DialogContainer'
 import PlainButton from '../PlainButton/PlainButton'
 import StyledError from '../StyledError'
 import {RecurrenceSettings} from './RecurrenceSettings'
 
-const UpdateRecurrenceSettingsModalRoot = styled(DialogContainer)({
-  backgroundColor: PALETTE.WHITE,
-  position: 'relative',
-  width: 400
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  position: 'absolute',
-  height: 24,
-  top: 0,
-  right: 0,
-  margin: 16
-})
-
-const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
-
 const ActionsContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
-  padding: 16
+  padding: '16px 0 0'
 })
 
 const ActionButton = styled(PlainButton)({
@@ -78,21 +56,17 @@ const StopButton = styled(ActionButton)({
   }
 })
 
-const ErrorContainer = styled('div')({
-  color: PALETTE.TOMATO_500,
-  padding: '0px 16px 16px 16px'
-})
-
 const validateTitle = (title: string) =>
-  new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
+  new Legitity(title).trim().min(2, `C'mon, you call that a title?`)
 
 interface Props {
+  isOpen: boolean
   meeting: UpdateRecurrenceSettingsModal_meeting$key
   closeModal: () => void
 }
 
 export const UpdateRecurrenceSettingsModal = (props: Props) => {
-  const {closeModal, meeting: meetingRef} = props
+  const {isOpen, closeModal, meeting: meetingRef} = props
 
   const meeting = useFragment(
     graphql`
@@ -131,9 +105,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   > = (res, errors) => {
     onCompleted(res, errors)
     const error = getOnCompletedError(res, errors)
-    if (error) {
-      return
-    }
+    if (error) return
 
     atmosphere.eventEmitter.emit('addSnackbar', {
       key: 'recurrenceSettingsUpdated',
@@ -153,31 +125,22 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   const titleErr = fields.title.error
 
   const onNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (titleErr) {
-      fields.title.setError('')
-    }
+    if (titleErr) fields.title.setError('')
     onChange(event)
   }
 
   const onUpdateRecurrenceClicked = () => {
     if (submitting) return
-
     const title = fields.title.value || placeholder
     const titleRes = validateTitle(title)
     if (titleRes.error) {
       fields.title.setError(titleRes.error)
       return
     }
-
     submitMutation()
-
     UpdateRecurrenceSettingsMutation(
       atmosphere,
-      {
-        meetingId: meeting.id,
-        rrule: rrule?.toString(),
-        name: title
-      },
+      {meetingId: meeting.id, rrule: rrule?.toString(), name: title},
       {onError, onCompleted: onRecurrenceSettingsUpdated}
     )
   }
@@ -185,7 +148,6 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
   const onStopRecurrence = () => {
     if (submitting) return
     submitMutation()
-
     UpdateRecurrenceSettingsMutation(
       atmosphere,
       {meetingId: meeting.id, rrule: null},
@@ -200,46 +162,41 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
       fields.title.setError(titleRes.error)
       return
     }
-
     const isRecurrenceReenabled = !isMeetingSeriesActive && rrule
     if (isRecurrenceReenabled) return true
-
     const hasRecurrenceSettingsChanged =
       isMeetingSeriesActive && currentRecurrenceRule !== rrule?.toString()
     if (hasRecurrenceSettingsChanged) return true
-
     const hasNameChanged = isMeetingSeriesActive && meeting.meetingSeries?.title !== title
     if (hasNameChanged) return true
-
     return false
   }, [meeting, title, rrule, currentRecurrenceRule, isMeetingSeriesActive])
 
   return (
-    <UpdateRecurrenceSettingsModalRoot>
-      <input
-        className='form-input border-none p-4 font-sans text-base outline-hidden focus:outline-hidden focus:ring-1 focus:ring-slate-600'
-        type='text'
-        name='title'
-        placeholder={placeholder}
-        value={title}
-        onChange={onNameChange}
-        min={1}
-        max={50}
-      />
-      {titleErr && <StyledError>{titleErr}</StyledError>}
-      <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
-      <StyledCloseButton onClick={closeModal}>
-        <CloseIcon />
-      </StyledCloseButton>
-      <ActionsContainer>
-        {isMeetingSeriesActive && (
-          <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
-        )}
-        <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!canUpdate}>
-          Update
-        </UpdateButton>
-      </ActionsContainer>
-      {error && <ErrorContainer>{error.message}</ErrorContainer>}
-    </UpdateRecurrenceSettingsModalRoot>
+    <Dialog isOpen={isOpen} onClose={closeModal}>
+      <DialogContent className='w-[420px] max-w-[95vw] md:w-[420px] md:max-w-[420px]'>
+        <input
+          className='form-input mb-4 w-[calc(100%-2.5rem)] border-none p-0 font-sans text-base outline-hidden focus:outline-hidden focus:ring-1 focus:ring-slate-600'
+          type='text'
+          name='title'
+          placeholder={placeholder}
+          value={title}
+          onChange={onNameChange}
+          min={1}
+          max={50}
+        />
+        {titleErr && <StyledError>{titleErr}</StyledError>}
+        <RecurrenceSettings className={'p-0'} rrule={rrule} onRruleUpdated={setRrule} />
+        <ActionsContainer>
+          {isMeetingSeriesActive && (
+            <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
+          )}
+          <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!canUpdate}>
+            Update
+          </UpdateButton>
+        </ActionsContainer>
+        {error && <div className='text-tomato-500'>{error.message}</div>}
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -1,7 +1,6 @@
 import {Check} from '@mui/icons-material'
 import * as RadixSelect from '@radix-ui/react-select'
 import * as React from 'react'
-import {twMerge} from 'tailwind-merge'
 import {cn} from '../cn'
 
 interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Item> {
@@ -13,7 +12,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
   ({className, children, endAdornment, checkClassName, ...props}, ref) => (
     <RadixSelect.Item
       ref={ref}
-      className={twMerge(
+      className={cn(
         'mx-1 flex h-10 cursor-pointer select-none items-center justify-between rounded-md text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50',
         className
       )}

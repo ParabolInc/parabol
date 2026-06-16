@@ -8,7 +8,6 @@ import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import useModal from '../../../hooks/useModal'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
 import AddTemplatePrompt from '../../../modules/meeting/components/AddTemplatePrompt'
@@ -20,6 +19,8 @@ import {UnstyledTemplateSharing} from '../../../modules/meeting/components/Templ
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
 import {cn} from '../../../ui/cn'
+import {Dialog} from '../../../ui/Dialog/Dialog'
+import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
@@ -46,7 +47,7 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
   retrospective: {
     description: (
       <>
-        <b>Reflect</b> on what’s working or not on your team. <b>Group</b> common themes and vote on
+        <b>Reflect</b> on what's working or not on your team. <b>Group</b> common themes and vote on
         the hottest topics. As you <b>discuss topics</b>, create <b>takeaway tasks</b> that can be
         integrated with your backlog.
       </>
@@ -67,7 +68,7 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
     description: (
       <>
         This is a space to check in as a team. Share a personal update using the <b>Icebreaker</b>{' '}
-        phase. Give a brief update on what’s changed with your work during the <b>Solo Updates</b>{' '}
+        phase. Give a brief update on what's changed with your work during the <b>Solo Updates</b>{' '}
         phase. Raise issues for discussion in the <b>Team Agenda</b> phase.
       </>
     ),
@@ -179,22 +180,15 @@ export const TemplateDetails = (props: Props) => {
   }, [activityId, submitting, submitMutation, onError, onCompleted])
 
   const [teamPickerOpen, setTeamPickerOpen] = useState(false)
-
-  const {
-    openPortal: openPokerTemplateScaleDetailsPortal,
-    modalPortal: pokerTemplateScaleDetailsPortal,
-    closePortal: closePokerTemplateScaleDetailsPortal
-  } = useModal({
-    id: 'pokerTemplateScaleDetailsModal'
-  })
+  const [isScaleDetailsOpen, setIsScaleDetailsOpen] = useState(false)
 
   useEffect(() => {
     if (editingScaleId) {
-      openPokerTemplateScaleDetailsPortal()
+      setIsScaleDetailsOpen(true)
     } else {
-      closePokerTemplateScaleDetailsPortal()
+      setIsScaleDetailsOpen(false)
     }
-  }, [openPokerTemplateScaleDetailsPortal, closePokerTemplateScaleDetailsPortal, editingScaleId])
+  }, [editingScaleId])
 
   const isOwner = viewerLowestScope === 'TEAM'
 
@@ -332,13 +326,15 @@ export const TemplateDetails = (props: Props) => {
         }}
       />
 
-      {type === 'poker' &&
-        editingScaleId &&
-        pokerTemplateScaleDetailsPortal(
-          <div className='w-[520px]'>
-            <PokerTemplateScaleDetails team={team} />
-          </div>
-        )}
+      {type === 'poker' && (
+        <Dialog isOpen={isScaleDetailsOpen} onClose={() => setIsScaleDetailsOpen(false)}>
+          <DialogContent>
+            <div className='w-[520px]'>
+              <PokerTemplateScaleDetails team={team} />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

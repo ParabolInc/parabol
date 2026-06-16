@@ -18,7 +18,6 @@ const mapPromptToJoinOrgToToast = (
   {atmosphere}: OnNextNavigateContext
 ): Snack => {
   const {id: notificationId, activeDomain} = notification
-
   return {
     autoDismiss: 0,
     showDismissButton: true,

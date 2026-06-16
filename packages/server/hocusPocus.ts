@@ -190,28 +190,34 @@ export const hocuspocus = new Hocuspocus<YjsContext>({
         return Buffer.from(encodeStateAsUpdate(yDoc))
       },
       store: async ({documentName, state, document}) => {
-        const [dbId, , entity] = CipherId.fromClient(documentName)
-        if (entity === 'meeting') return
-        // TODO: don't transform the document into content. just traverse the yjs doc for speed
-        const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
-        const {updatedTitle} = await tracer.trace(
-          'hocusPocus.updatePageContent',
-          {
-            tags: {documentName}
-          },
-          () => updatePageContent(dbId, content, state)
-        )
-        if (updatedTitle) {
-          await Promise.all([
-            tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
-              pushGQLTitleUpdates(dbId)
-            ),
-            updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
-          ])
+        // Must not throw: hocuspocus v4's debouncer leaks `runningExecutions` on error,
+        // causing isCurrentlyExecuting() to return true forever and preventing document unload.
+        try {
+          const [dbId, , entity] = CipherId.fromClient(documentName)
+          if (entity === 'meeting') return
+          // TODO: don't transform the document into content. just traverse the yjs doc for speed
+          const content = TiptapTransformer.fromYdoc(document, 'default') as JSONContent
+          const {updatedTitle} = await tracer.trace(
+            'hocusPocus.updatePageContent',
+            {
+              tags: {documentName}
+            },
+            () => updatePageContent(dbId, content, state)
+          )
+          if (updatedTitle) {
+            await Promise.all([
+              tracer.trace('hocusPocus.pushGQLTitleUpdates', {tags: {documentName}}, () =>
+                pushGQLTitleUpdates(dbId)
+              ),
+              updateAllBacklinkedPageLinkTitles({pageId: dbId, title: updatedTitle})
+            ])
+          }
+          const firstConnection = document.getConnections()[0]
+          const userId = firstConnection?.context.userId as string | undefined
+          publishToEmbedder({jobType: 'embedPage:start', pageId: dbId, userId}).catch(Logger.log)
+        } catch (e) {
+          logError(e instanceof Error ? e : new Error(String(e)), {tags: {documentName}})
         }
-        const firstConnection = document.getConnections()[0]
-        const userId = firstConnection?.context.userId as string | undefined
-        publishToEmbedder({jobType: 'embedPage:start', pageId: dbId, userId}).catch(Logger.log)
       }
     }),
     redisHocusPocus,

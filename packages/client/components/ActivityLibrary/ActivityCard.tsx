@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type PropsWithChildren, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
-import {twMerge} from 'tailwind-merge'
 import type {ActivityCard_template$key} from '../../__generated__/ActivityCard_template.graphql'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import {cn} from '../../ui/cn'
@@ -32,7 +31,7 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         'relative flex h-full w-full items-center justify-center overflow-hidden',
         className
       )}
@@ -99,7 +98,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       onMouseLeave={handleMouseLeave}
     >
       <div
-        className={twMerge(
+        className={cn(
           'relative flex h-full min-w-0 flex-col overflow-hidden rounded-lg',
           theme.secondary,
           className

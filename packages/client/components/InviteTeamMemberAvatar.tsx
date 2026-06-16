@@ -1,42 +1,10 @@
-import styled from '@emotion/styled'
 import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import type {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
-import useModal from '../hooks/useModal'
 import AddTeamMemberModal from './AddTeamMemberModal'
-
-const Label = styled('div')({
-  fontSize: 12,
-  fontWeight: 600,
-  lineHeight: '16px',
-  color: PALETTE.SLATE_700,
-  textAlign: 'center'
-})
-
-const StyledIcon = styled('span')({
-  color: PALETTE.SKY_500,
-  height: 24,
-  width: 24,
-  alignSelf: 'center'
-})
-
-const IconWrapper = styled('div')({
-  height: 28,
-  display: 'flex',
-  justifyContent: 'center'
-})
-
-const Wrapper = styled('div')({
-  margin: '0 6px',
-  ':hover': {
-    cursor: 'pointer'
-  },
-  ':hover span': {
-    color: PALETTE.SKY_600
-  }
-})
 
 interface Props {
   meetingId?: string
@@ -54,25 +22,32 @@ const InviteTeamMemberAvatar = (props: Props) => {
     `,
     props.teamMembers
   )
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <>
-      <Wrapper onClick={toggleModal}>
-        <IconWrapper>
-          <StyledIcon>
+      <div
+        className='mx-1.5 cursor-pointer hover:[&_span]:text-sky-600'
+        onClick={() => setIsOpen(true)}
+      >
+        <div className='flex h-7 justify-center'>
+          <span style={{color: PALETTE.SKY_500, height: 24, width: 24, alignSelf: 'center'}}>
             <PersonAdd />
-          </StyledIcon>
-        </IconWrapper>
-        <Label>Invite</Label>
-      </Wrapper>
-      {modalPortal(
-        <AddTeamMemberModal
-          closePortal={closeModal}
-          meetingId={meetingId}
-          teamId={teamId}
-          teamMembers={teamMembers}
-        />
-      )}
+          </span>
+        </div>
+        <div
+          className='text-center font-semibold text-xs leading-4'
+          style={{color: PALETTE.SLATE_700}}
+        >
+          Invite
+        </div>
+      </div>
+      <AddTeamMemberModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        meetingId={meetingId}
+        teamId={teamId}
+        teamMembers={teamMembers}
+      />
     </>
   )
 }

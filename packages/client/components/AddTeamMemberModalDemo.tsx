@@ -1,42 +1,29 @@
-import styled from '@emotion/styled'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
 import hasToken from '../utils/hasToken'
 import DemoCreateAccountPrimaryButton from './DemoCreateAccountPrimaryButton'
-import DialogContainer from './DialogContainer'
 
-const StyledDialogContainer = styled(DialogContainer)({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '24px 16px 32px',
-  width: 500
-})
+interface Props {
+  isOpen: boolean
+  onClose: () => void
+}
 
-const StyledCopy = styled('p')({
-  fontSize: 16,
-  lineHeight: 1.5,
-  margin: '16px 0 24px',
-  padding: 0,
-  textAlign: 'center'
-})
-
-const Illustration = styled('img')({
-  display: 'block',
-  margin: '16px auto 0',
-  maxWidth: 320,
-  width: '100%'
-})
-
-const AddTeamMemberModalDemo = () => {
+const AddTeamMemberModalDemo = (props: Props) => {
+  const {isOpen, onClose} = props
   const copy = hasToken()
     ? 'Invite your teammates to a team and kick off a real Retro!'
     : 'Sign up, invite your teammates, and kick off a real Retro!'
   return (
-    <StyledDialogContainer>
-      <Illustration alt='' src={modalTeamInvitePng} />
-      <StyledCopy>{copy}</StyledCopy>
-      <DemoCreateAccountPrimaryButton />
-    </StyledDialogContainer>
+    <Dialog isOpen={isOpen} onClose={onClose}>
+      <DialogContent>
+        <div className='flex flex-col items-center'>
+          <img alt='' src={modalTeamInvitePng} className='mx-auto mt-4 block w-full max-w-xs' />
+          <p className='my-4 p-0 text-center text-base leading-relaxed'>{copy}</p>
+          <DemoCreateAccountPrimaryButton />
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

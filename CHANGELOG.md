@@ -5,6 +5,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.5](https://github.com/ParabolInc/parabol/compare/v13.25.4...v13.25.5) (2026-06-15)
+
+
+### Fixed
+
+* document memory leak ([#13219](https://github.com/ParabolInc/parabol/issues/13219)) ([6c3671f](https://github.com/ParabolInc/parabol/commit/6c3671fea0e60e3fd486c16d53c6ab668156a910))
+* public subpage access ([#13218](https://github.com/ParabolInc/parabol/issues/13218)) ([6b2d054](https://github.com/ParabolInc/parabol/commit/6b2d054f2626901cfcb93ca638ff87453df71e8d))
+
+## [13.25.4](https://github.com/ParabolInc/parabol/compare/v13.25.3...v13.25.4) (2026-06-12)
+
+
+### Fixed
+
+* support redirects in saml ([#13215](https://github.com/ParabolInc/parabol/issues/13215)) ([c8527d1](https://github.com/ParabolInc/parabol/commit/c8527d1057995530b5705de4ee2965b593d9d9cd))
+
+## [13.25.3](https://github.com/ParabolInc/parabol/compare/v13.25.2...v13.25.3) (2026-06-12)
+
+
+### Fixed
+
+* add more metadata to dd logs ([#13212](https://github.com/ParabolInc/parabol/issues/13212)) ([0863c6f](https://github.com/ParabolInc/parabol/commit/0863c6f12eabcca56fe8af67b632941037d9ffb2))
+
+## [13.25.2](https://github.com/ParabolInc/parabol/compare/v13.25.1...v13.25.2) (2026-06-11)
+
+
+### Fixed
+
+* hidden last call copy ([#13209](https://github.com/ParabolInc/parabol/issues/13209)) ([6fb8374](https://github.com/ParabolInc/parabol/commit/6fb837481e24523de7b7f224c756e8166c9a2f75))
+
 ## [13.25.1](https://github.com/ParabolInc/parabol/compare/v13.25.0...v13.25.1) (2026-06-11)
 
 

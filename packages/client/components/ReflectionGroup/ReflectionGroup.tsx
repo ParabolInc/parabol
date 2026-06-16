@@ -73,7 +73,6 @@ interface Props {
   swipeColumn?: SwipeColumn
   dataCy?: string
   reflectionIdsToHide?: string[] | null
-  isSpotlightEntering?: boolean
   showDragHintAnimation?: boolean
 }
 
@@ -87,7 +86,6 @@ const ReflectionGroup = (props: Props) => {
     swipeColumn,
     dataCy,
     reflectionIdsToHide,
-    isSpotlightEntering,
     showDragHintAnimation
   } = props
   const meeting = useFragment(
@@ -318,7 +316,6 @@ const ReflectionGroup = (props: Props) => {
                     reflection={reflection}
                     staticReflections={staticReflections}
                     swipeColumn={swipeColumn}
-                    isSpotlightEntering={!!isSpotlightEntering}
                     showDragHintAnimation={showDragHintAnimation}
                   />
                 </ReflectionWrapper>

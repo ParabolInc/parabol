@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {PALETTE} from '~/styles/paletteV3'
 import type {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
-import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
-import GitHubFieldMenu from './GitHubFieldMenu'
+import {Menu} from '../ui/Menu/Menu'
+import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
+import GitHubFieldMenu, {type EditModalConfig} from './GitHubFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -60,32 +61,38 @@ const GitHubFieldDimensionDropdown = (props: Props) => {
   )
   const {finalScore, serviceField} = stage
   const {name: serviceFieldName} = serviceField
-  const {togglePortal, menuPortal, originRef, menuProps} = useMenu<HTMLButtonElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      isDropdown: true,
-      id: 'githubFieldMenu'
-    }
-  )
-
-  const onClick = () => {
-    if (!isFacilitator) return
-    togglePortal()
-    clearError()
-  }
+  const [editModalConfig, setEditModalConfig] = useState<EditModalConfig | null>(null)
 
   const label =
     labelLookup[serviceFieldName as keyof typeof labelLookup] ||
     interpolateVotingLabelTemplate(serviceFieldName, finalScore)
 
+  const trigger = (
+    <Wrapper isFacilitator={isFacilitator}>
+      <CurrentValue>{label}</CurrentValue>
+      <StyledIcon isFacilitator={isFacilitator} />
+    </Wrapper>
+  )
+
+  if (!isFacilitator) return trigger
+
   return (
     <>
-      <Wrapper isFacilitator={isFacilitator} onClick={onClick} ref={originRef}>
-        <CurrentValue>{label}</CurrentValue>
-        <StyledIcon isFacilitator={isFacilitator} />
-      </Wrapper>
-      {menuPortal(
-        <GitHubFieldMenu menuProps={menuProps} stageRef={stage} submitScore={submitScore} />
+      <Menu trigger={trigger} onOpenChange={(open) => open && clearError()}>
+        <GitHubFieldMenu
+          stageRef={stage}
+          submitScore={submitScore}
+          onOpenEditModal={setEditModalConfig}
+        />
+      </Menu>
+      {editModalConfig && (
+        <EditVotingLabelTemplateModal
+          isOpen
+          onClose={() => setEditModalConfig(null)}
+          updateLabelTemplate={editModalConfig.updateLabelTemplate}
+          defaultValue={editModalConfig.defaultValue}
+          placeholder={editModalConfig.placeholder}
+        />
       )}
     </>
   )

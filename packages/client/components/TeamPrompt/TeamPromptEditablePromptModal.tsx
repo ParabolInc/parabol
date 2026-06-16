@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import {Close, Info} from '@mui/icons-material'
+import {Info} from '@mui/icons-material'
 import type * as React from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
@@ -7,22 +7,10 @@ import useForm from '~/hooks/useForm'
 import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import Legitity from '~/validation/Legitity'
-import DialogContainer from '../DialogContainer'
-import DialogContent from '../DialogContent'
-import DialogTitle from '../DialogTitle'
-import PlainButton from '../PlainButton/PlainButton'
+import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import RaisedButton from '../RaisedButton'
-
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 860,
-  overflow: 'auto'
-})
-
-const StyledDialogTitle = styled(DialogTitle)({
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: 24
-})
 
 const LightbulbWrapper = styled('span')({
   marginRight: 12
@@ -34,7 +22,6 @@ const TextArea = styled(TextAreaAutoSize)<{isDesktop: boolean}>(({isDesktop}) =>
   borderColor: PALETTE.SLATE_500,
   borderWidth: 1,
   borderRadius: 8,
-  marginB: 24,
   display: 'block',
   fontSize: isDesktop ? 18 : 16,
   fontWeight: 400,
@@ -63,24 +50,11 @@ const UpdatePromptFooter = styled('div')({
   justifyContent: 'flex-end'
 })
 
-const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
-
 const StyledRaisedButton = styled(RaisedButton)({
   marginLeft: 16,
   paddingTop: 12,
   paddingBottom: 12,
   fontSize: 18
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  marginLeft: 'auto'
 })
 
 const ErrorWrapper = styled('div')({
@@ -108,6 +82,7 @@ const SUGGESTED_PROMPTS = [
 ]
 
 interface Props {
+  isOpen: boolean
   initialPrompt: string
   onCloseModal: () => void
   onSubmitUpdatePrompt: (newPrompt: string) => void
@@ -116,7 +91,7 @@ interface Props {
 }
 
 const TeamPromptEditablePromptModal = (props: Props) => {
-  const {initialPrompt, onCloseModal, onSubmitUpdatePrompt, error} = props
+  const {isOpen, initialPrompt, onCloseModal, onSubmitUpdatePrompt, error} = props
   const {
     validateField,
     setDirtyField,
@@ -136,7 +111,6 @@ const TeamPromptEditablePromptModal = (props: Props) => {
   })
 
   const displayError = fields.meetingPrompt.error ?? error
-
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   const handleSubmitUpdate = () => {
@@ -149,24 +123,19 @@ const TeamPromptEditablePromptModal = (props: Props) => {
   }
 
   return (
-    <StyledDialogContainer>
-      <StyledDialogTitle>
-        {'Prompt'}
-        <StyledCloseButton onClick={onCloseModal}>
-          <CloseIcon />
-        </StyledCloseButton>
-      </StyledDialogTitle>
-      <DialogContent>
+    <Dialog isOpen={isOpen} onClose={onCloseModal}>
+      <DialogContent className='w-[860px] max-w-[95vw] overflow-auto'>
+        <DialogTitle>Prompt</DialogTitle>
         <TextArea
           {...fields.meetingPrompt}
           onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => e.target.select()}
-          name={'meetingPrompt'}
+          name='meetingPrompt'
           isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
           maxRows={3}
           onChange={onChangePrompt}
-          placeholder={'What are you working on today? Stuck on anything?'}
+          placeholder='What are you working on today? Stuck on anything?'
         />
         {displayError && (
           <ErrorWrapper>
@@ -190,13 +159,13 @@ const TeamPromptEditablePromptModal = (props: Props) => {
             disabled={!!fields.meetingPrompt.error}
             onClick={handleSubmitUpdate}
             size='medium'
-            palette={'blue'}
+            palette='blue'
           >
             Use prompt
           </StyledRaisedButton>
         </UpdatePromptFooter>
       </DialogContent>
-    </StyledDialogContainer>
+    </Dialog>
   )
 }
 

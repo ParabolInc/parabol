@@ -14,7 +14,7 @@ export const getSSOMetadataFromURL = async (metadataURL: string) => {
     return new Error('Metadata URL must start with https://')
   // content-type may be application/samlmetadata+xml or application/xml or ???
   // we do not check for that here since it's not deterministic
-  const result = await fetchUntrusted(normalizedURL, MAX_METADATA_SIZE)
+  const result = await fetchUntrusted(normalizedURL, MAX_METADATA_SIZE, {maxRedirects: 5})
   if (!result) return new Error('Metadata URL could not be fetched')
   return result.buffer.toString('utf-8')
 }

@@ -58,7 +58,6 @@ interface Props {
   swipeColumn?: SwipeColumn
   dataCy?: string
   isExpanded?: boolean
-  isSpotlightEntering?: boolean
   showDragHintAnimation?: boolean
 }
 
@@ -83,7 +82,6 @@ const DraggableReflectionCard = (props: Props) => {
     isExpanded,
     swipeColumn,
     dataCy,
-    isSpotlightEntering,
     showDragHintAnimation
   } = props
   const staticReflections = useFragment(
@@ -175,13 +173,8 @@ const DraggableReflectionCard = (props: Props) => {
   return (
     <DragWrapper
       ref={(c) => {
-        // If the spotlight is closed, this card is the single source of truth
-        // Else, if it's a remote drag that is not in the spotlight
-        // Else, if this is the instance in the source or search results
-        // And Spotlight modal isn't entering. This throws off dropping remote card position
         const isPriorityCard =
-          (!isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight) &&
-          !isSpotlightEntering
+          !isSpotlightOpen || (!isReflectionIdInSpotlight && remoteDrag) || isInSpotlight
         if (isPriorityCard) {
           drag.ref = c
         }

@@ -1,6 +1,7 @@
-import {lazy, Suspense} from 'react'
+import {lazy, Suspense, useState} from 'react'
 import useHotkey from '../../hooks/useHotkey'
-import useModal from '../../hooks/useModal'
+import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogContent} from '../../ui/Dialog/DialogContent'
 
 const EditorHelpModal = lazy(
   () =>
@@ -10,13 +11,17 @@ const EditorHelpModal = lazy(
 )
 
 const EditorHelpModalContainer = () => {
-  const {togglePortal, closePortal, modalPortal} = useModal()
-  useHotkey('?', togglePortal as any)
-  useHotkey('escape', closePortal)
+  const [isOpen, setIsOpen] = useState(false)
+  useHotkey('?', () => setIsOpen((v) => !v))
+  useHotkey('escape', () => setIsOpen(false))
   return (
-    <Suspense fallback={''}>
-      {modalPortal(<EditorHelpModal handleCloseModal={closePortal} />)}
-    </Suspense>
+    <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <DialogContent className='w-[564px] max-w-[95vw]' noClose>
+        <Suspense fallback=''>
+          <EditorHelpModal handleCloseModal={() => setIsOpen(false)} />
+        </Suspense>
+      </DialogContent>
+    </Dialog>
   )
 }
 
