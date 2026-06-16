@@ -41,23 +41,24 @@ export const useCoverable = (
   height: number,
   parentRef?: RefObject<HTMLDivElement>,
   columnsRef?: RefObject<HTMLDivElement>,
-  isDrawer?: boolean
+  isDrawer?: boolean,
+  buffer?: number
 ) => {
   const updateCoverables = () => {
-    if (isDrawer) return
+    if (!id || isDrawer) return
     const el = ref.current
     if (!el) return
     if (window.innerWidth < Breakpoint.SINGLE_REFLECTION_COLUMN) return
     const bbox = el.getBoundingClientRect()
     const {left, right} = bbox
     const oldCoverable = coverables[id]
-    const BUFFER = 8
+    const b = buffer ?? 8
     const coverable = {
       id,
       el,
       height,
-      left: left - BUFFER,
-      right: right + BUFFER,
+      left: left - b,
+      right: right + b,
       isExpanded: oldCoverable?.isExpanded ?? false
     }
     if (covering.el) {
@@ -80,7 +81,7 @@ export const useCoverable = (
     }
   }, [])
 
-  if (isDrawer) return true
+  if (!id || isDrawer) return true
   return coverables[id]?.isExpanded ?? false
 }
 
