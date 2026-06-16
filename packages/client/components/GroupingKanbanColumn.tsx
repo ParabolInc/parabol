@@ -142,7 +142,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }, [reflectionGroups])
 
   const isLengthExpanded =
-    useCoverable(promptId, columnRef, MeetingControlBarEnum.HEIGHT, phaseRef, columnsRef) ||
+    useCoverable(promptId, columnRef, MeetingControlBarEnum.COVER_HEIGHT, phaseRef, columnsRef) ||
     !!endedAt
   const groups = useDeepEqual(reflectionGroups)
   // group may be undefined because relay could GC before useMemo in the Kanban recomputes >:-(
@@ -172,7 +172,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   return (
     <div
-      className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-56px)]'} max-w-min`}
+      className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-68px)]'} max-w-min`}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
