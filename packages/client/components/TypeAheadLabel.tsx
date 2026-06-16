@@ -15,9 +15,13 @@ const TypeAheadLabel = (props: Props) => {
   const cleanInnerHtml = DOMPurify.sanitize(
     query ? label.replace(getSafeRegex(query, 'gi'), queryHtml) : label
   )
+  const merged = cn('overflow-hidden text-ellipsis whitespace-nowrap', className)
+  if (!cleanInnerHtml) {
+    return <span className={merged}>{label}</span>
+  }
   return (
     <span
-      className={cn('overflow-hidden text-ellipsis whitespace-nowrap', className)}
+      className={merged}
       dangerouslySetInnerHTML={{
         __html: cleanInnerHtml
       }}

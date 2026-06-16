@@ -40,6 +40,7 @@ export const SearchDialogResultsRoot = (props: Props) => {
             queryRef={queryRef}
             searchType={searchType}
             closeSearch={closeSearch}
+            query={searchQuery}
           />
         )}
       </Suspense>
