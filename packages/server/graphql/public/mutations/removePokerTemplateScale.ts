@@ -1,25 +1,23 @@
+import {GraphQLError} from 'graphql/error'
 import {sql} from 'kysely'
 import {SprintPokerDefaults, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
-import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removePokerTemplateScale: MutationResolvers['removePokerTemplateScale'] = async (
   _source,
   {scaleId},
-  {authToken, dataLoader, socketId: mutatorId}
+  {dataLoader, socketId: mutatorId}
 ) => {
   const pg = getKysely()
   const operationId = dataLoader.share()
   const subOptions = {operationId, mutatorId}
   const scale = await dataLoader.get('templateScales').load(scaleId)
-  const viewerId = getUserId(authToken)
 
   // AUTH
   if (!scale || scale.removedAt) {
-    return standardError(new Error('Scale not found'), {userId: viewerId})
+    throw new GraphQLError('Scale not found')
   }
   const {teamId} = scale
   // RESOLUTION
@@ -40,7 +38,7 @@ const removePokerTemplateScale: MutationResolvers['removePokerTemplateScale'] = 
   dataLoader.clearAll(['templateDimensions', 'templateScales'])
   const dimensions = await dataLoader.get('templateDimensionsByScaleId').load(scaleId)
 
-  const data = {scaleId, dimensions}
+  const data = {scaleId, dimensions, teamId}
   publish(SubscriptionChannel.TEAM, teamId, 'RemovePokerTemplateScalePayload', data, subOptions)
   return data
 }

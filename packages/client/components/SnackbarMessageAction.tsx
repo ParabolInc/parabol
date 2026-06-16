@@ -30,8 +30,9 @@ const SnackbarMessageAction = (props: Props) => {
   const {label, callback} = action
   return (
     <Action
-      onClick={(e) => {
-        e.stopPropagation()
+      onClick={() => {
+        // claude added this & i'm not sure why, we want it to propagate up to dismiss
+        // e.stopPropagation()
         callback()
       }}
     >

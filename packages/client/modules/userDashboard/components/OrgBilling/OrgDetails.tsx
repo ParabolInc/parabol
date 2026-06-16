@@ -1,12 +1,11 @@
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgDetails_organization$key} from '../../../../__generated__/OrgDetails_organization.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import EditableOrgName from '../../../../components/EditableOrgName'
 import OrgAvatarInput from '../../../../components/OrgAvatarInput'
-import useModal from '../../../../hooks/useModal'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import OrganizationDetails from '../Organization/OrganizationDetails'
 import OrgBillingDangerZone from './OrgBillingDangerZone'
@@ -48,14 +47,23 @@ const OrgDetails = (props: Props) => {
   } = organization
   const pictureOrDefault = orgAvatar ?? defaultOrgAvatar
   const orgName = name ?? 'Unknown'
-  const {togglePortal, modalPortal} = useModal()
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false)
 
   return (
     <Suspense fallback={''}>
       <div className='mb-4 flex w-full items-center'>
-        {modalPortal(<OrgAvatarInput picture={pictureOrDefault} orgId={orgId} />)}
+        <OrgAvatarInput
+          isOpen={isAvatarOpen}
+          onClose={() => setIsAvatarOpen(false)}
+          picture={pictureOrDefault}
+          orgId={orgId}
+        />
         {isBillingLeader ? (
-          <EditableAvatar onClick={togglePortal} picture={pictureOrDefault} className='h-16 w-16' />
+          <EditableAvatar
+            onClick={() => setIsAvatarOpen(true)}
+            picture={pictureOrDefault}
+            className='h-16 w-16'
+          />
         ) : (
           <div className='w-16'>
             <Avatar picture={pictureOrDefault} />

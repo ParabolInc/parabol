@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify'
-import {twMerge} from 'tailwind-merge'
 import getSafeRegex from '~/utils/getSafeRegex'
+import {cn} from '../ui/cn'
 
 interface Props {
   query: string
@@ -17,7 +17,7 @@ const TypeAheadLabel = (props: Props) => {
   )
   return (
     <span
-      className={twMerge('overflow-hidden text-ellipsis whitespace-nowrap', className)}
+      className={cn('overflow-hidden text-ellipsis whitespace-nowrap', className)}
       dangerouslySetInnerHTML={{
         __html: cleanInnerHtml
       }}

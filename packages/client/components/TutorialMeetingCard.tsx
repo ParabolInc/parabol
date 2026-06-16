@@ -1,15 +1,16 @@
 import styled from '@emotion/styled'
-import {useCallback} from 'react'
-import SendClientSideEvent from '~/utils/SendClientSideEvent'
+import {useCallback, useState} from 'react'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
 import retroTutorialThumb from '../../../static/images/illustrations/retroTutorialThumb.png'
 import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useBreakpoint from '../hooks/useBreakpoint'
-import useModal from '../hooks/useModal'
 import {Elevation} from '../styles/elevation'
 import {PALETTE} from '../styles/paletteV3'
 import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import SendClientSideEvent from '../utils/SendClientSideEvent'
 import MeetingsDashTutorialModal from './MeetingsDashTutorialModal'
 
 const CardWrapper = styled('div')<{
@@ -124,24 +125,23 @@ const TUTORIAL_MAP = {
 
 const TutorialMeetingCard = (props: Props) => {
   const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
-  const atmospehere = useAtmosphere()
+  const atmosphere = useAtmosphere()
   const config = TUTORIAL_MAP[props.type]
+  const [isOpen, setIsOpen] = useState(false)
 
   const onOpen = useCallback(() => {
-    SendClientSideEvent(atmospehere, 'Tutorial Meeting Card Opened')
-  }, [])
-  const onClose = useCallback(() => {
-    SendClientSideEvent(atmospehere, 'Tutorial Meeting Card Closed')
-  }, [])
+    SendClientSideEvent(atmosphere, 'Tutorial Meeting Card Opened')
+    setIsOpen(true)
+  }, [atmosphere])
 
-  const {togglePortal: toggleModal, modalPortal} = useModal({
-    onOpen,
-    onClose
-  })
+  const onClose = useCallback(() => {
+    SendClientSideEvent(atmosphere, 'Tutorial Meeting Card Closed')
+    setIsOpen(false)
+  }, [atmosphere])
 
   return (
     <>
-      <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={toggleModal}>
+      <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={onOpen}>
         <MeetingImgWrapper>
           <MeetingImgBackground />
           <MeetingTypeLabel>Tutorial</MeetingTypeLabel>
@@ -154,7 +154,11 @@ const TutorialMeetingCard = (props: Props) => {
           <Meta>Video tutorial</Meta>
         </MeetingInfo>
       </CardWrapper>
-      {modalPortal(<MeetingsDashTutorialModal label={config.label} src={config.url} />)}
+      <Dialog isOpen={isOpen} onClose={onClose}>
+        <DialogContent>
+          <MeetingsDashTutorialModal label={config.label} src={config.url} />
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

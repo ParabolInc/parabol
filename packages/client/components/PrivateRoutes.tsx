@@ -76,13 +76,11 @@ const PrivateRoutes = () => {
         <Route path='/admin/impersonate' element={<Impersonate />} />
         <Route path='/invitation-required' element={<ViewerNotOnTeamRoot />} />
         <Route path='/signout' element={<Signout />} />
-        <Route path='*' element={<DashboardOrNotFound />} />
-      </Routes>
-      <Routes>
         <Route
           path='/organization-join-request/:requestId'
           element={<ReviewRequestToJoinOrgRoot />}
         />
+        <Route path='*' element={<DashboardOrNotFound />} />
       </Routes>
     </>
   )

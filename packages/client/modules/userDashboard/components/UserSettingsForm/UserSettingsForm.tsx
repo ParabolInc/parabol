@@ -1,14 +1,14 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
-import {lazy} from 'react'
+import {useState} from 'react'
 import type {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import SecondaryButton from '../../../../components/SecondaryButton'
+import UserAvatarInput from '../../../../components/UserAvatarInput'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
-import useModal from '../../../../hooks/useModal'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateUserProfileMutation from '../../../../mutations/UpdateUserProfileMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
@@ -58,10 +58,6 @@ const StyledButton = styled(SecondaryButton)({
   width: 112
 })
 
-const UserAvatarInput = lazy(
-  () => import(/* webpackChunkName: 'UserAvatarInput' */ '../../../../components/UserAvatarInput')
-)
-
 interface UserSettingsProps {
   viewer: UserProfileQuery['response']['viewer']
 }
@@ -74,8 +70,8 @@ function UserSettings(props: UserSettingsProps) {
       validate: (value: string) =>
         new Legitity(value)
           .trim()
-          .required('\u2018That\u2019s not much of a name, is it?')
-          .min(2, '\u2018C\u2019mon, you call that a name?')
+          .required('That’s not much of a name, is it?')
+          .min(2, 'C’mon, you call that a name?')
           .max(100, 'I want your name, not your life story')
     }
   })
@@ -92,14 +88,18 @@ function UserSettings(props: UserSettingsProps) {
 
   const {picture} = viewer
   const pictureOrDefault = picture || defaultUserAvatar
-  const {togglePortal, modalPortal} = useModal()
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false)
   const {value, error: fieldError} = fields.preferredName
   return (
     <SettingsForm onSubmit={onSubmit}>
-      <div onClick={togglePortal}>
+      <div onClick={() => setIsAvatarOpen(true)}>
         <EditableAvatar picture={pictureOrDefault} className='h-24 w-24' />
       </div>
-      {modalPortal(<UserAvatarInput closeModal={togglePortal} picture={pictureOrDefault} />)}
+      <UserAvatarInput
+        isOpen={isAvatarOpen}
+        onClose={() => setIsAvatarOpen(false)}
+        picture={pictureOrDefault}
+      />
       <InfoBlock>
         <FieldLabel
           customStyles={{paddingBottom: 8}}

@@ -1,10 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
-import {twMerge} from 'tailwind-merge'
 import {getLinearRepoName} from '~/utils/getLinearRepoName'
 import {parseWebPath} from '~/utils/parseWebPath'
 import type {TaskIntegrationLink_integration$key} from '../__generated__/TaskIntegrationLink_integration.graphql'
+import {cn} from '../ui/cn'
 import JiraIssueLink from './JiraIssueLink'
 
 interface Props {
@@ -52,7 +52,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Jira Data Center Issue #${issueKey} on ${projectKey}`}
-        className={twMerge(
+        className={cn(
           'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
@@ -74,7 +74,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitHub Issue #${number} on ${nameWithOwner}`}
-        className={twMerge(
+        className={cn(
           'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
@@ -92,7 +92,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`GitLab Issue #${iid} on ${fullPath}`}
-        className={twMerge(
+        className={cn(
           'focus:underline, block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline',
           className
         )}
@@ -110,7 +110,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Azure Item #${id} on ${teamProject}`}
-        className={twMerge(
+        className={cn(
           'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}
@@ -133,7 +133,7 @@ const TaskIntegrationLink = (props: Props) => {
         rel='noopener noreferrer'
         target='_blank'
         title={`Linear Issue #${identifier} on ${nameWithTeam}`}
-        className={twMerge(
+        className={cn(
           'block px-4 text-[14px] text-slate-700 leading-5 underline hover:underline focus:underline',
           className
         )}

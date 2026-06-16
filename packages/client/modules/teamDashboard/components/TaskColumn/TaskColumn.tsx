@@ -1,11 +1,11 @@
 import styled from '@emotion/styled'
 import {Droppable, type DroppableProvided, type DroppableStateSnapshot} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import type {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import useModal from '../../../../hooks/useModal'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
@@ -103,7 +103,7 @@ const TaskColumn = (props: Props) => {
   )
   const label = taskStatusLabels[status]
   const userCanAdd = area === TEAM_DASH || area === USER_DASH || isViewerMeetingSection
-  const {togglePortal, modalPortal} = useModal()
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false)
   return (
     <Droppable droppableId={status} type={DroppableType.TASK}>
       {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
@@ -123,17 +123,19 @@ const TaskColumn = (props: Props) => {
               <StatusLabel>{label}</StatusLabel>
               {tasks.length > 0 && <TasksCount>{tasks.length}</TasksCount>}
               {status === DONE && (
-                <a onClick={togglePortal} className='ml-auto cursor-pointer text-slate-600 text-sm'>
+                <a
+                  onClick={() => setIsArchiveOpen(true)}
+                  className='ml-auto cursor-pointer text-slate-600 text-sm'
+                >
                   Archive all
                 </a>
               )}
             </StatusLabelBlock>
-            {modalPortal(
-              <ArchiveAllDoneTasksModal
-                closeModal={togglePortal}
-                taskIds={tasks.map((t) => t.id)}
-              />
-            )}
+            <ArchiveAllDoneTasksModal
+              isOpen={isArchiveOpen}
+              closeModal={() => setIsArchiveOpen(false)}
+              taskIds={tasks.map((t) => t.id)}
+            />
           </ColumnHeader>
           <ColumnBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
             <TaskColumnInner

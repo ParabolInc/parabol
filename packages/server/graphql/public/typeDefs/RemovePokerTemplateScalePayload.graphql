@@ -2,11 +2,18 @@
 Result of archiving a Poker scoring scale
 """
 type RemovePokerTemplateScalePayload {
-  error: StandardMutationError
-  scale: TemplateScale
+  """
+  the scale that was removed
+  """
+  scale: TemplateScale!
+
+  """
+  the team that owned the scale being removed
+  """
+  team: Team!
 
   """
   A list of dimensions that were using the archived scale
   """
-  dimensions: [TemplateDimension!]
+  dimensions: [TemplateDimension!]!
 }

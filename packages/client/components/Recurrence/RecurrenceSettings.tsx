@@ -107,10 +107,11 @@ interface Props {
   onRruleUpdated: (rrule: RRule | null) => void
   rrule: RRule | null
   gcalStartTime?: Dayjs
+  className?: string
 }
 
 export const RecurrenceSettings = (props: Props) => {
-  const {onRruleUpdated, rrule, gcalStartTime} = props
+  const {onRruleUpdated, rrule, gcalStartTime, className} = props
   const [recurrenceInterval, setRecurrenceInterval] = React.useState(
     rrule ? rrule.options.interval : 1
   )
@@ -168,7 +169,7 @@ export const RecurrenceSettings = (props: Props) => {
   }, [recurrenceDays, recurrenceInterval, recurrenceStartTime])
 
   return (
-    <div className='space-y-4 p-4'>
+    <div className={cn('space-y-4 p-4', className)}>
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
           <label className='block text-slate-800 text-sm' htmlFor='series-interval'>

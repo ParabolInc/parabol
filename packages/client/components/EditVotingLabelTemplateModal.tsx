@@ -1,57 +1,22 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
 import useForm from '../hooks/useForm'
-import DialogContainer from './DialogContainer'
-import DialogContent from './DialogContent'
-import DialogTitle from './DialogTitle'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import BasicInput from './InputField/BasicInput'
 import PlainButton from './PlainButton/PlainButton'
 import RaisedButton from './RaisedButton'
 import SecondaryButton from './SecondaryButton'
 
 interface Props {
-  closePortal: () => void
+  isOpen: boolean
+  onClose: () => void
   updateLabelTemplate: (labelTemplate: string) => () => void
   defaultValue: string
   placeholder: string
 }
 
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 480
-})
-
-const ButtonGroup = styled('div')({
-  marginTop: '24px',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
-
-const StyledTip = styled('span')({
-  fontSize: 16,
-  margin: 0,
-  padding: 4
-})
-
-const WildcardTip = styled(StyledTip)({
-  background: PALETTE.SLATE_300,
-  borderRadius: 8,
-  fontWeight: 600
-})
-const StyledRaisedButton = styled(RaisedButton)({
-  marginLeft: 16
-})
-
-const LabelTemplateInput = styled(BasicInput)({
-  color: PALETTE.SLATE_700,
-  fontSize: 16,
-  marginBottom: 8,
-  outline: 0,
-  backgroundColor: 'transparent',
-  width: '100%'
-})
-
-const EditGitHubLabelTemplateModal = (props: Props) => {
-  const {closePortal, defaultValue, placeholder, updateLabelTemplate} = props
+const EditVotingLabelTemplateModal = (props: Props) => {
+  const {isOpen, onClose, defaultValue, placeholder, updateLabelTemplate} = props
   const INPUT_NAME = 'labelTemplate'
   const {fields, onChange, setValue} = useForm({
     [INPUT_NAME]: {
@@ -61,19 +26,17 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
   const labelTemplateField = fields[INPUT_NAME]
   const {value} = labelTemplateField
   const onSave = () => {
-    // validate?
-
     updateLabelTemplate(value)()
   }
   const addWildcard = () => {
     setValue(INPUT_NAME, `${value} {{#}}`)
   }
   return (
-    <StyledDialogContainer>
-      <DialogTitle>{'Edit Label Template'}</DialogTitle>
+    <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
+        <DialogTitle className='mb-4'>Edit Label Template</DialogTitle>
         <div>
-          <LabelTemplateInput
+          <BasicInput
             autoFocus
             name={INPUT_NAME}
             placeholder={placeholder}
@@ -82,25 +45,26 @@ const EditGitHubLabelTemplateModal = (props: Props) => {
             onChange={onChange}
             value={value}
             error={undefined}
+            className='mb-2 w-full bg-transparent text-base text-slate-700 outline-none'
           />
-          <StyledTip>{'Use '}</StyledTip>
+          <span className='p-1 text-base'>{'Use '}</span>
           <PlainButton onClick={addWildcard}>
-            <WildcardTip>{'{{#}}'}</WildcardTip>
+            <span className='rounded-lg bg-slate-300 p-1 font-semibold text-base'>{'{{#}}'}</span>
           </PlainButton>
-          <StyledTip>{' as the value wildcard'}</StyledTip>
+          <span className='p-1 text-base'>{' as the value wildcard'}</span>
 
-          <ButtonGroup>
-            <SecondaryButton onClick={closePortal} size='medium'>
+          <div className='mt-6 flex justify-end gap-4'>
+            <SecondaryButton onClick={onClose} size='medium'>
               Cancel
             </SecondaryButton>
-            <StyledRaisedButton onClick={onSave} size='medium' palette={'blue'}>
+            <RaisedButton onClick={onSave} size='medium' palette={'blue'}>
               Save
-            </StyledRaisedButton>
-          </ButtonGroup>
+            </RaisedButton>
+          </div>
         </div>
       </DialogContent>
-    </StyledDialogContainer>
+    </Dialog>
   )
 }
 
-export default EditGitHubLabelTemplateModal
+export default EditVotingLabelTemplateModal

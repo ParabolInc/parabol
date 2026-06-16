@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useRef} from 'react'
+import {useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
@@ -10,7 +10,6 @@ import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useModal from '../../../../hooks/useModal'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
 import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
@@ -108,7 +107,7 @@ const ManageTeamMember = (props: Props) => {
   // Team management permissions:
   // * Org admin can do anything, including promote themselves to team lead, and remove non-lead
   //   team members
-  // * Team leads can do anything, except manage org admins
+  // * Team leads can do anything
   // * Non-lead non-admins can only leave the team
   // Show the menu iff:
   // 1. Viewer is an admin, and the user is not a lead (viewer can promote them a lead, or remove
@@ -116,21 +115,10 @@ const ManageTeamMember = (props: Props) => {
   // 2. Viewer is a lead, and user is not the viewer, and not an admin (viewer can promote to lead,
   //    or remove from team).
   // 3. User is the viewer, and the user is not a lead (can leave team).
-  const showMenuButton =
-    (isViewerOrgAdmin && !isLead) ||
-    (isViewerLead && !isSelf && !isOrgAdmin) ||
-    (!isViewerLead && isSelf)
-  const {
-    closePortal: closePromote,
-    togglePortal: togglePromote,
-    modalPortal: portalPromote
-  } = useModal()
-  const {
-    closePortal: closeRemove,
-    togglePortal: toggleRemove,
-    modalPortal: portalRemove
-  } = useModal()
-  const {closePortal: closeLeave, togglePortal: toggleLeave, modalPortal: portalLeave} = useModal()
+  const showMenuButton = isViewerLead ? !isSelf : isSelf || isViewerOrgAdmin
+  const [isPromoteOpen, setIsPromoteOpen] = useState(false)
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false)
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false)
   const {togglePortal, originRef, menuProps, menuPortal} = useMenu(MenuPosition.UPPER_RIGHT)
   const ref = useRef<HTMLDivElement>(null)
   useScrollIntoView(ref, isSelectedAvatar)
@@ -163,14 +151,26 @@ const ManageTeamMember = (props: Props) => {
           isViewerLead={isViewerLead}
           isViewerOrgAdmin={isViewerOrgAdmin}
           teamMember={teamMember}
-          togglePromote={togglePromote}
-          toggleRemove={toggleRemove}
-          toggleLeave={toggleLeave}
+          togglePromote={() => setIsPromoteOpen(true)}
+          toggleRemove={() => setIsRemoveOpen(true)}
+          toggleLeave={() => setIsLeaveOpen(true)}
         />
       )}
-      {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
-      {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
-      {portalLeave(<LeaveTeamModal teamMember={teamMember} closePortal={closeLeave} />)}
+      <PromoteTeamMemberModal
+        isOpen={isPromoteOpen}
+        teamMember={teamMember}
+        closePortal={() => setIsPromoteOpen(false)}
+      />
+      <RemoveTeamMemberModal
+        isOpen={isRemoveOpen}
+        teamMember={teamMember}
+        closePortal={() => setIsRemoveOpen(false)}
+      />
+      <LeaveTeamModal
+        isOpen={isLeaveOpen}
+        teamMember={teamMember}
+        closePortal={() => setIsLeaveOpen(false)}
+      />
     </StyledRow>
   )
 }

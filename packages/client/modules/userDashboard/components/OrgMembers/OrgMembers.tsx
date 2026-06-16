@@ -8,7 +8,6 @@ import type {OrgMembers_viewer$key} from '~/__generated__/OrgMembers_viewer.grap
 import type {OrgMembersPaginationQuery} from '~/__generated__/OrgMembersPaginationQuery.graphql'
 import type {OrgMembersQuery} from '~/__generated__/OrgMembersQuery.graphql'
 import ExportToCSVButton from '../../../../components/ExportToCSVButton'
-import useModal from '../../../../hooks/useModal'
 import {APP_CORS_OPTIONS} from '../../../../types/cors'
 import {BATCH_ORG_USER_REMOVAL_LIMIT} from '../../../../utils/constants'
 import OrgMemberRow from '../OrgUserRow/OrgMemberRow'
@@ -84,11 +83,7 @@ const OrgMembers = (props: Props) => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
   const [searchInput, setSearchInput] = useState('')
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([])
-  const {
-    togglePortal: toggleBulkRemove,
-    modalPortal: bulkRemoveModal,
-    closePortal: closeBulkRemoveModal
-  } = useModal()
+  const [isBulkRemoveOpen, setIsBulkRemoveOpen] = useState(false)
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value)
@@ -256,7 +251,7 @@ const OrgMembers = (props: Props) => {
                       Export Selected to CSV
                     </button>
                     <button
-                      onClick={toggleBulkRemove}
+                      onClick={() => setIsBulkRemoveOpen(true)}
                       className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 font-medium text-slate-700 text-xs hover:bg-slate-200'
                     >
                       Remove Selected
@@ -315,15 +310,14 @@ const OrgMembers = (props: Props) => {
           </table>
         </div>
       </div>
-      {bulkRemoveModal(
-        <RemoveFromOrgModal
-          orgId={organization.id}
-          userIds={selectedUserIds}
-          organizationUsers={selectedOrganizationUsers}
-          closePortal={closeBulkRemoveModal}
-          onSuccess={() => setSelectedUserIds([])}
-        />
-      )}
+      <RemoveFromOrgModal
+        isOpen={isBulkRemoveOpen}
+        orgId={organization.id}
+        userIds={selectedUserIds}
+        organizationUsers={selectedOrganizationUsers}
+        closePortal={() => setIsBulkRemoveOpen(false)}
+        onSuccess={() => setSelectedUserIds([])}
+      />
     </div>
   )
 }

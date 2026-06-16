@@ -1,13 +1,13 @@
 import styled from '@emotion/styled'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import useModal from '../../hooks/useModal'
 import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/meeting'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
@@ -122,10 +122,8 @@ const TeamPromptTopBar = (props: Props) => {
     meetingRef
   )
   const atmosphere = useAtmosphere()
-  const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
-    useModal({id: 'updateRecurrenceSettingsModal'})
-  const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
-    useModal({id: 'endRecurringMeetingModal'})
+  const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
+  const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
 
   const {viewerId} = atmosphere
   const {
@@ -182,8 +180,8 @@ const TeamPromptTopBar = (props: Props) => {
       </button>
       <TeamPromptOptions
         meetingRef={meeting}
-        openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
-        openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
+        openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
+        openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
       />
     </ButtonContainer>
   )
@@ -233,19 +231,17 @@ const TeamPromptTopBar = (props: Props) => {
             <div className='hidden md:block'>{buttons}</div>
           </RightSectionContainer>
         </RightSection>
-        {recurrenceSettingsModal(
-          <UpdateRecurrenceSettingsModal
-            meeting={meeting}
-            closeModal={toggleRecurrenceSettingsModal}
-          />
-        )}
-        {endRecurringMeetingModal(
-          <EndRecurringMeetingModal
-            meetingRef={meeting}
-            nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
-            closeModal={toggleEndRecurringMeetingModal}
-          />
-        )}
+        <UpdateRecurrenceSettingsModal
+          meeting={meeting}
+          isOpen={isRecurrenceSettingsOpen}
+          closeModal={() => setIsRecurrenceSettingsOpen(false)}
+        />
+        <EndRecurringMeetingModal
+          meetingRef={meeting}
+          isOpen={isEndRecurringMeetingOpen}
+          nextMeetingDate={isRecurrenceEnabled ? meetingSeries.nextMeetingDate : undefined}
+          closeModal={() => setIsEndRecurringMeetingOpen(false)}
+        />
       </MeetingTopBarStyles>
       <div className='block flex justify-between border-slate-300 border-y border-solid px-4 py-2 md:hidden'>
         <div className='my-1'>

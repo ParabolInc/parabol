@@ -1,22 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {DeleteAccount_viewer$key} from '../__generated__/DeleteAccount_viewer.graphql'
-import useModal from '../hooks/useModal'
-import {PALETTE} from '../styles/paletteV3'
-import lazyPreload from '../utils/lazyPreload'
+import DeleteAccountModal from './DeleteAccountModal'
 import IconLabel from './IconLabel'
 import LinkButton from './LinkButton'
-
-const DeleteAccountModal = lazyPreload(
-  () => import(/* webpackChunkName: 'DeleteAccountModal' */ './DeleteAccountModal')
-)
-
-const Hint = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 13,
-  marginTop: 8
-})
 
 interface Props {
   viewerRef: DeleteAccount_viewer$key
@@ -31,22 +19,22 @@ const DeleteAccount = ({viewerRef}: Props) => {
     `,
     viewerRef
   )
-  const {togglePortal, modalPortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <>
       <div>
         <LinkButton
           aria-label='Click to permanently delete your account.'
           palette='red'
-          onClick={togglePortal}
+          onClick={() => setIsOpen(true)}
         >
           <IconLabel iconLarge icon='remove_circle' label='Delete Account' />
         </LinkButton>
-        <Hint>
+        <div className='mt-2 text-[13px] text-slate-600'>
           <b>Note</b>: {"This can't be undone."}
-        </Hint>
+        </div>
       </div>
-      {modalPortal(<DeleteAccountModal viewerRef={viewer} />)}
+      <DeleteAccountModal isOpen={isOpen} onClose={() => setIsOpen(false)} viewerRef={viewer} />
     </>
   )
 }
