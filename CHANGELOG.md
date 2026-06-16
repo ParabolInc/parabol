@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.6](https://github.com/ParabolInc/parabol/compare/v13.25.5...v13.25.6) (2026-06-16)
+
+
+### Fixed
+
+* Correct search result ordering ([#13226](https://github.com/ParabolInc/parabol/issues/13226)) ([95006d2](https://github.com/ParabolInc/parabol/commit/95006d25585ff8d9195e9abfd7425b4ef5fa1338))
+* poker scale menu stays open on edits ([#13225](https://github.com/ParabolInc/parabol/issues/13225)) ([4f00758](https://github.com/ParabolInc/parabol/commit/4f00758d8b675e1530e7c961879b86d715c6bb26))
+* refactor useModal to Dialog ([#13221](https://github.com/ParabolInc/parabol/issues/13221)) ([8b339bf](https://github.com/ParabolInc/parabol/commit/8b339bf870b9664d7cedb1e08d98b13d885e6366))
+
 ## [13.25.5](https://github.com/ParabolInc/parabol/compare/v13.25.4...v13.25.5) (2026-06-15)
 
 
