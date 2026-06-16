@@ -6,18 +6,20 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import type {DeleteAccountModal_viewer$key} from '../__generated__/DeleteAccountModal_viewer.graphql'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
-import DialogContainer from './DialogContainer'
-import DialogContent from './DialogContent'
-import DialogTitle from './DialogTitle'
 import BasicTextArea from './InputField/BasicTextArea'
 import PrimaryButton from './PrimaryButton'
 
 interface Props {
+  isOpen: boolean
+  onClose: () => void
   viewerRef: DeleteAccountModal_viewer$key
 }
 
-const DeleteAccountModal = ({viewerRef}: Props) => {
+const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
   const viewer = useFragment(
     graphql`
       fragment DeleteAccountModal_viewer on User {
@@ -52,48 +54,46 @@ const DeleteAccountModal = ({viewerRef}: Props) => {
     )
   }
 
-  if (step === 'reauth') {
-    return (
-      <DialogContainer className='w-[356px]'>
-        <DialogTitle className='mt-4 flex justify-center'>Verify your identity</DialogTitle>
-        <DialogContent className='flex flex-col items-center'>
-          <p className='w-full max-w-[240px] pb-4 text-[15px] leading-5'>
-            {'Please verify your identity before deleting your account.'}
-          </p>
-          <DeleteAccountReAuthStep viewerRef={viewer} onReAuthSuccess={handleDelete} />
-        </DialogContent>
-      </DialogContainer>
-    )
-  }
-
   return (
-    <DialogContainer className='w-[400px]'>
-      <DialogTitle className='min-[864px]:mb-2 min-[864px]:pt-6 min-[864px]:pl-8 min-[864px]:text-2xl min-[864px]:leading-8'>
-        How could we do better?
-      </DialogTitle>
-      <DialogContent className='min-[864px]:flex min-[864px]:items-center min-[864px]:px-8 min-[864px]:pt-4 min-[864px]:pb-8'>
-        <div className='min-[864px]:max-w-[320px]'>
-          <p className='flex items-center pb-4 text-[15px] leading-[21px]'>
-            {'We\u2019re on a mission to make every meeting worth the time invested.'}
-          </p>
-          <p className='flex items-center pb-4 text-[15px] leading-[21px]'>
-            {'If there is anything we can do to improve, let us know below.'}
-          </p>
-          <BasicTextArea
-            autoFocus
-            name='reason'
-            onChange={onChange}
-            placeholder=''
-            value={reason}
-          />
-          <div className='mt-6 flex justify-end'>
-            <PrimaryButton onClick={handleDelete} disabled={!reason} size='medium'>
-              {'Goodbye forever'}
-            </PrimaryButton>
+    <Dialog isOpen={isOpen} onClose={onClose}>
+      <DialogContent>
+        {step === 'reauth' ? (
+          <div>
+            <DialogTitle className='mb-4 flex justify-center'>Verify your identity</DialogTitle>
+            <div className='flex flex-col items-center'>
+              <p className='w-full max-w-[240px] pb-4 text-[15px] leading-5'>
+                {'Please verify your identity before deleting your account.'}
+              </p>
+              <DeleteAccountReAuthStep viewerRef={viewer} onReAuthSuccess={handleDelete} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div>
+            <DialogTitle className='mb-2'>How could we do better?</DialogTitle>
+            <div>
+              <p className='flex items-center pb-4 text-[15px] leading-[21px]'>
+                {'We’re on a mission to make every meeting worth the time invested.'}
+              </p>
+              <p className='flex items-center pb-4 text-[15px] leading-[21px]'>
+                {'If there is anything we can do to improve, let us know below.'}
+              </p>
+              <BasicTextArea
+                autoFocus
+                name='reason'
+                onChange={onChange}
+                placeholder=''
+                value={reason}
+              />
+              <div className='mt-6 flex justify-end'>
+                <PrimaryButton onClick={handleDelete} disabled={!reason} size='medium'>
+                  {'Goodbye forever'}
+                </PrimaryButton>
+              </div>
+            </div>
+          </div>
+        )}
       </DialogContent>
-    </DialogContainer>
+    </Dialog>
   )
 }
 

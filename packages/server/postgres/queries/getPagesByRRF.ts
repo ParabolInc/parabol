@@ -121,7 +121,6 @@ export const getPagesByRRF = async (params: Params) => {
         .distinctOn('pageId')
         .where('score', '>', MIN_RRF_SCORE)
         .orderBy('pageId')
-        .orderBy('score', 'desc')
         .limit(first)
     )
     .selectFrom('ChunkMax')
@@ -137,6 +136,7 @@ export const getPagesByRRF = async (params: Params) => {
         FragmentDelimiter: '$!$'
       }).as('snippet')
     )
+    .orderBy('score', 'desc')
     .execute()
   return {
     pageInfo: {

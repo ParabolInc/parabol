@@ -1,7 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SearchDialogResultsQuery} from '../../__generated__/SearchDialogResultsQuery.graphql'
-import query from '../../__generated__/SearchDialogResultsQuery.graphql'
+import gqlQuery from '../../__generated__/SearchDialogResultsQuery.graphql'
 import type {ResultsListRefHandler} from './SearchDialogContent'
 import {SearchDialogResultsList} from './SearchDialogResultsList'
 import {SearchDialogResultsRecent} from './SearchDialogResultsRecent'
@@ -28,11 +28,12 @@ interface Props {
   searchType: 'recent' | 'simple' | 'hybrid'
   closeSearch: () => void
   resultsListRef: React.Ref<ResultsListRefHandler>
+  query: string
 }
 
 export const SearchDialogResults = (props: Props) => {
-  const {queryRef, searchType, closeSearch, resultsListRef} = props
-  const data = usePreloadedQuery<SearchDialogResultsQuery>(query, queryRef)
+  const {queryRef, searchType, closeSearch, resultsListRef, query} = props
+  const data = usePreloadedQuery<SearchDialogResultsQuery>(gqlQuery, queryRef)
   const {viewer} = data
   const {search} = viewer
   const {edges} = search
@@ -53,6 +54,7 @@ export const SearchDialogResults = (props: Props) => {
       edgesRef={edges}
       title={title}
       closeSearch={closeSearch}
+      query={query}
     />
   )
 }

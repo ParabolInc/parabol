@@ -1,10 +1,10 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import useModal from '~/hooks/useModal'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
 import {PALETTE} from '~/styles/paletteV3'
@@ -37,7 +37,7 @@ interface Props {
 const TeamPromptEditablePrompt = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onCompleted, onError, error} = useMutationProps()
-  const {closePortal, openPortal, modalPortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
@@ -66,19 +66,18 @@ const TeamPromptEditablePrompt = (props: Props) => {
     <>
       {isFacilitator && !endedAt ? (
         <>
-          <Prompt isEditable={isFacilitator} onClick={openPortal}>
+          <Prompt isEditable={isFacilitator} onClick={() => setIsOpen(true)}>
             {meetingPrompt}
             <StyledIcon />
           </Prompt>
-          {modalPortal(
-            <TeamPromptEditablePromptModal
-              initialPrompt={meetingPrompt}
-              onCloseModal={closePortal}
-              onSubmitUpdatePrompt={handleUpdatePrompt}
-              error={error?.message}
-              onCompleted={onCompleted}
-            />
-          )}
+          <TeamPromptEditablePromptModal
+            isOpen={isOpen}
+            initialPrompt={meetingPrompt}
+            onCloseModal={() => setIsOpen(false)}
+            onSubmitUpdatePrompt={handleUpdatePrompt}
+            error={error?.message}
+            onCompleted={onCompleted}
+          />
         </>
       ) : (
         <Prompt>{meetingPrompt}</Prompt>

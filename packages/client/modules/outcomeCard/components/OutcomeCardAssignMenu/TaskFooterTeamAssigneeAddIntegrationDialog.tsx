@@ -1,62 +1,39 @@
-import styled from '@emotion/styled'
-import DialogContainer from '~/components/DialogContainer'
-import DialogContent from '~/components/DialogContent'
-import DialogTitle from '~/components/DialogTitle'
 import PrimaryButton from '~/components/PrimaryButton'
 import SecondaryButton from '~/components/SecondaryButton'
+import {Dialog} from '~/ui/Dialog/Dialog'
+import {DialogContent} from '~/ui/Dialog/DialogContent'
+import {DialogTitle} from '~/ui/Dialog/DialogTitle'
 
 interface Props {
+  isOpen: boolean
   onClose: () => void
   onConfirm: () => void
   serviceName: string
   teamName: string
 }
 
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 480
-})
-
-const ButtonGroup = styled('div')({
-  marginTop: '24px',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
-
-const StyledTip = styled('p')({
-  fontSize: 14,
-  lineHeight: '20px',
-  margin: 0,
-  padding: '0 0 16px'
-})
-
-const StyledPrimaryButton = styled(PrimaryButton)({
-  marginLeft: 16
-})
-
 const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
-  const {onClose, onConfirm, serviceName, teamName} = props
+  const {isOpen, onClose, onConfirm, serviceName, teamName} = props
 
   return (
-    <StyledDialogContainer>
-      <DialogTitle>
-        {serviceName} integration for {teamName}
-      </DialogTitle>
+    <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
-        <div>
-          <StyledTip>
-            You don't have {serviceName} configured for {teamName}. Do you want to add it now?
-          </StyledTip>
-          <ButtonGroup>
-            <SecondaryButton onClick={onClose} size='medium'>
-              Cancel
-            </SecondaryButton>
-            <StyledPrimaryButton onClick={onConfirm} size='medium'>
-              Add it now
-            </StyledPrimaryButton>
-          </ButtonGroup>
+        <DialogTitle>
+          {serviceName} integration for {teamName}
+        </DialogTitle>
+        <p className='m-0 pb-4 text-sm leading-5'>
+          You don't have {serviceName} configured for {teamName}. Do you want to add it now?
+        </p>
+        <div className='mt-6 flex justify-end gap-4'>
+          <SecondaryButton onClick={onClose} size='medium'>
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton onClick={onConfirm} size='medium'>
+            Add it now
+          </PrimaryButton>
         </div>
       </DialogContent>
-    </StyledDialogContainer>
+    </Dialog>
   )
 }
 

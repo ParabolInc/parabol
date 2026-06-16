@@ -11,8 +11,8 @@ import {
   useRef,
   useState
 } from 'react'
-import {twMerge} from 'tailwind-merge'
 import type {PortalStatus} from '../hooks/usePortal'
+import {cn} from '../ui/cn'
 import MenuItemAnimation from './MenuItemAnimation'
 
 const isMenuItem = (node: any) => node && node.onClick
@@ -168,7 +168,7 @@ const Menu = forwardRef((props: Props, ref: any) => {
     <div
       role='menu'
       aria-label={ariaLabel}
-      className={twMerge('max-h-56 max-w-md select-none outline-none', className)}
+      className={cn('max-h-56 max-w-md select-none outline-none', className)}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

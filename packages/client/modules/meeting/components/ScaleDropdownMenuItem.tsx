@@ -1,14 +1,9 @@
-import styled from '@emotion/styled'
 import {Public} from '@mui/icons-material'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
-import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
-import textOverflow from '~/styles/helpers/textOverflow'
-import {PALETTE} from '~/styles/paletteV3'
-import {FONT_FAMILY} from '~/styles/typographyV2'
 import type {ScaleDropdownMenuItem_dimension$key} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import type {ScaleDropdownMenuItem_scale$key} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
-import MenuItem from '../../../components/MenuItem'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import UpdatePokerTemplateDimensionScaleMutation from '../../../mutations/UpdatePokerTemplateDimensionScaleMutation'
@@ -22,55 +17,7 @@ interface Props {
   closePortal: () => void
 }
 
-const ScaleDetails = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  minWidth: '300px'
-})
-
-const ScaleNameAndValues = styled('div')({
-  display: 'block',
-  flexDirection: 'column',
-  maxWidth: '200px',
-  paddingTop: 12,
-  paddingLeft: 16,
-  paddingBottom: 12,
-  flexGrow: 1
-})
-
-const ScaleName = styled('div')({
-  ...textOverflow,
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '24px',
-  alignItems: 'center'
-})
-
-const ScaleValues = styled('div')({
-  ...textOverflow,
-  color: PALETTE.SLATE_600,
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 12,
-  lineHeight: '16px'
-})
-
-const ScaleActionButtonGroup = styled('div')({
-  paddingLeft: '8px',
-  paddingRight: '8px',
-  marginTop: 'auto',
-  marginBottom: 'auto'
-})
-
-const StarterIcon = styled(Public)({
-  height: 18,
-  width: 18,
-  marginLeft: 4
-})
-
-const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
+const ScaleDropdownMenuItem = (props: Props) => {
   const {scale: scaleRef, dimension: dimensionRef, closePortal, scaleCount} = props
   const dimension = useFragment(
     graphql`
@@ -107,7 +54,7 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   const atmosphere = useAtmosphere()
   const {submitMutation, submitting, onError, onCompleted} = useMutationProps()
 
-  const setScale = (scaleId: any) => () => {
+  const setScale = () => {
     if (submitting || scaleId === selectedScaleId) return
     submitMutation()
     UpdatePokerTemplateDimensionScaleMutation(
@@ -119,30 +66,23 @@ const ScaleDropdownMenuItem = forwardRef((props: Props, ref) => {
   }
 
   return (
-    <MenuItem
-      ref={ref}
-      onClick={setScale(scaleId)}
-      label={
-        <ScaleDetails>
-          <ScaleNameAndValues>
-            <ScaleName>
-              {scaleName}
-              {isStarter && <StarterIcon />}
-            </ScaleName>
-            <ScaleValues>{scaleValueString(values)}</ScaleValues>
-          </ScaleNameAndValues>
-          <ScaleActionButtonGroup>
-            <ScaleActions
-              scale={scale}
-              scaleCount={scaleCount}
-              teamId={dimension.team.id}
-              closeMenu={closePortal}
-            />
-          </ScaleActionButtonGroup>
-        </ScaleDetails>
-      }
-    />
+    <DropdownMenu.Item
+      className='mx-1 flex min-w-[300px] cursor-pointer justify-between rounded-md outline-hidden hover:bg-slate-100 focus:bg-slate-100'
+      data-scale-id={scaleId}
+      onClick={setScale}
+    >
+      <div className='flex max-w-[200px] grow flex-col px-4 py-3'>
+        <div className='flex items-center truncate font-semibold text-base text-slate-700 leading-6'>
+          {scaleName}
+          {isStarter && <Public className='ml-1 h-[18px] w-[18px]' />}
+        </div>
+        <div className='truncate text-slate-600 text-xs leading-4'>{scaleValueString(values)}</div>
+      </div>
+      <div className='my-auto px-2'>
+        <ScaleActions scale={scale} scaleCount={scaleCount} teamId={dimension.team.id} />
+      </div>
+    </DropdownMenu.Item>
   )
-})
+}
 
 export default ScaleDropdownMenuItem

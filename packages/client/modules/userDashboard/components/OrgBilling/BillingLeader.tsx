@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BillingLeader_organization$key} from '../../../../__generated__/BillingLeader_organization.graphql'
 import type {BillingLeader_orgUser$key} from '../../../../__generated__/BillingLeader_orgUser.graphql'
@@ -10,7 +11,6 @@ import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
 import BaseTag from '../../../../components/Tag/BaseTag'
-import useModal from '../../../../hooks/useModal'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
@@ -73,16 +73,8 @@ const BillingLeader = (props: Props) => {
     isOrgAdmin: isViewerOrgAdmin,
     isBillingLeader: isViewerBillingLeader
   } = organization
-  const {
-    togglePortal: toggleLeave,
-    modalPortal: leaveModal,
-    closePortal: closeLeaveModal
-  } = useModal()
-  const {
-    togglePortal: toggleRemove,
-    modalPortal: removeModal,
-    closePortal: closeRemoveModal
-  } = useModal()
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false)
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false)
   const {user: billingLeaderUser, role} = billingLeader
   const {id: userId, preferredName, picture} = billingLeaderUser
   const canEdit = isViewerOrgAdmin || (isViewerBillingLeader && role === 'BILLING_LEADER')
@@ -103,21 +95,20 @@ const BillingLeader = (props: Props) => {
             <OrgAdminActionMenu
               organization={organization}
               organizationUser={billingLeader}
-              toggleLeave={toggleLeave}
-              toggleRemove={toggleRemove}
+              toggleLeave={() => setIsLeaveOpen(true)}
+              toggleRemove={() => setIsRemoveOpen(true)}
             />
           )}
         </ActionsBlock>
       </RowActions>
-      {leaveModal(<LeaveOrgModal orgId={orgId} closePortal={closeLeaveModal} />)}
-      {removeModal(
-        <RemoveFromOrgModal
-          orgId={orgId}
-          userIds={[userId]}
-          organizationUsers={[billingLeader]}
-          closePortal={closeRemoveModal}
-        />
-      )}
+      <LeaveOrgModal isOpen={isLeaveOpen} orgId={orgId} closePortal={() => setIsLeaveOpen(false)} />
+      <RemoveFromOrgModal
+        isOpen={isRemoveOpen}
+        orgId={orgId}
+        userIds={[userId]}
+        organizationUsers={[billingLeader]}
+        closePortal={() => setIsRemoveOpen(false)}
+      />
     </StyledRow>
   )
 }

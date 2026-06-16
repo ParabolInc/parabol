@@ -5,6 +5,7 @@ import {type ReactNode, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {SearchDialogResult_edge$key} from '../../__generated__/SearchDialogResult_edge.graphql'
+import TypeAheadLabel from '../../components/TypeAheadLabel'
 import {getPageSlug} from '../../tiptap/getPageSlug'
 import {GQLID} from '../../utils/GQLID'
 
@@ -13,8 +14,15 @@ interface Props {
   closeSearch: () => void
   isActive?: boolean
   setSelectedIndex: () => void
+  query?: string
 }
-export const SearchDialogResult = ({edgeRef, closeSearch, isActive, setSelectedIndex}: Props) => {
+export const SearchDialogResult = ({
+  edgeRef,
+  closeSearch,
+  isActive,
+  setSelectedIndex,
+  query = ''
+}: Props) => {
   const data = useFragment(
     graphql`
   fragment SearchDialogResult_edge on SearchResultEdge {
@@ -42,7 +50,11 @@ export const SearchDialogResult = ({edgeRef, closeSearch, isActive, setSelectedI
   const icon = iconLookup[__typename as keyof typeof iconLookup]
   const safeSnippets = snippets.map((snippet) => DOMPurify.sanitize(snippet))
   const [firstSnippet] = safeSnippets
-
+  const wordPattern = query
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .join('|')
   const itemRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -77,7 +89,11 @@ export const SearchDialogResult = ({edgeRef, closeSearch, isActive, setSelectedI
         onClick={closeSearch}
       >
         <div className='flex flex-col'>
-          <span className='font-normal text-[14px] text-slate-800'>{title || '<Untitled>'}</span>
+          <TypeAheadLabel
+            query={wordPattern}
+            label={title || '<Untitled>'}
+            className='font-normal text-[14px] text-slate-800'
+          />
           {firstSnippet && (
             <span
               className='text-slate-700 text-xs'

@@ -117,6 +117,9 @@ const subscription = graphql`
       RemoveOrgUsersSuccess {
         ...RemoveOrgUsersMutation_team @relay(mask: false)
       }
+      RemovePokerTemplateScalePayload {
+        ...RemovePokerTemplateScaleMutation_team @relay(mask: false)
+      }
       RemoveReflectTemplatePayload {
         ...RemoveReflectTemplateMutation_team @relay(mask: false)
       }

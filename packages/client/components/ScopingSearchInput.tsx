@@ -2,9 +2,9 @@ import {Close} from '@mui/icons-material'
 import type * as React from 'react'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
-import {twMerge} from 'tailwind-merge'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {cn} from '../ui/cn'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 
 interface Props {
@@ -67,7 +67,7 @@ const ScopingSearchInput = (props: Props) => {
         ref={inputRef}
       />
       <Close
-        className={twMerge('m-3 cursor-pointer text-slate-600', isEmpty && 'invisible')}
+        className={cn('m-3 cursor-pointer text-slate-600', isEmpty && 'invisible')}
         onClick={clearSearch}
       />
     </div>
