@@ -283,6 +283,9 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   }
 
   async maintainLock(documentName: string) {
+    // Clear any existing interval to prevent leaking it when called more than once
+    // (e.g. both onLoadDocument and lockDocument call this for the same document)
+    clearInterval(this.locks[documentName])
     this.locks[documentName] = setInterval(() => {
       this.pub.set(this.getKey(documentName), this.serverId, 'PX', this.lockTTL)
     }, this.lockTTL / 2)

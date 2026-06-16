@@ -104,12 +104,16 @@ export const updateBacklinkedPageLinkTitles = async (
 export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<string[]> => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
   const {document} = conn
-  if (!document) return []
+  if (!document) {
+    await conn.disconnect()
+    return []
+  }
   const {awareness} = document
   const connectedClients = awareness.getStates()
   const userIds = Array.from(connectedClients.values())
     .map(({userId}) => userId)
     .filter((val) => typeof val === 'string')
+  await conn.disconnect()
   return userIds
 }
 
