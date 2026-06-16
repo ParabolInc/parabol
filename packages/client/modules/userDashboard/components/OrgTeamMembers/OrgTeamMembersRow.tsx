@@ -1,12 +1,12 @@
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgTeamMembersRow_teamMember$key} from '../../../../__generated__/OrgTeamMembersRow_teamMember.graphql'
 import Avatar from '../../../../components/Avatar/Avatar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
-import useModal from '../../../../hooks/useModal'
 import {Button} from '../../../../ui/Button/Button'
 import PromoteTeamMemberModal from '../../../teamDashboard/components/PromoteTeamMemberModal/PromoteTeamMemberModal'
 import RemoveTeamMemberModal from '../../../teamDashboard/components/RemoveTeamMemberModal/RemoveTeamMemberModal'
@@ -51,16 +51,8 @@ export const OrgTeamMembersRow = (props: Props) => {
   const showMenuButton = (isViewerOrgAdmin && !isLead) || (isViewerLead && !isSelf && !isOrgAdmin)
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
-  const {
-    closePortal: closePromote,
-    togglePortal: togglePromote,
-    modalPortal: portalPromote
-  } = useModal()
-  const {
-    closePortal: closeRemove,
-    togglePortal: toggleRemove,
-    modalPortal: portalRemove
-  } = useModal()
+  const [isPromoteOpen, setIsPromoteOpen] = useState(false)
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false)
 
   return (
     <div className='flex w-full items-center justify-center gap-4 p-4'>
@@ -101,14 +93,21 @@ export const OrgTeamMembersRow = (props: Props) => {
             teamMember={teamMember}
             isViewerLead={isViewerLead}
             isViewerOrgAdmin={isViewerOrgAdmin}
-            togglePromote={togglePromote}
-            toggleRemove={toggleRemove}
+            togglePromote={() => setIsPromoteOpen(true)}
+            toggleRemove={() => setIsRemoveOpen(true)}
           />
         )}
       </div>
-
-      {portalPromote(<PromoteTeamMemberModal teamMember={teamMember} closePortal={closePromote} />)}
-      {portalRemove(<RemoveTeamMemberModal teamMember={teamMember} closePortal={closeRemove} />)}
+      <PromoteTeamMemberModal
+        isOpen={isPromoteOpen}
+        teamMember={teamMember}
+        closePortal={() => setIsPromoteOpen(false)}
+      />
+      <RemoveTeamMemberModal
+        isOpen={isRemoveOpen}
+        teamMember={teamMember}
+        closePortal={() => setIsRemoveOpen(false)}
+      />
     </div>
   )
 }

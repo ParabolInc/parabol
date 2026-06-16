@@ -1,9 +1,9 @@
 import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
+import {useState} from 'react'
 import FlatButton from '~/components/FlatButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
-import useModal from '~/hooks/useModal'
 import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import lazyPreload from '~/utils/lazyPreload'
 
@@ -28,7 +28,7 @@ const UndoableGroupPhaseDialog = lazyPreload(
 
 const UndoableGroupPhaseControl = (props: Props) => {
   const {meetingId} = props
-  const {togglePortal: toggleModal, closePortal: closeModal, modalPortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
   const atmosphere = useAtmosphere()
   useHotkey('i d i d n t m e a n t o', () => {
     console.log('didntmean')
@@ -36,11 +36,15 @@ const UndoableGroupPhaseControl = (props: Props) => {
   })
   return (
     <>
-      <StyledButton onClick={toggleModal} palette={'blue'}>
+      <StyledButton onClick={() => setIsOpen(true)} palette={'blue'}>
         <StyledIcon />
         {' Edit Groups'}
       </StyledButton>
-      {modalPortal(<UndoableGroupPhaseDialog closePortal={closeModal} meetingId={meetingId} />)}
+      <UndoableGroupPhaseDialog
+        isOpen={isOpen}
+        closePortal={() => setIsOpen(false)}
+        meetingId={meetingId}
+      />
     </>
   )
 }

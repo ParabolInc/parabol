@@ -1,7 +1,6 @@
 import {Times} from 'parabol-client/types/constEnums'
 import {type MutableRefObject, useLayoutEffect, useRef} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {PortalStatus} from '~/hooks/usePortal'
 import StartDraggingReflectionMutation from '~/mutations/StartDraggingReflectionMutation'
 import {Elevation} from '~/styles/elevation'
 import {BezierCurve, ElementWidth} from '~/types/constEnums'
@@ -10,7 +9,7 @@ import cloneReflection from '~/utils/retroGroup/cloneReflection'
 import SendClientSideEvent from '~/utils/SendClientSideEvent'
 
 const useAnimatedSpotlightSource = (
-  portalStatus: PortalStatus,
+  isOpen: boolean,
   reflectionId: string | null | undefined,
   dragIdRef: MutableRefObject<string | undefined>
 ) => {
@@ -29,17 +28,16 @@ const useAnimatedSpotlightSource = (
   useLayoutEffect(() => {
     const {current: source} = sourceRef
     const {current: sourceClone} = sourceCloneRef
-    // wait for the modal to enter to get the source's bbox
-    if (portalStatus !== PortalStatus.Entered || !sourceClone || !reflectionId || !source) return
+    if (!isOpen || !sourceClone || !reflectionId || !source) return
     const sourceBbox = source.getBoundingClientRect()
     const sourceCloneBbox = sourceClone.getBoundingClientRect()
     const {style: sourceStyle} = source
-    sourceStyle.opacity = '0' // hide source while animating sourceClone into modal
+    sourceStyle.opacity = '0'
     const clone = cloneReflection(sourceClone, reflectionId)
     const {style: cloneStyle} = clone
     const {left: startLeft, top: startTop} = sourceCloneBbox
     const {left: endLeft, top: endTop} = sourceBbox
-    const roundedEndTop = Math.round(endTop) // fractional top pixel throws off transform position
+    const roundedEndTop = Math.round(endTop)
     cloneStyle.left = `${startLeft}px`
     cloneStyle.top = `${startTop}px`
     cloneStyle.borderRadius = `4px`
@@ -51,30 +49,24 @@ const useAnimatedSpotlightSource = (
       cloneStyle.transition = `transform ${Times.SPOTLIGHT_SOURCE_DURATION}ms ${BezierCurve.DECELERATE}`
     }, 0)
     dragIdRef.current = clientTempId()
-    // execute mutation after cloning as the mutation will cause reflection height to change
     startDrag(reflectionId, dragIdRef.current)
-    SendClientSideEvent(atmosphere, 'Opened Spotlight', {
-      reflectionId
-    })
+    SendClientSideEvent(atmosphere, 'Opened Spotlight', {reflectionId})
     const dragInterval = setInterval(() => {
-      // execute every second so that the remote animation continues when subscribers refresh page
       if (!dragIdRef.current) return
       startDrag(reflectionId, dragIdRef.current)
     }, 1000)
     const removeCloneTimeout = setTimeout(() => {
       if (clone && document.body.contains(clone)) {
         document.body.removeChild(clone)
-        sourceStyle.opacity = '1' // show source once clone is removed
+        sourceStyle.opacity = '1'
       }
-      // Wait for source & modal to animate. Removing clone before modal animation
-      // is complete causes flickering as the source opacity is still transitioning.
     }, Times.SPOTLIGHT_SOURCE_DURATION + Times.SPOTLIGHT_MODAL_DURATION)
     return () => {
       clearTimeout(transitionTimeout)
       clearTimeout(removeCloneTimeout)
       clearInterval(dragInterval)
     }
-  }, [portalStatus])
+  }, [isOpen])
 
   return {sourceRef, sourceCloneRef}
 }

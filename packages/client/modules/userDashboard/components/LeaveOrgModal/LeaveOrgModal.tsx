@@ -1,29 +1,21 @@
-import styled from '@emotion/styled'
 import {useNavigate} from 'react-router'
-import DialogContainer from '../../../../components/DialogContainer'
-import DialogContent from '../../../../components/DialogContent'
-import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
+import {Dialog} from '../../../../ui/Dialog/Dialog'
+import {DialogContent} from '../../../../ui/Dialog/DialogContent'
+import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
 
 interface Props {
+  isOpen: boolean
   orgId: string
   closePortal: () => void
 }
 
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto'
-})
-
 const LeaveOrgModal = (props: Props) => {
-  const {orgId, closePortal} = props
+  const {isOpen, orgId, closePortal} = props
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const {onCompleted, onError, submitMutation, submitting} = useMutationProps()
@@ -44,17 +36,21 @@ const LeaveOrgModal = (props: Props) => {
     )
   }
   return (
-    <StyledDialogContainer>
-      <DialogTitle>{'Are you sure?'}</DialogTitle>
+    <Dialog isOpen={isOpen} onClose={closePortal}>
       <DialogContent>
-        {'This will remove you from the organization and all teams under it! '}
-        <br />
-        {'To undo it, you’ll have to ask another Billing Leader to re-add you.'}
-        <StyledButton size='medium' onClick={handleClick} waiting={submitting}>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <p>This will remove you from the organization and all teams under it!</p>
+        <p>To undo it, you'll have to ask another Billing Leader to re-add you.</p>
+        <PrimaryButton
+          size='medium'
+          className='mx-auto mt-6 mb-0'
+          onClick={handleClick}
+          waiting={submitting}
+        >
           <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
-        </StyledButton>
+        </PrimaryButton>
       </DialogContent>
-    </StyledDialogContainer>
+    </Dialog>
   )
 }
 

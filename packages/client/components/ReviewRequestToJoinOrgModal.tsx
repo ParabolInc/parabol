@@ -4,9 +4,10 @@ import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import type {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
 import type {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import Checkbox from './Checkbox'
-import DialogContainer from './DialogContainer'
-import DialogTitle from './DialogTitle'
 import PrimaryButton from './PrimaryButton'
 import SecondaryButton from './SecondaryButton'
 
@@ -44,13 +45,12 @@ const query = graphql`
 `
 
 interface Props {
-  closePortal: () => void
+  onClose: () => void
   queryRef: PreloadedQuery<ReviewRequestToJoinOrgModalQuery>
 }
 
-// TODO: Create generic dialog components using tailwind https://github.com/ParabolInc/parabol/issues/8107
 const ReviewRequestToJoinOrgModal = (props: Props) => {
-  const {closePortal, queryRef} = props
+  const {onClose, queryRef} = props
 
   const [selectedTeamsIds, setSelectedTeamsIds] = useState<string[]>([])
 
@@ -61,109 +61,96 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
   )
 
   const {domainJoinRequest} = viewer
-
   const teams = domainJoinRequest?.teams
 
   const [commit, submitting] = useAcceptRequestToJoinDomainMutation()
 
   const sortedTeams = useMemo(() => {
-    if (!teams) {
-      return []
-    }
-
-    return teams?.slice().sort((a, b) => a.organization.name.localeCompare(b.organization.name))
+    if (!teams) return []
+    return teams.slice().sort((a, b) => a.organization.name.localeCompare(b.organization.name))
   }, [teams])
 
-  if (!domainJoinRequest) {
-    return (
-      <DialogContainer>
-        <DialogTitle>{'Add teammate'}</DialogTitle>
-        <div className={'overflow-y-scroll p-6 text-slate-700 text-sm leading-relaxed'}>
-          Request expired or deleted
-        </div>
-        <div className={'flex w-full justify-end px-6 pb-6'}>
-          <div className={'mr-2'}>
-            <SecondaryButton onClick={closePortal} size='small'>
-              Cancel
-            </SecondaryButton>
-          </div>
-        </div>
-      </DialogContainer>
-    )
-  }
-
-  const {createdBy, createdByEmail, id: requestId} = domainJoinRequest
-
   const onAdd = () => {
+    if (!domainJoinRequest) return
     commit(
-      {
-        variables: {
-          requestId,
-          teamIds: selectedTeamsIds
-        }
-      },
-      {
-        onSuccess: closePortal
-      }
+      {variables: {requestId: domainJoinRequest.id, teamIds: selectedTeamsIds}},
+      {onSuccess: onClose}
     )
   }
 
   return (
-    <DialogContainer>
-      <DialogTitle>{'Add teammate'}</DialogTitle>
-      <div className={'py-4 pl-6 text-base'}>
-        Which teams would you like to add <strong>{createdByEmail}</strong> to?
-      </div>
-      <div className={'overflow-y-scroll px-6 pb-6 text-slate-700 text-sm leading-relaxed'}>
-        {sortedTeams.map((team) => {
-          const {id: teamId, name: teamName, organization, teamMembers} = team
-          const {name: orgName} = organization
-
-          // TODO: implement userId filter for teamMembers on API side
-          const isAlreadyMember = teamMembers.some((member) => member.userId === createdBy)
-          const active = selectedTeamsIds.includes(teamId) || isAlreadyMember
-
-          const handleClick = () => {
-            if (isAlreadyMember) return
-
-            if (active) {
-              setSelectedTeamsIds((prevSelectedTeamsIds) =>
-                prevSelectedTeamsIds.filter((id) => id !== teamId)
-              )
-            } else {
-              setSelectedTeamsIds((prevSelectedTeamsIds) => [...prevSelectedTeamsIds, teamId])
-            }
-          }
-
-          return (
-            <div className='mb-2 flex items-center text-base' key={teamId} onClick={handleClick}>
-              <Checkbox
-                active={active}
-                disabled={isAlreadyMember}
-                className={active && !isAlreadyMember ? `text-sky-500` : undefined}
-              />
-              <label
-                className={`ml-2 ${
-                  isAlreadyMember ? 'cursor-not-allowed opacity-[.38]' : 'cursor-pointer'
-                }`}
-              >
-                {teamName} | {orgName}
-              </label>
+    <Dialog isOpen onClose={onClose}>
+      <DialogContent>
+        <DialogTitle>Add teammate</DialogTitle>
+        {!domainJoinRequest ? (
+          <>
+            <div className='py-4 text-slate-700 text-sm leading-relaxed'>
+              Request expired or deleted
             </div>
-          )
-        })}
-      </div>
-      <div className={'flex w-full justify-end p-4'}>
-        <div className={'mr-2'}>
-          <SecondaryButton onClick={closePortal} size='small' disabled={submitting}>
-            Cancel
-          </SecondaryButton>
-        </div>
-        <PrimaryButton size='small' onClick={onAdd} disabled={submitting}>
-          Add to teams
-        </PrimaryButton>
-      </div>
-    </DialogContainer>
+            <div className='flex w-full justify-end'>
+              <SecondaryButton onClick={onClose} size='small'>
+                Cancel
+              </SecondaryButton>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className='py-4 text-base'>
+              Which teams would you like to add <strong>{domainJoinRequest.createdByEmail}</strong>{' '}
+              to?
+            </div>
+            <div className='overflow-y-scroll pb-2 text-slate-700 text-sm leading-relaxed'>
+              {sortedTeams.map((team) => {
+                const {id: teamId, name: teamName, organization, teamMembers} = team
+                const {name: orgName} = organization
+                const isAlreadyMember = teamMembers.some(
+                  (member) => member.userId === domainJoinRequest.createdBy
+                )
+                const active = selectedTeamsIds.includes(teamId) || isAlreadyMember
+
+                const handleClick = () => {
+                  if (isAlreadyMember) return
+                  if (active) {
+                    setSelectedTeamsIds((prev) => prev.filter((id) => id !== teamId))
+                  } else {
+                    setSelectedTeamsIds((prev) => [...prev, teamId])
+                  }
+                }
+
+                return (
+                  <div
+                    className='mb-2 flex items-center text-base'
+                    key={teamId}
+                    onClick={handleClick}
+                  >
+                    <Checkbox
+                      active={active}
+                      disabled={isAlreadyMember}
+                      className={active && !isAlreadyMember ? 'text-sky-500' : undefined}
+                    />
+                    <label
+                      className={`ml-2 ${
+                        isAlreadyMember ? 'cursor-not-allowed opacity-[.38]' : 'cursor-pointer'
+                      }`}
+                    >
+                      {teamName} | {orgName}
+                    </label>
+                  </div>
+                )
+              })}
+            </div>
+            <div className='flex w-full justify-end gap-2 pt-2'>
+              <SecondaryButton onClick={onClose} size='small' disabled={submitting}>
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton size='small' onClick={onAdd} disabled={submitting}>
+                Add to teams
+              </PrimaryButton>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }
 

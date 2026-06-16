@@ -5,7 +5,6 @@ import type {TaskFooterTeamAssigneeMenu_viewerIntegrationsQuery} from '~/__gener
 import {EmptyDropdownMenuItemLabel} from '~/components/EmptyDropdownMenuItemLabel'
 import {SearchMenuItem} from '~/components/SearchMenuItem'
 import useEventCallback from '~/hooks/useEventCallback'
-import useModal from '~/hooks/useModal'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import type {TaskFooterTeamAssigneeMenu_task$key} from '../../../../__generated__/TaskFooterTeamAssigneeMenu_task.graphql'
@@ -110,18 +109,13 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
   const onDialogClose = useEventCallback(() => {
     closeTeamAssigneeMenu()
   })
-  const {
-    modalPortal: addIntegrationModalPortal,
-    openPortal: openAddIntegrationPortal,
-    closePortal: closeAddIntegrationPortal
-  } = useModal({
-    onClose: onDialogClose,
-    id: 'taskFooterTeamAssigneeAddIntegration'
-  })
+
+  const [isAddIntegrationOpen, setIsAddIntegrationOpen] = useState(false)
   const [newTeam, setNewTeam] = useState({id: '', name: ''})
 
   const handleAddIntegrationConfirmed = () => {
-    closeAddIntegrationPortal()
+    setIsAddIntegrationOpen(false)
+    onDialogClose()
     if (!newTeam.id) return
 
     submitMutation()
@@ -130,7 +124,7 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
     closeTeamAssigneeMenu()
   }
   const handleClose = () => {
-    closeAddIntegrationPortal()
+    setIsAddIntegrationOpen(false)
     closeTeamAssigneeMenu()
   }
 
@@ -145,13 +139,8 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
 
         if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
-          // viewer is not integrated, now we have these options:
-          // 1) if user has integration in source team, then we will use that, but still ask
-          // 2) if accessUser is someone else and they have integration for target team, then we will use that without asking
-          // 3) else we need to ask the user to integrate with complete oauth flow
-          // For now ignore 2) and 3) and just assume it's 1) as that's the most common case.
           setNewTeam(nextTeam)
-          openAddIntegrationPortal()
+          setIsAddIntegrationOpen(true)
           return
         }
       }
@@ -191,15 +180,15 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
           />
         )
       })}
-      {(isGitHubTask || isJiraTask) &&
-        addIntegrationModalPortal(
-          <TaskFooterTeamAssigneeAddIntegrationDialog
-            onClose={handleClose}
-            onConfirm={handleAddIntegrationConfirmed}
-            serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
-            teamName={newTeam.name}
-          />
-        )}
+      {(isGitHubTask || isJiraTask) && (
+        <TaskFooterTeamAssigneeAddIntegrationDialog
+          isOpen={isAddIntegrationOpen}
+          onClose={handleClose}
+          onConfirm={handleAddIntegrationConfirmed}
+          serviceName={isGitHubTask ? 'GitHub' : 'Jira'}
+          teamName={newTeam.name}
+        />
+      )}
     </Menu>
   )
 }

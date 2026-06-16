@@ -1,55 +1,41 @@
-import styled from '@emotion/styled'
 import {useEffect} from 'react'
-import DialogContainer from './DialogContainer'
-import DialogContent from './DialogContent'
-import DialogTitle from './DialogTitle'
 
 interface Props {
-  closePortal: () => void
+  onClose: () => void
   successfulInvitations: string[]
 }
 
-const StyledDialogContainer = styled(DialogContainer)({
-  overflow: 'auto',
-  width: 500
-})
-
-const UL = styled('ul')({
-  padding: '0 0 0 1rem'
-})
-
-const LI = styled('li')({
-  display: 'block',
-  lineHeight: '1.5rem'
-})
-
 const AddTeamMemberModalSuccess = (props: Props) => {
-  const {closePortal, successfulInvitations} = props
+  const {onClose, successfulInvitations} = props
 
   useEffect(() => {
     const exitTimeoutId = window.setTimeout(() => {
-      closePortal()
+      onClose()
     }, 5000)
     return () => {
       clearTimeout(exitTimeoutId)
     }
-  }, [closePortal])
+  }, [onClose])
 
   return (
-    <StyledDialogContainer>
-      <DialogTitle>Success!</DialogTitle>
-      <DialogContent>
+    <div>
+      <div className='mb-4 font-semibold text-xl'>Success!</div>
+      <div>
         <span>An invitation has been sent to</span>
         {successfulInvitations.length === 1 ? <span> {successfulInvitations[0]}.</span> : ':'}
         {successfulInvitations.length > 1 && (
-          <UL>
+          <ul className='pl-4'>
             {successfulInvitations.map((email) => {
-              return <LI key={email}>{email}</LI>
+              return (
+                <li className='block leading-6' key={email}>
+                  {email}
+                </li>
+              )
             })}
-          </UL>
+          </ul>
         )}
-      </DialogContent>
-    </StyledDialogContainer>
+      </div>
+    </div>
   )
 }
 

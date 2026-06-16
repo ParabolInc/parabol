@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
-import {forwardRef, type Ref} from 'react'
-import useModal from '~/hooks/useModal'
+import {forwardRef, type Ref, useState} from 'react'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import MenuContents, {type MenuContentsProps} from './MenuContents'
@@ -23,16 +22,19 @@ const Button = styled(PrimaryButton)({
 
 const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {error, eventId, ...blockProps} = props
-  const {modalPortal, openPortal, closePortal} = useModal()
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <ErrorBlock {...blockProps} ref={ref}>
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
-        {'We’ve alerted the developers. Try refreshing the page'}
-        <Button onClick={openPortal}>Report Feedback</Button>
-        {modalPortal(
-          <ReportErrorFeedback closePortal={closePortal} eventId={eventId} error={error} />
-        )}
+        {"We've alerted the developers. Try refreshing the page"}
+        <Button onClick={() => setIsOpen(true)}>Report Feedback</Button>
+        <ReportErrorFeedback
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          eventId={eventId}
+          error={error}
+        />
       </DialogContent>
     </ErrorBlock>
   )

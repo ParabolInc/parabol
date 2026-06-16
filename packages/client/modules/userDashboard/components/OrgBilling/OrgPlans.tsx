@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
@@ -8,7 +9,6 @@ import type {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import useModal from '../../../../hooks/useModal'
 import {ElementWidth} from '../../../../types/constEnums'
 import {EnterpriseBenefits, StarterBenefits, TeamBenefits} from '../../../../utils/constants'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
@@ -79,7 +79,7 @@ const OrgPlans = (props: Props) => {
     `,
     organizationRef
   )
-  const {closePortal: closeModal, openPortal, modalPortal} = useModal()
+  const [isDowngradeOpen, setIsDowngradeOpen] = useState(false)
   const atmosphere = useAtmosphere()
   const {id: orgId, billingTier, isBillingLeader} = organization
   const isTablet = useBreakpoint(Breakpoint.FUZZY_TABLET)
@@ -120,7 +120,7 @@ const OrgPlans = (props: Props) => {
     } else if (label === 'Select Plan') {
       handleSelectTeamPlan()
     } else if (label === 'Downgrade') {
-      openPortal()
+      setIsDowngradeOpen(true)
       SendClientSideEvent(atmosphere, 'Downgrade Clicked', {
         orgId,
         tier: planTier
@@ -137,7 +137,11 @@ const OrgPlans = (props: Props) => {
           ))}
         </StyledRow>
       </StyledPanel>
-      {modalPortal(<DowngradeModal closeModal={closeModal} organizationRef={organization} />)}
+      <DowngradeModal
+        isOpen={isDowngradeOpen}
+        closeModal={() => setIsDowngradeOpen(false)}
+        organizationRef={organization}
+      />
     </>
   )
 }

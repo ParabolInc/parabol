@@ -2,6 +2,7 @@ import {datadogRum} from '@datadog/browser-rum'
 import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import action from '../../../static/images/illustrations/action.png'
@@ -14,7 +15,6 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMeetingMemberAvatars from '../hooks/useMeetingMemberAvatars'
 import {useMeetingSeriesDate} from '../hooks/useMeetingSeriesDate'
 import useMenu from '../hooks/useMenu'
-import useModal from '../hooks/useModal'
 import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
@@ -128,10 +128,8 @@ const MeetingCard = (props: Props) => {
     originRef: tooltipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_RIGHT)
 
-  const {togglePortal: toggleRecurrenceSettingsModal, modalPortal: recurrenceSettingsModal} =
-    useModal({id: 'updateRecurrenceSettingsModal'})
-  const {togglePortal: toggleEndRecurringMeetingModal, modalPortal: endRecurringMeetingModal} =
-    useModal({id: 'endRecurringMeetingModal'})
+  const [isRecurrenceSettingsOpen, setIsRecurrenceSettingsOpen] = useState(false)
+  const [isEndRecurringMeetingOpen, setIsEndRecurringMeetingOpen] = useState(false)
 
   if (!team) {
     // 95% sure there's a bug in relay causing this
@@ -286,26 +284,26 @@ const MeetingCard = (props: Props) => {
               teamId={teamId}
               menuProps={menuProps}
               popTooltip={popTooltip}
-              openEndRecurringMeetingModal={toggleEndRecurringMeetingModal}
-              openRecurrenceSettingsModal={toggleRecurrenceSettingsModal}
+              openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
+              openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
             />
           )}
           {tooltipPortal('Copied!')}
-          {meeting &&
-            endRecurringMeetingModal(
-              <EndRecurringMeetingModal
-                meetingRef={meeting}
-                nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
-                closeModal={toggleEndRecurringMeetingModal}
-              />
-            )}
-          {meeting &&
-            recurrenceSettingsModal(
-              <UpdateRecurrenceSettingsModal
-                meeting={meeting}
-                closeModal={toggleRecurrenceSettingsModal}
-              />
-            )}
+          {meeting && (
+            <EndRecurringMeetingModal
+              meetingRef={meeting}
+              nextMeetingDate={isRecurring ? meetingSeries.nextMeetingDate : undefined}
+              isOpen={isEndRecurringMeetingOpen}
+              closeModal={() => setIsEndRecurringMeetingOpen(false)}
+            />
+          )}
+          {meeting && (
+            <UpdateRecurrenceSettingsModal
+              meeting={meeting}
+              isOpen={isRecurrenceSettingsOpen}
+              closeModal={() => setIsRecurrenceSettingsOpen(false)}
+            />
+          )}
         </div>
       </div>
     </motion.div>

@@ -1,14 +1,15 @@
 import styled from '@emotion/styled'
-import DialogContainer from '~/components/DialogContainer'
-import DialogContent from '~/components/DialogContent'
-import DialogTitle from '~/components/DialogTitle'
 import FlatButton from '~/components/FlatButton'
-import PrimaryButton from '~/components/PrimaryButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
 import {PALETTE} from '~/styles/paletteV3'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
+import PrimaryButton from './PrimaryButton'
 
 interface Props {
+  isOpen: boolean
   closePortal: () => void
   meetingId: string
 }
@@ -27,15 +28,15 @@ const StyledButton = styled(FlatButton)({
 })
 
 const UndoableGroupPhaseDialog = (props: Props) => {
-  const {closePortal, meetingId} = props
+  const {isOpen, closePortal, meetingId} = props
   const atmosphere = useAtmosphere()
   const handleConfirm = () => {
     ResetRetroMeetingToGroupStageMutation(atmosphere, {meetingId}) && closePortal()
   }
   return (
-    <DialogContainer>
-      <DialogTitle>Reset meeting and edit groups?</DialogTitle>
+    <Dialog isOpen={isOpen} onClose={closePortal}>
       <DialogContent>
+        <DialogTitle>Reset meeting and edit groups?</DialogTitle>
         <p>
           <b>Danger zone</b>: to edit groups you must reset the meeting to this point.
         </p>
@@ -45,7 +46,7 @@ const UndoableGroupPhaseDialog = (props: Props) => {
           <PrimaryButton onClick={handleConfirm}>Confirm Reset</PrimaryButton>
         </ButtonGroup>
       </DialogContent>
-    </DialogContainer>
+    </Dialog>
   )
 }
 

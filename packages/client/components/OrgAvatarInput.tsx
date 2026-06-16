@@ -3,43 +3,28 @@ import sanitizeSVG from '@mattkrick/sanitize-svg'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {Dialog} from '../ui/Dialog/Dialog'
+import {DialogContent} from '../ui/Dialog/DialogContent'
+import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
-import DialogTitle from './DialogTitle'
 
 const AvatarBlock = styled('div')({
   margin: '1.5rem auto',
   width: '6rem'
 })
 
-const flexBase = {
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center'
-}
-
-const ModalBoundary = styled('div')({
-  ...flexBase,
-  flexDirection: 'column',
-  background: '#FFFFFF',
-  borderRadius: 8,
-  height: 374,
-  width: 700
-})
-
-const StyledDialogTitle = styled(DialogTitle)({
-  textAlign: 'center'
-})
-
 interface Props {
+  isOpen: boolean
+  onClose: () => void
   picture: string
   orgId: string
 }
 
 const OrgAvatarInput = (props: Props) => {
-  const {picture, orgId} = props
+  const {isOpen, onClose, picture, orgId} = props
   const {error, onCompleted, onError, submitMutation, submitting} = useMutationProps()
   const atmosphere = useAtmosphere()
 
@@ -70,16 +55,18 @@ const OrgAvatarInput = (props: Props) => {
   }
 
   return (
-    <ModalBoundary>
-      <StyledDialogTitle>{'Upload a New Photo'}</StyledDialogTitle>
-      <AvatarBlock>
-        <Avatar
-          picture={picture}
-          className='h-24 w-24 shadow-[0_4px_5px_0px_rgba(218,218,218,1)]'
-        />
-      </AvatarBlock>
-      <AvatarInput error={error?.message} onSubmit={onSubmit} />
-    </ModalBoundary>
+    <Dialog isOpen={isOpen} onClose={onClose}>
+      <DialogContent>
+        <DialogTitle>{'Upload a New Photo'}</DialogTitle>
+        <AvatarBlock>
+          <Avatar
+            picture={picture}
+            className='h-24 w-24 shadow-[0_4px_5px_0px_rgba(218,218,218,1)]'
+          />
+        </AvatarBlock>
+        <AvatarInput error={error?.message} onSubmit={onSubmit} />
+      </DialogContent>
+    </Dialog>
   )
 }
 

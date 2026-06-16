@@ -1,6 +1,6 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {useLocation, useNavigate} from 'react-router'
+import {useNavigate} from 'react-router'
 import type {RequestToJoinOrgNotification_notification$key} from '~/__generated__/RequestToJoinOrgNotification_notification.graphql'
 import NotificationAction from './NotificationAction'
 import NotificationTemplate from './NotificationTemplate'
@@ -12,7 +12,6 @@ interface Props {
 const RequestToJoinOrgNotification = (props: Props) => {
   const {notification: notificationRef} = props
   const navigate = useNavigate()
-  const location = useLocation()
   const notification = useFragment(
     graphql`
       fragment RequestToJoinOrgNotification_notification on NotifyRequestToJoinOrg {
@@ -30,9 +29,9 @@ const RequestToJoinOrgNotification = (props: Props) => {
   const {name, email, picture, domainJoinRequestId} = notification
 
   const onActionClick = () => {
+    const {pathname, search, hash} = window.location
     navigate(`/organization-join-request/${domainJoinRequestId}`, {
-      replace: true,
-      state: {backgroundLocation: location}
+      state: {backgroundLocation: {pathname, search, hash}}
     })
   }
 
