@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.25.5](https://github.com/ParabolInc/parabol/compare/v13.25.4...v13.25.5) (2026-06-15)
+
+
+### Fixed
+
+* document memory leak ([#13219](https://github.com/ParabolInc/parabol/issues/13219)) ([6c3671f](https://github.com/ParabolInc/parabol/commit/6c3671fea0e60e3fd486c16d53c6ab668156a910))
+* public subpage access ([#13218](https://github.com/ParabolInc/parabol/issues/13218)) ([6b2d054](https://github.com/ParabolInc/parabol/commit/6b2d054f2626901cfcb93ca638ff87453df71e8d))
+
 ## [13.25.4](https://github.com/ParabolInc/parabol/compare/v13.25.3...v13.25.4) (2026-06-12)
 
 
