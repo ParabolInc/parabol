@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.26.0](https://github.com/ParabolInc/parabol/compare/v13.25.6...v13.26.0) (2026-06-17)
+
+
+### Added
+
+* AI estimates on jira issues ([#13230](https://github.com/ParabolInc/parabol/issues/13230)) ([5473aa5](https://github.com/ParabolInc/parabol/commit/5473aa5c365fec8a4626de67334ed04a8466c391))
+
+
+### Fixed
+
+* meeting facilitator bar and discussion drawer overlap ([#13228](https://github.com/ParabolInc/parabol/issues/13228)) ([ed14f51](https://github.com/ParabolInc/parabol/commit/ed14f51d9ae4ad0bafeb4964dd5a107050bf67e1))
+
 ## [13.25.6](https://github.com/ParabolInc/parabol/compare/v13.25.5...v13.25.6) (2026-06-16)
 
 

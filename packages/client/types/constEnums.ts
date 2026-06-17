@@ -233,7 +233,8 @@ export enum MathEnum {
 }
 
 export enum MeetingControlBarEnum {
-  HEIGHT = 56
+  HEIGHT = 56,
+  COVER_HEIGHT = 68 // HEIGHT + bottom-2 offset (8px) + 4px breathing room
 }
 
 export enum MeetingLabels {
