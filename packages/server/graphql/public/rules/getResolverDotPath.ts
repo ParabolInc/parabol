@@ -1,5 +1,4 @@
-import type {FirstParam} from '../../../../client/types/generics'
-import type {Resolvers} from '../resolverTypes'
+import type {Resolvers, ResolversParentTypes} from '../resolverTypes'
 
 export const getResolverDotPath = (
   dotPath: `${'source' | 'args'}.${string}`,
@@ -14,15 +13,14 @@ type SecondParam<T> = T extends (arg1: any, arg2: infer A, ...args: any[]) => an
 type ParseParent<T> = T extends `${infer Parent extends string}.${string}` ? Parent : never
 type ParseChild<T> = T extends `${string}.${infer Child extends string}` ? Child : never
 
-type ExtractTypeof<T extends keyof Resolvers> = '__isTypeOf' extends keyof NonNullable<Resolvers[T]>
-  ? NonNullable<Resolvers[T]>['__isTypeOf']
-  : never
-type ExtractParent<T extends keyof Resolvers> = FirstParam<NonNullable<ExtractTypeof<T>>>
+// The parent ("source") shape for any type is its mapper. graphql-codegen populates
+// ResolversParentTypes uniformly for object types (mapper), unions (ResolversUnionTypes),
+// and interfaces (ResolversInterfaceTypes), so this works for all of them — unlike keying
+// off __isTypeOf, which only exists on object types that are members of an interface/union.
+type ExtractParent<T extends keyof ResolversParentTypes> = NonNullable<ResolversParentTypes[T]>
 
-type Source<T> = ParseParent<T> extends keyof Resolvers
-  ? ExtractParent<ParseParent<T>> extends never
-    ? never
-    : keyof ExtractParent<ParseParent<T>> & string
+type Source<T> = ParseParent<T> extends keyof ResolversParentTypes
+  ? keyof ExtractParent<ParseParent<T>> & string
   : never
 
 type ExtractChild<TOp, TChild extends string> = TChild extends keyof TOp
