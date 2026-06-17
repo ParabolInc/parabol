@@ -49,7 +49,7 @@ const DiscussionDrawer = ({
 
   return (
     <div
-      className='flex h-screen w-[360px] flex-col justify-start overflow-hidden bg-white'
+      className='flex h-full w-[360px] flex-col justify-start overflow-hidden bg-white'
       style={drawerStyle}
     >
       <div className='flex w-full select-none items-center border-slate-300 border-b'>

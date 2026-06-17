@@ -8,7 +8,9 @@ import EstimateUserScore from '../../../database/types/EstimateUserScore'
 import getKysely from '../../../postgres/getKysely'
 import type {PokerMeetingMember} from '../../../postgres/types/Meeting'
 import getPhase from '../../../utils/getPhase'
+import {Logger} from '../../../utils/Logger'
 import publish from '../../../utils/publish'
+import {generatePokerAIEstimate} from '../../mutations/helpers/generatePokerAIEstimate'
 import type {MutationResolvers} from '../resolverTypes'
 
 const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
@@ -98,6 +100,10 @@ const pokerRevealVotes: MutationResolvers['pokerRevealVotes'] = async (
     .where('id', '=', meetingId)
     .execute()
   dataLoader.clearAll('newMeetings')
+
+  // generate an AI estimate and publish it async once ready; the helper no-ops if an
+  // AI comment already exists for this discussion (e.g. votes revealed again after a reset)
+  generatePokerAIEstimate({stage, meetingId, teamId}).catch(Logger.error)
 
   const data = {meetingId, stageId}
   publish(SubscriptionChannel.MEETING, meetingId, 'PokerRevealVotesSuccess', data, subOptions)

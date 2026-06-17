@@ -141,7 +141,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
                   const {reflectionGroup} = stage
                   if (!reflectionGroup) return null
                   const {title, voteCount, reflections} = reflectionGroup
-                  const reflectionColors = reflections.map(({prompt}) => prompt.groupColor)
+                  const reflectionColors = (reflections ?? []).map(({prompt}) => prompt.groupColor)
                   const colors = [...new Set(reflectionColors)]
                     .sort(
                       (a, b) =>

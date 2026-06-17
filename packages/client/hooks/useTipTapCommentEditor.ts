@@ -10,6 +10,7 @@ import {LoomExtension} from '../components/TipTapEditor/LoomExtension'
 import {TiptapLinkExtension} from '../components/TipTapEditor/TiptapLinkExtension'
 import {mentionConfig} from '../shared/tiptap/serverTipTapExtensions'
 import {ClearOnSubmit} from '../tiptap/extensions/ClearOnSubmit'
+import {PopoverMention} from '../tiptap/extensions/popoverMention/PopoverMention'
 import {MentionTaskTag} from '../utils/MentionTaskTag'
 import {tiptapEmojiConfig} from '../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../utils/tiptapMentionConfig'
@@ -50,6 +51,7 @@ export const useTipTapCommentEditor = (
             return placeholderRef.current || 'Edit your comment'
           }
         }),
+        PopoverMention,
         MentionTaskTag.configure(tiptapTagConfig),
         Mention.configure(
           atmosphere && teamId ? tiptapMentionConfig(atmosphere, teamId) : mentionConfig
