@@ -1,6 +1,7 @@
 import {fetch} from '@whatwg-node/fetch'
 
 import JiraProjectKeyId from 'parabol-client/shared/gqlIds/JiraProjectKeyId'
+import type {AdfNode} from 'parabol-client/shared/tiptap/convertADFToTipTap'
 import {SprintPokerDefaults} from 'parabol-client/types/constEnums'
 import AtlassianManager, {
   type AtlassianError,
@@ -632,6 +633,44 @@ class AtlassianServerManager extends AtlassianManager {
     })
     const {nextPageToken: nextNextPageToken, isLast} = res
     return {error: null, issues, nextPageToken: nextNextPageToken, isLast}
+  }
+
+  async getProjectIssuesWithField(
+    cloudId: string,
+    projectKey: string,
+    fieldId: string,
+    maxResults: number
+  ) {
+    const url = `https://api.atlassian.com/ex/jira/${cloudId}/rest/api/3/search/jql`
+    // filter for a non-empty estimate field in JS rather than JQL, since custom field
+    // ids (e.g. customfield_10016) aren't valid JQL identifiers
+    const jql = `project = "${projectKey}" ORDER BY updated DESC`
+    const payload = {
+      jql,
+      maxResults,
+      fields: ['summary', 'description', fieldId]
+    }
+    const res = await this.post<
+      JiraSearchResponse<{summary: string; description: AdfNode} & {[fieldId: string]: unknown}>
+    >(url, payload)
+    if (res instanceof Error) {
+      return {error: res, issues: null}
+    }
+    const issues = res.issues
+      .map((issue) => {
+        const {key: issueKey, fields} = issue
+        const storyPointsRaw = fields[fieldId]
+        const storyPoints =
+          storyPointsRaw === null || storyPointsRaw === undefined ? '' : String(storyPointsRaw)
+        return {
+          issueKey,
+          summary: fields.summary,
+          description: fields.description,
+          storyPoints
+        }
+      })
+      .filter((issue) => issue.storyPoints !== '')
+    return {error: null, issues}
   }
 
   async getComments(cloudId: string, issueKey: string) {
