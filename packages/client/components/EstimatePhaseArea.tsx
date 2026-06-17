@@ -96,6 +96,7 @@ const EstimatePhaseArea = (props: Props) => {
         index={stageIdx}
         onChangeIndex={onChangeIdx}
         style={innerStyle(isDesktop, hasSingleDimension)}
+        slideClassName='px-1'
       >
         {dimensionStages.map((stage, idx) => (
           <div
