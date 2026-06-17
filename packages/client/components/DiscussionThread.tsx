@@ -23,7 +23,7 @@ const Wrapper = styled('div')<{isExpanded: boolean; width?: string}>(({isExpande
   overflow: 'hidden',
   width: width || '100%',
   [makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)]: {
-    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT}px)`,
+    height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.COVER_HEIGHT}px)`,
     width: DiscussionThreadEnum.WIDTH
   }
 }))
@@ -81,7 +81,7 @@ const DiscussionThread = (props: Props) => {
     useCoverable(
       'threads',
       ref,
-      MeetingControlBarEnum.HEIGHT,
+      MeetingControlBarEnum.COVER_HEIGHT,
       meetingContentRef,
       undefined,
       isDrawer

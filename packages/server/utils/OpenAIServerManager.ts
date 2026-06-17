@@ -202,6 +202,58 @@ Return JSON: { "groups": [{ "title": "...", "reflectionIds": ["id1", "id2"] }] }
     }
   }
 
+  async getPokerEstimate(
+    issues: {title: string; description: string; issueKey: string; storyPoints: string}[],
+    dimensionName: string,
+    possibleLabels: string[]
+  ): Promise<string | null> {
+    if (!this.openAIApi) return null
+    if (issues.length === 0) return null
+    const [target, ...references] = issues
+    if (!target) return null
+    if (references.length === 0) return null
+    const allowedValues = possibleLabels.join(', ')
+    const referenceBlock = references
+      .map(
+        ({issueKey, title, storyPoints, description}) =>
+          `- Key: ${issueKey}. Title: ${title}. Points: (${storyPoints}). Description: ${description}`
+      )
+      .join('\n')
+    const prompt = `You are an agile estimation assistant helping a team play planning poker. Estimate the "${dimensionName}" for the issue below.
+
+You MUST choose exactly one value from these allowed values: ${allowedValues}.
+
+Issue to estimate:
+Key: ${target.issueKey}. Title: ${target.title}. Description: ${target.description}
+
+Recent issues from the same project that already have an estimate, for reference:
+${referenceBlock}
+
+Compare the scope and complexity of the issue to estimate against the reference issues, then give your estimate.
+
+Respond in GitHub-flavored markdown. The first line MUST be exactly "**Estimate: <value>**" where <value> is the chosen allowed value. After a blank line, justify the estimate in 2-3 sentences. When you cite a reference issue, refer to it by its bare issue key only (e.g. ${references[0]?.issueKey ?? 'PROJ-123'}) — do not include its title or a link.`
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-5.4-mini',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ]
+      })
+      const estimate = response.choices[0]?.message?.content?.trim()
+      return estimate || null
+    } catch (e) {
+      const error =
+        e instanceof Error
+          ? e
+          : new Error(`OpenAI failed to generate a poker estimate for ${issues[0]?.issueKey}`)
+      logError(error)
+      return null
+    }
+  }
+
   async modifyCheckInQuestion(question: string, modifyType: ModifyType) {
     if (!this.openAIApi) return null
 
