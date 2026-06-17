@@ -17,6 +17,7 @@ import {FileBlockBase} from './extensions/FileBlockBase'
 import {FileUploadBase} from './extensions/FileUploadBase'
 import {InsightsBlockBase} from './extensions/InsightsBlockBase'
 import {PageLinkBlockBase} from './extensions/PageLinkBlockBase'
+import {PopoverMentionBase} from './extensions/PopoverMentionBase'
 import {ResponseBlockBase} from './extensions/ResponseBlockBase'
 import {TaskBlockBase} from './extensions/TaskBlockBase'
 import {ThinkingBlockBase} from './extensions/ThinkingBlockBase'
@@ -71,6 +72,7 @@ export const serverTipTapExtensions: Extensions = [
   MentionTaskTag,
   PageUserMention,
   InsightsBlockBase,
+  PopoverMentionBase,
   UniqueID,
   PageLinkBlockBase,
   Database,
