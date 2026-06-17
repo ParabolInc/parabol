@@ -448,9 +448,9 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     organization: isViewerOnOrg<'Team.organization'>('source.orgId')
   },
-  TeamMember: {
-    integrations: isUserViewer<'TeamMember.integrations'>('source.userId')
-  },
+  // TeamMember: {
+  //   integrations: isUserViewer<'TeamMember.integrations'>('source.userId')
+  // },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),
     invoices: isViewerBillingLeader<'User.invoices'>('args.orgId'),
