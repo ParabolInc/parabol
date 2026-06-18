@@ -9,8 +9,6 @@ graphql`
     meeting {
       facilitatorUserId
       facilitator {
-        # https://github.com/ParabolInc/parabol/issues/2984
-        ...StageTimerModalEndTimeSlackToggle_facilitator
         user {
           id
           preferredName
