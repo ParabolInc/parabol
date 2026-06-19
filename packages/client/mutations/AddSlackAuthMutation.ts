@@ -9,7 +9,7 @@ graphql`
       ...SlackNotificationList_viewer
       ...SlackProviderRow_viewer
       teamMember(teamId: $teamId) {
-        ...StageTimerModalEndTimeSlackToggle_facilitator
+        ...StageTimerModalEndTimeSlackToggle_teamMember
       }
     }
   }
