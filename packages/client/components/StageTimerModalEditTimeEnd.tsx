@@ -2,8 +2,8 @@ import styled from '@emotion/styled'
 import {Stop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import type {StageTimerModalEditTimeEnd_facilitator$key} from '../__generated__/StageTimerModalEditTimeEnd_facilitator.graphql'
 import type {StageTimerModalEditTimeEnd_stage$key} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
+import type {StageTimerModalEditTimeEnd_teamMember$key} from '../__generated__/StageTimerModalEditTimeEnd_teamMember.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
@@ -15,7 +15,7 @@ import StageTimerModalEndTime from './StageTimerModalEndTime'
 
 interface Props {
   closePortal: () => void
-  facilitator: StageTimerModalEditTimeEnd_facilitator$key
+  teamMember: StageTimerModalEditTimeEnd_teamMember$key
   meetingId: string
   stage: StageTimerModalEditTimeEnd_stage$key
 }
@@ -49,14 +49,14 @@ const StyledIcon = styled(Stop)({
 })
 
 const StageTimerModalEditTimeEnd = (props: Props) => {
-  const {meetingId, closePortal, facilitator: facilitatorRef, stage: stageRef} = props
-  const facilitator = useFragment(
+  const {meetingId, closePortal, teamMember: teamMemberRef, stage: stageRef} = props
+  const teamMember = useFragment(
     graphql`
-      fragment StageTimerModalEditTimeEnd_facilitator on TeamMember {
-        ...StageTimerModalEndTime_facilitator
+      fragment StageTimerModalEditTimeEnd_teamMember on TeamMember {
+        ...StageTimerModalEndTime_teamMember
       }
     `,
-    facilitatorRef
+    teamMemberRef
   )
   const stage = useFragment(
     graphql`
@@ -83,7 +83,7 @@ const StageTimerModalEditTimeEnd = (props: Props) => {
       <HR />
       <StageTimerModalEndTime
         closePortal={closePortal}
-        facilitator={facilitator}
+        teamMember={teamMember}
         stage={stage}
         meetingId={meetingId}
       />

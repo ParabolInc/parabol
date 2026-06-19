@@ -38,7 +38,7 @@ type TeamMember {
   isSelf: Boolean!
 
   """
-  The integrations that the team member has authorized. accessible by all
+  The integrations that the team member has authorized. Only accessible by the team member themselves
   """
   integrations: TeamMemberIntegrations!
 
