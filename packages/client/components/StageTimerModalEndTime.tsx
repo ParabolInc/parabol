@@ -3,8 +3,8 @@ import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {StageTimerModalEndTime_facilitator$key} from '../__generated__/StageTimerModalEndTime_facilitator.graphql'
 import type {StageTimerModalEndTime_stage$key} from '../__generated__/StageTimerModalEndTime_stage.graphql'
+import type {StageTimerModalEndTime_teamMember$key} from '../__generated__/StageTimerModalEndTime_teamMember.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
@@ -18,7 +18,7 @@ import StageTimerModalEndTimeSlackToggle from './StageTimerModalEndTimeSlackTogg
 
 interface Props {
   closePortal: () => void
-  facilitator: StageTimerModalEndTime_facilitator$key
+  teamMember: StageTimerModalEndTime_teamMember$key
   meetingId: string
   stage: StageTimerModalEndTime_stage$key
 }
@@ -50,14 +50,14 @@ const DEFAULT_DURATION = ms('1d')
 const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATION))
 
 const StageTimerModalEndTime = (props: Props) => {
-  const {closePortal, facilitator: facilitatorRef, meetingId, stage: stageRef} = props
-  const facilitator = useFragment(
+  const {closePortal, teamMember: teamMemberRef, meetingId, stage: stageRef} = props
+  const teamMember = useFragment(
     graphql`
-      fragment StageTimerModalEndTime_facilitator on TeamMember {
-        ...StageTimerModalEndTimeSlackToggle_facilitator
+      fragment StageTimerModalEndTime_teamMember on TeamMember {
+        ...StageTimerModalEndTimeSlackToggle_teamMember
       }
     `,
-    facilitatorRef
+    teamMemberRef
   )
   const stage = useFragment(
     graphql`
@@ -100,7 +100,7 @@ const StageTimerModalEndTime = (props: Props) => {
         <StageTimerModalEndTimeHour endTime={endTime} setEndTime={setEndTime} />
       </Row>
       <Row>
-        <StageTimerModalEndTimeSlackToggle facilitator={facilitator} />
+        <StageTimerModalEndTimeSlackToggle teamMember={teamMember} />
       </Row>
       <ErrorMessage error={error} />
       <StyledButton onClick={startTimer}>

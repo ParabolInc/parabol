@@ -2,8 +2,8 @@ import {Event as EventIcon, Timer as TimerIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import type {StageTimerModal_facilitator$key} from '../__generated__/StageTimerModal_facilitator.graphql'
 import type {StageTimerModal_stage$key} from '../__generated__/StageTimerModal_stage.graphql'
+import type {StageTimerModal_teamMember$key} from '../__generated__/StageTimerModal_teamMember.graphql'
 import type {MenuProps} from '../hooks/useMenu'
 import StageTimerModalEditTimeEnd from './StageTimerModalEditTimeEnd'
 import StageTimerModalEditTimeLimit from './StageTimerModalEditTimeLimit'
@@ -21,7 +21,7 @@ interface Props {
   meetingId: string
   stage: StageTimerModal_stage$key
   menuProps: MenuProps
-  facilitator: StageTimerModal_facilitator$key
+  teamMember: StageTimerModal_teamMember$key
 }
 
 const StageTimerModal = (props: Props) => {
@@ -31,16 +31,16 @@ const StageTimerModal = (props: Props) => {
     meetingId,
     menuProps,
     stage: stageRef,
-    facilitator: facilitatorRef
+    teamMember: teamMemberRef
   } = props
-  const facilitator = useFragment(
+  const teamMember = useFragment(
     graphql`
-      fragment StageTimerModal_facilitator on TeamMember {
-        ...StageTimerModalEndTime_facilitator
-        ...StageTimerModalEditTimeEnd_facilitator
+      fragment StageTimerModal_teamMember on TeamMember {
+        ...StageTimerModalEndTime_teamMember
+        ...StageTimerModalEditTimeEnd_teamMember
       }
     `,
-    facilitatorRef
+    teamMemberRef
   )
   const stage = useFragment(
     graphql`
@@ -68,7 +68,7 @@ const StageTimerModal = (props: Props) => {
         meetingId={meetingId}
         closePortal={closePortal}
         stage={stage}
-        facilitator={facilitator}
+        teamMember={teamMember}
       />
     )
   }
@@ -97,7 +97,7 @@ const StageTimerModal = (props: Props) => {
         </div>
         <div className='flex flex-col items-center'>
           <StageTimerModalEndTime
-            facilitator={facilitator}
+            teamMember={teamMember}
             meetingId={meetingId}
             closePortal={closePortal}
             stage={stage}

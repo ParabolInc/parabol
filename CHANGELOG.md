@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.26.3](https://github.com/ParabolInc/parabol/compare/v13.26.2...v13.26.3) (2026-06-19)
+
+
+### Fixed
+
+* fetch from team member instead of facilitator for integration auth ([#13239](https://github.com/ParabolInc/parabol/issues/13239)) ([a1cbcbd](https://github.com/ParabolInc/parabol/commit/a1cbcbd19adfaaaf6299138830377b10d3ecf78e))
+
+## [13.26.2](https://github.com/ParabolInc/parabol/compare/v13.26.1...v13.26.2) (2026-06-17)
+
+
+### Fixed
+
+* hotfix perms ([#13236](https://github.com/ParabolInc/parabol/issues/13236)) ([b9702ea](https://github.com/ParabolInc/parabol/commit/b9702ea6a67bd98575fd67d868bcaf27b351d22b))
+
 ## [13.26.1](https://github.com/ParabolInc/parabol/compare/v13.26.0...v13.26.1) (2026-06-17)
 
 

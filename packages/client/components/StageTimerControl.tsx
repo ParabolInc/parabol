@@ -35,14 +35,20 @@ const StageTimerControl = (props: Props) => {
             ...StageTimerControlStage @relay(mask: false)
           }
         }
-        facilitator {
-          ...StageTimerModal_facilitator
+        viewerMeetingMember {
+          teamMember {
+            ...StageTimerModal_teamMember
+          }
         }
       }
     `,
     meetingRef
   )
-  const {meetingMembers, localStage, facilitator, id: meetingId} = meeting
+  const {meetingMembers, localStage, viewerMeetingMember, id: meetingId} = meeting
+  // The timer controls only render for the facilitator, so the viewer is always the facilitator here.
+  // We read the viewer's own team member (not facilitator) because TeamMember.integrations is private
+  // to its owner and must not be fetched for other team members.
+  const teamMember = viewerMeetingMember?.teamMember
   const {isAsync} = localStage
   const connectedMemberCount = meetingMembers.filter((member) => member.isConnectedAt).length
   const color = 'green'
@@ -64,16 +70,17 @@ const StageTimerControl = (props: Props) => {
       >
         <BottomNavIconLabel ref={originRef} icon={icon} iconColor={color} label={label} />
       </BottomNavControl>
-      {menuPortal(
-        <StageTimerModal
-          defaultToAsync={connectedMemberCount <= 1}
-          defaultTimeLimit={defaultTimeLimit}
-          meetingId={meetingId}
-          menuProps={menuProps}
-          stage={localStage}
-          facilitator={facilitator}
-        />
-      )}
+      {teamMember &&
+        menuPortal(
+          <StageTimerModal
+            defaultToAsync={connectedMemberCount <= 1}
+            defaultTimeLimit={defaultTimeLimit}
+            meetingId={meetingId}
+            menuProps={menuProps}
+            stage={localStage}
+            teamMember={teamMember}
+          />
+        )}
     </>
   )
 }
