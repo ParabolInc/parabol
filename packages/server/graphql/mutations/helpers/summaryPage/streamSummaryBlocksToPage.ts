@@ -76,17 +76,22 @@ export const streamSummaryBlocksToPage = async (
     // Always remove the thinkingBlock and release the connection/lock, even if
     // the generator threw. Leaving a thinkingBlock in the doc would pin the
     // client editor to read-only (see useEditablePage.ts).
-    await conn.transact((doc) => {
-      const frag = doc.getXmlFragment('default')
-      for (let i = frag.length - 1; i >= 0; i--) {
-        const node = frag.get(i)
-        if (node instanceof XmlElement && node.nodeName === 'thinkingBlock') {
-          frag.delete(i)
-          break
+    // Guard the cleanup transact so a throw here can't skip disconnect()/unlock():
+    // a leaked DirectConnection keeps directConnectionsCount > 0 and pins the doc in memory.
+    try {
+      await conn.transact((doc) => {
+        const frag = doc.getXmlFragment('default')
+        for (let i = frag.length - 1; i >= 0; i--) {
+          const node = frag.get(i)
+          if (node instanceof XmlElement && node.nodeName === 'thinkingBlock') {
+            frag.delete(i)
+            break
+          }
         }
-      }
-    })
-    await conn.disconnect()
-    unlock()
+      })
+    } finally {
+      await conn.disconnect()
+      unlock()
+    }
   }
 }

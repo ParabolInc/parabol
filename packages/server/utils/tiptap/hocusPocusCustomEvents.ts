@@ -10,8 +10,13 @@ import {hocuspocus} from '../../hocusPocus'
 
 const withDoc = async (documentName: string, fn: (doc: Document) => void) => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
-  await conn.transact(fn)
-  await conn.disconnect()
+  // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
+  // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
+  try {
+    await conn.transact(fn)
+  } finally {
+    await conn.disconnect()
+  }
 }
 
 export const addCanonicalPageLink = async (
@@ -103,18 +108,19 @@ export const updateBacklinkedPageLinkTitles = async (
 
 export const fetchUserIdsInSameMeeting = async (documentName: string): Promise<string[]> => {
   const conn = await hocuspocus.openDirectConnection(documentName, {})
-  const {document} = conn
-  if (!document) {
+  // Always disconnect: a DirectConnection has no idle-timeout safety net, so a skipped
+  // disconnect() keeps directConnectionsCount > 0 and leaks the loaded document forever
+  try {
+    const {document} = conn
+    if (!document) return []
+    const {awareness} = document
+    const connectedClients = awareness.getStates()
+    return Array.from(connectedClients.values())
+      .map((state) => state?.userId)
+      .filter((val): val is string => typeof val === 'string')
+  } finally {
     await conn.disconnect()
-    return []
   }
-  const {awareness} = document
-  const connectedClients = awareness.getStates()
-  const userIds = Array.from(connectedClients.values())
-    .map(({userId}) => userId)
-    .filter((val) => typeof val === 'string')
-  await conn.disconnect()
-  return userIds
 }
 
 // IMMUTABLE This is used in migrations, so you must either create a new function, or flatten the migrations!
