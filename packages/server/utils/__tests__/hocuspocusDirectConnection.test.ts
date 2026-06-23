@@ -4,7 +4,7 @@
  * Root cause: conn.disconnect() was never called, so directConnectionsCount
  * never reached 0, so hocuspocus never unloaded the document.
  */
-import {fetchUserIdsInSameMeeting} from '../tiptap/hocusPocusCustomEvents'
+import {applyYjsUpdate, fetchUserIdsInSameMeeting} from '../tiptap/hocusPocusCustomEvents'
 
 const mockDisconnect = jest.fn().mockResolvedValue(undefined)
 
@@ -48,5 +48,58 @@ test('fetchUserIdsInSameMeeting calls disconnect after reading awareness', async
   const result = await fetchUserIdsInSameMeeting('meeting:test')
 
   expect(result).toEqual(['user1'])
+  expect(mockDisconnect).toHaveBeenCalledTimes(1)
+})
+
+test('fetchUserIdsInSameMeeting ignores null/undefined awareness states without leaking', async () => {
+  hocuspocus.openDirectConnection.mockResolvedValue({
+    document: {
+      awareness: {
+        getStates: () =>
+          new Map<string, any>([
+            ['client1', {userId: 'user1'}],
+            ['client2', null],
+            ['client3', undefined],
+            ['client4', {}]
+          ])
+      }
+    },
+    disconnect: mockDisconnect
+  })
+
+  const result = await fetchUserIdsInSameMeeting('meeting:test')
+
+  expect(result).toEqual(['user1'])
+  expect(mockDisconnect).toHaveBeenCalledTimes(1)
+})
+
+test('fetchUserIdsInSameMeeting calls disconnect even when reading awareness throws', async () => {
+  hocuspocus.openDirectConnection.mockResolvedValue({
+    document: {
+      awareness: {
+        getStates: () => {
+          throw new Error('boom')
+        }
+      }
+    },
+    disconnect: mockDisconnect
+  })
+
+  await expect(fetchUserIdsInSameMeeting('meeting:test')).rejects.toThrow('boom')
+  expect(mockDisconnect).toHaveBeenCalledTimes(1)
+})
+
+test('withDoc handlers call disconnect even when the transaction throws', async () => {
+  const mockTransact = jest.fn().mockRejectedValue(new Error('transact failed'))
+  hocuspocus.openDirectConnection.mockResolvedValue({
+    document: {},
+    transact: mockTransact,
+    disconnect: mockDisconnect
+  })
+
+  await expect(applyYjsUpdate('page:test', {update: new Uint8Array()})).rejects.toThrow(
+    'transact failed'
+  )
+  expect(mockTransact).toHaveBeenCalledTimes(1)
   expect(mockDisconnect).toHaveBeenCalledTimes(1)
 })
