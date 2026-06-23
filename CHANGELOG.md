@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.26.4](https://github.com/ParabolInc/parabol/compare/v13.26.3...v13.26.4) (2026-06-23)
+
+
+### Fixed
+
+* finally disconnect hocus pocus ([#13242](https://github.com/ParabolInc/parabol/issues/13242)) ([c349c97](https://github.com/ParabolInc/parabol/commit/c349c97b1ba5539bb122bae114d513038faac198))
+
 ## [13.26.3](https://github.com/ParabolInc/parabol/compare/v13.26.2...v13.26.3) (2026-06-19)
 
 
