@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.26.6](https://github.com/ParabolInc/parabol/compare/v13.26.5...v13.26.6) (2026-06-25)
+
+
+### Fixed
+
+* bump gh actions ([#13252](https://github.com/ParabolInc/parabol/issues/13252)) ([110c88e](https://github.com/ParabolInc/parabol/commit/110c88e8809e7f023153204b1ed1b79cae39d016))
+* memory leak on subscribe ([#13251](https://github.com/ParabolInc/parabol/issues/13251)) ([4874922](https://github.com/ParabolInc/parabol/commit/4874922db39e084e67cf1de95f00718a0f6d910b))
+* scrollable work drawer ([#13249](https://github.com/ParabolInc/parabol/issues/13249)) ([90e3363](https://github.com/ParabolInc/parabol/commit/90e33630680e28be8e519fe64eecec4c63677b9d))
+
 ## [13.26.5](https://github.com/ParabolInc/parabol/compare/v13.26.4...v13.26.5) (2026-06-23)
 
 
