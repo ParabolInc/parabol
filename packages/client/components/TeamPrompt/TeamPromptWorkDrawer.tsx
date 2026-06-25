@@ -141,7 +141,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const {Component} = baseTabs[activeIdx]!
 
   return (
-    <div className='flex flex-1 flex-col bg-slate-50'>
+    <div className='flex min-h-0 flex-1 flex-col bg-slate-50'>
       <div className='flex justify-center pt-3 pb-2'>
         <div className='flex gap-1'>
           {baseTabs.map((tab, idx) => (
