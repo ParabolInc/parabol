@@ -54,7 +54,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache: "pnpm"
 
       - name: Get cached node modules
         id: cache
