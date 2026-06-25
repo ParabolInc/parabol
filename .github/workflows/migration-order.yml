@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.base_ref }}
 
@@ -23,7 +23,7 @@ jobs:
           echo MAX_OLD_MIGRATION=$MAX_OLD_MIGRATION >> $GITHUB_ENV
 
       - name: Checkout PR
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get new migrations
         id: new-migrations
