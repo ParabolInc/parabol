@@ -16,24 +16,24 @@ jobs:
       pull-requests: "write"
     steps:
       - name: Checkout production
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: production
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup environment variables
         run: |
           ACTION_VERSION=$(grep '"version":' package.json | cut -d\" -f4)
           echo "ACTION_VERSION=${ACTION_VERSION}" >> $GITHUB_ENV
       - id: "auth"
         name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v1"
+        uses: "google-github-actions/auth@v2"
         with:
           token_format: "access_token"
           workload_identity_provider: ${{ secrets.GCP_WI_PROVIDER_NAME }}
           service_account: ${{ secrets.GCP_SA_EMAIL }}
       - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v1"
+        uses: "google-github-actions/setup-gcloud@v2"
       - name: "Tag image with production version"
         run: |-
           gcloud container images add-tag -q \

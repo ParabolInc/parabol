@@ -32,14 +32,13 @@ jobs:
           - 6379:6379
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: package.json
-          cache: "pnpm"
 
       - name: Setup environment variables
         run: |
@@ -53,7 +52,7 @@ jobs:
 
       - name: Get cached node modules
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             **/node_modules
@@ -111,7 +110,7 @@ jobs:
       #     echo PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION
       # - name: Cache Playwright Browsers
       #   id: cache-playwright-browsers
-      #   uses: actions/cache@v3
+      #   uses: actions/cache@v4
       #   with:
       #     path: ~/.cache/ms-playwright
       #     key: playwright-${{ runner.arch }}-${{ env.PLAYWRIGHT_VERSION }}
