@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.26.7](https://github.com/ParabolInc/parabol/compare/v13.26.6...v13.26.7) (2026-06-29)
+
+
+### Fixed
+
+* safeguard against invalid frame data ([#13255](https://github.com/ParabolInc/parabol/issues/13255)) ([3d87177](https://github.com/ParabolInc/parabol/commit/3d87177aa2ed8a49ff9d9f45ee7fbcd3f5c11344))
+
 ## [13.26.6](https://github.com/ParabolInc/parabol/compare/v13.26.5...v13.26.6) (2026-06-25)
 
 
