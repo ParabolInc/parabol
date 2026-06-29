@@ -47,7 +47,8 @@ export const hocusPocusHandler: WebSocketBehavior<HocusPocusSocketData> = {
     userData.socket = new HocusPocusWebSocket(ws)
     redisHocusPocus.onSocketOpen(userData.socket, userData.serializedHTTPRequest)
   },
-  async message(ws, message) {
+  async message(ws, message, isBinary) {
+    if (!isBinary) return
     const {serializedHTTPRequest} = ws.getUserData()
     redisHocusPocus.onSocketMessage(serializedHTTPRequest, message)
   },
