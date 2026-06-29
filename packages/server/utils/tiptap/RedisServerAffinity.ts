@@ -378,7 +378,13 @@ export class RedisServerAffinity<TCE extends CustomEvents> implements Extension 
   async onSocketMessage(serializedHTTPRequest: SerializedHTTPRequest, detachableMsg: ArrayBuffer) {
     const message = new Uint8Array(detachableMsg.slice())
     const tmpMsg = new IncomingMessage(detachableMsg)
-    const documentNameAndSessionId = tmpMsg.readVarString()
+    let documentNameAndSessionId: string
+    try {
+      documentNameAndSessionId = tmpMsg.readVarString()
+    } catch {
+      // User trying to pass in invalid frame data
+      return
+    }
     // session-aware providers suffix the documentName with \0sessionId
     const sepIdx = documentNameAndSessionId.indexOf('\0')
     const documentName =
