@@ -73,7 +73,7 @@ const LinearIntegrationPanel = (props: Props) => {
     }
     LinearClientManager.openOAuth(atmosphere, teamMember.teamId, provider, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'linear'

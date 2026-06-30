@@ -1,8 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptWorkDrawer_meeting$key} from '../../__generated__/TeamPromptWorkDrawer_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useSessionStorageState from '../../hooks/useSessionStorageState'
 import gcalLogo from '../../styles/theme/images/graphics/google-calendar.svg'
 import {cn} from '../../ui/cn'
 import AtlassianClientManager from '../../utils/AtlassianClientManager'
@@ -71,13 +72,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
 
   useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Impression', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Impression', {
       teamId: meeting.teamId,
       meetingId: meeting.id
     })
   }, [])
-
-  const [activeIdx, setActiveIdx] = useState(0)
 
   const baseTabs = [
     {
@@ -138,6 +137,15 @@ const TeamPromptWorkDrawer = (props: Props) => {
       : [])
   ] as const
 
+  const [activeService, setActiveService] = useSessionStorageState<string>(
+    `Inspirations:tab:${meeting.id}`,
+    'PARABOL'
+  )
+  const activeIdx = Math.max(
+    0,
+    baseTabs.findIndex((tab) => tab.service === activeService)
+  )
+
   const {Component} = baseTabs[activeIdx]!
 
   return (
@@ -154,7 +162,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   meetingId: meeting.id,
                   service: baseTabs[idx]?.service
                 })
-                setActiveIdx(idx)
+                setActiveService(tab.service)
               }}
               className={cn(
                 'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',

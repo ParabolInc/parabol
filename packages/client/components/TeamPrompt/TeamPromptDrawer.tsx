@@ -113,6 +113,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
         onToggle={onToggleDrawer}
         allowedThreadables={['comment', 'task']}
         meetingRef={meeting}
+        meetingId={meetingId}
         threadHeader={
           <TeamPromptDiscussionThreadHeader
             teamMember={teamMember}

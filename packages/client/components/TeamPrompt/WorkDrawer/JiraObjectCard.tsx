@@ -51,13 +51,13 @@ const JiraObjectCard = (props: Props) => {
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
 
   const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Link Clicked', {
       service: 'jira'
     })
   }
 
   const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Copied', {
       service: 'jira'
     })
   }

@@ -1,6 +1,7 @@
 import {Close} from '@mui/icons-material'
-import {type ReactNode, useState} from 'react'
+import type {ReactNode} from 'react'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
+import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
 import DiscussionDrawerTranscripts from './DiscussionDrawerTranscripts'
@@ -16,6 +17,8 @@ interface Props {
   onToggle: () => void
   allowedThreadables: DiscussionThreadables[]
   meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
+  // When provided, the selected tab is persisted to sessionStorage scoped to this meeting.
+  meetingId?: string
   // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
   // The close button is always appended after this by DiscussionDrawer.
   headerContent?: ReactNode
@@ -30,18 +33,25 @@ const DiscussionDrawer = ({
   onToggle,
   allowedThreadables,
   meetingRef,
+  meetingId,
   headerContent,
   threadHeader,
   workContent
 }: Props) => {
   const tabs = [
     {id: 'discussion', label: 'Discussion'},
-    ...(workContent ? [{id: 'work', label: 'Your Work'}] : []),
+    ...(workContent ? [{id: 'work', label: 'Inspirations'}] : []),
     {id: 'transcription', label: 'Transcription'}
   ]
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [activeTabId, setActiveTabId] = useSessionStorageState<string>(
+    meetingId ? `DiscussionDrawer:tab:${meetingId}` : null,
+    'discussion'
+  )
   const hasTabs = tabs.length > 1
-  const activeTabId = tabs[activeIdx]?.id ?? 'discussion'
+  const activeIdx = Math.max(
+    0,
+    tabs.findIndex((tab) => tab.id === activeTabId)
+  )
 
   const drawerStyle: React.CSSProperties = {
     paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
@@ -55,11 +65,11 @@ const DiscussionDrawer = ({
       <div className='flex w-full select-none items-center border-slate-300 border-b'>
         {hasTabs ? (
           <Tabs activeIdx={activeIdx} className='flex-1'>
-            {tabs.map((tab, idx) => (
+            {tabs.map((tab) => (
               <Tab
                 key={tab.id}
                 label={tab.label}
-                onClick={() => setActiveIdx(idx)}
+                onClick={() => setActiveTabId(tab.id)}
                 className='flex-1 whitespace-nowrap text-xs'
               />
             ))}

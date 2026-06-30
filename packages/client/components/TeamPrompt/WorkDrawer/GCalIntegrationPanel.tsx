@@ -77,7 +77,7 @@ const GCalPanel = (props: Props) => {
     const {clientId, id: providerId} = gcal.cloudProvider
     GcalClientManager.openOAuth(atmosphere, providerId, clientId, teamMember.teamId, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'gcal'
@@ -85,7 +85,7 @@ const GCalPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Tag Navigated', {
       service: 'gcal',
       buttonLabel: label
     })

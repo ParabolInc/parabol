@@ -55,7 +55,7 @@ const JiraServerIntegrationPanel = (props: Props) => {
     }
     JiraServerClientManager.openOAuth(atmosphere, providerId, teamMember.teamId, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'jira server'

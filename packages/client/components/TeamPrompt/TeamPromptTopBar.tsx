@@ -146,7 +146,7 @@ const TeamPromptTopBar = (props: Props) => {
         if (!meetingProxy) return
         meetingProxy.setValue(false, 'isRightDrawerOpen')
 
-        SendClientSideEvent(atmosphere, 'Your Work Drawer Closed', {
+        SendClientSideEvent(atmosphere, 'Inspirations Drawer Closed', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'
@@ -160,7 +160,7 @@ const TeamPromptTopBar = (props: Props) => {
         meetingProxy.setValue(true, 'showWorkSidebar')
         meetingProxy.setValue(true, 'isRightDrawerOpen')
 
-        SendClientSideEvent(atmosphere, 'Your Work Drawer Opened', {
+        SendClientSideEvent(atmosphere, 'Inspirations Drawer Opened', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'
@@ -176,7 +176,7 @@ const TeamPromptTopBar = (props: Props) => {
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
-        <div className='text-slate-700 group-hover:text-slate-900'>Your work</div>
+        <div className='text-slate-700 group-hover:text-slate-900'>Inspirations</div>
       </button>
       <TeamPromptOptions
         meetingRef={meeting}

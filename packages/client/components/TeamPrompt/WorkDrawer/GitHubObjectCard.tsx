@@ -88,13 +88,13 @@ const GitHubObjectCard = (props: Props) => {
   } = useTooltip<HTMLDivElement>(MenuPosition.LOWER_CENTER)
 
   const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Link Clicked', {
       service: 'github'
     })
   }
 
   const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Card Copied', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Copied', {
       service: 'github'
     })
   }

@@ -5,6 +5,7 @@ import {useFragment} from 'react-relay'
 import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
@@ -26,8 +27,8 @@ const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
 ]
 
 const GITHUB_QUERY_MAPPING = {
-  issue: 'is:issue sort:updated assignee:@me',
-  pullRequest: 'is:pr sort:updated author:@me'
+  issue: 'is:issue sort:updated involves:@me',
+  pullRequest: 'is:pr sort:updated involves:@me'
 }
 
 interface Props {
@@ -75,12 +76,21 @@ const GitHubIntegrationPanel = (props: Props) => {
   const {viewerId} = atmosphere
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const [githubType, setGithubType] = useState<'issue' | 'pullRequest'>('issue')
-  const [selectedRepos, setSelectedRepos] = useState<string[]>([])
-  const [dateRange, setDateRange] = useState<WorkDrawerDateRange | undefined>(() => ({
-    startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
-    endAt: dayjs().endOf('day').toISOString()
-  }))
+  const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
+    `Inspirations:github:type:${meeting.id}`,
+    'issue'
+  )
+  const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
+    `Inspirations:github:repos:${meeting.id}`,
+    []
+  )
+  const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
+    `Inspirations:github:dateRange:${meeting.id}`,
+    () => ({
+      startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
+      endAt: dayjs().endOf('day').toISOString()
+    })
+  )
 
   const repoQueryString = selectedRepos.map((repo) => `repo:${repo}`).join(' ')
   const dateQueryString = dateRange
@@ -110,7 +120,7 @@ const GitHubIntegrationPanel = (props: Props) => {
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'github'
@@ -118,7 +128,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Inspirations Drawer Tag Navigated', {
       service: 'github',
       buttonLabel: label
     })

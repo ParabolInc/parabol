@@ -16,6 +16,7 @@ import BaseButton from '../BaseButton'
 import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
 import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
+import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -124,8 +125,14 @@ const PromptResponseEditor = (props: Props) => {
       onUpdate,
       editable: !readOnly
     },
-    [content, readOnly, onUpdate]
+    // Intentionally omit `content`: we don't want to recreate the editor when the response grows.
+    // Content updates are reconciled in the effect below so appended text can stream in word by word.
+    [readOnly, onUpdate]
   )
+
+  // Reconcile content updates into the editor: appended blocks (e.g. "Add to response") stream in
+  // word by word, everything else applies instantly. See the hook for the full reconciliation rules.
+  useStreamedEditorContent(editor, content, {wordDelayMs: 3})
 
   const onSubmit = useCallback(() => {
     if (!editor) return
@@ -142,9 +149,9 @@ const PromptResponseEditor = (props: Props) => {
 
   const hasRestoredDraftRef = useRef(false)
   useEffect(() => {
-    // Attempt to reload draft persisted to localstorage. Only run once per mount: the editor is
-    // recreated whenever `content` changes (e.g. when "Add to response" writes to the store), and
-    // re-running this would clobber that fresh content with a stale draft.
+    // Attempt to reload draft persisted to localstorage. Only run once per mount: later `content`
+    // changes (e.g. when "Add to response" writes to the store) are reconciled by the streaming
+    // effect above, and re-running this would clobber that fresh content with a stale draft.
     if (!editor || readOnly || !draftStorageKey) return
     if (hasRestoredDraftRef.current) return
     hasRestoredDraftRef.current = true

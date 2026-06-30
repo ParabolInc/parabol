@@ -170,7 +170,9 @@ const TeamPromptResponseCard = (props: Props) => {
 
   return (
     <motion.div
-      layout
+      // `position` (not full `layout`) so cards still slide when siblings reflow, but a card's own
+      // height changes apply instantly — letting "Add to response" stream in without a height jump.
+      layout='position'
       className='mx-auto flex w-full max-w-[600px] flex-col'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
