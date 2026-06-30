@@ -431,22 +431,23 @@ Return the analysis as a JSON object with this structure:
 
 The standup question is: "${meetingPrompt}"
 
-Below is a list of ${userName}'s recent work items (issues, pull requests, and their discussion threads). Based ONLY on this work, draft a concise, first-person answer to the standup question.
+Below is a list of ${userName}'s recent work items (issues, pull requests, and their discussion threads). Based ONLY on this work, draft a concise, first-person answer to the standup question that summarizes ALL of the work items together — not just one of them.
 
 Rules:
 - Write in the first person ("I", "my"), as if ${userName} wrote it themselves. NEVER refer to ${userName} in the third person (do not write "${userName} did X"); since you are ${userName}, write "I did X".
+- Synthesize across EVERY work item listed below into a single cohesive answer. Do NOT focus on just one item and ignore the rest; cover the full set of work, grouping related items together where it reads naturally.
 - Each work item lists a Status. Match your verb tense to it: use the past tense for completed work (status "complete", e.g. a merged PR or closed issue) and the present/continuous tense for ongoing work (status "in progress", e.g. an open issue or open PR).
-- Be specific: reference the actual work, but keep it to a few sentences.
+- Be specific: reference the actual work. Keep each individual point brief, but make sure the answer accounts for all of the items rather than expanding on a single one.
 - Mention anything that looks like a blocker or where they might be stuck, if the question asks about it. If you are not sure, omit this part.
 - If the work items are empty or irrelevant to the question, return an empty items array.
-- Produce at most ONE item.${styleGuide}
+- Produce exactly ONE item, and that one item MUST summarize all of the meaingful work items above. ${styleGuide}
 
 Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the drafted answer>" }] }`
 
     const instructions = userPrompt
       ? `${userPrompt}
 
-You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. Each work item lists a Status: use the past tense for completed work and the present/continuous tense for ongoing work.${styleGuide}
+You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. Each work item lists a Status: use the past tense for completed work and the present/continuous tense for ongoing work. Produce exactly ONE item that synthesizes ALL of the meaingful work items below into a single cohesive answer — do not focus on just one item and ignore the rest.${styleGuide}
 
 Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>" }] }`
       : defaultPrompt
