@@ -111,13 +111,13 @@ const GCalEventCard = (props: Props) => {
   const endDate = result.endDate ? new Date(result.endDate) : null
 
   const trackLinkClick = () => {
-    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Link Clicked', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
       service: 'gcal'
     })
   }
 
   const trackCopy = () => {
-    SendClientSideEvent(atmosphere, 'Inspirations Drawer Card Copied', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
       service: 'gcal'
     })
   }

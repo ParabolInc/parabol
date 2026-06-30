@@ -77,15 +77,15 @@ const GitHubIntegrationPanel = (props: Props) => {
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
   const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
-    `Inspirations:github:type:${meeting.id}`,
+    `Inspiration:github:type:${meeting.id}`,
     'issue'
   )
   const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
-    `Inspirations:github:repos:${meeting.id}`,
+    `Inspiration:github:repos:${meeting.id}`,
     []
   )
   const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
-    `Inspirations:github:dateRange:${meeting.id}`,
+    `Inspiration:github:dateRange:${meeting.id}`,
     () => ({
       startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
       endAt: dayjs().endOf('day').toISOString()
@@ -120,7 +120,7 @@ const GitHubIntegrationPanel = (props: Props) => {
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Inspirations Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'github'
@@ -128,7 +128,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Inspirations Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
       service: 'github',
       buttonLabel: label
     })

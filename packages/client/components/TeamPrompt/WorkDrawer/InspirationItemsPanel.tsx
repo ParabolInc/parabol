@@ -122,7 +122,6 @@ const InspirationItemsPanel = (props: Props) => {
         <Button
           variant='secondary'
           size='md'
-          shape='pill'
           className='flex-1'
           disabled={submitting}
           onClick={onGenerate}

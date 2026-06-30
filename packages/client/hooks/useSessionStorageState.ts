@@ -16,7 +16,7 @@ const readValue = <T>(key: string | null, getDefault: () => T): T => {
 /**
  * Like useState, but persists the value to sessionStorage under `key`.
  * Pass `key: null` to disable persistence (behaves like plain useState).
- * Keys should be scoped to avoid collisions, e.g. `Inspirations:tab:${meetingId}`.
+ * Keys should be scoped to avoid collisions, e.g. `Inspiration:tab:${meetingId}`.
  */
 const useSessionStorageState = <T>(
   key: string | null,

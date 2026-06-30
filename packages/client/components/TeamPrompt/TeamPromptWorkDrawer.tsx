@@ -72,7 +72,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
 
   useEffect(() => {
-    SendClientSideEvent(atmosphere, 'Inspirations Drawer Impression', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
       teamId: meeting.teamId,
       meetingId: meeting.id
     })
@@ -138,7 +138,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
   ] as const
 
   const [activeService, setActiveService] = useSessionStorageState<string>(
-    `Inspirations:tab:${meeting.id}`,
+    `Inspiration:tab:${meeting.id}`,
     'PARABOL'
   )
   const activeIdx = Math.max(
