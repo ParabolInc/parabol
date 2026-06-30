@@ -25,7 +25,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
         ...DiscussionDrawerTranscripts_meeting
         id
         teamId
-        isRightDrawerOpen
+        rightDrawerOpen
         localStageId
         phases {
           stages {
@@ -60,13 +60,20 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
 
   const atmosphere = useAtmosphere()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
-  const {id: meetingId, isRightDrawerOpen, localStageId} = meeting
+  const {id: meetingId, rightDrawerOpen, localStageId} = meeting
 
   const onToggleDrawer = () => {
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
-      meetingProxy.setValue(!meetingProxy.getValue('isRightDrawerOpen'), 'isRightDrawerOpen')
+      const isOpen = meetingProxy.getValue('rightDrawerOpen') !== null
+      meetingProxy.setValue(isOpen ? null : 'inspiration', 'rightDrawerOpen')
+    })
+  }
+
+  const onChangeTab = (tabId: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId)?.setValue(tabId, 'rightDrawerOpen')
     })
   }
 
@@ -103,7 +110,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
 
   return (
     <ResponsiveDashSidebar
-      isOpen={isRightDrawerOpen}
+      isOpen={rightDrawerOpen !== null}
       isRightDrawer
       onToggle={onToggleDrawer}
       sidebarWidth={DiscussionThreadEnum.WIDTH}
@@ -113,6 +120,7 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
         onToggle={onToggleDrawer}
         allowedThreadables={['comment', 'task']}
         meetingRef={meeting}
+        meetingId={meetingId}
         threadHeader={
           <TeamPromptDiscussionThreadHeader
             teamMember={teamMember}
@@ -123,6 +131,8 @@ const TeamPromptDrawer = ({meetingRef}: Props) => {
           />
         }
         workContent={<TeamPromptWorkDrawer meetingRef={meeting} />}
+        activeTab={rightDrawerOpen}
+        onChangeTab={onChangeTab}
       />
     </ResponsiveDashSidebar>
   )

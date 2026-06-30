@@ -60,8 +60,9 @@ extend type TeamPromptMeeting {
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   localStageId: String
-  isRightDrawerOpen: Boolean!
-  showWorkSidebar: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "work", "transcription").
+  rightDrawerOpen: String
   showSidebar: Boolean!
   musicSettings: MusicSettings
 }

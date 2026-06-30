@@ -46,7 +46,7 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment GitHubRepoSearchFilterMenu_teamMember on TeamMember {
-        ...useGetRepoContributions_teamMember
+        ...useGetRepoContributions_teamMember @defer
       }
     `,
     teamMemberRef

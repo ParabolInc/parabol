@@ -534,6 +534,12 @@ type Mutation {
   ): GenerateInsightPayload! @scope(name: TEAMS_WRITE)
 
   """
+  Generate AI inspiration items from a user's recent work in a Your Work integration
+  """
+  generateInspirationItems(input: GenerateInspirationItemsInput!): GenerateInspirationItemsSuccess!
+    @scope(name: MEETINGS_WRITE)
+
+  """
   Reorder a dimension within a poker template
   """
   movePokerTemplateDimension(

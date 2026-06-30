@@ -1,0 +1,14 @@
+"""
+The result of successfully generating inspiration items from a user's recent work
+"""
+type GenerateInspirationItemsSuccess {
+  """
+  The generated inspiration items, 0 or more
+  """
+  inspirationItems: [InspirationItem!]!
+
+  """
+  The meeting the items were generated for
+  """
+  meeting: TeamPromptMeeting!
+}
