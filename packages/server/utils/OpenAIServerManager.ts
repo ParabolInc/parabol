@@ -410,6 +410,86 @@ Return the analysis as a JSON object with this structure:
     }
   }
 
+  async generateInspirationItems(
+    workItemsText: string,
+    meetingPrompt: string,
+    userName: string,
+    pastResponses: string[],
+    userPrompt?: string | null
+  ): Promise<{items: {title: string | null; content: string}[]; tokenCost: number} | null> {
+    if (!this.openAIApi) return null
+    if (!workItemsText.trim()) return null
+
+    const styleGuide =
+      pastResponses.length > 0
+        ? `\n\nHere are ${userName}'s most recent answers to past standup questions. Mimic their style: match the tone, length, level of detail, formatting, and how casual or formal they are. Do NOT reuse their content — only their voice.\n\n${pastResponses
+            .map((response, i) => `<example_${i + 1}>\n${response}\n</example_${i + 1}>`)
+            .join('\n\n')}`
+        : ''
+
+    const defaultPrompt = `You are helping ${userName} quickly draft their answer to a standup question, grounded in their recent work. You are writing AS ${userName}, in their voice.
+
+The standup question is: "${meetingPrompt}"
+
+Below is a list of ${userName}'s recent work items (issues, pull requests, and their discussion threads). Based ONLY on this work, draft a concise, first-person answer to the standup question.
+
+Rules:
+- Write in the first person ("I", "my"), as if ${userName} wrote it themselves. NEVER refer to ${userName} in the third person (do not write "${userName} did X"); since you are ${userName}, write "I did X".
+- Each work item lists a Status. Match your verb tense to it: use the past tense for completed work (status "complete", e.g. a merged PR or closed issue) and the present/continuous tense for ongoing work (status "in progress", e.g. an open issue or open PR).
+- Be specific: reference the actual work, but keep it to a few sentences.
+- Mention anything that looks like a blocker or where they might be stuck, if the question asks about it. If you are not sure, omit this part.
+- If the work items are empty or irrelevant to the question, return an empty items array.
+- Produce at most ONE item.${styleGuide}
+
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the drafted answer>" }] }`
+
+    const instructions = userPrompt
+      ? `${userPrompt}
+
+You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. Each work item lists a Status: use the past tense for completed work and the present/continuous tense for ongoing work.${styleGuide}
+
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>" }] }`
+      : defaultPrompt
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'user',
+            content: `${instructions}\n\nRecent work items:\n${workItemsText}`
+          }
+        ],
+        response_format: {type: 'json_object'},
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const content = response.choices[0]?.message?.content
+      if (!content) return null
+
+      let parsed: {items?: {title?: string | null; content?: string}[]}
+      try {
+        parsed = JSON.parse(content)
+      } catch {
+        logError(new Error('Failed to parse generateInspirationItems JSON response'))
+        return null
+      }
+
+      const items = (parsed.items ?? [])
+        .filter((item) => !!item?.content?.trim())
+        .map((item) => ({title: item.title?.trim() || null, content: item.content!.trim()}))
+
+      return {items, tokenCost: response.usage?.total_tokens ?? 10_000}
+    } catch (e) {
+      const error = e instanceof Error ? e : new Error('OpenAI failed to generateInspirationItems')
+      logError(error)
+      return null
+    }
+  }
+
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = `https://${process.env.HOST}/meet`

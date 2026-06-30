@@ -1,0 +1,30 @@
+"""
+An AI-generated draft, grounded in a user's recent work items, that answers the
+meeting prompt. The text is editable and can be moved into a meeting response.
+"""
+type InspirationItem {
+  """
+  A client-generated unique id for the item
+  """
+  id: ID!
+
+  """
+  The editable AI-generated text (plaintext/markdown)
+  """
+  content: String!
+
+  """
+  An optional short heading for the item
+  """
+  title: String
+
+  """
+  The integration service the source work items came from, e.g. github
+  """
+  service: String!
+
+  """
+  The time the item was generated
+  """
+  createdAt: DateTime!
+}

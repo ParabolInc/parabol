@@ -1,0 +1,41 @@
+query searchWorkItems($searchQuery: String!, $first: Int!, $commentLast: Int!) {
+  search(query: $searchQuery, type: ISSUE, first: $first) {
+    nodes {
+      __typename
+      ... on Issue {
+        title
+        url
+        body
+        issueState: state
+        repository {
+          nameWithOwner
+        }
+        comments(last: $commentLast) {
+          nodes {
+            author {
+              login
+            }
+            body
+          }
+        }
+      }
+      ... on PullRequest {
+        title
+        url
+        body
+        prState: state
+        repository {
+          nameWithOwner
+        }
+        comments(last: $commentLast) {
+          nodes {
+            author {
+              login
+            }
+            body
+          }
+        }
+      }
+    }
+  }
+}

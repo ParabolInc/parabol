@@ -4,7 +4,7 @@ import Mention from '@tiptap/extension-mention'
 import {Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -140,11 +140,14 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit?.(editor)
   }, [setEditing, content, editor, handleSubmit])
 
+  const hasRestoredDraftRef = useRef(false)
   useEffect(() => {
-    // Attempt to reload draft persisted to localstorage.
-    if (!draftStorageKey || readOnly) {
-      return
-    }
+    // Attempt to reload draft persisted to localstorage. Only run once per mount: the editor is
+    // recreated whenever `content` changes (e.g. when "Add to response" writes to the store), and
+    // re-running this would clobber that fresh content with a stale draft.
+    if (!editor || readOnly || !draftStorageKey) return
+    if (hasRestoredDraftRef.current) return
+    hasRestoredDraftRef.current = true
 
     const maybeDraft = window.localStorage.getItem(draftStorageKey)
     if (!maybeDraft) {
@@ -155,7 +158,7 @@ const PromptResponseEditor = (props: Props) => {
     if (isEqualWhenSerialized(content, draftContent)) return
 
     setEditing(true)
-    editor?.commands.setContent(draftContent)
+    editor.commands.setContent(draftContent)
   }, [editor])
 
   if (!editor) return null
