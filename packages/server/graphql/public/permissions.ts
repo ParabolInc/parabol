@@ -138,6 +138,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInsight: or(isSuperUser, isViewerTeamLead('args.teamId')),
+    generateInspirationItems:
+      isMeetingMember<'Mutation.generateInspirationItems'>('args.input.meetingId'),
     inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
     joinTeam: isViewerOnOrg<'Mutation.joinTeam'>('args.teamId', 'teams'),

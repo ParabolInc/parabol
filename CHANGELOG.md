@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.27.0](https://github.com/ParabolInc/parabol/compare/v13.26.7...v13.27.0) (2026-06-30)
+
+
+### Added
+
+* inspo for github work items ([#13259](https://github.com/ParabolInc/parabol/issues/13259)) ([7ecc572](https://github.com/ParabolInc/parabol/commit/7ecc572c98edd1fbe8c24a74e705076e16318a79))
+
+
+### Fixed
+
+* trim null bytes from email and domain ([#13258](https://github.com/ParabolInc/parabol/issues/13258)) ([47eef11](https://github.com/ParabolInc/parabol/commit/47eef113efd5f4a9d10b903cba5e865d51960407))
+
 ## [13.26.7](https://github.com/ParabolInc/parabol/compare/v13.26.6...v13.26.7) (2026-06-29)
 
 

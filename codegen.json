@@ -150,6 +150,7 @@
           "ZoomIntegration": "./types/ZoomIntegration#ZoomIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
           "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
+          "GenerateInspirationItemsSuccess": "./types/GenerateInspirationItemsSuccess#GenerateInspirationItemsSuccessSource",
           "GifResponse": "./types/GifResponse#GifResponseSource",
           "GitHubIntegration": "../../postgres/types/index#GitHubAuth as GitHubAuthDB",
           "GitHubSearchQuery": "../../postgres/types/index#GitHubSearchQuery as GitHubSearchQueryDB",
@@ -159,6 +160,7 @@
           "IntegrationProviderOAuth1": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "IntegrationProviderOAuth2": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
           "IntegrationProviderWebhook": "../../postgres/types/IntegrationProvider#TIntegrationProvider",
+          "InspirationItem": "../../postgres/types/index#InspirationItem as InspirationItemDB",
           "InviteToTeamPayload": "./types/InviteToTeamPayload#InviteToTeamPayloadSource",
           "JiraIssue": "./types/JiraIssue#JiraIssueSource",
           "JiraRemoteAvatarUrls": "./types/JiraRemoteAvatarUrls#JiraRemoteAvatarUrlsSource",
@@ -383,6 +385,9 @@
         "assumeValidSDL": true
       },
       "documents": "packages/server/utils/githubQueries/*.graphql",
+      "hooks": {
+        "afterOneFileWrite": ["node scripts/prefixGitHubTypenames.js"]
+      },
       "plugins": ["typescript", "typescript-operations", "add"],
       "schema": "packages/server/utils/githubSchema.graphql"
     },

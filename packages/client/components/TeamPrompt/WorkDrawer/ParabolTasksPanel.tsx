@@ -51,7 +51,7 @@ const ParabolTasksPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
       service: 'PARABOL',
       buttonLabel: label
     })

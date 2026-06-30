@@ -1,11 +1,12 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
+import normalizeDomain from '../../../utils/normalizeDomain'
 import type {MutationResolvers} from '../resolverTypes'
 
 const removeApprovedOrganizationDomains: MutationResolvers['removeApprovedOrganizationDomains'] =
   async (_source, {emailDomains, orgId}) => {
     // VALIDATION
-    const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
+    const normalizedEmailDomains = emailDomains.map(normalizeDomain)
 
     // RESOLUTION
     const pg = getKysely()

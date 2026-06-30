@@ -10,26 +10,27 @@ import GitHubIntegrationResults from './GitHubIntegrationResults'
 interface Props {
   teamId: string
   queryType: 'issue' | 'pullRequest'
-  selectedRepos: string[]
-}
-
-const GITHUB_QUERY_MAPPING = {
-  issue: 'is:issue sort:updated assignee:@me',
-  pullRequest: 'is:pr sort:updated author:@me'
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const GitHubIntegrationResultsRoot = (props: Props) => {
-  const {teamId, queryType, selectedRepos} = props
-  const repoQueryString = selectedRepos.map((repo) => `repo:${repo}`).join(' ')
+  const {teamId, queryType, searchQuery, onResultCount} = props
   const queryRef = useQueryLoaderNow<GitHubIntegrationResultsQuery>(gitHubIntegrationResultsQuery, {
-    teamId: teamId,
-    searchQuery: `${GITHUB_QUERY_MAPPING[queryType]} ${repoQueryString}`
+    teamId,
+    searchQuery
   })
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
         {queryRef && (
-          <GitHubIntegrationResults queryRef={queryRef} queryType={queryType} teamId={teamId} />
+          <GitHubIntegrationResults
+            queryRef={queryRef}
+            queryType={queryType}
+            searchQuery={searchQuery}
+            teamId={teamId}
+            onResultCount={onResultCount}
+          />
         )}
       </Suspense>
     </ErrorBoundary>

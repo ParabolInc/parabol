@@ -96,8 +96,7 @@ const TeamPromptTopBar = (props: Props) => {
         id
         name
         teamId
-        isRightDrawerOpen
-        showWorkSidebar
+        rightDrawerOpen
         facilitatorUserId
         localStageId
         prevMeeting {
@@ -139,14 +138,14 @@ const TeamPromptTopBar = (props: Props) => {
   const isRecurrenceEnabled = meetingSeries && !meetingSeries.cancelledAt
 
   const onOpenWorkSidebar = () => {
-    if (meeting.isRightDrawerOpen && meeting.showWorkSidebar && !meeting.localStageId) {
-      // If we're clicking on 'Your Work' when it's already open, just close the drawer.
+    if (meeting.rightDrawerOpen === 'inspiration') {
+      // If we're clicking on 'Inspiration' when it's already open, just close the drawer.
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
-        meetingProxy.setValue(false, 'isRightDrawerOpen')
+        meetingProxy.setValue(null, 'rightDrawerOpen')
 
-        SendClientSideEvent(atmosphere, 'Your Work Drawer Closed', {
+        SendClientSideEvent(atmosphere, 'Inspiration Drawer Closed', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'
@@ -157,10 +156,9 @@ const TeamPromptTopBar = (props: Props) => {
         const meetingProxy = store.get(meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(null, 'localStageId')
-        meetingProxy.setValue(true, 'showWorkSidebar')
-        meetingProxy.setValue(true, 'isRightDrawerOpen')
+        meetingProxy.setValue('inspiration', 'rightDrawerOpen')
 
-        SendClientSideEvent(atmosphere, 'Your Work Drawer Opened', {
+        SendClientSideEvent(atmosphere, 'Inspiration Drawer Opened', {
           teamId: meeting.teamId,
           meetingId: meeting.id,
           source: 'top bar'
@@ -176,7 +174,7 @@ const TeamPromptTopBar = (props: Props) => {
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
-        <div className='text-slate-700 group-hover:text-slate-900'>Your work</div>
+        <div className='text-slate-700 group-hover:text-slate-900'>Inspiration</div>
       </button>
       <TeamPromptOptions
         meetingRef={meeting}

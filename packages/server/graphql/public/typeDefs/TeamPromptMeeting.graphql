@@ -11,6 +11,12 @@ type TeamPromptMeeting implements NewMeeting {
   responses: [TeamPromptResponse!]!
 
   """
+  The viewer's most recently generated AI inspiration items for a given integration service,
+  cached for a short window. Empty if none have been generated recently.
+  """
+  inspirationItems(service: ServiceEnum!): [InspirationItem!]!
+
+  """
   The team prompt meeting member of the viewer
   """
   viewerMeetingMember: TeamPromptMeetingMember

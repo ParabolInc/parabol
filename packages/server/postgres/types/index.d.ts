@@ -8,6 +8,7 @@ import {
   type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
+  type selectInspirationItems,
   type selectJiraDimensionFieldMap,
   type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
@@ -102,6 +103,7 @@ export type TeamMember = Selectable<TeamMemberPG>
 export interface TeamMemberIntegrationAuth
   extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
+export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 
 // TODO refactor getTemplateScaleRefsByIds to kysely
