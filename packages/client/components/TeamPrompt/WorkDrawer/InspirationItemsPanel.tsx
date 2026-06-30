@@ -1,11 +1,10 @@
 import TuneIcon from '@mui/icons-material/Tune'
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useState} from 'react'
-import type {GenerateInspirationItemsMutation$data} from '../../../__generated__/GenerateInspirationItemsMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import GenerateInspirationItemsMutation from '../../../mutations/GenerateInspirationItemsMutation'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
+import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
 import {Button} from '../../../ui/Button/Button'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
@@ -58,7 +57,8 @@ const InspirationItemsPanel = (props: Props) => {
   )
   const [userPrompt, setUserPrompt] = useState('')
   const [promptOpen, setPromptOpen] = useState(false)
-  const {onError, onCompleted, submitMutation, submitting, error} = useMutationProps()
+  const [error, setError] = useState<Error | null>(null)
+  const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
   const {
     onError: onResponseError,
     onCompleted: onResponseCompleted,
@@ -68,25 +68,21 @@ const InspirationItemsPanel = (props: Props) => {
 
   const onGenerate = () => {
     if (submitting) return
-    submitMutation()
-    GenerateInspirationItemsMutation(
-      atmosphere,
-      {input: {meetingId, service, searchQuery, userPrompt: userPrompt.trim() || null}},
-      {
-        onError,
-        onCompleted: (res: GenerateInspirationItemsMutation$data, errors) => {
-          onCompleted(res, errors)
-          const generated = res.generateInspirationItems?.inspirationItems ?? []
-          setItems(
-            generated.map(({id, title, content}) => ({
-              id,
-              title: title ?? null,
-              content: parseContent(content)
-            }))
-          )
-        }
+    setError(null)
+    generateInspirationItems({
+      variables: {input: {meetingId, service, searchQuery, userPrompt: userPrompt.trim() || null}},
+      onError: setError,
+      onCompleted: (res) => {
+        const generated = res.generateInspirationItems?.inspirationItems ?? []
+        setItems(
+          generated.map(({id, title, content}) => ({
+            id,
+            title: title ?? null,
+            content: parseContent(content)
+          }))
+        )
       }
-    )
+    })
   }
 
   const onAddToResponse = (editor: Editor) => {

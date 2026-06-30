@@ -4,7 +4,7 @@ meeting prompt. The text is editable and can be moved into a meeting response.
 """
 type InspirationItem {
   """
-  A client-generated unique id for the item
+  A unique id for the item
   """
   id: ID!
 

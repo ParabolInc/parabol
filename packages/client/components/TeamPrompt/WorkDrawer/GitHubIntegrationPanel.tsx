@@ -45,7 +45,7 @@ const GitHubIntegrationPanel = (props: Props) => {
         prevMeeting {
           createdAt
         }
-        inspirationItems(service: "github") {
+        inspirationItems(service: github) {
           id
           title
           content

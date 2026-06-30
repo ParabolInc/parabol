@@ -3,7 +3,6 @@ import {sql} from 'kysely'
 import {markdownToTipTap} from '../../../../client/shared/tiptap/markdownToTipTap'
 import {USER_AI_TOKENS_MONTHLY_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
-import {selectInspirationItems} from '../../../postgres/select'
 import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
@@ -128,15 +127,7 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   })
   dataLoader.get('inspirationItemsByMeeting').clear({meetingId, userId: viewerId, service})
 
-  // Re-read through the select helper so content is typed as a tiptap doc (JSONContent)
-  const inspirationItems = await selectInspirationItems()
-    .where('meetingId', '=', meetingId)
-    .where('userId', '=', viewerId)
-    .where('service', '=', service)
-    .orderBy('createdAt', 'asc')
-    .execute()
-
-  return {meetingId, inspirationItems}
+  return {meetingId, service}
 }
 
 export default generateInspirationItems
