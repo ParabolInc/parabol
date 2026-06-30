@@ -1,3 +1,5 @@
+// Deprecated. Use useMutation hooks instead, which provide this same functionality
+
 import {useCallback, useEffect, useRef, useState} from 'react'
 import type {PayloadError} from 'relay-runtime'
 

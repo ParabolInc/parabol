@@ -1,15 +1,19 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import dayjs from 'dayjs'
+import {useCallback, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {GitHubIntegrationPanel_meeting$key} from '../../../__generated__/GitHubIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
+import InspirationItemsPanel from './InspirationItemsPanel'
+import {WorkDrawerDateFilter, type WorkDrawerDateRange} from './WorkDrawerDateFilter'
 
 const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   {
@@ -22,6 +26,11 @@ const GITHUB_QUERY_TABS: {key: 'issue' | 'pullRequest'; label: string}[] = [
   }
 ]
 
+const GITHUB_QUERY_MAPPING = {
+  issue: 'is:issue sort:updated involves:@me',
+  pullRequest: 'is:pr sort:updated involves:@me'
+}
+
 interface Props {
   meetingRef: GitHubIntegrationPanel_meeting$key
 }
@@ -33,6 +42,20 @@ const GitHubIntegrationPanel = (props: Props) => {
       fragment GitHubIntegrationPanel_meeting on TeamPromptMeeting {
         teamId
         id
+        prevMeeting {
+          createdAt
+        }
+        inspirationItems(service: github) {
+          id
+          title
+          content
+        }
+        responses {
+          id
+          userId
+          content
+          plaintextContent
+        }
         viewerMeetingMember {
           teamMember {
             teamId
@@ -49,12 +72,45 @@ const GitHubIntegrationPanel = (props: Props) => {
     meetingRef
   )
 
+  const atmosphere = useAtmosphere()
+  const {viewerId} = atmosphere
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const [githubType, setGithubType] = useState<'issue' | 'pullRequest'>('issue')
-  const [selectedRepos, setSelectedRepos] = useState<string[]>([])
+  const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
+    `Inspiration:github:type:${meeting.id}`,
+    'issue'
+  )
+  const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
+    `Inspiration:github:repos:${meeting.id}`,
+    []
+  )
+  const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
+    `Inspiration:github:dateRange:${meeting.id}`,
+    () => ({
+      startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
+      endAt: dayjs().endOf('day').toISOString()
+    })
+  )
 
-  const atmosphere = useAtmosphere()
+  const repoQueryString = selectedRepos.map((repo) => `repo:${repo}`).join(' ')
+  const dateQueryString = dateRange
+    ? `updated:${dayjs(dateRange.startAt).format('YYYY-MM-DD')}..${dayjs(dateRange.endAt).format('YYYY-MM-DD')}`
+    : ''
+  const searchQuery = [GITHUB_QUERY_MAPPING[githubType], repoQueryString, dateQueryString]
+    .filter(Boolean)
+    .join(' ')
+
+  const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
+
+  // The results list lives in a separate Suspense subtree, so it reports its count back up here.
+  // We pair the count with the query it came from to avoid showing the draft UI against a stale
+  // result set while a new search is loading.
+  const [searchResult, setSearchResult] = useState<{query: string; count: number}>()
+  const onResultCount = useCallback((query: string, count: number) => {
+    setSearchResult({query, count})
+  }, [])
+  const hasResults = searchResult?.query === searchQuery && searchResult.count > 0
+
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -64,7 +120,7 @@ const GitHubIntegrationPanel = (props: Props) => {
     }
     teamMember && GitHubClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
 
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Integration Connected', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
       teamId: meeting.teamId,
       meetingId: meeting.id,
       service: 'github'
@@ -72,7 +128,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   }
 
   const trackTabNavigated = (label: string) => {
-    SendClientSideEvent(atmosphere, 'Your Work Drawer Tag Navigated', {
+    SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
       service: 'github',
       buttonLabel: label
     })
@@ -94,7 +150,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               setSelectedRepos(repos)
             }}
           />
-          <div className='mb-4 flex w-full gap-2 px-4'>
+          <div className='mb-2 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
               <div
                 key={tab.key}
@@ -113,10 +169,23 @@ const GitHubIntegrationPanel = (props: Props) => {
               </div>
             ))}
           </div>
+          <div className='mb-2 flex w-full px-4'>
+            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+          </div>
+          {hasResults && (
+            <InspirationItemsPanel
+              meetingId={meeting.id}
+              service='github'
+              searchQuery={searchQuery}
+              initialItems={meeting.inspirationItems}
+              viewerResponse={viewerResponse}
+            />
+          )}
           <GitHubIntegrationResultsRoot
             teamId={teamMember.teamId}
             queryType={githubType}
-            selectedRepos={selectedRepos}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
           />
         </>
       ) : (

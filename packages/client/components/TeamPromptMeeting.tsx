@@ -36,7 +36,6 @@ const TeamPromptMeeting = (props: Props) => {
         ...TeamPromptMeetingStatus_meeting
         ...MeetingLockedOverlay_meeting
         id
-        isRightDrawerOpen
         endedAt
         localStageId
         phases {
@@ -105,8 +104,7 @@ const TeamPromptMeeting = (props: Props) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
       meetingProxy.setValue(stage.id, 'localStageId')
-      meetingProxy.setValue(false, 'showWorkSidebar')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
+      meetingProxy.setValue('discussion', 'rightDrawerOpen')
     })
   }, [responseId])
 
@@ -117,8 +115,7 @@ const TeamPromptMeeting = (props: Props) => {
     commitLocalUpdate(atmosphere, (store) => {
       const meetingProxy = store.get(meetingId)
       if (!meetingProxy) return
-      meetingProxy.setValue(true, 'showWorkSidebar')
-      meetingProxy.setValue(true, 'isRightDrawerOpen')
+      meetingProxy.setValue('inspiration', 'rightDrawerOpen')
     })
   }, [])
 

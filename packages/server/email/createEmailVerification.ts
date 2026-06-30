@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import {Security, Threshold} from 'parabol-client/types/constEnums'
 import getKysely from '../postgres/getKysely'
+import normalizeEmail from '../utils/normalizeEmail'
 import emailVerificationEmailCreator from './emailVerificationEmailCreator'
 import getMailManager from './getMailManager'
 
@@ -16,7 +17,7 @@ type SignUpWithPasswordMutationVariables = {
 
 const createEmailVerification = async (props: SignUpWithPasswordMutationVariables) => {
   const {password, invitationToken, pseudoId, redirectTo} = props
-  const email = props.email.toLowerCase().trim()
+  const email = normalizeEmail(props.email)
   const tokenBuffer = crypto.randomBytes(48)
   const verifiedEmailToken = base64url.encode(tokenBuffer)
   const {subject, body, html} = emailVerificationEmailCreator({

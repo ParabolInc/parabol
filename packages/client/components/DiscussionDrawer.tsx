@@ -1,6 +1,7 @@
 import {Close} from '@mui/icons-material'
-import {type ReactNode, useState} from 'react'
+import type {ReactNode} from 'react'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
+import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
 import DiscussionDrawerTranscripts from './DiscussionDrawerTranscripts'
@@ -16,6 +17,8 @@ interface Props {
   onToggle: () => void
   allowedThreadables: DiscussionThreadables[]
   meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
+  // When provided, the selected tab is persisted to sessionStorage scoped to this meeting.
+  meetingId?: string
   // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
   // The close button is always appended after this by DiscussionDrawer.
   headerContent?: ReactNode
@@ -23,6 +26,10 @@ interface Props {
   threadHeader?: ReactNode
   // When provided a Your Work tab is inserted between Discussion and Transcription.
   workContent?: ReactNode
+  // When provided, the selected tab is controlled by the parent instead of sessionStorage
+  // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
+  activeTab?: string | null
+  onChangeTab?: (tabId: string) => void
 }
 
 const DiscussionDrawer = ({
@@ -30,18 +37,36 @@ const DiscussionDrawer = ({
   onToggle,
   allowedThreadables,
   meetingRef,
+  meetingId,
   headerContent,
   threadHeader,
-  workContent
+  workContent,
+  activeTab,
+  onChangeTab
 }: Props) => {
   const tabs = [
     {id: 'discussion', label: 'Discussion'},
-    ...(workContent ? [{id: 'work', label: 'Your Work'}] : []),
+    ...(workContent ? [{id: 'inspiration', label: 'Inspiration'}] : []),
     {id: 'transcription', label: 'Transcription'}
   ]
-  const [activeIdx, setActiveIdx] = useState(0)
+  const [storedTabId, setStoredTabId] = useSessionStorageState<string>(
+    meetingId ? `DiscussionDrawer:tab:${meetingId}` : null,
+    'discussion'
+  )
+  // When `activeTab` is provided the tab is controlled by the parent (e.g. TeamPrompt's
+  // rightDrawerOpen); otherwise it falls back to the sessionStorage-backed state.
+  const isControlled = activeTab !== undefined
+  const activeTabId = isControlled ? (activeTab ?? 'discussion') : storedTabId
+  const setActiveTabId = (tabId: string) => {
+    if (isControlled) onChangeTab?.(tabId)
+    else setStoredTabId(tabId)
+  }
+
   const hasTabs = tabs.length > 1
-  const activeTabId = tabs[activeIdx]?.id ?? 'discussion'
+  const activeIdx = Math.max(
+    0,
+    tabs.findIndex((tab) => tab.id === activeTabId)
+  )
 
   const drawerStyle: React.CSSProperties = {
     paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
@@ -55,11 +80,11 @@ const DiscussionDrawer = ({
       <div className='flex w-full select-none items-center border-slate-300 border-b'>
         {hasTabs ? (
           <Tabs activeIdx={activeIdx} className='flex-1'>
-            {tabs.map((tab, idx) => (
+            {tabs.map((tab) => (
               <Tab
                 key={tab.id}
                 label={tab.label}
-                onClick={() => setActiveIdx(idx)}
+                onClick={() => setActiveTabId(tab.id)}
                 className='flex-1 whitespace-nowrap text-xs'
               />
             ))}
@@ -77,7 +102,7 @@ const DiscussionDrawer = ({
           <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
         </PlainButton>
       </div>
-      {activeTabId === 'work' ? (
+      {activeTabId === 'inspiration' ? (
         workContent
       ) : activeTabId === 'transcription' ? (
         <DiscussionDrawerTranscripts meetingRef={meetingRef} />

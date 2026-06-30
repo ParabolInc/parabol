@@ -77,7 +77,7 @@ const UpsertTeamPromptResponseMutation: StandardMutation<
         content,
         plaintextContent,
         updatedAt: now,
-        createdAt: !teamPromptResponseId ? now : undefined,
+        createdAt: now,
         reactjis: []
       }
     }

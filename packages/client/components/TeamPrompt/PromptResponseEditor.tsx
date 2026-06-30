@@ -4,7 +4,7 @@ import Mention from '@tiptap/extension-mention'
 import {Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -16,6 +16,7 @@ import BaseButton from '../BaseButton'
 import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
 import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
+import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
@@ -124,8 +125,14 @@ const PromptResponseEditor = (props: Props) => {
       onUpdate,
       editable: !readOnly
     },
-    [content, readOnly, onUpdate]
+    // Intentionally omit `content`: we don't want to recreate the editor when the response grows.
+    // Content updates are reconciled in the effect below so appended text can stream in word by word.
+    [readOnly, onUpdate]
   )
+
+  // Reconcile content updates into the editor: appended blocks (e.g. "Add to response") stream in
+  // word by word, everything else applies instantly. See the hook for the full reconciliation rules.
+  useStreamedEditorContent(editor, content, {wordDelayMs: 3})
 
   const onSubmit = useCallback(() => {
     if (!editor) return
@@ -140,11 +147,14 @@ const PromptResponseEditor = (props: Props) => {
     handleSubmit?.(editor)
   }, [setEditing, content, editor, handleSubmit])
 
+  const hasRestoredDraftRef = useRef(false)
   useEffect(() => {
-    // Attempt to reload draft persisted to localstorage.
-    if (!draftStorageKey || readOnly) {
-      return
-    }
+    // Attempt to reload draft persisted to localstorage. Only run once per mount: later `content`
+    // changes (e.g. when "Add to response" writes to the store) are reconciled by the streaming
+    // effect above, and re-running this would clobber that fresh content with a stale draft.
+    if (!editor || readOnly || !draftStorageKey) return
+    if (hasRestoredDraftRef.current) return
+    hasRestoredDraftRef.current = true
 
     const maybeDraft = window.localStorage.getItem(draftStorageKey)
     if (!maybeDraft) {
@@ -155,7 +165,7 @@ const PromptResponseEditor = (props: Props) => {
     if (isEqualWhenSerialized(content, draftContent)) return
 
     setEditing(true)
-    editor?.commands.setContent(draftContent)
+    editor.commands.setContent(draftContent)
   }, [editor])
 
   if (!editor) return null

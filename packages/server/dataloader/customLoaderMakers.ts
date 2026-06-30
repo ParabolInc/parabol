@@ -10,6 +10,7 @@ import type {SAMLSource} from '../graphql/public/types/SAML'
 import getKysely from '../postgres/getKysely'
 import {
   selectGitLabDimensionFieldMap,
+  selectInspirationItems,
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
@@ -21,6 +22,7 @@ import type {
   FeatureFlag,
   GitLabDimensionFieldMap,
   Insight,
+  InspirationItem,
   MassInvitation,
   MeetingSettings,
   OrganizationUser,
@@ -138,6 +140,35 @@ export const meetingTaskEstimates = (parent: RootDataLoader) => {
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.meetingId}:${key.taskId}`
+    }
+  )
+}
+
+export const inspirationItemsByMeeting = (parent: RootDataLoader) => {
+  return new DataLoader<
+    {meetingId: string; userId: string; service: string},
+    InspirationItem[],
+    string
+  >(
+    async (keys) => {
+      const meetingIds = keys.map(({meetingId}) => meetingId)
+      const userIds = keys.map(({userId}) => userId)
+      const services = keys.map(({service}) => service)
+      const rows = await selectInspirationItems()
+        .where('meetingId', 'in', meetingIds)
+        .where('userId', 'in', userIds)
+        .where('service', 'in', services)
+        .orderBy('createdAt', 'asc')
+        .execute()
+      return keys.map(({meetingId, userId, service}) =>
+        rows.filter(
+          (row) => row.meetingId === meetingId && row.userId === userId && row.service === service
+        )
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.meetingId}:${key.userId}:${key.service}`
     }
   )
 }

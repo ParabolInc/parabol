@@ -1,0 +1,26 @@
+"""
+Parameters used to re-run a Your Work integration search server-side and generate
+inspiration items from the matching work items.
+"""
+input GenerateInspirationItemsInput {
+  """
+  The meeting the items are being generated for
+  """
+  meetingId: ID!
+
+  """
+  The integration service to pull work items from, e.g. github
+  """
+  service: String!
+
+  """
+  The service-specific search string. For github, the same search string the client
+  uses (including any date range filter and is:issue / is:pr qualifier)
+  """
+  searchQuery: String!
+
+  """
+  An optional custom prompt that overrides the default generation prompt
+  """
+  userPrompt: String
+}

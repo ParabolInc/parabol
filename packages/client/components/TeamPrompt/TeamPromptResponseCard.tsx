@@ -58,7 +58,7 @@ const TeamPromptResponseCard = (props: Props) => {
           ... on TeamPromptMeeting {
             endedAt
             localStageId
-            isRightDrawerOpen
+            rightDrawerOpen
           }
         }
         teamMember {
@@ -84,20 +84,19 @@ const TeamPromptResponseCard = (props: Props) => {
   )
 
   const onSelectDiscussion = () => {
-    if (meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id) {
+    if (meeting?.rightDrawerOpen != null && meeting?.localStageId === responseStage.id) {
       // If we're selecting a discussion that's already open, just close the drawer.
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(responseStage.meetingId)
         if (!meetingProxy) return
-        meetingProxy.setValue(false, 'isRightDrawerOpen')
+        meetingProxy.setValue(null, 'rightDrawerOpen')
       })
     } else {
       commitLocalUpdate(atmosphere, (store) => {
         const meetingProxy = store.get(responseStage.meetingId)
         if (!meetingProxy) return
         meetingProxy.setValue(responseStage.id, 'localStageId')
-        meetingProxy.setValue(false, 'showWorkSidebar')
-        meetingProxy.setValue(true, 'isRightDrawerOpen')
+        meetingProxy.setValue('discussion', 'rightDrawerOpen')
       })
     }
   }
@@ -170,7 +169,9 @@ const TeamPromptResponseCard = (props: Props) => {
 
   return (
     <motion.div
-      layout
+      // `position` (not full `layout`) so cards still slide when siblings reflow, but a card's own
+      // height changes apply instantly — letting "Add to response" stream in without a height jump.
+      layout='position'
       className='mx-auto flex w-full max-w-[600px] flex-col'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
@@ -205,7 +206,7 @@ const TeamPromptResponseCard = (props: Props) => {
         className={cn(
           'flex flex-1 flex-col justify-between rounded-card p-4',
           isEmptyResponse ? 'bg-slate-300 text-slate-600' : 'bg-white shadow-card',
-          meeting?.isRightDrawerOpen && meeting?.localStageId === responseStage.id
+          meeting?.rightDrawerOpen != null && meeting?.localStageId === responseStage.id
             ? 'outline-2 outline-sky-300'
             : 'outline-none'
         )}
