@@ -1,6 +1,7 @@
 import {domainRegex, domainWithWildcardRegex, emailRegex} from 'parabol-client/validation/regex'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
+import normalizeDomain from '../../../utils/normalizeDomain'
 import type {MutationResolvers} from '../resolverTypes'
 
 const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganizationDomains'] = async (
@@ -16,7 +17,7 @@ const addApprovedOrganizationDomains: MutationResolvers['addApprovedOrganization
     return {error: {message: 'Must include at least 1 email domain'}}
   }
 
-  const normalizedEmailDomains = emailDomains.map((domain) => domain.toLowerCase().trim())
+  const normalizedEmailDomains = emailDomains.map(normalizeDomain)
   const invalidEmailDomain = normalizedEmailDomains.find(
     (domain) =>
       !emailRegex.test(domain) && !domainRegex.test(domain) && !domainWithWildcardRegex.test(domain)

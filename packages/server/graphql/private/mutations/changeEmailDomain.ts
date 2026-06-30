@@ -1,6 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../../../postgres/getKysely'
 import getUsersbyDomain from '../../../postgres/queries/getUsersByDomain'
+import normalizeDomain from '../../../utils/normalizeDomain'
 import type {MutationResolvers} from '../../private/resolverTypes'
 
 const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
@@ -8,8 +9,8 @@ const changeEmailDomain: MutationResolvers['changeEmailDomain'] = async (
   {oldDomain, newDomain}
 ) => {
   // VALIDATION
-  const normalizedNewDomain = newDomain.toLowerCase().trim()
-  const normalizedOldDomain = oldDomain.toLowerCase().trim()
+  const normalizedNewDomain = normalizeDomain(newDomain)
+  const normalizedOldDomain = normalizeDomain(oldDomain)
   if (normalizedOldDomain === normalizedNewDomain) {
     return {error: {message: 'New domain is the same as the old one'}}
   }
