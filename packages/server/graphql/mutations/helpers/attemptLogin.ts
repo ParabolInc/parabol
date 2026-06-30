@@ -9,6 +9,7 @@ import AuthToken from '../../../database/types/AuthToken'
 import FailedAuthRequest from '../../../database/types/FailedAuthRequest'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import normalizeEmail from '../../../utils/normalizeEmail'
 import type {DataLoaderWorker} from '../../graphql'
 
 const logFailedLogin = async (ip: string, email: string) => {
@@ -27,7 +28,7 @@ const attemptLogin = async (
 ) => {
   const pg = getKysely()
   const yesterday = new Date(Date.now() - ms('1d'))
-  const email = denormEmail.toLowerCase().trim()
+  const email = normalizeEmail(denormEmail)
 
   const existingUser = await getUserByEmail(email)
   const {failOnAccount, failOnTime} = (await pg

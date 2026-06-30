@@ -8,6 +8,7 @@ import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'
 import getKysely from '../../../postgres/getKysely'
 import {getUserByEmail} from '../../../postgres/queries/getUsersByEmails'
+import normalizeEmail from '../../../utils/normalizeEmail'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -19,7 +20,7 @@ const emailPasswordReset: MutationResolvers['emailPasswordReset'] = async (
   if (process.env.AUTH_INTERNAL_DISABLED === 'true') {
     return {error: {message: 'Resetting password is disabled'}}
   }
-  const email = denormEmail.toLowerCase().trim()
+  const email = normalizeEmail(denormEmail)
 
   const yesterday = new Date(Date.now() - ms('1d'))
   const user = await getUserByEmail(email)

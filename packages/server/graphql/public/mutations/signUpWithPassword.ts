@@ -6,6 +6,7 @@ import {USER_PREFERRED_NAME_LIMIT} from '../../../postgres/constants'
 import getKysely from '../../../postgres/getKysely'
 import {setAuthCookie} from '../../../utils/authCookie'
 import createNewLocalUser from '../../../utils/createNewLocalUser'
+import normalizeEmail from '../../../utils/normalizeEmail'
 import attemptLogin from '../../mutations/helpers/attemptLogin'
 import bootstrapNewUser from '../../mutations/helpers/bootstrapNewUser'
 import type {MutationResolvers} from '../resolverTypes'
@@ -34,7 +35,7 @@ const signUpWithPassword: MutationResolvers['signUpWithPassword'] = async (
   {invitationToken, password, pseudoId, email: denormEmail, params},
   context
 ) => {
-  const email = denormEmail.toLowerCase().trim()
+  const email = normalizeEmail(denormEmail)
   if (email.length > USER_PREFERRED_NAME_LIMIT) {
     return {error: {message: 'Email is too long'}}
   }

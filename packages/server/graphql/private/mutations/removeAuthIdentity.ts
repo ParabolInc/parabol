@@ -4,6 +4,8 @@ import AuthIdentityLocal from '../../../database/types/AuthIdentityLocal'
 import generateRandomString from '../../../generateRandomString'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
+import normalizeDomain from '../../../utils/normalizeDomain'
+import normalizeEmail from '../../../utils/normalizeEmail'
 import isValid from '../../isValid'
 import processEmailPasswordReset from '../../mutations/helpers/processEmailPasswordReset'
 import type {MutationResolvers} from '../../private/resolverTypes'
@@ -15,9 +17,9 @@ const removeAuthIdentity: MutationResolvers['removeAuthIdentity'] = async (
 ) => {
   // VALIDATION
   const [usersByDomain, usersById, usersByEmail] = await Promise.all([
-    domain && getUsersByDomain(domain.toLowerCase().trim()),
+    domain && getUsersByDomain(normalizeDomain(domain)),
     userIds && dataLoader.get('users').loadMany(userIds),
-    emails && getUsersByEmails(emails.map((email) => email.toLowerCase().trim()))
+    emails && getUsersByEmails(emails.map(normalizeEmail))
   ])
   const users = [...(usersByDomain || []), ...(usersById || []), ...(usersByEmail || [])].filter(
     isValid
