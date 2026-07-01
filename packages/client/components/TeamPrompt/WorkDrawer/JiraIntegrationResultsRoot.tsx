@@ -9,17 +9,27 @@ import JiraIntegrationResults from './JiraIntegrationResults'
 
 interface Props {
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const JiraIntegrationResultsRoot = (props: Props) => {
-  const {teamId} = props
+  const {teamId, searchQuery, onResultCount} = props
   const queryRef = useQueryLoaderNow<JiraIntegrationResultsQuery>(jiraIntegrationResultsQuery, {
-    teamId: teamId
+    teamId,
+    searchQuery
   })
   return (
     <ErrorBoundary>
       <Suspense fallback={<Loader />}>
-        {queryRef && <JiraIntegrationResults queryRef={queryRef} teamId={teamId} />}
+        {queryRef && (
+          <JiraIntegrationResults
+            queryRef={queryRef}
+            teamId={teamId}
+            searchQuery={searchQuery}
+            onResultCount={onResultCount}
+          />
+        )}
       </Suspense>
     </ErrorBoundary>
   )

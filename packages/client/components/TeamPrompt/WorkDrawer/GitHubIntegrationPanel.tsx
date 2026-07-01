@@ -45,7 +45,7 @@ const GitHubIntegrationPanel = (props: Props) => {
         prevMeeting {
           createdAt
         }
-        inspirationItems(service: github) {
+        githubInspirationItems: inspirationItems(service: github) {
           id
           title
           content
@@ -177,7 +177,7 @@ const GitHubIntegrationPanel = (props: Props) => {
               meetingId={meeting.id}
               service='github'
               searchQuery={searchQuery}
-              initialItems={meeting.inspirationItems}
+              initialItems={meeting.githubInspirationItems}
               viewerResponse={viewerResponse}
             />
           )}

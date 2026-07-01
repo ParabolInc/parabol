@@ -2,7 +2,6 @@ import TuneIcon from '@mui/icons-material/Tune'
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useState} from 'react'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import useMutationProps from '../../../hooks/useMutationProps'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'
 import {Button} from '../../../ui/Button/Button'
@@ -57,22 +56,21 @@ const InspirationItemsPanel = (props: Props) => {
   )
   const [userPrompt, setUserPrompt] = useState('')
   const [promptOpen, setPromptOpen] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [addingToResponse, setAddingToResponse] = useState(false)
   const [generateInspirationItems, submitting] = useGenerateInspirationItemsMutation()
-  const {
-    onError: onResponseError,
-    onCompleted: onResponseCompleted,
-    submitMutation: submitResponse,
-    submitting: addingToResponse
-  } = useMutationProps()
 
   const onGenerate = () => {
     if (submitting) return
     setError(null)
     generateInspirationItems({
       variables: {input: {meetingId, service, searchQuery, userPrompt: userPrompt.trim() || null}},
-      onError: setError,
-      onCompleted: (res) => {
+      onError: (e) => setError(e.message),
+      onCompleted: (res, errors) => {
+        if (errors) {
+          setError(errors[0]?.message ?? 'Something went wrong')
+          return
+        }
         const generated = res.generateInspirationItems?.inspirationItems ?? []
         setItems(
           generated.map(({id, title, content}) => ({
@@ -104,11 +102,15 @@ const InspirationItemsPanel = (props: Props) => {
     const plaintextContent = [viewerResponse?.plaintextContent, editor.getText()]
       .filter(Boolean)
       .join('\n')
-    submitResponse()
+    setAddingToResponse(true)
     UpsertTeamPromptResponseMutation(
       atmosphere,
       {teamPromptResponseId: viewerResponse?.id, meetingId, content},
-      {plaintextContent, onError: onResponseError, onCompleted: onResponseCompleted}
+      {
+        plaintextContent,
+        onError: () => setAddingToResponse(false),
+        onCompleted: () => setAddingToResponse(false)
+      }
     )
   }
 
@@ -163,7 +165,7 @@ const InspirationItemsPanel = (props: Props) => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-      {error && <div className='text-sm text-tomato-500'>{error.message}</div>}
+      {error && <div className='text-sm text-tomato-500'>{error}</div>}
       {items.map((item) => (
         <InspirationItemCard
           key={item.id}
