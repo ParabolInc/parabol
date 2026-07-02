@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.28.0](https://github.com/ParabolInc/parabol/compare/v13.27.0...v13.28.0) (2026-07-02)
+
+
+### Added
+
+* add jira inspo ([#13262](https://github.com/ParabolInc/parabol/issues/13262)) ([f47bec4](https://github.com/ParabolInc/parabol/commit/f47bec46543e1fcae329b4525f2b6a6bcd80cc75))
+
 ## [13.27.0](https://github.com/ParabolInc/parabol/compare/v13.26.7...v13.27.0) (2026-06-30)
 
 
