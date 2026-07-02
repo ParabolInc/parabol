@@ -21,4 +21,14 @@ type GcalIntegrationEvent {
   A URL link to the event in Google Calendar
   """
   link: String
+
+  """
+  The physical or virtual location of the event, if any
+  """
+  location: String
+
+  """
+  The number of people invited to the event, including the viewer
+  """
+  attendeeCount: Int
 }
