@@ -1,14 +1,18 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {LinearIntegrationPanel_meeting$key} from '../../../__generated__/LinearIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
+import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import linearSVG from '../../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../../utils/LinearClientManager'
+import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
+import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 interface Props {
   meetingRef: LinearIntegrationPanel_meeting$key
@@ -19,8 +23,14 @@ const LinearIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment LinearIntegrationPanel_meeting on TeamPromptMeeting {
+        ...useInspirationDrawer_meeting
         teamId
         id
+        linearInspirationItems: inspirationItems(service: linear) {
+          id
+          title
+          content
+        }
         viewerMeetingMember {
           teamMember {
             teamId
@@ -51,16 +61,25 @@ const LinearIntegrationPanel = (props: Props) => {
     meetingRef
   )
 
+  const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
   const linear = teamMember?.integrations?.linear
   const isActive = !!linear?.auth?.isActive
   const provider = linear?.cloudProvider
-
   const linearViewerId = linear?.api?.query?.viewer?.id
 
-  const [selectedLinearIds, setSelectedLinearIds] = useState<string[]>([])
+  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
+    useInspirationDrawer('linear', meeting)
 
-  const atmosphere = useAtmosphere()
+  const [selectedLinearIds, setSelectedLinearIds] = useSessionStorageState<string[]>(
+    `Inspiration:linear:ids:${meeting.id}`,
+    []
+  )
+
+  const filter = makeLinearWorkFilter(linearViewerId ?? '', selectedLinearIds, dateRange)
+  const searchQuery = JSON.stringify(filter)
+  const hasResults = getHasResults(searchQuery)
+
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
 
@@ -96,10 +115,23 @@ const LinearIntegrationPanel = (props: Props) => {
               setSelectedLinearIds(ids)
             }}
           />
+          <div className='mb-2 flex w-full px-4'>
+            <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
+          </div>
+          {hasResults && (
+            <InspirationItemsPanel
+              meetingId={meeting.id}
+              service='linear'
+              searchQuery={searchQuery}
+              initialItems={meeting.linearInspirationItems}
+              viewerResponse={viewerResponse}
+            />
+          )}
           <LinearIntegrationResultsRoot
-            linearViewerId={linearViewerId}
-            selectedLinearIds={selectedLinearIds}
+            filter={filter}
+            searchQuery={searchQuery}
             teamId={teamMember.teamId}
+            onResultCount={onResultCount}
           />
         </>
       ) : isActive && !linearViewerId ? (

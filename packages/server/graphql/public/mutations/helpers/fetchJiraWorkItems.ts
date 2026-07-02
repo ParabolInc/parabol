@@ -4,12 +4,7 @@ import {serverTipTapExtensions} from '../../../../../client/shared/tiptap/server
 import AtlassianServerManager from '../../../../utils/AtlassianServerManager'
 import {Logger} from '../../../../utils/Logger'
 import type {DataLoaderWorker} from '../../../graphql'
-
-const MAX_ITEMS = 20
-const MAX_BODY_LEN = 1500
-
-const truncate = (text: string, max: number) =>
-  text.length > max ? `${text.slice(0, max)}…` : text
+import {formatWorkItemsForAI, MAX_WORK_ITEMS, type WorkItem} from './workItemsForAI'
 
 // Flatten a Jira ADF description into plaintext for the AI prompt. getIssues types description as
 // a string, but the search API returns it as an ADF document, so guard on the runtime shape.
@@ -36,23 +31,30 @@ const fetchJiraWorkItems = async (
 
   const manager = new AtlassianServerManager(auth.accessToken)
   const cloudResults = await Promise.all(
-    cloudIds.map(async (cloudId) => {
-      const {error, issues} = await manager.getIssues(cloudId, searchQuery, true, [], MAX_ITEMS)
+    cloudIds.map(async (cloudId): Promise<WorkItem[]> => {
+      const {error, issues} = await manager.getIssues(
+        cloudId,
+        searchQuery,
+        true,
+        [],
+        MAX_WORK_ITEMS
+      )
       if (error) {
         Logger.error(error.message)
         return []
       }
-      return issues.map((issue) => {
-        const cloudName = cloudNameLookup[cloudId]
-        const url = `https://${cloudName}.atlassian.net/browse/${issue.issueKey}`
-        const description = adfToPlaintext(issue.description)
-        const body = description ? truncate(description, MAX_BODY_LEN) : '(no description)'
-        return `### Issue: ${issue.summary} (${issue.issueKey})\n${url}\n${body}`
-      })
+      const cloudName = cloudNameLookup[cloudId]
+      return issues.map((issue) => ({
+        kind: 'Issue',
+        title: issue.summary,
+        reference: issue.issueKey,
+        url: `https://${cloudName}.atlassian.net/browse/${issue.issueKey}`,
+        description: adfToPlaintext(issue.description)
+      }))
     })
   )
 
-  return cloudResults.flat().slice(0, MAX_ITEMS).join('\n\n')
+  return formatWorkItemsForAI(cloudResults.flat().slice(0, MAX_WORK_ITEMS))
 }
 
 export default fetchJiraWorkItems
