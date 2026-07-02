@@ -1,5 +1,6 @@
 import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
@@ -10,10 +11,12 @@ interface Props {
   queryRef: PreloadedQuery<GCalIntegrationResultsQuery>
   order: 'DESC' | 'ASC'
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const GCalIntegrationResults = (props: Props) => {
-  const {queryRef, order, teamId} = props
+  const {queryRef, order, teamId, searchQuery, onResultCount} = props
   const query = usePreloadedQuery(
     graphql`
       query GCalIntegrationResultsQuery($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
@@ -41,6 +44,13 @@ const GCalIntegrationResults = (props: Props) => {
   if (order === 'DESC') {
     gcalResults?.reverse()
   }
+
+  // Report how many events this range returned so the parent can hide the AI draft UI
+  // when there's no work to draft from.
+  const resultCount = gcalResults?.length ?? 0
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
 
   const gcalEventsByDay = gcalResults?.reduce<{
     [day: string]: typeof gcalResults
