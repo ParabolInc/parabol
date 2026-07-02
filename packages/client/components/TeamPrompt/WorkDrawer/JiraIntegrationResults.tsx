@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
@@ -12,13 +13,15 @@ import JiraObjectCard from './JiraObjectCard'
 interface Props {
   queryRef: PreloadedQuery<JiraIntegrationResultsQuery>
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const JiraIntegrationResults = (props: Props) => {
-  const {queryRef, teamId} = props
+  const {queryRef, teamId, searchQuery, onResultCount} = props
   const query = usePreloadedQuery(
     graphql`
-      query JiraIntegrationResultsQuery($teamId: ID!) {
+      query JiraIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...JiraIntegrationResults_search @arguments(teamId: $teamId)
       }
     `,
@@ -45,7 +48,7 @@ const JiraIntegrationResults = (props: Props) => {
                   first: $count
                   after: $cursor
                   isJQL: true
-                  queryString: "assignee = currentUser() order by updated DESC"
+                  queryString: $searchQuery
                 ) @connection(key: "JiraScopingSearchResults_issues") {
                   error {
                     message
@@ -75,6 +78,13 @@ const JiraIntegrationResults = (props: Props) => {
   const jira = data.viewer.teamMember?.integrations.atlassian
   const jiraResults = jira?.issues.edges.map((edge) => edge.node)
   const error = jira?.issues.error ?? null
+
+  // Report how many issues this search returned so the parent can hide the AI draft UI
+  // when there's no work to draft from.
+  const resultCount = jiraResults?.length ?? 0
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
 
   return (
     <>
