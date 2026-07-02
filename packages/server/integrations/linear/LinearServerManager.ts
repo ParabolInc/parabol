@@ -12,6 +12,7 @@ import getProfileQuery from '../../graphql/nestedSchema/Linear/queries/getProfil
 import getProjectIssuesQuery from '../../graphql/nestedSchema/Linear/queries/getProjectIssues.graphql'
 import getProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getProjects.graphql'
 import getTeamsAndProjectsQuery from '../../graphql/nestedSchema/Linear/queries/getTeamsAndProjects.graphql'
+import getWorkItemsQuery from '../../graphql/nestedSchema/Linear/queries/getWorkItems.graphql'
 import {linearRequest} from '../../graphql/public/rootSchema'
 import type {TeamMemberIntegrationAuth} from '../../postgres/types'
 import type {
@@ -23,6 +24,8 @@ import type {
   GetProjectIssuesQueryVariables,
   GetProjectsQuery,
   GetTeamsAndProjectsQuery,
+  GetWorkItemsQuery,
+  GetWorkItemsQueryVariables,
   UpdateIssueMutation,
   UpdateIssueMutationVariables
 } from '../../types/linearTypes'
@@ -158,6 +161,12 @@ class LinearServerManager implements TaskIntegrationManager {
     const [data, error] = await linearRequest<GetIssueQuery>(getIssueQuery, {
       id
     })
+    return [data, error] as const
+  }
+
+  async getWorkItems(variables: GetWorkItemsQueryVariables) {
+    const linearRequest = this.getLinearRequest(this.info, this.context)
+    const [data, error] = await linearRequest<GetWorkItemsQuery>(getWorkItemsQuery, variables)
     return [data, error] as const
   }
 

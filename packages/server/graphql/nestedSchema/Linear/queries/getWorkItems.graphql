@@ -1,0 +1,29 @@
+query getWorkItems($filter: IssueFilter, $first: Int!, $commentLast: Int!) {
+  issues(first: $first, filter: $filter, sort: {updatedAt: {order: Descending}}) {
+    nodes {
+      identifier
+      title
+      description
+      url
+      updatedAt
+      state {
+        name
+        type
+      }
+      project {
+        name
+      }
+      team {
+        displayName
+      }
+      comments(last: $commentLast) {
+        nodes {
+          body
+          user {
+            displayName
+          }
+        }
+      }
+    }
+  }
+}

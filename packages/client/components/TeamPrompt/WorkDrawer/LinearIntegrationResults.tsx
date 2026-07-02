@@ -1,4 +1,5 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePaginationFragment, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router'
 import halloweenRetrospectiveTemplate from '../../../../../static/images/illustrations/halloweenRetrospectiveTemplate.png'
@@ -12,10 +13,12 @@ import LinearObjectCard from './LinearObjectCard'
 interface Props {
   queryRef: PreloadedQuery<LinearIntegrationResultsQuery>
   teamId: string
+  searchQuery: string
+  onResultCount: (searchQuery: string, count: number) => void
 }
 
 const LinearIntegrationResults = (props: Props) => {
-  const {queryRef, teamId} = props
+  const {queryRef, teamId, searchQuery, onResultCount} = props
 
   const queryData = usePreloadedQuery<LinearIntegrationResultsQuery>(
     graphql`
@@ -93,6 +96,13 @@ const LinearIntegrationResults = (props: Props) => {
   const linear = data.viewer?.teamMember?.integrations.linear
   const linearIssues = linear?.api?.query?.issues?.edges?.map((edge) => edge?.node)
   const errors = linear?.api?.errors ?? null
+
+  // Report how many issues this search returned so the parent can hide the AI draft UI
+  // when there's no work to draft from.
+  const resultCount = linearIssues?.length ?? 0
+  useEffect(() => {
+    onResultCount(searchQuery, resultCount)
+  }, [searchQuery, resultCount, onResultCount])
 
   return (
     <>

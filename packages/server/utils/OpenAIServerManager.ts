@@ -431,14 +431,16 @@ Return the analysis as a JSON object with this structure:
 
 The standup question is: "${meetingPrompt}"
 
-Below is a list of ${userName}'s recent work items (issues, pull requests, and their discussion threads). Based ONLY on this work, draft a concise, first-person answer to the standup question that summarizes ALL of the work items together — not just one of them.
+Below is a list of ${userName}'s recent work items (issues, pull requests, and their discussion threads). Based ONLY on this work, draft a short, first-person answer to the standup question that summarizes ALL of the work items together — not just one of them.
 
 Rules:
+- Be terse and information-dense. Every sentence must convey a specific piece of work. Get straight to the point.
+- Do NOT add a filler intro (e.g. "Today, I'm working on a few tasks") or a filler outro (e.g. "No major blockers at the moment, just juggling these tasks"). Start with the actual work and end when the work is covered.
+- Do NOT include a blocker sentence unless there is a concrete, specific blocker evident in the work items. Never add a generic "no blockers" statement.
 - Write in the first person ("I", "my"), as if ${userName} wrote it themselves. NEVER refer to ${userName} in the third person (do not write "${userName} did X"); since you are ${userName}, write "I did X".
 - Synthesize across EVERY work item listed below into a single cohesive answer. Do NOT focus on just one item and ignore the rest; cover the full set of work, grouping related items together where it reads naturally.
 - Each work item lists a Status. Match your verb tense to it: use the past tense for completed work (status "complete", e.g. a merged PR or closed issue) and the present/continuous tense for ongoing work (status "in progress", e.g. an open issue or open PR).
-- Be specific: reference the actual work. Keep each individual point brief, but make sure the answer accounts for all of the items rather than expanding on a single one.
-- Mention anything that looks like a blocker or where they might be stuck, if the question asks about it. If you are not sure, omit this part.
+- Be specific: reference the actual work. Keep each point to the essential detail — no padding, no restating the obvious.
 - If the work items are empty or irrelevant to the question, return an empty items array.
 - Produce exactly ONE item, and that one item MUST summarize all of the meaingful work items above. ${styleGuide}
 

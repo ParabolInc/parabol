@@ -1,16 +1,15 @@
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
-import {useCallback, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {JiraIntegrationPanel_meeting$key} from '../../../__generated__/JiraIntegrationPanel_meeting.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
-import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
-import {WorkDrawerDateFilter, type WorkDrawerDateRange} from './WorkDrawerDateFilter'
+import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 interface Props {
   meetingRef: JiraIntegrationPanel_meeting$key
@@ -21,21 +20,13 @@ const JiraIntegrationPanel = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment JiraIntegrationPanel_meeting on TeamPromptMeeting {
+        ...useInspirationDrawer_meeting
         id
         teamId
-        prevMeeting {
-          createdAt
-        }
         jiraInspirationItems: inspirationItems(service: jira) {
           id
           title
           content
-        }
-        responses {
-          id
-          userId
-          content
-          plaintextContent
         }
         viewerMeetingMember {
           teamMember {
@@ -53,16 +44,10 @@ const JiraIntegrationPanel = (props: Props) => {
   )
 
   const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
-    `Inspiration:jira:dateRange:${meeting.id}`,
-    () => ({
-      startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
-      endAt: dayjs().endOf('day').toISOString()
-    })
-  )
+  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
+    useInspirationDrawer('jira', meeting)
 
   // JQL search re-run server-side when drafting a response, so the query the user sees and the
   // query the server runs stay in sync by construction.
@@ -71,17 +56,7 @@ const JiraIntegrationPanel = (props: Props) => {
     : ''
   const conditions = ['assignee = currentUser()', dateQueryString].filter(Boolean).join(' AND ')
   const searchQuery = `${conditions} order by updated DESC`
-
-  const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
-
-  // The results list lives in a separate Suspense subtree, so it reports its count back up here.
-  // We pair the count with the query it came from to avoid showing the draft UI against a stale
-  // result set while a new search is loading.
-  const [searchResult, setSearchResult] = useState<{query: string; count: number}>()
-  const onResultCount = useCallback((query: string, count: number) => {
-    setSearchResult({query, count})
-  }, [])
-  const hasResults = searchResult?.query === searchQuery && searchResult.count > 0
+  const hasResults = getHasResults(searchQuery)
 
   const mutationProps = useMutationProps()
   const {error, onError} = mutationProps
