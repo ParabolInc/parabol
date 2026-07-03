@@ -8,6 +8,8 @@ enum ServiceEnum {
   github
   "Jira Cloud"
   jira
+  "Linear"
+  linear
   "GitLab"
   gitlab
   "Mattermost"

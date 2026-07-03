@@ -298,6 +298,9 @@ export default class Atmosphere extends Environment {
           if (errors) {
             console.warn('GraphQL errors:', errors)
           }
+          // if a mutation throws a GraphQLError, this will result in
+          // `Warning: RelayResponseNormalizer: Payload did not contain a value for field`
+          // but without it, it's a hard error
           _next({...value, data: {}})
           return
         }

@@ -4,16 +4,12 @@ import getGitHubRequest from '../../../../utils/getGitHubRequest'
 import searchWorkItems from '../../../../utils/githubQueries/searchWorkItems.graphql'
 import {Logger} from '../../../../utils/Logger'
 import type {DataLoaderWorker, GQLContext} from '../../../graphql'
-
-const MAX_ITEMS = 20
-// Fetch the most recent comments rather than the first: on long threads the latest
-// discussion carries the current state, which is what the AI needs to draft a response.
-const MAX_COMMENTS = 10
-const MAX_BODY_LEN = 1500
-const MAX_COMMENT_LEN = 500
-
-const truncate = (text: string, max: number) =>
-  text.length > max ? `${text.slice(0, max)}…` : text
+import {
+  formatWorkItemsForAI,
+  MAX_WORK_ITEM_COMMENTS,
+  MAX_WORK_ITEMS,
+  type WorkItem
+} from './workItemsForAI'
 
 // Re-runs the GitHub search the user saw in the Your Work drawer, server-side, but fetches the
 // full body + discussion thread for each item so the AI has enough context to draft a response.
@@ -32,19 +28,19 @@ const fetchGitHubWorkItems = async (
   const githubRequest = getGitHubRequest(info, context, {accessToken})
   const [data, error] = await githubRequest<SearchWorkItemsQuery>(searchWorkItems, {
     searchQuery,
-    first: MAX_ITEMS,
-    commentLast: MAX_COMMENTS
+    first: MAX_WORK_ITEMS,
+    commentLast: MAX_WORK_ITEM_COMMENTS
   })
   if (error) {
     Logger.error(error.message)
     return ''
   }
   const nodes = data.search.nodes ?? []
-  const blocks = nodes.flatMap((node) => {
+  const items = nodes.flatMap((node): WorkItem[] => {
     if (!node || (node.__typename !== '_xGitHubIssue' && node.__typename !== '_xGitHubPullRequest'))
       return []
     const kind = node.__typename === '_xGitHubIssue' ? 'Issue' : 'Pull Request'
-    // OPEN -> ongoing, CLOSED/MERGED -> complete. The AI uses this to pick verb tense.
+    // OPEN -> ongoing, CLOSED/MERGED -> complete.
     const status =
       node.__typename === '_xGitHubIssue'
         ? node.issueState === 'OPEN'
@@ -55,24 +51,23 @@ const fetchGitHubWorkItems = async (
           : node.prState === 'MERGED'
             ? 'merged (complete)'
             : 'closed without merging (complete)'
-    const repo = node.repository.nameWithOwner
-    const thread = (node.comments.nodes ?? [])
-      .flatMap((comment) =>
-        comment?.body?.trim()
-          ? [
-              `  - ${comment.author?.login ?? 'unknown'}: ${truncate(comment.body.trim(), MAX_COMMENT_LEN)}`
-            ]
-          : []
-      )
-      .join('\n')
-    const body = node.body?.trim() ? truncate(node.body.trim(), MAX_BODY_LEN) : '(no description)'
+    const comments = (node.comments.nodes ?? []).map((comment) => ({
+      author: comment?.author?.login ?? 'unknown',
+      body: comment?.body ?? ''
+    }))
     return [
-      `### ${kind}: ${node.title} (${repo})\nStatus: ${status}\n${node.url}\n${body}${
-        thread ? `\nThread:\n${thread}` : ''
-      }`
+      {
+        kind,
+        title: node.title,
+        reference: node.repository.nameWithOwner,
+        status,
+        url: node.url,
+        description: node.body,
+        comments
+      }
     ]
   })
-  return blocks.join('\n\n')
+  return formatWorkItemsForAI(items)
 }
 
 export default fetchGitHubWorkItems
