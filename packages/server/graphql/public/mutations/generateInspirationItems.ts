@@ -7,7 +7,10 @@ import {getUserId, isSuperUser} from '../../../utils/authorization'
 import OpenAIServerManager from '../../../utils/OpenAIServerManager'
 import canAccessAI from '../../mutations/helpers/canAccessAI'
 import type {MutationResolvers} from '../resolverTypes'
+import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
+import fetchJiraWorkItems from './helpers/fetchJiraWorkItems'
+import fetchLinearWorkItems from './helpers/fetchLinearWorkItems'
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,
@@ -61,6 +64,12 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
       context,
       info
     )
+  } else if (service === 'jira') {
+    workItemsText = await fetchJiraWorkItems(teamId, viewerId, searchQuery, dataLoader)
+  } else if (service === 'linear') {
+    workItemsText = await fetchLinearWorkItems(teamId, viewerId, searchQuery, context, info)
+  } else if (service === 'gcal') {
+    workItemsText = await fetchGCalWorkItems(teamId, viewerId, searchQuery, dataLoader)
   } else {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
   }
