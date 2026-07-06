@@ -155,9 +155,7 @@ export const selectOrganizations = () =>
     .select(({fn}) => [fn<CreditCard | null>('to_json', ['creditCard']).as('creditCard')])
 
 export const selectInspirationItems = () => {
-  const query = getKysely()
-    .selectFrom('InspirationItem')
-    .select(['id', 'meetingId', 'userId', 'service', 'title', 'content', 'createdAt'])
+  const query = getKysely().selectFrom('InspirationItem').selectAll()
   return query as AssertedQuery<typeof query, {content: JSONContent}>
 }
 

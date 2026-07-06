@@ -39,7 +39,7 @@ const GitHubIntegrationPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment GitHubIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment GitHubIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         teamId
         id
@@ -47,6 +47,7 @@ const GitHubIntegrationPanel = (props: Props) => {
           id
           title
           content
+          promptId
         }
         viewerMeetingMember {
           teamMember {
@@ -67,8 +68,10 @@ const GitHubIntegrationPanel = (props: Props) => {
   const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
-    useInspirationDrawer('github', meeting)
+  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+    'github',
+    meeting
+  )
 
   const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
     `Inspiration:github:type:${meeting.id}`,
@@ -149,21 +152,22 @@ const GitHubIntegrationPanel = (props: Props) => {
           <div className='mb-2 flex w-full px-4'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
-          {hasResults && (
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='github'
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+            {hasResults && (
+              <InspirationItemsPanel
+                meetingId={meeting.id}
+                service='github'
+                searchQuery={searchQuery}
+                initialItems={meeting.githubInspirationItems}
+              />
+            )}
+            <GitHubIntegrationResultsRoot
+              teamId={teamMember.teamId}
+              queryType={githubType}
               searchQuery={searchQuery}
-              initialItems={meeting.githubInspirationItems}
-              viewerResponse={viewerResponse}
+              onResultCount={onResultCount}
             />
-          )}
-          <GitHubIntegrationResultsRoot
-            teamId={teamMember.teamId}
-            queryType={githubType}
-            searchQuery={searchQuery}
-            onResultCount={onResultCount}
-          />
+          </div>
         </>
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>

@@ -4,7 +4,7 @@ import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
-const useRightDrawer = (meetingId: string) => {
+const useRightDrawer = (meetingId: string, defaultTab = 'discussion') => {
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
@@ -12,12 +12,18 @@ const useRightDrawer = (meetingId: string) => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
-      const isRightDrawerOpen = meeting.getValue('isRightDrawerOpen')
+      const isOpen = meeting.getValue('rightDrawerOpen') != null
       const isCommentUnread = meeting.getValue('isCommentUnread')
-      if (isRightDrawerOpen && isCommentUnread) {
+      if (isOpen && isCommentUnread) {
         meeting.setValue(false, 'isCommentUnread')
       }
-      meeting.setValue(!isRightDrawerOpen, 'isRightDrawerOpen')
+      meeting.setValue(isOpen ? null : defaultTab, 'rightDrawerOpen')
+    })
+  }
+
+  const setActiveTab = (tabId: string) => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId)?.setValue(tabId, 'rightDrawerOpen')
     })
   }
 
@@ -25,7 +31,7 @@ const useRightDrawer = (meetingId: string) => {
     commitLocalUpdate(atmosphere, (store) => {
       const meeting = store.get(meetingId)
       if (!meeting) return
-      meeting.setValue(isOpen, 'isRightDrawerOpen')
+      meeting.setValue(isOpen ? defaultTab : null, 'rightDrawerOpen')
     })
   }
   useLayoutEffect(() => {
@@ -35,7 +41,7 @@ const useRightDrawer = (meetingId: string) => {
     }
   }, [isDesktop])
 
-  return toggleDrawer
+  return [toggleDrawer, setActiveTab] as const
 }
 
 export default useRightDrawer

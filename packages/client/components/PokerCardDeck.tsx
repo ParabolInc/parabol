@@ -54,7 +54,7 @@ const PokerCardDeck = (props: Props) => {
     graphql`
       fragment PokerCardDeck_meeting on PokerMeeting {
         id
-        isRightDrawerOpen
+        rightDrawerOpen
         showSidebar
         phases {
           ... on EstimatePhase {
@@ -73,7 +73,7 @@ const PokerCardDeck = (props: Props) => {
     `,
     meetingRef
   )
-  const {id: meetingId, isRightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
+  const {id: meetingId, rightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
   // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
   const stageId = localStage.id ?? ''
@@ -84,7 +84,7 @@ const PokerCardDeck = (props: Props) => {
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)
   const leftEdge = estimateAreaWidth / 2 - PokerCards.WIDTH / 4
-  const left = useLeft(PokerCards.WIDTH, isRightDrawerOpen, showSidebar)
+  const left = useLeft(PokerCards.WIDTH, rightDrawerOpen != null, showSidebar)
   const isInit = useInitialRender()
   useEffect(() => {
     setIsCollapsed(!isVoting)

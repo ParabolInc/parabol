@@ -16,7 +16,7 @@ const JiraServerIntegrationPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment JiraServerIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment JiraServerIntegrationPanel_meeting on NewMeeting {
         id
         teamId
         viewerMeetingMember {

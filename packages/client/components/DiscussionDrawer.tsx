@@ -26,6 +26,9 @@ interface Props {
   threadHeader?: ReactNode
   // When provided a Your Work tab is inserted between Discussion and Transcription.
   workContent?: ReactNode
+  // When set, the Discussion tab is omitted entirely (e.g. retro reflect/group phases, which have
+  // no discussion thread — only Inspiration and Transcription).
+  hideDiscussion?: boolean
   // When provided, the selected tab is controlled by the parent instead of sessionStorage
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
@@ -42,21 +45,23 @@ const DiscussionDrawer = ({
   threadHeader,
   workContent,
   activeTab,
-  onChangeTab
+  onChangeTab,
+  hideDiscussion
 }: Props) => {
   const tabs = [
-    {id: 'discussion', label: 'Discussion'},
+    ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
     ...(workContent ? [{id: 'inspiration', label: 'Inspiration'}] : []),
     {id: 'transcription', label: 'Transcription'}
   ]
+  const defaultTabId = hideDiscussion ? 'inspiration' : 'discussion'
   const [storedTabId, setStoredTabId] = useSessionStorageState<string>(
     meetingId ? `DiscussionDrawer:tab:${meetingId}` : null,
-    'discussion'
+    defaultTabId
   )
   // When `activeTab` is provided the tab is controlled by the parent (e.g. TeamPrompt's
   // rightDrawerOpen); otherwise it falls back to the sessionStorage-backed state.
   const isControlled = activeTab !== undefined
-  const activeTabId = isControlled ? (activeTab ?? 'discussion') : storedTabId
+  const activeTabId = isControlled ? (activeTab ?? defaultTabId) : storedTabId
   const setActiveTabId = (tabId: string) => {
     if (isControlled) onChangeTab?.(tabId)
     else setStoredTabId(tabId)

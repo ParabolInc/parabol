@@ -1,152 +1,43 @@
-import styled from '@emotion/styled'
-import {Comment} from '@mui/icons-material'
-import type {ReactElement, ReactNode} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
-import {meetingAvatarMediaQueries} from '../styles/meeting'
+import {Forum} from '@mui/icons-material'
+import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
+import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 import DemoCreateAccountButton from './DemoCreateAccountButton'
-import PlainButton from './PlainButton/PlainButton'
+import IconLabel from './IconLabel'
 import RetroDrawerRoot from './RetroDrawerRoot'
 import SidebarToggle from './SidebarToggle'
 
-const localHeaderBreakpoint = makeMinWidthMediaQuery(600)
+// The two custom breakpoints below match the deprecated meetingAvatarMediaQueries (1280px & 1600px).
+export const MeetingTopBarStyles = ({className, ...props}: ComponentPropsWithoutRef<'div'>) => (
+  <div
+    className={cn(
+      // pr compensates for overlapping block padding
+      'flex w-full max-w-full shrink-0 flex-wrap items-start justify-between overflow-x-auto pr-3.5 pl-4 min-[1280px]:pr-3.25',
+      className
+    )}
+    {...props}
+  />
+)
 
-export const MeetingTopBarStyles = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flexShrink: 0,
-  flexWrap: 'wrap',
-  justifyContent: 'space-between',
-  margin: 0,
-  maxWidth: '100%',
-  overflowX: 'auto',
-  paddingLeft: 16,
-  paddingRight: 14, // compensate for overlapping block padding
-  width: '100%',
-  [meetingAvatarMediaQueries[0]]: {
-    paddingRight: 13 // compensate for overlapping block padding
-  }
-})
-
-export const HeadingBlock = styled('div')<{
-  isMeetingSidebarCollapsed?: boolean
-}>(({isMeetingSidebarCollapsed = true}) => ({
-  alignItems: 'flex-start',
-  display: 'flex',
-  paddingLeft: isMeetingSidebarCollapsed ? undefined : 8,
-  marginTop: 16,
-  minHeight: 24,
-  [localHeaderBreakpoint]: {
-    flex: 1
-  }
-}))
-
-const PrimaryActionBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
-})
-
-export const IconGroupBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'center',
-  padding: '10px 0',
-  [meetingAvatarMediaQueries[0]]: {
-    minHeight: 76,
-    padding: 0
-  }
-})
-
-const ChildrenBlock = styled('div')({
-  width: '100%'
-})
-
-const StyledSidebarToggle = styled(SidebarToggle)({
-  marginRight: 16
-})
-
-const badgeSize = 10
-
-const Badge = styled('div')({
-  display: 'block',
-  height: badgeSize,
-  position: 'absolute',
-  width: badgeSize,
-  right: -1,
-  top: -1,
-  zIndex: 1,
-  [meetingAvatarMediaQueries[0]]: {
-    right: 2,
-    top: 2
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    right: 3,
-    top: 3
-  }
-})
-
-const BadgeDot = styled('div')<{isCommentUnread: boolean}>(({isCommentUnread}) => ({
-  backgroundColor: PALETTE.TOMATO_500,
-  border: '1px solid rgba(255, 255, 255, .65)',
-  borderRadius: badgeSize,
-  display: isCommentUnread ? 'flex' : 'none',
-  height: badgeSize,
-  width: badgeSize
-}))
-
-const ButtonContainer = styled('div')({
-  alignItems: 'center',
-  alignContent: 'center',
-  display: 'flex',
-  height: 32,
-  marginLeft: 11,
-  position: 'relative',
-  [meetingAvatarMediaQueries[0]]: {
-    height: 48,
-    marginLeft: 10
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    height: 56
-  }
-})
-
-const DiscussionButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: PALETTE.GRAPE_700,
-  borderRadius: '50%',
-  display: 'flex',
-  padding: 7,
-  [meetingAvatarMediaQueries[0]]: {
-    padding: 12
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    padding: 10
-  }
-})
-
-const StyledIcon = styled(Comment)({
-  color: '#FFFF',
-  transform: 'scaleX(-1)',
-  height: 18,
-  width: 18,
-  [meetingAvatarMediaQueries[0]]: {
-    height: 24,
-    width: 24
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    height: 36,
-    width: 36
-  }
-})
+export const IconGroupBlock = ({className, ...props}: ComponentPropsWithoutRef<'div'>) => (
+  <div
+    className={cn(
+      'flex items-center justify-center py-2.5 min-[1280px]:min-h-19 min-[1280px]:py-0',
+      className
+    )}
+    {...props}
+  />
+)
 
 interface Props {
   avatarGroup: ReactElement
   children?: ReactNode
   isCommentUnread?: boolean
   isMeetingSidebarCollapsed: boolean
-  isRightDrawerOpen?: boolean
+  rightDrawerOpen?: string | null
+  // The tab the drawer button opens to, which sets its icon & label. Defaults to 'discussion'.
+  drawerType?: 'discussion' | 'inspiration'
   toggleSidebar: () => void
   toggleDrawer?: () => void
   meetingId?: string
@@ -158,41 +49,60 @@ const MeetingTopBar = (props: Props) => {
     children,
     isCommentUnread = false,
     isMeetingSidebarCollapsed,
-    isRightDrawerOpen,
+    rightDrawerOpen,
+    drawerType = 'discussion',
     toggleDrawer,
     toggleSidebar,
     meetingId
   } = props
   const showButton = isDemoRoute() && !hasToken()
-  const showDiscussionButton = toggleDrawer && !isRightDrawerOpen
+  const showDrawerButton = toggleDrawer && rightDrawerOpen == null
   const isOptionsVisible = !!meetingId && !isDemoRoute()
+  const drawerButton =
+    drawerType === 'inspiration'
+      ? {icon: 'task_alt' as const, label: 'Inspiration'}
+      : {icon: Forum, label: 'Discussion'}
 
   return (
     <MeetingTopBarStyles>
-      <HeadingBlock isMeetingSidebarCollapsed={isMeetingSidebarCollapsed}>
-        {isMeetingSidebarCollapsed && (
-          <StyledSidebarToggle dataCy='topbar' onClick={toggleSidebar} />
+      <div
+        className={cn(
+          'mt-4 flex min-h-6 items-start min-[600px]:flex-1',
+          !isMeetingSidebarCollapsed && 'pl-2'
         )}
-        <ChildrenBlock>{children}</ChildrenBlock>
-      </HeadingBlock>
+      >
+        {isMeetingSidebarCollapsed && (
+          <SidebarToggle className='mr-4' dataCy='topbar' onClick={toggleSidebar} />
+        )}
+        <div className='w-full'>{children}</div>
+      </div>
       <IconGroupBlock>
         {showButton && (
-          <PrimaryActionBlock>
+          <div className='flex items-center'>
             <DemoCreateAccountButton />
-          </PrimaryActionBlock>
+          </div>
         )}
         {avatarGroup}
-        {isOptionsVisible && <RetroDrawerRoot meetingId={meetingId} />}
-        {showDiscussionButton && toggleDrawer && (
-          <ButtonContainer>
-            <Badge>
-              <BadgeDot isCommentUnread={isCommentUnread} />
-            </Badge>
-            <DiscussionButton onClick={toggleDrawer}>
-              <StyledIcon />
-            </DiscussionButton>
-          </ButtonContainer>
+        {showDrawerButton && toggleDrawer && (
+          <div className='relative ml-2.75 flex content-center items-center min-[1280px]:ml-2.5'>
+            <div className='-top-px -right-px absolute z-1 h-2.5 w-2.5 min-[1280px]:top-2 min-[1600px]:top-0.75 min-[1280px]:right-2 min-[1600px]:right-0.75'>
+              <div
+                className={cn(
+                  'h-2.5 w-2.5 rounded-full border border-white/65 bg-tomato-500',
+                  isCommentUnread ? 'flex' : 'hidden'
+                )}
+              />
+            </div>
+            <button
+              className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-sky-500 text-sm hover:text-sky-600'
+              onClick={toggleDrawer}
+            >
+              <IconLabel icon={drawerButton.icon} iconLarge />
+              <div className='text-slate-700 group-hover:text-slate-900'>{drawerButton.label}</div>
+            </button>
+          </div>
         )}
+        {isOptionsVisible && <RetroDrawerRoot meetingId={meetingId} />}
       </IconGroupBlock>
     </MeetingTopBarStyles>
   )

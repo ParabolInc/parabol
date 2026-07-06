@@ -2,6 +2,12 @@
 A standup-style meeting where each team member responds to a shared prompt
 """
 type TeamPromptMeeting implements NewMeeting {
+  """
+  The viewer's most recently generated AI inspiration items for a given integration service,
+  cached for a short window. Empty if none have been generated recently.
+  """
+  inspirationItems(service: ServiceEnum!): [InspirationItem!]!
+
   "The prompt all team members are responding to"
   meetingPrompt: String!
 
@@ -9,12 +15,6 @@ type TeamPromptMeeting implements NewMeeting {
   The tasks created within the meeting
   """
   responses: [TeamPromptResponse!]!
-
-  """
-  The viewer's most recently generated AI inspiration items for a given integration service,
-  cached for a short window. Empty if none have been generated recently.
-  """
-  inspirationItems(service: ServiceEnum!): [InspirationItem!]!
 
   """
   The team prompt meeting member of the viewer

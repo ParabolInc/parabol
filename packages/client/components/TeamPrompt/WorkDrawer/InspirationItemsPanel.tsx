@@ -14,25 +14,26 @@ import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 import Ellipsis from '../../Ellipsis/Ellipsis'
 import InspirationItemCard from './InspirationItemCard'
+import RetroInspirationItemCard from './RetroInspirationItemCard'
+import {useWorkDrawerConsume} from './WorkDrawerConsumeContext'
 
 interface InspirationItemData {
   id: string
   title: string | null
   content: JSONContent
-}
-
-interface ViewerResponse {
-  id: string
-  content: string
-  plaintextContent: string
+  promptId: string | null
 }
 
 interface Props {
   meetingId: string
   service: string
   searchQuery: string
-  initialItems: readonly {id: string; title?: string | null; content: string}[]
-  viewerResponse: ViewerResponse | null
+  initialItems: readonly {
+    id: string
+    title?: string | null
+    content: string
+    promptId?: string | null
+  }[]
 }
 
 // content arrives as a stringified tiptap doc
@@ -45,13 +46,17 @@ const parseContent = (raw: string): JSONContent => {
 }
 
 const InspirationItemsPanel = (props: Props) => {
-  const {meetingId, service, searchQuery, initialItems, viewerResponse} = props
+  const {meetingId, service, searchQuery, initialItems} = props
+  const consume = useWorkDrawerConsume()
+  const isRetro = consume.mode === 'retro'
+  const viewerResponse = consume.mode === 'teamPrompt' ? consume.viewerResponse : null
   const atmosphere = useAtmosphere()
   const [items, setItems] = useState<InspirationItemData[]>(() =>
-    initialItems.map(({id, title, content}) => ({
+    initialItems.map(({id, title, content, promptId}) => ({
       id,
       title: title ?? null,
-      content: parseContent(content)
+      content: parseContent(content),
+      promptId: promptId ?? null
     }))
   )
   const [userPrompt, setUserPrompt] = useState('')
@@ -73,10 +78,11 @@ const InspirationItemsPanel = (props: Props) => {
         }
         const generated = res.generateInspirationItems?.inspirationItems ?? []
         setItems(
-          generated.map(({id, title, content}) => ({
+          generated.map(({id, title, content, promptId}) => ({
             id,
             title: title ?? null,
-            content: parseContent(content)
+            content: parseContent(content),
+            promptId: promptId ?? null
           }))
         )
       }
@@ -114,6 +120,16 @@ const InspirationItemsPanel = (props: Props) => {
     )
   }
 
+  const generateLabel = isRetro
+    ? 'Draft reflections from this work'
+    : 'Draft my response from this work'
+  const customInstructionsHint = isRetro
+    ? 'Customize how the AI drafts your reflections'
+    : 'Customize how the AI drafts your response'
+  const customInstructionsPlaceholder = isRetro
+    ? 'Tell the AI how to draft your reflections…'
+    : 'Tell the AI how to draft your response…'
+
   return (
     <div className='flex flex-col gap-2 px-4 pb-4'>
       <div className='flex gap-2'>
@@ -124,7 +140,7 @@ const InspirationItemsPanel = (props: Props) => {
           disabled={submitting}
           onClick={onGenerate}
         >
-          {submitting ? <Ellipsis /> : 'Draft my response from this work'}
+          {submitting ? <Ellipsis /> : generateLabel}
         </Button>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -140,7 +156,7 @@ const InspirationItemsPanel = (props: Props) => {
               <TuneIcon />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Customize how the AI drafts your response</TooltipContent>
+          <TooltipContent>{customInstructionsHint}</TooltipContent>
         </Tooltip>
       </div>
       <Dialog isOpen={promptOpen} onClose={() => setPromptOpen(false)}>
@@ -151,7 +167,7 @@ const InspirationItemsPanel = (props: Props) => {
             className='min-h-32 w-full resize-y rounded-md border border-slate-300 p-2 text-slate-700 text-sm focus:border-sky-500 focus:outline-none'
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
-            placeholder='Tell the AI how to draft your response…'
+            placeholder={customInstructionsPlaceholder}
           />
           <DialogActions>
             {userPrompt.trim() && (
@@ -166,16 +182,26 @@ const InspirationItemsPanel = (props: Props) => {
         </DialogContent>
       </Dialog>
       {error && <div className='text-sm text-tomato-500'>{error}</div>}
-      {items.map((item) => (
-        <InspirationItemCard
-          key={item.id}
-          title={item.title}
-          content={item.content}
-          onAddToResponse={onAddToResponse}
-          responsePlaintext={viewerResponse?.plaintextContent ?? ''}
-          disabled={addingToResponse}
-        />
-      ))}
+      {items.map((item) =>
+        isRetro ? (
+          <RetroInspirationItemCard
+            key={item.id}
+            meetingId={meetingId}
+            promptId={item.promptId}
+            title={item.title}
+            content={item.content}
+          />
+        ) : (
+          <InspirationItemCard
+            key={item.id}
+            title={item.title}
+            content={item.content}
+            onAddToResponse={onAddToResponse}
+            responsePlaintext={viewerResponse?.plaintextContent ?? ''}
+            disabled={addingToResponse}
+          />
+        )
+      )}
     </div>
   )
 }

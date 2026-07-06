@@ -8,14 +8,16 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
+import useRightDrawer from '~/hooks/useRightDrawer'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
 import useTooltip from '../hooks/useTooltip'
 import AutogroupMutation from '../mutations/AutogroupMutation'
 import {Elevation} from '../styles/elevation'
-import {Threshold} from '../types/constEnums'
+import {DiscussionThreadEnum, Threshold} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
+import DiscussionDrawer from './DiscussionDrawer'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -25,8 +27,10 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PrimaryButton from './PrimaryButton'
+import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
+import RetroWorkDrawer from './TeamPrompt/WorkDrawer/RetroWorkDrawer'
 
 const ButtonWrapper = styled('div')({
   display: 'flex',
@@ -52,9 +56,12 @@ const RetroGroupPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...StageTimerDisplay_meeting
         ...GroupingKanban_meeting
+        ...DiscussionDrawerTranscripts_meeting
+        ...RetroWorkDrawer_meeting
         id
         endedAt
         showSidebar
+        rightDrawerOpen
         localStage {
           isComplete
           phaseType
@@ -80,11 +87,13 @@ const RetroGroupPhase = (props: Props) => {
     id: meetingId,
     endedAt,
     showSidebar,
+    rightDrawerOpen,
     organization,
     autogroupReflectionGroups,
     localStage,
     team
   } = meeting
+  const [toggleDrawer, setActiveTab] = useRightDrawer(meetingId, 'inspiration')
   const {useAI, tier} = organization
   const {qualAIMeetingsCount} = team
   const teamOverLimit = qualAIMeetingsCount >= Threshold.MAX_QUAL_AI_MEETINGS && tier === 'starter'
@@ -128,7 +137,10 @@ const RetroGroupPhase = (props: Props) => {
           <MeetingTopBar
             avatarGroup={avatarGroup}
             isMeetingSidebarCollapsed={!showSidebar}
+            rightDrawerOpen={rightDrawerOpen}
+            drawerType='inspiration'
             toggleSidebar={toggleSidebar}
+            toggleDrawer={toggleDrawer}
           >
             <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
             <PhaseHeaderDescription>
@@ -161,6 +173,23 @@ const RetroGroupPhase = (props: Props) => {
             </MeetingPhaseWrapper>
           </PhaseWrapper>
         </MeetingHeaderAndPhase>
+        <ResponsiveDashSidebar
+          isOpen={rightDrawerOpen != null}
+          isRightDrawer
+          onToggle={toggleDrawer}
+          sidebarWidth={DiscussionThreadEnum.WIDTH}
+        >
+          <DiscussionDrawer
+            hideDiscussion
+            onToggle={toggleDrawer}
+            allowedThreadables={[]}
+            meetingRef={meeting}
+            meetingId={meetingId}
+            workContent={<RetroWorkDrawer meetingRef={meeting} />}
+            activeTab={rightDrawerOpen}
+            onChangeTab={setActiveTab}
+          />
+        </ResponsiveDashSidebar>
       </MeetingContent>
       {tooltipPortal(tooltipText)}
     </>

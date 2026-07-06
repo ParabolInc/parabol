@@ -44,6 +44,10 @@ const NewMeeting: NewMeetingResolvers = {
 
     return series
   },
+  inspirationItems: ({id: meetingId}, {service}, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    return dataLoader.get('inspirationItemsByMeeting').load({meetingId, userId: viewerId, service})
+  },
   meetingMembers: ({id: meetingId}, _args, {dataLoader}) => {
     return dataLoader.get('meetingMembersByMeetingId').load(meetingId)
   },
