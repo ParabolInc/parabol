@@ -29,6 +29,9 @@ interface Props {
   // When set, the Discussion tab is omitted entirely (e.g. retro reflect/group phases, which have
   // no discussion thread — only Inspiration and Transcription).
   hideDiscussion?: boolean
+  // When set, the tab bar is rendered even if there is only a single tab (e.g. the retro vote
+  // phase, which only has Transcription but should still show it as a tab).
+  alwaysShowTabs?: boolean
   // When provided, the selected tab is controlled by the parent instead of sessionStorage
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
@@ -46,7 +49,8 @@ const DiscussionDrawer = ({
   workContent,
   activeTab,
   onChangeTab,
-  hideDiscussion
+  hideDiscussion,
+  alwaysShowTabs
 }: Props) => {
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
@@ -67,7 +71,7 @@ const DiscussionDrawer = ({
     else setStoredTabId(tabId)
   }
 
-  const hasTabs = tabs.length > 1
+  const hasTabs = alwaysShowTabs || tabs.length > 1
   const activeIdx = Math.max(
     0,
     tabs.findIndex((tab) => tab.id === activeTabId)

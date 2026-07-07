@@ -1,4 +1,4 @@
-import {Forum} from '@mui/icons-material'
+import {Forum, Transcribe} from '@mui/icons-material'
 import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
 import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
@@ -37,7 +37,7 @@ interface Props {
   isMeetingSidebarCollapsed: boolean
   rightDrawerOpen?: string | null
   // The tab the drawer button opens to, which sets its icon & label. Defaults to 'discussion'.
-  drawerType?: 'discussion' | 'inspiration'
+  drawerType?: 'discussion' | 'inspiration' | 'transcription'
   toggleSidebar: () => void
   toggleDrawer?: () => void
   meetingId?: string
@@ -61,7 +61,9 @@ const MeetingTopBar = (props: Props) => {
   const drawerButton =
     drawerType === 'inspiration'
       ? {icon: 'task_alt' as const, label: 'Inspiration'}
-      : {icon: Forum, label: 'Discussion'}
+      : drawerType === 'transcription'
+        ? {icon: Transcribe, label: 'Transcription'}
+        : {icon: Forum, label: 'Discussion'}
 
   return (
     <MeetingTopBarStyles>

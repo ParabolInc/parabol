@@ -5,19 +5,16 @@ import type {RetroReflectPhase_meeting$key} from '~/__generated__/RetroReflectPh
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useRightDrawer from '~/hooks/useRightDrawer'
 import useBreakpoint from '../../hooks/useBreakpoint'
-import {Breakpoint, DiscussionThreadEnum} from '../../types/constEnums'
+import {Breakpoint} from '../../types/constEnums'
 import {phaseLabelLookup} from '../../utils/meetings/lookups'
-import DiscussionDrawer from '../DiscussionDrawer'
 import MeetingContent from '../MeetingContent'
 import MeetingHeaderAndPhase from '../MeetingHeaderAndPhase'
 import MeetingTopBar from '../MeetingTopBar'
 import PhaseHeaderDescription from '../PhaseHeaderDescription'
 import PhaseHeaderTitle from '../PhaseHeaderTitle'
 import PhaseWrapper from '../PhaseWrapper'
-import ResponsiveDashSidebar from '../ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from '../RetroMeeting'
 import StageTimerDisplay from '../StageTimerDisplay'
-import RetroWorkDrawer from '../TeamPrompt/WorkDrawer/RetroWorkDrawer'
 import PhaseItemColumn from './PhaseItemColumn'
 import ReflectWrapperMobile from './ReflectionWrapperMobile'
 import ReflectWrapperDesktop from './ReflectWrapperDesktop'
@@ -34,8 +31,6 @@ const RetroReflectPhase = (props: Props) => {
         ...StageTimerDisplay_meeting
         ...StageTimerControl_meeting
         ...PhaseItemColumn_meeting
-        ...DiscussionDrawerTranscripts_meeting
-        ...RetroWorkDrawer_meeting
         id
         endedAt
         rightDrawerOpen
@@ -58,7 +53,7 @@ const RetroReflectPhase = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {disableAnonymity, localPhase, endedAt, showSidebar, rightDrawerOpen} = meeting
-  const [toggleDrawer, setActiveTab] = useRightDrawer(meeting.id, 'inspiration')
+  const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', false)
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId
@@ -101,23 +96,6 @@ const RetroReflectPhase = (props: Props) => {
           </ColumnWrapper>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
-      <ResponsiveDashSidebar
-        isOpen={rightDrawerOpen != null}
-        isRightDrawer
-        onToggle={toggleDrawer}
-        sidebarWidth={DiscussionThreadEnum.WIDTH}
-      >
-        <DiscussionDrawer
-          hideDiscussion
-          onToggle={toggleDrawer}
-          allowedThreadables={[]}
-          meetingRef={meeting}
-          meetingId={meeting.id}
-          workContent={<RetroWorkDrawer meetingRef={meeting} />}
-          activeTab={rightDrawerOpen}
-          onChangeTab={setActiveTab}
-        />
-      </ResponsiveDashSidebar>
     </MeetingContent>
   )
 }

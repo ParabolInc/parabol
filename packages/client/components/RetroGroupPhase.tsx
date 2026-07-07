@@ -15,9 +15,8 @@ import useMutationProps from '../hooks/useMutationProps'
 import useTooltip from '../hooks/useTooltip'
 import AutogroupMutation from '../mutations/AutogroupMutation'
 import {Elevation} from '../styles/elevation'
-import {DiscussionThreadEnum, Threshold} from '../types/constEnums'
+import {Threshold} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
-import DiscussionDrawer from './DiscussionDrawer'
 import GroupingKanban from './GroupingKanban'
 import MeetingContent from './MeetingContent'
 import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
@@ -27,10 +26,8 @@ import PhaseHeaderDescription from './PhaseHeaderDescription'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
 import PrimaryButton from './PrimaryButton'
-import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
-import RetroWorkDrawer from './TeamPrompt/WorkDrawer/RetroWorkDrawer'
 
 const ButtonWrapper = styled('div')({
   display: 'flex',
@@ -56,8 +53,6 @@ const RetroGroupPhase = (props: Props) => {
         ...StageTimerControl_meeting
         ...StageTimerDisplay_meeting
         ...GroupingKanban_meeting
-        ...DiscussionDrawerTranscripts_meeting
-        ...RetroWorkDrawer_meeting
         id
         endedAt
         showSidebar
@@ -93,7 +88,7 @@ const RetroGroupPhase = (props: Props) => {
     localStage,
     team
   } = meeting
-  const [toggleDrawer, setActiveTab] = useRightDrawer(meetingId, 'inspiration')
+  const [toggleDrawer] = useRightDrawer(meetingId, 'inspiration', false)
   const {useAI, tier} = organization
   const {qualAIMeetingsCount} = team
   const teamOverLimit = qualAIMeetingsCount >= Threshold.MAX_QUAL_AI_MEETINGS && tier === 'starter'
@@ -173,23 +168,6 @@ const RetroGroupPhase = (props: Props) => {
             </MeetingPhaseWrapper>
           </PhaseWrapper>
         </MeetingHeaderAndPhase>
-        <ResponsiveDashSidebar
-          isOpen={rightDrawerOpen != null}
-          isRightDrawer
-          onToggle={toggleDrawer}
-          sidebarWidth={DiscussionThreadEnum.WIDTH}
-        >
-          <DiscussionDrawer
-            hideDiscussion
-            onToggle={toggleDrawer}
-            allowedThreadables={[]}
-            meetingRef={meeting}
-            meetingId={meetingId}
-            workContent={<RetroWorkDrawer meetingRef={meeting} />}
-            activeTab={rightDrawerOpen}
-            onChangeTab={setActiveTab}
-          />
-        </ResponsiveDashSidebar>
       </MeetingContent>
       {tooltipPortal(tooltipText)}
     </>

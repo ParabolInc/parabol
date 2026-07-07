@@ -4,7 +4,7 @@ import {Breakpoint} from '~/types/constEnums'
 import useAtmosphere from './useAtmosphere'
 import useBreakpoint from './useBreakpoint'
 
-const useRightDrawer = (meetingId: string, defaultTab = 'discussion') => {
+const useRightDrawer = (meetingId: string, defaultTab = 'discussion', autoToggle = true) => {
   const atmosphere = useAtmosphere()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
@@ -35,11 +35,12 @@ const useRightDrawer = (meetingId: string, defaultTab = 'discussion') => {
     })
   }
   useLayoutEffect(() => {
+    if (!autoToggle) return
     setDrawerOpen(isDesktop)
     return () => {
       setDrawerOpen(false)
     }
-  }, [isDesktop])
+  }, [isDesktop, autoToggle])
 
   return [toggleDrawer, setActiveTab] as const
 }
