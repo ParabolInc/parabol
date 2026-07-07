@@ -44,7 +44,9 @@ const NewMeeting: NewMeetingResolvers = {
 
     return series
   },
-  inspirationItems: ({id: meetingId}, {service}, {authToken, dataLoader}) => {
+  inspirationItems: ({id: meetingId, meetingType}, {service}, {authToken, dataLoader}) => {
+    // inspirationItems only exist on retro & teamPrompt meetings, so we can skip the DB hit otherwise
+    if (meetingType !== 'retrospective' && meetingType !== 'teamPrompt') return []
     const viewerId = getUserId(authToken)
     return dataLoader.get('inspirationItemsByMeeting').load({meetingId, userId: viewerId, service})
   },
