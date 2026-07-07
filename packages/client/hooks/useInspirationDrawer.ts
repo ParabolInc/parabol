@@ -4,42 +4,39 @@ import {useCallback, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {useInspirationDrawer_meeting$key} from '../__generated__/useInspirationDrawer_meeting.graphql'
 import {type WorkDrawerDateRange} from '../components/TeamPrompt/WorkDrawer/WorkDrawerDateFilter'
-import useAtmosphere from './useAtmosphere'
 import useSessionStorageState from './useSessionStorageState'
 
-// Shared state for the "Your Work" inspiration drawer panels (GitHub, Jira, Linear). Each panel
+// Shared state for the "Your Work" inspiration drawer panels (GitHub, Jira, Linear, …). Each panel
 // builds its own service-specific searchQuery and renders its own results, but they all need the
-// same date-range filter, the viewer's response, and the results-count -> hasResults handshake.
+// same date-range filter and the results-count -> hasResults handshake. Works for both team prompt
+// and retrospective meetings (the NewMeeting interface).
 const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_meeting$key) => {
   const meeting = useFragment(
     graphql`
-      fragment useInspirationDrawer_meeting on TeamPromptMeeting {
+      fragment useInspirationDrawer_meeting on NewMeeting {
         id
-        prevMeeting {
-          createdAt
-        }
-        responses {
-          id
-          userId
-          content
-          plaintextContent
+        createdAt
+        ... on TeamPromptMeeting {
+          prevMeeting {
+            createdAt
+          }
         }
       }
     `,
     meetingRef
   )
-  const atmosphere = useAtmosphere()
-  const {viewerId} = atmosphere
 
+  // Team prompt defaults the window to the previous standup; retro (and any fallback) uses the
+  // meeting's own start time, then finally the last 24 hours.
+  const prevMeetingCreatedAt = 'prevMeeting' in meeting ? meeting.prevMeeting?.createdAt : undefined
   const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
     `Inspiration:${service}:dateRange:${meeting.id}`,
     () => ({
-      startAt: meeting.prevMeeting?.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
+      startAt:
+        prevMeetingCreatedAt ?? meeting.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
       endAt: dayjs().endOf('day').toISOString()
     })
   )
-
-  const viewerResponse = meeting.responses.find((response) => response.userId === viewerId) ?? null
 
   // The results list lives in a separate Suspense subtree, so it reports its count back up here.
   // We pair the count with the query it came from to avoid showing the draft UI against a stale
@@ -51,7 +48,7 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
   const getHasResults = (searchQuery: string) =>
     searchResult?.query === searchQuery && searchResult.count > 0
 
-  return {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} as const
+  return {dateRange, setDateRange, onResultCount, getHasResults} as const
 }
 
 export default useInspirationDrawer

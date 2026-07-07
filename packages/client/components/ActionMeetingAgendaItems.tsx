@@ -41,7 +41,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         showSidebar
         endedAt
         isCommentUnread
-        isRightDrawerOpen
+        rightDrawerOpen
         facilitatorUserId
         phases {
           stages {
@@ -61,10 +61,10 @@ const ActionMeetingAgendaItems = (props: Props) => {
     endedAt,
     localStage,
     isCommentUnread,
-    isRightDrawerOpen
+    rightDrawerOpen
   } = meeting
   const {agendaItem, discussionId} = localStage
-  const toggleDrawer = useRightDrawer(meetingId)
+  const [toggleDrawer] = useRightDrawer(meetingId)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null
   const {content, teamMember} = agendaItem
@@ -79,7 +79,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
-          isRightDrawerOpen={isRightDrawerOpen}
+          rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -96,7 +96,7 @@ const ActionMeetingAgendaItems = (props: Props) => {
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
-        isOpen={isRightDrawerOpen}
+        isOpen={rightDrawerOpen != null}
         isRightDrawer
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}

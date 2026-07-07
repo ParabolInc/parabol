@@ -22,7 +22,7 @@ const LinearIntegrationPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment LinearIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment LinearIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         teamId
         id
@@ -30,6 +30,7 @@ const LinearIntegrationPanel = (props: Props) => {
           id
           title
           content
+          promptId
         }
         viewerMeetingMember {
           teamMember {
@@ -68,8 +69,10 @@ const LinearIntegrationPanel = (props: Props) => {
   const provider = linear?.cloudProvider
   const linearViewerId = linear?.api?.query?.viewer?.id
 
-  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
-    useInspirationDrawer('linear', meeting)
+  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+    'linear',
+    meeting
+  )
 
   const [selectedLinearIds, setSelectedLinearIds] = useSessionStorageState<string[]>(
     `Inspiration:linear:ids:${meeting.id}`,
@@ -118,21 +121,22 @@ const LinearIntegrationPanel = (props: Props) => {
           <div className='mb-2 flex w-full px-4'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
-          {hasResults && (
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='linear'
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+            {hasResults && (
+              <InspirationItemsPanel
+                meetingId={meeting.id}
+                service='linear'
+                searchQuery={searchQuery}
+                initialItems={meeting.linearInspirationItems}
+              />
+            )}
+            <LinearIntegrationResultsRoot
+              filter={filter}
               searchQuery={searchQuery}
-              initialItems={meeting.linearInspirationItems}
-              viewerResponse={viewerResponse}
+              teamId={teamMember.teamId}
+              onResultCount={onResultCount}
             />
-          )}
-          <LinearIntegrationResultsRoot
-            filter={filter}
-            searchQuery={searchQuery}
-            teamId={teamMember.teamId}
-            onResultCount={onResultCount}
-          />
+          </div>
         </>
       ) : isActive && !linearViewerId ? (
         <div className='flex flex-col items-center gap-2 pt-12'>

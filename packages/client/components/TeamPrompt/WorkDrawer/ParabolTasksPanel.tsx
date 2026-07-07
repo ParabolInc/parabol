@@ -23,7 +23,7 @@ const ParabolTasksPanel = (props: Props) => {
 
   const meeting = useFragment(
     graphql`
-      fragment ParabolTasksPanel_meeting on TeamPromptMeeting {
+      fragment ParabolTasksPanel_meeting on NewMeeting {
         id
         teamId
       }

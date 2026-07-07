@@ -13,7 +13,9 @@ extend interface NewMeeting {
 
 extend type ActionMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
@@ -28,7 +30,9 @@ type ParabolSearchQuery {
 
 extend type PokerMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
   showSidebar: Boolean!
@@ -44,7 +48,9 @@ extend type PokerMeeting {
 
 extend type RetrospectiveMeeting {
   isCommentUnread: Boolean!
-  isRightDrawerOpen: Boolean!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  # (e.g. "discussion", "inspiration", "transcription").
+  rightDrawerOpen: String
   isViewerDragInProgress: Boolean
   localPhase: NewMeetingPhase!
   localStage: NewMeetingStage!
