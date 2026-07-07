@@ -77,7 +77,6 @@ const RetroVotePhase = (props: Props) => {
       >
         <DiscussionDrawer
           hideDiscussion
-          alwaysShowTabs
           onToggle={toggleDrawer}
           allowedThreadables={[]}
           meetingRef={meeting}

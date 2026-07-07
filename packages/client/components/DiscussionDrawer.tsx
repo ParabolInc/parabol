@@ -19,9 +19,6 @@ interface Props {
   meetingRef?: DiscussionDrawerTranscripts_meeting$key | null
   // When provided, the selected tab is persisted to sessionStorage scoped to this meeting.
   meetingId?: string
-  // Custom header content replacing the label — e.g. TeamPrompt's avatar + name row.
-  // The close button is always appended after this by DiscussionDrawer.
-  headerContent?: ReactNode
   // Content passed inside the thread above thread items (e.g. TeamPrompt's prompt + reactjis).
   threadHeader?: ReactNode
   // When provided a Your Work tab is inserted between Discussion and Transcription.
@@ -29,9 +26,6 @@ interface Props {
   // When set, the Discussion tab is omitted entirely (e.g. retro reflect/group phases, which have
   // no discussion thread — only Inspiration and Transcription).
   hideDiscussion?: boolean
-  // When set, the tab bar is rendered even if there is only a single tab (e.g. the retro vote
-  // phase, which only has Transcription but should still show it as a tab).
-  alwaysShowTabs?: boolean
   // When provided, the selected tab is controlled by the parent instead of sessionStorage
   // (e.g. TeamPrompt's rightDrawerOpen). Pair with onChangeTab to keep the parent in sync.
   activeTab?: string | null
@@ -44,13 +38,11 @@ const DiscussionDrawer = ({
   allowedThreadables,
   meetingRef,
   meetingId,
-  headerContent,
   threadHeader,
   workContent,
   activeTab,
   onChangeTab,
-  hideDiscussion,
-  alwaysShowTabs
+  hideDiscussion
 }: Props) => {
   const tabs = [
     ...(hideDiscussion ? [] : [{id: 'discussion', label: 'Discussion'}]),
@@ -71,7 +63,6 @@ const DiscussionDrawer = ({
     else setStoredTabId(tabId)
   }
 
-  const hasTabs = alwaysShowTabs || tabs.length > 1
   const activeIdx = Math.max(
     0,
     tabs.findIndex((tab) => tab.id === activeTabId)
@@ -87,26 +78,16 @@ const DiscussionDrawer = ({
       style={drawerStyle}
     >
       <div className='flex w-full select-none items-center border-slate-300 border-b'>
-        {hasTabs ? (
-          <Tabs activeIdx={activeIdx} className='flex-1'>
-            {tabs.map((tab) => (
-              <Tab
-                key={tab.id}
-                label={tab.label}
-                onClick={() => setActiveTabId(tab.id)}
-                className='flex-1 whitespace-nowrap text-xs'
-              />
-            ))}
-          </Tabs>
-        ) : (
-          <div className='flex-1 px-3 py-2'>
-            {headerContent ?? (
-              <span className='font-semibold text-slate-700 text-xs uppercase tracking-wider'>
-                {'Discussion'}
-              </span>
-            )}
-          </div>
-        )}
+        <Tabs activeIdx={activeIdx} className='flex-1'>
+          {tabs.map((tab) => (
+            <Tab
+              key={tab.id}
+              label={tab.label}
+              onClick={() => setActiveTabId(tab.id)}
+              className='flex-1 whitespace-nowrap text-xs'
+            />
+          ))}
+        </Tabs>
         <PlainButton onClick={onToggle} className='h-6 shrink-0 px-2'>
           <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
         </PlainButton>
