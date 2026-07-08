@@ -2,6 +2,7 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import getKysely from '../../../postgres/getKysely'
 import {getUserId, isUserOrgAdmin} from '../../../utils/authorization'
+import {getFeatureFlag} from '../../../utils/featureFlags'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
@@ -49,14 +50,9 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
     return standardError(new Error('Not the user'))
   }
 
-  const featureFlag = await pg
-    .selectFrom('FeatureFlag')
-    .selectAll()
-    .where('featureName', '=', featureName)
-    .where('expiresAt', '>', new Date())
-    .executeTakeFirst()
+  const featureFlag = getFeatureFlag(featureName)
 
-  if (!featureFlag) {
+  if (!featureFlag || featureFlag.expiresAt <= new Date()) {
     return standardError(new Error('Feature flag not found or expired'))
   }
   if (!featureFlag.isPublic) {
@@ -73,7 +69,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   const existingOwner = await pg
     .selectFrom('FeatureFlagOwner')
     .selectAll()
-    .where('featureFlagId', '=', featureFlag.id)
+    .where('featureName', '=', featureName)
     .where((eb) =>
       eb.or([
         eb('orgId', '=', orgId || null),
@@ -90,7 +86,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
   if (isEnabled) {
     await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlag.id)
+      .where('featureName', '=', featureName)
       .where((eb) =>
         eb.or([
           eb('orgId', '=', orgId || null),
@@ -103,7 +99,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
     await pg
       .insertInto('FeatureFlagOwner')
       .values({
-        featureFlagId: featureFlag.id,
+        featureName,
         orgId: orgId || null,
         teamId: teamId || null,
         userId: userId || null
@@ -111,7 +107,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
       .execute()
   }
   const data = {
-    featureFlagId: featureFlag.id,
+    featureFlagId: featureFlag.featureName,
     enabled: !isEnabled
   }
   publish(SubscriptionChannel.NOTIFICATION, ownerId, 'ToggleFeatureFlagPayload', data, subOptions)

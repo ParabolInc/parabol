@@ -1,3 +1,4 @@
+import {getFeatureFlagWithId} from '../../../utils/featureFlags'
 import type {ToggleFeatureFlagSuccessResolvers} from '../resolverTypes'
 
 export type ToggleFeatureFlagSuccessSource = {
@@ -6,8 +7,8 @@ export type ToggleFeatureFlagSuccessSource = {
 }
 
 const ToggleFeatureFlagSuccess: ToggleFeatureFlagSuccessResolvers = {
-  featureFlag: async ({featureFlagId, enabled}, _, {dataLoader}) => {
-    const flag = await dataLoader.get('featureFlags').loadNonNull(featureFlagId)
+  featureFlag: ({featureFlagId: featureName, enabled}) => {
+    const flag = getFeatureFlagWithId(featureName)
     return {
       ...flag,
       enabled

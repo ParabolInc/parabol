@@ -2,6 +2,7 @@ import getKysely from '../../../postgres/getKysely'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserId} from '../../../utils/authorization'
+import {getFeatureFlag} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -22,11 +23,7 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
     })
   }
 
-  const featureFlag = await pg
-    .selectFrom('FeatureFlag')
-    .select(['id', 'scope'])
-    .where('featureName', '=', flagName)
-    .executeTakeFirst()
+  const featureFlag = getFeatureFlag(flagName)
 
   if (!featureFlag) {
     return standardError(new Error('Feature flag not found'), {
@@ -34,7 +31,7 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
     })
   }
 
-  const {id: featureFlagId, scope} = featureFlag
+  const {featureName, scope} = featureFlag
 
   const userIds: string[] = []
   const teamIds: string[] = []
@@ -71,21 +68,21 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
   if (scope === 'User' && userIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('userId', 'in', userIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Team' && teamIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('teamId', 'in', teamIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
   } else if (scope === 'Organization' && orgIds.length > 0) {
     const result = await pg
       .deleteFrom('FeatureFlagOwner')
-      .where('featureFlagId', '=', featureFlagId)
+      .where('featureName', '=', featureName)
       .where('orgId', 'in', orgIds)
       .executeTakeFirst()
     deletedCount = Number(result?.numDeletedRows ?? 0)
@@ -98,7 +95,7 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
   }
 
   return {
-    featureFlagId,
+    featureFlagId: featureName,
     removedCount: deletedCount,
     userIds: scope === 'User' ? userIds : null,
     teamIds: scope === 'Team' ? teamIds : null,

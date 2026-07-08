@@ -2,6 +2,7 @@ import getKysely from '../../../postgres/getKysely'
 import getUsersByDomain from '../../../postgres/queries/getUsersByDomain'
 import {getUsersByEmails} from '../../../postgres/queries/getUsersByEmails'
 import {getUserId} from '../../../utils/authorization'
+import {getFeatureFlag} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -22,11 +23,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     })
   }
 
-  const featureFlag = await pg
-    .selectFrom('FeatureFlag')
-    .select(['id', 'scope'])
-    .where('featureName', '=', flagName)
-    .executeTakeFirst()
+  const featureFlag = getFeatureFlag(flagName)
 
   if (!featureFlag) {
     return standardError(new Error('Feature flag not found'), {
@@ -34,7 +31,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     })
   }
 
-  const {id: featureFlagId, scope} = featureFlag
+  const {featureName, scope} = featureFlag
 
   const userIds: string[] = []
   const teamIds: string[] = []
@@ -68,10 +65,10 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
 
   const values =
     scope === 'User'
-      ? userIds.map((userId) => ({userId, featureFlagId}))
+      ? userIds.map((userId) => ({userId, featureName}))
       : scope === 'Team'
-        ? teamIds.map((teamId) => ({teamId, featureFlagId}))
-        : orgIds.map((orgId) => ({orgId, featureFlagId}))
+        ? teamIds.map((teamId) => ({teamId, featureName}))
+        : orgIds.map((orgId) => ({orgId, featureName}))
 
   if (values.length === 0) {
     return standardError(
@@ -88,7 +85,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     .execute()
 
   return {
-    featureFlagId,
+    featureFlagId: featureName,
     userIds: scope === 'User' ? userIds : [],
     teamIds: scope === 'Team' ? teamIds : [],
     orgIds: scope === 'Organization' ? orgIds : []

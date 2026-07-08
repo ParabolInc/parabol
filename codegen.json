@@ -16,14 +16,12 @@
       "config": {
         "contextType": "../graphql#InternalContext",
         "mappers": {
-          "AddFeatureFlagSuccess": "./types/AddFeatureFlagSuccess#AddFeatureFlagSuccessSource",
           "CompanyCluster": "./types/CompanyCluster#CompanyClusterSource",
           "ReassignToCompanyClusterSuccess": "./types/ReassignToCompanyClusterSuccess#ReassignToCompanyClusterSuccessSource",
           "SetTeamLimitAtSuccess": "./types/SetTeamLimitAtSuccess#SetTeamLimitAtSuccessSource",
           "ApplyFeatureFlagSuccess": "./types/ApplyFeatureFlagSuccess#ApplyFeatureFlagSuccessSource",
           "ChangeEmailDomainSuccess": "./types/ChangeEmailDomainSuccess#ChangeEmailDomainSuccessSource",
           "Company": "./queries/company#CompanySource",
-          "DeleteFeatureFlagSuccess": "./types/DeleteFeatureFlagSuccess#DeleteFeatureFlagSuccessSource",
           "DraftEnterpriseInvoicePayload": "./types/DraftEnterpriseInvoicePayload#DraftEnterpriseInvoicePayloadSource",
           "EndTrialSuccess": "./types/EndTrialSuccess#EndTrialSuccessSource",
           "FlagOverLimitPayload": "./types/FlagOverLimitPayload#FlagOverLimitPayloadSource",
@@ -44,7 +42,6 @@
           "StartTrialSuccess": "./types/StartTrialSuccess#StartTrialSuccessSource",
           "StripeFailPaymentPayload": "./mutations/stripeFailPayment#StripeFailPaymentPayloadSource",
           "Team": "../../postgres/types/index#Team as TeamDB",
-          "UpdateFeatureFlagSuccess": "./types/UpdateFeatureFlagSuccess#UpdateFeatureFlagSuccessSource",
           "UpgradeToTeamTierSuccess": "./mutations/upgradeToTeamTier#UpgradeToTeamTierSuccessSource",
           "User": "../../postgres/types/index#User as UserDB",
           "UserTiersCount": "./types/UserTiersCount#UserTiersCountSource",
