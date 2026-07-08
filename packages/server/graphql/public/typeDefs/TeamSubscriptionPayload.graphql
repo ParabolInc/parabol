@@ -70,7 +70,6 @@ type TeamSubscriptionPayload {
   UpdateRecurrenceSettingsSuccess: UpdateRecurrenceSettingsSuccess
   UpdateDimensionFieldSuccess: UpdateDimensionFieldSuccess
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
-  GenerateInsightSuccess: GenerateInsightSuccess
   JoinTeamSuccess: JoinTeamSuccess
   SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload
 }

@@ -37,7 +37,6 @@ graphql`
       summaryPageId
     }
     team {
-      ...TeamInsights_team
       id
       activeMeetings {
         id
