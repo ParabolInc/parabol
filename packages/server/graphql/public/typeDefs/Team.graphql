@@ -133,11 +133,6 @@ type Team implements Node & TeamPartial {
   organization: Organization! @scope(name: ORGS_READ)
 
   """
-  The AI insight for the team. Null if not enough data or feature flag isn't set
-  """
-  insight: Insight @scope(name: MEETINGS_READ)
-
-  """
   The agenda items for the upcoming or current meeting
   """
   agendaItems: [AgendaItem!]! @scope(name: MEETINGS_READ)

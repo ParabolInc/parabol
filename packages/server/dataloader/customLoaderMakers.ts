@@ -21,7 +21,6 @@ import {
 import type {
   FeatureFlag,
   GitLabDimensionFieldMap,
-  Insight,
   InspirationItem,
   MassInvitation,
   MeetingSettings,
@@ -809,25 +808,6 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
     {
       ...parent.dataLoaderOptions,
       cacheKeyFn: (key) => `${key.teamId}:${key.meetingType}`
-    }
-  )
-}
-
-export const latestInsightByTeamId = (parent: RootDataLoader) => {
-  return new NullableDataLoader<string, Insight | null, string>(
-    async (teamIds) => {
-      const pg = getKysely()
-      const insights = await pg
-        .selectFrom('Insight')
-        .where('teamId', 'in', teamIds)
-        .selectAll()
-        .orderBy('createdAt', 'desc')
-        .execute()
-
-      return teamIds.map((teamId) => insights.find((insight) => insight.teamId === teamId) || null)
-    },
-    {
-      ...parent.dataLoaderOptions
     }
   )
 }

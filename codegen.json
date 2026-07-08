@@ -149,7 +149,6 @@
           "GdriveIntegration": "./types/GdriveIntegration#GdriveIntegrationSource",
           "ZoomIntegration": "./types/ZoomIntegration#ZoomIntegrationSource",
           "GenerateGroupsSuccess": "./types/GenerateGroupsSuccess#GenerateGroupsSuccessSource",
-          "GenerateInsightSuccess": "./types/GenerateInsightSuccess#GenerateInsightSuccessSource",
           "GenerateInspirationItemsSuccess": "./types/GenerateInspirationItemsSuccess#GenerateInspirationItemsSuccessSource",
           "GifResponse": "./types/GifResponse#GifResponseSource",
           "GitHubIntegration": "../../postgres/types/index#GitHubAuth as GitHubAuthDB",
