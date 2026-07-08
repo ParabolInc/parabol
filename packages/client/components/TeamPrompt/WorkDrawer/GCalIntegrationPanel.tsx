@@ -96,7 +96,7 @@ const GCalPanel = (props: Props) => {
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          <div className='mt-4 mb-2 flex w-full px-4'>
+          <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>

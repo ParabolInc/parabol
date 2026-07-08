@@ -19,3 +19,13 @@ export const taskStatusColors: Record<TaskStatus, ValueOf<typeof PALETTE>> = {
   [TaskStatus.ARCHIVED]: PALETTE.SLATE_500,
   [TaskStatus.PRIVATE]: PALETTE.GOLD_300
 } as const
+
+// Tailwind bg-* classes matching taskStatusColors, for use as status color dots
+export const taskStatusDotColors: Record<TaskStatus, string> = {
+  [TaskStatus.DONE]: 'bg-grape-600',
+  [TaskStatus.ACTIVE]: 'bg-jade-400',
+  [TaskStatus.STUCK]: 'bg-tomato-500',
+  [TaskStatus.FUTURE]: 'bg-aqua-400',
+  [TaskStatus.ARCHIVED]: 'bg-slate-500',
+  [TaskStatus.PRIVATE]: 'bg-gold-300'
+} as const

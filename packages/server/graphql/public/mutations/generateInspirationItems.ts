@@ -11,6 +11,7 @@ import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
 import fetchJiraWorkItems from './helpers/fetchJiraWorkItems'
 import fetchLinearWorkItems from './helpers/fetchLinearWorkItems'
+import fetchParabolWorkItems from './helpers/fetchParabolWorkItems'
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,
@@ -72,6 +73,8 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     workItemsText = await fetchLinearWorkItems(teamId, viewerId, searchQuery, context, info)
   } else if (service === 'gcal') {
     workItemsText = await fetchGCalWorkItems(teamId, viewerId, searchQuery, dataLoader)
+  } else if (service === 'PARABOL') {
+    workItemsText = await fetchParabolWorkItems(teamId, viewerId, searchQuery)
   } else {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
   }

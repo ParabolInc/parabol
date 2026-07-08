@@ -16,7 +16,13 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
       fragment useInspirationDrawer_meeting on NewMeeting {
         id
         createdAt
+        meetingType
         ... on TeamPromptMeeting {
+          prevMeeting {
+            createdAt
+          }
+        }
+        ... on RetrospectiveMeeting {
           prevMeeting {
             createdAt
           }
@@ -26,14 +32,19 @@ const useInspirationDrawer = (service: string, meetingRef: useInspirationDrawer_
     meetingRef
   )
 
-  // Team prompt defaults the window to the previous standup; retro (and any fallback) uses the
+  // Both standup and retro default the window to the previous meeting in the series. When there
+  // isn't one, retro falls back to the last two weeks; standup (and any other type) uses the
   // meeting's own start time, then finally the last 24 hours.
   const prevMeetingCreatedAt = 'prevMeeting' in meeting ? meeting.prevMeeting?.createdAt : undefined
+  const retroFallback = dayjs().subtract(2, 'week').toISOString()
+  const defaultStartAt =
+    meeting.meetingType === 'retrospective'
+      ? (prevMeetingCreatedAt ?? retroFallback)
+      : (prevMeetingCreatedAt ?? meeting.createdAt ?? dayjs().subtract(24, 'hour').toISOString())
   const [dateRange, setDateRange] = useSessionStorageState<WorkDrawerDateRange | undefined>(
     `Inspiration:${service}:dateRange:${meeting.id}`,
     () => ({
-      startAt:
-        prevMeetingCreatedAt ?? meeting.createdAt ?? dayjs().subtract(24, 'hour').toISOString(),
+      startAt: defaultStartAt,
       endAt: dayjs().endOf('day').toISOString()
     })
   )
