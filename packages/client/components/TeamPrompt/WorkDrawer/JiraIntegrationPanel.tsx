@@ -81,7 +81,7 @@ const JiraIntegrationPanel = (props: Props) => {
     <>
       {teamMember?.integrations.atlassian?.isActive ? (
         <>
-          <div className='mb-2 flex w-full px-4'>
+          <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
           <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>

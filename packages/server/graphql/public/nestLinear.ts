@@ -14,9 +14,7 @@ export const nestLinear = (parentSchema: GraphQLSchema) =>
       _args,
       {dataLoader}: GQLContext
     ) => {
-      const auth = await dataLoader
-        .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-        .load({service: 'linear', teamId, userId})
+      const auth = await dataLoader.get('freshLinearAuth').load({teamId, userId})
       if (!auth?.accessToken) throw new Error('No Linear token found')
       if (!auth?.providerId) throw new Error('No Linear provider found')
       const {accessToken, providerId} = auth
