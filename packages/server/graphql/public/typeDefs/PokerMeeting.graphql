@@ -3,6 +3,12 @@ A Poker meeting
 """
 type PokerMeeting implements NewMeeting {
   """
+  The viewer's most recently generated AI inspiration items for a given integration service,
+  cached for a short window. Empty if none have been generated recently.
+  """
+  inspirationItems(service: ServiceEnum!): [InspirationItem!]!
+
+  """
   The number of comments generated in the meeting
   """
   commentCount: Int!

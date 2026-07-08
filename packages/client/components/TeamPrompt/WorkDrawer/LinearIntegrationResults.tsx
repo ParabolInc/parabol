@@ -106,7 +106,7 @@ const LinearIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='flex h-full flex-col gap-y-2 overflow-auto px-4'>
+      <div className='flex flex-col gap-y-2 px-4'>
         {linearIssues && linearIssues.length > 0 ? (
           linearIssues.map((issue) => {
             if (!issue) {

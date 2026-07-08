@@ -3,6 +3,12 @@ A retrospective meeting
 """
 type RetrospectiveMeeting implements NewMeeting {
   """
+  The viewer's most recently generated AI inspiration items for a given integration service,
+  cached for a short window. Empty if none have been generated recently.
+  """
+  inspirationItems(service: ServiceEnum!): [InspirationItem!]!
+
+  """
   The unique meeting id. shortid.
   """
   id: ID!
@@ -91,6 +97,11 @@ type RetrospectiveMeeting implements NewMeeting {
   The meeting series this meeting is associated with if the meeting is recurring
   """
   meetingSeries: MeetingSeries
+
+  """
+  The previous retrospective in the same meeting series, if any
+  """
+  prevMeeting: RetrospectiveMeeting
   meetingType: MeetingTypeEnum!
 
   """

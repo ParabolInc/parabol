@@ -10,5 +10,5 @@ type GenerateInspirationItemsSuccess {
   """
   The meeting the items were generated for
   """
-  meeting: TeamPromptMeeting!
+  meeting: NewMeeting!
 }

@@ -13,6 +13,7 @@ const mutation = graphql`
         content
         title
         service
+        promptId
         createdAt
       }
     }

@@ -42,7 +42,7 @@ const RetroDiscussPhase = (props: Props) => {
         id
         endedAt
         isCommentUnread
-        isRightDrawerOpen
+        rightDrawerOpen
         showSidebar
         phases {
           stages {
@@ -63,12 +63,12 @@ const RetroDiscussPhase = (props: Props) => {
     localStage,
     showSidebar,
     isCommentUnread,
-    isRightDrawerOpen
+    rightDrawerOpen
   } = meeting
   const {reflectionGroup, discussionId} = localStage
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment', 'task', 'poll']
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
-  const toggleDrawer = useRightDrawer(meetingId)
+  const [toggleDrawer] = useRightDrawer(meetingId)
   const title = reflectionGroup?.title ?? ''
 
   // Uncomment below code to enable Easter Egg:
@@ -95,7 +95,7 @@ const RetroDiscussPhase = (props: Props) => {
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
-          isRightDrawerOpen={isRightDrawerOpen}
+          rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -139,7 +139,7 @@ const RetroDiscussPhase = (props: Props) => {
         <EditorHelpModalContainer />
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
-        isOpen={isRightDrawerOpen}
+        isOpen={rightDrawerOpen != null}
         isRightDrawer
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}

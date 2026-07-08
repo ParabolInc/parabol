@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.29.0](https://github.com/ParabolInc/parabol/compare/v13.28.0...v13.29.0) (2026-07-08)
+
+
+### Added
+
+* Inspiration Items in Retros ([#13267](https://github.com/ParabolInc/parabol/issues/13267)) ([a742599](https://github.com/ParabolInc/parabol/commit/a742599fbec3041a30e3ea4ffc09cad866d39b51))
+
+
+### Fixed
+
+* linear refresh bug, parabol standups as inspo ([#13269](https://github.com/ParabolInc/parabol/issues/13269)) ([bd8f9af](https://github.com/ParabolInc/parabol/commit/bd8f9af57ac91ecda64d8f69046563e23c5f8a30))
+
 ## [13.28.0](https://github.com/ParabolInc/parabol/compare/v13.27.0...v13.28.0) (2026-07-02)
 
 

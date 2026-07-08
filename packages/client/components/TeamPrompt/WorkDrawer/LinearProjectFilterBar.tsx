@@ -21,7 +21,7 @@ const LinearProjectFilterBar = (props: Props) => {
   const teamMember = useFragment(
     graphql`
       fragment LinearProjectFilterBar_teamMember on TeamMember {
-        ...useLinearProjectsAndTeams_teamMember
+        ...useLinearProjectsAndTeams_teamMember @defer
       }
     `,
     teamMemberRef

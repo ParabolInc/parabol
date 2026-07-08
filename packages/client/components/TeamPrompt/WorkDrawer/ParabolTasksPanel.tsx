@@ -1,18 +1,30 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {ParabolTasksPanel_meeting$key} from '../../../__generated__/ParabolTasksPanel_meeting.graphql'
 import type {TaskStatusEnum} from '../../../__generated__/ParabolTasksResultsQuery.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import CreateTaskMutation from '../../../mutations/CreateTaskMutation'
+import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
+import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {TaskStatus} from '../../../types/constEnums'
+import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {meetingColumnArray} from '../../../utils/constants'
-import dndNoise from '../../../utils/dndNoise'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import {taskStatusLabels} from '../../../utils/taskStatus'
-import AddTaskButton from '../../AddTaskButton'
-import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
+import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
+import InspirationItemsPanel from './InspirationItemsPanel'
+import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
+import ParabolTasksSubPanel from './ParabolTasksSubPanel'
+import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
+
+const SUB_TABS = [
+  {key: 'tasks', label: 'Tasks'},
+  {key: 'standups', label: 'Standups'}
+] as const
+type SubTab = (typeof SUB_TABS)[number]['key']
+
+const PILL = 'shrink-0 cursor-pointer rounded-full px-4 py-2 text-slate-800 text-sm leading-3'
+const PILL_ACTIVE = 'bg-grape-700 font-semibold text-white focus:text-white'
+const PILL_INACTIVE = 'border border-slate-300 bg-white'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -23,32 +35,43 @@ const ParabolTasksPanel = (props: Props) => {
 
   const meeting = useFragment(
     graphql`
-      fragment ParabolTasksPanel_meeting on TeamPromptMeeting {
+      fragment ParabolTasksPanel_meeting on NewMeeting {
+        ...useInspirationDrawer_meeting
         id
         teamId
+        parabolInspirationItems: inspirationItems(service: PARABOL) {
+          id
+          title
+          content
+          promptId
+        }
       }
     `,
     meetingRef
   )
 
   const atmosphere = useAtmosphere()
-  const [selectedStatus, setSelectedStatus] = useState<TaskStatusEnum>(TaskStatus.DONE)
+  const {dateRange, setDateRange} = useInspirationDrawer('PARABOL', meeting)
+  const [subTab, setSubTab] = useSessionStorageState<SubTab>(
+    `Inspiration:parabol:subTab:${meeting.id}`,
+    'tasks'
+  )
+  const [selectedStatuses, setSelectedStatuses] = useSessionStorageState<TaskStatusEnum[]>(
+    `Inspiration:parabol:taskStatuses:${meeting.id}`,
+    [TaskStatus.DONE]
+  )
 
-  const handleAddTask = () => {
-    CreateTaskMutation(
-      atmosphere,
-      {
-        newTask: {
-          status: selectedStatus,
-          meetingId: meeting.id,
-          teamId: meeting.teamId,
-          userId: atmosphere.viewerId,
-          sortOrder: dndNoise()
-        }
-      },
-      {}
+  const toggleStatus = (status: TaskStatusEnum) => {
+    trackTabNavigated(taskStatusLabels[status])
+    setSelectedStatuses((prev) =>
+      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
     )
   }
+
+  // The client serializes the date window as JSON; the server parses it to gather work items.
+  const searchQuery = dateRange
+    ? JSON.stringify({startAt: dateRange.startAt, endAt: dateRange.endAt})
+    : ''
 
   const trackTabNavigated = (label: string) => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Tag Navigated', {
@@ -58,33 +81,66 @@ const ParabolTasksPanel = (props: Props) => {
   }
 
   return (
-    <>
-      <div>
-        <div className='my-4 flex gap-2 px-4'>
+    <div className='flex min-h-0 flex-1 flex-col'>
+      {/* Row 1: content type */}
+      <div className='flex gap-2 px-4 pt-3 pb-1'>
+        {SUB_TABS.map((tab) => (
+          <div
+            key={tab.key}
+            className={cn(PILL, tab.key === subTab ? PILL_ACTIVE : PILL_INACTIVE)}
+            onClick={() => {
+              trackTabNavigated(tab.label)
+              setSubTab(tab.key)
+            }}
+          >
+            {tab.label}
+          </div>
+        ))}
+      </div>
+      {/* Row 2: task status (Tasks only) */}
+      {subTab === 'tasks' && (
+        <div className='flex gap-x-3 px-4 py-2'>
           {meetingColumnArray.map((status) => (
-            <div
+            <label
               key={status}
-              className={cn(
-                'shrink-0 cursor-pointer rounded-full px-4 py-2 text-slate-800 text-sm leading-3',
-                status === selectedStatus
-                  ? 'bg-grape-700 font-semibold text-white focus:text-white'
-                  : 'border border-slate-300 bg-white'
-              )}
-              onClick={() => {
-                trackTabNavigated(taskStatusLabels[status])
-                setSelectedStatus(status)
-              }}
+              className='flex min-w-0 cursor-pointer items-center text-slate-800 text-sm'
             >
-              {taskStatusLabels[status]}
-            </div>
+              <Checkbox
+                checked={selectedStatuses.includes(status)}
+                onCheckedChange={() => toggleStatus(status)}
+              />
+              <span
+                className={cn('ml-1 size-2 shrink-0 rounded-full', taskStatusDotColors[status])}
+              />
+              <span className='ml-0.5 truncate'>{taskStatusLabels[status]}</span>
+            </label>
           ))}
         </div>
+      )}
+      {/* Row 3: date range */}
+      <div className='flex px-2 py-1'>
+        <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
       </div>
-      <ParabolTasksResultsRoot selectedStatus={selectedStatus} />
-      <div className='flex items-center justify-center border-slate-200 border-t border-solid p-2'>
-        <AddTaskButton onClick={handleAddTask} />
+      {/* Row 4: draft button + suggestions, then results (scrollable) */}
+      <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+        <InspirationItemsPanel
+          meetingId={meeting.id}
+          service='PARABOL'
+          searchQuery={searchQuery}
+          initialItems={meeting.parabolInspirationItems}
+        />
+        {subTab === 'tasks' ? (
+          <ParabolTasksSubPanel
+            meetingId={meeting.id}
+            teamId={meeting.teamId}
+            selectedStatuses={selectedStatuses}
+            dateRange={dateRange}
+          />
+        ) : (
+          <ParabolStandupsResultsRoot teamId={meeting.teamId} dateRange={dateRange} />
+        )}
       </div>
-    </>
+    </div>
   )
 }
 

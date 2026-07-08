@@ -19,7 +19,7 @@ const JiraIntegrationPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment JiraIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment JiraIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         id
         teamId
@@ -27,6 +27,7 @@ const JiraIntegrationPanel = (props: Props) => {
           id
           title
           content
+          promptId
         }
         viewerMeetingMember {
           teamMember {
@@ -46,8 +47,10 @@ const JiraIntegrationPanel = (props: Props) => {
   const atmosphere = useAtmosphere()
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
-    useInspirationDrawer('jira', meeting)
+  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+    'jira',
+    meeting
+  )
 
   // JQL search re-run server-side when drafting a response, so the query the user sees and the
   // query the server runs stay in sync by construction.
@@ -78,23 +81,24 @@ const JiraIntegrationPanel = (props: Props) => {
     <>
       {teamMember?.integrations.atlassian?.isActive ? (
         <>
-          <div className='mb-2 flex w-full px-4'>
+          <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
-          {hasResults && (
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='jira'
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+            {hasResults && (
+              <InspirationItemsPanel
+                meetingId={meeting.id}
+                service='jira'
+                searchQuery={searchQuery}
+                initialItems={meeting.jiraInspirationItems}
+              />
+            )}
+            <JiraIntegrationResultsRoot
+              teamId={teamMember.teamId}
               searchQuery={searchQuery}
-              initialItems={meeting.jiraInspirationItems}
-              viewerResponse={viewerResponse}
+              onResultCount={onResultCount}
             />
-          )}
-          <JiraIntegrationResultsRoot
-            teamId={teamMember.teamId}
-            searchQuery={searchQuery}
-            onResultCount={onResultCount}
-          />
+          </div>
         </>
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>

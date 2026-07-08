@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {type ComponentPropsWithoutRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
@@ -9,6 +9,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
 import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/meeting'
+import {cn} from '../../ui/cn'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
 import IconLabel from '../IconLabel'
@@ -56,12 +57,9 @@ const MiddleSection = styled('div')({
   alignItems: 'center'
 })
 
-export const RightSection = styled(IconGroupBlock)({
-  margin: 'auto 0',
-  flex: 1,
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
+export const RightSection = ({className, ...props}: ComponentPropsWithoutRef<'div'>) => (
+  <IconGroupBlock className={cn('my-auto flex-1 justify-end', className)} {...props} />
+)
 
 export const RightSectionContainer = styled('div')({
   display: 'flex',

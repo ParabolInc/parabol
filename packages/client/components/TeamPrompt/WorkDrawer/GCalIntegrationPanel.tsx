@@ -22,7 +22,7 @@ const GCalPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment GCalIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment GCalIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         id
         teamId
@@ -30,6 +30,7 @@ const GCalPanel = (props: Props) => {
           id
           title
           content
+          promptId
         }
         viewerMeetingMember {
           teamMember {
@@ -54,8 +55,10 @@ const GCalPanel = (props: Props) => {
 
   const teamMember = meeting.viewerMeetingMember?.teamMember
 
-  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
-    useInspirationDrawer('gcal', meeting)
+  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+    'gcal',
+    meeting
+  )
 
   // The events query requires a bounded window, so fall back to the past week when the filter is cleared.
   const startDate = dateRange?.startAt ?? new Date(TODAY_MIDNIGHT - ms('7d')).toJSON()
@@ -93,26 +96,27 @@ const GCalPanel = (props: Props) => {
     <>
       {teamMember?.integrations.gcal?.auth?.providerId ? (
         <>
-          <div className='mt-4 mb-2 flex w-full px-4'>
+          <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
-          {hasResults && (
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='gcal'
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+            {hasResults && (
+              <InspirationItemsPanel
+                meetingId={meeting.id}
+                service='gcal'
+                searchQuery={searchQuery}
+                initialItems={meeting.gcalInspirationItems}
+              />
+            )}
+            <GCalIntegrationResultsRoot
+              teamId={teamMember.teamId}
+              startDate={startDate}
+              endDate={endDate}
+              order={order}
               searchQuery={searchQuery}
-              initialItems={meeting.gcalInspirationItems}
-              viewerResponse={viewerResponse}
+              onResultCount={onResultCount}
             />
-          )}
-          <GCalIntegrationResultsRoot
-            teamId={teamMember.teamId}
-            startDate={startDate}
-            endDate={endDate}
-            order={order}
-            searchQuery={searchQuery}
-            onResultCount={onResultCount}
-          />
+          </div>
         </>
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>
