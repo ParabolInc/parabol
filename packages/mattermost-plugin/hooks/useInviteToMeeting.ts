@@ -16,7 +16,8 @@ const MeetingTypeToReadable = {
   action: 'Team Check-in',
   poker: 'Sprint Poker',
   retrospective: 'Retrospective',
-  teamPrompt: 'Standup'
+  teamPrompt: 'Standup',
+  teamHealth: 'Team Health'
 } satisfies Record<MeetingTypeEnum, string>
 
 export const useInviteToMeeting = (meetingRef?: useInviteToMeeting_meeting$key) => {

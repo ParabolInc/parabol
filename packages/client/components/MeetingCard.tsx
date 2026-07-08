@@ -32,14 +32,16 @@ const BACKGROUND_CLASSES = {
   retrospective: 'bg-grape-500',
   action: 'bg-aqua-400',
   poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400'
+  teamPrompt: 'bg-jade-400',
+  teamHealth: 'bg-rose-500'
 } as const
 
 const RECURRING_LABEL_COLORS = {
   retrospective: 'text-grape-600',
   action: 'text-aqua-600',
   poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600'
+  teamPrompt: 'text-jade-600',
+  teamHealth: 'text-rose-600'
 }
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
@@ -50,12 +52,14 @@ interface Props {
   meeting: MeetingCard_meeting$key
 }
 
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt}
+// TODO: add a dedicated teamHealth illustration
+const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 const MEETING_TYPE_LABEL = {
   retrospective: 'Retro',
   action: 'Check-In',
   poker: 'Sprint Poker',
-  teamPrompt: 'Standup'
+  teamPrompt: 'Standup',
+  teamHealth: 'Team Health'
 }
 
 const MeetingCard = (props: Props) => {

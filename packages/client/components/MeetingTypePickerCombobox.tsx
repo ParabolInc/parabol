@@ -15,7 +15,8 @@ export const MeetingTypeToReadable = {
   action: 'Team Check-in',
   poker: 'Sprint Poker',
   retrospective: 'Retrospective',
-  teamPrompt: 'Standup'
+  teamPrompt: 'Standup',
+  teamHealth: 'Team Health'
 } satisfies Record<MeetingTypeEnum, string>
 
 export const MeetingTypePickerCombobox = (props: Props) => {
@@ -34,7 +35,8 @@ export const MeetingTypePickerCombobox = (props: Props) => {
       <MenuContent align='end' sideOffset={4}>
         {Object.entries(MeetingTypeToReadable)
           // Hide Check-in meetings since I didn't build the summarization transform for them
-          .filter((entry) => entry[0] !== 'action')
+          // Hide Team Health meetings until the meeting type ships
+          .filter((entry) => entry[0] !== 'action' && entry[0] !== 'teamHealth')
           .map((entry) => {
             const [meetingType, label] = entry as [MeetingTypeEnum, string]
             const checked = meetingTypes.includes(meetingType)

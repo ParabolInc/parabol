@@ -25,8 +25,10 @@ export const EndMeetingMutationLookup = {
   teamPrompt: EndTeamPromptMutation,
   action: EndCheckInMutation,
   retrospective: EndRetrospectiveMutation,
-  poker: EndSprintPokerMutation
-} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler>>
+  poker: EndSprintPokerMutation,
+  // TODO: add an EndTeamHealth mutation when the meeting type ships
+  teamHealth: null
+} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler> | null>
 
 interface RadioToggleProps {
   checked: boolean

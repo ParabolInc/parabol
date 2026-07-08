@@ -110,5 +110,6 @@ export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {
   retrospective: 'retrospective',
   action: 'feedback',
   poker: 'estimation',
-  teamPrompt: 'standup'
+  teamPrompt: 'standup',
+  teamHealth: 'feedback'
 }

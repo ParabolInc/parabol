@@ -1,5 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
-import type {QuickStats_meeting$key} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
+import type {
+  MeetingTypeEnum,
+  QuickStats_meeting$key
+} from 'parabol-client/__generated__/QuickStats_meeting.graphql'
 import {PALETTE} from 'parabol-client/styles/paletteV3'
 import {FONT_FAMILY} from 'parabol-client/styles/typographyV2'
 import {ACTION, RETROSPECTIVE} from 'parabol-client/utils/constants'
@@ -43,7 +46,10 @@ interface Props {
   meeting: QuickStats_meeting$key
 }
 
-const quickStatsLookup = {
+// teamHealth has no summary stats yet
+const quickStatsLookup: Partial<
+  Record<MeetingTypeEnum, (meeting: any) => {value: string | number; label: string}[]>
+> = {
   [ACTION]: makeActionStats,
   [RETROSPECTIVE]: makeRetroStats,
   poker: makePokerStats,

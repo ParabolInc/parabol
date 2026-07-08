@@ -46,7 +46,8 @@ export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history',
   [POKER]: CardsSVG,
-  [TEAM_PROMPT]: 'group_work'
+  [TEAM_PROMPT]: 'group_work',
+  teamHealth: 'monitor_heart'
 } as Record<MeetingTypeEnum, string | React.ComponentType>
 
 export const phaseTypeToSlug = {
