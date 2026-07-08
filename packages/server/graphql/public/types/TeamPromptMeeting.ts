@@ -55,11 +55,6 @@ const TeamPromptMeeting: TeamPromptMeetingResolvers = {
     return getTeamPromptResponsesByMeetingId(meetingId)
   },
 
-  inspirationItems: ({id: meetingId}, {service}, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    return dataLoader.get('inspirationItemsByMeeting').load({meetingId, userId: viewerId, service})
-  },
-
   responseCount: async ({id: meetingId}) => {
     return (await getTeamPromptResponsesByMeetingId(meetingId)).filter(
       (response) => !!response.plaintextContent

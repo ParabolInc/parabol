@@ -69,7 +69,7 @@ const GCalIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='mt-4 flex h-full flex-col gap-y-4 overflow-auto px-4'>
+      <div className='mt-4 flex flex-col gap-y-4 px-4'>
         {gcalEventsByDay && Object.keys(gcalEventsByDay).length > 0 ? (
           <>
             {Object.entries(gcalEventsByDay).map(([dayString, events]) => {

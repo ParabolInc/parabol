@@ -8,6 +8,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
 import useCallbackRef from '~/hooks/useCallbackRef'
+import useRightDrawer from '~/hooks/useRightDrawer'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMutationProps from '../hooks/useMutationProps'
@@ -55,6 +56,7 @@ const RetroGroupPhase = (props: Props) => {
         id
         endedAt
         showSidebar
+        rightDrawerOpen
         localStage {
           isComplete
           phaseType
@@ -80,11 +82,13 @@ const RetroGroupPhase = (props: Props) => {
     id: meetingId,
     endedAt,
     showSidebar,
+    rightDrawerOpen,
     organization,
     autogroupReflectionGroups,
     localStage,
     team
   } = meeting
+  const [toggleDrawer] = useRightDrawer(meetingId, 'inspiration', false)
   const {useAI, tier} = organization
   const {qualAIMeetingsCount} = team
   const teamOverLimit = qualAIMeetingsCount >= Threshold.MAX_QUAL_AI_MEETINGS && tier === 'starter'
@@ -128,7 +132,10 @@ const RetroGroupPhase = (props: Props) => {
           <MeetingTopBar
             avatarGroup={avatarGroup}
             isMeetingSidebarCollapsed={!showSidebar}
+            rightDrawerOpen={rightDrawerOpen}
+            drawerType='inspiration'
             toggleSidebar={toggleSidebar}
+            toggleDrawer={toggleDrawer}
           >
             <PhaseHeaderTitle>{phaseLabelLookup.group}</PhaseHeaderTitle>
             <PhaseHeaderDescription>

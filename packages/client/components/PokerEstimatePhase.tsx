@@ -51,7 +51,7 @@ const PokerEstimatePhase = (props: Props) => {
         id
         endedAt
         isCommentUnread
-        isRightDrawerOpen
+        rightDrawerOpen
         localStage {
           ...PokerEstimateHeaderCard_stage
           ... on EstimateStage {
@@ -78,10 +78,10 @@ const PokerEstimatePhase = (props: Props) => {
     localStage,
     endedAt,
     isCommentUnread,
-    isRightDrawerOpen,
+    rightDrawerOpen,
     showSidebar
   } = meeting
-  const toggleDrawer = useRightDrawer(meetingId)
+  const [toggleDrawer] = useRightDrawer(meetingId)
   if (!localStage) return null
   const allowedThreadables: DiscussionThreadables[] = endedAt ? [] : ['comment']
   return (
@@ -91,7 +91,7 @@ const PokerEstimatePhase = (props: Props) => {
           avatarGroup={avatarGroup}
           isCommentUnread={isCommentUnread}
           isMeetingSidebarCollapsed={!showSidebar}
-          isRightDrawerOpen={isRightDrawerOpen}
+          rightDrawerOpen={rightDrawerOpen}
           toggleSidebar={toggleSidebar}
           toggleDrawer={toggleDrawer}
         >
@@ -109,7 +109,7 @@ const PokerEstimatePhase = (props: Props) => {
         </StoryAndEstimateWrapper>
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
-        isOpen={isRightDrawerOpen}
+        isOpen={rightDrawerOpen != null}
         isRightDrawer
         onToggle={toggleDrawer}
         sidebarWidth={DiscussionThreadEnum.WIDTH}

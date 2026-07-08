@@ -493,6 +493,103 @@ Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "con
     }
   }
 
+  async generateRetroInspirationItems(
+    workItemsText: string,
+    prompts: {question: string; description: string}[],
+    userName: string,
+    userPrompt?: string | null
+  ): Promise<{
+    items: {title: string | null; content: string; promptIndex: number}[]
+    tokenCost: number
+  } | null> {
+    if (!this.openAIApi) return null
+    if (!workItemsText.trim()) return null
+    if (prompts.length === 0) return null
+
+    // The reflect prompts are the retro's columns. The model drafts reflections and assigns each
+    // to the single best-fitting column by index.
+    const categoryList = prompts
+      .map(
+        (prompt, i) =>
+          `${i}: "${prompt.question}"${prompt.description ? ` — ${prompt.description}` : ''}`
+      )
+      .join('\n')
+
+    const defaultPrompt = `You are helping ${userName} prepare for a team retrospective, grounded in their recent work. You are writing AS ${userName}, in the first person ("I", "my").
+
+A retrospective collects reflections into categories. The categories for this retro are:
+${categoryList}
+
+Below is a list of ${userName}'s recent work items (issues, pull requests, calendar events, tasks, and their discussion threads). Based ONLY on this work, draft several short, first-person reflections that ${userName} could contribute to the retro.
+
+Rules:
+- Produce MULTIPLE distinct reflections (typically one per meaningful theme in the work), not a single summary. Each reflection is one concise thought.
+- Do not just summarize the work done. If a work item does not convey sentiment towards the work that fits the prompt (e.g. what could have been done better), exclude it from consideration and do not use it to create a reflection.
+- For EACH reflection, choose the single best-fitting category and return its index ("promptIndex") from the list above.
+- Be terse and specific. Every reflection must reference concrete work. No filler, no generic statements.
+- Write in the first person ("I", "my"), as if ${userName} wrote it. NEVER refer to ${userName} in the third person.
+- Do NOT invent problems or wins that are not evident in the work items. If a category has nothing relevant, simply produce no reflections for it.
+- If the work items are empty or irrelevant, return an empty items array.
+
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<the reflection>", "promptIndex": <category index> }] }`
+
+    const instructions = userPrompt
+      ? `${userPrompt}
+
+You are writing AS ${userName}, in the first person ("I", "my"). Never refer to ${userName} in the third person. The retro categories are:
+${categoryList}
+
+Produce MULTIPLE distinct reflections grounded ONLY in the work items below. For each, choose the single best-fitting category and return its index as "promptIndex".
+
+Return JSON of the form: { "items": [{ "title": "<short heading, or null>", "content": "<text>", "promptIndex": <category index> }] }`
+      : defaultPrompt
+
+    try {
+      const response = await this.openAIApi.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'user',
+            content: `${instructions}\n\nRecent work items:\n${workItemsText}`
+          }
+        ],
+        response_format: {type: 'json_object'},
+        temperature: 0.7,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0
+      })
+
+      const content = response.choices[0]?.message?.content
+      if (!content) return null
+
+      let parsed: {items?: {title?: string | null; content?: string; promptIndex?: number}[]}
+      try {
+        parsed = JSON.parse(content)
+      } catch {
+        logError(new Error('Failed to parse generateRetroInspirationItems JSON response'))
+        return null
+      }
+
+      const items = (parsed.items ?? [])
+        .filter((item) => !!item?.content?.trim())
+        .map((item) => {
+          // Clamp the model's chosen index into a valid category; default to the first.
+          const rawIndex = Number(item.promptIndex)
+          const promptIndex =
+            Number.isInteger(rawIndex) && rawIndex >= 0 && rawIndex < prompts.length ? rawIndex : 0
+          return {title: item.title?.trim() || null, content: item.content!.trim(), promptIndex}
+        })
+
+      return {items, tokenCost: response.usage?.total_tokens ?? 10_000}
+    } catch (e) {
+      const error =
+        e instanceof Error ? e : new Error('OpenAI failed to generateRetroInspirationItems')
+      logError(error)
+      return null
+    }
+  }
+
   async generateSummary(yamlData: string, userPrompt?: string | null): Promise<string | null> {
     if (!this.openAIApi) return null
     const meetingURL = `https://${process.env.HOST}/meet`

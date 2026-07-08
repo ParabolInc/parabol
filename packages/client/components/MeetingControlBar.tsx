@@ -54,7 +54,7 @@ const MeetingControlBar = (props: Props) => {
         meetingType
         showSidebar
         ... on PokerMeeting {
-          isRightDrawerOpen
+          rightDrawerOpen
         }
         localStage {
           id
@@ -90,8 +90,9 @@ const MeetingControlBar = (props: Props) => {
     phases,
     meetingType,
     showSidebar,
-    isRightDrawerOpen = false
+    rightDrawerOpen
   } = meeting
+  const isRightDrawerOpen = rightDrawerOpen != null // derived for geometry helpers below
   const isFacilitating = facilitatorUserId === viewerId && !endedAt
   const {phaseType} = localPhase
   const {id: localStageId, isComplete} = localStage

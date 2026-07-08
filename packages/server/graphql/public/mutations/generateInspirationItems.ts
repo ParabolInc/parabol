@@ -11,6 +11,7 @@ import fetchGCalWorkItems from './helpers/fetchGCalWorkItems'
 import fetchGitHubWorkItems from './helpers/fetchGitHubWorkItems'
 import fetchJiraWorkItems from './helpers/fetchJiraWorkItems'
 import fetchLinearWorkItems from './helpers/fetchLinearWorkItems'
+import fetchParabolWorkItems from './helpers/fetchParabolWorkItems'
 
 const generateInspirationItems: MutationResolvers['generateInspirationItems'] = async (
   _source,
@@ -26,10 +27,12 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
   const meeting = await dataLoader.get('newMeetings').load(meetingId)
   if (!meeting) throw new GraphQLError('Meeting not found')
   if (meeting.endedAt) throw new GraphQLError('Meeting already ended')
-  if (meeting.meetingType !== 'teamPrompt') {
-    throw new GraphQLError('Inspiration items are only available in standup meetings')
+  if (meeting.meetingType !== 'teamPrompt' && meeting.meetingType !== 'retrospective') {
+    throw new GraphQLError(
+      'Inspiration items are only available in standup and retrospective meetings'
+    )
   }
-  const {teamId, meetingPrompt} = meeting
+  const {teamId} = meeting
 
   const team = await dataLoader.get('teams').loadNonNull(teamId)
   if (!(await canAccessAI(team, dataLoader, true))) {
@@ -70,6 +73,8 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     workItemsText = await fetchLinearWorkItems(teamId, viewerId, searchQuery, context, info)
   } else if (service === 'gcal') {
     workItemsText = await fetchGCalWorkItems(teamId, viewerId, searchQuery, dataLoader)
+  } else if (service === 'PARABOL') {
+    workItemsText = await fetchParabolWorkItems(teamId, viewerId, searchQuery)
   } else {
     throw new GraphQLError(`Inspiration items are not yet supported for ${service}`)
   }
@@ -82,33 +87,72 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
 
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
-  // Pull the viewer's most recent answers from other standups to use as a style guide
-  const pastResponseRows = await pg
-    .selectFrom('TeamPromptResponse')
-    .select('plaintextContent')
-    .where('userId', '=', viewerId)
-    .where('meetingId', '!=', meetingId)
-    .where('plaintextContent', '!=', '')
-    .orderBy('createdAt', 'desc')
-    .limit(5)
-    .execute()
-  const pastResponses = pastResponseRows.map((row) => row.plaintextContent)
-
   const manager = new OpenAIServerManager()
-  const result = await manager.generateInspirationItems(
-    workItemsText,
-    meetingPrompt,
-    viewer.preferredName,
-    pastResponses,
-    userPrompt
-  )
-  if (!result) {
-    throw new GraphQLError('Unable to draft a response right now. Please try again.')
+  // Each generated item, ready to persist. promptId is set for retrospective meetings (the
+  // AI-chosen reflect prompt/column) and null for team prompt meetings.
+  let generatedItems: {title: string | null; content: string; promptId: string | null}[]
+  let tokenCost: number
+
+  if (meeting.meetingType === 'retrospective') {
+    // The retro's reflect prompts are the columns the model assigns each reflection to.
+    const allPrompts = await dataLoader.get('reflectPromptsByTemplateId').load(meeting.templateId)
+    const prompts = allPrompts.filter(
+      (prompt) =>
+        prompt.createdAt < meeting.createdAt &&
+        (!prompt.removedAt || meeting.createdAt < prompt.removedAt)
+    )
+    if (prompts.length === 0) {
+      throw new GraphQLError('This retrospective has no reflect prompts to draft reflections for.')
+    }
+    const result = await manager.generateRetroInspirationItems(
+      workItemsText,
+      prompts.map(({question, description}) => ({question, description})),
+      viewer.preferredName,
+      userPrompt
+    )
+    if (!result) {
+      throw new GraphQLError('Unable to draft reflections right now. Please try again.')
+    }
+    tokenCost = result.tokenCost
+    generatedItems = result.items.map((item) => ({
+      title: item.title,
+      content: item.content,
+      promptId: prompts[item.promptIndex]?.id ?? prompts[0]!.id
+    }))
+  } else {
+    // Pull the viewer's most recent answers from other standups to use as a style guide
+    const pastResponseRows = await pg
+      .selectFrom('TeamPromptResponse')
+      .select('plaintextContent')
+      .where('userId', '=', viewerId)
+      .where('meetingId', '!=', meetingId)
+      .where('plaintextContent', '!=', '')
+      .orderBy('createdAt', 'desc')
+      .limit(5)
+      .execute()
+    const pastResponses = pastResponseRows.map((row) => row.plaintextContent)
+
+    const result = await manager.generateInspirationItems(
+      workItemsText,
+      meeting.meetingPrompt,
+      viewer.preferredName,
+      pastResponses,
+      userPrompt
+    )
+    if (!result) {
+      throw new GraphQLError('Unable to draft a response right now. Please try again.')
+    }
+    tokenCost = result.tokenCost
+    generatedItems = result.items.map((item) => ({
+      title: item.title,
+      content: item.content,
+      promptId: null
+    }))
   }
 
-  await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost: result.tokenCost}).execute()
+  await pg.insertInto('AIRequest').values({userId: viewerId, tokenCost}).execute()
 
-  if (result.items.length === 0) {
+  if (generatedItems.length === 0) {
     throw new GraphQLError('No suggestions could be drafted from your work. Please try again.')
   }
 
@@ -124,11 +168,12 @@ const generateInspirationItems: MutationResolvers['generateInspirationItems'] = 
     await trx
       .insertInto('InspirationItem')
       .values(
-        result.items.map((item) => ({
+        generatedItems.map((item) => ({
           meetingId,
           userId: viewerId,
           service,
           title: item.title,
+          promptId: item.promptId,
           content: JSON.stringify({type: 'doc', content: markdownToTipTap(item.content)})
         }))
       )

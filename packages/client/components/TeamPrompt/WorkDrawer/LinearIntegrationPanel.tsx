@@ -22,7 +22,7 @@ const LinearIntegrationPanel = (props: Props) => {
   const {meetingRef} = props
   const meeting = useFragment(
     graphql`
-      fragment LinearIntegrationPanel_meeting on TeamPromptMeeting {
+      fragment LinearIntegrationPanel_meeting on NewMeeting {
         ...useInspirationDrawer_meeting
         teamId
         id
@@ -30,19 +30,13 @@ const LinearIntegrationPanel = (props: Props) => {
           id
           title
           content
+          promptId
         }
         viewerMeetingMember {
           teamMember {
             teamId
             integrations {
               linear {
-                api {
-                  query {
-                    viewer {
-                      id
-                    }
-                  }
-                }
                 auth {
                   isActive
                 }
@@ -66,17 +60,18 @@ const LinearIntegrationPanel = (props: Props) => {
   const linear = teamMember?.integrations?.linear
   const isActive = !!linear?.auth?.isActive
   const provider = linear?.cloudProvider
-  const linearViewerId = linear?.api?.query?.viewer?.id
 
-  const {dateRange, setDateRange, viewerResponse, onResultCount, getHasResults} =
-    useInspirationDrawer('linear', meeting)
+  const {dateRange, setDateRange, onResultCount, getHasResults} = useInspirationDrawer(
+    'linear',
+    meeting
+  )
 
   const [selectedLinearIds, setSelectedLinearIds] = useSessionStorageState<string[]>(
     `Inspiration:linear:ids:${meeting.id}`,
     []
   )
 
-  const filter = makeLinearWorkFilter(linearViewerId ?? '', selectedLinearIds, dateRange)
+  const filter = makeLinearWorkFilter(selectedLinearIds, dateRange)
   const searchQuery = JSON.stringify(filter)
   const hasResults = getHasResults(searchQuery)
 
@@ -101,7 +96,7 @@ const LinearIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {isActive && linearViewerId && teamMember ? (
+      {isActive && teamMember ? (
         <>
           <LinearProjectFilterBar
             teamMemberRef={teamMember}
@@ -115,30 +110,26 @@ const LinearIntegrationPanel = (props: Props) => {
               setSelectedLinearIds(ids)
             }}
           />
-          <div className='mb-2 flex w-full px-4'>
+          <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />
           </div>
-          {hasResults && (
-            <InspirationItemsPanel
-              meetingId={meeting.id}
-              service='linear'
+          <div className='flex min-h-0 flex-1 flex-col overflow-y-auto'>
+            {hasResults && (
+              <InspirationItemsPanel
+                meetingId={meeting.id}
+                service='linear'
+                searchQuery={searchQuery}
+                initialItems={meeting.linearInspirationItems}
+              />
+            )}
+            <LinearIntegrationResultsRoot
+              filter={filter}
               searchQuery={searchQuery}
-              initialItems={meeting.linearInspirationItems}
-              viewerResponse={viewerResponse}
+              teamId={teamMember.teamId}
+              onResultCount={onResultCount}
             />
-          )}
-          <LinearIntegrationResultsRoot
-            filter={filter}
-            searchQuery={searchQuery}
-            teamId={teamMember.teamId}
-            onResultCount={onResultCount}
-          />
+          </div>
         </>
-      ) : isActive && !linearViewerId ? (
-        <div className='flex flex-col items-center gap-2 pt-12'>
-          <b>Error: Linear Integration API Not Responding</b>
-          <div className='w-1/2 text-center text-sm'>Please try your request again later.</div>
-        </div>
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>
           <div className='h-10 w-10'>

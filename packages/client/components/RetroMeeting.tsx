@@ -15,6 +15,7 @@ import MeetingControlBar from './MeetingControlBar'
 import MeetingLockedOverlay from './MeetingLockedOverlay'
 import MeetingStyles from './MeetingStyles'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
+import RetroInspirationDrawer from './RetroInspirationDrawer'
 import RetroMeetingSidebar from './RetroMeetingSidebar'
 
 interface Props {
@@ -61,6 +62,7 @@ const RetroMeeting = (props: Props) => {
         ...RetroGroupPhase_meeting
         ...RetroVotePhase_meeting
         ...RetroDiscussPhase_meeting
+        ...RetroInspirationDrawer_meeting
         ...NewMeetingAvatarGroup_meeting
         ...MeetingLockedOverlay_meeting
         id
@@ -85,6 +87,10 @@ const RetroMeeting = (props: Props) => {
   const {id: meetingId, showSidebar, localPhase} = meeting
   const localPhaseType = localPhase?.phaseType
   const Phase = phaseLookup[localPhaseType]!
+  // The inspiration drawer is shared by the reflect & group phases. Render it here, above the
+  // swapped Phase component, so it stays mounted across the reflect <-> group transition and
+  // doesn't flicker.
+  const showInspirationDrawer = localPhaseType === 'reflect' || localPhaseType === 'group'
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID
@@ -108,6 +114,7 @@ const RetroMeeting = (props: Props) => {
           avatarGroup={<NewMeetingAvatarGroup meetingRef={meeting} />}
         />
       </Suspense>
+      {showInspirationDrawer && <RetroInspirationDrawer meeting={meeting} />}
       <MeetingControlBar
         isDemoStageComplete={isDemoStageComplete}
         meeting={meeting}

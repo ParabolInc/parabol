@@ -41,8 +41,8 @@ export const addCommentMeetingUpdater: SharedUpdater<AddCommentMutation_meeting$
 ) => {
   const meetingId = payload.getValue('meetingId')
   const meeting = store.get(meetingId)
-  const isRightDrawerOpen = meeting?.getValue('isRightDrawerOpen')
-  if (isRightDrawerOpen === false) {
+  const rightDrawerOpen = meeting?.getValue('rightDrawerOpen')
+  if (rightDrawerOpen == null) {
     meeting?.setValue(true, 'isCommentUnread')
   }
   const comment = payload.getLinkedRecord('comment')

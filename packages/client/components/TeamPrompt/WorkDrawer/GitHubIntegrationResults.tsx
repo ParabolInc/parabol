@@ -92,7 +92,7 @@ const GitHubIntegrationResults = (props: Props) => {
 
   return (
     <>
-      <div className='flex h-full flex-col gap-y-2 overflow-auto px-4'>
+      <div className='flex flex-col gap-y-2 px-4'>
         {githubResults && githubResults.length > 0 ? (
           githubResults?.map((result, idx) => {
             if (!result) {
