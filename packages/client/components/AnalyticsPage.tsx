@@ -28,11 +28,6 @@ declare global {
       fieldName: string,
       callback: (field: string) => void
     ) => void
-    HubSpotConversations?: {
-      widget?: {
-        refresh?: () => void
-      }
-    }
   }
 }
 
@@ -191,11 +186,6 @@ const AnalyticsPage = () => {
       }
     }, TIME_TO_RENDER_TREE)
   }, [pathname, location.search, atmosphere.viewerId])
-
-  // We need to refresh the chat widget so it can recheck the URL
-  useEffect(() => {
-    window.HubSpotConversations?.widget?.refresh?.()
-  }, [pathname])
 
   useEffect(() => {
     if (!datadogEnabled) {
