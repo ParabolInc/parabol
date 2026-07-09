@@ -66,6 +66,10 @@ graphql`
             ... on DiscussPhase {
               phaseType
               stages {
+                # the stage list is replaced wholesale and the viewer is navigated here
+                # immediately, so this payload cannot rely on the store already having
+                # the reflection group's data (e.g. reflections)
+                ...RetroDiscussPhase_stage
                 id
                 isComplete
                 isNavigable
