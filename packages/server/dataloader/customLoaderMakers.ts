@@ -32,7 +32,7 @@ import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
 import {
   type FeatureFlagName,
-  type FeatureFlagWithId,
+  type FeatureFlagRecord,
   getFeatureFlag,
   getFeatureFlagsByScope
 } from '../utils/featureFlags'
@@ -919,7 +919,7 @@ export const publicTemplatesByType = (parent: RootDataLoader) => {
 export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
   return new DataLoader<
     {ownerId: string; scope: 'Organization' | 'Team' | 'User'},
-    FeatureFlagWithId[],
+    (FeatureFlagRecord & {enabled: boolean})[],
     string
   >(
     async (keys) => {

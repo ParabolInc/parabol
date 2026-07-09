@@ -40,19 +40,20 @@ export const FEATURE_FLAGS = {
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS
 
-export type FeatureFlagWithId = FeatureFlag & {id: string; featureName: FeatureFlagName}
+export type FeatureFlagRecord = FeatureFlag & {featureName: FeatureFlagName}
 
-export const getFeatureFlag = (featureName: string) => {
-  return (FEATURE_FLAGS as Record<string, FeatureFlag>)[featureName]
+export function getFeatureFlag(featureName: FeatureFlagName): FeatureFlagRecord
+export function getFeatureFlag(featureName: string): FeatureFlagRecord | undefined
+export function getFeatureFlag(featureName: string) {
+  return (FEATURE_FLAGS as Record<string, FeatureFlagRecord>)[featureName]
 }
 
 export const getFeatureFlagsByScope = (
   scope: FeatureFlag['scope'] | 'all'
-): FeatureFlagWithId[] => {
+): FeatureFlagRecord[] => {
   const now = new Date()
   return Object.values(FEATURE_FLAGS)
     .filter((flag) => flag.expiresAt > now)
     .filter((flag) => scope === 'all' || flag.scope === scope)
     .sort((a, b) => a.featureName.localeCompare(b.featureName))
-    .map((flag) => ({...flag, id: flag.featureName, isEnabled: true}))
 }

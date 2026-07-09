@@ -1,9 +1,9 @@
-import {FEATURE_FLAGS, type FeatureFlagName} from '../../../utils/featureFlags'
+import {type FeatureFlagName, getFeatureFlag} from '../../../utils/featureFlags'
 import isValid from '../../isValid'
 import type {RemoveFeatureFlagOwnerSuccessResolvers} from '../resolverTypes'
 
 export type RemoveFeatureFlagOwnerSuccessSource = {
-  featureName: string
+  featureName: FeatureFlagName
   userIds: string[] | null
   teamIds: string[] | null
   orgIds: string[] | null
@@ -12,7 +12,7 @@ export type RemoveFeatureFlagOwnerSuccessSource = {
 
 const RemoveFeatureFlagOwnerSuccess: RemoveFeatureFlagOwnerSuccessResolvers = {
   featureFlag: ({featureName}) => {
-    return FEATURE_FLAGS[featureName as FeatureFlagName]
+    return getFeatureFlag(featureName)
   },
   users: async ({userIds}, _args, {dataLoader}) => {
     if (!userIds) return null
