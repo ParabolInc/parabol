@@ -107,7 +107,7 @@ const toggleFeatureFlag: MutationResolvers['toggleFeatureFlag'] = async (
       .execute()
   }
   const data = {
-    featureFlagId: featureFlag.featureName,
+    featureName: featureFlag.featureName,
     enabled: !isEnabled
   }
   publish(SubscriptionChannel.NOTIFICATION, ownerId, 'ToggleFeatureFlagPayload', data, subOptions)

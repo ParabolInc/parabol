@@ -62,7 +62,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     .createTable('FeatureFlag')
     .addColumn('id', 'uuid', (col) => col.primaryKey().defaultTo(sql`gen_random_uuid()`))
     .addColumn('featureName', 'varchar(255)', (col) => col.notNull())
-    .addColumn('scope', 'FeatureFlagScope', (col) => col.notNull())
+    .addColumn('scope', sql`"FeatureFlagScope"`, (col) => col.notNull())
     .addColumn('description', 'text')
     .addColumn('expiresAt', 'timestamptz', (col) => col.notNull())
     .addColumn('createdAt', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())

@@ -95,7 +95,7 @@ const removeFeatureFlagOwner: MutationResolvers['removeFeatureFlagOwner'] = asyn
   }
 
   return {
-    featureFlagId: featureName,
+    featureName,
     removedCount: deletedCount,
     userIds: scope === 'User' ? userIds : null,
     teamIds: scope === 'Team' ? teamIds : null,

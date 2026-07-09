@@ -85,7 +85,7 @@ const applyFeatureFlag: MutationResolvers['applyFeatureFlag'] = async (
     .execute()
 
   return {
-    featureFlagId: featureName,
+    featureName,
     userIds: scope === 'User' ? userIds : [],
     teamIds: scope === 'Team' ? teamIds : [],
     orgIds: scope === 'Organization' ? orgIds : []

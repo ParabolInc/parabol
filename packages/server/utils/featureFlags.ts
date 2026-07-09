@@ -46,14 +46,6 @@ export const getFeatureFlag = (featureName: string) => {
   return (FEATURE_FLAGS as Record<string, FeatureFlag>)[featureName]
 }
 
-export const getFeatureFlagWithId = (featureName: string): FeatureFlagWithId => {
-  const flag = getFeatureFlag(featureName)
-  if (!flag) {
-    throw new Error(`Non-nullable value is undefined for key: ${JSON.stringify(featureName)}`)
-  }
-  return {...flag, id: flag.featureName}
-}
-
 export const getFeatureFlagsByScope = (
   scope: FeatureFlag['scope'] | 'all'
 ): FeatureFlagWithId[] => {
