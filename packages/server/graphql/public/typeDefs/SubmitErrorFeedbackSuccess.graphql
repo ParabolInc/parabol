@@ -1,0 +1,7 @@
+"""
+Return value for submitErrorFeedback
+"""
+type SubmitErrorFeedbackSuccess {
+  "The database id of the persisted feedback row"
+  feedbackId: ID!
+}
