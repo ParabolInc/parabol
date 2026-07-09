@@ -40,7 +40,7 @@ export const FEATURE_FLAGS = {
 
 export type FeatureFlagName = keyof typeof FEATURE_FLAGS
 
-export type FeatureFlagWithId = FeatureFlag & {id: string}
+export type FeatureFlagWithId = FeatureFlag & {id: string; featureName: FeatureFlagName}
 
 export const getFeatureFlag = (featureName: string) => {
   return (FEATURE_FLAGS as Record<string, FeatureFlag>)[featureName]

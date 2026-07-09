@@ -30,7 +30,12 @@ import type {
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
-import {type FeatureFlagWithId, getFeatureFlag, getFeatureFlagsByScope} from '../utils/featureFlags'
+import {
+  type FeatureFlagName,
+  type FeatureFlagWithId,
+  getFeatureFlag,
+  getFeatureFlagsByScope
+} from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
@@ -814,7 +819,7 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
 
 // whether a feature flag is enabled for a given owner (user, team, or org)
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
-  return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(
+  return new DataLoader<{ownerId: string; featureName: FeatureFlagName}, boolean, string>(
     async (keys) => {
       const pg = getKysely()
 
