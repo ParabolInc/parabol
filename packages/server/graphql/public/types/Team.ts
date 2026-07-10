@@ -11,6 +11,7 @@ import {
   isTeamMember,
   isUserBillingLeader
 } from '../../../utils/authorization'
+import type {FeatureFlagName} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
@@ -38,7 +39,9 @@ const Team: TeamResolvers = {
     return tier
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: teamId, featureName: featureName as FeatureFlagName})
   },
   isOnboardTeam: ({isOnboardTeam}) => !!isOnboardTeam,
   isOrgAdmin: async ({orgId}, _args, {authToken, dataLoader}) => {

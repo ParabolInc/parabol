@@ -7,17 +7,11 @@ import {getFeatureTier} from './getFeatureTier'
  * - the organization is unpaid
  */
 const isMeetingLocked = async (
-  viewerId: string,
   teamId: string,
   endedAt: Date | undefined | null,
   dataLoader: DataLoaderWorker
 ) => {
-  const [team, hasNoMeetingHistoryLimit] = await Promise.all([
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader
-      .get('featureFlagByOwnerId')
-      .load({ownerId: viewerId, featureName: 'noMeetingHistoryLimit'})
-  ])
+  const team = await dataLoader.get('teams').loadNonNull(teamId)
   const {orgId} = team
   const org = await dataLoader.get('organizations').loadNonNull(orgId)
   const featureTier = getFeatureTier(org)
@@ -26,7 +20,7 @@ const isMeetingLocked = async (
   if (!isPaid) {
     return true
   }
-  if (hasNoMeetingHistoryLimit || featureTier !== 'starter') {
+  if (featureTier !== 'starter') {
     return false
   }
 

@@ -28,6 +28,7 @@ import {
   selectTasks
 } from '../../../postgres/select'
 import {getUserId, isSuperUser, isTeamMember} from '../../../utils/authorization'
+import type {FeatureFlagName} from '../../../utils/featureFlags'
 import getDomainFromEmail from '../../../utils/getDomainFromEmail'
 import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
@@ -695,7 +696,9 @@ const User: ReqResolvers<'User'> = {
     return templates.filter((_, i) => accessible[i])
   },
   featureFlag: async ({id: userId}, {featureName}, {dataLoader}) => {
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: userId, featureName})
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: userId, featureName: featureName as FeatureFlagName})
   },
   availableTemplates: async ({id: userId}, {first, after, type}, {authToken, dataLoader}) => {
     const viewerId = getUserId(authToken)

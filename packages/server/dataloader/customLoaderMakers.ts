@@ -19,7 +19,6 @@ import {
   selectTeams
 } from '../postgres/select'
 import type {
-  FeatureFlag,
   GitLabDimensionFieldMap,
   InspirationItem,
   MassInvitation,
@@ -31,6 +30,12 @@ import type {
 } from '../postgres/types'
 import type {AnyMeeting, MeetingTypeEnum} from '../postgres/types/Meeting'
 import type {Tierenum as TierEnum} from '../postgres/types/pg'
+import {
+  type FeatureFlagName,
+  type FeatureFlagRecord,
+  getFeatureFlag,
+  getFeatureFlagsByScope
+} from '../utils/featureFlags'
 import getRedis from '../utils/getRedis'
 import isUserVerified from '../utils/isUserVerified'
 import {Logger} from '../utils/Logger'
@@ -814,50 +819,44 @@ export const meetingCount = (parent: RootDataLoader, dependsOn: RegisterDependsO
 
 // whether a feature flag is enabled for a given owner (user, team, or org)
 export const featureFlagByOwnerId = (parent: RootDataLoader) => {
-  return new DataLoader<{ownerId: string; featureName: string}, boolean, string>(
+  return new DataLoader<{ownerId: string; featureName: FeatureFlagName}, boolean, string>(
     async (keys) => {
       const pg = getKysely()
 
       const featureNames = [...new Set(keys.map(({featureName}) => featureName))]
       const ownerIds = [...new Set(keys.map(({ownerId}) => ownerId))]
 
-      if (!__PRODUCTION__) {
-        const existingFeatureNames = await pg
-          .selectFrom('FeatureFlag')
-          .select('featureName')
-          .where('featureName', 'in', featureNames)
-          .execute()
-
-        const existingFeatureNameSet = new Set(existingFeatureNames.map((row) => row.featureName))
-
-        const missingFeatureNames = featureNames.filter((name) => !existingFeatureNameSet.has(name))
-        if (missingFeatureNames.length > 0) {
-          Logger.warn(
-            `Feature flag name(s) not found: ${missingFeatureNames.join(', ')}. Add the feature flag name with the addFeatureFlag mutation.`
-          )
+      const now = new Date()
+      const activeFeatureNames = featureNames.filter((featureName) => {
+        const flag = getFeatureFlag(featureName)
+        if (!flag) {
+          if (!__PRODUCTION__) {
+            Logger.warn(
+              `Feature flag name not found: ${featureName}. Add it to FEATURE_FLAGS in packages/server/utils/featureFlags.ts.`
+            )
+          }
+          return false
         }
+        return flag.expiresAt > now
+      })
+
+      if (activeFeatureNames.length === 0) {
+        return keys.map(() => false)
       }
 
       const results = await pg
-        .selectFrom('FeatureFlag')
-        .innerJoin('FeatureFlagOwner', 'FeatureFlag.id', 'FeatureFlagOwner.featureFlagId')
+        .selectFrom('FeatureFlagOwner')
         .where((eb) =>
           eb.and([
             eb.or([
-              eb('FeatureFlagOwner.userId', 'in', ownerIds),
-              eb('FeatureFlagOwner.teamId', 'in', ownerIds),
-              eb('FeatureFlagOwner.orgId', 'in', ownerIds)
+              eb('userId', 'in', ownerIds),
+              eb('teamId', 'in', ownerIds),
+              eb('orgId', 'in', ownerIds)
             ]),
-            eb('FeatureFlag.featureName', 'in', featureNames),
-            eb('FeatureFlag.expiresAt', '>', new Date())
+            eb('featureName', 'in', activeFeatureNames)
           ])
         )
-        .select([
-          'FeatureFlagOwner.userId',
-          'FeatureFlagOwner.teamId',
-          'FeatureFlagOwner.orgId',
-          'FeatureFlag.featureName'
-        ])
+        .select(['userId', 'teamId', 'orgId', 'featureName'])
         .execute()
 
       const featureFlagMap = new Map<string, boolean>()
@@ -917,43 +916,16 @@ export const publicTemplatesByType = (parent: RootDataLoader) => {
   )
 }
 
-export const allFeatureFlags = (parent: RootDataLoader) => {
-  return new DataLoader<'Organization' | 'Team' | 'User' | 'all', FeatureFlag[], string>(
-    async (scopes) => {
-      const pg = getKysely()
-      return await Promise.all(
-        scopes.map(async (scope) => {
-          const flags = await pg
-            .selectFrom('FeatureFlag')
-            .selectAll()
-            .where('expiresAt', '>', new Date())
-            .$if(scope !== 'all', (qb) => {
-              const validScope = scope as 'Organization' | 'Team' | 'User'
-              return qb.where('scope', '=', validScope)
-            })
-            .orderBy('featureName')
-            .execute()
-          return flags.map((flag) => ({...flag, isEnabled: true}))
-        })
-      )
-    },
-    {
-      ...parent.dataLoaderOptions,
-      cacheKeyFn: (scope) => scope
-    }
-  )
-}
-
 export const allFeatureFlagsByOwner = (parent: RootDataLoader) => {
   return new DataLoader<
     {ownerId: string; scope: 'Organization' | 'Team' | 'User'},
-    FeatureFlag[],
+    (FeatureFlagRecord & {enabled: boolean})[],
     string
   >(
     async (keys) => {
       const flagsByOwnerId = await Promise.all(
         keys.map(async ({ownerId, scope}) => {
-          const allFlags = await parent.get('allFeatureFlags').load(scope)
+          const allFlags = getFeatureFlagsByScope(scope)
           const flags = await Promise.all(
             allFlags.map(async (flag) => {
               const isEnabled = await parent
