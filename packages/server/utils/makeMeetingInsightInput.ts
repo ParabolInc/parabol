@@ -1,6 +1,6 @@
 import type {DataLoaderInstance} from '../dataloader/RootDataLoader'
 import isValid from '../graphql/isValid'
-import {getComments} from '../graphql/public/mutations/helpers/getTopics'
+import {getComments} from '../graphql/public/mutations/helpers/getComments'
 import {resolveStoryFinalScore} from '../graphql/resolvers/resolveStoryFinalScore'
 import type {RetroReflection} from '../postgres/types'
 import type {

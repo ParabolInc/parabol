@@ -1,30 +1,5 @@
 type Mutation {
   """
-  Add a new feature flag
-  """
-  addFeatureFlag(
-    """
-    The name of the feature flag
-    """
-    featureName: String!
-
-    """
-    A description of the feature flag
-    """
-    description: String!
-
-    """
-    The expiration date of the feature flag
-    """
-    expiresAt: DateTime!
-
-    """
-    The scope of the feature flag
-    """
-    scope: FeatureFlagScope!
-  ): AddFeatureFlagPayload!
-
-  """
   Apply a feature flag to specified subjects (users, teams, or organizations)
   """
   applyFeatureFlag(
@@ -51,36 +26,6 @@ type Mutation {
     """
     subjects: SubjectsInput!
   ): RemoveFeatureFlagOwnerPayload!
-
-  """
-  Delete an existing feature flag
-  """
-  deleteFeatureFlag(
-    """
-    The name of the feature flag to delete
-    """
-    featureName: String!
-  ): DeleteFeatureFlagPayload!
-
-  """
-  Update an existing feature flag
-  """
-  updateFeatureFlag(
-    """
-    The name of the feature flag
-    """
-    featureName: String!
-
-    """
-    The new description of the feature flag (optional)
-    """
-    description: String
-
-    """
-    The new expiration date of the feature flag (optional)
-    """
-    expiresAt: DateTime
-  ): UpdateFeatureFlagPayload!
   """
   Updates the user email
   """

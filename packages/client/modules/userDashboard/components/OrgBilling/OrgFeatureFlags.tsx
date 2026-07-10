@@ -39,9 +39,7 @@ const FeatureNameGroup = styled('div')({
   }
 })
 
-const FEATURE_NAME_LOOKUP: Record<string, string> = {
-  insights: 'Insights'
-}
+const FEATURE_NAME_LOOKUP: Record<string, string> = {}
 
 interface Props {
   organizationRef: OrgFeatureFlags_organization$key

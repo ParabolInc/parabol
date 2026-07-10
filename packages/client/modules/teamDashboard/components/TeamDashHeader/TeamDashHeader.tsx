@@ -1,7 +1,6 @@
 import {ClassNames} from '@emotion/react'
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import {NavLink, useLocation, useNavigate} from 'react-router'
 import DashSectionHeader from '~/components/Dashboard/DashSectionHeader'
@@ -95,13 +94,9 @@ const TeamDashHeader = (props: Props) => {
         ...DashboardAvatars_team
         id
         name
-        hasInsightsFlag: featureFlag(featureName: "insights")
         organization {
           id
           name
-        }
-        viewerTeamMember {
-          isLead
         }
         teamMembers(sortBy: "preferredName") {
           ...InviteTeamMemberAvatar_teamMembers
@@ -114,38 +109,16 @@ const TeamDashHeader = (props: Props) => {
     teamRef
   )
 
-  const {
-    organization,
-    id: teamId,
-    name: teamName,
-    teamMembers,
-    viewerTeamMember,
-    hasInsightsFlag
-  } = team
+  const {organization, id: teamId, name: teamName, teamMembers} = team
   const {name: orgName, id: orgId} = organization
-  const canViewInsights = viewerTeamMember?.isLead && hasInsightsFlag
   const navigate = useNavigate()
   const location = useLocation()
 
   const tabs = [
     {label: 'Activity', path: 'activity'},
     {label: 'Tasks', path: 'tasks'},
-    {label: 'Integrations', path: 'integrations'},
-    ...(canViewInsights ? [{label: 'Insights', path: 'insights'}] : [])
+    {label: 'Integrations', path: 'integrations'}
   ]
-
-  const insightsSeenKey = `insightsSeen_${teamId}`
-  const isLocalStorageAvailable = typeof window !== 'undefined' && window.localStorage
-
-  useEffect(() => {
-    if (canViewInsights && isLocalStorageAvailable) {
-      const hasSeenInsights = localStorage.getItem(insightsSeenKey) === 'true'
-      if (!hasSeenInsights) {
-        localStorage.setItem(insightsSeenKey, 'true')
-        navigate(`/team/${teamId}/insights`)
-      }
-    }
-  }, [canViewInsights, insightsSeenKey, isLocalStorageAvailable, navigate, teamId])
 
   const activePath = location.pathname.split('/').pop()
   const activeTab = tabs.find((tab) => tab.path === activePath) ? activePath : 'activity'
