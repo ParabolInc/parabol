@@ -1,0 +1,46 @@
+"""
+A single team member's answer to a team health question in a meeting
+"""
+type TeamHealthResponse {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The 1-5 Likert score the user gave. Null if the user skipped the question
+  """
+  score: Int
+
+  """
+  An optional freeform comment the user left with their answer
+  """
+  comment: String
+
+  """
+  *Foreign key. The meeting this response was given in
+  """
+  meetingId: ID!
+
+  """
+  *Foreign key. The question this response answers
+  """
+  questionId: ID!
+
+  """
+  The question this response answers
+  """
+  question: TeamHealthQuestion!
+
+  """
+  *Foreign key. The user who gave this response
+  """
+  userId: ID!
+
+  """
+  The user who gave this response
+  """
+  user: User!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

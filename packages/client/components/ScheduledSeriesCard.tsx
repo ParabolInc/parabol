@@ -21,6 +21,7 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
+import {MeetingTypeToReadable} from '../utils/meetings/lookups'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 
@@ -47,13 +48,6 @@ const RECURRING_LABEL_COLORS = {
 
 // TODO: add a dedicated teamHealth illustration
 const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
-const MEETING_TYPE_LABEL = {
-  retrospective: 'Retro',
-  action: 'Check-In',
-  poker: 'Sprint Poker',
-  teamPrompt: 'Standup',
-  teamHealth: 'Team Health'
-}
 
 const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-white shadow-card'
 const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
@@ -160,7 +154,7 @@ const ScheduledSeriesCard = (props: Props) => {
           <div className={MEETING_IMG_WRAPPER}>
             <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-              {MEETING_TYPE_LABEL[meetingType]}
+              {MeetingTypeToReadable[meetingType]}
             </span>
             <span
               className={cn(
@@ -202,7 +196,7 @@ const ScheduledSeriesCard = (props: Props) => {
             </div>
             <Link to={seriesLink} onClick={openEdit}>
               <span className='block pt-1 pb-2 text-slate-600 text-sm'>
-                {MEETING_TYPE_LABEL[meetingType]} • Awaiting first meeting
+                {MeetingTypeToReadable[meetingType]} • Awaiting first meeting
               </span>
             </Link>
           </div>

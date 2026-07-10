@@ -19,7 +19,7 @@ import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import getMeetingPhase from '../utils/getMeetingPhase'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {MeetingTypeToReadable, phaseLabelLookup} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
@@ -54,13 +54,6 @@ interface Props {
 
 // TODO: add a dedicated teamHealth illustration
 const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
-const MEETING_TYPE_LABEL = {
-  retrospective: 'Retro',
-  action: 'Check-In',
-  poker: 'Sprint Poker',
-  teamPrompt: 'Standup',
-  teamHealth: 'Team Health'
-}
 
 const MeetingCard = (props: Props) => {
   const {meeting: meetingRef} = props
@@ -161,7 +154,7 @@ const MeetingCard = (props: Props) => {
         )}
       />
       <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-        {MEETING_TYPE_LABEL[meetingType]}
+        {MeetingTypeToReadable[meetingType]}
       </span>
       {isRecurring && (
         <span
@@ -224,7 +217,7 @@ const MeetingCard = (props: Props) => {
               )}
             />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-              {MEETING_TYPE_LABEL[meetingType]}
+              {MeetingTypeToReadable[meetingType]}
             </span>
             {isRecurring && (
               <span

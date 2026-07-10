@@ -24,6 +24,11 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamHealthCategories,
+  selectTeamHealthQuestionPacks,
+  selectTeamHealthQuestions,
+  selectTeamHealthResponses,
+  selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
@@ -61,6 +66,26 @@ export const meetingSeries = primaryKeyLoaderMaker((ids: readonly number[]) => {
 
 export const meetingTemplates = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMeetingTemplates().where('id', 'in', ids).execute()
+})
+
+export const teamHealthCategories = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamHealthCategories().where('id', 'in', ids).execute()
+})
+
+export const teamHealthQuestionPacks = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamHealthQuestionPacks().where('id', 'in', ids).execute()
+})
+
+export const teamHealthQuestions = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamHealthQuestions().where('id', 'in', ids).execute()
+})
+
+export const teamHealthTemplateQuestions = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamHealthTemplateQuestions().where('id', 'in', ids).execute()
+})
+
+export const teamHealthResponses = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectTeamHealthResponses().where('id', 'in', ids).execute()
 })
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
 

@@ -5,19 +5,12 @@ import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'
 import {MenuLabelTrigger} from '../ui/Menu/MenuLabelTrigger'
+import {MeetingTypeToReadable} from '../utils/meetings/lookups'
 
 interface Props {
   updateAttributes: NodeViewProps['updateAttributes']
   attrs: InsightsBlockAttrs
 }
-
-export const MeetingTypeToReadable = {
-  action: 'Team Check-in',
-  poker: 'Sprint Poker',
-  retrospective: 'Retrospective',
-  teamPrompt: 'Standup',
-  teamHealth: 'Team Health'
-} satisfies Record<MeetingTypeEnum, string>
 
 export const MeetingTypePickerCombobox = (props: Props) => {
   const {updateAttributes, attrs} = props

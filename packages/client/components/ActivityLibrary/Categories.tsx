@@ -9,7 +9,8 @@ export const MAIN_CATEGORIES = [
   'feedback',
   'strategy',
   'premortem',
-  'postmortem'
+  'postmortem',
+  'teamHealth'
 ] as const
 
 export const QUICK_START_CATEGORY_ID = 'recommended'
@@ -59,9 +60,9 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     text: 'text-jade-400'
   },
   strategy: {
-    primary: 'bg-rose-500',
-    secondary: 'bg-rose-100',
-    text: 'text-rose-500'
+    primary: 'bg-sky-500',
+    secondary: 'bg-sky-100',
+    text: 'text-sky-500'
   },
   premortem: {
     primary: 'bg-gold-500',
@@ -72,6 +73,11 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
     primary: 'bg-grass-500',
     secondary: 'bg-grass-100',
     text: 'text-grass-500'
+  },
+  teamHealth: {
+    primary: 'bg-rose-500',
+    secondary: 'bg-rose-100',
+    text: 'text-rose-500'
   },
   [CUSTOM_CATEGORY_ID]: {
     primary: 'bg-fuscia-400',
@@ -97,6 +103,7 @@ export const CATEGORY_ID_TO_NAME: Record<AllCategoryID, string | JSX.Element> = 
     />
   ),
   [CUSTOM_CATEGORY_ID]: 'Custom',
+  teamHealth: 'Team Health',
   retrospective: 'Retrospective',
   estimation: 'Estimation',
   standup: 'Standup',
@@ -111,5 +118,5 @@ export const MEETING_TYPE_TO_CATEGORY: Record<MeetingTypeEnum, CategoryID> = {
   action: 'feedback',
   poker: 'estimation',
   teamPrompt: 'standup',
-  teamHealth: 'feedback'
+  teamHealth: 'teamHealth'
 }

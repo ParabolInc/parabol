@@ -14,6 +14,9 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamHealthQuestions,
+  selectTeamHealthResponses,
+  selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
   selectTeams,
   selectTemplateDimension,
@@ -158,6 +161,33 @@ export const templateDimensionsByTemplateId = foreignKeyLoaderMaker(
       .where('templateId', 'in', templateIds)
       .orderBy('sortOrder')
       .execute()
+  }
+)
+
+export const teamHealthQuestionsByPackId = foreignKeyLoaderMaker(
+  'teamHealthQuestions',
+  'packId',
+  async (packIds) => {
+    return selectTeamHealthQuestions().where('packId', 'in', packIds).orderBy('id').execute()
+  }
+)
+
+export const teamHealthTemplateQuestionsByTemplateId = foreignKeyLoaderMaker(
+  'teamHealthTemplateQuestions',
+  'templateId',
+  async (templateIds) => {
+    return selectTeamHealthTemplateQuestions()
+      .where('templateId', 'in', templateIds)
+      .orderBy('id')
+      .execute()
+  }
+)
+
+export const teamHealthResponsesByMeetingId = foreignKeyLoaderMaker(
+  'teamHealthResponses',
+  'meetingId',
+  async (meetingIds) => {
+    return selectTeamHealthResponses().where('meetingId', 'in', meetingIds).execute()
   }
 )
 

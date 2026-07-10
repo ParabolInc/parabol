@@ -87,6 +87,26 @@ export const selectTemplateDimension = () => {
   return getKysely().selectFrom('TemplateDimension').selectAll().where('removedAt', 'is', null)
 }
 
+export const selectTeamHealthCategories = () => {
+  return getKysely().selectFrom('TeamHealthCategory').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthQuestionPacks = () => {
+  return getKysely().selectFrom('TeamHealthQuestionPack').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthQuestions = () => {
+  return getKysely().selectFrom('TeamHealthQuestion').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthTemplateQuestions = () => {
+  return getKysely().selectFrom('TeamHealthTemplateQuestion').selectAll()
+}
+
+export const selectTeamHealthResponses = () => {
+  return getKysely().selectFrom('TeamHealthResponse').selectAll()
+}
+
 export const selectSuggestedAction = () => {
   return getKysely()
     .selectFrom('SuggestedAction')

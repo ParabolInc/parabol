@@ -42,6 +42,14 @@ export const phaseIconLookup = {
 export const phaseImageLookup = {
   ESTIMATE: CardsSVG
 }
+export const MeetingTypeToReadable = {
+  action: 'Team Check-in',
+  poker: 'Sprint Poker',
+  retrospective: 'Retrospective',
+  teamPrompt: 'Standup',
+  teamHealth: 'Team Health'
+} satisfies Record<MeetingTypeEnum, string>
+
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history',
