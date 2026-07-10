@@ -44,7 +44,6 @@ import {
 import {
   AIPrompt as AIPromptPG,
   type DB,
-  FeatureFlag as FeatureFlagPG,
   Insight as InsightPG,
   OrganizationUser as OrganizationUserPG,
   PageAccessRequest as PageAccessRequestPG,
@@ -114,7 +113,7 @@ export type PokerMeetingSettings = MeetingSettings & {meetingType: 'poker'}
 export type RetrospectiveMeetingSettings = MeetingSettings & {
   meetingType: 'retrospective'
 }
-export type FeatureFlag = Selectable<FeatureFlagPG>
+export type {FeatureFlag} from '../../utils/featureFlags'
 
 export type AgendaItem = ExtractTypeFromQueryBuilderSelect<typeof selectAgendaItems>
 

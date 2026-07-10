@@ -89,8 +89,11 @@ const RetroMeeting = (props: Props) => {
   const Phase = phaseLookup[localPhaseType]!
   // The inspiration drawer is shared by the reflect & group phases. Render it here, above the
   // swapped Phase component, so it stays mounted across the reflect <-> group transition and
-  // doesn't flicker.
-  const showInspirationDrawer = localPhaseType === 'reflect' || localPhaseType === 'group'
+  // doesn't flicker. Hidden in the demo: the mock DB doesn't serve inspirationItems (or the
+  // drawer's other fields), and drafting reflections can't work against the mock server anyway.
+  const showInspirationDrawer =
+    (localPhaseType === 'reflect' || localPhaseType === 'group') &&
+    meetingId !== RetroDemo.MEETING_ID
 
   const isDemoStageComplete =
     meetingId === RetroDemo.MEETING_ID

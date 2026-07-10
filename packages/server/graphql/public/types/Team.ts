@@ -1,7 +1,6 @@
 import {sql} from 'kysely'
 import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
-import {InsightId} from '../../../../client/shared/gqlIds/InsightId'
 import {Security, Threshold} from '../../../../client/types/constEnums'
 import toTeamMemberId from '../../../../client/utils/relay/toTeamMemberId'
 import generateRandomString from '../../../generateRandomString'
@@ -12,6 +11,7 @@ import {
   isTeamMember,
   isUserBillingLeader
 } from '../../../utils/authorization'
+import type {FeatureFlagName} from '../../../utils/featureFlags'
 import standardError from '../../../utils/standardError'
 import isValid from '../../isValid'
 import connectionFromTasks from '../../queries/helpers/connectionFromTasks'
@@ -39,15 +39,9 @@ const Team: TeamResolvers = {
     return tier
   },
   featureFlag: async ({id: teamId}, {featureName}, {dataLoader}) => {
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: teamId, featureName})
-  },
-  insight: async ({id: teamId}, _args, {dataLoader}) => {
-    const insight = await dataLoader.get('latestInsightByTeamId').load(teamId)
-    if (!insight) return null
-    return {
-      ...insight,
-      id: InsightId.join(teamId, insight.id)
-    }
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: teamId, featureName: featureName as FeatureFlagName})
   },
   isOnboardTeam: ({isOnboardTeam}) => !!isOnboardTeam,
   isOrgAdmin: async ({orgId}, _args, {authToken, dataLoader}) => {

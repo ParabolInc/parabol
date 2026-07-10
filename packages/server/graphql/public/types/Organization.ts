@@ -5,6 +5,7 @@ import {
   isUserOrgAdmin
 } from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
+import type {FeatureFlagName} from '../../../utils/featureFlags'
 import {getStripeManager} from '../../../utils/stripe'
 import {getFeatureTier} from '../../types/helpers/getFeatureTier'
 import type {OrganizationResolvers} from '../resolverTypes'
@@ -25,7 +26,9 @@ const Organization: OrganizationResolvers = {
     return {id: activeDomain}
   },
   featureFlag: async ({id: orgId}, {featureName}, {dataLoader}) => {
-    return await dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName})
+    return await dataLoader
+      .get('featureFlagByOwnerId')
+      .load({ownerId: orgId, featureName: featureName as FeatureFlagName})
   },
   tier: ({tier, trialStartDate}) => {
     return getFeatureTier({tier, trialStartDate})

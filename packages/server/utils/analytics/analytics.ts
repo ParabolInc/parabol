@@ -162,7 +162,6 @@ export type AnalyticsEvent =
   // page
   | 'Page Created'
   // insight
-  | 'Insight Generated'
   | 'Page Insights Generated'
   // user
   | 'Account Created'
@@ -206,7 +205,6 @@ export type AnalyticsEvent =
   | 'Slack notification sent'
   | 'Smart group title changed'
   | 'Task due date set'
-  | 'Insights Feedback Submitted'
 
 /**
  * Provides a unified interface for sending all the analytics events
@@ -588,10 +586,6 @@ class Analytics {
   }
 
   // insight
-  insightGenerated = (user: AnalyticsUser, insightId: number, teamId: string) => {
-    this.track(user, 'Insight Generated', {insightId, teamId})
-  }
-
   pageInsightsGenerated = (user: AnalyticsUser) => {
     this.track(user, 'Page Insights Generated')
   }
@@ -784,19 +778,6 @@ class Analytics {
       meetingId,
       modifyType,
       success
-    })
-  }
-
-  insightsFeedbackSubmitted = (
-    user: AnalyticsUser,
-    isUseful: boolean,
-    feedback: string,
-    canEmail: boolean
-  ) => {
-    this.track(user, 'Insights Feedback Submitted', {
-      isUseful,
-      feedback,
-      canEmail
     })
   }
 

@@ -523,17 +523,6 @@ type Mutation {
   ): InviteToTeamPayload! @scope(name: TEAMS_WRITE)
 
   """
-  Generate an AI-powered insight report for a team based on meeting data within a date range
-  """
-  generateInsight(
-    teamId: ID!
-    startDate: DateTime!
-    endDate: DateTime!
-    useSummaries: Boolean
-    prompt: String
-  ): GenerateInsightPayload! @scope(name: TEAMS_WRITE)
-
-  """
   Generate AI inspiration items from a user's recent work in a Your Work integration
   """
   generateInspirationItems(input: GenerateInspirationItemsInput!): GenerateInspirationItemsSuccess!
