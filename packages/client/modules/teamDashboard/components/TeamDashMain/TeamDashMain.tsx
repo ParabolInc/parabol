@@ -8,7 +8,6 @@ import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import getTeamIdFromPathname from '../../../../utils/getTeamIdFromPathname'
 import TeamTasksHeaderContainer from '../../containers/TeamTasksHeader/TeamTasksHeaderContainer'
 import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
-import TeamDashInsightsTab from '../TeamDashInsightsTab/TeamDashInsightsTab'
 import TeamDashIntegrationsTab from '../TeamDashIntegrationsTab/TeamDashIntegrationsTab'
 import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
 import TeamDrawer from './TeamDrawer'
@@ -55,7 +54,6 @@ const TeamDashMain = (props: Props) => {
         <Routes>
           <Route path='tasks' element={<TeamDashTasksTab viewerRef={viewer} />} />
           <Route path='integrations' element={<TeamDashIntegrationsTab teamRef={teamId} />} />
-          <Route path='insights' element={<TeamDashInsightsTab teamId={teamId} />} />
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='*' element={<TeamDashActivityTab teamRef={team} />} />
         </Routes>

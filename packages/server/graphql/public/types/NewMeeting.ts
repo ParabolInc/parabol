@@ -23,9 +23,8 @@ const NewMeeting: NewMeetingResolvers = {
     const teamMemberId = toTeamMemberId(teamId, facilitatorUserId!)
     return dataLoader.get('teamMembers').loadNonNull(teamMemberId)
   },
-  locked: async ({endedAt, teamId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    return isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
+  locked: async ({endedAt, teamId}, _args, {dataLoader}) => {
+    return isMeetingLocked(teamId, endedAt, dataLoader)
   },
   meetingSeriesId: ({meetingSeriesId}, _args, _context) => {
     if (meetingSeriesId) {
@@ -58,9 +57,8 @@ const NewMeeting: NewMeetingResolvers = {
     const {orgId} = team
     return dataLoader.get('organizations').loadNonNull(orgId)
   },
-  phases: async ({phases, id: meetingId, teamId, endedAt}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    const locked = await isMeetingLocked(viewerId, teamId, endedAt, dataLoader)
+  phases: async ({phases, id: meetingId, teamId, endedAt}, _args, {dataLoader}) => {
+    const locked = await isMeetingLocked(teamId, endedAt, dataLoader)
 
     const resolvedPhases = phases.map((phase) => ({
       ...phase,

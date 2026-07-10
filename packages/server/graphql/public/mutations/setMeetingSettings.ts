@@ -22,14 +22,7 @@ const getFlagState = (
 
 const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   _source,
-  {
-    settingsId,
-    checkinEnabled,
-    teamHealthEnabled,
-    reviewPastTasksEnabled,
-    disableAnonymity,
-    videoMeetingURL
-  },
+  {settingsId, checkinEnabled, teamHealthEnabled, reviewPastTasksEnabled, disableAnonymity},
   {authToken, dataLoader, socketId: mutatorId}
 ) => {
   const operationId = dataLoader.share()
@@ -44,13 +37,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
 
   // RESOLUTION
   const {teamId, meetingType, phaseTypes} = settings
-  const [team, viewer] = await Promise.all([
-    dataLoader.get('teams').loadNonNull(teamId),
-    dataLoader.get('users').loadNonNull(viewerId)
-  ])
-  const hasTranscriptFlag = await dataLoader
-    .get('featureFlagByOwnerId')
-    .load({ownerId: team.orgId, featureName: 'zoomTranscription'})
+  const viewer = await dataLoader.get('users').loadNonNull(viewerId)
 
   const isRetro = meetingType === 'retrospective'
 
@@ -76,12 +63,7 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
           phase !== 'checkin' && phase !== 'TEAM_HEALTH' && !(isRetro && phase === 'updates')
       )
     ],
-    disableAnonymity: isNotNull(disableAnonymity) ? disableAnonymity : settings.disableAnonymity,
-    videoMeetingURL: hasTranscriptFlag
-      ? isNotNull(videoMeetingURL)
-        ? videoMeetingURL
-        : settings.videoMeetingURL
-      : null
+    disableAnonymity: isNotNull(disableAnonymity) ? disableAnonymity : settings.disableAnonymity
   }
 
   await getKysely()
@@ -94,7 +76,6 @@ const setMeetingSettings: MutationResolvers['setMeetingSettings'] = async (
   const data = {settingsId}
   analytics.meetingSettingsChanged(viewer, teamId, meetingType, {
     disableAnonymity: nextSettings.disableAnonymity,
-    videoMeetingURL: nextSettings.videoMeetingURL,
     hasIcebreaker: nextSettings.phaseTypes.includes('checkin'),
     hasTeamHealth: nextSettings.phaseTypes.includes('TEAM_HEALTH'),
     hasReviewPastTasks: isRetro && nextSettings.phaseTypes.includes('updates')

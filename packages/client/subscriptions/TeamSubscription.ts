@@ -39,9 +39,6 @@ const subscription = graphql`
   subscription TeamSubscription {
     teamSubscription {
       fieldName
-      GenerateInsightSuccess {
-        ...GenerateInsightMutation_team @relay(mask: false)
-      }
       UpdateRecurrenceSettingsSuccess {
         ...UpdateRecurrenceSettingsMutation_team @relay(mask: false)
       }

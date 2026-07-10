@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.29.1](https://github.com/ParabolInc/parabol/compare/v13.29.0...v13.29.1) (2026-07-10)
+
+
+### Fixed
+
+* fetch discuss phase on navigate to discuss phase ([#13276](https://github.com/ParabolInc/parabol/issues/13276)) ([d43d430](https://github.com/ParabolInc/parabol/commit/d43d430e2d7aa63e94f21aa99774ecb3314cedcb))
+* hide inspo in retro demo ([#13278](https://github.com/ParabolInc/parabol/issues/13278)) ([239c8ce](https://github.com/ParabolInc/parabol/commit/239c8ce4259728e904f06f36206ab204fabe7d26))
+* move feature flags to in-app ([#13275](https://github.com/ParabolInc/parabol/issues/13275)) ([afd5ba8](https://github.com/ParabolInc/parabol/commit/afd5ba8e6e8d3f50fdfaf3a7dc6738bc5a65a811))
+
+
+### Changed
+
+* remove generateInsights and team-level insights ([#13273](https://github.com/ParabolInc/parabol/issues/13273)) ([873ae79](https://github.com/ParabolInc/parabol/commit/873ae79f6c9405fc56c14257bd2f6e7f7ec44b32))
+
 ## [13.29.0](https://github.com/ParabolInc/parabol/compare/v13.28.0...v13.29.0) (2026-07-08)
 
 
