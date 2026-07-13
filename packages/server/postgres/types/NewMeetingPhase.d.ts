@@ -165,6 +165,16 @@ export interface TeamPromptResponsesPhase extends GenericMeetingPhase {
   stages: [TeamPromptResponseStage, ...TeamPromptResponseStage[]]
 }
 
+export interface TeamHealthResponseStage extends GenericMeetingStage {
+  phaseType: 'TEAM_HEALTH_RESPONSE'
+  questionId: string
+}
+
+export interface TeamHealthResponsePhase extends GenericMeetingPhase {
+  phaseType: 'TEAM_HEALTH_RESPONSE'
+  stages: [TeamHealthResponseStage, ...TeamHealthResponseStage[]]
+}
+
 export interface UpdatesPhase extends GenericMeetingPhase {
   phaseType: 'updates'
 
@@ -197,6 +207,7 @@ export type NewMeetingPhase =
   | PokerMeetingPhase
   | CheckInMeetingPhase
   | TeamPromptPhase
+  | TeamHealthResponsePhase
 
 type TupleToArray<T> = T extends (infer U)[] ? U : never
 export type NewMeetingStage = TupleToArray<NewMeetingPhase['stages']>

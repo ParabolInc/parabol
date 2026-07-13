@@ -33,14 +33,9 @@ type TeamHealthResponse {
   question: TeamHealthQuestion!
 
   """
-  *Foreign key. The user who gave this response
+  true if the viewer authored this response. The author is otherwise kept private
   """
-  userId: ID!
-
-  """
-  The user who gave this response
-  """
-  user: User!
+  isViewerCreator: Boolean!
   createdAt: DateTime!
   updatedAt: DateTime!
 }

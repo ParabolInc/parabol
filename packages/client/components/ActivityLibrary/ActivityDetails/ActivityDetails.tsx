@@ -11,6 +11,7 @@ import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
 import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
+import TeamHealthDetailsSidebar from '../TeamHealthDetailsSidebar'
 import {TemplateDetails} from './TemplateDetails'
 
 graphql`
@@ -43,9 +44,14 @@ export const query = graphql`
         id
         ...ActivityDetailsSidebar_teams
         ...TeamPickerModal_teams
+        ...TeamHealthDetailsSidebar_teams
       }
       organizations {
         id
+        teams {
+          id
+          ...TeamHealthDetailsSidebar_teams
+        }
       }
 
       ...TemplateDetails_user
@@ -80,6 +86,10 @@ const ActivityDetails = (props: Props) => {
   }, [])
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
+  const orgTeams = viewer.organizations.flatMap((org) => org.teams)
+  const teamHealthTeams = [...teams, ...orgTeams].filter(
+    (team, index, arr) => arr.findIndex((t) => t.id === team.id) === index
+  )
   const prevCategory = location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
@@ -130,21 +140,37 @@ const ActivityDetails = (props: Props) => {
           </div>
         </div>
         <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
+          {type === 'teamHealth' ? (
+            <TeamHealthDetailsSidebar
+              templateId={activity.id}
+              teamsRef={teamHealthTeams}
+              preferredTeamId={preferredTeamId}
+            />
+          ) : (
+            <ActivityDetailsSidebar
+              selectedTemplateRef={activity}
+              teamsRef={teams}
+              type={activity.type}
+              preferredTeamId={preferredTeamId}
+            />
+          )}
+        </div>
+      </div>
+      <div className={cn('lg:hidden', isEditing && 'hidden')}>
+        {type === 'teamHealth' ? (
+          <TeamHealthDetailsSidebar
+            templateId={activity.id}
+            teamsRef={teamHealthTeams}
+            preferredTeamId={preferredTeamId}
+          />
+        ) : (
           <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
             type={activity.type}
             preferredTeamId={preferredTeamId}
           />
-        </div>
-      </div>
-      <div className={cn('lg:hidden', isEditing && 'hidden')}>
-        <ActivityDetailsSidebar
-          selectedTemplateRef={activity}
-          teamsRef={teams}
-          type={activity.type}
-          preferredTeamId={preferredTeamId}
-        />
+        )}
       </div>
     </div>
   )

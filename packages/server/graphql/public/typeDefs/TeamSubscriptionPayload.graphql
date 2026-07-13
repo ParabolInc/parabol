@@ -27,6 +27,7 @@ type TeamSubscriptionPayload {
   SetTeamNotificationSettingSuccess: SetTeamNotificationSettingSuccess
   StartCheckInSuccess: StartCheckInSuccess
   StartRetrospectiveSuccess: StartRetrospectiveSuccess
+  StartTeamHealthSuccess: StartTeamHealthSuccess
   StartSprintPokerSuccess: StartSprintPokerSuccess
   StartTeamPromptSuccess: StartTeamPromptSuccess
   UpdateAgendaItemPayload: UpdateAgendaItemPayload

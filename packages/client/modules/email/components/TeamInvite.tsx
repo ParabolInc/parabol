@@ -1,5 +1,6 @@
 import {ExternalLinks} from 'parabol-client/types/constEnums'
 import type {CorsOptions} from '../../../types/cors'
+import {MeetingTypeToReadable} from '../../../utils/meetings/lookups'
 import {emailCopyStyle, emailLinkStyle, emailProductTeamSignature} from '../styles'
 import Button from './Button'
 import EmailBlock from './EmailBlock/EmailBlock'
@@ -30,12 +31,6 @@ const videoGraphicStyle = {
 }
 
 const videoGraphicSrc = `${ExternalLinks.EMAIL_CDN}online-retro-meeting-vid.png`
-const meetingCopyLabelLookup = {
-  action: 'a Check-in Meeting',
-  retrospective: 'a Retrospective Meeting',
-  poker: 'a Sprint Poker Meeting',
-  teamPrompt: 'a Standup Meeting'
-} as const
 
 const utmParams = {
   utm_source: 'invite email',
@@ -59,7 +54,7 @@ export interface TeamInviteProps {
   inviteLink: string
   teamName: string
   meeting?: {
-    meetingType: keyof typeof meetingCopyLabelLookup
+    meetingType: keyof typeof MeetingTypeToReadable
     name: string
   }
   corsOptions: CorsOptions
@@ -100,7 +95,7 @@ const TeamInvite = (props: TeamInviteProps) => {
               <a href={`mailto:${inviterEmail}`} style={emailLinkStyle}>
                 {inviterEmail}
               </a>
-              {`) has started ${meetingCopyLabelLookup[meeting.meetingType]} for your team (`}
+              {`) has started a ${MeetingTypeToReadable[meeting.meetingType]} meeting for your team (`}
               <b>{teamName}</b>
               {'). Just a few clicks and you’re in!'}
             </p>

@@ -55,14 +55,14 @@ const Organization: OrganizationResolvers = {
 
   teams: async ({id: orgId}, _args, {dataLoader, authToken}) => {
     const viewerId = getUserId(authToken)
-    const [teamsInOrg, isOrgAdmin] = await Promise.all([
+    const [teamsInOrg, isBillingLeader] = await Promise.all([
       dataLoader.get('teamsByOrgIds').load(orgId),
-      isUserOrgAdmin(viewerId, orgId, dataLoader)
+      isUserBillingLeader(viewerId, orgId, dataLoader)
     ])
     const sortedTeams = teamsInOrg.sort((a, b) => a.name.localeCompare(b.name))
 
-    if (isOrgAdmin || isSuperUser(authToken)) {
-      // Org admins and super users can see all teams
+    if (isBillingLeader || isSuperUser(authToken)) {
+      // Billing leaders, org admins, and super users can see all teams
       return sortedTeams
     } else {
       // Regular users can see teams they're on plus public teams

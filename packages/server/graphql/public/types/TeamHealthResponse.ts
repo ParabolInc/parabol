@@ -1,11 +1,12 @@
+import {getUserId} from '../../../utils/authorization'
 import type {TeamHealthResponseResolvers} from '../resolverTypes'
 
 const TeamHealthResponse: TeamHealthResponseResolvers = {
   question: ({questionId}, _args, {dataLoader}) => {
     return dataLoader.get('teamHealthQuestions').loadNonNull(questionId)
   },
-  user: ({userId}, _args, {dataLoader}) => {
-    return dataLoader.get('users').loadNonNull(userId)
+  isViewerCreator: ({userId}, _args, {authToken}) => {
+    return userId === getUserId(authToken)
   }
 }
 

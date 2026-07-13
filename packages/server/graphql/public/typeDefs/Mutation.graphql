@@ -1952,6 +1952,21 @@ type Mutation {
   ): StartRetrospectivePayload! @scope(name: MEETINGS_WRITE)
 
   """
+  Start a team health meeting for one or more teams, one meeting per team
+  """
+  startTeamHealth(
+    """
+    The teams to start a team health meeting for
+    """
+    teamIds: [ID!]!
+
+    """
+    The team health template to use
+    """
+    templateId: ID!
+  ): StartTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Starts a new team prompt meeting
   """
   startTeamPrompt(
