@@ -8,7 +8,10 @@
     "NextMeetingCountdown",
     "NextMeetingLink",
     "ReflectionCardRoot",
-    "TeamPromptDiscussionThreadHeader"
+    "TeamPromptDiscussionThreadHeader",
+    "TeamMemberName",
+    "ReflectionGroup",
+    "TeamPromptResponseCard"
   ],
   "groups": [
     {
@@ -78,6 +81,27 @@
         "modules/userDashboard/components/OrgTeams/TeaserOrgTeamsRow.tsx",
         "modules/userDashboard/components/OrgAuthentication/CopyServiceProviderURL.tsx",
         "modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle.tsx"
+      ]
+    },
+    {
+      "name": "Signature",
+      "_note": "Iconic Relay-coupled components. Rendered in previews via react-relay read-hook identity stub (useFragment(f, ref) => ref) — the preview passes the fragment's $data shape as the ref prop.",
+      "includeRelay": true,
+      "files": [
+        "components/ReflectionCard/ReflectionCard.tsx",
+        "components/ReflectionCard/ColorBadge.tsx",
+        "components/ReflectionGroup/ReflectionGroup.tsx",
+        "components/ReflectionGroupVoting.tsx",
+        "components/TeamPrompt/TeamPromptResponseCard.tsx",
+        "components/TeamPrompt/TeamPromptResponseEmojis.tsx",
+        "components/DashboardAvatars/DashboardAvatars.tsx",
+        "components/DashboardAvatars/DashboardAvatar.tsx",
+        "modules/userDashboard/components/OrgBilling/OrgPlan.tsx",
+        "components/PokerCard.tsx",
+        "components/PokerCardDeck.tsx",
+        "components/PokerActiveVoting.tsx",
+        "components/EstimateDimensionColumn.tsx",
+        "components/PokerVotingRow.tsx"
       ]
     }
   ]

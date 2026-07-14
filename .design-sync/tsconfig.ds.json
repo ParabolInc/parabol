@@ -5,7 +5,8 @@
     "paths": {
       "~/*": ["./*"],
       "parabol-client/*": ["./*"],
-      "babel-plugin-relay/macro": ["../../.design-sync/shims/graphql-macro.ts"]
+      "babel-plugin-relay/macro": ["../../.design-sync/shims/graphql-macro.ts"],
+      "react-relay": ["../../.design-sync/shims/react-relay.ts"]
     }
   }
 }
