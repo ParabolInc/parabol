@@ -10,8 +10,6 @@ import {
   acceptTeamInvitationTeamUpdater
 } from '../mutations/AcceptTeamInvitationMutation'
 import {addAgendaItemUpdater} from '../mutations/AddAgendaItemMutation'
-import {addPokerTemplateTeamUpdater} from '../mutations/AddPokerTemplateMutation'
-import {addReflectTemplateTeamUpdater} from '../mutations/AddReflectTemplateMutation'
 import {addReflectTemplatePromptTeamUpdater} from '../mutations/AddReflectTemplatePromptMutation'
 import {archiveTeamTeamOnNext, archiveTeamTeamUpdater} from '../mutations/ArchiveTeamMutation'
 import {batchArchiveTasksTaskUpdater} from '../mutations/BatchArchiveTasksMutation'
@@ -33,6 +31,8 @@ import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTempla
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
+import {addPokerTemplateTeamUpdater} from '../mutations/useAddPokerTemplateMutation'
+import {addReflectTemplateTeamUpdater} from '../mutations/useAddReflectTemplateMutation'
 import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
@@ -62,10 +62,10 @@ const subscription = graphql`
         ...AddAtlassianAuthMutation_team @relay(mask: false)
       }
       AddReflectTemplateSuccess {
-        ...AddReflectTemplateMutation_team @relay(mask: false)
+        ...useAddReflectTemplateMutation_team @relay(mask: false)
       }
       AddPokerTemplateSuccess {
-        ...AddPokerTemplateMutation_team @relay(mask: false)
+        ...useAddPokerTemplateMutation_team @relay(mask: false)
       }
       AddReflectTemplatePromptPayload {
         ...AddReflectTemplatePromptMutation_team @relay(mask: false)
