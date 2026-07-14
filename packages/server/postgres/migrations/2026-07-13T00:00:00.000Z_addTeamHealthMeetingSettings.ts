@@ -1,5 +1,4 @@
 import {type Kysely, sql} from 'kysely'
-import getKysely from '../getKysely'
 
 // Standalone team health meetings read their phase list + selected template from a
 // per-team MeetingSettings row (like retro/action/poker). New teams get one from
@@ -57,17 +56,63 @@ const generateUID = () => {
 
 // `any` is required here since migrations should be frozen in time.
 export async function up(db: Kysely<any>): Promise<void> {
-  // pg forbids using a new enum value in the same transaction that added it, and kysely runs
-  // the whole batch in one transaction. Add it on a separate pooled connection that autocommits
-  // so it's durable before the backfill below references it. IF NOT EXISTS keeps it idempotent.
-  await sql`ALTER TYPE public."NewMeetingPhaseTypeEnum" ADD VALUE IF NOT EXISTS 'TEAM_HEALTH_RESPONSE'`.execute(
-    getKysely()
+  // pg forbids *using* a new enum value in the same transaction that added it via
+  // `ALTER TYPE ... ADD VALUE`, and kysely runs the whole batch in one transaction — the
+  // backfill below uses 'TEAM_HEALTH_RESPONSE'. Doing the ADD VALUE on a separate autocommit
+  // connection doesn't work on a fresh database either: the batch that CREATEs these types is
+  // still uncommitted, so that connection can't see them ("type does not exist"). Rebuild each
+  // type in place instead: values of a type created in the current transaction may be used
+  // within it.
+  await sql`ALTER TYPE public."NewMeetingPhaseTypeEnum" RENAME TO "NewMeetingPhaseTypeEnum_old"`.execute(
+    db
   )
+  await sql`
+    CREATE TYPE public."NewMeetingPhaseTypeEnum" AS ENUM (
+      'ESTIMATE',
+      'SCOPE',
+      'SUMMARY',
+      'agendaitems',
+      'checkin',
+      'TEAM_HEALTH',
+      'discuss',
+      'firstcall',
+      'group',
+      'lastcall',
+      'lobby',
+      'reflect',
+      'updates',
+      'vote',
+      'RESPONSES',
+      'TEAM_HEALTH_RESPONSE'
+    )
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."MeetingSettings"
+    ALTER COLUMN "phaseTypes" TYPE public."NewMeetingPhaseTypeEnum"[]
+    USING "phaseTypes"::text[]::public."NewMeetingPhaseTypeEnum"[]
+  `.execute(db)
+  await sql`DROP TYPE public."NewMeetingPhaseTypeEnum_old"`.execute(db)
+
   // Adds the timeline event type emitted when a team health meeting ends, so ended
   // team health meetings appear in the viewer's activity timeline like retro/teamPrompt.
-  await sql`ALTER TYPE public."TimelineEventEnum" ADD VALUE IF NOT EXISTS 'TEAM_HEALTH_COMPLETE'`.execute(
-    getKysely()
-  )
+  await sql`ALTER TYPE public."TimelineEventEnum" RENAME TO "TimelineEventEnum_old"`.execute(db)
+  await sql`
+    CREATE TYPE public."TimelineEventEnum" AS ENUM (
+      'TEAM_PROMPT_COMPLETE',
+      'POKER_COMPLETE',
+      'actionComplete',
+      'createdTeam',
+      'joinedParabol',
+      'retroComplete',
+      'TEAM_HEALTH_COMPLETE'
+    )
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."TimelineEvent"
+    ALTER COLUMN "type" TYPE public."TimelineEventEnum"
+    USING "type"::text::public."TimelineEventEnum"
+  `.execute(db)
+  await sql`DROP TYPE public."TimelineEventEnum_old"`.execute(db)
   const teams = await db
     .selectFrom('Team')
     .select('Team.id')

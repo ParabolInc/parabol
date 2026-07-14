@@ -1,20 +1,64 @@
 import {type Kysely, sql} from 'kysely'
-import getKysely from '../getKysely'
 
 const SEED_DATE = new Date('2026-07-08T00:00:00.000Z')
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
-  // pg forbids *using* an enum value in the same transaction that added it via
-  // `ALTER TYPE ... ADD VALUE`, and kysely runs every pending migration in a single
-  // transaction. Adding the value on `db` (the batch transaction) would make a later
-  // migration in the same batch — the one seeding MeetingTemplate rows of type
-  // 'teamHealth' — fail with "unsafe use of new value". So add it on a separate pooled
-  // connection that autocommits, making it durable before any migration references it.
-  // `IF NOT EXISTS` + autocommit keeps this idempotent even if the batch later rolls back.
-  await sql`ALTER TYPE public."MeetingTypeEnum" ADD VALUE IF NOT EXISTS 'teamHealth'`.execute(
-    getKysely()
+  // Add 'teamHealth' to MeetingTypeEnum by rebuilding the type in place. pg forbids
+  // *using* an enum value in the same transaction that added it via `ALTER TYPE ... ADD
+  // VALUE`, and kysely runs every pending migration in a single transaction — so a later
+  // migration in this batch that seeds MeetingTemplate rows of type 'teamHealth' would
+  // fail with "unsafe use of new value". Doing the ADD VALUE on a separate autocommit
+  // connection doesn't work either: on a fresh database the whole batch (including the
+  // init migration that CREATEs MeetingTypeEnum) is still uncommitted, so that connection
+  // can't see the type ("type does not exist"). Recreating the type here sidesteps both:
+  // values of a type created in the current transaction may be used within it.
+  await sql`ALTER TYPE public."MeetingTypeEnum" RENAME TO "MeetingTypeEnum_old"`.execute(db)
+  await sql`
+    CREATE TYPE public."MeetingTypeEnum" AS ENUM (
+      'action',
+      'retrospective',
+      'poker',
+      'teamPrompt',
+      'teamHealth'
+    )
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."NewMeeting"
+    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
+    USING "meetingType"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."MeetingMember"
+    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
+    USING "meetingType"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."MeetingSettings"
+    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
+    USING "meetingType"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."MeetingSeries"
+    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
+    USING "meetingType"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`
+    ALTER TABLE public."MeetingTemplate"
+    ALTER COLUMN "type" TYPE public."MeetingTypeEnum"
+    USING "type"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`ALTER TABLE public."Team" ALTER COLUMN "lastMeetingType" DROP DEFAULT`.execute(db)
+  await sql`
+    ALTER TABLE public."Team"
+    ALTER COLUMN "lastMeetingType" TYPE public."MeetingTypeEnum"
+    USING "lastMeetingType"::text::public."MeetingTypeEnum"
+  `.execute(db)
+  await sql`ALTER TABLE public."Team" ALTER COLUMN "lastMeetingType" SET DEFAULT 'retrospective'`.execute(
+    db
   )
+  await sql`DROP TYPE public."MeetingTypeEnum_old"`.execute(db)
+
   await db.schema.createType('TeamHealthQuestionTypeEnum').asEnum(['likert']).execute()
 
   await db.schema
