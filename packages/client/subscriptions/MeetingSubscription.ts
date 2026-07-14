@@ -101,6 +101,9 @@ const subscription = graphql`
       EndTeamPromptSuccess {
         ...EndTeamPromptMutation_meeting @relay(mask: false)
       }
+      EndTeamHealthSuccess {
+        ...useEndTeamHealthMutation_meeting @relay(mask: false)
+      }
       FlagReadyToAdvanceSuccess {
         ...FlagReadyToAdvanceMutation_meeting @relay(mask: false)
       }

@@ -765,7 +765,6 @@ const User: ReqResolvers<'User'> = {
       }))
       .filter((activity) => !type || activity.type === type)
       .sort((a, b) => (a.sortOrder > b.sortOrder ? -1 : 1))
-
     return connectionFromTemplateArray(allActivities, first, after)
   },
   templateSearch: async ({id: userId}, {search}, {authToken, dataLoader}) => {

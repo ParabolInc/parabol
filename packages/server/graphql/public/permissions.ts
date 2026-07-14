@@ -136,6 +136,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.endTeamPrompt'>('args.meetingId'),
       isSuperUser
     ),
+    endTeamHealth: or(
+      isTeamMemberOfMeeting<'Mutation.endTeamHealth'>('args.meetingId'),
+      isSuperUser
+    ),
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInspirationItems:
       isMeetingMember<'Mutation.generateInspirationItems'>('args.input.meetingId'),
@@ -312,6 +316,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
+    startTeamHealth: or(
+      isTeamMember<'Mutation.startTeamHealth'>('args.teamIds'),
+      isViewerBillingLeader<'Mutation.startTeamHealth'>('args.teamIds', 'teams')
+    ),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
     toggleAIFeatures: or(
       isSuperUser,

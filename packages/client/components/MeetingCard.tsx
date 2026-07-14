@@ -19,7 +19,7 @@ import useTooltip from '../hooks/useTooltip'
 import {Breakpoint, ElementWidth} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import getMeetingPhase from '../utils/getMeetingPhase'
-import {phaseLabelLookup} from '../utils/meetings/lookups'
+import {MeetingTypeToReadable, phaseLabelLookup} from '../utils/meetings/lookups'
 import AvatarList from './AvatarList'
 import CardButton from './CardButton'
 import IconLabel from './IconLabel'
@@ -32,14 +32,16 @@ const BACKGROUND_CLASSES = {
   retrospective: 'bg-grape-500',
   action: 'bg-aqua-400',
   poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400'
+  teamPrompt: 'bg-jade-400',
+  teamHealth: 'bg-rose-500'
 } as const
 
 const RECURRING_LABEL_COLORS = {
   retrospective: 'text-grape-600',
   action: 'text-aqua-600',
   poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600'
+  teamPrompt: 'text-jade-600',
+  teamHealth: 'text-rose-600'
 }
 
 const STACK_DEGREES = {0: 1, 1: -2} as const
@@ -50,13 +52,8 @@ interface Props {
   meeting: MeetingCard_meeting$key
 }
 
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt}
-const MEETING_TYPE_LABEL = {
-  retrospective: 'Retro',
-  action: 'Check-In',
-  poker: 'Sprint Poker',
-  teamPrompt: 'Standup'
-}
+// TODO: add a dedicated teamHealth illustration
+const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 
 const MeetingCard = (props: Props) => {
   const {meeting: meetingRef} = props
@@ -157,7 +154,7 @@ const MeetingCard = (props: Props) => {
         )}
       />
       <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-        {MEETING_TYPE_LABEL[meetingType]}
+        {MeetingTypeToReadable[meetingType]}
       </span>
       {isRecurring && (
         <span
@@ -220,7 +217,7 @@ const MeetingCard = (props: Props) => {
               )}
             />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-              {MEETING_TYPE_LABEL[meetingType]}
+              {MeetingTypeToReadable[meetingType]}
             </span>
             {isRecurring && (
               <span

@@ -104,6 +104,9 @@ const query = graphql`
     ...ActivityLibraryTemplateSearch_query @arguments(search: "")
     viewer {
       ...ActivityGrid_user
+      organizations {
+        hasTeamHealth: featureFlag(featureName: "teamHealth")
+      }
       favoriteTemplates {
         ...ActivityLibrary_template @relay(mask: false)
       }
@@ -243,7 +246,11 @@ export const ActivityLibrary = (props: Props) => {
     return templatesMap
   }, [availableTemplates])
 
-  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME)
+  const hasTeamHealth = viewer.organizations.some((org) => org.hasTeamHealth)
+
+  const availableCategoryIds = Object.keys(CATEGORY_ID_TO_NAME).filter(
+    (id) => hasTeamHealth || id !== 'teamHealth'
+  )
 
   const {
     query: searchQuery,
@@ -305,12 +312,12 @@ export const ActivityLibrary = (props: Props) => {
 
     return filteredTemplates.filter((template) =>
       categoryId === QUICK_START_CATEGORY_ID
-        ? template.isRecommended
+        ? template.isRecommended && (hasTeamHealth || template.id !== 'everythingBagelTemplate')
         : categoryId === CUSTOM_CATEGORY_ID
           ? template.scope !== 'PUBLIC'
           : template.category === categoryId
     )
-  }, [searchQuery, filteredTemplates, templateSearch, categoryId])
+  }, [searchQuery, filteredTemplates, templateSearch, categoryId, hasTeamHealth])
 
   const sectionedTemplates = useMemo(() => {
     // Show the teams on search as well, because you can search by team name
@@ -391,7 +398,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={cn(
-                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-slate-800 text-sm leading-9',
+                    'relative flex shrink-0 cursor-pointer items-center rounded-full px-4 text-slate-800 text-sm leading-9',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
@@ -412,6 +419,11 @@ export const ActivityLibrary = (props: Props) => {
                   }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
+                  {category === 'teamHealth' && (
+                    <sup className='-top-1 -right-1 absolute rounded-full bg-grape-700 px-1.5 py-0.5 font-semibold text-[10px] text-white leading-none'>
+                      NEW
+                    </sup>
+                  )}
                 </Link>
               )
             )}

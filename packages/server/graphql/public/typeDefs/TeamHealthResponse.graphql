@@ -1,0 +1,41 @@
+"""
+A single team member's answer to a team health question in a meeting
+"""
+type TeamHealthResponse {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The 1-5 Likert score the user gave. Null if the user skipped the question
+  """
+  score: Int
+
+  """
+  A freeform comment the user left with their answer, paraphrased ot preserve anonymity
+  """
+  commentParaphrased: String
+
+  """
+  *Foreign key. The meeting this response was given in
+  """
+  meetingId: ID!
+
+  """
+  *Foreign key. The question this response answers
+  """
+  questionId: ID!
+
+  """
+  The question this response answers
+  """
+  question: TeamHealthQuestion!
+
+  """
+  true if the viewer authored this response. The author is otherwise kept private
+  """
+  isViewerCreator: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

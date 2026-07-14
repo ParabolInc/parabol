@@ -1,0 +1,46 @@
+"""
+A single team health question, e.g. "It is safe to take a risk on this team."
+"""
+type TeamHealthQuestion {
+  """
+  shortid
+  """
+  id: ID!
+
+  """
+  The question or statement presented to the team member
+  """
+  question: String!
+
+  """
+  Additional context for the question
+  """
+  description: String
+
+  """
+  The way the question is answered
+  """
+  questionType: TeamHealthQuestionType!
+
+  """
+  *Foreign key. The pack this question belongs to
+  """
+  packId: ID!
+
+  """
+  The pack this question belongs to
+  """
+  pack: TeamHealthQuestionPack!
+
+  """
+  *Foreign key. The category this question maps to
+  """
+  categoryId: ID!
+
+  """
+  The category this question maps to
+  """
+  category: TeamHealthCategory!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

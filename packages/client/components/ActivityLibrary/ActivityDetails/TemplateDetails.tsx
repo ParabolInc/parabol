@@ -73,6 +73,16 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
       </>
     ),
     integrationsTip: <>push takeaway tasks to your backlog</>
+  },
+  teamHealth: {
+    description: (
+      <>
+        Take the pulse of your team by answering research-backed survey questions across categories
+        like psychological safety, dependability, and impact. Track your team's health trends over
+        time.
+      </>
+    ),
+    integrationsTip: <>push takeaway tasks to your backlog</>
   }
 }
 
@@ -159,7 +169,8 @@ export const TemplateDetails = (props: Props) => {
       retrospective: RemoveReflectTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null
+      teamPrompt: null,
+      teamHealth: null
     } as const
 
     const removeTemplateMutation = removeTemplateMutationLookup[type]

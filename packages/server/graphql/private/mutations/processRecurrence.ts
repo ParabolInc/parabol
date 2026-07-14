@@ -10,7 +10,11 @@ import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
 import type {MeetingSeries} from '../../../postgres/types'
-import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
+import type {
+  RetrospectiveMeeting,
+  TeamHealthMeeting,
+  TeamPromptMeeting
+} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
 import logError from '../../../utils/logError'
@@ -20,8 +24,10 @@ import type {DataLoaderWorker} from '../../graphql'
 import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
 import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
 import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
+import safeCreateTeamHealth from '../../mutations/helpers/safeCreateTeamHealth'
 import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
+import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
 import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
 import type {MutationResolvers} from '../resolverTypes'
@@ -115,6 +121,39 @@ const startRecurringMeeting = async (
       const data = {teamId, meetingId: meeting.id}
       publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
       return meeting
+    } else if (meetingSeries.meetingType === 'teamHealth') {
+      // Field-by-field fallback: prior meeting > MeetingSettings (nullable) > default.
+      const healthLastMeeting = lastMeeting as TeamHealthMeeting | null
+      const templateId =
+        healthLastMeeting?.templateId ??
+        meetingSettings?.selectedTemplateId ??
+        'everythingBagelTemplate'
+      const meeting = await safeCreateTeamHealth(
+        {
+          teamId,
+          facilitatorUserId: facilitatorId,
+          templateId,
+          name: meetingName,
+          meetingSeriesId: meetingSeries.id,
+          scheduledEndTime
+        },
+        dataLoader
+      )
+      if (!meeting) {
+        return {
+          error: {
+            message: 'Unable to create meeting. Perhaps one was just created?'
+          }
+        }
+      }
+      publish(
+        SubscriptionChannel.TEAM,
+        teamId,
+        'StartTeamHealthSuccess',
+        {meetingIds: [meeting.id], teamIds: [teamId]},
+        subOptions
+      )
+      return meeting
     }
     return standardError(new Error('Unhandled recurring meeting type'), {
       tags: {
@@ -164,6 +203,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             return safeEndTeamPrompt({meeting, context, info})
           } else if (meeting.meetingType === 'retrospective') {
             return safeEndRetrospective({meeting, context, info})
+          } else if (meeting.meetingType === 'teamHealth') {
+            return safeEndTeamHealth({meeting, context, info})
           } else {
             return standardError(new Error('Unhandled recurring meeting type'), {
               tags: {

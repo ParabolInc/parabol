@@ -7,6 +7,7 @@ import type {
   AnyMeeting,
   PokerMeeting,
   RetrospectiveMeeting,
+  TeamHealthMeeting,
   TeamPromptMeeting
 } from '../postgres/types/Meeting'
 import getPhase from './getPhase'
@@ -120,6 +121,42 @@ const makeTeamPromptMeetingInsightInput = async (
   return {meetingType, responses: contentWithUsers}
 }
 
+const makeTeamHealthMeetingInsightInput = async (
+  meeting: TeamHealthMeeting,
+  dataLoader: DataLoaderInstance
+) => {
+  // require enough distinct respondents that no answer can be traced back to an individual
+  const MIN_RESPONSES = 3
+  const {id: meetingId, meetingType} = meeting
+  const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
+  const responderCount = new Set(responses.map(({userId}) => userId)).size
+  if (responderCount < MIN_RESPONSES) return null
+
+  const questionIds = [...new Set(responses.map(({questionId}) => String(questionId)))]
+  const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
+    isValid
+  )
+  const questionById = new Map(questions.map((question) => [String(question.id), question]))
+
+  // group responses by question, dropping any user linkage so the data stays anonymous
+  const grouped = new Map<string, {question: string; scores: number[]; comments: string[]}>()
+  for (const response of responses) {
+    const questionId = String(response.questionId)
+    const question = questionById.get(questionId)
+    if (!question) continue
+    let entry = grouped.get(questionId)
+    if (!entry) {
+      entry = {question: question.question, scores: [], comments: []}
+      grouped.set(questionId, entry)
+    }
+    if (response.score !== null && response.score !== undefined) entry.scores.push(response.score)
+    // prefer the anonymity-preserving paraphrase; fall back to the raw comment only if absent
+    const comment = response.commentParaphrased ?? response.comment
+    if (comment) entry.comments.push(comment)
+  }
+  return {meetingType, questions: [...grouped.values()]}
+}
+
 const makePokerMeetingInsightInput = async (
   meeting: PokerMeeting,
   dataLoader: DataLoaderInstance
@@ -161,6 +198,8 @@ const makeMeetingInsightPart = async (meeting: AnyMeeting, dataLoader: DataLoade
   switch (meetingType) {
     case 'action':
       return null
+    case 'teamHealth':
+      return makeTeamHealthMeetingInsightInput(meeting, dataLoader)
     case 'poker':
       return makePokerMeetingInsightInput(meeting, dataLoader)
     case 'retrospective':
