@@ -1,0 +1,21 @@
+"""
+A team-defined secondary status nested under one of the 4 locked primary task statuses
+"""
+type TaskSecondaryStatus {
+  id: ID!
+
+  "The team that defined this secondary status"
+  teamId: ID!
+
+  "The team that defined this secondary status"
+  team: Team! @scope(name: TEAMS_READ)
+
+  "The primary status this secondary status is nested under"
+  status: TaskStatusEnum!
+
+  "The display label, unique per (team, primary status), case-insensitive"
+  label: String!
+
+  "Sort order within the primary status band"
+  sortOrder: Float!
+}

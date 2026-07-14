@@ -119,6 +119,11 @@ type Task implements Threadable {
   status: TaskStatusEnum!
 
   """
+  The team-defined secondary status nested under the primary status, if any
+  """
+  secondaryStatus: TaskSecondaryStatus @scope(name: TASKS_READ)
+
+  """
   The tags associated with the task
   """
   tags: [String!]!

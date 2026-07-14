@@ -145,6 +145,11 @@ const Task: Omit<ReqResolvers<'Task'>, 'replies'> = {
     return dataLoader.get('users').loadNonNull(userId)
   },
 
+  secondaryStatus: async ({secondaryStatusId}, _args, {dataLoader}) => {
+    if (!secondaryStatusId) return null
+    return (await dataLoader.get('taskSecondaryStatuses').load(secondaryStatusId)) ?? null
+  },
+
   isHighlighted: async ({id: taskId}, {meetingId}, {dataLoader}) => {
     if (!meetingId) return false
     const highlightedTaskId = await dataLoader.get('meetingHighlightedTaskId').load(meetingId)

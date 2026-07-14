@@ -140,6 +140,10 @@ const Team: TeamResolvers = {
     const availableScales = await dataLoader.get('scalesByTeamId').loadMany([teamId, 'aGhostTeam'])
     return availableScales.filter(isValid).flat()
   },
+  secondaryStatuses: ({id: teamId}, _args, {authToken, dataLoader}) => {
+    if (!isTeamMember(authToken, teamId)) return []
+    return dataLoader.get('taskSecondaryStatusesByTeamId').load(teamId)
+  },
   sortOrder: (source, _args) => {
     if ('sortOrder' in source) {
       return source.sortOrder as string

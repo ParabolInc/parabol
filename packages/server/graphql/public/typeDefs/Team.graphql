@@ -150,6 +150,11 @@ type Team implements Node & TeamPartial {
   ): TaskConnection! @scope(name: TASKS_READ)
 
   """
+  The team-defined secondary statuses nested under the 4 primary task statuses
+  """
+  secondaryStatuses: [TaskSecondaryStatus!]! @scope(name: TASKS_READ)
+
+  """
   All the team members actively associated with the team
   """
   teamMembers(

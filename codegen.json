@@ -293,6 +293,7 @@
           "SuggestedAction": "../../postgres/types/index#SuggestedAction as SuggestedActionDB",
           "Task": "../../postgres/types/index#Task as TaskDB",
           "TaskEstimate": "../../postgres/types/index#TaskEstimate as TaskEstimateDB",
+          "TaskSecondaryStatus": "../../postgres/types/index#TaskSecondaryStatus as TaskSecondaryStatusDB",
           "Team": "../../postgres/types/index#Team as TeamDB",
           "TeamHealthPhase": "./types/TeamHealthPhase#TeamHealthPhaseSource",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
