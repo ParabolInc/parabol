@@ -71,6 +71,7 @@ const permissionMap: PermissionMap<Resolvers> = {
       'meetingTemplates'
     ),
     addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
+    addTaskSecondaryStatus: isTeamMember<'Mutation.addTaskSecondaryStatus'>('args.teamId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
     addTeamMemberIntegrationAuth:
       isTeamMember<'Mutation.addTeamMemberIntegrationAuth'>('args.teamId'),

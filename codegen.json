@@ -99,6 +99,7 @@
           "AddReflectTemplatePromptPayload": "./types/AddReflectTemplatePromptPayload#AddReflectTemplatePromptPayloadSource",
           "AddReflectTemplateSuccess": "./types/AddReflectTemplateSuccess#AddReflectTemplateSuccessSource",
           "AddSlackAuthPayload": "./types/AddSlackAuthPayload#AddSlackAuthPayloadSource",
+          "AddTaskSecondaryStatusSuccess": "./types/AddTaskSecondaryStatusSuccess#AddTaskSecondaryStatusSuccessSource",
           "AddTeamMemberIntegrationAuthSuccess": "./types/AddTeamMemberIntegrationAuthSuccess#AddTeamMemberIntegrationAuthSuccessSource",
           "AddTeamPayload": "./types/AddTeamPayload#AddTeamPayloadSource",
           "AddTranscriptionBotSuccess": "./types/AddTranscriptionBotSuccess#AddTranscriptionBotSuccessSource",

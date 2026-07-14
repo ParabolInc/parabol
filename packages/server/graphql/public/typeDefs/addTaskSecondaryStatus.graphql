@@ -1,0 +1,26 @@
+extend type Mutation {
+  """
+  Add a team-defined secondary status nested under one of the 4 primary task statuses
+  """
+  addTaskSecondaryStatus(
+    "The team defining the secondary status"
+    teamId: ID!
+
+    "The primary status to nest under"
+    status: TaskStatusEnum!
+
+    "The display label; unique per (team, primary status), case-insensitive"
+    label: String!
+
+    "Position within the primary status band"
+    sortOrder: Float!
+  ): AddTaskSecondaryStatusSuccess! @scope(name: TASKS_WRITE)
+}
+
+type AddTaskSecondaryStatusSuccess {
+  "The created secondary status"
+  taskSecondaryStatus: TaskSecondaryStatus!
+
+  "The team it belongs to"
+  team: Team!
+}

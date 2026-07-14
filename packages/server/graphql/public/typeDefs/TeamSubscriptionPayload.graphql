@@ -72,4 +72,5 @@ type TeamSubscriptionPayload {
   UpdateTemplateCategorySuccess: UpdateTemplateCategorySuccess
   JoinTeamSuccess: JoinTeamSuccess
   SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload
+  AddTaskSecondaryStatusSuccess: AddTaskSecondaryStatusSuccess
 }
