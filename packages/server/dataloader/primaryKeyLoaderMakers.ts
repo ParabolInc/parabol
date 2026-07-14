@@ -23,6 +23,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTaskSecondaryStatuses,
   selectTasks,
   selectTeamInvitations,
   selectTeamPromptResponses,
@@ -165,6 +166,10 @@ export const teamInvitations = primaryKeyLoaderMaker((ids: readonly string[]) =>
 
 export const tasks = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectTasks().where('id', 'in', ids).execute()
+})
+
+export const taskSecondaryStatuses = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTaskSecondaryStatuses().where('id', 'in', ids).execute()
 })
 
 export const notifications = primaryKeyLoaderMaker((ids: readonly string[]) => {

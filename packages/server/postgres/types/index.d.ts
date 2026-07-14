@@ -29,6 +29,7 @@ import {
   type selectSlackAuths,
   type selectSlackNotifications,
   type selectSuggestedAction,
+  type selectTaskSecondaryStatuses,
   type selectTasks,
   type selectTeamInvitations,
   type selectTeamMemberIntegrationAuth,
@@ -131,6 +132,9 @@ export type NewMeeting = ExtractTypeFromQueryBuilderSelect<typeof selectNewMeeti
 export type NewFeature = ExtractTypeFromQueryBuilderSelect<typeof selectNewFeatures>
 export type TeamInvitation = ExtractTypeFromQueryBuilderSelect<typeof selectTeamInvitations>
 export type Task = ExtractTypeFromQueryBuilderSelect<typeof selectTasks>
+export type TaskSecondaryStatus = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTaskSecondaryStatuses
+>
 export type TaskEstimate = Selectable<TaskEstimatePG>
 
 export type Discussion = ExtractTypeFromQueryBuilderSelect<typeof selectDiscussion>

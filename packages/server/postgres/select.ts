@@ -284,6 +284,7 @@ export const selectTasks = () =>
       'integrationHash',
       'meetingId',
       'plaintextContent',
+      'secondaryStatusId',
       'sortOrder',
       'status',
       'teamId',
@@ -297,6 +298,9 @@ export const selectTasks = () =>
       fn<TaskTag[]>('to_json', ['tags']).as('tags'),
       fn<AnyTaskIntegration | null>('to_json', ['integration']).as('integration')
     ])
+
+export const selectTaskSecondaryStatuses = () =>
+  getKysely().selectFrom('TaskSecondaryStatus').selectAll()
 
 export const selectNotifications = () =>
   getKysely().selectFrom('Notification').selectAll().$narrowType<AnyNotification>()

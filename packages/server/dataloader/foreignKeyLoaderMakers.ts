@@ -13,6 +13,7 @@ import {
   selectSlackAuths,
   selectSlackNotifications,
   selectSuggestedAction,
+  selectTaskSecondaryStatuses,
   selectTasks,
   selectTeamInvitations,
   selectTeams,
@@ -323,6 +324,18 @@ export const tasksByMeetingId = foreignKeyLoaderMaker('tasks', 'meetingId', asyn
     .where(sql<boolean>`'archived' != ALL(tags)`)
     .execute()
 })
+
+export const taskSecondaryStatusesByTeamId = foreignKeyLoaderMaker(
+  'taskSecondaryStatuses',
+  'teamId',
+  async (teamIds) => {
+    return selectTaskSecondaryStatuses()
+      .where('teamId', 'in', teamIds)
+      .orderBy('status')
+      .orderBy('sortOrder')
+      .execute()
+  }
+)
 
 export const tasksByIntegrationHash = foreignKeyLoaderMaker(
   'tasks',
