@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<section data-screen-label="11 Assignment on Pages" style="padding:24px;min-width:1380px;max-width:1500px">
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:6px">
+    <span style="font-size:18px;font-weight:600;color:#1C1C21">11 · Team + user assignment on Pages — research & combined control</span>
+    <div style="display:flex;gap:12px;margin-left:auto;font-size:13px">
+      <a href="00 Index.dc.html" style="color:#329AE5">Index</a>
+      <a href="10 Inline Task Anatomy.dc.html" style="color:#329AE5">← Anatomy</a>
+    </div>
+  </div>
+  <p style="margin:0 0 24px;font-size:13px;color:#82809A;max-width:900px;line-height:19px">Today team and user never appear on a card together — one is always implied by context. Pages break that assumption in exactly one case. Findings below are read from the source, not assumed.</p>
+
+  <div style="display:flex;align-items:flex-start;gap:24px">
+
+    <!-- Column 1: research -->
+    <div style="width:400px;flex-shrink:0;display:flex;flex-direction:column;gap:16px">
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:16px 18px">
+        <div style="font-size:14px;font-weight:600;color:#1C1C21;padding-bottom:8px">What the code does today</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;line-height:18px;color:#444258">
+          <div><b>Card shows team XOR user.</b> <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">TaskFooter: show&#8203;Team = area === USER_DASH</span> — on /me/tasks the user is the viewer, so the card shows the <i>team</i>; on team dashboards and in meetings the team is the context, so the card shows the <i>user</i>.</div>
+          <div><b>Selectable teams = the viewer's teams.</b> <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">TaskFooterTeamAssigneeMenuQuery → viewer.teams</span>. NOT the union of people invited to a page — you can never move a task onto a team you aren't a member of (<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">ChangeTaskTeamMutation</span> enforces this).</div>
+          <div><b>Selectable users = members of the task's team.</b> <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">TaskFooterUserAssigneeMenuQuery → viewer.team(taskTeamId).teamMembers</span>. Page invitees who aren't on that team cannot be assignees.</div>
+          <div><b>Locks.</b> Integrated tasks can't change user (<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">canAssignUser = !integration && !isArchived</span>); archived tasks can't change either.</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:16px 18px">
+        <div style="font-size:14px;font-weight:600;color:#1C1C21;padding-bottom:8px">Where does the card need both?</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="color:#82809A;text-align:left">
+              <th style="padding:4px 6px;border-bottom:1px solid #E0DDEC;font-weight:500">Context</th>
+              <th style="padding:4px 6px;border-bottom:1px solid #E0DDEC;font-weight:500">Implied</th>
+              <th style="padding:4px 6px;border-bottom:1px solid #E0DDEC;font-weight:500">Card shows</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ matrix }}" as="m" hint-placeholder-count="5">
+              <tr style="background:{{ m.bg }}">
+                <td style="padding:5px 6px;border-bottom:1px solid #F1F0FA;color:#444258">{{ m.context }}</td>
+                <td style="padding:5px 6px;border-bottom:1px solid #F1F0FA;color:#82809A">{{ m.implied }}</td>
+                <td style="padding:5px 6px;border-bottom:1px solid #F1F0FA;font-weight:600;color:#444258">{{ m.shows }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <div style="padding-top:10px;font-size:12px;line-height:18px;color:#444258"><b>Jordan's hypothesis holds, narrowed:</b> both are needed only on pages <b>not nested under a team</b> — shared pages with multi-team invitees, and private pages when the viewer is on 2+ teams (team choice at creation; user defaults to viewer). A page nested under a team behaves like the team dashboard: user only.</div>
+      </div>
+    </div>
+
+    <!-- Column 2: the combined control -->
+    <div style="width:440px;flex-shrink:0">
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:16px 18px">
+        <div style="font-size:14px;font-weight:600;color:#1C1C21;padding-bottom:2px">One control, not two</div>
+        <div style="font-size:12px;color:#82809A;padding-bottom:14px;line-height:17px">On a non-team page the footer shows <b>user primary, team as suffix</b> — a single button opening one cascading menu instead of separate team + user pickers.</div>
+
+        <!-- Card footer treatment -->
+        <div style="position:relative;width:340px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'Material Icons';font-size:14px;line-height:1;text-transform:none;color:#66BC8C" title="Active">play_arrow</span>
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:#66BC8C"></div>
+                <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:#66BC8C;opacity:0.35"></div>
+              </div>
+              <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">In progress</span>
+            </div>
+            <span>Just now</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">Follow up with infra about staging quota</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 14px">
+            <button style="display:flex;align-items:center;gap:6px;border:0;background:none;padding:2px 6px 2px 2px;margin-left:-2px;border-radius:9999px;font-family:inherit;cursor:pointer">
+              <div style="width:24px;height:24px;border-radius:50%;background:#7340B5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">PN</div>
+              <span style="font-size:12px;font-weight:600;color:#444258">Priya Natarajan</span>
+              <span style="font-size:12px;color:#A7A3C2">· Platform Team</span>
+            </button>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2">publish</span>
+              <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2">more_vert</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cascading menu -->
+        <div style="margin-top:14px;width:320px;border-radius:6px;background:#fff;padding:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06)">
+          <div style="display:flex;align-items:center;gap:8px;border:1px solid #329AE5;border-radius:4px;padding:6px 10px;font-size:13px;color:#82809A;box-shadow:0 0 0 2px rgba(50,154,229,0.3)">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1">search</span>
+            Search your teams' members…
+          </div>
+          <sc-for list="{{ menuTeams }}" as="t" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 4px 4px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#A7A3C2">
+              <span style="font-family:'Material Icons';font-size:13px;line-height:1;text-transform:none">group</span>
+              {{ t.name }}
+              <span style="font-weight:400;text-transform:none;letter-spacing:0">{{ t.note }}</span>
+            </div>
+            <sc-for list="{{ t.members }}" as="m" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:8px;border-radius:6px;padding:6px 8px;cursor:{{ m.cursor }};opacity:{{ m.opacity }};background:{{ m.bg }}" style-hover="background:#F1F0FA">
+                <div style="width:22px;height:22px;border-radius:50%;background:{{ m.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600">{{ m.initials }}</div>
+                <span style="font-size:13px;color:#444258">{{ m.name }}</span>
+                <span style="margin-left:auto;font-size:11px;color:#A7A3C2">{{ m.hint }}</span>
+              </div>
+            </sc-for>
+          </sc-for>
+          <div style="border-top:1px solid #F1F0FA;margin-top:6px;padding:8px 8px 2px;font-size:11px;color:#A7A3C2;line-height:15px">Picking a member of another team moves the task there — one gesture fires ChangeTaskTeamMutation, then UpdateTaskMutation {userId}.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 3: corner cases -->
+    <div style="flex:1;min-width:340px">
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:16px 18px">
+        <div style="font-size:14px;font-weight:600;color:#1C1C21;padding-bottom:8px">Corner cases & resolutions</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:12px;line-height:18px;color:#444258">
+          <div><b>Page invitee isn't on any of my teams.</b> They appear in the menu greyed out with “not on a shared team” — selecting is disabled. Assigning them would require a team invite, which stays out of this menu's scope.</div>
+          <div><b>Viewer is on one team only.</b> The team group header collapses away entirely — the menu looks exactly like today's user-assignee menu. Zero added complexity for the common case.</div>
+          <div><b>Task created via /task on a team-nested page.</b> Team is the page's team, control shows user only (matches team dashboard). The “· Team” suffix never renders.</div>
+          <div><b>Integrated task.</b> User half locks (as today: <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">canAssignUser = !integration</span>); team move remains allowed, so the suffix stays clickable and opens the menu scoped to teams.</div>
+          <div><b>Moving teams orphans the assignee.</b> If the current assignee isn't on the destination team, the task lands Unassigned (today's ChangeTaskTeam behavior) — the menu warns inline before confirming: “Priya isn't on Moonshot Crew — task will be unassigned.”</div>
+          <div><b>#archived task.</b> Whole control is inert, matching today's <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;background:#F8F7FC;padding:1px 4px;border-radius:3px">canAssignTeam = !isArchived</span>.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#82809A;line-height:18px"><b>Rejected alternative:</b> “teams = union of page invitees' teams.” It reads naturally but can't work — the viewer may not be a member of those teams, and ChangeTaskTeamMutation (correctly) refuses such moves. Team choice must stay scoped to <i>viewer.teams</i>.</div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const matrix = [
+      {context: 'Team dashboard', implied: 'Team', shows: 'User', bg: '#fff'},
+      {context: '/me/tasks (user dash)', implied: 'User (viewer)', shows: 'Team', bg: '#fff'},
+      {context: 'Meeting', implied: 'Team', shows: 'User', bg: '#fff'},
+      {context: 'Page nested under a team', implied: 'Team (page\u2019s)', shows: 'User', bg: '#fff'},
+      {context: 'Shared / private page (no team)', implied: 'Nothing', shows: 'User + Team', bg: '#E8F4FC'}
+    ]
+    const mem = (name, avatarBg, hint, disabled, selected) => ({
+      name, avatarBg, hint: hint || '',
+      initials: name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      opacity: disabled ? 0.45 : 1,
+      bg: selected ? '#F8F7FC' : 'transparent'
+    })
+    const menuTeams = [
+      {name: 'Platform Team', note: '(current)', members: [
+        mem('Priya Natarajan', '#7340B5', 'assigned', false, true),
+        mem('Sam Okafor', '#ED4C86', '', false, false)
+      ]},
+      {name: 'Moonshot Crew', note: '', members: [
+        mem('Jordan Rivas', '#55C0CF', '', false, false),
+        mem('Taylor Chen', '#DE8E02', '', false, false)
+      ]},
+      {name: 'Invited to this page', note: '', members: [
+        mem('Alex Kim', '#A7A3C2', 'not on a shared team', true, false)
+      ]}
+    ]
+    return {matrix, menuTeams}
+  }
+}
+</script>
+</body>
+</html>

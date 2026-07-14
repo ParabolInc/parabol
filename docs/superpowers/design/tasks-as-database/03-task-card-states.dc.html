@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<!-- Turn 3: color-blind-safe primary category on top of 3f -->
+<section data-screen-label="03 Task Card States — color-blind primary" style="padding:24px;min-width:1320px">
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+    <span style="font-size:18px;font-weight:600;color:#1C1C21">03 · Making the primary category color-blind safe</span>
+    <span style="font-size:13px;color:#82809A">All variants build on the chosen <a href="#3f" style="color:#329AE5">3f</a> chip treatment (below)</span>
+    <div style="display:flex;gap:12px;margin-left:auto;font-size:13px">
+      <a href="00 Index.dc.html" style="color:#329AE5">Index</a>
+      <a href="04 Kanban Grouping.dc.html" style="color:#329AE5">Next: Kanban grouping →</a>
+    </div>
+  </div>
+
+  <!-- 3h Patterned bars -->
+  <div id="3h" style="margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700">3h</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Patterned bars</span>
+      <span style="font-size:12px;color:#82809A">Each primary gets a distinct texture: Future dashed · Stuck striped · Active solid · Done hollow. Works even in grayscale; no extra pixels used</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ samples }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;width:280px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="box-sizing:border-box;height:6px;width:32px;border-radius:2px;background:{{ c.patternBg }};border:{{ c.patternBorder }}"></div>
+              <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">{{ c.secondary }}</span>
+              </sc-if>
+            </div>
+            <span>{{ c.meta }}</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">{{ c.title }}</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 16px">
+            <div style="display:flex;align-items:center;height:24px">
+              <div style="width:24px;height:24px;border-radius:50%;margin-right:6px;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ c.initials }}</div>
+              <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">{{ c.assignee }}</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11px;color:#A7A3C2">{{ c.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- 3i Micro-caps status line -->
+  <div id="3i" style="margin-top:44px;margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700">3i</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Micro-caps status line (text)</span>
+      <span style="font-size:12px;color:#82809A">3f's caps text extended to the primary: “ACTIVE · IN REVIEW”. Fully color-independent and screen-reader friendly; adds a word of visual noise per card</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ samples }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;width:280px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:{{ c.color }}"></div>
+                <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                  <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:{{ c.color }};opacity:0.35"></div>
+                </sc-if>
+              </div>
+              <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">{{ c.statusCaps }}</span>
+            </div>
+            <span>{{ c.meta }}</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">{{ c.title }}</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 16px">
+            <div style="display:flex;align-items:center;height:24px">
+              <div style="width:24px;height:24px;border-radius:50%;margin-right:6px;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ c.initials }}</div>
+              <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">{{ c.assignee }}</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11px;color:#A7A3C2">{{ c.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- 3j Glyph + bar -->
+  <div id="3j" style="margin-top:44px;margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700" data-comment-anchor="568f67e7ca-span">3j</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Glyph + bar (shape) — CHOSEN</span>
+      <span style="font-size:12px;color:#82809A">A tiny glyph per primary — Future clock · Stuck alert · Active play · Done check — carries the state by shape; color becomes reinforcement. Pulled through screens 01, 02, 05, 07, 08, 09, 10</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ samples }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;width:280px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'Material Icons';font-size:14px;line-height:1;color:{{ c.color }}" title="{{ c.caption }}">{{ c.glyph }}</span>
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:{{ c.color }}"></div>
+                <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                  <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:{{ c.color }};opacity:0.35"></div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">{{ c.secondary }}</span>
+              </sc-if>
+            </div>
+            <span>{{ c.meta }}</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">{{ c.title }}</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 16px">
+            <div style="display:flex;align-items:center;height:24px">
+              <div style="width:24px;height:24px;border-radius:50%;margin-right:6px;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ c.initials }}</div>
+              <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">{{ c.assignee }}</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11px;color:#A7A3C2">{{ c.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- 3k Hover reveal -->
+  <div id="3k" style="margin-top:44px;margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700">3k</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Hover reveal (tooltip)</span>
+      <span style="font-size:12px;color:#82809A">Card stays exactly as 3f; hovering the bar names the full state. Cheapest, but invisible on touch and to keyboard users — recommend only as a supplement to 3h–3j, never alone</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ samples }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;width:280px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <sc-if value="{{ c.showTooltip }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:-26px;left:12px;z-index:5;background:#2D2D39;color:#fff;border-radius:4px;padding:4px 8px;font-size:11px;font-weight:600;white-space:nowrap">{{ c.caption }}<span style="position:absolute;left:16px;bottom:-4px;width:8px;height:8px;background:#2D2D39;transform:rotate(45deg)"></span></div>
+          </sc-if>
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px" title="{{ c.caption }}">
+              <div style="display:flex;align-items:center;gap:2px;cursor:help">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:{{ c.color }}"></div>
+                <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                  <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:{{ c.color }};opacity:0.35"></div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">{{ c.secondary }}</span>
+              </sc-if>
+            </div>
+            <span>{{ c.meta }}</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">{{ c.title }}</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 16px">
+            <div style="display:flex;align-items:center;height:24px">
+              <div style="width:24px;height:24px;border-radius:50%;margin-right:6px;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ c.initials }}</div>
+              <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">{{ c.assignee }}</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11px;color:#A7A3C2">{{ c.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<!-- Turn 2: the chosen chip treatment (3f); other chip variants removed -->
+<section style="padding:24px;min-width:1320px;border-top:1px dashed #C3C0D8">
+  <div id="3f" style="margin-bottom:28px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700" data-comment-anchor="2d968c26cf-span">3f</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Split bar + micro-caps — CHOSEN</span>
+      <span style="font-size:12px;color:#82809A">3a, 3d, 3e, 3g removed. The variants above explore color-blind-safe primaries on this base</span>
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <sc-for list="{{ samples }}" as="c" hint-placeholder-count="4">
+        <div style="position:relative;width:280px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+          <div style="min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:{{ c.color }}"></div>
+                <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                  <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:{{ c.color }};opacity:0.35"></div>
+                </sc-if>
+              </div>
+              <sc-if value="{{ c.secondary }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">{{ c.secondary }}</span>
+              </sc-if>
+            </div>
+            <span>{{ c.meta }}</span>
+          </div>
+          <div style="min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258">{{ c.title }}</div>
+          <div style="display:flex;justify-content:space-between;padding:8px 16px 16px">
+            <div style="display:flex;align-items:center;height:24px">
+              <div style="width:24px;height:24px;border-radius:50%;margin-right:6px;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ c.initials }}</div>
+              <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">{{ c.assignee }}</div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:-22px;text-align:center;font-size:11px;color:#A7A3C2">{{ c.caption }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const mk = (primary, secondary, color, bg, title, assignee, avatarBg, meta, glyph, pattern) => ({
+      primary, secondary, color, bg, title, assignee, avatarBg, meta, glyph,
+      noSecondary: !secondary,
+      caption: secondary ? primary + ' · ' + secondary : primary,
+      statusCaps: secondary ? primary + ' · ' + secondary : primary,
+      patternBg: pattern.bg,
+      patternBorder: pattern.border || 'none',
+      showTooltip: primary === 'Active',
+      initials: assignee.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+    })
+    const AQUA = '#55C0CF', TOMATO = '#FD6157', JADE = '#66BC8C', GRAPE = '#7340B5'
+    const samples = [
+      mk('Future', 'Up next', AQUA, '#CBECF0', 'Design onboarding checklist page', 'Jordan Rivas', '#55C0CF', 'Created 4 days ago', 'schedule',
+        {bg: 'repeating-linear-gradient(90deg, ' + AQUA + ' 0 5px, transparent 5px 9px)'}),
+      mk('Stuck', 'Blocked', TOMATO, '#FFE2E0', 'Waiting on legal for DPA template', 'María Silva', '#2D9F5F', 'Updated 2 days ago', 'error_outline',
+        {bg: 'repeating-linear-gradient(45deg, ' + TOMATO + ' 0 3px, #fff 3px 6px)'}),
+      mk('Active', 'In review', JADE, '#CFF2DE', 'Fix flaky retro summary email', 'Priya Natarajan', '#7340B5', 'Updated 1 hour ago', 'play_arrow',
+        {bg: JADE}),
+      mk('Done', '', GRAPE, '#F2E1F7', 'Ship /task slash command', 'Priya Natarajan', '#7340B5', 'Updated 3 days ago', 'check',
+        {bg: 'transparent', border: '1.5px solid ' + GRAPE})
+    ]
+    return {samples}
+  }
+}
+</script>
+</body>
+</html>

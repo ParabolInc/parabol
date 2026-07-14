@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#fff; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<div data-screen-label="01 Tasks Table" style="display:flex;flex-direction:column;height:100vh;overflow:hidden">
+
+  <!-- Spec bar (not part of app UI) -->
+  <div style="display:flex;align-items:center;gap:16px;flex-shrink:0;height:40px;padding:0 16px;background:#1C1C21;color:#F1F0FA;font-size:12px">
+    <span style="font-weight:600;letter-spacing:0.03em">01 · /me/tasks — Table view</span>
+    <span style="color:#82809A">Tasks database rendered as a table, saved views as tabs</span>
+    <div style="display:flex;gap:12px;margin-left:auto">
+      <a href="00 Index.dc.html" style="color:#8EC7F1">Index</a>
+      <a href="02 Tasks Kanban.dc.html" style="color:#8EC7F1">Next: Kanban →</a>
+    </div>
+  </div>
+
+  <!-- Top bar -->
+  <div style="display:flex;flex-shrink:0;height:56px;width:100%;justify-content:space-between;background:#493272">
+    <div style="display:flex;align-items:center;width:256px;flex-shrink:0">
+      <button style="display:flex;border:0;background:none;border-radius:100px;margin:12px;padding:4px;cursor:pointer">
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#fff">menu</span>
+      </button>
+      <img src="assets/parabol-logo-white.svg" alt="Parabol logo" style="height:24px;margin:8px 0">
+    </div>
+    <div style="display:flex;flex:1;align-items:center;justify-content:space-between;height:56px">
+      <div style="display:flex;align-items:center;flex:1;max-width:480px;height:40px;margin:8px;border-radius:4px;background:rgba(255,255,255,0.125)">
+        <span style="flex:1;padding:0 16px;font-size:20px;line-height:24px;color:rgba(241,240,250,0.5)">Search</span>
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#fff;margin:12px;cursor:pointer">search</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;padding-right:16px">
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#F1F0FA;cursor:pointer">help_outline</span>
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#F1F0FA;cursor:pointer">notifications_none</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:#55C0CF;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer">JR</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel: sidebar + main -->
+  <div style="display:flex;flex:1;min-height:0;overflow:hidden">
+
+    <!-- Left sidebar -->
+    <div style="display:flex;flex-direction:column;width:256px;flex-shrink:0;overflow-y:auto;background:#fff;user-select:none">
+      <div style="padding:0 12px">
+        <button style="display:flex;align-items:center;justify-content:center;width:232px;height:40px;margin:16px 0 14px;border:0;border-radius:9999px;background-image:linear-gradient(to right,#F23B31 0,#ED4C86 100%);color:#fff;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer">
+          <span style="font-family:'Material Icons';font-size:24px;line-height:1;margin-right:4px">add</span>
+          Add Meeting
+        </button>
+      </div>
+      <div style="padding:0 12px">
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">forum</span></span>
+          <span style="padding-left:4px">Meetings</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">search</span></span>
+          <span style="padding-left:4px">Search</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">timeline</span></span>
+          <span style="padding-left:4px">History</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;background:#E0DDEC;color:#1C1C21;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">playlist_add_check</span></span>
+          <span style="padding-left:4px">Tasks</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">add</span></span>
+          <span style="padding-left:4px">Add a Team</span>
+        </div>
+      </div>
+      <div style="padding:12px;padding-top:16px;padding-bottom:0">
+        <div style="display:flex;align-items:center;padding:2px 4px 2px 12px;border-radius:6px;font-size:12px;font-weight:600;line-height:20px;color:#444258;cursor:pointer">
+          <span style="flex:1;padding:4px">Teams</span>
+          <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2">manage_accounts</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">group</span></span>
+          <span style="padding-left:4px">Moonshot Crew</span>
+        </div>
+        <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+          <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">group</span></span>
+          <span style="padding-left:4px">Platform Team</span>
+        </div>
+        <div style="padding-top:8px">
+          <div style="display:flex;align-items:center;padding:6px 4px 2px 16px;font-size:12px;font-weight:600;line-height:20px;color:#444258">Shared Pages</div>
+          <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+            <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">description</span></span>
+            <span style="padding-left:4px">Sprint 42 Notes</span>
+          </div>
+          <div style="display:flex;align-items:center;padding:6px 4px 2px 16px;font-size:12px;font-weight:600;line-height:20px;color:#444258">Private Pages</div>
+          <div style="display:flex;align-items:center;margin:2px 0;padding:4px;border-radius:6px;color:#444258;font-size:14px;line-height:32px;cursor:pointer">
+            <span style="display:flex;width:24px;height:24px;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#82809A">description</span></span>
+            <span style="padding-left:4px">Drafts</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div style="display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;overflow:auto;background:#F1F0FA">
+
+      <!-- Section header: saved-view tabs + controls -->
+      <div style="box-sizing:border-box;width:100%;max-width:1360px;padding:16px 20px 4px">
+
+        <!-- Saved view tabs (Notion-style, shared with everyone who can see this database) -->
+        <div style="display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid #E0DDEC">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;margin-bottom:-1px;border-bottom:2px solid #493272;font-size:14px;font-weight:600;color:#1C1C21;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#444258">grid_on</span>
+            All Tasks
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;margin-bottom:-1px;border-bottom:2px solid transparent;font-size:14px;font-weight:600;color:#82809A;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#A7A3C2">view_week</span>
+            My Kanban
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 10px;margin-bottom:-1px;border-bottom:2px solid transparent;font-size:14px;font-weight:600;color:#82809A;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#A7A3C2">grid_on</span>
+            Done this week
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;padding:6px 10px;margin-bottom:-1px;font-size:14px;font-weight:600;color:#82809A;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1">add</span>
+            Add view
+          </div>
+        </div>
+
+        <!-- Controls row: legacy filters preserved + new database controls -->
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:24px;width:100%;padding:12px 0 8px">
+          <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#82809A;font-size:15px;font-weight:600;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:24px;line-height:1;margin-right:8px">group</span>
+            All Teams
+          </button>
+          <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#82809A;font-size:15px;font-weight:600;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:24px;line-height:1;margin-right:8px">person</span>
+            All Team Members
+          </button>
+          <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#82809A;font-size:15px;font-weight:600;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:24px;line-height:1;margin-right:8px">check_box_outline_blank</span>
+            Archived
+          </button>
+          <div style="display:flex;align-items:center;gap:16px;margin-left:auto">
+            <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#82809A;font-size:15px;font-weight:600;cursor:pointer">
+              <span style="font-family:'Material Icons';font-size:22px;line-height:1;margin-right:6px">filter_list</span>
+              Filter
+            </button>
+            <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#82809A;font-size:15px;font-weight:600;cursor:pointer">
+              <span style="font-family:'Material Icons';font-size:22px;line-height:1;margin-right:6px">swap_vert</span>
+              Sort
+            </button>
+            <!-- Table / Kanban segmented toggle -->
+            <div style="display:flex;align-items:center;border:1px solid #C3C0D8;border-radius:4px;overflow:hidden;background:#fff">
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;background:#E0DDEC;color:#1C1C21;font-size:13px;font-weight:600;cursor:pointer">
+                <span style="font-family:'Material Icons';font-size:16px;line-height:1">grid_on</span>
+                Table
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 12px;color:#82809A;font-size:13px;font-weight:600;cursor:pointer">
+                <span style="font-family:'Material Icons';font-size:16px;line-height:1">view_week</span>
+                Kanban
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Database table -->
+      <div style="box-sizing:border-box;width:100%;max-width:1360px;padding:4px 20px 24px">
+        <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;background:#fff;table-layout:fixed">
+            <thead>
+              <tr style="color:#82809A">
+                <th style="width:34%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">title</span>Task</div></th>
+                <th style="width:19%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">label</span>Status</div></th>
+                <th style="width:14%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">person</span>Assignee</div></th>
+                <th style="width:11%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">group</span>Team</div></th>
+                <th style="width:8%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">event</span>Due</div></th>
+                <th style="width:10%;height:48px;border-bottom:1px solid #C3C0D8;text-align:left;font-size:14px;font-weight:500;padding:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1">link</span>Integration</div></th>
+                <th style="width:4%;height:48px;border-bottom:1px solid #C3C0D8;text-align:center;font-size:14px;font-weight:500;padding:8px"><span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2">add</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="9">
+                <tr style-hover="background:#F8F7FC" style="border-bottom:1px solid #E0DDEC">
+                  <td style="padding:10px 8px;font-size:14px;color:#444258;cursor:pointer">{{ t.title }}</td>
+                  <td style="padding:10px 8px">
+                    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                      <span style="display:inline-flex;align-items:center;gap:5px;border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;color:#444258;background:{{ t.primaryBg }}"><span style="font-family:'Material Icons';font-size:13px;line-height:1;color:#444258">{{ t.glyph }}</span>{{ t.primary }}</span>
+                      <sc-if value="{{ t.secondary }}" hint-placeholder-val="{{ false }}">
+                        <span style="display:inline-flex;align-items:center;gap:6px;border-radius:9999px;padding:3px 10px;font-size:12px;font-weight:600;color:#444258;background:#F1F0FA"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:{{ t.primaryDot }}"></span>{{ t.secondary }}</span>
+                      </sc-if>
+                    </div>
+                  </td>
+                  <td style="padding:10px 8px">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:{{ t.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">{{ t.initials }}</div>
+                      <span style="font-size:13px;font-weight:600;color:#82809A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.assignee }}</span>
+                    </div>
+                  </td>
+                  <td style="padding:10px 8px;font-size:13px;color:#82809A">{{ t.team }}</td>
+                  <td style="padding:10px 8px;font-size:13px;color:{{ t.dueColor }}">{{ t.due }}</td>
+                  <td style="padding:10px 8px;font-size:13px;font-weight:600;color:#329AE5;cursor:pointer">{{ t.integration }}</td>
+                  <td style="padding:10px 8px"></td>
+                </tr>
+              </sc-for>
+              <tr>
+                <td colspan="7" style="height:48px;padding:8px;cursor:pointer" style-hover="background:#F8F7FC">
+                  <div style="display:flex;align-items:center;gap:8px;color:#82809A;font-size:14px">
+                    <span style="font-family:'Material Icons';font-size:20px;line-height:1">add</span>
+                    New task
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="padding-top:10px;font-size:12px;color:#A7A3C2">Tasks is a special-cased Database from Parabol Pages · Changes to filters or sorting mark the view as edited (see <a href="06 Save View Flow.dc.html" style="color:#329AE5">06 Save View Flow</a>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const STATUS = {
+      Active: {bg: '#CFF2DE', dot: '#66BC8C', glyph: 'play_arrow'},
+      Stuck: {bg: '#FFE2E0', dot: '#FD6157', glyph: 'error_outline'},
+      Future: {bg: '#CBECF0', dot: '#55C0CF', glyph: 'schedule'},
+      Done: {bg: '#F2E1F7', dot: '#7340B5', glyph: 'check'}
+    }
+    const mk = (title, primary, secondary, assignee, avatarBg, team, due, dueColor, integration) => ({
+      title, primary, secondary,
+      primaryBg: STATUS[primary].bg,
+      primaryDot: STATUS[primary].dot,
+      glyph: STATUS[primary].glyph,
+      assignee,
+      initials: assignee.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+      avatarBg, team, due, dueColor: dueColor || '#82809A', integration: integration || ''
+    })
+    const tasks = [
+      mk('Draft Q3 roadmap narrative', 'Active', 'In progress', 'Jordan Rivas', '#55C0CF', 'Moonshot Crew', 'Jul 18', null, ''),
+      mk('Fix flaky retro summary email', 'Active', 'In review', 'Priya Natarajan', '#7340B5', 'Platform Team', 'Jul 15', '#D5211A', 'GitHub #4812'),
+      mk('Migrate task board to Pages database', 'Active', 'In progress', 'Sam Okafor', '#ED4C86', 'Platform Team', '—', null, 'GitHub #4790'),
+      mk('Renew SOC 2 audit vendor contract', 'Stuck', '', 'Taylor Chen', '#DE8E02', 'Moonshot Crew', 'Jul 22', null, ''),
+      mk('Waiting on legal for DPA template', 'Stuck', 'Blocked', 'María Silva', '#2D9F5F', 'Moonshot Crew', '—', null, 'Jira LEG-77'),
+      mk('Spike: Yjs subdocument sharding', 'Future', 'Backlog', 'Sam Okafor', '#ED4C86', 'Platform Team', '—', null, ''),
+      mk('Design onboarding checklist page', 'Future', 'Up next', 'Jordan Rivas', '#55C0CF', 'Moonshot Crew', 'Aug 04', null, ''),
+      mk('Ship /task slash command', 'Done', '', 'Priya Natarajan', '#7340B5', 'Platform Team', '—', null, 'GitHub #4801'),
+      mk('Archive 2025 team pages', 'Done', '', 'Taylor Chen', '#DE8E02', 'Moonshot Crew', '—', null, '')
+    ]
+    return {tasks}
+  }
+}
+</script>
+</body>
+</html>

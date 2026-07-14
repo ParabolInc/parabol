@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<section data-screen-label="10 Inline Task Anatomy" style="padding:24px;min-width:1360px">
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:6px">
+    <span style="font-size:18px;font-weight:600;color:#1C1C21">10 · Inline task card — every affordance, cross-referenced with today's mutations</span>
+    <div style="display:flex;gap:12px;margin-left:auto;font-size:13px">
+      <a href="00 Index.dc.html" style="color:#329AE5">Index</a>
+      <a href="08 Task Command.dc.html" style="color:#329AE5">← /task command</a>
+    </div>
+  </div>
+  <p style="margin:0 0 24px;font-size:13px;color:#82809A;max-width:820px;line-height:19px">The inserted card reuses <b>OutcomeCard</b>'s existing affordances one-for-one — no invented picker chips. Everything below maps to a GraphQL mutation that exists in <span style="font-family:'IBM Plex Mono',monospace">packages/client/mutations</span> today, except the one item flagged NEW.</p>
+
+  <div style="display:flex;align-items:flex-start;gap:48px">
+
+    <!-- The card with numbered callouts -->
+    <div style="position:relative;flex-shrink:0;padding:8px 40px 8px 8px">
+      <div style="position:relative;width:340px;border-radius:4px;background:#fff;padding-top:16px;box-shadow:rgba(0,0,0,.2) 0px 5px 5px -3px, rgba(0,0,0,.14) 0px 8px 10px 1px, rgba(0,0,0,.12) 0px 3px 14px 2px">
+        <!-- meta row -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;min-height:20px;padding:0 16px 4px;font-weight:600;font-size:11px;color:#82809A;line-height:20px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-family:'Material Icons';font-size:14px;line-height:1;color:#66BC8C" title="Active">play_arrow</span>
+              <div style="display:flex;align-items:center;gap:2px">
+                <div style="height:4px;width:32px;border-radius:2px 0 0 2px;background:#66BC8C"></div>
+                <div style="height:4px;width:20px;border-radius:0 2px 2px 0;background:#66BC8C;opacity:0.35"></div>
+              </div>
+              <span style="font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#82809A">In progress</span>
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">1</span>
+            </div>
+            <span>Just now</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="display:inline-flex;align-items:center;gap:3px;border-radius:9999px;background:#F1F0FA;padding:2px 8px;font-size:10px;color:#82809A;cursor:pointer"><span style="font-family:'Material Icons';font-size:12px;line-height:1">event</span>Jul 18</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">2</span>
+          </div>
+        </div>
+        <!-- content -->
+        <div style="display:flex;align-items:flex-start;gap:6px;min-height:44px;padding:0 16px;font-size:14px;line-height:20px;color:#444258;cursor:text">
+          <span>Follow up with infra about staging quota</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700;flex-shrink:0">3</span>
+        </div>
+        <!-- team line -->
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 16px 0;font-size:12px;font-weight:600;color:#82809A">
+          <span style="font-family:'Material Icons';font-size:14px;line-height:1;color:#A7A3C2">group</span>
+          <span style="cursor:pointer">Platform Team</span>
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">4</span>
+        </div>
+        <!-- footer -->
+        <div style="display:flex;justify-content:space-between;padding:6px 16px 14px">
+          <div style="display:flex;align-items:center;height:24px;gap:6px">
+            <div style="width:24px;height:24px;border-radius:50%;background:#7340B5;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">PN</div>
+            <div style="font-size:12px;font-weight:600;color:#82809A;line-height:24px">Priya Natarajan</div>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">5</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2;cursor:pointer">publish</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">6</span>
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2;cursor:pointer">more_vert</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:#493272;color:#fff;font-size:10px;font-weight:700">7</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- The open 3-dots menu -->
+      <div style="margin-top:20px;width:280px;border-radius:6px;background:#fff;padding:6px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06)">
+        <div style="padding:4px 10px;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#A7A3C2">Set Status <span style="font-weight:400;text-transform:none;letter-spacing:0">(7 · today's menu)</span></div>
+        <sc-for list="{{ statusItems }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;border-radius:4px;padding:7px 10px;font-size:13px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+            <span style="font-family:'Material Icons';font-size:15px;line-height:1;color:{{ s.color }}">{{ s.glyph }}</span>
+            Move to <b>{{ s.label }}</b>
+          </div>
+        </sc-for>
+        <div style="display:flex;align-items:center;gap:10px;border-radius:4px;padding:7px 10px;font-size:13px;color:#444258;cursor:pointer;background:#F8F7FC;outline:1.5px dashed #61B1EB" style-hover="background:#F1F0FA">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#66BC8C;opacity:0.5"></span>
+          Set secondary: <b>In review</b>
+          <span style="margin-left:auto;display:inline-flex;border-radius:9999px;background:#E8F4FC;color:#0F4A76;padding:1px 7px;font-size:9px;font-weight:700">NEW</span>
+        </div>
+        <div style="height:1px;background:#F1F0FA;margin:4px 0"></div>
+        <div style="display:flex;align-items:center;gap:10px;border-radius:4px;padding:7px 10px;font-size:13px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFCC63"></span>
+          Set as <b>#private</b>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;border-radius:4px;padding:7px 10px;font-size:13px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#A7A3C2"></span>
+          Set as <b>#archived</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend: affordance → mutation -->
+    <div style="flex:1;max-width:640px">
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:8px 0">
+        <sc-for list="{{ legend }}" as="l" hint-placeholder-count="8">
+          <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 18px;border-bottom:1px solid #F8F7FC">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:{{ l.badgeBg }};color:#fff;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px">{{ l.num }}</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:#1C1C21">{{ l.affordance }}</div>
+              <div style="font-size:12px;color:#82809A;line-height:17px">{{ l.detail }}</div>
+            </div>
+            <div style="width:230px;flex-shrink:0;text-align:right">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#444258">{{ l.mutation }}</div>
+              <div style="font-size:10px;font-weight:700;color:{{ l.statusColor }}">{{ l.status }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:#82809A;line-height:18px;max-width:640px">
+        <b>The one genuinely new capability</b> is the secondary status. Everything else is a re-skin of existing behavior. Proposed shape: extend <span style="font-family:'IBM Plex Mono',monospace">UpdateTaskMutation</span>'s <span style="font-family:'IBM Plex Mono',monospace">UpdateTaskInput</span> with an optional <span style="font-family:'IBM Plex Mono',monospace">secondaryStatus: String</span> (validated against the database's configured secondaries; cleared automatically when <span style="font-family:'IBM Plex Mono',monospace">status</span> changes primaries), so kanban drag-and-drop stays a single mutation call as it is today.
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const GRAPE = '#493272'
+    const legend = [
+      {num: '1', badgeBg: GRAPE, affordance: 'Status indicator (glyph + split bar + micro-caps)', detail: 'Chosen 3j treatment. Click opens the same Set Status menu as ⋯ (7).', mutation: 'UpdateTaskMutation {status}', status: 'EXISTS · + secondaryStatus NEW', statusColor: '#DE8E02'},
+      {num: '2', badgeBg: GRAPE, affordance: 'Due date toggle', detail: 'Appears on hover, exactly as DueDateToggle does on cards today.', mutation: 'UpdateTaskDueDateMutation', status: 'EXISTS', statusColor: '#2D9F5F'},
+      {num: '3', badgeBg: GRAPE, affordance: 'Editable rich-text content', detail: 'TipTap editor; live co-editing presence shown in the meta line.', mutation: 'UpdateTaskMutation {content} · EditTaskMutation', status: 'EXISTS', statusColor: '#2D9F5F'},
+      {num: '4', badgeBg: GRAPE, affordance: 'Team assignment (non-team pages only)', detail: 'Team and user never co-exist on cards today (showTeam = area === USER_DASH). On pages, the team renders only when the page is NOT nested under a team \u2014 full research + combined control in screen 11.', mutation: 'ChangeTaskTeamMutation', status: 'EXISTS · see 11', statusColor: '#DE8E02'},
+      {num: '5', badgeBg: GRAPE, affordance: 'User assignment', detail: 'Avatar + name opens the assignee menu (task team\u2019s members). On non-team pages it merges with (4) into one cascading control \u2014 screen 11.', mutation: 'UpdateTaskMutation {userId}', status: 'EXISTS · see 11', statusColor: '#DE8E02'},
+      {num: '6', badgeBg: GRAPE, affordance: 'Push to integration', detail: 'TaskFooterIntegrateMenu: GitHub, Jira, GitLab, Azure DevOps, Linear. Card becomes an integrated card (watermark + link).', mutation: 'CreateTaskIntegrationMutation', status: 'EXISTS', statusColor: '#2D9F5F'},
+      {num: '7', badgeBg: GRAPE, affordance: '⋯ menu (Set Status, #private, #archived)', detail: 'TaskMoreOptionsMenu + TaskTagContent, shown open at left. Delete appears in agenda contexts only, matching today\u2019s rule.', mutation: 'UpdateTaskMutation · DeleteTaskMutation', status: 'EXISTS', statusColor: '#2D9F5F'},
+      {num: '·', badgeBg: '#A7A3C2', affordance: 'Drag between kanban columns', detail: 'Reordering and column moves on /tasks stay one call, as today (sortOrder + status).', mutation: 'UpdateTaskMutation {sortOrder, status}', status: 'EXISTS', statusColor: '#2D9F5F'}
+    ]
+    const statusItems = [
+      {label: 'Done', color: '#7340B5', glyph: 'check'},
+      {label: 'Stuck', color: '#FD6157', glyph: 'error_outline'},
+      {label: 'Future', color: '#55C0CF', glyph: 'schedule'}
+    ]
+    return {legend, statusItems}
+  }
+}
+</script>
+</body>
+</html>

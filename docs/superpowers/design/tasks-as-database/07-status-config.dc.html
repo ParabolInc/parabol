@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#fff; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<div data-screen-label="07 Status Config" style="position:relative;display:flex;flex-direction:column;height:100vh;min-width:1280px;overflow:hidden">
+
+  <!-- Spec bar -->
+  <div style="display:flex;align-items:center;gap:16px;flex-shrink:0;height:40px;padding:0 16px;background:#1C1C21;color:#F1F0FA;font-size:12px">
+    <span style="font-weight:600;letter-spacing:0.03em">07 · Configuring secondary states</span>
+    <span style="color:#82809A">Primary states (Future / Stuck / Active / Done) are locked; secondary states are per-database and add Kanban columns</span>
+    <div style="display:flex;gap:12px;margin-left:auto">
+      <a href="00 Index.dc.html" style="color:#8EC7F1">Index</a>
+      <a href="06 Save View Flow.dc.html" style="color:#8EC7F1">← Save view</a>
+      <a href="08 Task Command.dc.html" style="color:#8EC7F1">Next: /task command →</a>
+    </div>
+  </div>
+
+  <!-- Top bar -->
+  <div style="display:flex;flex-shrink:0;height:56px;width:100%;justify-content:space-between;background:#493272">
+    <div style="display:flex;align-items:center;width:256px;flex-shrink:0">
+      <button style="display:flex;border:0;background:none;border-radius:100px;margin:12px;padding:4px;cursor:pointer">
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#fff">menu</span>
+      </button>
+      <img src="assets/parabol-logo-white.svg" alt="Parabol logo" style="height:24px;margin:8px 0">
+    </div>
+    <div style="display:flex;flex:1;align-items:center;justify-content:flex-end;height:56px">
+      <div style="display:flex;align-items:center;gap:16px;padding-right:16px">
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#F1F0FA">help_outline</span>
+        <span style="font-family:'Material Icons';font-size:24px;line-height:1;color:#F1F0FA">notifications_none</span>
+        <div style="width:32px;height:32px;border-radius:50%;background:#55C0CF;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600">JR</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Board behind -->
+  <div style="display:flex;flex:1;min-height:0;overflow:hidden;background:#F1F0FA">
+    <div style="width:256px;flex-shrink:0;background:#fff"></div>
+    <div style="flex:1;min-width:0;overflow:hidden;padding:16px 20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px">
+        <div style="display:flex;align-items:flex-end;gap:4px;font-size:14px;font-weight:600">
+          <span style="padding:6px 10px;border-bottom:2px solid #493272;color:#1C1C21">My Kanban</span>
+          <span style="padding:6px 10px;color:#82809A">All Tasks</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px">
+          <button style="display:flex;align-items:center;border:0;background:none;padding:0;font-family:inherit;color:#1C1C21;font-size:15px;font-weight:600;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:22px;line-height:1;margin-right:6px">tune</span>
+            Statuses
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;gap:20px;opacity:0.55">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+          <div style="flex-shrink:0">
+            <div style="display:flex;align-items:center;gap:6px;padding:0 4px 6px;font-size:14px;font-weight:600;text-transform:capitalize;color:#444258"><span style="font-family:'Material Icons';font-size:15px;line-height:1;text-transform:none;color:{{ g.color }}">{{ g.glyph }}</span>{{ g.label }}<span style="font-weight:400;color:#A7A3C2">{{ g.count }}</span></div>
+            <div style="height:4px;border-radius:2px;margin:0 4px 8px;background:{{ g.color }}"></div>
+            <div style="display:flex;gap:8px">
+              <sc-for list="{{ g.subcols }}" as="col" hint-placeholder-count="1">
+                <div style="width:170px;flex-shrink:0">
+                  <div style="display:flex;align-items:center;gap:6px;padding:2px 4px 6px;font-size:12px;font-weight:600;color:{{ col.headerColor }}"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ g.color }};opacity:{{ col.dotOpacity }}"></span>{{ col.label }}</div>
+                  <div style="display:flex;flex-direction:column;gap:6px;min-height:100px">
+                    <sc-for list="{{ col.cards }}" as="c" hint-placeholder-count="1">
+                      <div style="border-radius:4px;background:#fff;padding:10px 12px 8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+                        <div style="height:3px;width:24px;border-radius:2px;background:{{ g.color }};margin-bottom:6px"></div>
+                        <div style="font-size:12px;line-height:16px;color:#444258">{{ c.title }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statuses popover (anchored to the Statuses button) -->
+  <div style="position:absolute;top:170px;right:120px;z-index:20;width:400px;background:#fff;border-radius:8px;box-shadow:0px 11px 15px -7px rgba(0,0,0,.2), 0px 24px 38px 3px rgba(0,0,0,.14), 0px 9px 46px 8px rgba(0,0,0,.12);padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:4px">
+      <div style="font-size:16px;font-weight:600;color:#1C1C21">Task statuses</div>
+      <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2;cursor:pointer">close</span>
+    </div>
+    <p style="margin:0 0 12px;font-size:13px;line-height:18px;color:#82809A">Primary statuses are built into every Task database. Add secondary statuses to break them into more Kanban columns.</p>
+
+    <sc-for list="{{ config }}" as="p" hint-placeholder-count="4">
+      <div style="padding:6px 0;border-top:1px solid #F1F0FA">
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
+          <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:{{ p.color }}">{{ p.glyph }}</span>
+          <span style="font-size:14px;font-weight:600;color:#1C1C21">{{ p.label }}</span>
+          <span style="font-family:'Material Icons';font-size:14px;line-height:1;color:#C3C0D8" title="Primary statuses cannot be renamed or removed">lock</span>
+          <span style="margin-left:auto;font-size:11px;color:#A7A3C2">{{ p.note }}</span>
+        </div>
+        <sc-for list="{{ p.secondaries }}" as="s" hint-placeholder-count="0">
+          <div style="display:flex;align-items:center;gap:8px;margin-left:18px;padding:5px 8px;border-radius:6px" style-hover="background:#F8F7FC">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#C3C0D8;cursor:grab">drag_indicator</span>
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ p.color }};opacity:0.55"></span>
+            <span style="font-size:13px;color:#444258">{{ s }}</span>
+            <span style="margin-left:auto;font-family:'Material Icons';font-size:16px;line-height:1;color:#C3C0D8;cursor:pointer">delete_outline</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ p.typing }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;margin-left:18px;padding:4px 8px">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#C3C0D8">drag_indicator</span>
+            <span style="display:flex;align-items:center;flex:1;border:1px solid #329AE5;border-radius:4px;padding:4px 8px;font-size:13px;color:#1C1C21;box-shadow:0 0 0 2px rgba(50,154,229,0.3)">Ready to deploy<span style="width:1px;height:14px;background:#329AE5;margin-left:1px"></span></span>
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#2D9F5F;cursor:pointer">check</span>
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#A7A3C2;cursor:pointer">close</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ p.showAdd }}" hint-placeholder-val="{{ true }}">
+          <button style="display:flex;align-items:center;gap:4px;margin-left:26px;border:0;background:none;padding:4px 0;font-family:inherit;font-size:12px;font-weight:600;color:#82809A;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1">add</span>
+            Add secondary status
+          </button>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <div style="border-top:1px solid #F1F0FA;margin-top:4px;padding-top:10px;font-size:12px;color:#A7A3C2;display:flex;gap:6px;align-items:flex-start">
+      <span style="font-family:'Material Icons';font-size:14px;line-height:1;margin-top:1px">info</span>
+      Removing a secondary status moves its tasks back to the primary status. Reports and integrations only ever see the primary.
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const AQUA = '#55C0CF', TOMATO = '#FD6157', JADE = '#66BC8C', GRAPE = '#7340B5'
+    const GLYPHS = {}
+    GLYPHS[AQUA] = 'schedule'
+    GLYPHS[TOMATO] = 'error_outline'
+    GLYPHS[JADE] = 'play_arrow'
+    GLYPHS[GRAPE] = 'check'
+    const card = (title) => ({title})
+    const groups = [
+      {label: 'Future', color: AQUA, count: 2, hasSecondary: true, subcols: [
+        {label: 'Backlog', cards: [card('Spike: Yjs subdocument sharding')]},
+        {label: 'Up next', cards: [card('Design onboarding checklist page')]}
+      ]},
+      {label: 'Stuck', color: TOMATO, count: 2, hasSecondary: true, subcols: [
+        {label: 'Stuck', cards: [card('Renew SOC 2 audit vendor contract')]},
+        {label: 'Blocked', cards: [card('Waiting on legal for DPA template')]}
+      ]},
+      {label: 'Active', color: JADE, count: 3, hasSecondary: true, subcols: [
+        {label: 'In progress', cards: [card('Draft Q3 roadmap narrative'), card('Migrate task board to Pages database')]},
+        {label: 'In review', cards: [card('Fix flaky retro summary email')]}
+      ]},
+      {label: 'Done', color: GRAPE, count: 2, hasSecondary: false, subcols: [
+        {label: 'All', muted: true, cards: [card('Ship /task slash command'), card('Archive 2025 team pages')]}
+      ]}
+    ].map((g) => ({
+      ...g,
+      glyph: GLYPHS[g.color],
+      subcols: g.subcols.map((col) => ({
+        ...col,
+        headerColor: col.muted ? '#A7A3C2' : '#82809A',
+        dotOpacity: col.muted ? 0.45 : 1
+      }))
+    }))
+    const config = [
+      {label: 'Future', color: AQUA, note: '', secondaries: ['Backlog', 'Up next'], typing: false, showAdd: true},
+      {label: 'Stuck', color: TOMATO, note: '', secondaries: ['Blocked'], typing: false, showAdd: true},
+      {label: 'Active', color: JADE, note: 'adding…', secondaries: ['In progress', 'In review'], typing: true, showAdd: false},
+      {label: 'Done', color: GRAPE, note: '', secondaries: [], typing: false, showAdd: true}
+    ]
+    return {groups, config: config.map((p) => ({...p, glyph: GLYPHS[p.color]}))}
+  }
+}
+</script>
+</body>
+</html>

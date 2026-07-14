@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<section data-screen-label="09 Insert Database View" style="padding:24px;min-width:1400px">
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+    <span style="font-size:18px;font-weight:600;color:#1C1C21">09 · Adding a database view to a page via the / menu</span>
+    <span style="font-size:13px;color:#82809A">New commands: “Tabular view · database” and “Kanban view · database”, then an inline portal to pick the database</span>
+    <div style="display:flex;gap:12px;margin-left:auto;font-size:13px">
+      <a href="00 Index.dc.html" style="color:#329AE5">Index</a>
+      <a href="08 Task Command.dc.html" style="color:#329AE5">← /task command</a>
+      <a href="05 Database in a Page.dc.html" style="color:#329AE5">Result in context: 05 →</a>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:flex-start;gap:28px">
+
+    <!-- Step 1: slash menu with new commands -->
+    <div style="width:430px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#493272;color:#fff;font-size:12px;font-weight:700">1</span>
+        <span style="font-size:13px;font-weight:600;color:#444258">Type “/” — Database group in the command menu</span>
+      </div>
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:20px 24px 16px;min-height:430px">
+        <p style="margin:0 0 4px;font-size:15px;line-height:24px;color:#444258">/data<span style="display:inline-block;width:1px;height:17px;background:#329AE5;vertical-align:text-bottom;margin-left:1px"></span></p>
+        <div style="width:330px;border-radius:6px;background:#fff;padding:4px 0;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06)">
+          <div style="margin:0 4px;padding:4px 12px;font-weight:600;font-size:12px;color:#444258">Databases</div>
+          <div style="margin:0 4px;display:flex">
+            <div style="display:flex;width:100%;align-items:center;gap:8px;border-radius:6px;padding:8px 12px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+              <div style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:4px;background:#F1F0FA">
+                <span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#444258">add_box</span>
+              </div>
+              <div style="display:flex;flex-direction:column;font-size:14px">
+                <span>Database</span>
+                <span style="color:#82809A;font-size:12px">Create a new database</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin:0 4px;display:flex">
+            <div style="display:flex;width:100%;align-items:center;gap:8px;border-radius:6px;padding:8px 12px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+              <div style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:4px;background:#F1F0FA">
+                <span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#444258">grid_on</span>
+              </div>
+              <div style="display:flex;flex-direction:column;font-size:14px">
+                <span>Tabular view <span style="color:#A7A3C2">· database</span></span>
+                <span style="color:#82809A;font-size:12px">Embed an existing database as a table</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin:0 4px;display:flex">
+            <div style="display:flex;width:100%;align-items:center;gap:8px;border-radius:6px;padding:8px 12px;background:#F8F7FC;color:#1C1C21;cursor:pointer">
+              <div style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:4px;background:#E0DDEC">
+                <span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#444258">view_week</span>
+              </div>
+              <div style="display:flex;flex-direction:column;font-size:14px">
+                <span>Kanban view <span style="color:#82809A">· database</span></span>
+                <span style="color:#82809A;font-size:12px">Embed an existing database as a kanban board</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin:0 4px;padding:4px 12px;font-weight:600;font-size:12px;color:#444258;border-top:1px solid #F1F0FA;margin-top:4px;padding-top:8px">Basic blocks</div>
+          <div style="margin:0 4px;display:flex">
+            <div style="display:flex;width:100%;align-items:center;gap:8px;border-radius:6px;padding:8px 12px;color:#444258;cursor:pointer" style-hover="background:#F1F0FA">
+              <div style="display:flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:4px;background:#F1F0FA">
+                <span style="font-family:'Material Icons';font-size:20px;line-height:1;color:#444258">grid_on</span>
+              </div>
+              <div style="display:flex;flex-direction:column;font-size:14px">
+                <span>Table</span>
+                <span style="color:#82809A;font-size:12px">Insert a simple table</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <span style="font-family:'Material Icons';font-size:26px;line-height:1;color:#A7A3C2;margin-top:210px">arrow_forward</span>
+
+    <!-- Step 2: database picker portal -->
+    <div style="width:430px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#493272;color:#fff;font-size:12px;font-weight:700">2</span>
+        <span style="font-size:13px;font-weight:600;color:#444258">Pick the database — inline portal at the cursor</span>
+      </div>
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:20px 24px 16px;min-height:430px">
+        <div style="display:inline-flex;align-items:center;gap:6px;border-radius:4px;background:#F1F0FA;padding:3px 8px;font-size:14px;color:#82809A">
+          <span style="font-family:'Material Icons';font-size:16px;line-height:1">view_week</span>
+          Kanban view of…
+        </div>
+        <div style="margin-top:8px;width:340px;border-radius:6px;background:#fff;padding:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06)">
+          <div style="display:flex;align-items:center;gap:8px;border:1px solid #329AE5;border-radius:4px;padding:6px 10px;font-size:13px;color:#1C1C21;box-shadow:0 0 0 2px rgba(50,154,229,0.3)">
+            <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#82809A">search</span>
+            tasks<span style="width:1px;height:14px;background:#329AE5;margin-left:1px"></span>
+          </div>
+          <div style="padding:8px 4px 2px;font-weight:600;font-size:11px;color:#A7A3C2;text-transform:uppercase;letter-spacing:0.05em">Task databases</div>
+          <div style="display:flex;align-items:center;gap:8px;border-radius:6px;padding:7px 8px;background:#F8F7FC;cursor:pointer">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#444258">playlist_add_check</span>
+            <span style="font-size:13px;color:#1C1C21;font-weight:600">Moonshot Crew — Tasks</span>
+            <span style="margin-left:auto;font-size:11px;color:#A7A3C2">Team</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;border-radius:6px;padding:7px 8px;cursor:pointer" style-hover="background:#F1F0FA">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#82809A">playlist_add_check</span>
+            <span style="font-size:13px;color:#444258">Platform Team — Tasks</span>
+            <span style="margin-left:auto;font-size:11px;color:#A7A3C2">Team</span>
+          </div>
+          <div style="padding:8px 4px 2px;font-weight:600;font-size:11px;color:#A7A3C2;text-transform:uppercase;letter-spacing:0.05em">Page databases</div>
+          <div style="display:flex;align-items:center;gap:8px;border-radius:6px;padding:7px 8px;cursor:pointer" style-hover="background:#F1F0FA">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#82809A">grid_on</span>
+            <span style="font-size:13px;color:#444258">Q3 OKRs</span>
+            <span style="margin-left:auto;font-size:11px;color:#A7A3C2">in Sprint 42 Notes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;border-radius:6px;padding:7px 8px;border-top:1px solid #F1F0FA;margin-top:6px;cursor:pointer" style-hover="background:#F1F0FA">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#82809A">add</span>
+            <span style="font-size:13px;color:#444258">New database…</span>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#A7A3C2;line-height:17px">The team the page is nested under sorts first. Enter inserts the view; Esc cancels and removes the placeholder.</div>
+      </div>
+    </div>
+
+    <span style="font-family:'Material Icons';font-size:26px;line-height:1;color:#A7A3C2;margin-top:210px">arrow_forward</span>
+
+    <!-- Step 3: inserted kanban view block -->
+    <div style="width:470px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;padding-bottom:8px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#493272;color:#fff;font-size:12px;font-weight:700">3</span>
+        <span style="font-size:13px;font-weight:600;color:#444258">Kanban view block inserted (default view, unsaved)</span>
+      </div>
+      <div style="background:#fff;border-radius:8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;padding:20px 24px 16px;min-height:430px">
+        <div style="border:1px solid #E0DDEC;border-radius:8px;padding:10px 12px">
+          <div style="display:flex;align-items:center;gap:8px;padding-bottom:6px">
+            <span style="font-family:'Material Icons';font-size:18px;line-height:1;color:#82809A">view_week</span>
+            <span style="font-size:15px;font-weight:600;color:#1C1C21">Moonshot Crew — Tasks</span>
+            <span style="display:inline-flex;align-items:center;border-radius:9999px;padding:2px 8px;font-size:10px;font-weight:600;color:#82809A;background:#F1F0FA">Database view</span>
+          </div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid #E0DDEC">
+            <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;margin-bottom:-1px;border-bottom:2px solid #493272;font-size:12px;font-weight:600;color:#1C1C21">
+              <span style="font-family:'Material Icons';font-size:14px;line-height:1;color:#444258">view_week</span>
+              New view
+              <span style="display:inline-flex;align-items:center;border-radius:9999px;padding:1px 7px;font-size:9px;font-weight:700;color:#855000;background:#FADC9E">Unsaved</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:4px">
+              <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#A7A3C2">filter_list</span>
+              <span style="font-family:'Material Icons';font-size:16px;line-height:1;color:#A7A3C2">swap_vert</span>
+              <div style="display:flex;align-items:center;border:1px solid #C3C0D8;border-radius:4px;overflow:hidden">
+                <div style="padding:2px 6px"><span style="font-family:'Material Icons';font-size:13px;line-height:1;color:#82809A">grid_on</span></div>
+                <div style="padding:2px 6px;background:#E0DDEC"><span style="font-family:'Material Icons';font-size:13px;line-height:1;color:#1C1C21">view_week</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;padding-top:10px;overflow:hidden">
+            <sc-for list="{{ miniGroups }}" as="g" hint-placeholder-count="3">
+              <div style="width:128px;flex-shrink:0">
+                <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;text-transform:capitalize;color:#444258;padding-bottom:3px"><span style="font-family:'Material Icons';font-size:12px;line-height:1;text-transform:none;color:{{ g.color }}">{{ g.glyph }}</span>{{ g.label }}<span style="font-weight:400;color:#A7A3C2">{{ g.count }}</span></div>
+                <div style="height:3px;border-radius:2px;background:{{ g.color }};margin-bottom:6px"></div>
+                <div style="display:flex;flex-direction:column;gap:5px">
+                  <sc-for list="{{ g.cards }}" as="c" hint-placeholder-count="1">
+                    <div style="border-radius:4px;background:#fff;padding:7px 8px 6px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+                      <div style="height:3px;width:18px;border-radius:2px;background:{{ g.color }};margin-bottom:4px"></div>
+                      <div style="font-size:10px;line-height:14px;color:#444258">{{ c }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:#A7A3C2;line-height:17px">The block lands with the database's default view plus an “Unsaved” badge — the <a href="06 Save View Flow.dc.html" style="color:#329AE5">save-view flow (06)</a> names it for everyone.</div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const miniGroups = [
+      {label: 'Future', color: '#55C0CF', glyph: 'schedule', count: 2, cards: ['Spike: Yjs subdocument sharding', 'Design onboarding checklist page']},
+      {label: 'Stuck', color: '#FD6157', glyph: 'error_outline', count: 1, cards: ['Waiting on legal for DPA template']},
+      {label: 'Active', color: '#66BC8C', glyph: 'play_arrow', count: 2, cards: ['Draft Q3 roadmap narrative', 'Fix flaky retro summary email']}
+    ]
+    return {miniGroups}
+  }
+}
+</script>
+</body>
+</html>

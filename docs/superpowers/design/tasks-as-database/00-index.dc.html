@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<div data-screen-label="00 Index" style="max-width:880px;margin:0 auto;padding:48px 32px 80px">
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="width:40px;height:40px;border-radius:10px;background:#493272;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Icons';font-size:22px;line-height:1;color:#fff">playlist_add_check</span></div>
+    <div>
+      <h1 style="margin:0;font-size:26px;font-weight:700;color:#1C1C21">Tasks as a Pages Database</h1>
+      <div style="font-size:14px;color:#82809A">Wireframe series — re-implementing Parabol's tasking system as a special-cased Database block · July 2026</div>
+    </div>
+  </div>
+
+  <p style="margin:20px 0 8px;font-size:15px;line-height:24px;color:#444258">Design constraints honored throughout: the four primary states (<b>Future / Stuck / Active / Done</b>) are preserved and locked; user-configured <b>secondary states</b> add Kanban columns; database views embed in any page with <b>table/kanban toggles, filters, sorting, and shareable named views</b>; and a <b>/task</b> command creates tasks inline.</p>
+
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:24px">
+    <sc-for list="{{ screens }}" as="s" hint-placeholder-count="8">
+      <a href="{{ s.href }}" style="display:flex;align-items:center;gap:14px;background:#fff;border-radius:8px;padding:14px 18px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;cursor:pointer" style-hover="box-shadow:rgba(0,0,0,.2) 0px 5px 5px -3px, rgba(0,0,0,.14) 0px 8px 10px 1px, rgba(0,0,0,.12) 0px 3px 14px 2px">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:26px;border-radius:6px;background:#493272;color:#fff;font-size:13px;font-weight:700;flex-shrink:0">{{ s.num }}</span>
+        <span style="display:flex;flex-direction:column;gap:2px">
+          <span style="font-size:15px;font-weight:600;color:#1C1C21">{{ s.title }}</span>
+          <span style="font-size:13px;color:#82809A">{{ s.desc }}</span>
+        </span>
+        <span style="margin-left:auto;font-family:'Material Icons';font-size:20px;line-height:1;color:#C3C0D8">chevron_right</span>
+      </a>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const screens = [
+      {num: '01', href: '01 Tasks Table.dc.html', title: '/me/tasks — Table view', desc: 'The Tasks route as a database table: saved-view tabs, preserved Team / Team Member / Archived filters, table-kanban toggle'},
+      {num: '02', href: '02 Tasks Kanban.dc.html', title: '/me/tasks — Kanban view', desc: 'Primary state bands with user-configured secondary sub-columns; today’s column headers, add buttons, and cards preserved'},
+      {num: '03', href: '03 Task Card States.dc.html', title: 'Task card — color-blind-safe primaries', desc: '3f (split bar + micro-caps) chosen; 3h–3k explore patterns, text, glyphs, and hover for the primary state'},
+      {num: '04', href: '04 Kanban Grouping.dc.html', title: 'Kanban grouping — chosen treatment', desc: '4a grouped sub-columns (swimlane and flat options dropped)'},
+      {num: '05', href: '05 Database in a Page.dc.html', title: 'Database view embedded in a Page', desc: 'A view block with title, view tabs, filter/sort chips, and the compact table'},
+      {num: '06', href: '06 Save View Flow.dc.html', title: 'Saving an edited view', desc: '“Edited” badge, Reset / Save, and the naming dialog (new view vs update-for-everyone)'},
+      {num: '07', href: '07 Status Config.dc.html', title: 'Configuring secondary states', desc: 'Locked primaries, per-database secondary statuses, drag to reorder, safe-delete behavior'},
+      {num: '08', href: '08 Task Command.dc.html', title: '/task slash command', desc: 'Slash menu entry plus the inserted, fully editable task card block with team / status / integration pickers'},
+      {num: '09', href: '09 Insert Database View.dc.html', title: 'Insert a database view via /', desc: '“Tabular view · database” and “Kanban view · database” commands → inline database picker portal → inserted view block'},
+      {num: '10', href: '10 Inline Task Anatomy.dc.html', title: 'Inline task card anatomy', desc: 'Every card affordance cross-referenced with today’s mutations; only secondaryStatus is net-new'},
+      {num: '11', href: '11 Assignment on Pages.dc.html', title: 'Team + user assignment on Pages', desc: 'Research from source: both appear only on non-team pages; one cascading control (user primary, team suffix) + corner cases'}
+    ]
+    return {screens}
+  }
+}
+</script>
+</body>
+</html>

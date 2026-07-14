@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <meta name="design_doc_mode" content="canvas">
+  <link rel="stylesheet" href="_ds/parabol-ui-b7214005-30d8-49b3-ae21-8629507714c9/fonts/fonts.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+    body { margin:0; padding:0; font-family:'IBM Plex Sans',sans-serif; font-size:16px; line-height:normal; color:#444258; -webkit-font-smoothing:antialiased; background:#F1F0FA; }
+    a { color:#444258; text-decoration:none; }
+    a:hover, a:focus { color:#493272; text-decoration:none; }
+  </style>
+</helmet>
+
+<section data-screen-label="04 Kanban Grouping" style="padding:24px;min-width:1400px">
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+    <span style="font-size:18px;font-weight:600;color:#1C1C21">04 · Kanban — secondary states as grouped sub-columns</span>
+    <span style="font-size:13px;color:#82809A">Chosen treatment (<a href="#4a" style="color:#329AE5">4a</a>); used in screen <a href="02 Tasks Kanban.dc.html" style="color:#329AE5">02</a>. Swimlane and flat-column treatments were dropped.</span>
+    <div style="display:flex;gap:12px;margin-left:auto;font-size:13px">
+      <a href="00 Index.dc.html" style="color:#329AE5">Index</a>
+      <a href="05 Database in a Page.dc.html" style="color:#329AE5">Next: Database in a page →</a>
+    </div>
+  </div>
+
+  <!-- 4a Grouped sub-columns -->
+  <div id="4a" style="margin-bottom:36px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <span style="display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:22px;border-radius:6px;background:#493272;color:#fff;font-size:12px;font-weight:700">4a</span>
+      <span style="font-size:14px;font-weight:600;color:#444258">Sub-columns grouped under primary headers (recommended)</span>
+      <span style="font-size:12px;color:#82809A">Primary states stay legible as bands; dragging across a band changes primary + secondary in one move</span>
+    </div>
+    <div style="display:flex;gap:20px;padding:16px;background:#EBE9F5;border-radius:8px;overflow-x:auto">
+      <sc-for list="{{ grouped }}" as="g" hint-placeholder-count="4">
+        <div style="flex-shrink:0">
+          <div style="display:flex;align-items:baseline;gap:8px;padding:0 4px 6px;font-size:14px;font-weight:600;text-transform:capitalize;color:#444258">{{ g.label }}<span style="font-weight:400;color:#A7A3C2">{{ g.count }}</span></div>
+          <div style="height:4px;border-radius:2px;margin:0 4px 8px;background:{{ g.color }}"></div>
+          <div style="display:flex;gap:8px">
+            <sc-for list="{{ g.subcols }}" as="col" hint-placeholder-count="1">
+              <div style="width:180px;flex-shrink:0">
+                <sc-if value="{{ g.hasSecondary }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:6px;padding:2px 4px 6px;font-size:12px;font-weight:600;color:#82809A"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:{{ g.color }}"></span>{{ col.label }}</div>
+                </sc-if>
+                <div style="display:flex;flex-direction:column;gap:6px;min-height:120px">
+                  <sc-for list="{{ col.cards }}" as="c" hint-placeholder-count="1">
+                    <div style="border-radius:4px;background:#fff;padding:10px 12px 8px;box-shadow:rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px">
+                      <div style="height:3px;width:24px;border-radius:2px;background:{{ g.color }};margin-bottom:6px"></div>
+                      <div style="font-size:12px;line-height:16px;color:#444258">{{ c.title }}</div>
+                      <div style="display:flex;justify-content:flex-end;padding-top:6px"><div style="width:18px;height:18px;border-radius:50%;background:{{ c.avatarBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600">{{ c.initials }}</div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const card = (title, assignee, avatarBg) => ({
+      title, avatarBg,
+      initials: assignee.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+    })
+    const AQUA = '#55C0CF', TOMATO = '#FD6157', JADE = '#66BC8C', GRAPE = '#7340B5'
+    const spike = card('Spike: Yjs subdocument sharding', 'Sam Okafor', '#ED4C86')
+    const onboard = card('Design onboarding checklist page', 'Jordan Rivas', '#55C0CF')
+    const soc2 = card('Renew SOC 2 audit vendor contract', 'Taylor Chen', '#DE8E02')
+    const dpa = card('Waiting on legal for DPA template', 'María Silva', '#2D9F5F')
+    const roadmap = card('Draft Q3 roadmap narrative', 'Jordan Rivas', '#55C0CF')
+    const migrate = card('Migrate task board to Pages database', 'Sam Okafor', '#ED4C86')
+    const email = card('Fix flaky retro summary email', 'Priya Natarajan', '#7340B5')
+    const slash = card('Ship /task slash command', 'Priya Natarajan', '#7340B5')
+    const archive = card('Archive 2025 team pages', 'Taylor Chen', '#DE8E02')
+
+    const grouped = [
+      {label: 'Future', color: AQUA, count: 2, hasSecondary: true, subcols: [
+        {label: 'Backlog', cards: [spike]},
+        {label: 'Up next', cards: [onboard]}
+      ]},
+      {label: 'Stuck', color: TOMATO, count: 2, hasSecondary: true, subcols: [
+        {label: 'Stuck', cards: [soc2]},
+        {label: 'Blocked', cards: [dpa]}
+      ]},
+      {label: 'Active', color: JADE, count: 3, hasSecondary: true, subcols: [
+        {label: 'In progress', cards: [roadmap, migrate]},
+        {label: 'In review', cards: [email]}
+      ]},
+      {label: 'Done', color: GRAPE, count: 2, hasSecondary: false, subcols: [
+        {label: 'Done', cards: [slash, archive]}
+      ]}
+    ]
+
+    return {grouped}
+  }
+}
+</script>
+</body>
+</html>
