@@ -42,3 +42,10 @@ webpack-assets.json
 **/data
 backups/
 tsconfig.tsbuildinfo
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+packages/client/.ds-entry.tsx
+packages/client/.ds-tailwind.css

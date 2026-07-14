@@ -1,0 +1,11 @@
+{
+  "_comment": "Standalone tsconfig for the design-sync esbuild bundle. tsconfigPathsPlugin does a shallow parse (no `extends`), so all path aliases are inlined here. baseUrl points at packages/client so ~/* and parabol-client/* resolve like the app; babel-plugin-relay/macro is redirected to a no-op stub (see shims/graphql-macro.ts).",
+  "compilerOptions": {
+    "baseUrl": "../packages/client",
+    "paths": {
+      "~/*": ["./*"],
+      "parabol-client/*": ["./*"],
+      "babel-plugin-relay/macro": ["../../.design-sync/shims/graphql-macro.ts"]
+    }
+  }
+}

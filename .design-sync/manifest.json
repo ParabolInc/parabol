@@ -1,0 +1,84 @@
+{
+  "_comment": "Curated design-system scope. Paths relative to packages/client. Presentational tier only — [relay]/[root] files are auto-skipped by gen.mjs (RELAY_RX). Iconic [relay] components are handled separately.",
+  "exclude": [
+    "OrgBillingReassuranceQuote",
+    "IconGroupBlock",
+    "MeetingTopBarStyles",
+    "Author",
+    "NextMeetingCountdown",
+    "NextMeetingLink",
+    "ReflectionCardRoot",
+    "TeamPromptDiscussionThreadHeader"
+  ],
+  "groups": [
+    {
+      "name": "Primitives",
+      "dirs": ["ui"]
+    },
+    {
+      "name": "Team Dashboard",
+      "dirs": [
+        "components/Dashboard",
+        "components/DashNavList",
+        "components/DashNavControl",
+        "components/DashFilterToggle"
+      ],
+      "files": [
+        "components/SwipeableDashSidebar.tsx",
+        "components/ResponsiveDashSidebar.tsx"
+      ]
+    },
+    {
+      "name": "Retrospective",
+      "dirs": [
+        "components/RetroReflectPhase",
+        "components/ReflectionCard",
+        "components/ReflectionGroup"
+      ],
+      "files": [
+        "components/MeetingContent.tsx",
+        "components/MeetingHeaderAndPhase.tsx",
+        "components/MeetingTopBar.tsx",
+        "components/MeetingArea.tsx",
+        "components/PhaseHeaderTitle.tsx",
+        "components/PhaseHeaderDescription.tsx",
+        "components/NewMeetingSidebarPhaseListItem.tsx",
+        "components/RetroPrompt.tsx",
+        "components/GroupingKanbanColumnHeader.tsx",
+        "components/UndoableGroupPhaseDialog.tsx",
+        "components/VoteSettingsMenu.tsx",
+        "components/DiscussionThreadListEmptyState.tsx",
+        "components/ThreadedAvatarColumn.tsx",
+        "components/SpotlightSearchBar.tsx"
+      ]
+    },
+    {
+      "name": "Estimate",
+      "files": [
+        "components/MiniPokerCard.tsx",
+        "components/PokerVotingRowBase.tsx",
+        "components/PokerVotingNoVotes.tsx",
+        "components/PokerEstimateHeaderCardReadonly.tsx",
+        "components/PokerEstimateHeaderCardEditable.tsx",
+        "components/PokerEstimateHeaderCardError.tsx",
+        "components/EstimatePhaseEmptyState.tsx",
+        "components/PokerSidebarEstimateMeta.tsx",
+        "modules/meeting/components/MockScopingList.tsx",
+        "modules/meeting/components/MockScopingTask.tsx"
+      ]
+    },
+    {
+      "name": "Team Prompt",
+      "dirs": ["components/TeamPrompt"]
+    },
+    {
+      "name": "Org Admin",
+      "files": [
+        "modules/userDashboard/components/OrgBilling/OrgBillingReassuranceQuote.tsx",
+        "modules/userDashboard/components/OrgTeams/TeaserOrgTeamsRow.tsx",
+        "modules/userDashboard/components/OrgAuthentication/CopyServiceProviderURL.tsx",
+        "modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle.tsx"
+      ]
+    }
+  ]
+}

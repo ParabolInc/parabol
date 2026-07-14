@@ -1,0 +1,304 @@
+{
+  "projectId": "b7214005-30d8-49b3-ae21-8629507714c9",
+  "shape": "package",
+  "pkg": "parabol-client",
+  "globalName": "ParabolUI",
+  "srcDir": "ui",
+  "tsconfig": "../../.design-sync/tsconfig.ds.json",
+  "cssEntry": ".ds-tailwind.css",
+  "extraFonts": [
+    "../../.design-sync/fonts.css"
+  ],
+  "readmeHeader": ".design-sync/conventions.md",
+  "extraEntries": [
+    "../../.design-sync/shims/ds-provider.tsx"
+  ],
+  "provider": {
+    "component": "DesignSyncProvider"
+  },
+  "componentSrcMap": {
+    "AddReactjiButton": "components/ReflectionCard/AddReactjiButton.tsx",
+    "AlertDialog": "ui/AlertDialog/AlertDialog.tsx",
+    "AlertDialogContent": "ui/AlertDialog/AlertDialogContent.tsx",
+    "AlertDialogOverlay": "ui/AlertDialog/AlertDialogOverlay.tsx",
+    "AlertDialogPortal": "ui/AlertDialog/AlertDialogPortal.tsx",
+    "AlertDialogTitle": "ui/AlertDialog/AlertDialogTitle.tsx",
+    "AlertDialogTrigger": "ui/AlertDialog/AlertDialogTrigger.tsx",
+    "Avatar": "ui/Avatar/Avatar.tsx",
+    "AvatarFallback": "ui/Avatar/AvatarFallback.tsx",
+    "AvatarImage": "ui/Avatar/AvatarImage.tsx",
+    "BillingMembersToggle": "modules/userDashboard/components/BillingMembersToggle/BillingMembersToggle.tsx",
+    "Button": "ui/Button/Button.tsx",
+    "Checkbox": "ui/Checkbox/Checkbox.tsx",
+    "Chip": "ui/Chip/Chip.tsx",
+    "CopyServiceProviderURL": "modules/userDashboard/components/OrgAuthentication/CopyServiceProviderURL.tsx",
+    "DashContent": "components/Dashboard/DashContent.tsx",
+    "DashFilterToggle": "components/DashFilterToggle/DashFilterToggle.tsx",
+    "DashModal": "components/Dashboard/DashModal.tsx",
+    "DashNavControl": "components/DashNavControl/DashNavControl.tsx",
+    "DashSectionControls": "components/Dashboard/DashSectionControls.tsx",
+    "DashSectionHeader": "components/Dashboard/DashSectionHeader.tsx",
+    "DeleteReflectionButton": "components/ReflectionCard/DeleteReflectionButton.tsx",
+    "Dialog": "ui/Dialog/Dialog.tsx",
+    "DialogActions": "ui/Dialog/DialogActions.tsx",
+    "DialogClose": "ui/Dialog/DialogClose.tsx",
+    "DialogContent": "ui/Dialog/DialogContent.tsx",
+    "DialogDescription": "ui/Dialog/DialogDescription.tsx",
+    "DialogOverlay": "ui/Dialog/DialogOverlay.tsx",
+    "DialogTitle": "ui/Dialog/DialogTitle.tsx",
+    "DialogTrigger": "ui/Dialog/DialogTrigger.tsx",
+    "DiscussionThreadListEmptyState": "components/DiscussionThreadListEmptyState.tsx",
+    "EstimatePhaseEmptyState": "components/EstimatePhaseEmptyState.tsx",
+    "ExpandedReflection": "components/RetroReflectPhase/ExpandedReflection.tsx",
+    "ExpandedReflectionStack": "components/RetroReflectPhase/ExpandedReflectionStack.tsx",
+    "ExpandPageChildrenButton": "components/DashNavList/ExpandPageChildrenButton.tsx",
+    "GroupingKanbanColumnHeader": "components/GroupingKanbanColumnHeader.tsx",
+    "HTMLReflection": "components/RetroReflectPhase/HTMLReflection.tsx",
+    "Input": "ui/Input/Input.tsx",
+    "InspirationItemCard": "components/TeamPrompt/WorkDrawer/InspirationItemCard.tsx",
+    "InspirationItemsPanel": "components/TeamPrompt/WorkDrawer/InspirationItemsPanel.tsx",
+    "LeftDashNavItem": "components/Dashboard/LeftDashNavItem.tsx",
+    "LeftDashParabol": "components/Dashboard/LeftDashNavParabol.tsx",
+    "LeftNavHeader": "components/DashNavList/LeftNavHeader.tsx",
+    "LeftNavHeaderButton": "components/DashNavList/LeftNavHeaderButton.tsx",
+    "LeftNavItem": "components/DashNavList/LeftNavItem.tsx",
+    "LeftNavItemButton": "components/DashNavList/LeftNavItemButton.tsx",
+    "LeftNavItemButtons": "components/DashNavList/LeftNavItemButtons.tsx",
+    "LeftNavPagesTrash": "components/DashNavList/LeftNavPagesTrash.tsx",
+    "MarqueeText": "components/ReflectionGroup/MarqueeText.tsx",
+    "MeetingArea": "components/MeetingArea.tsx",
+    "MeetingContent": "components/MeetingContent.tsx",
+    "MeetingHeaderAndPhase": "components/MeetingHeaderAndPhase.tsx",
+    "MeetingTopBar": "components/MeetingTopBar.tsx",
+    "Menu": "ui/Menu/Menu.tsx",
+    "MenuContent": "ui/Menu/MenuContent.tsx",
+    "MenuItem": "ui/Menu/MenuItem.tsx",
+    "MenuItemCheckbox": "ui/Menu/MenuItemCheckbox.tsx",
+    "MenuLabelTrigger": "ui/Menu/MenuLabelTrigger.tsx",
+    "MiniPokerCard": "components/MiniPokerCard.tsx",
+    "MockScopingList": "modules/meeting/components/MockScopingList.tsx",
+    "MockScopingTask": "modules/meeting/components/MockScopingTask.tsx",
+    "NewMeetingSidebarPhaseListItem": "components/NewMeetingSidebarPhaseListItem.tsx",
+    "ParabolTasksSubPanel": "components/TeamPrompt/WorkDrawer/ParabolTasksSubPanel.tsx",
+    "PhaseHeaderDescription": "components/PhaseHeaderDescription.tsx",
+    "PhaseHeaderTitle": "components/PhaseHeaderTitle.tsx",
+    "PhaseItemChits": "components/RetroReflectPhase/PhaseItemChits.tsx",
+    "PokerEstimateHeaderCardEditable": "components/PokerEstimateHeaderCardEditable.tsx",
+    "PokerEstimateHeaderCardError": "components/PokerEstimateHeaderCardError.tsx",
+    "PokerEstimateHeaderCardReadonly": "components/PokerEstimateHeaderCardReadonly.tsx",
+    "PokerSidebarEstimateMeta": "components/PokerSidebarEstimateMeta.tsx",
+    "PokerVotingNoVotes": "components/PokerVotingNoVotes.tsx",
+    "PokerVotingRowBase": "components/PokerVotingRowBase.tsx",
+    "PromptResponseEditor": "components/TeamPrompt/PromptResponseEditor.tsx",
+    "RadioGroup": "ui/RadioGroup/RadioGroup.tsx",
+    "RadioGroupItem": "ui/RadioGroup/RadioGroup.tsx",
+    "ReactjiCountWrapper": "components/ReflectionCard/ReactjiCountWrapper.tsx",
+    "ReflectionCardButton": "components/ReflectionCard/ReflectionCardButton.tsx",
+    "ReflectionStackPlaceholder": "components/RetroReflectPhase/ReflectionStackPlaceholder.tsx",
+    "ReflectWrapperDesktop": "components/RetroReflectPhase/ReflectWrapperDesktop.tsx",
+    "ReflectWrapperMobile": "components/RetroReflectPhase/ReflectionWrapperMobile.tsx",
+    "ResponsiveDashSidebar": "components/ResponsiveDashSidebar.tsx",
+    "RetroInspirationItemCard": "components/TeamPrompt/WorkDrawer/RetroInspirationItemCard.tsx",
+    "RetroPrompt": "components/RetroPrompt.tsx",
+    "Select": "ui/Select/Select.tsx",
+    "SelectContent": "ui/Select/SelectContent.tsx",
+    "SelectGroup": "ui/Select/SelectGroup.tsx",
+    "SelectItem": "ui/Select/SelectItem.tsx",
+    "SelectTrigger": "ui/Select/SelectTrigger.tsx",
+    "SelectValue": "ui/Select/SelectValue.tsx",
+    "SpotlightButton": "components/ReflectionCard/SpotlightButton.tsx",
+    "SubmitReflectionButton": "components/ReflectionCard/SubmitReflectionButton.tsx",
+    "SwipeableDashSidebar": "components/SwipeableDashSidebar.tsx",
+    "TeamPromptBadge": "components/TeamPrompt/TeamPromptBadge.tsx",
+    "TeamPromptEditablePromptModal": "components/TeamPrompt/TeamPromptEditablePromptModal.tsx",
+    "TeamPromptEndedBadge": "components/TeamPrompt/TeamPromptEndedBadge.tsx",
+    "TeamPromptLastUpdatedTime": "components/TeamPrompt/TeamPromptLastUpdatedTime.tsx",
+    "TeamPromptOverflowAvatar": "components/TeamPrompt/TeamPromptOverflowAvatar.tsx",
+    "TeaserOrgTeamsRow": "modules/userDashboard/components/OrgTeams/TeaserOrgTeamsRow.tsx",
+    "ThreadedAvatarColumn": "components/ThreadedAvatarColumn.tsx",
+    "Tooltip": "ui/Tooltip/Tooltip.tsx",
+    "TooltipContent": "ui/Tooltip/TooltipContent.tsx",
+    "TooltipTrigger": "ui/Tooltip/TooltipTrigger.tsx",
+    "UndoableGroupPhaseDialog": "components/UndoableGroupPhaseDialog.tsx",
+    "UngroupButton": "components/ReflectionCard/UngroupButton.tsx",
+    "WorkDrawerDateFilter": "components/TeamPrompt/WorkDrawer/WorkDrawerDateFilter.tsx"
+  },
+  "docsMap": {
+    "AddReactjiButton": "../../.design-sync/groups/retrospective.md",
+    "AlertDialog": "../../.design-sync/groups/primitives.md",
+    "AlertDialogContent": "../../.design-sync/groups/primitives.md",
+    "AlertDialogOverlay": "../../.design-sync/groups/primitives.md",
+    "AlertDialogPortal": "../../.design-sync/groups/primitives.md",
+    "AlertDialogTitle": "../../.design-sync/groups/primitives.md",
+    "AlertDialogTrigger": "../../.design-sync/groups/primitives.md",
+    "Avatar": "../../.design-sync/groups/primitives.md",
+    "AvatarFallback": "../../.design-sync/groups/primitives.md",
+    "AvatarImage": "../../.design-sync/groups/primitives.md",
+    "BillingMembersToggle": "../../.design-sync/groups/org-admin.md",
+    "Button": "../../.design-sync/groups/primitives.md",
+    "Checkbox": "../../.design-sync/groups/primitives.md",
+    "Chip": "../../.design-sync/groups/primitives.md",
+    "CopyServiceProviderURL": "../../.design-sync/groups/org-admin.md",
+    "DashContent": "../../.design-sync/groups/team-dashboard.md",
+    "DashFilterToggle": "../../.design-sync/groups/team-dashboard.md",
+    "DashModal": "../../.design-sync/groups/team-dashboard.md",
+    "DashNavControl": "../../.design-sync/groups/team-dashboard.md",
+    "DashSectionControls": "../../.design-sync/groups/team-dashboard.md",
+    "DashSectionHeader": "../../.design-sync/groups/team-dashboard.md",
+    "DeleteReflectionButton": "../../.design-sync/groups/retrospective.md",
+    "Dialog": "../../.design-sync/groups/primitives.md",
+    "DialogActions": "../../.design-sync/groups/primitives.md",
+    "DialogClose": "../../.design-sync/groups/primitives.md",
+    "DialogContent": "../../.design-sync/groups/primitives.md",
+    "DialogDescription": "../../.design-sync/groups/primitives.md",
+    "DialogOverlay": "../../.design-sync/groups/primitives.md",
+    "DialogTitle": "../../.design-sync/groups/primitives.md",
+    "DialogTrigger": "../../.design-sync/groups/primitives.md",
+    "DiscussionThreadListEmptyState": "../../.design-sync/groups/retrospective.md",
+    "EstimatePhaseEmptyState": "../../.design-sync/groups/estimate.md",
+    "ExpandedReflection": "../../.design-sync/groups/retrospective.md",
+    "ExpandedReflectionStack": "../../.design-sync/groups/retrospective.md",
+    "ExpandPageChildrenButton": "../../.design-sync/groups/team-dashboard.md",
+    "GroupingKanbanColumnHeader": "../../.design-sync/groups/retrospective.md",
+    "HTMLReflection": "../../.design-sync/groups/retrospective.md",
+    "Input": "../../.design-sync/groups/primitives.md",
+    "InspirationItemCard": "../../.design-sync/groups/team-prompt.md",
+    "InspirationItemsPanel": "../../.design-sync/groups/team-prompt.md",
+    "LeftDashNavItem": "../../.design-sync/groups/team-dashboard.md",
+    "LeftDashParabol": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavHeader": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavHeaderButton": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavItem": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavItemButton": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavItemButtons": "../../.design-sync/groups/team-dashboard.md",
+    "LeftNavPagesTrash": "../../.design-sync/groups/team-dashboard.md",
+    "MarqueeText": "../../.design-sync/groups/retrospective.md",
+    "MeetingArea": "../../.design-sync/groups/retrospective.md",
+    "MeetingContent": "../../.design-sync/groups/retrospective.md",
+    "MeetingHeaderAndPhase": "../../.design-sync/groups/retrospective.md",
+    "MeetingTopBar": "../../.design-sync/groups/retrospective.md",
+    "Menu": "../../.design-sync/groups/primitives.md",
+    "MenuContent": "../../.design-sync/groups/primitives.md",
+    "MenuItem": "../../.design-sync/groups/primitives.md",
+    "MenuItemCheckbox": "../../.design-sync/groups/primitives.md",
+    "MenuLabelTrigger": "../../.design-sync/groups/primitives.md",
+    "MiniPokerCard": "../../.design-sync/groups/estimate.md",
+    "MockScopingList": "../../.design-sync/groups/estimate.md",
+    "MockScopingTask": "../../.design-sync/groups/estimate.md",
+    "NewMeetingSidebarPhaseListItem": "../../.design-sync/groups/retrospective.md",
+    "ParabolTasksSubPanel": "../../.design-sync/groups/team-prompt.md",
+    "PhaseHeaderDescription": "../../.design-sync/groups/retrospective.md",
+    "PhaseHeaderTitle": "../../.design-sync/groups/retrospective.md",
+    "PhaseItemChits": "../../.design-sync/groups/retrospective.md",
+    "PokerEstimateHeaderCardEditable": "../../.design-sync/groups/estimate.md",
+    "PokerEstimateHeaderCardError": "../../.design-sync/groups/estimate.md",
+    "PokerEstimateHeaderCardReadonly": "../../.design-sync/groups/estimate.md",
+    "PokerSidebarEstimateMeta": "../../.design-sync/groups/estimate.md",
+    "PokerVotingNoVotes": "../../.design-sync/groups/estimate.md",
+    "PokerVotingRowBase": "../../.design-sync/groups/estimate.md",
+    "PromptResponseEditor": "../../.design-sync/groups/team-prompt.md",
+    "RadioGroup": "../../.design-sync/groups/primitives.md",
+    "RadioGroupItem": "../../.design-sync/groups/primitives.md",
+    "ReactjiCountWrapper": "../../.design-sync/groups/retrospective.md",
+    "ReflectionCardButton": "../../.design-sync/groups/retrospective.md",
+    "ReflectionStackPlaceholder": "../../.design-sync/groups/retrospective.md",
+    "ReflectWrapperDesktop": "../../.design-sync/groups/retrospective.md",
+    "ReflectWrapperMobile": "../../.design-sync/groups/retrospective.md",
+    "ResponsiveDashSidebar": "../../.design-sync/groups/team-dashboard.md",
+    "RetroInspirationItemCard": "../../.design-sync/groups/team-prompt.md",
+    "RetroPrompt": "../../.design-sync/groups/retrospective.md",
+    "Select": "../../.design-sync/groups/primitives.md",
+    "SelectContent": "../../.design-sync/groups/primitives.md",
+    "SelectGroup": "../../.design-sync/groups/primitives.md",
+    "SelectItem": "../../.design-sync/groups/primitives.md",
+    "SelectTrigger": "../../.design-sync/groups/primitives.md",
+    "SelectValue": "../../.design-sync/groups/primitives.md",
+    "SpotlightButton": "../../.design-sync/groups/retrospective.md",
+    "SubmitReflectionButton": "../../.design-sync/groups/retrospective.md",
+    "SwipeableDashSidebar": "../../.design-sync/groups/team-dashboard.md",
+    "TeamPromptBadge": "../../.design-sync/groups/team-prompt.md",
+    "TeamPromptEditablePromptModal": "../../.design-sync/groups/team-prompt.md",
+    "TeamPromptEndedBadge": "../../.design-sync/groups/team-prompt.md",
+    "TeamPromptLastUpdatedTime": "../../.design-sync/groups/team-prompt.md",
+    "TeamPromptOverflowAvatar": "../../.design-sync/groups/team-prompt.md",
+    "TeaserOrgTeamsRow": "../../.design-sync/groups/org-admin.md",
+    "ThreadedAvatarColumn": "../../.design-sync/groups/retrospective.md",
+    "Tooltip": "../../.design-sync/groups/primitives.md",
+    "TooltipContent": "../../.design-sync/groups/primitives.md",
+    "TooltipTrigger": "../../.design-sync/groups/primitives.md",
+    "UndoableGroupPhaseDialog": "../../.design-sync/groups/retrospective.md",
+    "UngroupButton": "../../.design-sync/groups/retrospective.md",
+    "WorkDrawerDateFilter": "../../.design-sync/groups/team-prompt.md"
+  },
+  "overrides": {
+    "DialogActions": {
+      "cardMode": "single"
+    },
+    "DialogClose": {
+      "cardMode": "single"
+    },
+    "DialogContent": {
+      "cardMode": "single"
+    },
+    "DialogDescription": {
+      "cardMode": "single"
+    },
+    "DialogOverlay": {
+      "cardMode": "single"
+    },
+    "DialogTitle": {
+      "cardMode": "single"
+    },
+    "DialogTrigger": {
+      "cardMode": "single"
+    },
+    "PokerEstimateHeaderCardReadonly": {
+      "cardMode": "column"
+    },
+    "MockScopingTask": {
+      "cardMode": "column"
+    },
+    "MenuContent": {
+      "cardMode": "single"
+    },
+    "MenuItem": {
+      "cardMode": "single"
+    },
+    "MenuItemCheckbox": {
+      "cardMode": "single"
+    },
+    "Dialog": {
+      "cardMode": "single"
+    },
+    "Menu": {
+      "cardMode": "single"
+    },
+    "Select": {
+      "cardMode": "single"
+    },
+    "SelectContent": {
+      "cardMode": "single"
+    },
+    "SelectGroup": {
+      "cardMode": "single"
+    },
+    "SelectItem": {
+      "cardMode": "single"
+    },
+    "SelectTrigger": {
+      "cardMode": "single"
+    },
+    "SelectValue": {
+      "cardMode": "single"
+    },
+    "ResponsiveDashSidebar": {
+      "cardMode": "single"
+    },
+    "SwipeableDashSidebar": {
+      "cardMode": "single"
+    },
+    "TeamPromptEditablePromptModal": {
+      "cardMode": "single"
+    }
+  }
+}
