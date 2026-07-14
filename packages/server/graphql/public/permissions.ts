@@ -136,6 +136,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       isTeamMemberOfMeeting<'Mutation.endTeamPrompt'>('args.meetingId'),
       isSuperUser
     ),
+    endTeamHealth: or(
+      isTeamMemberOfMeeting<'Mutation.endTeamHealth'>('args.meetingId'),
+      isSuperUser
+    ),
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInspirationItems:
       isMeetingMember<'Mutation.generateInspirationItems'>('args.input.meetingId'),

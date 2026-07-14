@@ -15,6 +15,7 @@ type TeamSubscriptionPayload {
   EndCheckInSuccess: EndCheckInSuccess
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
   EndSprintPokerSuccess: EndSprintPokerSuccess
+  EndTeamHealthSuccess: EndTeamHealthSuccess
   EndTeamPromptSuccess: EndTeamPromptSuccess
   NavigateMeetingPayload: NavigateMeetingPayload
   PushInvitationPayload: PushInvitationPayload

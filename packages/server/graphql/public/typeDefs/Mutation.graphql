@@ -1397,6 +1397,16 @@ type Mutation {
   ): EndTeamPromptPayload! @scope(name: MEETINGS_WRITE)
 
   """
+  Finish the team health meeting
+  """
+  endTeamHealth(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Set the Azure DevOps field that the poker dimension should map to
   """
   updateAzureDevOpsDimensionField(

@@ -63,6 +63,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   await sql`ALTER TYPE public."NewMeetingPhaseTypeEnum" ADD VALUE IF NOT EXISTS 'TEAM_HEALTH_RESPONSE'`.execute(
     getKysely()
   )
+  // Adds the timeline event type emitted when a team health meeting ends, so ended
+  // team health meetings appear in the viewer's activity timeline like retro/teamPrompt.
+  await sql`ALTER TYPE public."TimelineEventEnum" ADD VALUE IF NOT EXISTS 'TEAM_HEALTH_COMPLETE'`.execute(
+    getKysely()
+  )
   const teams = await db
     .selectFrom('Team')
     .select('Team.id')
@@ -95,4 +100,10 @@ export async function up(db: Kysely<any>): Promise<void> {
 
 export async function down(db: Kysely<any>): Promise<void> {
   await db.deleteFrom('MeetingSettings').where('meetingType', '=', 'teamHealth').execute()
+  // Postgres cannot drop a single enum value; remove any rows using it so a later
+  // enum recreation isn't blocked.
+  await db
+    .deleteFrom('TimelineEvent')
+    .where('type', '=', 'TEAM_HEALTH_COMPLETE' as any)
+    .execute()
 }

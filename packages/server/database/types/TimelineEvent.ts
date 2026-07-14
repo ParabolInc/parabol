@@ -2,6 +2,7 @@ import generateUID from '../../generateUID'
 
 export type TimelineEventEnum =
   | 'TEAM_PROMPT_COMPLETE'
+  | 'TEAM_HEALTH_COMPLETE'
   | 'POKER_COMPLETE'
   | 'actionComplete'
   | 'createdTeam'

@@ -33,6 +33,7 @@ import {removeReflectTemplateTeamUpdater} from '../mutations/RemoveReflectTempla
 import {removeReflectTemplatePromptTeamUpdater} from '../mutations/RemoveReflectTemplatePromptMutation'
 import {removeTeamMemberTeamUpdater} from '../mutations/RemoveTeamMemberMutation'
 import {updateAgendaItemUpdater} from '../mutations/UpdateAgendaItemMutation'
+import {endTeamHealthTeamUpdater} from '../mutations/useEndTeamHealthMutation'
 import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
@@ -89,6 +90,9 @@ const subscription = graphql`
       }
       EndTeamPromptSuccess {
         ...EndTeamPromptMutation_team @relay(mask: false)
+      }
+      EndTeamHealthSuccess {
+        ...useEndTeamHealthMutation_team @relay(mask: false)
       }
       JoinTeamSuccess {
         ...JoinTeamMutation_team @relay(mask: false)
@@ -156,6 +160,9 @@ const subscription = graphql`
       StartTeamPromptSuccess {
         ...StartTeamPromptMutation_team @relay(mask: false)
       }
+      StartTeamHealthSuccess {
+        ...useStartTeamHealthMutation_success @relay(mask: false)
+      }
       UpdateAgendaItemPayload {
         ...UpdateAgendaItemMutation_team @relay(mask: false)
       }
@@ -206,6 +213,7 @@ const updateHandlers = {
   EndRetrospectiveSuccess: endRetrospectiveTeamUpdater,
   EndSprintPokerSuccess: endSprintPokerTeamUpdater,
   EndTeamPromptSuccess: endTeamPromptTeamUpdater,
+  EndTeamHealthSuccess: endTeamHealthTeamUpdater,
   MoveReflectTemplatePromptPayload: moveReflectTemplatePromptTeamUpdater,
   NavigateMeetingPayload: navigateMeetingTeamUpdater,
   RemoveOrgUsersSuccess: removeOrgUsersTeamUpdater,

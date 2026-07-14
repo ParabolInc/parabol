@@ -165,6 +165,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     // null score = skipped, or a future non-likert questionType
     .addColumn('score', 'smallint')
     .addColumn('comment', 'varchar(2000)')
+    .addColumn('commentParaphrased', 'varchar(2000)')
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addUniqueConstraint('uniq_TeamHealthResponse_meetingId_questionId_userId', [

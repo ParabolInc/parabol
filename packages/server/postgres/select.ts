@@ -26,7 +26,12 @@ type AssertedQuery<Q, K> = Q extends SelectQueryBuilder<infer T1, infer T2, infe
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
-        type: 'actionComplete' | 'POKER_COMPLETE' | 'TEAM_PROMPT_COMPLETE' | 'retroComplete'
+        type:
+          | 'actionComplete'
+          | 'POKER_COMPLETE'
+          | 'TEAM_PROMPT_COMPLETE'
+          | 'TEAM_HEALTH_COMPLETE'
+          | 'retroComplete'
         teamId: NotNull
         orgId: NotNull
         meetingId: NotNull
