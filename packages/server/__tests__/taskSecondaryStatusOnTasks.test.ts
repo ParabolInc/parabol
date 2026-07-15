@@ -91,7 +91,7 @@ const UPDATE_TASK = `
 `
 
 const createTaskWithSecondary = async () => {
-  const {userId, teamId, orgId, cookie} = await signUp()
+  const {userId, teamId, orgId, cookie, email, password} = await signUp()
   const secondaryId = await addStatus(teamId, cookie, 'In review', 'active')
   const res = await sendPublic({
     query: CREATE_TASK,
@@ -101,7 +101,7 @@ const createTaskWithSecondary = async () => {
     cookie
   })
   const taskId = res.data.createTask.task.id as string
-  return {userId, teamId, orgId, cookie, secondaryId, taskId}
+  return {userId, teamId, orgId, cookie, secondaryId, taskId, email, password}
 }
 
 test('updateTask sets and clears secondaryStatusId', async () => {
@@ -176,7 +176,7 @@ test('updateTask with the SAME primary status does not auto-clear the secondary'
 })
 
 test('changeTaskTeam clears secondaryStatusId', async () => {
-  const {cookie, taskId, orgId} = await createTaskWithSecondary()
+  const {cookie, taskId, orgId, email, password} = await createTaskWithSecondary()
   // create a second team owned by the same user
   // NewTeamInput requires {name: String!, orgId: ID!, isPublic: Boolean!} (verified SDL);
   // AddTeamPayload is a plain type — direct selection, no fragment needed
@@ -192,7 +192,23 @@ test('changeTaskTeam clears secondaryStatusId', async () => {
     cookie
   })
   const newTeamId = addTeamRes.data.addTeam.team.id
-  const newCookie = addTeamRes.cookie || cookie
+  // addTeam's HTTP response does not mint a refreshed JWT: the cookie set at signup
+  // still carries the stale `tms` claim (missing the just-created team), so
+  // isTeamMember('args.teamId') would reject changeTaskTeam below. Re-authenticate to
+  // mint a fresh cookie whose tms includes both teams.
+  const loginRes = await sendPublic({
+    query: `
+      mutation LoginWithPasswordMutation($email: ID!, $password: String!) {
+        loginWithPassword(email: $email, password: $password) {
+          error { message }
+          authToken
+        }
+      }
+    `,
+    variables: {email, password}
+  })
+  expect(loginRes.cookie).toBeTruthy()
+  const newCookie = loginRes.cookie
   const moveRes = await sendPublic({
     query: `
       mutation ChangeTaskTeam($taskId: ID!, $teamId: ID!) {
