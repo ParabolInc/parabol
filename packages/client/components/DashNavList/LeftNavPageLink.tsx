@@ -152,10 +152,10 @@ export const LeftNavPageLink = (props: Props) => {
         style={{paddingLeft: depth * 8}}
         data-drop-in={canDropIn ? id : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pr-1 pl-1 text-slate-700 text-sm leading-8 outline-hidden',
+          'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pr-1 pl-1 text-fg-nav text-sm leading-8 outline-hidden',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
-            'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900',
+            'hover:bg-surface-nav-active focus:bg-surface-nav-active data-highlighted:bg-surface-nav-active data-highlighted:text-fg-primary',
           draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
         )}
       >
@@ -180,7 +180,7 @@ export const LeftNavPageLink = (props: Props) => {
           }}
         >
           {isDatabase ? (
-            <div className='flex size-6 shrink-0 items-center justify-center rounded-sm bg-slate-200 text-slate-600 group-data-highlighted:bg-slate-300'>
+            <div className='flex size-6 shrink-0 items-center justify-center rounded-sm bg-surface-sidebar text-fg-nav-muted group-data-highlighted:bg-surface-nav-active'>
               <StorageIcon className='size-5' />
             </div>
           ) : (

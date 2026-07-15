@@ -41,7 +41,7 @@ export const GlobalSearchDialog = () => {
     <Dialog isOpen={isOpen} onOpenChange={onOpenChange}>
       <DialogContent
         className={
-          'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-white p-0 duration-200 focus:outline-none'
+          'top-[15%] w-full translate-y-0 animate-in overflow-hidden bg-surface-card p-0 duration-200 focus:outline-none'
         }
       >
         <VisuallyHidden asChild>

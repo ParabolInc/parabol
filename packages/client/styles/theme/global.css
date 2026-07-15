@@ -202,6 +202,8 @@
     rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
   --shadow-status-ring: 0 0 0 0 transparent;
+  --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
 
   /* V3 default-- ring outlines are blue */
   --default-ring-color: var(--color-sky-500);

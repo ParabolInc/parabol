@@ -37,7 +37,7 @@ export const ExpandPageChildrenButton = memo((props: Props) => {
       onPointerEnter={handleDragExpandEnter}
       onPointerLeave={handleDragExpandLeave}
       className={cn(
-        'flex size-6 shrink-0 items-center justify-center rounded-sm bg-slate-200 text-slate-600 hover:bg-slate-400 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300',
+        'flex size-6 shrink-0 items-center justify-center rounded-sm bg-surface-sidebar text-fg-nav-muted hover:bg-hairline-strong group-hover:bg-surface-nav-active group-data-highlighted:bg-surface-nav-active',
         draggingPageId && 'bg-inherit hover:bg-sky-300 group-hover:bg-sky-300'
       )}
     >
