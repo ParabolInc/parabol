@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
 
 export const TeamPromptBadge = styled('div')({
   display: 'flex',
@@ -8,8 +7,8 @@ export const TeamPromptBadge = styled('div')({
   fontSize: 14,
   fontWeight: 600,
   padding: '6px 16px 6px 16px',
-  backgroundColor: PALETTE.WHITE,
-  color: PALETTE.SLATE_700,
+  backgroundColor: 'var(--color-surface-card)',
+  color: 'var(--color-fg-primary)',
   borderRadius: '100vmax',
   minHeight: 34,
   userSelect: 'none'

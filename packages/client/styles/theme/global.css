@@ -694,6 +694,7 @@
   }
 
   [data-type='taskTag'] {
+    color: var(--color-fg-muted);
     font-weight: 600;
   }
 

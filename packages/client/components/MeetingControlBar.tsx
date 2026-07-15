@@ -53,7 +53,16 @@ const MeetingControlBar = (props: Props) => {
         facilitatorUserId
         meetingType
         showSidebar
+        ... on ActionMeeting {
+          rightDrawerOpen
+        }
         ... on PokerMeeting {
+          rightDrawerOpen
+        }
+        ... on RetrospectiveMeeting {
+          rightDrawerOpen
+        }
+        ... on TeamPromptMeeting {
           rightDrawerOpen
         }
         localStage {

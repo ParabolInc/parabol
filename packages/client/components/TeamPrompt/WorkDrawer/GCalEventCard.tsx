@@ -149,8 +149,8 @@ const GCalEventCard = (props: Props) => {
   }
 
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex items-center gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex items-center gap-2 text-fg-secondary text-xs'>
         {hasHappened ? (
           <CheckCircle className='h-4 w-4 text-jade-500' />
         ) : isInProgress ? (
@@ -159,12 +159,12 @@ const GCalEventCard = (props: Props) => {
             Now
           </span>
         ) : (
-          <Schedule className='h-4 w-4 text-sky-500' />
+          <Schedule className='h-4 w-4 text-accent' />
         )}
         <div>{formatEventTimeRange(startDate, endDate)}</div>
         {durationMs !== null && durationMs > 0 && (
           <div className='ml-auto flex shrink-0 items-center gap-2'>
-            <div className='h-1.5 w-16 overflow-hidden rounded-full bg-slate-200'>
+            <div className='h-1.5 w-16 overflow-hidden rounded-full bg-surface-well'>
               <div
                 className={cn('h-full rounded-full', getDurationColor(durationMs))}
                 style={{width: `${Math.max(durationRatio * 100, 12)}%`}}
@@ -186,7 +186,7 @@ const GCalEventCard = (props: Props) => {
         </a>
       </div>
       <div className='flex items-center justify-between'>
-        <div className='flex min-w-0 items-center gap-3 text-slate-600 text-xs'>
+        <div className='flex min-w-0 items-center gap-3 text-fg-secondary text-xs'>
           {!!attendeeCount && attendeeCount > 0 && (
             <div className='flex shrink-0 items-center gap-1'>
               <People className='h-4 w-4' />
@@ -211,7 +211,7 @@ const GCalEventCard = (props: Props) => {
             <TooltipTrigger asChild>
               <button
                 type='button'
-                className='shrink-0 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
+                className='shrink-0 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
                 onClick={handleCopy}
               >
                 <Link className='h-6 w-6 cursor-pointer p-0.5' />

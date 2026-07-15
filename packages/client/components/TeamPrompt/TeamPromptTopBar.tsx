@@ -168,11 +168,11 @@ const TeamPromptTopBar = (props: Props) => {
   const buttons = (
     <ButtonContainer>
       <button
-        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-sky-500 text-sm hover:text-sky-600'
+        className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm'
         onClick={onOpenWorkSidebar}
       >
         <IconLabel icon='task_alt' iconLarge />
-        <div className='text-slate-700 group-hover:text-slate-900'>Inspiration</div>
+        <div className='text-fg-primary group-hover:text-fg-primary'>Inspiration</div>
       </button>
       <TeamPromptOptions
         meetingRef={meeting}
@@ -190,7 +190,7 @@ const TeamPromptTopBar = (props: Props) => {
           <div>
             <div className='flex w-max gap-1'>
               {isRecurrenceEnabled && prevMeeting && (
-                <Link className='text-slate-600' to={`/meet/${prevMeeting.id}`}>
+                <Link className='text-fg-secondary' to={`/meet/${prevMeeting.id}`}>
                   <KeyboardArrowLeft />
                 </Link>
               )}
@@ -211,7 +211,7 @@ const TeamPromptTopBar = (props: Props) => {
                 <MeetingDateLabel meetingRef={meeting} />
               </div>
               {isRecurrenceEnabled && nextMeeting && (
-                <Link className='text-slate-600' to={`/meet/${nextMeeting.id}`}>
+                <Link className='text-fg-secondary' to={`/meet/${nextMeeting.id}`}>
                   <KeyboardArrowRight />
                 </Link>
               )}
@@ -239,7 +239,7 @@ const TeamPromptTopBar = (props: Props) => {
           closeModal={() => setIsEndRecurringMeetingOpen(false)}
         />
       </MeetingTopBarStyles>
-      <div className='block flex justify-between border-slate-300 border-y border-solid px-4 py-2 md:hidden'>
+      <div className='block flex justify-between border-hairline border-y border-solid px-4 py-2 md:hidden'>
         <div className='my-1'>
           <TeamPromptMeetingStatus meetingRef={meeting} />
         </div>

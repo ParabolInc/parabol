@@ -7,7 +7,6 @@ import type {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPro
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 
 const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
@@ -26,7 +25,7 @@ const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
 }))
 
 const StyledIcon = styled(Edit)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginLeft: 16
 })
 

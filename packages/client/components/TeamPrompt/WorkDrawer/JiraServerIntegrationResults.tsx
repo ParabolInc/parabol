@@ -94,7 +94,7 @@ const JiraServerIntegrationResults = (props: Props) => {
             </div>
             <Link
               to={`/team/${teamId}/integrations`}
-              className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+              className='mt-4 font-semibold text-accent hover:text-sky-400'
             >
               Review your Jira Data Center configuration
             </Link>

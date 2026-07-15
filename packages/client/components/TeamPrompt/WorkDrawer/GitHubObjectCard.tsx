@@ -125,8 +125,8 @@ const GitHubObjectCard = (props: Props) => {
       : PR_STATUS_MAP[modifiedStatus]
 
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex gap-2 text-fg-secondary text-xs'>
         {statusImg && <img src={statusImg} />}
         <a
           href={url}
@@ -158,7 +158,7 @@ const GitHubObjectCard = (props: Props) => {
           <a
             href={repoUrl}
             target='_blank'
-            className='text-slate-600 text-xs hover:underline'
+            className='text-fg-secondary text-xs hover:underline'
             rel='noreferrer'
             onClick={trackLinkClick}
           >
@@ -167,7 +167,7 @@ const GitHubObjectCard = (props: Props) => {
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
+            className='h-6 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}

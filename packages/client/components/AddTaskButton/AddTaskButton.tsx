@@ -23,6 +23,7 @@ const AddTaskButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => 
   return (
     <StyledButton
       aria-label={`Add a Task set to ${label}`}
+      className='bg-surface-card text-fg-primary'
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       palette='white'

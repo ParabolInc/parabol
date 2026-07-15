@@ -13,12 +13,12 @@ const MiniPokerCardPlaceholder = styled('div')<{
   isFinal?: boolean
 }>(({canEdit, color, onClick, isFinal}) => ({
   alignItems: 'center',
-  background: color ? getPokerCardBackground(color) : '#fff',
+  background: color ? getPokerCardBackground(color) : 'var(--color-surface-card)',
   border: color
     ? 0
     : isFinal
-      ? `1px solid ${PALETTE.SLATE_400}`
-      : `1px dashed ${PALETTE.SLATE_600}`,
+      ? '1px solid var(--color-hairline-strong)'
+      : `1px dashed var(--color-hairline-strong)`,
   borderRadius: 2,
   color: color ? '#fff' : PALETTE.SLATE_600,
   cursor: onClick || canEdit ? 'pointer' : 'default',

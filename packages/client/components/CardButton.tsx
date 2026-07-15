@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
 import BaseButton from './BaseButton'
 
@@ -8,7 +7,7 @@ const buttonSize = Card.BUTTON_HEIGHT
 const CardButton = styled(BaseButton)({
   alignItems: 'center',
   borderRadius: buttonSize,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   height: buttonSize,
   justifyContent: 'center',
@@ -18,7 +17,7 @@ const CardButton = styled(BaseButton)({
   outline: 0,
   padding: 0,
   ':hover, :focus': {
-    backgroundColor: PALETTE.SLATE_200,
+    backgroundColor: 'var(--color-surface-well)',
     opacity: 1
   }
 })

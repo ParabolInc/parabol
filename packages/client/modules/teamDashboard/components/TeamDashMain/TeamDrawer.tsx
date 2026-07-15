@@ -9,7 +9,6 @@ import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../../../mutations/ToggleTeamDrawerMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import AgendaListAndInput from '../AgendaListAndInput/AgendaListAndInput'
 import CloseDrawer from '../CloseDrawer/CloseDrawer'
 import ManageTeamList from '../ManageTeam/ManageTeamList'
@@ -62,7 +61,7 @@ const TeamDrawer = (props: Props) => {
 
   return (
     <ResponsiveDashSidebar isOpen={openDrawer !== null} isRightDrawer onToggle={toggleDrawer}>
-      <div className='flex h-full w-64 flex-col bg-white'>
+      <div className='flex h-full w-64 flex-col bg-surface-card'>
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0 flex-1 overflow-y-auto'>
             <div className='flex items-center justify-between py-4 pr-2 pl-4'>
@@ -79,7 +78,7 @@ const TeamDrawer = (props: Props) => {
           </div>
           {drawerTypeRef.current === 'manageTeam' && (
             <div className='mt-auto p-4'>
-              <div style={{backgroundColor: PALETTE.SLATE_200}} className='rounded-lg p-4'>
+              <div className='rounded-lg bg-surface-well p-4'>
                 <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
                   Invite to Team
                 </h2>
@@ -87,7 +86,7 @@ const TeamDrawer = (props: Props) => {
                   This link expires in 30 days
                 </p>
                 <div className='overflow-x-hidden pb-2'>
-                  <div className='bg-white'>
+                  <div className='bg-surface-card'>
                     <MassInvitationTokenLinkRoot meetingId={undefined} teamId={teamId} />
                   </div>
                 </div>

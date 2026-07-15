@@ -148,7 +148,7 @@ const AddTeamMemberModal = (props: Props) => {
           <div className='flex flex-row'>
             {showIllustration && (
               <div
-                className='w-[339px] shrink-0 bg-center bg-no-repeat'
+                className='w-[339px] shrink-0 rounded-l-lg bg-center bg-no-repeat dark:bg-white/[.06]'
                 style={{
                   backgroundImage: `url(${modalTeamInvitePng})`,
                   backgroundSize: '80%'

@@ -90,8 +90,8 @@ const LinearObjectCard = memo((props: Props) => {
   const repoUrl = project?.url
 
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex items-center gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex items-center gap-2 text-fg-secondary text-xs'>
         <span className='font-medium'>{identifier}</span>
         <span>•</span>
         <span>{state.name}</span>
@@ -116,19 +116,21 @@ const LinearObjectCard = memo((props: Props) => {
             <a
               href={repoUrl}
               target='_blank'
-              className='flex items-center text-slate-600 text-xs hover:underline'
+              className='flex items-center text-fg-secondary text-xs hover:underline'
               rel='noreferrer'
               onClick={trackLinkClick}
             >
               <span className='leading-none'>{repoStr}</span>
             </a>
           ) : (
-            <span className='flex items-center text-slate-600 text-xs leading-none'>{repoStr}</span>
+            <span className='flex items-center text-fg-secondary text-xs leading-none'>
+              {repoStr}
+            </span>
           )}
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 w-6 cursor-pointer rounded-full bg-transparent p-0.5 text-slate-500 hover:bg-slate-200'
+            className='h-6 w-6 cursor-pointer rounded-full bg-transparent p-0.5 text-fg-muted hover:bg-surface-raised'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}
