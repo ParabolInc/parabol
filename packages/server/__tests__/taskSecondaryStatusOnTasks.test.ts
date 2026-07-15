@@ -174,3 +174,43 @@ test('updateTask with the SAME primary status does not auto-clear the secondary'
     secondaryStatus: {id: secondaryId}
   })
 })
+
+test('changeTaskTeam clears secondaryStatusId', async () => {
+  const {cookie, taskId, orgId} = await createTaskWithSecondary()
+  // create a second team owned by the same user
+  // NewTeamInput requires {name: String!, orgId: ID!, isPublic: Boolean!} (verified SDL);
+  // AddTeamPayload is a plain type — direct selection, no fragment needed
+  const addTeamRes = await sendPublic({
+    query: `
+      mutation AddTeam($newTeam: NewTeamInput!) {
+        addTeam(newTeam: $newTeam) {
+          team { id }
+        }
+      }
+    `,
+    variables: {newTeam: {name: `Second Team ${Date.now()}`, orgId, isPublic: false}},
+    cookie
+  })
+  const newTeamId = addTeamRes.data.addTeam.team.id
+  const newCookie = addTeamRes.cookie || cookie
+  const moveRes = await sendPublic({
+    query: `
+      mutation ChangeTaskTeam($taskId: ID!, $teamId: ID!) {
+        changeTaskTeam(taskId: $taskId, teamId: $teamId) {
+          task {
+            id
+            teamId
+            secondaryStatus { id }
+          }
+        }
+      }
+    `,
+    variables: {taskId, teamId: newTeamId},
+    cookie: newCookie
+  })
+  expect(moveRes.errors).toBeUndefined()
+  expect(moveRes.data.changeTaskTeam.task).toMatchObject({
+    teamId: newTeamId,
+    secondaryStatus: null
+  })
+})

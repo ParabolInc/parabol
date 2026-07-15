@@ -124,6 +124,8 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     .updateTable('Task')
     .set({
       teamId,
+      // secondary statuses are team-scoped vocabulary; they never follow a cross-team move
+      secondaryStatusId: null,
       integration: JSON.stringify(integration)
     })
     .where('id', '=', taskId)
