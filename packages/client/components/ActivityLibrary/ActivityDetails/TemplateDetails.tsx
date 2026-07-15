@@ -206,14 +206,14 @@ export const TemplateDetails = (props: Props) => {
       <div className='max-w-[480px]'>
         <div className='mb-6'>
           {__typename === 'FixedActivity' && (
-            <div className='font-semibold text-base text-slate-600'>Created by Parabol</div>
+            <div className='font-semibold text-base text-fg-secondary'>Created by Parabol</div>
           )}
           {isOwner && (
             <div className='flex items-center justify-between'>
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-full border border-slate-400 border-solid pl-3'
+                  isEditing && 'rounded-full border border-hairline-strong border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -224,7 +224,7 @@ export const TemplateDetails = (props: Props) => {
               </div>
               <div className='flex gap-2'>
                 {isEditing ? (
-                  <div className='rounded-full border border-slate-400 border-solid'>
+                  <div className='rounded-full border border-hairline-strong border-solid'>
                     <DetailAction
                       icon={'delete'}
                       tooltip={'Delete template'}
@@ -233,14 +233,14 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div className='rounded-full border border-slate-400 border-solid'>
+                    <div className='rounded-full border border-hairline-strong border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
                         onClick={() => setIsEditing(true)}
                       />
                     </div>
-                    <div className='rounded-full border border-slate-400 border-solid'>
+                    <div className='rounded-full border border-hairline-strong border-solid'>
                       <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
                     </div>
                   </>
@@ -250,21 +250,21 @@ export const TemplateDetails = (props: Props) => {
           )}
           {!isOwner && __typename !== 'FixedActivity' && (
             <div className='flex items-center justify-between'>
-              <div className='py-2 font-semibold text-slate-600 text-sm'>{description}</div>
+              <div className='py-2 font-semibold text-fg-secondary text-sm'>{description}</div>
               <div className='flex items-center gap-2'>
                 <ActivityCardFavorite
                   templateId={activityId}
                   viewerRef={viewer}
-                  className='rounded-full border border-slate-400 border-solid hover:bg-slate-200'
+                  className='rounded-full border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div className='rounded-full border border-slate-400 border-solid'>
+                <div className='rounded-full border border-hairline-strong border-solid'>
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
                     onClick={() => setTeamPickerOpen(true)}
                   >
-                    <ContentCopy className='text-slate-600' />
-                    <div className='font-semibold text-slate-700'>Clone & Edit</div>
+                    <ContentCopy className='text-fg-secondary' />
+                    <div className='font-semibold text-fg-primary'>Clone & Edit</div>
                   </FlatButton>
                 </div>
               </div>

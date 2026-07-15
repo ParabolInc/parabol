@@ -4,9 +4,11 @@ import BaseButton, {type BaseButtonProps} from './BaseButton'
 
 const paletteColors = {
   blue: PALETTE.SKY_500,
-  dark: PALETTE.SLATE_700,
+  // theme-aware (SLATE_700 == fg-primary's light value; SLATE_600 == fg-secondary's) so these
+  // neutral link palettes stop rendering dark-on-dark in dark mode.
+  dark: 'var(--color-fg-primary)',
   gray: PALETTE.SLATE_200,
-  midGray: PALETTE.SLATE_600,
+  midGray: 'var(--color-fg-secondary)',
   red: PALETTE.TOMATO_600,
   warm: PALETTE.GOLD_500,
   white: '#FFFFFF'
@@ -15,9 +17,10 @@ const paletteColors = {
 // mix palete color with ~15% black
 const hoverColors = {
   blue: PALETTE.SKY_600,
-  dark: PALETTE.SLATE_800,
+  // hover LIGHTENS in dark (toward fg-primary) instead of darkening into the surface.
+  dark: 'var(--color-accent)',
   gray: PALETTE.SLATE_400,
-  midGray: PALETTE.SLATE_700,
+  midGray: 'var(--color-fg-primary)',
   red: PALETTE.TOMATO_800,
   warm: PALETTE.GOLD_700,
   white: PALETTE.SLATE_300

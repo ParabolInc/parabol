@@ -11,7 +11,7 @@ import {Radius} from '../../../../types/constEnums'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
 const PlanTitle = styled('h6')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 22,
   fontWeight: 600,
   lineHeight: '30px',
@@ -33,7 +33,7 @@ const HeadingBlock = styled('div')({
 })
 
 const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
-  color: PALETTE.SLATE_800,
+  color: isItalic ? 'var(--color-fg-secondary)' : 'var(--color-fg-primary)',
   fontSize: 16,
   width: '100%',
   lineHeight: '24px',
@@ -55,7 +55,7 @@ const UL = styled('ul')({
 const LI = styled('li')({
   fontSize: 16,
   lineHeight: '32px',
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   textTransform: 'none',
   fontWeight: 400
 })
@@ -63,7 +63,7 @@ const LI = styled('li')({
 const StyledIcon = styled('span')({
   width: 18,
   height: 18,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   paddingLeft: 8,
   display: 'flex',
   alignItems: 'center',
@@ -78,7 +78,11 @@ const Plan = styled('div')<{
   isActive: boolean
 }>(({tier, isTablet, isActive}) => ({
   background:
-    tier === 'starter' ? PALETTE.STARTER : tier === 'team' ? PALETTE.TEAM : PALETTE.ENTERPRISE,
+    tier === 'starter'
+      ? 'var(--color-starter)'
+      : tier === 'team'
+        ? 'var(--color-team)'
+        : 'var(--color-enterprise)',
   fontSize: 12,
   fontWeight: 600,
   lineHeight: '16px',
@@ -92,7 +96,7 @@ const Plan = styled('div')<{
   marginRight: isTablet ? '8px' : 0,
   padding: '16px 8px',
   borderRadius: 4,
-  border: '2px solid white',
+  border: '2px solid var(--color-surface-card)',
   outline: isActive
     ? tier === 'starter'
       ? `2px solid ${PALETTE.GRAPE_500}`
@@ -129,19 +133,24 @@ const CTAButton = styled(BaseButton)<{
     buttonStyle === 'primary'
       ? PALETTE.GRADIENT_TOMATO_600_ROSE_500
       : buttonStyle === 'secondary'
-        ? PALETTE.WHITE
-        : PALETTE.SLATE_300,
+        ? 'var(--color-surface-card)'
+        : 'transparent',
   color:
     buttonStyle === 'primary'
       ? PALETTE.WHITE
       : buttonStyle === 'secondary'
-        ? PALETTE.SLATE_900
-        : PALETTE.SLATE_600,
-  border: buttonStyle === 'secondary' ? `1px solid ${PALETTE.SLATE_600}` : 'none',
+        ? 'var(--color-fg-primary)'
+        : 'var(--color-fg-secondary)',
+  border: buttonStyle === 'primary' ? 'none' : '1px solid var(--color-hairline-strong)',
   transition: 'all ease 0.5s',
   ':hover': {
     opacity: 1,
-    background: buttonStyle === 'primary' ? PALETTE.GRADIENT_TOMATO_700_ROSE_600 : PALETTE.SLATE_300
+    background:
+      buttonStyle === 'primary'
+        ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
+        : buttonStyle === 'secondary'
+          ? 'var(--color-surface-well)'
+          : 'transparent'
   }
 }))
 

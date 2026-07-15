@@ -22,13 +22,13 @@ const VARIANT_STYLES: Record<Variant, string> = {
   primary: 'bg-linear-to-r from-tomato-600 to-rose-500 text-white font-semibold hover:opacity-90',
   destructive: 'bg-tomato-500 text-white font-semibold hover:bg-tomato-500/90',
   outline:
-    'text-fg-primary border border-hairline-strong hover:bg-surface-well px-2.5 py-1 bg-transparent font-semibold',
+    'text-fg-primary border border-hairline-strong hover:bg-surface-hover px-2.5 py-1 bg-transparent font-semibold',
   dialogPrimary:
     'text-white bg-grape-700 hover:bg-grape-600 focus-visible:ring-grape-500 font-semibold',
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',
-  flat: 'rounded-full bg-transparent outline-hidden shadow-none hover:bg-surface-well focus:bg-surface-well active:bg-surface-well focus-visible:ring-0'
+  flat: 'rounded-full bg-transparent outline-hidden shadow-none hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover focus-visible:ring-0'
 }
 
 const SIZE_STYLES: Record<Size, string> = {

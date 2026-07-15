@@ -46,13 +46,13 @@ const OrgTeamsRow = (props: Props) => {
     </div>
   )
   return (
-    <tr className='border-slate-300 border-b hover:bg-slate-50'>
+    <tr className='border-hairline border-b hover:bg-surface-raised'>
       <td className='flex items-center p-3'>
         <td className='flex items-center p-3'>
           {isLead || isMember || isOrgAdmin ? (
             <Link to={teamId} className='flex items-center font-bold text-fg-primary text-lg'>
               {teamNameAndTags}
-              <ChevronRight className='ml-2 text-slate-600' />
+              <ChevronRight className='ml-2 text-fg-secondary' />
             </Link>
           ) : (
             <div className='flex items-center font-bold text-fg-primary text-lg'>

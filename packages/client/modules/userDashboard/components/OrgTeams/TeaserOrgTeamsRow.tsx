@@ -27,7 +27,7 @@ const TeaserOrgTeamsRow = (props: Props) => {
               <a
                 href='#'
                 onClick={handleParabolEnterpriseClick}
-                className='font-bold text-sky-500 hover:text-sky-600'
+                className='font-bold text-accent hover:text-sky-600'
               >
                 Parabol Enterprise
               </a>{' '}
@@ -38,7 +38,7 @@ const TeaserOrgTeamsRow = (props: Props) => {
         </div>
         <div className='flex items-center justify-center'>
           <div className='flex h-8 w-6 flex-row items-center py-2'>
-            <Lock className='h-6 w-6 text-slate-600' />
+            <Lock className='h-6 w-6 text-fg-secondary' />
           </div>
         </div>
       </div>

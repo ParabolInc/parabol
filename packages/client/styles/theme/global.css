@@ -159,6 +159,9 @@
   --color-surface-well: #e0ddec;
   --color-surface-card: #ffffff;
   --color-surface-raised: #f8f7fc;
+  /* Button/interactive hover fill. Light: subtle darken; dark: subtle LIGHTEN
+     (a translucent plum overlay) so hover moves toward the foreground in both. */
+  --color-surface-hover: #e0ddec;
   --color-surface-meeting-sidebar: #ffffff;
   --color-surface-topbar: #493272;
   --color-surface-input: #ffffff;
@@ -313,20 +316,21 @@
   --color-surface-well: #171029;
   --color-surface-card: #332965;
   --color-surface-raised: #3d3175;
+  --color-surface-hover: rgba(183, 180, 233, 0.22);
   --color-surface-meeting-sidebar: #251c48;
   --color-surface-topbar: #2d1d53;
   --color-surface-input: #171029;
   --color-surface-nav-active: #332965;
   --color-surface-phase-active: #362b63;
   --color-fg-primary: #eeedf7;
-  --color-fg-secondary: #b7b4e9;
+  --color-fg-secondary: #cac7f2;
   --color-fg-muted: #938cbf;
   --color-fg-topbar: #eeedf7;
   --color-fg-nav: #d4d2ef;
   --color-fg-nav-muted: #9b94c2;
   --color-hairline: rgba(183, 180, 233, 0.16);
   --color-hairline-strong: rgba(183, 180, 233, 0.32);
-  --color-hairline-field: #4a3e75;
+  --color-hairline-field: rgba(183, 180, 233, 0.32);
   --color-accent: #61b1eb;
   --color-accent-active: #a86bd6;
   --color-search-bg: rgba(255, 255, 255, 0.1);

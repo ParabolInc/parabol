@@ -10,9 +10,9 @@ import type {
 } from '../../../../__generated__/OrgAuthenticationSCIM_saml.graphql'
 import {OrgAuthenticationSCIMUpdateSCIMMutation} from '../../../../__generated__/OrgAuthenticationSCIMUpdateSCIMMutation.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {ExternalLinks} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import {Select} from '../../../../ui/Select/Select'
 import {SelectContent} from '../../../../ui/Select/SelectContent'
 import {SelectGroup} from '../../../../ui/Select/SelectGroup'
@@ -40,11 +40,11 @@ const CensoredSecret = (props: {secret: string; label: string; onReset: () => vo
         <Popover.Root open={confirming} onOpenChange={setConfirming}>
           <Popover.Trigger asChild>
             <PlainButton onClick={() => setConfirming(true)}>
-              <RestartAlt className='h-5 w-5 text-sky-500 hover:text-sky-700' />
+              <RestartAlt className='h-5 w-5 text-accent hover:text-fg-primary' />
             </PlainButton>
           </Popover.Trigger>
           <Popover.Portal>
-            <Popover.Content className='rounded-md border border-slate-200 bg-white p-2 shadow-md'>
+            <Popover.Content className='rounded-md border border-hairline bg-surface-card p-2 shadow-md'>
               <div className='flex flex-col items-center gap-2'>
                 Reset {label}?
                 <div className='flex gap-4'>
@@ -54,14 +54,14 @@ const CensoredSecret = (props: {secret: string; label: string; onReset: () => vo
                       setConfirming(false)
                     }}
                   >
-                    <Check alt='yes' className='h-5 w-5 text-sky-500 hover:text-sky-700' />
+                    <Check alt='yes' className='h-5 w-5 text-accent hover:text-fg-primary' />
                   </PlainButton>
                   <PlainButton
                     onClick={() => {
                       setConfirming(false)
                     }}
                   >
-                    <Close alt='no' className='h-5 w-5 text-sky-500 hover:text-sky-700' />
+                    <Close alt='no' className='h-5 w-5 text-accent hover:text-fg-primary' />
                   </PlainButton>
                 </div>
               </div>
@@ -112,15 +112,17 @@ const OrgAuthenticationSCIM = (props: Props) => {
   if (!saml || !scimEnabled) {
     return (
       <div className='px-6 pb-8'>
-        <div className='flex flex-row rounded border border-slate-500 px-2 py-1'>
+        <div className='flex flex-row rounded border border-hairline-field px-2 py-1'>
           <div className='px-2'>
-            <Add className='h-6 w-6 text-sky-500' />
+            <Add className='h-6 w-6 text-accent' />
           </div>
           <div className='flex flex-col'>
-            <span className='font-semibold text-base text-slate-700'>Enable SCIM Provisioning</span>
-            <span className='text-slate-700 text-sm'>
+            <span className='font-semibold text-base text-fg-primary'>
+              Enable SCIM Provisioning
+            </span>
+            <span className='text-fg-primary text-sm'>
               <a
-                className='font-semibold text-sky-500 text-sm focus:text-sky-500 active:text-sky-500'
+                className='font-semibold text-accent text-sm focus:text-accent active:text-accent'
                 href={`${ExternalLinks.CONTACT}?subject=Enable SCIM`}
                 title={'Contact customer success to enable SCIM provisioning'}
               >
@@ -180,7 +182,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
   const RenderSettings = () => {
     if (scimAuthenticationType === null) {
       return (
-        <div className='text- py-6 text-slate-700'>
+        <div className='py-6 text-fg-primary'>
           SCIM provisioning is currently disabled. Please select an authentication method to
           proceed.
         </div>
@@ -192,10 +194,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
     const tokenURL = makeAppURL(startURL, '/oauth/token')
     return (
       <div>
-        <div className='flex pt-6 font-semibold text-base text-slate-700 leading-6'>
+        <div className='flex pt-6 font-semibold text-base text-fg-primary leading-6'>
           Set up your Identity Provider
         </div>
-        <div className={'flex items-center text-slate-700 text-sm'}>
+        <div className={'flex items-center text-fg-primary text-sm'}>
           Paste the following URL into your Identity Provider’s SCIM configuration
         </div>
         <div className='column-ga grid grid-cols-[max-content_fit-content(600px)_24px] items-center gap-x-2 pt-4 pb-8'>
@@ -236,9 +238,9 @@ const OrgAuthenticationSCIM = (props: Props) => {
   return (
     <>
       {!isOrgAdmin && (
-        <div className='px-6 pb-3 text-slate-700 text-sm'>
+        <div className='px-6 pb-3 text-fg-primary text-sm'>
           <Link
-            className='font-semibold text-sky-500 hover:text-sky-600'
+            className='font-semibold text-accent hover:text-sky-600'
             to={`/me/organizations/${orgId}/members`}
           >
             Contact an Org Admin
@@ -248,7 +250,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
       )}
       <div className={!isOrgAdmin ? 'pointer-events-none select-none opacity-50' : ''}>
         <div className='px-6 pb-3'>
-          <div className='flex font-semibold text-base text-slate-700 leading-6'>
+          <div className='flex font-semibold text-base text-fg-primary leading-6'>
             Authentication Method
           </div>
           <div className='flex gap-8'>
@@ -270,7 +272,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <SecondaryButton
+            <Button
+              variant='outline'
+              size='md'
+              shape='pill'
               disabled={!isOrgAdmin || nextScimAuthenticationType === scimAuthenticationType}
               onClick={() => updateSCIM(nextScimAuthenticationType)}
             >
@@ -279,7 +284,7 @@ const OrgAuthenticationSCIM = (props: Props) => {
                 : !nextScimAuthenticationType
                   ? 'Disable SCIM'
                   : 'Change Authentication Method'}
-            </SecondaryButton>
+            </Button>
           </div>
           <RenderSettings />
         </div>

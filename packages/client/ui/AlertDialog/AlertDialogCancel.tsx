@@ -9,7 +9,7 @@ const AlertDialogCancel = React.forwardRef<
   <AlertDialogPrimitive.Cancel
     ref={ref}
     className={cn(
-      'border border-hairline-strong bg-transparent px-2.5 py-1 font-semibold text-fg-primary hover:bg-surface-well',
+      'border border-hairline-strong bg-transparent px-2.5 py-1 font-semibold text-fg-primary hover:bg-surface-hover',
       className
     )}
     {...props}

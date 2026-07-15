@@ -336,7 +336,7 @@ export const ActivityLibrary = (props: Props) => {
   }
 
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col bg-surface-card'>
       <div className='mx-2 flex'>
         <div className='hidden items-center justify-start gap-x-2 px-4 lg:flex lg:basis-[15%]'>
           <Link title='My Dashboard' to='/meetings'>
@@ -344,7 +344,7 @@ export const ActivityLibrary = (props: Props) => {
           </Link>
         </div>
 
-        <div className='mt-4 flex flex-1 flex-col items-center border-slate-300 border-b-[1px] border-b-solid pb-4 lg:mr-[15%]'>
+        <div className='mt-4 flex flex-1 flex-col items-center border-hairline border-b-[1px] border-b-solid pb-4 lg:mr-[15%]'>
           <div className='mx-auto flex w-full items-center justify-between gap-14 px-2 md:px-4'>
             <div className='flex items-center'>
               <Link className='mr-6 block lg:hidden' title='My Dashboard' to='/meetings'>
@@ -391,25 +391,21 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={cn(
-                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-slate-800 text-sm leading-9',
+                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-fg-primary text-sm leading-9',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,
                           'font-semibold text-white focus:text-white'
                         ]
-                      : 'border border-slate-300 bg-white'
+                      : 'border border-hairline bg-surface-card',
+                    category === 'favorite' &&
+                      (category === categoryId && searchQuery.length === 0
+                        ? 'text-white'
+                        : 'text-tomato-500')
                   )}
                   to={`/activity-library/category/${category}`}
                   onClick={() => resetQuery()}
                   key={category}
-                  style={{
-                    color:
-                      category === 'favorite'
-                        ? category === categoryId && searchQuery.length === 0
-                          ? 'white'
-                          : 'red'
-                        : undefined
-                  }}
                 >
                   {CATEGORY_ID_TO_NAME[category]}
                 </Link>
@@ -435,7 +431,7 @@ export const ActivityLibrary = (props: Props) => {
                     subCategoryTemplates.length > 0 ? (
                       <Fragment key={subCategory}>
                         {subCategory && (
-                          <div className='mt-8 ml-4 font-bold text-slate-700 text-xl'>
+                          <div className='mt-8 ml-4 font-bold text-fg-primary text-xl'>
                             {subCategory}
                           </div>
                         )}

@@ -240,7 +240,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
         >
           <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
             <div className='flex flex-col space-y-1'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Application Name
               </label>
               <BasicInput
@@ -254,7 +254,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </div>
 
             <div className='flex flex-col space-y-1'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Redirect URIs (Comma separated)
               </label>
               <BasicInput
@@ -268,25 +268,25 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </div>
 
             <div className='flex flex-col space-y-1'>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Scopes
               </label>
               <div className='flex gap-4'>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                <label className='flex cursor-pointer items-center gap-2 text-fg-primary text-sm'>
                   <input
                     type='checkbox'
                     checked={scopes.includes('graphql_query')}
                     onChange={() => toggleScope('graphql_query')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                    className='rounded border-hairline text-accent focus:ring-accent'
                   />
                   graphql:query
                 </label>
-                <label className='flex cursor-pointer items-center gap-2 text-slate-700 text-sm'>
+                <label className='flex cursor-pointer items-center gap-2 text-fg-primary text-sm'>
                   <input
                     type='checkbox'
                     checked={scopes.includes('graphql_mutation')}
                     onChange={() => toggleScope('graphql_mutation')}
-                    className='rounded border-slate-300 text-sky-500 focus:ring-sky-500'
+                    className='rounded border-hairline text-accent focus:ring-accent'
                   />
                   graphql:mutation
                 </label>
@@ -294,7 +294,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -305,7 +305,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             <div className='grid grid-cols-2 gap-6'>
               <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                     Client ID
                   </label>
                 </div>
@@ -317,7 +317,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       disabled
                       placeholder='Save to reveal...'
                       onChange={() => {}}
-                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      className='w-full rounded-r-none border-hairline! border-r-0! bg-surface-well font-mono text-sm'
                       autoComplete='off'
                       error={undefined}
                     />
@@ -325,7 +325,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(clientId)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -333,18 +333,18 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               </div>
               <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                     Client Secret
                   </label>
                   {!isNew && (
                     <div className='flex items-center gap-2'>
                       {regenerateConfirmOpen ? (
                         <>
-                          <span className='text-slate-500 text-xs'>Are you sure?</span>
+                          <span className='text-fg-muted text-xs'>Are you sure?</span>
                           <button
                             type='button'
                             onClick={handleConfirmRegenerate}
-                            className='text-slate-500 hover:text-green-600'
+                            className='text-fg-muted hover:text-jade-600'
                             title='Confirm Regenerate'
                           >
                             <CheckIcon fontSize='small' />
@@ -352,7 +352,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                           <button
                             type='button'
                             onClick={() => setRegenerateConfirmOpen(false)}
-                            className='text-slate-500 hover:text-red-600'
+                            className='text-fg-muted hover:text-tomato-600'
                             title='Cancel'
                           >
                             <CloseIcon fontSize='small' />
@@ -362,7 +362,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                         <button
                           type='button'
                           onClick={handleRegenerateSecret}
-                          className='font-semibold text-slate-500 text-xs tracking-wider hover:text-slate-700'
+                          className='font-semibold text-fg-muted text-xs tracking-wider hover:text-fg-primary'
                         >
                           Regenerate
                         </button>
@@ -380,9 +380,9 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       placeholder='Save to reveal...'
                       onChange={() => {}}
                       className={cn(
-                        'w-full bg-slate-50 font-mono text-sm',
+                        'w-full bg-surface-well font-mono text-sm',
                         clientSecret !== '••••••••••••••••••••' &&
-                          'rounded-r-none border-slate-300! border-r-0!'
+                          'rounded-r-none border-hairline! border-r-0!'
                       )}
                       type={showSecret ? 'text' : 'password'}
                       error={undefined}
@@ -392,7 +392,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     <button
                       type='button'
                       onClick={() => copyToClipboard(clientSecret)}
-                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                     >
                       <ContentCopyIcon fontSize='small' />
                     </button>
@@ -403,7 +403,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             <div className='flex flex-col gap-4'>
               <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                     Authorize endpoint
                   </label>
                 </div>
@@ -413,7 +413,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       name='authorizeEndpoint'
                       value={authorizeEndpoint}
                       disabled
-                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      className='w-full rounded-r-none border-hairline! border-r-0! bg-surface-well font-mono text-sm'
                       autoComplete='off'
                       error={undefined}
                     />
@@ -421,7 +421,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(authorizeEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -429,7 +429,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               </div>
               <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                     Token endpoint
                   </label>
                 </div>
@@ -439,7 +439,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       name='tokenEndpoint'
                       value={tokenEndpoint}
                       disabled
-                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      className='w-full rounded-r-none border-hairline! border-r-0! bg-surface-well font-mono text-sm'
                       autoComplete='off'
                       error={undefined}
                     />
@@ -447,7 +447,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(tokenEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -455,7 +455,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
               </div>
               <div className='space-y-1'>
                 <div className='flex h-5 items-center justify-between'>
-                  <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+                  <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                     GraphQL endpoint
                   </label>
                 </div>
@@ -465,7 +465,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       name='graphqlEndpoint'
                       value={graphqlEndpoint}
                       disabled
-                      className='w-full rounded-r-none border-slate-300! border-r-0! bg-slate-50 font-mono text-sm'
+                      className='w-full rounded-r-none border-hairline! border-r-0! bg-surface-well font-mono text-sm'
                       autoComplete='off'
                       error={undefined}
                     />
@@ -473,7 +473,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(graphqlEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-slate-300 bg-slate-50 px-4 py-0 font-medium text-slate-700 text-sm hover:bg-slate-100'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -482,7 +482,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
             </div>
           </div>
 
-          <div className='flex shrink-0 justify-end border-slate-200 border-t bg-slate-50/50 p-6 pt-4'>
+          <div className='flex shrink-0 justify-end border-hairline border-t bg-surface-well/50 p-6 pt-4'>
             <SecondaryButton type='submit' disabled={isSaving || (isNew && !!clientId)}>
               {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
             </SecondaryButton>

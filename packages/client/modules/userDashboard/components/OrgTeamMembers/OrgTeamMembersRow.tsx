@@ -69,9 +69,12 @@ export const OrgTeamMembersRow = (props: Props) => {
           ) : null}
         </div>
         <div>
-          <Button asChild variant='link'>
-            <a href={`mailto:${email}`}>{email}</a>
-          </Button>
+          <a
+            href={`mailto:${email}`}
+            className='text-fg-secondary text-sm underline-offset-4 hover:underline'
+          >
+            {email}
+          </a>
         </div>
       </div>
       <div>

@@ -72,11 +72,11 @@ export const OrgTeamMembers = (props: Props) => {
           {canEditTeam && (
             <div className='group mx-1.5 cursor-pointer' onClick={openDeleteTeamDialog}>
               <div className='flex h-7 justify-center'>
-                <span className='h-6 w-6 self-center text-slate-500 group-hover:text-slate-600'>
+                <span className='h-6 w-6 self-center text-fg-muted group-hover:text-fg-secondary'>
                   <Delete />
                 </span>
               </div>
-              <div className='text-center font-semibold text-slate-700 text-xs leading-4'>
+              <div className='text-center font-semibold text-fg-primary text-xs leading-4'>
                 Delete
               </div>
             </div>
@@ -84,8 +84,8 @@ export const OrgTeamMembers = (props: Props) => {
         </div>
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
-        <div className='bg-slate-100 px-4 py-2'>
+      <div className='divide-y divide-hairline overflow-hidden rounded-md border border-hairline bg-surface-card shadow-xs'>
+        <div className='bg-surface-raised px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
               {teamMembers.length} {plural(teamMembers.length, 'User')}
