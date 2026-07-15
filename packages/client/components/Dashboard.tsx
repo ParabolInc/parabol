@@ -17,6 +17,7 @@ import DashTopBar from './DashTopBar'
 import MobileDashTopBar from './MobileDashTopBar'
 import RequestToJoinComponent from './RequestToJoin'
 import SwipeableDashSidebar from './SwipeableDashSidebar'
+import ThemeSync from './ThemeSync'
 
 const MeetingsDash = lazy(
   () => import(/* webpackChunkName: 'MeetingsDash' */ '../components/MeetingsDash')
@@ -128,6 +129,7 @@ const Dashboard = (props: Props) => {
           ...useNewFeatureSnackbar_viewer
           ...Page_viewer
           overLimitCopy
+          theme
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings
@@ -151,6 +153,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <SearchProvider>
+      <ThemeSync theme={viewer.theme} />
       <GlobalSearchDialog />
       <DashLayout>
         <SkipLink href='#main'>Skip to content</SkipLink>

@@ -1,68 +1,40 @@
-import styled from '@emotion/styled'
 import type {CSSProperties, ReactNode} from 'react'
-import {panelShadow} from '../../styles/elevation'
-import {Layout} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import LabelHeading from '../LabelHeading/LabelHeading'
-
-const PanelRoot = styled('div')({
-  backgroundColor: 'white',
-  boxShadow: panelShadow,
-  borderRadius: 4,
-  fontSize: 14,
-  lineHeight: '20px',
-  margin: '16px 0',
-  position: 'relative',
-  width: '100%'
-})
-
-const PanelHeader = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const PanelLabel = styled(LabelHeading)<{
-  casing: CSSProperties['textTransform']
-}>(({casing}) => ({
-  padding: `8px ${Layout.ROW_GUTTER}px`,
-  textTransform: casing ? casing : 'uppercase'
-}))
-
-const PanelControls = styled('div')({
-  display: 'flex',
-  flex: 1,
-  height: 44,
-  justifyContent: 'flex-end',
-  lineHeight: '44px',
-  padding: `0 ${Layout.ROW_GUTTER}px`
-})
-
-const PanelBody = styled('div')({
-  display: 'block',
-  width: '100%'
-})
 
 interface Props {
   children: ReactNode
   className?: string
-  controls?: any
+  controls?: ReactNode
   label?: string
   casing?: CSSProperties['textTransform']
 }
 
+const CASING_CLASS = {
+  capitalize: 'capitalize',
+  lowercase: 'lowercase',
+  none: 'normal-case'
+} as Partial<Record<NonNullable<CSSProperties['textTransform']>, string>>
+
 const Panel = (props: Props) => {
   const {children, className, controls, label, casing} = props
-
   return (
-    <PanelRoot className={className}>
-      {label && (
-        <PanelHeader>
-          <PanelLabel casing={casing}>{label}</PanelLabel>
-          <PanelControls>{controls}</PanelControls>
-        </PanelHeader>
+    <div
+      className={cn(
+        'relative my-4 w-full rounded bg-surface-card text-sm leading-5 shadow-card',
+        className
       )}
-      <PanelBody>{children}</PanelBody>
-    </PanelRoot>
+    >
+      {label && (
+        <div className='flex w-full items-center'>
+          <LabelHeading className={cn('px-4 py-2', casing && CASING_CLASS[casing])}>
+            {label}
+          </LabelHeading>
+          <div className='flex h-11 flex-1 justify-end px-4 leading-[44px]'>{controls}</div>
+        </div>
+      )}
+      <div className='block w-full'>{children}</div>
+    </div>
   )
 }
 

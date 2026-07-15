@@ -7,6 +7,7 @@ import Panel from '../../../components/Panel/Panel'
 import PasswordResetLink from '../../../components/PasswordResetLink'
 import useDocumentTitle from '../../../hooks/useDocumentTitle'
 import {AuthIdentityTypeEnum} from '../../../types/constEnums'
+import AppearancePanel from './AppearancePanel'
 import PersonalAccessTokens from './PersonalAccessTokens'
 import UserSettingsForm from './UserSettingsForm/UserSettingsForm'
 import UserSettingsWrapper from './UserSettingsWrapper/UserSettingsWrapper'
@@ -25,6 +26,7 @@ const query = graphql`
       ...PersonalAccessTokens_viewer
       preferredName
       picture
+      hasDarkMode: featureFlag(featureName: "darkMode")
       identities {
         type
       }
@@ -35,7 +37,7 @@ const query = graphql`
 const UserProfile = ({queryRef}: Props) => {
   const data = usePreloadedQuery<UserProfileQuery>(query, queryRef)
   const {viewer} = data
-  const {identities} = viewer
+  const {identities, hasDarkMode} = viewer
   const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
@@ -44,21 +46,22 @@ const UserProfile = ({queryRef}: Props) => {
         <Panel label='Profile' casing={'capitalize'}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
+        {hasDarkMode && <AppearancePanel />}
         {isLocal && (
           <Panel label='Authentication' casing={'capitalize'}>
-            <div className='border-slate-300 border-t p-4 text-center'>
+            <div className='border-hairline border-t p-4 text-center'>
               <PasswordResetLink viewerRef={viewer} />
             </div>
           </Panel>
         )}
         <Panel label='Email Notifications' casing={'capitalize'}>
-          <div className='border-slate-300 border-t p-4 text-center'>
+          <div className='border-hairline border-t p-4 text-center'>
             <EmailNotifications viewerRef={viewer} />
           </div>
         </Panel>
         {true && <PersonalAccessTokens viewerRef={viewer} />}
         <Panel label='Danger Zone' casing={'capitalize'}>
-          <div className='border-slate-300 border-t p-4 text-center'>
+          <div className='border-hairline border-t p-4 text-center'>
             <DeleteAccount viewerRef={viewer} />
           </div>
         </Panel>

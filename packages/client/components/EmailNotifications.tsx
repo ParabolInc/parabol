@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EmailNotifications_viewer$key} from '../__generated__/EmailNotifications_viewer.graphql'
@@ -6,7 +5,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import TogglePageInvitationEmailMutation from '../mutations/TogglePageInvitationEmailMutation'
 import ToggleSummaryEmailMutation from '../mutations/ToggleSummaryEmailMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {twStyled} from '../ui/twStyled'
 import Checkbox from './Checkbox'
 import StyledError from './StyledError'
@@ -14,14 +12,7 @@ import StyledError from './StyledError'
 const Wrapper = twStyled('div')('flex py-1 items-center cursor-pointer')
 const Text = twStyled('div')('pr-2')
 const ErrorMessage = twStyled(StyledError)('pr-2')
-const StyledCheckbox = styled(Checkbox)({
-  '&&': {
-    width: 24,
-    height: 24,
-    marginRight: 8,
-    color: PALETTE.SKY_500
-  }
-})
+const StyledCheckbox = twStyled(Checkbox)('mr-2 h-6 w-6 text-accent')
 
 type Props = {
   viewerRef: EmailNotifications_viewer$key
