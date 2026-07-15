@@ -75,3 +75,88 @@ test("createTask rejects another team's secondary", async () => {
   })
   expect(res.data.createTask.error.message).toMatch('different team')
 })
+
+const UPDATE_TASK = `
+  mutation UpdateTask($updatedTask: UpdateTaskInput!) {
+    updateTask(updatedTask: $updatedTask) {
+      error { message }
+      task {
+        id
+        status
+        secondaryStatus { id }
+        user { id }
+      }
+    }
+  }
+`
+
+const createTaskWithSecondary = async () => {
+  const {userId, teamId, orgId, cookie} = await signUp()
+  const secondaryId = await addStatus(teamId, cookie, 'In review', 'active')
+  const res = await sendPublic({
+    query: CREATE_TASK,
+    variables: {
+      newTask: {teamId, status: 'active', sortOrder: 0, secondaryStatusId: secondaryId, userId}
+    },
+    cookie
+  })
+  const taskId = res.data.createTask.task.id as string
+  return {userId, teamId, orgId, cookie, secondaryId, taskId}
+}
+
+test('updateTask sets and clears secondaryStatusId', async () => {
+  const {cookie, taskId, secondaryId} = await createTaskWithSecondary()
+  // explicit null clears
+  const cleared = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, secondaryStatusId: null}},
+    cookie
+  })
+  expect(cleared.data.updateTask.task.secondaryStatus).toBeNull()
+  // set it back
+  const setAgain = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, secondaryStatusId: secondaryId}},
+    cookie
+  })
+  expect(setAgain.data.updateTask.task.secondaryStatus).toEqual({id: secondaryId})
+})
+
+test('updateTask auto-clears secondary when primary status changes', async () => {
+  const {cookie, taskId} = await createTaskWithSecondary()
+  const res = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, status: 'done'}},
+    cookie
+  })
+  expect(res.data.updateTask.task).toMatchObject({status: 'done', secondaryStatus: null})
+})
+
+test('updateTask rejects a secondary that mismatches the new primary', async () => {
+  const {cookie, taskId, secondaryId} = await createTaskWithSecondary()
+  // secondary is nested under active; moving to done while keeping it must fail
+  const res = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, status: 'done', secondaryStatusId: secondaryId}},
+    cookie
+  })
+  expect(res.data.updateTask.error.message).toMatch('different primary status')
+})
+
+test('updateTask userId: null unassigns (bug fix)', async () => {
+  const {cookie, taskId, userId} = await createTaskWithSecondary()
+  // sanity: currently assigned
+  const before = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, sortOrder: 1}},
+    cookie
+  })
+  expect(before.data.updateTask.task.user).toEqual({id: userId})
+  const res = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, userId: null}},
+    cookie
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.updateTask.task.user).toBeNull()
+})

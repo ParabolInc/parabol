@@ -1,4 +1,5 @@
 import {generateText} from '@tiptap/core'
+import TaskSecondaryStatusId from 'parabol-client/shared/gqlIds/TaskSecondaryStatusId'
 import type {TipTapSerializedContent} from 'parabol-client/shared/tiptap/TipTapSerializedContent'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {convertTiptapToADF} from '../../../../client/shared/tiptap/convertTipTapToADF'
@@ -14,6 +15,7 @@ import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
 import publishChangeNotifications from '../../mutations/helpers/publishChangeNotifications'
 import type {MutationResolvers} from '../resolverTypes'
 import {validateTaskUserIsTeamMember} from './createTask'
+import {validateTaskSecondaryStatus} from './helpers/validateTaskSecondaryStatus'
 
 const updateTask: MutationResolvers['updateTask'] = async (
   _source,
@@ -26,7 +28,14 @@ const updateTask: MutationResolvers['updateTask'] = async (
   const viewerId = getUserId(authToken)
 
   // VALIDATION
-  const {id: taskId, userId: inputUserId, status, sortOrder, content} = updatedTask
+  const {
+    id: taskId,
+    userId: inputUserId,
+    status,
+    sortOrder,
+    content,
+    secondaryStatusId
+  } = updatedTask
 
   const validContent = convertToTipTap(content)
   const plaintextContent = content ? generateText(validContent, serverTipTapExtensions) : undefined
@@ -43,6 +52,24 @@ const updateTask: MutationResolvers['updateTask'] = async (
     if (error) return standardError(new Error('Invalid user ID'), {userId: viewerId})
   }
 
+  const nextStatus = status || task.status
+  // undefined = untouched; null = clear; string = set (validated)
+  const dbSecondaryStatusId =
+    secondaryStatusId == null ? secondaryStatusId : TaskSecondaryStatusId.split(secondaryStatusId)
+  if (typeof dbSecondaryStatusId === 'number') {
+    const secondaryError = await validateTaskSecondaryStatus(
+      dbSecondaryStatusId,
+      teamId,
+      nextStatus,
+      dataLoader
+    )
+    if (secondaryError) return {error: {message: secondaryError}}
+  }
+  const isPrimaryChanging = !!status && status !== task.status
+  // auto-clear invariant (spec §3.2): a primary change without a new secondary clears the old one
+  const nextSecondaryStatusId =
+    dbSecondaryStatusId !== undefined ? dbSecondaryStatusId : isPrimaryChanging ? null : undefined
+
   // RESOLUTION
   const teamMembers = await dataLoader.get('teamMembersByTeamId').load(teamId)
   const updateRes = await pg
@@ -52,7 +79,8 @@ const updateTask: MutationResolvers['updateTask'] = async (
       plaintextContent,
       sortOrder: sortOrder || undefined,
       status: status || undefined,
-      userId: inputUserId || undefined,
+      userId: inputUserId,
+      secondaryStatusId: nextSecondaryStatusId,
       tags: content ? getTagsFromTipTapTask(validContent) : undefined
     })
     .where('id', '=', taskId)
