@@ -1,6 +1,7 @@
 import {generateText} from '@tiptap/core'
 import type {Insertable} from 'kysely'
 import MeetingMemberId from 'parabol-client/shared/gqlIds/MeetingMemberId'
+import TaskSecondaryStatusId from 'parabol-client/shared/gqlIds/TaskSecondaryStatusId'
 import {getAllNodesAttributesByType} from 'parabol-client/shared/tiptap/getAllNodesAttributesByType'
 import {getTagsFromTipTapTask} from 'parabol-client/shared/tiptap/getTagsFromTipTapTask'
 import {serverTipTapExtensions} from 'parabol-client/shared/tiptap/serverTipTapExtensions'
@@ -20,6 +21,7 @@ import type {DataLoaderWorker} from '../../graphql'
 import createTaskInService from '../../mutations/helpers/createTaskInService'
 import getUsersToIgnore from '../../mutations/helpers/getUsersToIgnore'
 import type {MutationResolvers} from '../resolverTypes'
+import {validateTaskSecondaryStatus} from './helpers/validateTaskSecondaryStatus'
 
 const validateTaskMeetingId = async (
   meetingId: string | null | undefined,
@@ -149,13 +151,18 @@ const createTask: MutationResolvers['createTask'] = async (
     sortOrder,
     status,
     teamId,
-    userId
+    userId,
+    secondaryStatusId
   } = newTask
+  const dbSecondaryStatusId = secondaryStatusId
+    ? TaskSecondaryStatusId.split(secondaryStatusId)
+    : null
   const [viewer, ...errors] = await Promise.all([
     dataLoader.get('users').loadNonNull(viewerId),
     validateTaskDiscussionId(discussionId, teamId, meetingId, dataLoader),
     validateTaskMeetingId(meetingId, viewerId, dataLoader),
-    validateTaskUserIsTeamMember(userId, teamId, dataLoader)
+    validateTaskUserIsTeamMember(userId, teamId, dataLoader),
+    validateTaskSecondaryStatus(dbSecondaryStatusId, teamId, status, dataLoader)
   ])
   const firstError = errors.find(Boolean)
   if (firstError) {
@@ -191,6 +198,7 @@ const createTask: MutationResolvers['createTask'] = async (
     meetingId,
     sortOrder: sortOrder || dndNoise(),
     status,
+    secondaryStatusId: dbSecondaryStatusId,
     teamId,
     discussionId,
     integrationHash,

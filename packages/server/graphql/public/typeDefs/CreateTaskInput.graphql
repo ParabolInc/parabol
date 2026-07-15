@@ -68,6 +68,12 @@ input CreateTaskInput {
   status: TaskStatusEnum!
 
   """
+  Optional team-defined secondary status nested under status. Must belong to teamId and to the
+  same primary status. Format: taskSecondaryStatus:<id>
+  """
+  secondaryStatusId: ID
+
+  """
   teamId, the team the task is on
   """
   teamId: ID!
