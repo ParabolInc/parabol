@@ -160,3 +160,17 @@ test('updateTask userId: null unassigns (bug fix)', async () => {
   expect(res.errors).toBeUndefined()
   expect(res.data.updateTask.task.user).toBeNull()
 })
+
+test('updateTask with the SAME primary status does not auto-clear the secondary', async () => {
+  const {cookie, taskId, secondaryId} = await createTaskWithSecondary()
+  const res = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, status: 'active'}},
+    cookie
+  })
+  expect(res.errors).toBeUndefined()
+  expect(res.data.updateTask.task).toMatchObject({
+    status: 'active',
+    secondaryStatus: {id: secondaryId}
+  })
+})
