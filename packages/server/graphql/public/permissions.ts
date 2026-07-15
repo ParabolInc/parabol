@@ -247,6 +247,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'creatorId'
     ),
     removeSlackAuth: isTeamMember<'Mutation.removeSlackAuth'>('args.teamId'),
+    removeTaskSecondaryStatus:
+      isTeamMemberOfTaskSecondaryStatus<'Mutation.removeTaskSecondaryStatus'>('args.id'),
     removeTeamMember: or(
       isUser<'Mutation.removeTeamMember'>('args.userId'),
       isViewerTeamLead<'Mutation.removeTeamMember'>('args.teamId'),
@@ -276,8 +278,6 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     renameTaskSecondaryStatus:
       isTeamMemberOfTaskSecondaryStatus<'Mutation.renameTaskSecondaryStatus'>('args.id'),
-    removeTaskSecondaryStatus:
-      isTeamMemberOfTaskSecondaryStatus<'Mutation.removeTaskSecondaryStatus'>('args.id'),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
     resetReflectionGroups:
       isTeamMemberOfMeeting<'Mutation.resetReflectionGroups'>('args.meetingId'),
