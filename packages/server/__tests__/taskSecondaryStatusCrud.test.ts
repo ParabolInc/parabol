@@ -1,3 +1,4 @@
+import TaskSecondaryStatusId from '../../client/shared/gqlIds/TaskSecondaryStatusId'
 import getKysely from '../postgres/getKysely'
 import {sendPublic, signUp} from './common'
 
@@ -158,4 +159,50 @@ test('moveTaskSecondaryStatus updates sortOrder', async () => {
   })
   expect(moved.errors).toBeUndefined()
   expect(moved.data.moveTaskSecondaryStatus.taskSecondaryStatus).toEqual({id, sortOrder: 4.5})
+})
+
+test('removeTaskSecondaryStatus safe-deletes: tasks revert to bare primary', async () => {
+  const {teamId, cookie} = await signUp()
+  const gqlId = await addStatus(teamId, cookie, 'Doomed', 'active')
+  const dbId = TaskSecondaryStatusId.split(gqlId)
+
+  // create a task, then point it at the secondary via direct UPDATE
+  // (createTask gains secondaryStatusId in a later change; this test isolates SET NULL)
+  const createRes = await sendPublic({
+    query: `
+      mutation CreateTask($newTask: CreateTaskInput!) {
+        createTask(newTask: $newTask) {
+          task { id }
+        }
+      }
+    `,
+    variables: {newTask: {teamId, status: 'active', sortOrder: 0}},
+    cookie
+  })
+  const taskId = createRes.data.createTask.task.id
+  const pg = getKysely()
+  await pg.updateTable('Task').set({secondaryStatusId: dbId}).where('id', '=', taskId).execute()
+
+  const removeRes = await sendPublic({
+    query: `
+      mutation RemoveTaskSecondaryStatus($id: ID!) {
+        removeTaskSecondaryStatus(id: $id) {
+          removedTaskSecondaryStatusId
+          team { id }
+        }
+      }
+    `,
+    variables: {id: gqlId},
+    cookie
+  })
+  expect(removeRes.errors).toBeUndefined()
+  expect(removeRes.data.removeTaskSecondaryStatus.removedTaskSecondaryStatusId).toBe(gqlId)
+
+  // FK ON DELETE SET NULL reverted the task to its bare primary
+  const {secondaryStatusId} = await pg
+    .selectFrom('Task')
+    .select('secondaryStatusId')
+    .where('id', '=', taskId)
+    .executeTakeFirstOrThrow()
+  expect(secondaryStatusId).toBeNull()
 })

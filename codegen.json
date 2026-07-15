@@ -255,6 +255,7 @@
           "RemoveReflectTemplatePayload": "./types/RemoveReflectTemplatePayload#RemoveReflectTemplatePayloadSource",
           "RemoveReflectTemplatePromptPayload": "./types/RemoveReflectTemplatePromptPayload#RemoveReflectTemplatePromptPayloadSource",
           "RemoveSlackAuthPayload": "./types/RemoveSlackAuthPayload#RemoveSlackAuthPayloadSource",
+          "RemoveTaskSecondaryStatusSuccess": "./types/RemoveTaskSecondaryStatusSuccess#RemoveTaskSecondaryStatusSuccessSource",
           "RemoveTeamMemberIntegrationAuthSuccess": "./types/RemoveTeamMemberIntegrationAuthSuccess#RemoveTeamMemberIntegrationAuthSuccessSource",
           "RemoveTeamMemberPayload": "./types/RemoveTeamMemberPayload#RemoveTeamMemberPayloadSource",
           "RenameMeetingSuccess": "./types/RenameMeetingSuccess#RenameMeetingSuccessSource",

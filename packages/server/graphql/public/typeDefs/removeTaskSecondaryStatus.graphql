@@ -1,0 +1,16 @@
+extend type Mutation {
+  """
+  Safe-delete a team-defined secondary status. Tasks referencing it revert to their bare
+  primary status (FK ON DELETE SET NULL).
+  """
+  removeTaskSecondaryStatus("The TaskSecondaryStatus id" id: ID!): RemoveTaskSecondaryStatusSuccess!
+    @scope(name: TASKS_WRITE)
+}
+
+type RemoveTaskSecondaryStatusSuccess {
+  "The id of the removed secondary status"
+  removedTaskSecondaryStatusId: ID!
+
+  "The team it belonged to"
+  team: Team!
+}
