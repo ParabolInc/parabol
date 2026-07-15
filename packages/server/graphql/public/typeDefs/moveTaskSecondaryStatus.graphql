@@ -1,0 +1,20 @@
+extend type Mutation {
+  """
+  Reorder a team-defined secondary status within its primary status band
+  """
+  moveTaskSecondaryStatus(
+    "The TaskSecondaryStatus id"
+    id: ID!
+
+    "The new position within the primary status band"
+    sortOrder: Float!
+  ): MoveTaskSecondaryStatusSuccess! @scope(name: TASKS_WRITE)
+}
+
+type MoveTaskSecondaryStatusSuccess {
+  "The moved secondary status"
+  taskSecondaryStatus: TaskSecondaryStatus!
+
+  "The team it belongs to"
+  team: Team!
+}

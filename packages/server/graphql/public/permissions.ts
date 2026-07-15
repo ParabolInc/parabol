@@ -13,6 +13,7 @@ import {isOrgTier} from './rules/isOrgTier'
 import isSuperUser from './rules/isSuperUser'
 import {isTeamMember} from './rules/isTeamMember'
 import {isTeamMemberOfMeeting} from './rules/isTeamMemberOfMeeting'
+import {isTeamMemberOfTaskSecondaryStatus} from './rules/isTeamMemberOfTaskSecondaryStatus'
 import {isUser} from './rules/isUser'
 import {isUserViewer} from './rules/isUserViewer'
 import {isViewerBillingLeader} from './rules/isViewerBillingLeader'
@@ -169,6 +170,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'reflectPrompts'
     ),
+    moveTaskSecondaryStatus:
+      isTeamMemberOfTaskSecondaryStatus<'Mutation.moveTaskSecondaryStatus'>('args.id'),
     moveTeamToOrg: or(isSuperUser, isViewerBillingLeader<'Mutation.moveTeamToOrg'>('args.orgId')),
     navigateMeeting: isMeetingFacilitator<'Mutation.navigateMeeting'>('args.meetingId'),
     persistGitHubSearchQuery: isTeamMember<'Mutation.persistGitHubSearchQuery'>('args.teamId'),
@@ -271,6 +274,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.promptId',
       'reflectPrompts'
     ),
+    renameTaskSecondaryStatus:
+      isTeamMemberOfTaskSecondaryStatus<'Mutation.renameTaskSecondaryStatus'>('args.id'),
     resetPassword: rateLimit({perMinute: 10, perHour: 100}),
     resetReflectionGroups:
       isTeamMemberOfMeeting<'Mutation.resetReflectionGroups'>('args.meetingId'),

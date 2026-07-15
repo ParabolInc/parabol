@@ -103,3 +103,59 @@ test('addTaskSecondaryStatus enforces the 25-per-team cap', async () => {
     expect.objectContaining({message: expect.stringMatching('limited to 25')})
   ])
 })
+
+const addStatus = async (
+  teamId: string,
+  cookie: string,
+  label = 'In review',
+  status = 'active'
+) => {
+  const res = await sendPublic({
+    query: ADD_MUTATION,
+    variables: {teamId, status, label, sortOrder: 1},
+    cookie
+  })
+  return res.data.addTaskSecondaryStatus.taskSecondaryStatus.id as string
+}
+
+test('renameTaskSecondaryStatus renames; blocks non-members', async () => {
+  const [{teamId, cookie}, attacker] = await Promise.all([signUp(), signUp()])
+  const id = await addStatus(teamId, cookie)
+  const RENAME = `
+    mutation RenameTaskSecondaryStatus($id: ID!, $label: String!) {
+      renameTaskSecondaryStatus(id: $id, label: $label) {
+        taskSecondaryStatus { id label }
+      }
+    }
+  `
+  const attack = await sendPublic({
+    query: RENAME,
+    variables: {id, label: 'Hijacked'},
+    cookie: attacker.cookie
+  })
+  expect(attack.errors).toEqual([
+    expect.objectContaining({message: expect.stringMatching('Viewer is not on team')})
+  ])
+
+  const renamed = await sendPublic({query: RENAME, variables: {id, label: 'In QA'}, cookie})
+  expect(renamed.errors).toBeUndefined()
+  expect(renamed.data.renameTaskSecondaryStatus.taskSecondaryStatus).toEqual({id, label: 'In QA'})
+})
+
+test('moveTaskSecondaryStatus updates sortOrder', async () => {
+  const {teamId, cookie} = await signUp()
+  const id = await addStatus(teamId, cookie)
+  const moved = await sendPublic({
+    query: `
+      mutation MoveTaskSecondaryStatus($id: ID!, $sortOrder: Float!) {
+        moveTaskSecondaryStatus(id: $id, sortOrder: $sortOrder) {
+          taskSecondaryStatus { id sortOrder }
+        }
+      }
+    `,
+    variables: {id, sortOrder: 4.5},
+    cookie
+  })
+  expect(moved.errors).toBeUndefined()
+  expect(moved.data.moveTaskSecondaryStatus.taskSecondaryStatus).toEqual({id, sortOrder: 4.5})
+})

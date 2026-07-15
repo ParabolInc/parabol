@@ -73,4 +73,6 @@ type TeamSubscriptionPayload {
   JoinTeamSuccess: JoinTeamSuccess
   SetJiraDisplayFieldIdsPayload: SetJiraDisplayFieldIdsPayload
   AddTaskSecondaryStatusSuccess: AddTaskSecondaryStatusSuccess
+  RenameTaskSecondaryStatusSuccess: RenameTaskSecondaryStatusSuccess
+  MoveTaskSecondaryStatusSuccess: MoveTaskSecondaryStatusSuccess
 }

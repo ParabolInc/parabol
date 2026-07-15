@@ -1,0 +1,20 @@
+extend type Mutation {
+  """
+  Rename a team-defined secondary status. Tasks referencing it keep the FK; only the label changes.
+  """
+  renameTaskSecondaryStatus(
+    "The TaskSecondaryStatus id"
+    id: ID!
+
+    "The new display label; unique per (team, primary status), case-insensitive"
+    label: String!
+  ): RenameTaskSecondaryStatusSuccess! @scope(name: TASKS_WRITE)
+}
+
+type RenameTaskSecondaryStatusSuccess {
+  "The renamed secondary status"
+  taskSecondaryStatus: TaskSecondaryStatus!
+
+  "The team it belongs to"
+  team: Team!
+}
