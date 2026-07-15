@@ -230,3 +230,23 @@ test('changeTaskTeam clears secondaryStatusId', async () => {
     secondaryStatus: null
   })
 })
+
+test('updateTask rejects an empty-string userId', async () => {
+  const {cookie, taskId} = await createTaskWithSecondary()
+  const res = await sendPublic({
+    query: UPDATE_TASK,
+    variables: {updatedTask: {id: taskId, userId: ''}},
+    cookie
+  })
+  expect(res.data.updateTask.error.message).toMatch('Invalid user ID')
+})
+
+test('createTask rejects a malformed secondaryStatusId with a clean error', async () => {
+  const {teamId, cookie} = await signUp()
+  const res = await sendPublic({
+    query: CREATE_TASK,
+    variables: {newTask: {teamId, status: 'active', sortOrder: 0, secondaryStatusId: 'garbage'}},
+    cookie
+  })
+  expect(res.data.createTask.error.message).toMatch('Secondary status not found')
+})

@@ -1,6 +1,6 @@
 import {GraphQLError} from 'graphql'
 import {rule} from 'graphql-shield'
-import TaskSecondaryStatusId from '../../../../client/shared/gqlIds/TaskSecondaryStatusId'
+import TaskSecondaryStatusId from 'parabol-client/shared/gqlIds/TaskSecondaryStatusId'
 import type {GQLContext} from '../../graphql'
 import {getResolverDotPath, type ResolverDotPath} from './getResolverDotPath'
 

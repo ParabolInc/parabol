@@ -37,6 +37,10 @@ const updateTask: MutationResolvers['updateTask'] = async (
     secondaryStatusId
   } = updatedTask
 
+  if (inputUserId === '') {
+    return standardError(new Error('Invalid user ID'), {userId: viewerId})
+  }
+
   const validContent = convertToTipTap(content)
   const plaintextContent = content ? generateText(validContent, serverTipTapExtensions) : undefined
 

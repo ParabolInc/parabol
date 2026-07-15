@@ -25,6 +25,9 @@ export const validateTaskSecondaryStatus = async (
   dataLoader: DataLoaderWorker
 ) => {
   if (secondaryStatusId == null) return getSecondaryStatusValidationError(null, teamId, status)
+  if (Number.isNaN(secondaryStatusId)) {
+    return getSecondaryStatusValidationError(undefined, teamId, status)
+  }
   const row = await dataLoader.get('taskSecondaryStatuses').load(secondaryStatusId)
   return getSecondaryStatusValidationError(row ?? undefined, teamId, status)
 }
