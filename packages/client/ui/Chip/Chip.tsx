@@ -29,10 +29,10 @@ export const Chip = (props: Props) => {
           />
         </div>
       )}
-      <div className='font-semibold text-gray-700 text-sm leading-normal'>{label}</div>
+      <div className='font-semibold text-fg-primary text-sm leading-normal'>{label}</div>
       {onDelete && (
         <Close
-          className='cursor-pointer text-gray-700 text-sm hover:opacity-50'
+          className='cursor-pointer text-fg-secondary text-sm hover:opacity-50'
           onClick={onDelete}
         />
       )}

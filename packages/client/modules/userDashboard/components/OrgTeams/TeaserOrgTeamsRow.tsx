@@ -23,7 +23,7 @@ const TeaserOrgTeamsRow = (props: Props) => {
             {hiddenTeamCount} {plural(hiddenTeamCount, 'Hidden Team')}
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-gray-600'>
+            <div className='text-fg-secondary'>
               <a
                 href='#'
                 onClick={handleParabolEnterpriseClick}

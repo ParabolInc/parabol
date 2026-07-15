@@ -122,7 +122,7 @@ const LinearIntegrationResults = (props: Props) => {
               src={halloweenRetrospectiveTemplate}
               alt='No results illustration'
             />
-            <div className='mt-7 w-2/3 text-gray-600 text-sm dark:text-gray-400'>
+            <div className='mt-7 w-2/3 text-fg-secondary text-sm'>
               {errors?.[0]?.message
                 ? `Error fetching Linear issues: ${errors[0].message}`
                 : `Looks like no Linear issues match your filter.`}

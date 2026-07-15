@@ -64,7 +64,7 @@ export const OrgTeamMembers = (props: Props) => {
             <ArrowBack />
           </Link>
         </Button>
-        <div className='font-bold text-gray-700 text-lg hover:text-gray-900'>
+        <div className='font-bold text-fg-primary text-lg'>
           {canEditTeam ? <EditableTeamName team={team} /> : teamName}
         </div>
         <div className='ml-auto flex items-center'>

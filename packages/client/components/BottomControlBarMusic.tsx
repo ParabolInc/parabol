@@ -66,7 +66,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
           <div className='flex flex-col gap-4 rounded-lg bg-white p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
               <HeadphonesIcon className='text-blue-500' fontSize='small' />
-              <span className='font-semibold text-base text-gray-800'>Background music</span>
+              <span className='font-semibold text-base text-fg-primary'>Background music</span>
             </div>
             <div className='relative'>
               <div
@@ -139,7 +139,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
             </div>
 
             <div className='mt-2 flex items-center gap-3'>
-              <span className='w-14 text-gray-500 text-sm'>Volume</span>
+              <span className='w-14 text-fg-secondary text-sm'>Volume</span>
               <div className='min-w-0 flex-1'>
                 <input
                   type='range'

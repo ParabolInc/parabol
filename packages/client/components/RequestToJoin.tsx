@@ -46,7 +46,7 @@ const RequestToJoinComponent = () => {
         ) : (
           <Lock className='h-10 w-10 rounded-full text-purple-500' />
         )}
-        <div className='my-4 flex flex-col items-center justify-between font-semibold text-gray-700 text-sm leading-5'>
+        <div className='my-4 flex flex-col items-center justify-between font-semibold text-fg-primary text-sm leading-5'>
           {isRequestSent ? 'Request Sent' : 'Request to Join'}
         </div>
         <div className='my-2 mb-7 px-16 text-center text-sm leading-5'>
