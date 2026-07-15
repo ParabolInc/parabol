@@ -11,7 +11,7 @@ const ReflectionCardRoot = forwardRef<HTMLDivElement, Props>(
       <div
         ref={ref}
         className={cn(
-          'relative block w-74 max-w-full rounded-card bg-white shadow-card transition-shadow',
+          'relative block w-74 max-w-full rounded-card bg-surface-card shadow-card transition-shadow',
           showDragHintAnimation && 'animate-drag-hint',
           className
         )}

@@ -28,7 +28,7 @@ interface Props {
 }
 
 const StyledIcon = styled('div')<{iconColor?: keyof typeof paletteColors}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'inherit',
+  color: iconColor ? paletteColors[iconColor] : 'var(--color-fg-secondary)',
   height: 24,
   width: 24
 }))
@@ -41,7 +41,8 @@ const Inner = styled('div')({
 })
 
 const Label = styled('div')({
-  color: 'inherit',
+  // mockup 02: control-bar labels use the primary text tone, not the button's inherited gray
+  color: 'var(--color-fg-primary)',
   fontSize: 12,
   height: 16,
   lineHeight: '16px'

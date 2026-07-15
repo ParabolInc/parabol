@@ -1,10 +1,5 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {twStyled} from '../ui/twStyled'
 
-const StyledError = styled('div')({
-  color: PALETTE.TOMATO_500,
-  fontWeight: 600,
-  textAlign: 'center'
-})
+const StyledError = twStyled('div')('text-center font-semibold text-tomato-500')
 
 export default StyledError

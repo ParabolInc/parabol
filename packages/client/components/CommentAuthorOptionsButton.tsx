@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
 import {MoreVert} from '@mui/icons-material'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV3'
 import lazyPreload from '~/utils/lazyPreload'
 import PlainButton from './PlainButton/PlainButton'
 
@@ -10,30 +8,6 @@ const CommentAuthorOptionsDropdown = lazyPreload(
   () =>
     import(/* webpackChunkName: 'CommentAuthorOptionsDropdown' */ './CommentAuthorOptionsDropdown')
 )
-
-const StyledButton = styled(PlainButton)({
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
-
-const StyledIconWrapper = styled('div')({
-  borderRadius: 24,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  color: 'inherit',
-  flexShrink: 0,
-  height: 24,
-  lineHeight: '24px',
-  marginLeft: 'auto',
-  width: 24
-})
-
-const StyledIcon = styled(MoreVert)({
-  height: 18,
-  width: 18
-})
 
 interface Props {
   commentId: string
@@ -45,14 +19,15 @@ const CommentAuthorOptionsButton = (props: Props) => {
   const {commentId, editComment, meetingId} = props
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
   return (
-    <StyledButton
+    <PlainButton
+      className='hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
       onMouseEnter={CommentAuthorOptionsDropdown.preload}
       ref={originRef}
       onClick={togglePortal}
     >
-      <StyledIconWrapper>
-        <StyledIcon />
-      </StyledIconWrapper>
+      <div className='ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-3xl text-inherit leading-6'>
+        <MoreVert className='h-[18px] w-[18px]' />
+      </div>
       {menuPortal(
         <CommentAuthorOptionsDropdown
           menuProps={menuProps}
@@ -61,7 +36,7 @@ const CommentAuthorOptionsButton = (props: Props) => {
           meetingId={meetingId}
         />
       )}
-    </StyledButton>
+    </PlainButton>
   )
 }
 

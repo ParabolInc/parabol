@@ -74,10 +74,10 @@ const DiscussionDrawer = ({
 
   return (
     <div
-      className='flex h-full w-[360px] flex-col justify-start overflow-hidden bg-white'
+      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-card'
       style={drawerStyle}
     >
-      <div className='flex w-full select-none items-center border-slate-300 border-b'>
+      <div className='flex w-full select-none items-center border-hairline border-b'>
         <Tabs activeIdx={activeIdx} className='flex-1'>
           {tabs.map((tab) => (
             <Tab
@@ -89,7 +89,7 @@ const DiscussionDrawer = ({
           ))}
         </Tabs>
         <PlainButton onClick={onToggle} className='h-6 shrink-0 px-2'>
-          <Close className='cursor-pointer text-slate-600 hover:opacity-50' />
+          <Close className='cursor-pointer text-fg-secondary hover:opacity-50' />
         </PlainButton>
       </div>
       {activeTabId === 'inspiration' ? (

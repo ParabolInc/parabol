@@ -18,7 +18,7 @@
     'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
   --font-mono:
-    'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
 
   /* Palette */
@@ -602,7 +602,7 @@
   /* Gap cursor is 2px above the top of an element */
   padding-top: 2px;
   blockquote {
-    border-left: 3px solid var(--color-slate-500);
+    border-left: 3px solid var(--color-hairline-strong);
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
@@ -710,7 +710,7 @@
 
   a {
     text-decoration: underline;
-    color: var(--color-slate-700);
+    color: var(--color-fg-primary);
     :hover {
       cursor: pointer;
     }
@@ -734,7 +734,7 @@
   }
 
   hr {
-    border-top: 1px solid var(--color-slate-400);
+    border-top: 1px solid var(--color-hairline-strong);
   }
 }
 
@@ -876,7 +876,7 @@
 .details div[data-type="detailsContent"].is-empty::before {
   content: attr(data-placeholder);
   float: left;
-  color: hsl(from var(--color-slate-700) h s l / 0.5);
+  color: var(--color-fg-muted);
   pointer-events: none;
   height: 0;
 }

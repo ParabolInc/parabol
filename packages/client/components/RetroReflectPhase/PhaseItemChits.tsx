@@ -1,7 +1,6 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
 import {DECELERATE, fadeIn} from '../../styles/animation'
-import {Elevation} from '../../styles/elevation'
 import {PALETTE} from '../../styles/paletteV3'
 import {ElementWidth} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
@@ -42,11 +41,11 @@ const shiftColor = (idx: number) => keyframes`
   }
 `
 
+// bg + shadow live in the className (bg-surface-card shadow-card); the fadeIn
+// keyframe animation is not expressible as a Tailwind utility
 const Chit = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  backgroundColor: '#FFFFFF',
   borderRadius: 2,
-  boxShadow: Elevation.Z1,
   height: CHIT_HEIGHT,
   width: CHIT_WIDTH
 })
@@ -65,10 +64,6 @@ const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
   height: CHIT_HEIGHT,
   width: PROGRESS_WIDTH
 }))
-
-const ChitAreaLabel = styled(TinyLabel)({
-  margin: '0 0 1em'
-})
 
 const getStatus = (count: number, editorCount: number) => {
   if (count) {
@@ -104,7 +99,7 @@ const PhaseItemChits = (props: Props) => {
         <Chit
           key={totalCount - idx}
           className={cn(
-            'absolute transition-[left] transition-[top] transition-all duration-300',
+            'absolute bg-surface-card shadow-card transition-[left] transition-[top] transition-all duration-300',
             isOverflow ? overflowStyles[overflowIdx] : ''
           )}
           style={{
@@ -126,7 +121,7 @@ const PhaseItemChits = (props: Props) => {
 
   return (
     <div className='flex flex-none flex-col'>
-      <ChitAreaLabel>{getStatus(count, editorCount)}</ChitAreaLabel>
+      <TinyLabel className='mb-[1em]'>{getStatus(count, editorCount)}</TinyLabel>
       <div className='relative h-5 w-full'>{chitList}</div>
     </div>
   )
