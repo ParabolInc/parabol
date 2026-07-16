@@ -2,7 +2,6 @@ import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {InviteTeamMemberAvatar_teamMembers$key} from '../__generated__/InviteTeamMemberAvatar_teamMembers.graphql'
 import AddTeamMemberModal from './AddTeamMemberModal'
 
@@ -30,16 +29,11 @@ const InviteTeamMemberAvatar = (props: Props) => {
         onClick={() => setIsOpen(true)}
       >
         <div className='flex h-7 justify-center'>
-          <span style={{color: PALETTE.SKY_500, height: 24, width: 24, alignSelf: 'center'}}>
+          <span className='h-6 w-6 self-center text-accent'>
             <PersonAdd />
           </span>
         </div>
-        <div
-          className='text-center font-semibold text-xs leading-4'
-          style={{color: PALETTE.SLATE_700}}
-        >
-          Invite
-        </div>
+        <div className='text-center font-semibold text-fg-primary text-xs leading-4'>Invite</div>
       </div>
       <AddTeamMemberModal
         isOpen={isOpen}

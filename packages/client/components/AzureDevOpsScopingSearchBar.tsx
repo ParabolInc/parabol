@@ -3,12 +3,11 @@ import {Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
 
 const SearchIcon = styled(Search)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   margin: '3px 15px 3px 3px'
 })
 
@@ -18,7 +17,7 @@ const SearchBar = styled('div')({
 
 const SearchBarWrapper = styled('div')({
   alignItems: 'center',
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: `1px solid var(--color-hairline-field)`,
   borderRadius: '40px',
   display: 'flex',
   height: 44,

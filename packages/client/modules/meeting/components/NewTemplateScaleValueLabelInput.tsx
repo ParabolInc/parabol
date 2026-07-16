@@ -45,7 +45,7 @@ const ScaleValueInputBox = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 14,
   lineHeight: '24px',
   margin: 0,
@@ -55,7 +55,7 @@ const ScaleValueInputBox = styled('input')({
 })
 
 const RemoveScaleValueIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   display: 'flex',
   justifyContent: 'center',

@@ -159,6 +159,9 @@
   --color-surface-well: #e0ddec;
   --color-surface-card: #ffffff;
   --color-surface-raised: #f8f7fc;
+  /* Full-bleed document canvas (Pages). White in light like a doc; in dark a
+     calmer step between app and card so in-page cards/wells still elevate. */
+  --color-surface-document: #ffffff;
   /* Button/interactive hover fill. Light: subtle darken; dark: subtle LIGHTEN
      (a translucent plum overlay) so hover moves toward the foreground in both. */
   --color-surface-hover: #e0ddec;
@@ -178,6 +181,10 @@
   --color-hairline-field: #c3c0d8;
   --color-accent: #329ae5;
   --color-accent-active: #493272;
+  /* Error/destructive TEXT. Light = tomato-500 (unchanged from production);
+     dark uses tomato-400 — tomato-500 on surface-card is 4.27:1, under AA.
+     Fills/icons keep raw tomato classes. */
+  --color-fg-error: #fd6157;
   --color-search-bg: rgba(255, 255, 255, 0.125);
   --color-search-placeholder: #c3c0d8;
 
@@ -316,6 +323,8 @@
   --color-surface-well: #171029;
   --color-surface-card: #332965;
   --color-surface-raised: #3d3175;
+  /* = meeting-sidebar ramp step: app < document < topbar < card */
+  --color-surface-document: #251c48;
   --color-surface-hover: rgba(183, 180, 233, 0.22);
   --color-surface-meeting-sidebar: #251c48;
   --color-surface-topbar: #2d1d53;
@@ -327,12 +336,14 @@
   --color-fg-muted: #938cbf;
   --color-fg-topbar: #eeedf7;
   --color-fg-nav: #d4d2ef;
-  --color-fg-nav-muted: #9b94c2;
+  /* #9b94c2 measured exactly 4.50:1 on surface-nav-active — zero AA margin */
+  --color-fg-nav-muted: #a19ac7;
   --color-hairline: rgba(183, 180, 233, 0.16);
   --color-hairline-strong: rgba(183, 180, 233, 0.32);
   --color-hairline-field: rgba(183, 180, 233, 0.32);
   --color-accent: #61b1eb;
   --color-accent-active: #a86bd6;
+  --color-fg-error: #fd7f77;
   --color-search-bg: rgba(255, 255, 255, 0.1);
   --color-search-placeholder: #b7b4e9;
   --color-starter: #3a2857;
@@ -346,6 +357,147 @@
   --shadow-card-raised: 0 8px 16px rgba(0, 0, 0, 0.6);
   --shadow-bar: 0 4px 12px rgba(0, 0, 0, 0.55);
   --shadow-status-ring: 0 0 0 1px rgba(238, 237, 247, 0.28);
+}
+
+/* Deliberate light island (dark mode design spec §8). The in-app meeting
+   summary renders the literal email markup, whose inline styles are light by
+   design — the wrapper re-declares the semantic tokens to their light values
+   so token-based descendants match, and re-inherits color from the island
+   (not from the dark body). Keep the values in sync with the @theme block.
+   Shadows are left alone: they're all black alphas and read fine on light. */
+.light-island {
+  color-scheme: light;
+  color: var(--color-fg-primary);
+
+  --color-surface-app: #f8f7fc;
+  --color-surface-sidebar: #f1f0fa;
+  --color-surface-well: #e0ddec;
+  --color-surface-card: #ffffff;
+  --color-surface-raised: #f8f7fc;
+  --color-surface-document: #ffffff;
+  --color-surface-hover: #e0ddec;
+  --color-surface-meeting-sidebar: #ffffff;
+  --color-surface-topbar: #493272;
+  --color-surface-input: #ffffff;
+  --color-surface-nav-active: #e0ddec;
+  --color-surface-phase-active: #f1f0fa;
+  --color-fg-primary: #444258;
+  --color-fg-secondary: #82809a;
+  --color-fg-muted: #a7a3c2;
+  --color-fg-topbar: #f1f0fa;
+  --color-fg-nav: #444258;
+  --color-fg-nav-muted: #82809a;
+  --color-hairline: #e0ddec;
+  --color-hairline-strong: #c3c0d8;
+  --color-hairline-field: #c3c0d8;
+  --color-accent: #329ae5;
+  --color-accent-active: #493272;
+  --color-fg-error: #fd6157;
+  --color-search-bg: rgba(255, 255, 255, 0.125);
+  --color-search-placeholder: #c3c0d8;
+  --color-starter: #f2e1f7;
+  --color-team: #cbecf0;
+  --color-enterprise: #ffe2e0;
+  --default-ring-color: var(--color-sky-500);
+}
+
+/* ---- MUI dark overrides ----------------------------------------------
+   There is no MUI ThemeProvider — MUI components (Checkbox, CircularProgress,
+   x-date-pickers, the OAuth list's Menu/Dialog) render Emotion-injected stock
+   light styles that never see our tokens. MUI portals mount on document.body,
+   which is inside <html class="theme-dark">, so descendant selectors reach
+   them. Un-layered on purpose; selectors include MUI state classes to beat
+   Emotion's injected specificity regardless of injection order. */
+.theme-dark .MuiCheckbox-root {
+  color: var(--color-fg-muted);
+}
+.theme-dark .MuiCheckbox-root.Mui-checked,
+.theme-dark .MuiCheckbox-root.MuiCheckbox-indeterminate {
+  color: var(--color-accent);
+}
+
+.theme-dark .MuiCircularProgress-colorPrimary {
+  color: var(--color-accent);
+}
+
+.theme-dark .MuiDivider-root {
+  border-color: var(--color-hairline);
+}
+
+/* Any MUI Paper: picker popups, OAuth provider Menu/Dialog */
+.theme-dark .MuiPaper-root {
+  background-color: var(--color-surface-card);
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiBackdrop-root {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.theme-dark .MuiMenuItem-root {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiMenuItem-root:hover,
+.theme-dark .MuiMenuItem-root.Mui-focusVisible {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiIconButton-root {
+  color: var(--color-fg-secondary);
+}
+
+/* Date/Time picker text field */
+.theme-dark .MuiInputBase-input,
+.theme-dark .MuiOutlinedInput-input {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiFormLabel-root,
+.theme-dark .MuiFormLabel-root.Mui-focused {
+  color: var(--color-fg-secondary);
+}
+.theme-dark .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hairline-field);
+}
+.theme-dark .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.theme-dark .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hairline-strong);
+}
+
+/* Date/Time picker popup internals */
+.theme-dark .MuiPickersCalendarHeader-label,
+.theme-dark .MuiPickersArrowSwitcher-button,
+.theme-dark .MuiPickersCalendarHeader-switchViewButton {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiDayCalendar-weekDayLabel {
+  color: var(--color-fg-muted);
+}
+.theme-dark .MuiPickersDay-root,
+.theme-dark .MuiPickersYear-yearButton,
+.theme-dark .MuiPickersMonth-monthButton {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiPickersDay-root:hover,
+.theme-dark .MuiPickersDay-root:focus {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiPickersDay-root.Mui-selected,
+.theme-dark .MuiPickersYear-yearButton.Mui-selected,
+.theme-dark .MuiPickersMonth-monthButton.Mui-selected {
+  background-color: var(--color-accent);
+  color: var(--color-surface-card);
+}
+.theme-dark .MuiPickersDay-today:not(.Mui-selected) {
+  border-color: var(--color-hairline-strong);
+}
+
+/* TimePicker desktop = MultiSectionDigitalClock (x-date-pickers v7) */
+.theme-dark .MuiMultiSectionDigitalClockSection-item {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiMultiSectionDigitalClockSection-item:hover {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiMultiSectionDigitalClockSection-item.Mui-selected {
+  background-color: var(--color-accent);
+  color: var(--color-surface-card);
 }
 
 /*
@@ -680,14 +832,18 @@
   }
   .search-result {
     background-color: rgba(255, 217, 0, 0.5);
+
+    .theme-dark & {
+      background-color: rgba(255, 217, 0, 0.28);
+    }
   }
 
   .page-user-mention {
-    color: var(--color-slate-600);
+    color: var(--color-fg-secondary);
   }
 
   .page-user-mentioning {
-    background-color: var(--color-slate-200);
+    background-color: var(--color-surface-well);
     border-radius: 4px;
   }
 
@@ -695,6 +851,12 @@
     background-color: var(--color-gold-100);
     border-radius: 2px;
     font-weight: 600;
+
+    /* gold-100 is a light pastel; in dark, a translucent gold keeps the
+       highlight without forcing dark text into the light island */
+    .theme-dark & {
+      background-color: rgba(255, 204, 99, 0.25);
+    }
   }
 
   [data-type='taskTag'] {
@@ -751,7 +913,7 @@
 .page-editor .tiptap {
   font-size: 1rem;
   line-height: 1.625;
-  color: var(--color-slate-800);
+  color: var(--color-fg-primary);
   text-rendering: optimizeLegibility;
 
   /* Page title — always the first h1 in the document */
@@ -760,7 +922,7 @@
     line-height: 1.15;
     letter-spacing: -0.025em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 0;
     margin-bottom: 2.5rem;
   }
@@ -771,7 +933,7 @@
     line-height: 1.25;
     letter-spacing: -0.015em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 2.25rem;
     margin-bottom: 0.5rem;
   }
@@ -781,7 +943,7 @@
     line-height: 1.3;
     letter-spacing: -0.01em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 2rem;
     margin-bottom: 0.375rem;
   }
@@ -791,7 +953,7 @@
     line-height: 1.35;
     letter-spacing: -0.005em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 1.5rem;
     margin-bottom: 0.25rem;
   }
@@ -799,35 +961,35 @@
   p {
     font-size: 1rem;
     line-height: 1.625;
-    color: var(--color-slate-800);
+    color: var(--color-fg-primary);
     margin-block: 0.5rem;
   }
 
   blockquote {
-    border-left: 4px solid var(--color-slate-400);
+    border-left: 4px solid var(--color-hairline-strong);
     margin: 1.25rem 0;
     padding: 0.5rem 0 0.5rem 1.25em;
-    color: var(--color-slate-700);
+    color: var(--color-fg-primary);
     font-style: normal;
-    background-color: var(--color-slate-100);
+    background-color: var(--color-surface-raised);
     border-radius: 0 4px 4px 0;
   }
 
   pre {
-    background-color: var(--color-slate-100);
-    border: 1px solid var(--color-slate-300);
+    background-color: var(--color-surface-well);
+    border: 1px solid var(--color-hairline);
     border-radius: 6px;
     padding: 1rem 1.25rem;
     margin: 1rem 0;
     font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.5;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
   }
 
   :not(pre) > code {
-    background-color: var(--color-slate-200);
-    color: var(--color-slate-900);
+    background-color: var(--color-surface-well);
+    color: var(--color-fg-primary);
     border-radius: 4px;
     padding: 0.125em 0.375em;
     font-family: var(--font-mono);
@@ -836,14 +998,14 @@
 
   hr {
     border: none;
-    border-top: 1px solid var(--color-slate-300);
+    border-top: 1px solid var(--color-hairline);
     margin: 2rem 0;
   }
 
   a {
     color: inherit;
     text-decoration: underline;
-    text-decoration-color: var(--color-slate-400);
+    text-decoration-color: var(--color-hairline-strong);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
     transition: text-decoration-color 150ms ease;
@@ -905,13 +1067,19 @@
   z-index: 50;
   cursor: grab;
 
+  /* the dot glyph is a data-URI SVG, so its fill can't read CSS vars —
+     swap in a light-filled copy for dark */
+  .theme-dark & {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' style='fill: rgba(255, 255, 255, 0.55)'%3E%3Cpath d='M3,2 C2.44771525,2 2,1.55228475 2,1 C2,0.44771525 2.44771525,0 3,0 C3.55228475,0 4,0.44771525 4,1 C4,1.55228475 3.55228475,2 3,2 Z M3,6 C2.44771525,6 2,5.55228475 2,5 C2,4.44771525 2.44771525,4 3,4 C3.55228475,4 4,4.44771525 4,5 C4,5.55228475 3.55228475,6 3,6 Z M3,10 C2.44771525,10 2,9.55228475 2,9 C2,8.44771525 2.44771525,8 3,8 C3.55228475,8 4,8.44771525 4,9 C4,9.55228475 3.55228475,10 3,10 Z M7,2 C6.44771525,2 6,1.55228475 6,1 C6,0.44771525 6.44771525,0 7,0 C7.55228475,0 8,0.44771525 8,1 C8,1.55228475 7.55228475,2 7,2 Z M7,6 C6.44771525,6 6,5.55228475 6,5 C6,4.44771525 6.44771525,4 7,4 C7.55228475,4 8,4.44771525 8,5 C8,5.55228475 7.55228475,6 7,6 Z M7,10 C6.44771525,10 6,9.55228475 6,9 C6,8.44771525 6.44771525,8 7,8 C7.55228475,8 8,8.44771525 8,9 C8,9.55228475 7.55228475,10 7,10 Z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
   &:hover {
-    background-color: var(--color-slate-100);
+    background-color: var(--color-surface-hover);
     transition: background-color 0.2s;
   }
 
   &:active {
-    background-color: var(--color-slate-200);
+    background-color: var(--color-surface-nav-active);
     transition: background-color 0.2s;
     cursor: grabbing;
   }
@@ -947,13 +1115,18 @@
     cursor: pointer;
 
     &:hover {
-      background-color: var(--color-slate-300);
+      background-color: var(--color-surface-hover);
     }
 
     &::before {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 17l5-5-5-5v10z'%3E%3C/path%3E%3C/svg%3E");
       width: 24px;
       height: 24px;
+    }
+
+    /* data-URI SVG defaults to a black fill — light copy for dark */
+    .theme-dark &::before {
+      content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4d2ef' d='M10 17l5-5-5-5v10z'%3E%3C/path%3E%3C/svg%3E");
     }
 
   }

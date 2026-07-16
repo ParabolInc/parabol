@@ -467,7 +467,7 @@ export const ActivityLibrary = (props: Props) => {
           orientation='vertical'
           className='flex h-full w-2.5 touch-none select-none border-l border-l-transparent p-[1px] transition-colors'
         >
-          <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-slate-600`} />
+          <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-fg-secondary`} />
         </ScrollArea.Scrollbar>
       </ScrollArea.Root>
     </div>

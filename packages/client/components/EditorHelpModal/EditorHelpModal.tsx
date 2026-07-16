@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
 import {Radius} from '../../types/constEnums'
 import {modKey} from '../../utils/platform'
 import IconButton from '../IconButton'
@@ -7,7 +6,7 @@ import IconLabel from '../IconLabel'
 
 const ModalHeader = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   justifyContent: 'center',
   lineHeight: 1.5,
@@ -36,8 +35,8 @@ const CloseButton = styled(IconButton)({
 })
 
 const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  color: PALETTE.SLATE_700,
+  border: `1px solid var(--color-hairline-strong)`,
+  color: 'var(--color-fg-primary)',
   fontSize: 13,
   lineHeight: '18px',
   margin: listIndex === 0 ? '0 auto' : '16px auto 0',
@@ -47,7 +46,7 @@ const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
 
 const HelpRow = styled('div')<{shortcutIndex: number}>(({shortcutIndex}) => ({
   alignItems: 'center',
-  backgroundColor: shortcutIndex % 2 ? '#FFFFFF' : PALETTE.SLATE_200,
+  backgroundColor: shortcutIndex % 2 ? 'var(--color-surface-card)' : 'var(--color-surface-well)',
   display: 'flex',
   padding: '4px 0'
 }))
@@ -81,7 +80,7 @@ const HeaderLabelBlock = styled('div')({
 })
 
 const HeaderLabel = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 13,
   fontWeight: 600,
   lineHeight: '18px',
@@ -174,7 +173,7 @@ const blockShortcuts = [
 const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
 
 const ModalBoundary = styled('div')({
-  background: '#FFFFFF',
+  background: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   display: 'flex',
   flexDirection: 'column',

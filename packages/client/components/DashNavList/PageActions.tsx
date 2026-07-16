@@ -105,7 +105,7 @@ export const PageActions = (props: Props) => {
   return (
     <LeftNavItemButtons>
       {viewerAccess === 'owner' && (
-        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-slate-400'>
+        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-hairline-strong'>
           <Menu
             trigger={
               <div>
@@ -126,7 +126,7 @@ export const PageActions = (props: Props) => {
                   e.stopPropagation()
                 }}
               >
-                <DeleteIcon className='text-slate-600' />
+                <DeleteIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Delete page'}</span>
               </MenuItem>
             </MenuContent>

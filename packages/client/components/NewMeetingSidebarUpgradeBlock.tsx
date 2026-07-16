@@ -12,7 +12,7 @@ const RootBlock = styled('div')({
 })
 
 const Container = styled('div')({
-  background: PALETTE.SLATE_200,
+  background: 'var(--color-surface-well)',
   border: `2px solid ${PALETTE.GRAPE_500}`,
   padding: 12,
   borderRadius: 4,
@@ -20,14 +20,14 @@ const Container = styled('div')({
 })
 
 const Heading = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: '14px',
   lineHeight: '16px',
   fontWeight: 600
 })
 
 const Description = styled('div')({
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   fontSize: '12px',
   lineHeight: '16px',
   marginTop: 8

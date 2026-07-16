@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import FlatButton from '~/components/FlatButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
@@ -22,7 +21,7 @@ const ButtonGroup = styled('div')({
 })
 
 const StyledButton = styled(FlatButton)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontWeight: 600,
   marginRight: 16
 })

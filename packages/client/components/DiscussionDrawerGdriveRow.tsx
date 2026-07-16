@@ -99,7 +99,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
           </button>
         )}
       </div>
-      {error && <div className='text-tomato-500 text-xs'>{error.message}</div>}
+      {error && <div className='text-fg-error text-xs'>{error.message}</div>}
     </div>
   )
 }

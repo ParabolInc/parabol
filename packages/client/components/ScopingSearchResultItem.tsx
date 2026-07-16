@@ -4,7 +4,6 @@ import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__g
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import Checkbox from './Checkbox'
@@ -27,7 +26,7 @@ const Issue = styled('div')({
 const Title = styled('div')({})
 
 const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',

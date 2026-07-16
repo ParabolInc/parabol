@@ -42,7 +42,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
           </div>
           <RowInfoCopy>{providerDescription} </RowInfoCopy>
           {!!error && (
-            <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+            <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
               {error}
             </div>
           )}

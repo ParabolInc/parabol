@@ -187,7 +187,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
             ref={uploadInputRef}
           />
         </div>
-        <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
+        <div className={'px-6 text-fg-error empty:hidden'}>{error?.message}</div>
         <div className='flex justify-end px-6 pb-8'>
           <Button
             variant='outline'

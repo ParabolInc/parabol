@@ -134,7 +134,7 @@ const ScheduledSeriesCard = (props: Props) => {
 
   return (
     <motion.div
-      className='relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none'
+      className='relative m-3 fuzzy-tablet:mb-3 mb-4 fuzzy-tablet:w-80 w-[calc(100%-24px)] max-w-full shrink-0 select-none'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}

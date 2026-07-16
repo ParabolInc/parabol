@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
 import {Elevation} from '../styles/elevation'
 import {PokerCards} from '../types/constEnums'
@@ -20,7 +19,7 @@ const MiniPokerCardPlaceholder = styled('div')<{
       ? '1px solid var(--color-hairline-strong)'
       : `1px dashed var(--color-hairline-strong)`,
   borderRadius: 2,
-  color: color ? '#fff' : PALETTE.SLATE_600,
+  color: color ? '#fff' : 'var(--color-fg-secondary)',
   cursor: onClick || canEdit ? 'pointer' : 'default',
   display: 'flex',
   flexShrink: 0,

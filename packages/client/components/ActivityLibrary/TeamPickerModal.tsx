@@ -138,7 +138,7 @@ const TeamPickerModal = (props: Props) => {
               this team.
             </div>
           )}
-          {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
+          {error?.message && <div className='w-full text-fg-error'>{error.message}</div>}
           <div className='flex gap-2.5 self-end'>
             <button
               className={cn(

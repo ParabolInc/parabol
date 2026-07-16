@@ -63,7 +63,7 @@ export const ImageSelectorSearchTab = (props: Props) => {
   const lastItem = useLoadNextOnScrollBottom(paginationRes, {}, 20)
   return (
     <div className='flex flex-col overflow-hidden'>
-      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-slate-100 p-2'>
+      <form className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-surface-raised p-2'>
         <input
           autoFocus
           placeholder={placeholder}

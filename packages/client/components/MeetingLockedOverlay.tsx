@@ -39,7 +39,7 @@ const DialogOverlay = styled('div')({
 
 const DialogContainer = styled('div')({
   display: 'flex',
-  backgroundColor: 'white',
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   flexDirection: 'column',
@@ -55,7 +55,7 @@ const DialogContainer = styled('div')({
 const DialogTitle = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 14,
   justifyContent: 'space-around',
   fontWeight: 600,

@@ -48,7 +48,7 @@ const TutorialMeetingCard = (props: Props) => {
   return (
     <>
       <div
-        className='m-2 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 cursor-pointer select-none rounded-card bg-surface-card shadow-card [transition:box-shadow_100ms_cubic-bezier(0,0,.2,1),opacity_300ms_cubic-bezier(0,0,.2,1)] hover:shadow-card-hover'
+        className='m-3 fuzzy-tablet:w-80 w-[calc(100%-24px)] max-w-full shrink-0 cursor-pointer select-none rounded-card bg-surface-card shadow-card [transition:box-shadow_100ms_cubic-bezier(0,0,.2,1),opacity_300ms_cubic-bezier(0,0,.2,1)] hover:shadow-card-hover'
         onClick={onOpen}
       >
         <div className='relative bottom-0 mb-1.5 block rounded-t-card'>

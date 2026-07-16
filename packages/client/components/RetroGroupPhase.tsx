@@ -153,7 +153,7 @@ const RetroGroupPhase = (props: Props) => {
                 <div
                   onMouseEnter={openTooltip}
                   onMouseLeave={closeTooltip}
-                  className='ml-2 h-6 w-6 cursor-pointer text-slate-600'
+                  className='ml-2 h-6 w-6 cursor-pointer text-fg-secondary'
                   ref={originRef}
                 >
                   <InfoIcon />

@@ -181,7 +181,7 @@ const InspirationItemsPanel = (props: Props) => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-      {error && <div className='text-sm text-tomato-500'>{error}</div>}
+      {error && <div className='text-fg-error text-sm'>{error}</div>}
       {items.map((item) =>
         isRetro ? (
           <RetroInspirationItemCard

@@ -15,7 +15,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     return (
       <DropdownMenu.Item
         className={cn(
-          'mx-1 flex items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-raised focus:bg-surface-raised',
+          'mx-1 flex items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover',
           isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}

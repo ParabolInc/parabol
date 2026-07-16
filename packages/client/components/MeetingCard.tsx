@@ -179,8 +179,8 @@ const MeetingCard = (props: Props) => {
 
   return (
     <motion.div
-      className='relative m-2 max-w-full shrink-0 select-none'
-      style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)'}}
+      className='relative m-3 max-w-full shrink-0 select-none'
+      style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 24px)'}}
       initial={{opacity: 0}}
       animate={{opacity: 1}}
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}

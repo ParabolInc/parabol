@@ -184,7 +184,7 @@ const GitHubIntegrationPanel = (props: Props) => {
           >
             Connect
           </button>
-          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
+          {error && <div className='text-fg-error'>Error: {error.message}</div>}
         </div>
       )}
     </>

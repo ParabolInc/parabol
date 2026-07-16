@@ -294,7 +294,7 @@ export const CreateNewActivity = (props: Props) => {
             />
           </div>
         </div>
-        {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
+        {error && <div className='px-4 text-fg-error'>{error.message}</div>}
         <div className='mt-auto flex w-full bg-surface-well p-2 shadow-card-1'>
           {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
             <div className='flex w-full items-center justify-center gap-4'>

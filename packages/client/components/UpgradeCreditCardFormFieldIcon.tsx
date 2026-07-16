@@ -6,7 +6,7 @@ interface StyleProps {
 }
 
 const UpgradeCreditCardFormFieldIcon = styled('div')<StyleProps>(({hasError}) => ({
-  color: hasError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
+  color: hasError ? PALETTE.TOMATO_500 : 'var(--color-fg-secondary)',
   display: 'block',
   height: 24,
   width: 24,

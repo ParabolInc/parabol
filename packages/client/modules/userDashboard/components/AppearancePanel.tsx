@@ -38,15 +38,7 @@ const AppearancePanel = () => {
   }
 
   return (
-    <Panel
-      label='Appearance'
-      casing={'capitalize'}
-      controls={
-        <span className='self-center rounded-full bg-grape-500 px-2 py-0.5 font-semibold text-[11px] text-white tracking-wide'>
-          NEW
-        </span>
-      }
-    >
+    <Panel label='Appearance' casing={'capitalize'}>
       <div className='border-hairline border-t p-4'>
         <p className='mb-4 text-fg-secondary text-sm leading-5'>
           Choose how Parabol looks to you. Select a single theme, or sync with your operating

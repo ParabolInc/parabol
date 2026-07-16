@@ -47,22 +47,22 @@ export const PersonalAccessTokenPageGrant = ({
   const displayList = [...selectedNotInResults, ...sortedResults]
 
   return (
-    <div className='max-h-40 overflow-y-auto rounded-md border border-slate-200'>
+    <div className='max-h-40 overflow-y-auto rounded-md border border-hairline'>
       {displayList.length === 0 ? (
-        <p className='p-3 text-slate-500 text-sm'>
+        <p className='p-3 text-fg-muted text-sm'>
           {hasSearch ? 'No pages found' : 'Type to search pages'}
         </p>
       ) : (
         displayList.map((page) => (
           <label
             key={page.id}
-            className='flex cursor-pointer select-none items-center gap-2 border-slate-100 border-b px-3 py-2 last:border-0 hover:bg-slate-50'
+            className='flex cursor-pointer select-none items-center gap-2 border-hairline border-b px-3 py-2 last:border-0 hover:bg-surface-raised'
           >
             <Checkbox
               checked={selectedPageIds.has(page.id)}
               onCheckedChange={() => togglePage(page)}
             />
-            <span className='text-slate-700 text-sm'>{page.title ?? '(Untitled)'}</span>
+            <span className='text-fg-primary text-sm'>{page.title ?? '(Untitled)'}</span>
           </label>
         ))
       )}

@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import type {MouseEvent} from 'react'
 import type {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import {ICON_SIZE} from '../styles/typographyV2'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
 import IconButton from './IconButton'
@@ -10,7 +9,7 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 
 const Filter = styled('span')({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const StyledMenuItemLabel = styled(MenuItemLabel)({

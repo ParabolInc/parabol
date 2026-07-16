@@ -32,7 +32,11 @@ export const TipTapLinkEditor = (props: props) => {
   )
   useLinkEditor?.()
   return (
-    <div className={'flex items-center rounded-md bg-surface-card p-2 shadow-lg'}>
+    <div
+      className={
+        'flex items-center rounded-md border border-hairline bg-surface-raised p-2 shadow-lg'
+      }
+    >
       <form onSubmit={handleSubmit} className='flex flex-col items-center'>
         <label className='flex cursor-text items-center gap-2 rounded-lg bg-surface-well p-2'>
           <Link className='flex-none text-fg-secondary' />
@@ -60,7 +64,7 @@ export const TipTapLinkEditor = (props: props) => {
             size='sm'
             type='submit'
             disabled={!isValidUrl}
-            className='font-semibold text-slate-800'
+            className='font-semibold text-fg-primary'
           >
             Save
           </Button>

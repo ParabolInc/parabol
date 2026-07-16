@@ -52,20 +52,20 @@ const StartMeetingUpgradeModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={isHardBlock ? undefined : onClose}>
       <DialogContent noClose={isHardBlock} className='text-center'>
         <DialogTitle>{title}</DialogTitle>
-        <p className='mt-2 text-slate-700 text-sm leading-5'>
+        <p className='mt-2 text-fg-primary text-sm leading-5'>
           {'Your company has run '}
-          <span className='font-semibold text-sky-500'>{meetingCount} meetings</span>
+          <span className='font-semibold text-accent'>{meetingCount} meetings</span>
           {' on Parabol and currently has '}
-          <span className='font-semibold text-sky-500'>{teamCount} active teams</span>
+          <span className='font-semibold text-accent'>{teamCount} active teams</span>
           {'. '}
           {isHardBlock
             ? "You've exceeded the free tier trial period. Please upgrade to continue running meetings."
             : 'This exceeds the 2-team free tier limit. Upgrade your team now to prevent interruption.'}
         </p>
-        <p className='mt-2 text-slate-700 text-sm leading-5'>
+        <p className='mt-2 text-fg-primary text-sm leading-5'>
           {'Something not right? Reach out to '}
           <a
-            className={'font-semibold text-sky-500'}
+            className={'font-semibold text-accent'}
             href={`mailto:${SALES_EMAIL}`}
             rel='noopener noreferrer'
             target='_blank'

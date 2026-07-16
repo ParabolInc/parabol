@@ -182,7 +182,7 @@ const AddTeamMemberModal = (props: Props) => {
                   />
                   {error && (
                     <div
-                      className={`mt-2 flex items-center p-2 ${!isSubmitted ? 'text-gold-500' : 'text-tomato-500'}`}
+                      className={`mt-2 flex items-center p-2 ${!isSubmitted ? 'text-gold-500' : 'text-fg-error'}`}
                     >
                       <div className='mr-2 h-6 w-6'>
                         {isSubmitted ? <ErrorIcon /> : <Warning />}

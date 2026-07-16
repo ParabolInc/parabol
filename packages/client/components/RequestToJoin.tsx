@@ -40,7 +40,7 @@ const RequestToJoinComponent = () => {
 
   return (
     <div className='relative z-10 flex h-full w-full flex-col items-center justify-center overflow-y-auto'>
-      <div className='mb-20 flex max-h-[90vh] w-[50%] min-w-[280px] max-w-[calc(100vw-48px)] flex-col items-center rounded-sm bg-white p-8 shadow-2xl'>
+      <div className='mb-20 flex max-h-[90vh] w-[50%] min-w-[280px] max-w-[calc(100vw-48px)] flex-col items-center rounded-sm bg-surface-card p-8 shadow-2xl'>
         {isRequestSent ? (
           <MailOutline className='h-10 w-10 rounded-full text-purple-500' />
         ) : (
@@ -58,7 +58,7 @@ const RequestToJoinComponent = () => {
           <PrimaryButton onClick={handleRequestJoin}>{'Request to Join'}</PrimaryButton>
         )}
         {error?.message && (
-          <div className='mt-4 text-center font-semibold text-tomato-600'>{error.message}</div>
+          <div className='mt-4 text-center font-semibold text-fg-error'>{error.message}</div>
         )}
       </div>
     </div>

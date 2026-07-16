@@ -112,7 +112,7 @@ const GitLabProviderRow = (props: Props) => {
                         : 'Connect to your own GitLab server.'}
                     </RowInfoCopy>
                     {!!error?.message && (
-                      <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+                      <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
                         {error.message}
                       </div>
                     )}

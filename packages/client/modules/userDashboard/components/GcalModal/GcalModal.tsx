@@ -17,7 +17,6 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import Legitity from '../../../../validation/Legitity'
@@ -36,7 +35,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 })
 
 const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   '&:hover': {
     opacity: 0.5
@@ -49,9 +48,9 @@ const StyledCloseButton = styled(PlainButton)({
 })
 
 const StyledInput = styled('input')({
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: `1px solid var(--color-hairline-field)`,
   borderRadius: 4,
-  color: PALETTE.SLATE_800,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   font: 'inherit',
   margin: '8px 0',
@@ -59,7 +58,7 @@ const StyledInput = styled('input')({
   outline: 0,
   width: '100%',
   '::placeholder': {
-    color: PALETTE.SLATE_600
+    color: 'var(--color-fg-muted)'
   }
 })
 

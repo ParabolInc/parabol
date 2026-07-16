@@ -163,7 +163,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
       <div {...getRootProps()}>
         <div
           ref={setAnchorEl}
-          className='flex min-h-[44px] w-full flex-wrap rounded-sm border border-slate-500 bg-white px-1 py-0.5 align-center text-sm'
+          className='flex min-h-[44px] w-full flex-wrap rounded-sm border border-hairline-field bg-surface-input px-1 py-0.5 align-center text-sm'
         >
           {value.map((option, index: number) => (
             <Chip
@@ -178,15 +178,15 @@ export const AdhocTeamMultiSelect = (props: Props) => {
           <input
             {...getInputProps()}
             placeholder={!value.length ? 'ex. Traci or traci@example.com' : ''}
-            className='m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-white pl-1 text-black outline-hidden'
+            className='m-0 box-border min-h-[36px] w-0 min-w-[30px] grow border-0 bg-surface-input pl-1 text-fg-primary outline-hidden'
           />
         </div>
-        {error && <div className='mt-2 font-semibold text-sm text-tomato-500'>{error}</div>}
+        {error && <div className='mt-2 font-semibold text-fg-error text-sm'>{error}</div>}
       </div>
       {groupedOptions.length > 0 ? (
         <ul
           {...getListboxProps()}
-          className='absolute z-50 mt-0.5 h-auto max-h-64 w-[300px] list-none overflow-y-auto rounded-sm bg-white p-0 shadow-card-1'
+          className='absolute z-50 mt-0.5 h-auto max-h-64 w-[300px] list-none overflow-y-auto rounded-sm bg-surface-card p-0 shadow-card-1'
         >
           {(groupedOptions as Option[]).map((option, index) => {
             const optionProps = getOptionProps({option, index})
@@ -195,13 +195,13 @@ export const AdhocTeamMultiSelect = (props: Props) => {
               <li
                 {...optionProps}
                 key={option.id ?? option.email}
-                className={`[&.Mui-focused]:bg-slate-100 ${
-                  isSelected ? 'bg-slate-100' : ''
-                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50`}
+                className={`[&.Mui-focused]:bg-surface-raised ${
+                  isSelected ? 'bg-surface-raised' : ''
+                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-hidden hover:bg-surface-raised focus:bg-surface-raised data-disabled:pointer-events-none data-disabled:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 {option.id && (
-                  <div className='relative mr-2 h-6 w-6 rounded-sm border border-slate-100'>
+                  <div className='relative mr-2 h-6 w-6 rounded-sm border border-hairline'>
                     <div
                       className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
                       style={{backgroundImage: `url('${option.picture}')`}}

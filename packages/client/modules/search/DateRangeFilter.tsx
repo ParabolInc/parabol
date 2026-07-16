@@ -141,7 +141,7 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
             </button>
           </div>
 
-          <div className='flex justify-center border-slate-200 border-t pt-4'>
+          <div className='flex justify-center border-hairline border-t pt-4'>
             <DayPicker
               mode='range'
               selected={selectedDates}

@@ -22,7 +22,7 @@ const involvementWord = {
 
 const TaskListView = styled('div')({
   alignSelf: 'center',
-  backgroundColor: '#fff',
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: 4,
   boxShadow: cardShadow,
   fontSize: 14,

@@ -94,7 +94,7 @@ const OrgFeatureFlags = (props: Props) => {
           </FeatureRow>
         ))}
         {error && (
-          <div className='mt-2 pr-4 font-semibold text-tomato-500 text-xs'>{error.message}</div>
+          <div className='mt-2 pr-4 font-semibold text-fg-error text-xs'>{error.message}</div>
         )}
       </PanelRow>
     </StyledPanel>

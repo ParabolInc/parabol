@@ -46,7 +46,9 @@ const ActivityCardFavorite = (props: Props) => {
       <div
         className={cn(
           className,
-          `flex h-10 w-10 items-center justify-center rounded-full bg-surface-card`
+          // fixed slate chip: the card illustrations are always light in both
+          // themes, so a neutral slate reads cleaner than a themed plum surface
+          `flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 bg-slate-700`
         )}
       >
         <TooltipTrigger asChild>
@@ -54,7 +56,7 @@ const ActivityCardFavorite = (props: Props) => {
             onClick={handleClick}
             className='flex h-full w-full cursor-pointer items-center justify-center bg-transparent'
           >
-            <Favorite className={isFavorite ? 'text-rose-600' : 'text-fg-secondary'} />
+            <Favorite className={isFavorite ? 'text-rose-500' : 'text-slate-200'} />
           </button>
         </TooltipTrigger>
       </div>

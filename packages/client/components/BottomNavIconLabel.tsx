@@ -11,7 +11,8 @@ import {PALETTE} from '../styles/paletteV3'
 
 const paletteColors = {
   warm: PALETTE.ROSE_500,
-  midGray: PALETTE.SLATE_600,
+  // theme-aware so the neutral icon tone doesn't render dark-on-dark in dark mode
+  midGray: 'var(--color-fg-secondary)',
   red: PALETTE.TOMATO_600,
   green: PALETTE.JADE_400,
   blue: PALETTE.SKY_500

@@ -137,10 +137,10 @@ const OrgAuthenticationSCIM = (props: Props) => {
   }
   if (!saml.orgId) {
     return (
-      <div className='px-6 pb-3 text-sm text-tomato-500'>
+      <div className='px-6 pb-3 text-fg-error text-sm'>
         Your SAML configuration is corrupted, please{' '}
         <a
-          className='font-bold text-tomato-500 hover:text-tomato-500 active:text-tomato-500'
+          className='font-bold text-fg-error hover:text-fg-error active:text-fg-error'
           href={`${ExternalLinks.CONTACT}?subject=${'SAML config corrupted'}`}
           title={'Contact customer success to enable SSO'}
         >

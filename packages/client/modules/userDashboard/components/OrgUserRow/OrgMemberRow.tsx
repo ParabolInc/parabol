@@ -183,7 +183,7 @@ const OrgMemberRow = (props: Props) => {
               type='checkbox'
               checked={isSelected}
               onChange={handleCheckboxChange}
-              className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+              className='h-4 w-4 rounded border-hairline-field text-grape-700 focus:ring-grape-500'
             />
           )}
         </div>

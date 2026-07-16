@@ -34,7 +34,7 @@ export const PageNoAccess = (props: Props) => {
           noClose
         >
           <DialogTitle className='flex w-full flex-col items-center justify-center'>
-            <div className='h-12 w-12 rounded-full bg-slate-300 p-3 text-slate-600'>
+            <div className='h-12 w-12 rounded-full bg-surface-well p-3 text-fg-secondary'>
               <LockIcon />
             </div>
             <div>Login Required</div>

@@ -17,7 +17,7 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600 hover:text-slate-700'
+              className='cursor-pointer text-fg-secondary hover:text-fg-primary'
               onClick={async () => {
                 // Leaving the comment here in case we want to switch back to plain text
                 // const plainText = editor.state.doc.textBetween(nodePos.from, nodePos.to, '\n')
@@ -55,7 +55,7 @@ export const InsightsBlockResult = (props: NodeViewProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className='cursor-pointer text-slate-600 hover:text-slate-700'
+              className='cursor-pointer text-fg-secondary hover:text-fg-primary'
               onClick={() => {
                 updateAttributes({editing: true})
               }}
