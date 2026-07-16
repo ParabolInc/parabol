@@ -7,7 +7,7 @@ import {positionAfter} from '../../../../client/shared/sortOrder'
 // TODO: TimelineEventCheckinComplete is from the deprecated /database directory
 import TimelineEventCheckinComplete from '../../../database/types/TimelineEventCheckinComplete'
 import type {DataLoaderInstance} from '../../../dataloader/RootDataLoader'
-import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
+import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import {selectTasks} from '../../../postgres/select'
@@ -225,7 +225,7 @@ const endCheckIn: MutationResolvers['endCheckIn'] = async (_source, {meetingId},
     removedTaskIds
   }
   publish(SubscriptionChannel.TEAM, teamId, 'EndCheckInSuccess', data, subOptions)
-  sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   IntegrationNotifier.endMeeting(dataLoader, meetingId, teamId).catch(Logger.log)
   analytics.checkInEnd(completedCheckIn, meetingMembers, dataLoader).catch(Logger.log)
   return data

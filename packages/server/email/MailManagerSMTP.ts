@@ -3,6 +3,10 @@ import {isNotNull} from '../../client/utils/predicates'
 import logError from '../utils/logError'
 import MailManager, {type MailManagerOptions} from './MailManager'
 
+// Amazon SES has a 50 recipients limit, but it's safe to apply everywhere SMTP
+// https://docs.aws.amazon.com/ses/latest/dg/quotas.html
+const MAX_RECIPIENTS = 50
+
 const composeConfig = () => {
   const {
     MAIL_SMTP_URL,
@@ -66,13 +70,22 @@ if (process.env.MAIL_SMTP_DEBUG === 'true') {
   verifyTransport()
 }
 
+const batch = <T extends Array<any>>(arr: T, batchSize: number) => {
+  const batches = Math.ceil(arr.length / batchSize)
+  return [...new Array(batches)].map((_, i) => arr.slice(i * batchSize, i * batchSize + batchSize))
+}
+
 export default class MailManagerSMTP extends MailManager {
   transport = nodemailer.createTransport(composeConfig())
 
   async sendEmail(options: MailManagerOptions) {
     const {subject, body, to, attachments, html} = options
-    try {
-      await this.transport.sendMail({
+    // process in batches
+    //
+    const toList = Array.isArray(to) ? to : [to]
+
+    const res = await Promise.allSettled(batch(toList, MAX_RECIPIENTS).map((to) =>
+      this.transport.sendMail({
         from: process.env.MAIL_FROM,
         to,
         subject,
@@ -80,13 +93,17 @@ export default class MailManagerSMTP extends MailManager {
         html,
         attachments
       })
-    } catch (e) {
-      const error = e instanceof Error ? e : new Error('SMTP nodemailer error')
-      logError(error, {
-        tags: {to: JSON.stringify(to)}
-      })
-      return false
-    }
-    return true
+    ))
+
+    return res.reduce((success, value) => {
+      if (value.status !== 'fulfilled') {
+        const error = value.reason instanceof Error ? value.reason : new Error('SMTP nodemailer error')
+        logError(error, {
+          tags: {to: JSON.stringify(to)}
+        })
+        return false
+      }
+      return success
+    }, true)
   }
 }
