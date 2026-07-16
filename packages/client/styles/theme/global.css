@@ -768,6 +768,28 @@
     margin: 0;
   }
 
+  /* Task list items wrap their paragraph in a <div> (`li > div > p`), so the
+     `li > p` reset above never reaches them. Without this they inherit the
+     generic `p { margin-block: 0.5rem }` and gap apart from each other. */
+  ul[data-type='taskList'] li > div > p {
+    margin: 0;
+  }
+  /* Center the checkbox against the first line of text. The list item is a
+     flex row aligned to flex-start; giving the label the paragraph's own
+     line-height and centering its contents lines the box up with the text. */
+  ul[data-type='taskList'] li > label {
+    display: inline-flex;
+    align-items: center;
+    height: 1.625em;
+  }
+  /* Optical nudge: centering on the line box leaves the checkbox a hair above
+     the text's visual mass (the 1.625 line-height adds symmetric leading, but
+     lowercase glyphs sit low in the em box). Drop the native checkbox onto the
+     cap-height midline. */
+  ul[data-type='taskList'] input[type='checkbox'] {
+    transform: translateY(2px);
+  }
+
   strong,
   b,
   th {
