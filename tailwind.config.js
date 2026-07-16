@@ -27,7 +27,6 @@ module.exports = {
       animation: {
         'drag-hint': 'drag-hint 60s 30s infinite'
       },
-      // boxShadow moved to --shadow-* tokens in packages/client/styles/theme/global.css @theme
       borderRadius: {
         card: '4px'
       },

@@ -210,7 +210,6 @@ export enum LocalStorageKey {
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
   ERROR_PRONE_AT = 'errorProneAt',
-  // raw value is inlined in template.html / devTemplate.html boot scripts — keep in sync
   THEME = 'theme'
 }
 

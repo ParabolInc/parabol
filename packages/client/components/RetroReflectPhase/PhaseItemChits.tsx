@@ -1,7 +1,3 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
-import {DECELERATE, fadeIn} from '../../styles/animation'
-import {PALETTE} from '../../styles/paletteV3'
 import {ElementWidth} from '../../types/constEnums'
 import {cn} from '../../ui/cn'
 import plural from '../../utils/plural'
@@ -21,49 +17,7 @@ const CHIT_HEIGHT = 16
 const OFFSET = CHIT_MARGIN * 2 + CHIT_WIDTH
 const PROGRESS_WIDTH = ElementWidth.REFLECTION_CARD
 const PROGRESS_MARGIN = 2
-
-// easiest way to debug this is to just print it to a string
-// we need 4 things to fake a circle:
-// pos at 0%, % when pos is at progress width, % when pos is back at 0, and pos at 100%
-// doing this gives the illusion that there is a single progress bar & each chit is just a mask
-const shiftColor = (idx: number) => keyframes`
-  0% {
-    background-position: ${idx * OFFSET}px;
-  }
-  ${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100)}% {
-    background-position: ${PROGRESS_WIDTH}px;
-  }
-  ${100 - (idx * OFFSET) / (PROGRESS_WIDTH / 100) + 0.0001}% {
-    background-position: 0px;
-  }
-  100% {
-    background-position: ${idx === 0 ? PROGRESS_WIDTH : idx * OFFSET}px;
-  }
-`
-
-// bg + shadow live in the className (bg-surface-card shadow-card); the fadeIn
-// keyframe animation is not expressible as a Tailwind utility
-const Chit = styled('div')({
-  animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  borderRadius: 2,
-  height: CHIT_HEIGHT,
-  width: CHIT_WIDTH
-})
-
-const ActiveChitMask = styled('div')({
-  borderRadius: 2,
-  height: CHIT_HEIGHT - PROGRESS_MARGIN * 2,
-  margin: PROGRESS_MARGIN,
-  overflow: 'hidden',
-  width: CHIT_WIDTH - PROGRESS_MARGIN * 2
-})
-
-const ActiveChit = styled('div')<{idx: number}>(({idx}) => ({
-  animation: `${shiftColor(idx).toString()} 2000ms linear infinite`,
-  background: `linear-gradient(90deg, ${PALETTE.GRAPE_500} 0%, ${PALETTE.TOMATO_500} 33%, ${PALETTE.AQUA_400} 66%, ${PALETTE.GRAPE_500} 100%)`,
-  height: CHIT_HEIGHT,
-  width: PROGRESS_WIDTH
-}))
+const SHIFT_DURATION = 2000
 
 const getStatus = (count: number, editorCount: number) => {
   if (count) {
@@ -96,25 +50,40 @@ const PhaseItemChits = (props: Props) => {
       const isOverflow = idx >= CHITS_PER_ROW
       const overflowIdx = idx - CHITS_PER_ROW
       return (
-        <Chit
+        <div
           key={totalCount - idx}
           className={cn(
-            'absolute bg-surface-card shadow-card transition-[left] transition-[top] transition-all duration-300',
+            'absolute animate-chit-fade-in rounded-[2px] bg-surface-card shadow-card transition-all duration-300',
             isOverflow ? overflowStyles[overflowIdx] : ''
           )}
           style={{
-            top: !isOverflow ? '0px' : `${overflowTops[overflowIdx]!}px`,
+            height: CHIT_HEIGHT,
+            width: CHIT_WIDTH,
+            top: !isOverflow ? 0 : overflowTops[overflowIdx]!,
             left: !isOverflow
-              ? `${idx * (CHIT_WIDTH + CHIT_GUTTER)}px`
-              : `${(CHITS_PER_ROW - 1) * (CHIT_WIDTH + CHIT_GUTTER) + overflowLefts[overflowIdx]!}px`
+              ? idx * (CHIT_WIDTH + CHIT_GUTTER)
+              : (CHITS_PER_ROW - 1) * (CHIT_WIDTH + CHIT_GUTTER) + overflowLefts[overflowIdx]!
           }}
         >
           {idx < editorCount && (
-            <ActiveChitMask>
-              <ActiveChit idx={idx} />
-            </ActiveChitMask>
+            <div
+              className='m-0.5 overflow-hidden rounded-[2px]'
+              style={{
+                height: CHIT_HEIGHT - PROGRESS_MARGIN * 2,
+                width: CHIT_WIDTH - PROGRESS_MARGIN * 2
+              }}
+            >
+              <div
+                className='animate-chit-shift bg-[linear-gradient(90deg,var(--color-grape-500)_0%,var(--color-tomato-500)_33%,var(--color-aqua-400)_66%,var(--color-grape-500)_100%)]'
+                style={{
+                  height: CHIT_HEIGHT,
+                  width: PROGRESS_WIDTH,
+                  animationDelay: `${-((idx * OFFSET) / PROGRESS_WIDTH) * SHIFT_DURATION}ms`
+                }}
+              />
+            </div>
           )}
-        </Chit>
+        </div>
       )
     })
     .reverse()

@@ -25,8 +25,12 @@ const useUpdateUserThemeMutation = () => {
   const [commit, submitting] = useMutation<TUpdateUserThemeMutation>(mutation)
   const atmosphere = useAtmosphere()
   const execute = (config: UseMutationConfig<TUpdateUserThemeMutation>) => {
+    const {onCompleted, ...rest} = config
     return commit({
-      onCompleted: (res) => {
+      ...rest,
+      // always surface the mutation error; callers layer their own handling
+      // (e.g. reverting an optimistic flip) through their onCompleted
+      onCompleted: (res, errors) => {
         const error = res.updateUserTheme.error
         if (error) {
           atmosphere.eventEmitter.emit('addSnackbar', {
@@ -35,9 +39,8 @@ const useUpdateUserThemeMutation = () => {
             key: 'updateUserThemeError'
           })
         }
-      },
-      // allow components to override default handlers
-      ...config
+        onCompleted?.(res, errors)
+      }
     })
   }
   return [execute, submitting] as const

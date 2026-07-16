@@ -1,6 +1,5 @@
 import Panel from '../../../components/Panel/Panel'
 import {useThemePreference} from '../../../components/ThemeProvider'
-import useAtmosphere from '../../../hooks/useAtmosphere'
 import useUpdateUserThemeMutation from '../../../mutations/useUpdateUserThemeMutation'
 import type {ThemePreference} from '../../../utils/themePreference'
 import ThemeOptionCard from './ThemeOptionCard'
@@ -14,7 +13,6 @@ const OPTIONS: {value: ThemePreference; label: string; sub: string}[] = [
 const AppearancePanel = () => {
   const {preference, setPreference} = useThemePreference()
   const [execute] = useUpdateUserThemeMutation()
-  const atmosphere = useAtmosphere()
 
   const handleSelect = (next: ThemePreference) => {
     if (next === preference) return
@@ -23,15 +21,10 @@ const AppearancePanel = () => {
     setPreference(next)
     execute({
       variables: {theme: next},
+      // revert the optimistic flip if the server rejects it (the hook shows the error)
       onCompleted: (res) => {
-        const error = res.updateUserTheme.error
-        if (error) {
+        if (res.updateUserTheme.error) {
           setPreference(previous)
-          atmosphere.eventEmitter.emit('addSnackbar', {
-            message: error.message,
-            autoDismiss: 5,
-            key: 'updateUserThemeError'
-          })
         }
       }
     })

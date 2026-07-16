@@ -304,6 +304,30 @@
       transform: translateX(0);
     }
   }
+
+  /* Retro reflect-phase chits (see PhaseItemChits) */
+  --animate-chit-fade-in: chit-fade-in 300ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes chit-fade-in {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  /* One shared sweep; each chit is phased by a negative animation-delay so the
+     gradient reads as a single continuous progress bar. 296px = REFLECTION_CARD. */
+  --animate-chit-shift: chit-shift 2000ms linear infinite;
+  @keyframes chit-shift {
+    from {
+      background-position: 0px;
+    }
+    to {
+      background-position: 296px;
+    }
+  }
 }
 
 :root {

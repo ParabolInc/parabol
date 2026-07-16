@@ -46,8 +46,6 @@ const ActivityCardFavorite = (props: Props) => {
       <div
         className={cn(
           className,
-          // fixed slate chip: the card illustrations are always light in both
-          // themes, so a neutral slate reads cleaner than a themed plum surface
           `flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 bg-slate-700`
         )}
       >
