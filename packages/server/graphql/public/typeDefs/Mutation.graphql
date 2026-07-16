@@ -1595,6 +1595,11 @@ type Mutation {
     The channel to link
     """
     channelId: ID!
+
+    """
+    JWT signed by the Mattermost plugin authorizing Parabol to send notifications to this channel
+    """
+    webhookToken: String
   ): LinkMattermostChannelPayload! @scope(name: TEAMS_WRITE)
 
   """

@@ -1,4 +1,4 @@
-import {useEffect} from 'react'
+import {useState} from 'react'
 import {useSelector} from 'react-redux'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {isAuthorized} from '../selectors'
@@ -6,14 +6,26 @@ import {isAuthorized} from '../selectors'
 const AutoLogin = () => {
   const atmosphere = useAtmosphere()
   const loggedIn = useSelector(isAuthorized)
+  const [pending, setPending] = useState(false)
 
-  useEffect(() => {
-    if (!loggedIn) {
-      atmosphere.login()
+  if (loggedIn) return null
+
+  const handleConnect = async () => {
+    setPending(true)
+    try {
+      await atmosphere.login()
+    } finally {
+      setPending(false)
     }
-  }, [atmosphere, loggedIn])
+  }
 
-  return null
+  return (
+    <div style={{padding: 16, textAlign: 'center'}}>
+      <button onClick={handleConnect} disabled={pending}>
+        {pending ? 'Connecting…' : 'Connect to Parabol'}
+      </button>
+    </div>
+  )
 }
 
 export default AutoLogin
