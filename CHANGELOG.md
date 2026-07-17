@@ -5,6 +5,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.29.2](https://github.com/ParabolInc/parabol/compare/v13.29.1...v13.29.2) (2026-07-17)
+
+
+### Fixed
+
+* check for org before destructure ([#13290](https://github.com/ParabolInc/parabol/issues/13290)) ([c563016](https://github.com/ParabolInc/parabol/commit/c563016a51acd809f10217af07bfe8fee8f854bc))
+* Pages TODO style regression ([#13286](https://github.com/ParabolInc/parabol/issues/13286)) ([5ab8691](https://github.com/ParabolInc/parabol/commit/5ab86917d163c8b61e6d9fb572dc84980d3cea46))
+
+
+### Changed
+
+* split SMTP emails into batches ([#13284](https://github.com/ParabolInc/parabol/issues/13284)) ([66f1a30](https://github.com/ParabolInc/parabol/commit/66f1a30bff62f26bf4a8d2f6f40ef203bd80cbf4))
+
 ## [13.29.1](https://github.com/ParabolInc/parabol/compare/v13.29.0...v13.29.1) (2026-07-10)
 
 
