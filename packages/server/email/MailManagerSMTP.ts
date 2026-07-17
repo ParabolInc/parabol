@@ -84,20 +84,23 @@ export default class MailManagerSMTP extends MailManager {
     //
     const toList = Array.isArray(to) ? to : [to]
 
-    const res = await Promise.allSettled(batch(toList, MAX_RECIPIENTS).map((to) =>
-      this.transport.sendMail({
-        from: process.env.MAIL_FROM,
-        to,
-        subject,
-        text: body,
-        html,
-        attachments
-      })
-    ))
+    const res = await Promise.allSettled(
+      batch(toList, MAX_RECIPIENTS).map((to) =>
+        this.transport.sendMail({
+          from: process.env.MAIL_FROM,
+          to,
+          subject,
+          text: body,
+          html,
+          attachments
+        })
+      )
+    )
 
     return res.reduce((success, value) => {
       if (value.status !== 'fulfilled') {
-        const error = value.reason instanceof Error ? value.reason : new Error('SMTP nodemailer error')
+        const error =
+          value.reason instanceof Error ? value.reason : new Error('SMTP nodemailer error')
         logError(error, {
           tags: {to: JSON.stringify(to)}
         })

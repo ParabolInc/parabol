@@ -40,9 +40,7 @@ describe('MailManagerSMTP', () => {
       const result = await manager.sendEmail(makeOptions('user@example.com'))
 
       expect(mockSendMail).toHaveBeenCalledTimes(1)
-      expect(mockSendMail).toHaveBeenCalledWith(
-        expect.objectContaining({to: ['user@example.com']})
-      )
+      expect(mockSendMail).toHaveBeenCalledWith(expect.objectContaining({to: ['user@example.com']}))
       expect(result).toBe(true)
     })
 
@@ -63,10 +61,7 @@ describe('MailManagerSMTP', () => {
         1,
         expect.objectContaining({to: to.slice(0, 50)})
       )
-      expect(mockSendMail).toHaveBeenNthCalledWith(
-        2,
-        expect.objectContaining({to: to.slice(50)})
-      )
+      expect(mockSendMail).toHaveBeenNthCalledWith(2, expect.objectContaining({to: to.slice(50)}))
     })
 
     it('splits 100 recipients into 2 batches of 50', async () => {
