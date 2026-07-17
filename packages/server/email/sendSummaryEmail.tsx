@@ -7,7 +7,7 @@ import getKysely from '../postgres/getKysely'
 import getMailManager from './getMailManager'
 import {makeSummaryEmailV2} from './makeSummaryEmailV2'
 
-export const sendSummaryEmailV2 = async (
+export const sendSummaryEmail = async (
   meetingId: string,
   pageId: number,
   context: InternalContext,
