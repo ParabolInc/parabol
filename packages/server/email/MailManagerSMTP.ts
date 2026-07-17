@@ -70,7 +70,7 @@ if (process.env.MAIL_SMTP_DEBUG === 'true') {
   verifyTransport()
 }
 
-const batch = <T extends Array<any>>(arr: T, batchSize: number) => {
+const batch = <T>(arr: T[], batchSize: number): T[][] => {
   const batches = Math.ceil(arr.length / batchSize)
   return [...new Array(batches)].map((_, i) => arr.slice(i * batchSize, i * batchSize + batchSize))
 }
@@ -80,15 +80,15 @@ export default class MailManagerSMTP extends MailManager {
 
   async sendEmail(options: MailManagerOptions) {
     const {subject, body, to, attachments, html} = options
-    // process in batches
-    //
     const toList = Array.isArray(to) ? to : [to]
+    if (toList.length === 0) return true
 
+    const batches = batch(toList, MAX_RECIPIENTS)
     const res = await Promise.allSettled(
-      batch(toList, MAX_RECIPIENTS).map((to) =>
+      batches.map((batchTo) =>
         this.transport.sendMail({
           from: process.env.MAIL_FROM,
-          to,
+          to: batchTo,
           subject,
           text: body,
           html,
@@ -97,12 +97,12 @@ export default class MailManagerSMTP extends MailManager {
       )
     )
 
-    return res.reduce((success, value) => {
+    return res.reduce((success, value, i) => {
       if (value.status !== 'fulfilled') {
         const error =
           value.reason instanceof Error ? value.reason : new Error('SMTP nodemailer error')
         logError(error, {
-          tags: {to: JSON.stringify(to)}
+          tags: {to: JSON.stringify(batches[i])}
         })
         return false
       }
