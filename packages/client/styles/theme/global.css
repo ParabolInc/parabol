@@ -221,6 +221,9 @@
     rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
   --shadow-status-ring: 0 0 0 0 transparent;
+  /* Selected left-nav item ring. No-op in light (state reads from fill + text);
+     .theme-dark supplies a lilac ring that carries the selected state (WCAG 1.4.11). */
+  --shadow-nav-active: none;
   --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
 
@@ -363,7 +366,9 @@
   --color-surface-meeting-sidebar: var(--color-grape-850);
   --color-surface-topbar: var(--color-grape-800);
   --color-surface-input: var(--color-grape-925);
-  --color-surface-nav-active: var(--color-grape-775);
+  /* selected nav lifts one ramp step (grape-775 -> 725); the lilac ring in
+     --shadow-nav-active supplies the WCAG 1.4.11 selected-state indicator */
+  --color-surface-nav-active: var(--color-grape-725);
   --color-surface-phase-active: var(--color-grape-750);
   --color-fg-primary: #eeedf7;
   --color-fg-secondary: #cac7f2;
@@ -385,13 +390,25 @@
   --color-team: #12404c;
   --color-enterprise: #4a2430;
   --default-ring-color: var(--color-accent);
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-card-hover: 0 3px 10px rgba(0, 0, 0, 0.55);
-  --shadow-card-focus: 0 3px 12px rgba(0, 0, 0, 0.6);
-  --shadow-card-dragging: 0 8px 16px rgba(0, 0, 0, 0.6);
-  --shadow-card-raised: 0 8px 16px rgba(0, 0, 0, 0.6);
+  /* On near-black, a drop shadow alone is invisible. Each elevation layers a
+     hairline ring (defines the edge) + a top highlight (catches light) + a soft
+     drop (grounds it). The ring uses var(--color-hairline*) so it re-resolves to
+     the light value inside .light-island. */
+  --shadow-card: inset 0 0 0 1px var(--color-hairline), inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 16px -6px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 22px -8px rgba(0, 0, 0, 0.65);
+  --shadow-card-focus: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 26px -8px rgba(0, 0, 0, 0.7);
+  --shadow-card-dragging: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 36px -10px rgba(0, 0, 0, 0.75);
+  --shadow-card-raised: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px -10px rgba(0, 0, 0, 0.7);
   --shadow-bar: 0 4px 12px rgba(0, 0, 0, 0.55);
   --shadow-status-ring: 0 0 0 1px rgba(238, 237, 247, 0.28);
+  /* lilac ring (fg-nav-muted #a19ac7 -> 6.5:1 on the sidebar) + faint top
+     highlight; the selected-state indicator that replaces the acid-blue bar */
+  --shadow-nav-active: inset 0 0 0 1px #a19ac7, inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* Deliberate light island (dark mode design spec §8). The in-app meeting

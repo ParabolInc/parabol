@@ -155,7 +155,7 @@ export const LeftNavPageLink = (props: Props) => {
           'peer group relative my-0.5 flex w-full min-w-full cursor-pointer items-center space-x-2 rounded-md py-1 pr-1 pl-1 text-fg-nav text-sm leading-8 outline-hidden',
           // when in dragging mode, hide hover/focus/active slate background so you only see blue
           !draggingPageId &&
-            'hover:bg-surface-nav-active focus:bg-surface-nav-active data-highlighted:bg-surface-nav-active data-highlighted:text-fg-primary',
+            'hover:bg-surface-nav-active focus:bg-surface-nav-active data-highlighted:bg-surface-nav-active data-highlighted:text-fg-primary data-highlighted:shadow-[var(--shadow-nav-active)]',
           draggingPageId && (isDraggingLastChild ? 'cursor-no-drop' : 'cursor-pointer')
         )}
       >

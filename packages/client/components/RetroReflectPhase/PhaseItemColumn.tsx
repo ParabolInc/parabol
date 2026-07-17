@@ -162,7 +162,7 @@ const PhaseItemColumn = (props: Props) => {
     >
       <div
         className={cn(
-          'relative flex w-full flex-1 shrink-0 flex-col overflow-hidden rounded-lg bg-surface-well p-3 transition-[background] duration-150 ease-out',
+          'relative flex w-full flex-1 shrink-0 flex-col overflow-hidden rounded-lg border border-hairline bg-surface-well p-3 transition-[background] duration-150 ease-out',
           isDesktop ? 'max-h-150' : 'h-full'
         )}
       >

@@ -5,7 +5,6 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {PokerEstimateHeaderCardContent_task$key} from '~/__generated__/PokerEstimateHeaderCardContent_task.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Elevation} from '~/styles/elevation'
 import {Breakpoint} from '~/types/constEnums'
 import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import CardButton from './CardButton'
@@ -22,7 +21,8 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 const HeaderCard = styled('div')({
   background: 'var(--color-surface-card)',
   borderRadius: 4,
-  boxShadow: Elevation.Z1,
+  // theme-aware: dark adds a hairline ring + top highlight so the card reads on near-black
+  boxShadow: 'var(--shadow-card)',
   height: '100%',
   padding: '12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.

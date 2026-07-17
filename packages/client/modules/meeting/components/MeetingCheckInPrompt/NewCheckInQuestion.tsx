@@ -197,7 +197,7 @@ const NewCheckInQuestion = (props: Props) => {
         )}
       </div>
       {showAiIcebreaker && (
-        <div className='flex flex-col gap-4 rounded-lg bg-surface-well p-6'>
+        <div className='flex flex-col gap-4 rounded-lg border border-hairline bg-surface-well p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
