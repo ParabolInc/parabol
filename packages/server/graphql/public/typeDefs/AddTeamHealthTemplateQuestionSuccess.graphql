@@ -1,0 +1,10 @@
+"""
+Returned when the addTeamHealthTemplateQuestion mutation succeeds. One or more questions were linked
+to the template.
+"""
+type AddTeamHealthTemplateQuestionSuccess {
+  """
+  The template the questions were added to
+  """
+  template: TeamHealthTemplate!
+}

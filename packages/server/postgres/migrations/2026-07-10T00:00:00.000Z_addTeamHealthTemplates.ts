@@ -75,8 +75,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .selectFrom('TeamHealthQuestionPack')
       .select('id')
       .where('name', '=', name)
-      .where('orgId', '=', 'aGhostOrg')
-      .where('removedAt', 'is', null)
+      .where('userId', '=', 'aGhostUser')
       .executeTakeFirstOrThrow()
     const questions = await db
       .selectFrom('TeamHealthQuestion')
@@ -95,9 +94,7 @@ export async function up(db: Kysely<any>): Promise<void> {
     .selectFrom('TeamHealthQuestion')
     .innerJoin('TeamHealthQuestionPack', 'TeamHealthQuestionPack.id', 'TeamHealthQuestion.packId')
     .select('TeamHealthQuestion.id')
-    .where('TeamHealthQuestionPack.orgId', '=', 'aGhostOrg')
-    .where('TeamHealthQuestionPack.removedAt', 'is', null)
-    .where('TeamHealthQuestion.removedAt', 'is', null)
+    .where('TeamHealthQuestionPack.userId', '=', 'aGhostUser')
     .execute()
   await db
     .insertInto('TeamHealthTemplateQuestion')

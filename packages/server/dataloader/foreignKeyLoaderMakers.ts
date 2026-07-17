@@ -14,6 +14,7 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamHealthQuestionPacks,
   selectTeamHealthQuestions,
   selectTeamHealthResponses,
   selectTeamHealthTemplateQuestions,
@@ -168,7 +169,23 @@ export const teamHealthQuestionsByPackId = foreignKeyLoaderMaker(
   'teamHealthQuestions',
   'packId',
   async (packIds) => {
-    return selectTeamHealthQuestions().where('packId', 'in', packIds).orderBy('id').execute()
+    // replaced questions stay resolvable by id (for historical responses) but drop out of pack listings
+    return selectTeamHealthQuestions()
+      .where('packId', 'in', packIds)
+      .where('replacedBy', 'is', null)
+      .orderBy('TeamHealthQuestion.id')
+      .execute()
+  }
+)
+
+export const teamHealthQuestionPacksByUserId = foreignKeyLoaderMaker(
+  'teamHealthQuestionPacks',
+  'userId',
+  async (userIds) => {
+    return selectTeamHealthQuestionPacks()
+      .where('userId', 'in', userIds)
+      .orderBy('TeamHealthQuestionPack.id')
+      .execute()
   }
 )
 
@@ -178,7 +195,7 @@ export const teamHealthTemplateQuestionsByTemplateId = foreignKeyLoaderMaker(
   async (templateIds) => {
     return selectTeamHealthTemplateQuestions()
       .where('templateId', 'in', templateIds)
-      .orderBy('id')
+      .orderBy('TeamHealthTemplateQuestion.id')
       .execute()
   }
 )

@@ -23,9 +23,9 @@ type TeamHealthCategory {
   sortOrder: Int!
 
   """
-  *Foreign key. The organization that owns the category. 'aGhostOrg' for built-in categories
+  *Foreign key. The user that owns the category. 'aGhostUser' for built-in categories
   """
-  orgId: ID!
+  userId: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
 }

@@ -8,7 +8,7 @@ const headers = ['Question', 'Average', 'Responses', 'Comments'] as const
 // matching the anonymity guarantee of the team health meeting itself.
 const getRowData = async (meetingId: string, dataLoader: DataLoaderInstance) => {
   const responses = await dataLoader.get('teamHealthResponsesByMeetingId').load(meetingId)
-  const questionIds = [...new Set(responses.map(({questionId}) => String(questionId)))]
+  const questionIds = [...new Set(responses.map(({questionId}) => questionId))]
   const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
     isValid
   )

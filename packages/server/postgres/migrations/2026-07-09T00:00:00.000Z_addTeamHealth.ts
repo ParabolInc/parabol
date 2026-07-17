@@ -64,13 +64,13 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('TeamHealthCategory')
     .ifNotExists()
-    .addColumn('id', 'bigserial', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('name', 'varchar(100)', (col) => col.notNull())
     .addColumn('description', 'varchar(500)')
     .addColumn('sortOrder', 'smallint', (col) => col.notNull().defaultTo(0))
-    // seeded/built-in categories belong to 'aGhostOrg'
-    .addColumn('orgId', 'varchar(100)', (col) =>
-      col.notNull().references('Organization.id').onDelete('cascade')
+    // seeded/built-in categories belong to 'aGhostUser'
+    .addColumn('userId', 'varchar(100)', (col) =>
+      col.notNull().references('User.id').onDelete('cascade')
     )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
@@ -78,70 +78,69 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('uniq_TeamHealthCategory_orgId_name')
+    .createIndex('uniq_TeamHealthCategory_userId_name')
     .ifNotExists()
     .on('TeamHealthCategory')
     .unique()
-    .columns(['orgId', sql`lower(name)`])
+    .columns(['userId', sql`lower(name)`])
     .where(sql.ref('removedAt'), 'is', null)
     .execute()
   await db.schema
-    .createIndex('idx_TeamHealthCategory_orgId')
+    .createIndex('idx_TeamHealthCategory_userId')
     .ifNotExists()
     .on('TeamHealthCategory')
-    .column('orgId')
+    .column('userId')
     .execute()
 
   await db.schema
     .createTable('TeamHealthQuestionPack')
     .ifNotExists()
-    .addColumn('id', 'bigserial', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('name', 'varchar(250)', (col) => col.notNull())
     .addColumn('description', 'varchar(2000)')
     .addColumn('source', 'varchar(255)')
     .addColumn('sourceUrl', 'varchar(2048)')
-    // exactly one of teamId/orgId is set: teamId = team pack, orgId = org pack, orgId 'aGhostOrg' = built-in
-    .addColumn('teamId', 'varchar(100)', (col) => col.references('Team.id').onDelete('cascade'))
-    .addColumn('orgId', 'varchar(100)', (col) =>
-      col.references('Organization.id').onDelete('cascade')
+    // the user who owns this pack. 'aGhostUser' for the built-in/seeded packs
+    .addColumn('userId', 'varchar(100)', (col) =>
+      col.notNull().references('User.id').onDelete('cascade')
     )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
-    .addColumn('removedAt', 'timestamptz')
-    .addCheckConstraint(
-      'ck_TeamHealthQuestionPack_teamId_orgId_xor',
-      sql`("teamId" IS NULL) <> ("orgId" IS NULL)`
-    )
+    // no removedAt: packs are only ever added or hard-deleted (cascade on User delete)
     .execute()
 
+  // one pack per real user. The built-in packs all belong to 'aGhostUser' (there are many), so the
+  // uniqueness is partial — it excludes the ghost user. This partial index also serves as the arbiter
+  // for the find-or-create upsert in addTeamHealthQuestion (single ON CONFLICT statement)
   await db.schema
-    .createIndex('idx_TeamHealthQuestionPack_teamId')
+    .createIndex('idx_TeamHealthQuestionPack_userId')
     .ifNotExists()
+    .unique()
     .on('TeamHealthQuestionPack')
-    .column('teamId')
-    .where(sql.ref('teamId'), 'is not', null)
-    .execute()
-  await db.schema
-    .createIndex('idx_TeamHealthQuestionPack_orgId')
-    .ifNotExists()
-    .on('TeamHealthQuestionPack')
-    .column('orgId')
-    .where(sql.ref('orgId'), 'is not', null)
+    .column('userId')
+    .where(sql.ref('userId'), '<>', 'aGhostUser')
     .execute()
 
   await db.schema
     .createTable('TeamHealthQuestion')
     .ifNotExists()
-    .addColumn('id', 'bigserial', (col) => col.primaryKey())
-    .addColumn('packId', 'bigint', (col) =>
+    .addColumn('id', 'serial', (col) => col.primaryKey())
+    .addColumn('packId', 'integer', (col) =>
       col.notNull().references('TeamHealthQuestionPack.id').onDelete('cascade')
     )
     // no cascade: categories soft-delete; a hard delete must not destroy questions across packs
-    .addColumn('categoryId', 'bigint', (col) => col.notNull().references('TeamHealthCategory.id'))
+    .addColumn('categoryId', 'integer', (col) => col.notNull().references('TeamHealthCategory.id'))
     .addColumn('question', 'varchar(500)', (col) => col.notNull())
     .addColumn('description', 'varchar(1000)')
     .addColumn('questionType', sql`"TeamHealthQuestionTypeEnum"`, (col) =>
       col.notNull().defaultTo('likert')
+    )
+    // null = built-in/seeded (system) question. Set to the author's userId for user-created questions
+    .addColumn('createdBy', 'varchar(100)', (col) => col.references('User.id').onDelete('set null'))
+    // when non-null, this question was superseded by a new version (see replacedBy) and is hidden from
+    // pack listings, but stays resolvable by id so historical responses reference the question as asked
+    .addColumn('replacedBy', 'integer', (col) =>
+      col.references('TeamHealthQuestion.id').onDelete('set null')
     )
     .addColumn('createdAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
     .addColumn('updatedAt', 'timestamptz', (col) => col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`))
@@ -167,16 +166,24 @@ export async function up(db: Kysely<any>): Promise<void> {
     .unique()
     .columns(['packId', sql`lower(question)`])
     .where(sql.ref('removedAt'), 'is', null)
+    .where(sql.ref('replacedBy'), 'is', null)
+    .execute()
+  await db.schema
+    .createIndex('idx_TeamHealthQuestion_replacedBy')
+    .ifNotExists()
+    .on('TeamHealthQuestion')
+    .column('replacedBy')
+    .where(sql.ref('replacedBy'), 'is not', null)
     .execute()
 
   await db.schema
     .createTable('TeamHealthTemplateQuestion')
     .ifNotExists()
-    .addColumn('id', 'bigserial', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('templateId', 'varchar(100)', (col) =>
       col.notNull().references('MeetingTemplate.id').onDelete('cascade')
     )
-    .addColumn('questionId', 'bigint', (col) =>
+    .addColumn('questionId', 'integer', (col) =>
       col.notNull().references('TeamHealthQuestion.id').onDelete('cascade')
     )
     // the unique btree's leading templateId column also serves list-by-template queries
@@ -196,11 +203,11 @@ export async function up(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable('TeamHealthResponse')
     .ifNotExists()
-    .addColumn('id', 'bigserial', (col) => col.primaryKey())
+    .addColumn('id', 'serial', (col) => col.primaryKey())
     .addColumn('meetingId', 'varchar(100)', (col) =>
       col.notNull().references('NewMeeting.id').onDelete('cascade')
     )
-    .addColumn('questionId', 'bigint', (col) =>
+    .addColumn('questionId', 'integer', (col) =>
       col.notNull().references('TeamHealthQuestion.id').onDelete('cascade')
     )
     .addColumn('userId', 'varchar(100)', (col) =>
@@ -253,35 +260,35 @@ export async function up(db: Kysely<any>): Promise<void> {
       {
         name: 'Psychological Safety',
         sortOrder: 1,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       },
       {
         name: 'Dependability',
         sortOrder: 2,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       },
       {
         name: 'Structure & Clarity',
         sortOrder: 3,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       },
       {
         name: 'Meaning',
         sortOrder: 4,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       },
       {
         name: 'Impact',
         sortOrder: 5,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       }
@@ -292,7 +299,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   const categories = await db
     .selectFrom('TeamHealthCategory')
     .select(['id', 'name'])
-    .where('orgId', '=', 'aGhostOrg')
+    .where('userId', '=', 'aGhostUser')
     .execute()
   const categoryId = (name: string) => {
     const category = categories.find((c: {name: string}) => c.name === name)
@@ -534,7 +541,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       name: 'Gallup Q12',
       description:
         "Gallup's Q12 employee engagement items — verbatim, lightly re-voiced toward the team. Individual-level, with strong coverage of Meaning and Structure & clarity.",
-      source: 'Gallup Q12',
+      source: 'Gallup Q12 — Buckingham & Coffman, First, Break All the Rules (1999)',
       sourceUrl: 'https://www.parabol.co/agile/team-health-check-tool/gallup-q12/',
       questions: [
         {
@@ -774,7 +781,7 @@ export async function up(db: Kysely<any>): Promise<void> {
       .insertInto('TeamHealthQuestionPack')
       .values({
         ...pack,
-        orgId: 'aGhostOrg',
+        userId: 'aGhostUser',
         createdAt: SEED_DATE,
         updatedAt: SEED_DATE
       })

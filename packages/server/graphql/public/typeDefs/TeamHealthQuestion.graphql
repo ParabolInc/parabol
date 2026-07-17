@@ -23,24 +23,26 @@ type TeamHealthQuestion {
   questionType: TeamHealthQuestionType!
 
   """
-  *Foreign key. The pack this question belongs to
-  """
-  packId: ID!
-
-  """
   The pack this question belongs to
   """
   pack: TeamHealthQuestionPack!
 
   """
-  *Foreign key. The category this question maps to
-  """
-  categoryId: ID!
-
-  """
   The category this question maps to
   """
   category: TeamHealthCategory!
+
+  """
+  *Foreign key. The user who authored this question. Null for built-in/system questions. Only the
+  author may edit the question or change its category
+  """
+  createdBy: ID
+
+  """
+  The user who authored this question. Null for built-in/system questions
+  """
+  createdByUser: User
+
   createdAt: DateTime!
   updatedAt: DateTime!
 }

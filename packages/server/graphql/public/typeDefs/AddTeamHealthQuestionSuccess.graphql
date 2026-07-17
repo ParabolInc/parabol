@@ -1,0 +1,15 @@
+"""
+Returned when the addTeamHealthQuestion mutation succeeds. A new question was added to the
+viewer's personal question pack (the pack is created lazily on the first question).
+"""
+type AddTeamHealthQuestionSuccess {
+  """
+  The newly created question
+  """
+  question: TeamHealthQuestion!
+
+  """
+  The viewer's personal pack the question was added to
+  """
+  pack: TeamHealthQuestionPack!
+}

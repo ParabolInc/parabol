@@ -163,6 +163,12 @@ const subscription = graphql`
       StartTeamHealthSuccess {
         ...useStartTeamHealthMutation_success @relay(mask: false)
       }
+      AddTeamHealthTemplateQuestionSuccess {
+        ...useAddTeamHealthTemplateQuestionMutation_team @relay(mask: false)
+      }
+      RemoveTeamHealthTemplateQuestionSuccess {
+        ...useRemoveTeamHealthTemplateQuestionMutation_team @relay(mask: false)
+      }
       UpdateAgendaItemPayload {
         ...UpdateAgendaItemMutation_team @relay(mask: false)
       }

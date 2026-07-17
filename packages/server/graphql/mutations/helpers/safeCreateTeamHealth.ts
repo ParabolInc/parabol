@@ -28,17 +28,15 @@ const safeCreateTeamHealth = async (
 
   const questions = (
     await Promise.all(
-      templateQuestions.map((tq) =>
-        dataLoader.get('teamHealthQuestions').load(String(tq.questionId))
-      )
+      templateQuestions.map((tq) => dataLoader.get('teamHealthQuestions').load(tq.questionId))
     )
   ).filter(isValid)
   if (questions.length === 0) {
     throw new Error(`Team health template ${templateId} has no questions`)
   }
 
-  // stages reference the immutable question by id, one stage per template question
-  const questionIds = questions.map((question) => String(question.id))
+  // stages reference the immutable question by its raw id, one stage per template question
+  const questionIds = questions.map((question) => question.id)
   const phases: [TeamHealthResponsePhase] = [new TeamHealthResponsePhase({questionIds})]
   primePhases(phases)
 

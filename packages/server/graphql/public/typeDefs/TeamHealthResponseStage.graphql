@@ -95,11 +95,6 @@ type TeamHealthResponseStage implements NewMeetingStage {
   stageIdx: Int!
 
   """
-  *Foreign key. The immutable question this stage captures answers for
-  """
-  questionId: ID!
-
-  """
   The team health question presented in this stage
   """
   question: TeamHealthQuestion!

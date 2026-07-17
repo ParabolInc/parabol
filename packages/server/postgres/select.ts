@@ -96,7 +96,7 @@ export const selectTeamHealthCategories = () => {
 }
 
 export const selectTeamHealthQuestionPacks = () => {
-  return getKysely().selectFrom('TeamHealthQuestionPack').selectAll().where('removedAt', 'is', null)
+  return getKysely().selectFrom('TeamHealthQuestionPack').selectAll()
 }
 
 export const selectTeamHealthQuestions = () => {

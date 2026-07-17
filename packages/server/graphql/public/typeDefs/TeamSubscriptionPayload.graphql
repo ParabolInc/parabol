@@ -17,6 +17,8 @@ type TeamSubscriptionPayload {
   EndSprintPokerSuccess: EndSprintPokerSuccess
   EndTeamHealthSuccess: EndTeamHealthSuccess
   EndTeamPromptSuccess: EndTeamPromptSuccess
+  AddTeamHealthTemplateQuestionSuccess: AddTeamHealthTemplateQuestionSuccess
+  RemoveTeamHealthTemplateQuestionSuccess: RemoveTeamHealthTemplateQuestionSuccess
   NavigateMeetingPayload: NavigateMeetingPayload
   PushInvitationPayload: PushInvitationPayload
   PromoteToTeamLeadPayload: PromoteToTeamLeadPayload

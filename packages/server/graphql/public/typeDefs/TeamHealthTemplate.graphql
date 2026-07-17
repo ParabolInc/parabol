@@ -60,6 +60,13 @@ type TeamHealthTemplate implements MeetingTemplate {
   questions: [TeamHealthQuestion!]!
 
   """
+  All question packs a user can pick questions from when editing this template: this template's
+  organization pack (if any) followed by the built-in packs. The client derives which questions are
+  selected by intersecting each pack's questions with this template's questions
+  """
+  availableQuestionPacks: [TeamHealthQuestionPack!]!
+
+  """
   The category this template falls under, e.g. retro, feedback, strategy, etc.
   """
   category: String!

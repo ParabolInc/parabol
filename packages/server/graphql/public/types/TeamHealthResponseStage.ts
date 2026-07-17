@@ -8,6 +8,7 @@ export type TeamHealthResponseStageSource = TeamHealthResponseStageDB & {
 
 const TeamHealthResponseStage: TeamHealthResponseStageResolvers = {
   __isTypeOf: ({phaseType}) => phaseType === 'TEAM_HEALTH_RESPONSE',
+  // the phases JSON snapshots the raw question id
   question: ({questionId}, _args, {dataLoader}) => {
     return dataLoader.get('teamHealthQuestions').loadNonNull(questionId)
   },

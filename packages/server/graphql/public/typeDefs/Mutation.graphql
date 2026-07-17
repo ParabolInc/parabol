@@ -1484,6 +1484,91 @@ type Mutation {
   ): AddTeamHealthTemplateSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
+  Add a new question to the viewer's personal team health question pack (the pack is created on first use).
+  """
+  addTeamHealthQuestion(
+    """
+    The text of the question.
+    """
+    question: String!
+  ): AddTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Set the category of a team health question, creating the category for the viewer if the exact
+  name does not already exist. Only the question's author may change its category.
+  """
+  upsertTeamHealthQuestionCategory(
+    """
+    The ID of the question to categorize.
+    """
+    questionId: ID!
+
+    """
+    The name of the category to assign.
+    """
+    category: String!
+  ): UpsertTeamHealthQuestionCategorySuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Edit a team health question. If the question has never been answered it is edited in place;
+  otherwise a new version is created and the original is hidden so historical responses are preserved.
+  Only the question's author may edit it.
+  """
+  editTeamHealthQuestion(
+    """
+    The ID of the question to edit.
+    """
+    questionId: ID!
+
+    """
+    The new text of the question.
+    """
+    question: String!
+  ): EditTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Link one or more questions to a team health template (used for both selecting a single question and
+  adding an entire pack).
+  """
+  addTeamHealthTemplateQuestion(
+    """
+    The ID of the template to add the questions to.
+    """
+    templateId: ID!
+
+    """
+    The IDs of the questions to link to the template.
+    """
+    questionIds: [ID!]!
+  ): AddTeamHealthTemplateQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Unlink one or more questions from a team health template.
+  """
+  removeTeamHealthTemplateQuestion(
+    """
+    The ID of the template to remove the questions from.
+    """
+    templateId: ID!
+
+    """
+    The IDs of the questions to unlink from the template.
+    """
+    questionIds: [ID!]!
+  ): RemoveTeamHealthTemplateQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Delete a team health question. The question is unlinked from every template and hidden from pack
+  listings; historical responses are preserved. Only the question's author may delete it.
+  """
+  deleteTeamHealthQuestion(
+    """
+    The ID of the question to delete.
+    """
+    questionId: ID!
+  ): DeleteTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
   Deactivate a user's billing seat. The user can still log in and will be automatically reactivated when they do.
   """
   inactivateUser(

@@ -65,7 +65,10 @@ const addTeamHealthTemplate: MutationResolvers['addTeamHealthTemplate'] = async 
   const parentLinks = await dataLoader
     .get('teamHealthTemplateQuestionsByTemplateId')
     .load(parentTemplateId)
-  const newLinks = parentLinks.map(({questionId}) => ({templateId: newTemplate.id, questionId}))
+  const newLinks = parentLinks.map(({questionId}) => ({
+    templateId: newTemplate.id,
+    questionId
+  }))
 
   if (newLinks.length > 0) {
     await pg

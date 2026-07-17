@@ -23,11 +23,6 @@ type TeamHealthResponse {
   meetingId: ID!
 
   """
-  *Foreign key. The question this response answers
-  """
-  questionId: ID!
-
-  """
   The question this response answers
   """
   question: TeamHealthQuestion!

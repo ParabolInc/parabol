@@ -81,7 +81,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   }
 
   return (
-    <div className='sticky bottom-0 flex w-full flex-col border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+    <div className='sticky bottom-0 flex w-full flex-col border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-screen lg:w-96 lg:border-l lg:pt-14'>
       <div className='grow'>
         <div className='flex items-center justify-between pt-2 font-semibold text-xl lg:pt-0'>
           Settings

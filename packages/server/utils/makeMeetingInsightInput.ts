@@ -132,7 +132,7 @@ const makeTeamHealthMeetingInsightInput = async (
   const responderCount = new Set(responses.map(({userId}) => userId)).size
   if (responderCount < MIN_RESPONSES) return null
 
-  const questionIds = [...new Set(responses.map(({questionId}) => String(questionId)))]
+  const questionIds = [...new Set(responses.map(({questionId}) => questionId))]
   const questions = (await dataLoader.get('teamHealthQuestions').loadMany(questionIds)).filter(
     isValid
   )

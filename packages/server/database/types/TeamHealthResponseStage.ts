@@ -3,11 +3,11 @@ import GenericMeetingStage, {type GenericMeetingStageInput} from './GenericMeeti
 interface Input extends Omit<GenericMeetingStageInput, 'phaseType'> {
   // questions are immutable, so referencing the id is safe: editing a question after the
   // meeting creates a brand new question rather than mutating this one
-  questionId: string
+  questionId: number
 }
 
 export default class TeamHealthResponseStage extends GenericMeetingStage {
-  questionId: string
+  questionId: number
   phaseType = 'TEAM_HEALTH_RESPONSE' as const
   constructor(input: Input) {
     super({...input, phaseType: 'TEAM_HEALTH_RESPONSE', isNavigable: true})

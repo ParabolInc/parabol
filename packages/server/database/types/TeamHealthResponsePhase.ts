@@ -2,7 +2,7 @@ import GenericMeetingPhase from './GenericMeetingPhase'
 import TeamHealthResponseStage from './TeamHealthResponseStage'
 
 interface Input {
-  questionIds: string[]
+  questionIds: number[]
 }
 
 export default class TeamHealthResponsePhase extends GenericMeetingPhase {

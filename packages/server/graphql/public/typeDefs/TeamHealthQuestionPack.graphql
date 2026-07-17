@@ -28,14 +28,9 @@ type TeamHealthQuestionPack {
   sourceUrl: String
 
   """
-  *Foreign key. The team that owns this pack, if it is a team pack. Null for org & built-in packs
+  *Foreign key. The user that owns this pack. 'aGhostUser' for the built-in packs
   """
-  teamId: ID
-
-  """
-  *Foreign key. The organization that owns this pack, if it is an org pack. 'aGhostOrg' for built-in packs
-  """
-  orgId: ID
+  userId: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
 
