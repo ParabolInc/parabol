@@ -4,13 +4,20 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
+import type {RRule} from 'rrule'
 import type {TeamHealthDetailsSidebar_teams$key} from '~/__generated__/TeamHealthDetailsSidebar_teams.graphql'
+import type {CreateGcalEventInput} from '../../__generated__/useStartTeamHealthMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
+import useMutationProps from '../../hooks/useMutationProps'
 import useStartTeamHealthMutation from '../../mutations/useStartTeamHealthMutation'
 import {cn} from '../../ui/cn'
+import {Dialog} from '../../ui/Dialog/Dialog'
+import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import sortByTier from '../../utils/sortByTier'
 import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingTeamPickerMultiple from '../NewMeetingTeamPickerMultiple'
+import {ScheduleDialog} from '../ScheduleDialog'
 import StyledLink from '../StyledLink'
 
 interface Props {
@@ -28,6 +35,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
         name
         tier
         ...NewMeetingTeamPickerMultiple_teams
+        ...ScheduleDialog_team
       }
     `,
     teamsRef
@@ -36,7 +44,10 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
   const [isMinimized, setIsMinimized] = useState(false)
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false)
   const [execute, submitting] = useStartTeamHealthMutation()
+  // ScheduleDialog drives the Google Calendar OAuth flow through the legacy mutationProps shape
+  const mutationProps = useMutationProps()
 
   const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>(() => {
     const defaultTeam = teams.find((team) => team.id === preferredTeamId) ?? sortByTier(teams)[0]
@@ -59,22 +70,33 @@ const TeamHealthDetailsSidebar = (props: Props) => {
     )
   }
 
-  const handleStartActivity = () => {
+  // the Google Calendar UI in the dialog is scoped to a single team member's integration
+  const gcalTeam = teams.find((team) => team.id === selectedTeamIds[0]) ?? teams[0]!
+
+  const handleStartActivity = (name?: string, rrule?: RRule, gcalInput?: CreateGcalEventInput) => {
     if (submitting || selectedTeamIds.length === 0) return
     execute({
-      variables: {teamIds: selectedTeamIds, templateId},
+      variables: {
+        teamIds: selectedTeamIds,
+        templateId,
+        name,
+        rrule: rrule?.toString(),
+        gcalInput
+      },
       onCompleted: (res) => {
-        const meetings = res.startTeamHealth.meetings
+        setIsScheduleOpen(false)
+        const {meetings, teams: startedTeams} = res.startTeamHealth
+        // an immediate (non-recurring) meeting was created for a single team → jump right in
         if (selectedTeamIds.length === 1 && meetings[0]) {
           navigate(`/meet/${meetings[0].id}`)
           return
         }
+        const teamCount = startedTeams.length
+        const verb = meetings.length > 0 ? 'Started' : 'Scheduled'
         atmosphere.eventEmitter.emit('addSnackbar', {
           key: 'startTeamHealth',
           autoDismiss: 5,
-          message: `Started Team Health for ${meetings.length} team${
-            meetings.length === 1 ? '' : 's'
-          }`
+          message: `${verb} Team Health for ${teamCount} team${teamCount === 1 ? '' : 's'}`
         })
       }
     })
@@ -112,14 +134,28 @@ const TeamHealthDetailsSidebar = (props: Props) => {
       </div>
 
       <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
-        <FlatPrimaryButton
-          onClick={handleStartActivity}
-          waiting={submitting}
-          disabled={selectedTeamIds.length === 0}
-          className='h-14'
-        >
-          <div className='text-lg'>Start Activity</div>
-        </FlatPrimaryButton>
+        <Dialog isOpen={isScheduleOpen} onClose={() => setIsScheduleOpen(false)}>
+          <DialogTrigger>
+            <FlatPrimaryButton
+              onClick={() => setIsScheduleOpen(true)}
+              waiting={submitting}
+              disabled={selectedTeamIds.length === 0}
+              className='h-14'
+            >
+              <div className='text-lg'>Schedule Meeting</div>
+            </FlatPrimaryButton>
+          </DialogTrigger>
+          <DialogContent noClose>
+            <ScheduleDialog
+              teamRef={gcalTeam}
+              placeholder='Team Health'
+              onStartActivity={handleStartActivity}
+              onCancel={() => setIsScheduleOpen(false)}
+              mutationProps={mutationProps}
+              withRecurrence
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

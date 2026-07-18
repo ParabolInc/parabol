@@ -79,8 +79,9 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
     description: (
       <>
         Take the pulse of your team by answering research-backed survey questions across categories
-        like psychological safety, dependability, and impact. Track your team's health trends over
-        time.
+        like psychological safety, dependability, and impact.
+        <br />
+        Each round we ask one new question from each category and track health trends over time.
       </>
     ),
     integrationsTip: <>push takeaway tasks to your backlog</>

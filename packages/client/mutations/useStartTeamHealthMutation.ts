@@ -16,8 +16,20 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation useStartTeamHealthMutation($teamIds: [ID!]!, $templateId: ID!) {
-    startTeamHealth(teamIds: $teamIds, templateId: $templateId) {
+  mutation useStartTeamHealthMutation(
+    $teamIds: [ID!]!
+    $templateId: ID!
+    $name: String
+    $rrule: RRule
+    $gcalInput: CreateGcalEventInput
+  ) {
+    startTeamHealth(
+      teamIds: $teamIds
+      templateId: $templateId
+      name: $name
+      rrule: $rrule
+      gcalInput: $gcalInput
+    ) {
       ...useStartTeamHealthMutation_success @relay(mask: false)
     }
   }
