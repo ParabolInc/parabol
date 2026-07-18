@@ -53,7 +53,8 @@ const meetingTypeTitleLookup: Record<MeetingTypeEnum, (meetingName: string) => s
   action: createGenericMeetingTitle,
   poker: createGenericMeetingTitle,
   retrospective: createGenericMeetingTitle,
-  teamPrompt: createTeamPromptMeetingTitle
+  teamPrompt: createTeamPromptMeetingTitle,
+  teamHealth: createGenericMeetingTitle
 }
 
 const createGenericMeetingAction = (meetingUrl: string) => {
@@ -81,7 +82,8 @@ const MeetingActionLookup: Record<
   action: createGenericMeetingAction,
   poker: createGenericMeetingAction,
   retrospective: createGenericMeetingAction,
-  teamPrompt: createTeamPromptMeetingAction
+  teamPrompt: createTeamPromptMeetingAction,
+  teamHealth: createGenericMeetingAction
 }
 
 export const MSTeamsNotificationHelper: NotificationIntegrationHelper<MSTeamsNotificationAuth> = (

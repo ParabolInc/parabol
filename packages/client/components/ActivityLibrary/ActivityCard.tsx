@@ -8,10 +8,9 @@ import {cn} from '../../ui/cn'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
-import {upperFirst} from '../../utils/upperFirst'
 import {ActivityLibraryCardDescription} from './ActivityLibraryCardDescription'
 import {backgroundImgMap} from './backgroundImgMap'
-import {type CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
+import {CATEGORY_ID_TO_NAME, type CategoryID, MEETING_TYPE_TO_CATEGORY} from './Categories'
 
 export interface CardTheme {
   primary: string
@@ -125,7 +124,9 @@ export const ActivityCard = (props: ActivityCardProps) => {
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
           <div className='truncate pb-1 text-lg text-slate-800 leading-5'>{title}</div>
-          <div className={cn('font-semibold italic', `${theme.text}`)}>{upperFirst(category)}</div>
+          <div className={cn('font-semibold italic', `${theme.text}`)}>
+            {CATEGORY_ID_TO_NAME[category]}
+          </div>
         </div>
       )}
     </div>

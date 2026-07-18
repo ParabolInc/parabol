@@ -107,6 +107,13 @@ export default async function createTeamAndLeader(
             meetingType: 'poker',
             phaseTypes: ['checkin', 'SCOPE', 'ESTIMATE'],
             selectedTemplateId: 'estimatedEffortTemplate'
+          },
+          {
+            id: generateUID(),
+            teamId,
+            meetingType: 'teamHealth',
+            phaseTypes: ['TEAM_HEALTH_RESPONSE'],
+            selectedTemplateId: 'everythingBagelTemplate'
           }
         ])
       )

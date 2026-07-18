@@ -1397,6 +1397,16 @@ type Mutation {
   ): EndTeamPromptPayload! @scope(name: MEETINGS_WRITE)
 
   """
+  Finish the team health meeting
+  """
+  endTeamHealth(
+    """
+    The meeting to end
+    """
+    meetingId: ID!
+  ): EndTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Set the Azure DevOps field that the poker dimension should map to
   """
   updateAzureDevOpsDimensionField(
@@ -1457,6 +1467,106 @@ type Mutation {
     """
     teamId: ID!
   ): AddReflectTemplatePayload! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Adds a new team health template, optionally cloned from an existing template.
+  """
+  addTeamHealthTemplate(
+    """
+    The ID of the parent template, if this is a clone operation.
+    """
+    parentTemplateId: ID
+
+    """
+    The ID of the team for which the template is being created.
+    """
+    teamId: ID!
+  ): AddTeamHealthTemplateSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Add a new question to the viewer's personal team health question pack (the pack is created on first use).
+  """
+  addTeamHealthQuestion(
+    """
+    The text of the question.
+    """
+    question: String!
+  ): AddTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Set the category of a team health question, creating the category for the viewer if the exact
+  name does not already exist. Only the question's author may change its category.
+  """
+  upsertTeamHealthQuestionCategory(
+    """
+    The ID of the question to categorize.
+    """
+    questionId: ID!
+
+    """
+    The name of the category to assign.
+    """
+    category: String!
+  ): UpsertTeamHealthQuestionCategorySuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Edit a team health question. If the question has never been answered it is edited in place;
+  otherwise a new version is created and the original is hidden so historical responses are preserved.
+  Only the question's author may edit it.
+  """
+  editTeamHealthQuestion(
+    """
+    The ID of the question to edit.
+    """
+    questionId: ID!
+
+    """
+    The new text of the question.
+    """
+    question: String!
+  ): EditTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Link one or more questions to a team health template (used for both selecting a single question and
+  adding an entire pack).
+  """
+  addTeamHealthTemplateQuestion(
+    """
+    The ID of the template to add the questions to.
+    """
+    templateId: ID!
+
+    """
+    The IDs of the questions to link to the template.
+    """
+    questionIds: [ID!]!
+  ): AddTeamHealthTemplateQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Unlink one or more questions from a team health template.
+  """
+  removeTeamHealthTemplateQuestion(
+    """
+    The ID of the template to remove the questions from.
+    """
+    templateId: ID!
+
+    """
+    The IDs of the questions to unlink from the template.
+    """
+    questionIds: [ID!]!
+  ): RemoveTeamHealthTemplateQuestionSuccess! @scope(name: TEMPLATES_WRITE)
+
+  """
+  Delete a team health question. The question is unlinked from every template and hidden from pack
+  listings; historical responses are preserved. Only the question's author may delete it.
+  """
+  deleteTeamHealthQuestion(
+    """
+    The ID of the question to delete.
+    """
+    questionId: ID!
+  ): DeleteTeamHealthQuestionSuccess! @scope(name: TEMPLATES_WRITE)
 
   """
   Deactivate a user's billing seat. The user can still log in and will be automatically reactivated when they do.
@@ -1950,6 +2060,36 @@ type Mutation {
     """
     ignoreSuggestedUpgrade: Boolean
   ): StartRetrospectivePayload! @scope(name: MEETINGS_WRITE)
+
+  """
+  Start a team health meeting for one or more teams, one meeting per team
+  """
+  startTeamHealth(
+    """
+    The teams to start a team health meeting for
+    """
+    teamIds: [ID!]!
+
+    """
+    The team health template to use
+    """
+    templateId: ID!
+
+    """
+    Name of the meeting or series
+    """
+    name: String
+
+    """
+    The recurrence rule for the meeting series in RRULE format. Applied to every selected team.
+    """
+    rrule: RRule
+
+    """
+    The gcal input if creating a gcal event. Applied to every selected team.
+    """
+    gcalInput: CreateGcalEventInput
+  ): StartTeamHealthSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Starts a new team prompt meeting

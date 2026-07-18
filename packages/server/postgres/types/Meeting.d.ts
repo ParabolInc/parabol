@@ -6,6 +6,7 @@ import {
   NewMeetingPhase,
   PokerMeetingPhase,
   RetroMeetingPhase,
+  type TeamHealthResponsePhase,
   TeamPromptPhase
 } from './NewMeetingPhase'
 import {NewMeeting as NewMeetingPG} from './pg'
@@ -77,7 +78,18 @@ export type TeamPromptMeeting = BaseNewMeeting &
     phases: TeamPromptPhase[]
   }
 
-export type AnyMeeting = RetrospectiveMeeting | PokerMeeting | CheckInMeeting | TeamPromptMeeting
+export type TeamHealthMeeting = BaseNewMeeting &
+  NonNullableProps<Pick<NewMeeting, 'templateId'>> & {
+    meetingType: 'teamHealth'
+    phases: [TeamHealthResponsePhase]
+  }
+
+export type AnyMeeting =
+  | RetrospectiveMeeting
+  | PokerMeeting
+  | CheckInMeeting
+  | TeamPromptMeeting
+  | TeamHealthMeeting
 
 export interface MeetingMember {
   id: string

@@ -76,4 +76,9 @@ enum NewMeetingPhaseTypeEnum {
   Team health check phase for pulse-check voting
   """
   TEAM_HEALTH
+
+  """
+  Responses phase in a standalone Team Health meeting, one stage per template question
+  """
+  TEAM_HEALTH_RESPONSE
 }

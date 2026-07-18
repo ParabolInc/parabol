@@ -73,6 +73,15 @@ extend type TeamPromptMeeting {
   musicSettings: MusicSettings
 }
 
+extend type TeamHealthMeeting {
+  localPhase: NewMeetingPhase!
+  localStage: NewMeetingStage!
+  # null = the right drawer is closed. Otherwise the active tab id it is open to
+  rightDrawerOpen: String
+  showSidebar: Boolean!
+  musicSettings: MusicSettings
+}
+
 extend type Team {
   teamMemberFilter: TeamMember
   editingScaleId: ID
@@ -175,6 +184,10 @@ extend type TeamHealthStage {
 }
 
 extend type TeamPromptResponseStage {
+  localScheduledEndTime: String
+}
+
+extend type TeamHealthResponseStage {
   localScheduledEndTime: String
 }
 

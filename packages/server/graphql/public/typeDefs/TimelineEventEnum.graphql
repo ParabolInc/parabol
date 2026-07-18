@@ -14,4 +14,6 @@ enum TimelineEventEnum {
   POKER_COMPLETE
   "A standup (team prompt) meeting was completed"
   TEAM_PROMPT_COMPLETE
+  "A team health meeting was completed"
+  TEAM_HEALTH_COMPLETE
 }
