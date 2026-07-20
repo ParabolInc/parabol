@@ -1,15 +1,5 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-
-const Reply = styled(PlainButton)({
-  fontWeight: 600,
-  lineHeight: '24px',
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
 
 interface Props {
   onReply: () => void
@@ -23,7 +13,14 @@ const ThreadedReplyButton = (props: Props) => {
     e.stopPropagation()
     onReply()
   }
-  return <Reply onClick={onClick}>Reply</Reply>
+  return (
+    <PlainButton
+      className='font-semibold leading-6 hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+      onClick={onClick}
+    >
+      Reply
+    </PlainButton>
+  )
 }
 
 export default ThreadedReplyButton

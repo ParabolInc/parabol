@@ -1,11 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {VoteSettingsMenu_meeting$key} from '~/__generated__/VoteSettingsMenu_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateRetroMaxVotesMutation from '~/mutations/UpdateRetroMaxVotesMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
 import type {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
@@ -17,21 +15,8 @@ interface Props {
   meeting: VoteSettingsMenu_meeting$key
 }
 
-const VoteOption = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'space-between',
-  padding: '8px 16px',
-  fontWeight: 600,
-  color: PALETTE.SLATE_600,
-  fontSize: 14
-})
-
-const Label = styled('div')({})
-
-const Error = styled(StyledError)({
-  fontSize: 12
-})
+const voteOptionClass =
+  'flex items-center justify-between px-4 py-2 font-semibold text-[14px] text-fg-secondary'
 
 const VoteSettingsMenu = (props: Props) => {
   const {menuProps, meeting: meetingRef} = props
@@ -81,25 +66,25 @@ const VoteSettingsMenu = (props: Props) => {
 
   return (
     <Menu ariaLabel='Adjust the vote count' {...menuProps}>
-      <VoteOption>
-        <Label>Votes per participant</Label>
+      <div className={voteOptionClass}>
+        <div>Votes per participant</div>
         <VoteStepper
           aria-label='Votes per participant'
           value={totalVotes}
           increase={increaseTotalVotes}
           decrease={decreaseTotalVotes}
         />
-      </VoteOption>
-      {error && <Error>{error?.message}</Error>}
-      <VoteOption>
-        <Label>Votes per topic</Label>
+      </div>
+      {error && <StyledError className='text-[12px]'>{error?.message}</StyledError>}
+      <div className={voteOptionClass}>
+        <div>Votes per topic</div>
         <VoteStepper
           aria-label='Votes per topic'
           value={maxVotesPerGroup}
           increase={increaseMaxVotesPerGroup}
           decrease={decreaseMaxVotesPerGroup}
         />
-      </VoteOption>
+      </div>
     </Menu>
   )
 }

@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import {upperFirst} from '../../../../utils/upperFirst'
 
@@ -13,7 +12,7 @@ const List = styled('div')({
 })
 
 const DrawerContent = styled('div')({
-  backgroundColor: PALETTE.WHITE,
+  backgroundColor: 'var(--color-surface-card)',
   display: 'flex',
   flexDirection: 'column',
   overflowY: 'auto',
@@ -37,7 +36,7 @@ const UL = styled('ul')({
 const LI = styled('li')({
   fontSize: 16,
   lineHeight: '28px',
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   textTransform: 'none',
   fontWeight: 400,
   textAlign: 'left',
@@ -45,11 +44,11 @@ const LI = styled('li')({
 })
 
 const Link = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontWeight: 600,
   textDecoration: 'none',
   '&:hover, &:focus': {
-    color: PALETTE.SKY_500,
+    color: 'var(--color-accent)',
     textDecoration: 'underline'
   }
 })

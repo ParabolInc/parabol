@@ -13,7 +13,6 @@ import type {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePr
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'
 import UpdateTaskMutation from '../mutations/UpdateTaskMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {DroppableType} from '../types/constEnums'
 import {ACTIVE, ACTIVE_TASK, SORT_STEP} from '../utils/constants'
 import dndNoise from '../utils/dndNoise'
@@ -25,8 +24,8 @@ interface Props {
 }
 
 const PriorityTasksHeader = styled('div')({
-  background: PALETTE.SLATE_200,
-  color: PALETTE.SLATE_600,
+  background: 'var(--color-surface-well)',
+  color: 'var(--color-fg-secondary)',
   fontSize: 14,
   fontWeight: 600,
   paddingTop: 16,

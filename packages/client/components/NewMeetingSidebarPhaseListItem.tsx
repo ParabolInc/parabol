@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   Comment,
   Edit,
@@ -14,121 +13,10 @@ import {useEffect} from 'react'
 import type {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import {PALETTE} from '../styles/paletteV3'
-import {NavSidebar, Times} from '../types/constEnums'
+import {Times} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {phaseIconLookup, phaseImageLookup, phaseLabelLookup} from '../utils/meetings/lookups'
 import Badge from './Badge/Badge'
-
-const NavItemSVG = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
-  ({isUnsyncedFacilitatorPhase}) => ({
-    height: 24,
-    margin: '0 16px',
-    width: 24,
-    svg: {
-      path: {
-        fill: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : PALETTE.SLATE_600
-      }
-    }
-  })
-)
-
-const NavItemIcon = styled('div')<{isUnsyncedFacilitatorPhase: boolean}>(
-  {
-    color: PALETTE.SLATE_600,
-    height: 24,
-    width: 24,
-    margin: '0 16px'
-  },
-  ({isUnsyncedFacilitatorPhase}) => ({
-    color: isUnsyncedFacilitatorPhase ? PALETTE.ROSE_500 : undefined
-  })
-)
-
-const NavItemLabel = styled('span')({
-  display: 'inline-block',
-  fontSize: NavSidebar.FONT_SIZE,
-  verticalAlign: 'middle'
-})
-
-const navListItemLinkActive = {
-  backgroundColor: PALETTE.SLATE_200,
-  borderLeftColor: PALETTE.GRAPE_700,
-  borderRadius: '0 4px 4px 0',
-  color: PALETTE.SLATE_700,
-  cursor: 'default',
-  ':hover,:focus': {
-    backgroundColor: PALETTE.SLATE_200
-  }
-}
-
-const navListItemLinkDisabled = {
-  cursor: 'not-allowed',
-  ':hover,:focus': {
-    backgroundColor: 'transparent'
-  }
-}
-
-interface LinkProps {
-  isActive: boolean
-  isCollapsible?: boolean
-  isDisabled: boolean
-  isFacilitatorPhase: boolean
-  isUnsyncedFacilitatorStage?: boolean
-}
-
-const NavListItemLink = styled('div')<LinkProps>(
-  {
-    alignItems: 'center',
-    borderRadius: '0 4px 4px 0',
-    color: PALETTE.SLATE_700,
-    cursor: 'pointer',
-    display: 'flex',
-    flexShrink: 0,
-    marginRight: 8,
-    minHeight: 40,
-    textDecoration: 'none',
-    userSelect: 'none',
-    fontWeight: 600,
-    ':hover,:focus': {
-      backgroundColor: PALETTE.SLATE_200
-    }
-  },
-  ({isDisabled}) => isDisabled && navListItemLinkDisabled,
-  ({isActive}) => isActive && navListItemLinkActive,
-  ({isCollapsible, isActive}) =>
-    isCollapsible &&
-    isActive && {
-      backgroundColor: 'transparent',
-      ':hover,:focus': {
-        cursor: 'pointer'
-      }
-    },
-  ({isCollapsible, isFacilitatorPhase, isUnsyncedFacilitatorStage}) =>
-    isCollapsible &&
-    isFacilitatorPhase &&
-    !isUnsyncedFacilitatorStage && {
-      backgroundColor: 'transparent',
-      cursor: 'default',
-      ':hover,:focus': {
-        backgroundColor: 'transparent',
-        cursor: 'default'
-      }
-    }
-)
-
-const PhaseCountBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  marginLeft: 'auto'
-})
-
-const StyledBadge = styled(Badge)({
-  backgroundColor: PALETTE.SLATE_600,
-  boxShadow: 'none',
-  marginRight: 8,
-  minWidth: 24,
-  textShadow: 'none'
-})
 
 interface Props {
   handleClick?: () => void
@@ -156,6 +44,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
     phaseType,
     isConfirming
   } = props
+  const isDisabled = !handleClick
   const label = phaseLabel ?? (phaseLabelLookup[phaseType] as string | undefined)
   const icon = phaseIconLookup[phaseType] as string | undefined
   const Image = phaseImageLookup[phaseType as keyof typeof phaseImageLookup]
@@ -176,18 +65,29 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   }, [isConfirming])
 
   return (
-    <NavListItemLink
-      isActive={isActive}
-      isCollapsible={isCollapsible}
-      isDisabled={!handleClick}
-      isFacilitatorPhase={isFacilitatorPhase}
-      isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
+    <div
+      className={cn(
+        'mr-2 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-r border-l-[3px] border-l-transparent font-semibold text-fg-primary no-underline hover:bg-surface-phase-active focus:bg-surface-phase-active',
+        isDisabled && 'cursor-not-allowed hover:bg-transparent focus:bg-transparent',
+        isActive &&
+          'cursor-default border-l-(--color-accent-active) bg-surface-phase-active hover:bg-surface-phase-active focus:bg-surface-phase-active',
+        isCollapsible && isActive && 'bg-transparent hover:cursor-pointer focus:cursor-pointer',
+        isCollapsible &&
+          isFacilitatorPhase &&
+          !isUnsyncedFacilitatorStage &&
+          'cursor-default bg-transparent hover:cursor-default hover:bg-transparent focus:cursor-default focus:bg-transparent'
+      )}
       onClick={handleClick}
       title={label}
       ref={originRef}
     >
       {icon && (
-        <NavItemIcon isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+        <div
+          className={cn(
+            'mx-4 h-6 w-6 text-fg-nav-muted',
+            isUnsyncedFacilitatorPhase && 'text-rose-500'
+          )}
+        >
           {
             {
               group: <Group />,
@@ -201,21 +101,31 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
               receipt: <Receipt />
             }[icon]
           }
-        </NavItemIcon>
+        </div>
       )}
       {Image && (
-        <NavItemSVG isUnsyncedFacilitatorPhase={isUnsyncedFacilitatorPhase}>
+        <div
+          className={cn(
+            'mx-4 h-6 w-6',
+            isUnsyncedFacilitatorPhase
+              ? '[&_svg_path]:fill-rose-500'
+              : '[&_svg_path]:fill-fg-nav-muted'
+          )}
+        >
           <Image />
-        </NavItemSVG>
+        </div>
       )}
-      <NavItemLabel>{label}</NavItemLabel>
+      <span className='inline-block align-middle text-sm'>{label}</span>
       {showPhaseCount && (
-        <PhaseCountBlock>
-          <StyledBadge>{phaseCount}</StyledBadge>
-        </PhaseCountBlock>
+        <div className='ml-auto flex items-center'>
+          {/* INVARIANT: slate-600/white in both themes */}
+          <Badge className='mr-2 h-6 min-w-6 rounded-xl bg-slate-600 text-xs leading-6 shadow-none'>
+            {phaseCount}
+          </Badge>
+        </div>
       )}
       {tooltipPortal(`Tap '${label}' again if everyone is ready`)}
-    </NavListItemLink>
+    </div>
   )
 }
 

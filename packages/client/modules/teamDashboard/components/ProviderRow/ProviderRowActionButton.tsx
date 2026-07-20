@@ -1,16 +1,29 @@
-import styled from '@emotion/styled'
-import FlatButton from '../../../../components/FlatButton'
-import {PALETTE} from '../../../../styles/paletteV3'
+import type {ReactNode} from 'react'
+import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 
-const ProviderRowActionButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
-  fontSize: 14,
-  fontWeight: 600,
-  minWidth: 36,
-  paddingLeft: 0,
-  paddingRight: 0,
-  width: '100%'
-})
+interface Props {
+  children?: ReactNode
+  className?: string
+  disabled?: boolean
+  onClick?: () => void
+  waiting?: boolean
+}
+
+const ProviderRowActionButton = (props: Props) => {
+  const {children, className, disabled, onClick, waiting} = props
+  return (
+    <Button
+      variant='outline'
+      size='md'
+      shape='pill'
+      onClick={onClick}
+      disabled={disabled || waiting}
+      className={cn('w-full min-w-9 whitespace-nowrap', className)}
+    >
+      {children}
+    </Button>
+  )
+}
 
 export default ProviderRowActionButton

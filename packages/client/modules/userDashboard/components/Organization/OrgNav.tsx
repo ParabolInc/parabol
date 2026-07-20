@@ -4,7 +4,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -22,7 +21,7 @@ const StyledIcon = styled('div')({
 
 const NavigateNextIcon = styled(NavigateNext)({
   height: 18,
-  color: PALETTE.SLATE_900
+  color: 'var(--color-fg-primary)'
 })
 
 const NavLabel = styled('span')<{isCurrent?: boolean}>(({isCurrent}) => ({

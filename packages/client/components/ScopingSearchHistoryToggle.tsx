@@ -2,24 +2,23 @@ import styled from '@emotion/styled'
 import {ExpandMore, Search} from '@mui/icons-material'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 import ScopingSearchHistoryMenu, {type SearchQueries} from './ScopingSearchHistoryMenu'
 
 const StyledIcon = styled(Search)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   margin: '3px 15px 3px 3px'
 })
 
 const DropdownIcon = styled(ExpandMore)({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   height: 18,
   width: 18,
   marginLeft: -8
 })
 
 const StyledIconDropdown = styled(Search)({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const Toggle = styled(PlainButton)({

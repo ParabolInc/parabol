@@ -16,13 +16,13 @@ export const CancelSeriesConfirmationModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='md:max-w-sm'>
         <DialogTitle>Cancel scheduled meeting?</DialogTitle>
-        <p className='mt-2 mb-4 text-slate-700 text-sm'>
+        <p className='mt-2 mb-4 text-fg-primary text-sm'>
           "{seriesTitle}" will not recur and the first meeting will not start automatically. You can
           re-schedule it later.
         </p>
         <DialogActions>
           <button
-            className='cursor-pointer rounded-full border border-slate-400 border-solid bg-white px-4 py-2 font-medium font-sans text-base text-slate-700 hover:bg-slate-100'
+            className='cursor-pointer rounded-full border border-hairline-strong border-solid bg-surface-card px-4 py-2 font-medium font-sans text-base text-fg-primary hover:bg-surface-hover'
             onClick={onClose}
           >
             Keep series

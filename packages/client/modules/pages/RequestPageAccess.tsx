@@ -82,7 +82,7 @@ export const RequestPageAccess = (props: Props) => {
           noClose
         >
           <DialogTitle className='flex w-full flex-col items-center justify-center'>
-            <div className='h-12 w-12 rounded-full bg-slate-300 p-3 text-slate-600'>
+            <div className='h-12 w-12 rounded-full bg-surface-well p-3 text-fg-secondary'>
               <LockIcon />
             </div>
             <div>Request Access</div>
@@ -91,7 +91,7 @@ export const RequestPageAccess = (props: Props) => {
             Ask a page owner to share the page with you.
             <BasicTextArea
               autoFocus
-              className='mt-6 resize-none border-slate-500 px-3 py-2.5'
+              className='mt-6 resize-none border-hairline-field px-3 py-2.5'
               name='reason'
               onChange={(e) => setReason(e.target.value)}
               placeholder='Optional message...'

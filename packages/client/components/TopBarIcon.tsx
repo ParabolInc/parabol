@@ -1,41 +1,6 @@
-import styled from '@emotion/styled'
 import {HelpOutline, Notifications, Search} from '@mui/icons-material'
 import {forwardRef} from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-
-const ButtonIcon = styled('div')({
-  height: 24,
-  width: 24
-})
-
-const Button = styled(PlainButton)({
-  borderRadius: 100,
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'center',
-  margin: '8px 4px',
-  padding: 4,
-  position: 'relative',
-  ':focus': {
-    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
-  },
-  ':active': {
-    boxShadow: '0 0 0 2px transparent'
-  }
-})
-
-const Badge = styled('div')({
-  borderRadius: 10,
-  top: 5,
-  position: 'absolute',
-  left: 18,
-  background: PALETTE.ROSE_500,
-  border: `1px solid ${PALETTE.GRAPE_700}`,
-  // +1 for borders
-  width: 9,
-  height: 9
-})
 
 interface Props {
   //FIXME 6062: change to React.ComponentType
@@ -49,8 +14,14 @@ interface Props {
 const TopBarIcon = forwardRef((props: Props, ref: any) => {
   const {icon, hasBadge, onClick, onMouseEnter, ariaLabel} = props
   return (
-    <Button onClick={onClick} ref={ref} onMouseEnter={onMouseEnter} aria-label={ariaLabel}>
-      <ButtonIcon>
+    <PlainButton
+      onClick={onClick}
+      ref={ref}
+      onMouseEnter={onMouseEnter}
+      aria-label={ariaLabel}
+      className='relative mx-1 my-2 flex cursor-pointer justify-center rounded-full p-1 focus:shadow-[0_0_0_2px_var(--color-sky-400)] active:shadow-[0_0_0_2px_transparent]'
+    >
+      <div className='h-6 w-6'>
         {
           {
             search: <Search />,
@@ -58,9 +29,12 @@ const TopBarIcon = forwardRef((props: Props, ref: any) => {
             notifications: <Notifications />
           }[icon]
         }
-      </ButtonIcon>
-      {hasBadge && <Badge />}
-    </Button>
+      </div>
+      {/* badge is 9x9: 8px dot +1 for borders */}
+      {hasBadge && (
+        <div className='absolute top-[5px] left-[18px] h-[9px] w-[9px] rounded-[10px] border border-(--color-surface-topbar) bg-rose-500' />
+      )}
+    </PlainButton>
   )
 })
 

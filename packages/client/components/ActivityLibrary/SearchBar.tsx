@@ -9,9 +9,9 @@ interface Props {
 const SearchBar = (props: Props) => {
   const {searchQuery, onChange} = props
   return (
-    <div className='ml-2 flex grow items-center rounded-full bg-slate-200 px-4 py-2 outline-1 outline-hidden outline-offset-0 focus-within:outline-sky-500'>
+    <div className='ml-2 flex grow items-center rounded-full bg-surface-well px-4 py-2 outline-1 outline-hidden outline-offset-0 focus-within:outline-sky-500'>
       <input
-        className='w-full border-none bg-transparent font-sans text-slate-700 text-sm placeholder-slate-800 outline-hidden'
+        className='w-full border-none bg-transparent font-sans text-fg-primary text-sm outline-hidden placeholder:text-fg-muted'
         autoFocus
         autoComplete='off'
         name='search'
@@ -20,7 +20,7 @@ const SearchBar = (props: Props) => {
         onChange={onChange}
         value={searchQuery}
       />
-      <SearchIcon fontSize='small' className='text-slate-600' />
+      <SearchIcon fontSize='small' className='text-fg-secondary' />
     </div>
   )
 }

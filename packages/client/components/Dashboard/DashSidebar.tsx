@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import AddIcon from '@mui/icons-material/Add'
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -15,7 +14,7 @@ import {useFragment} from 'react-relay'
 import {useMatch} from 'react-router'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {SearchDialog} from '../../modules/search/SearchDialog'
-import {NavSidebar} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
@@ -28,26 +27,12 @@ import DashNavList from '../DashNavList/DashNavList'
 import SideBarStartMeetingButton from '../SideBarStartMeetingButton'
 import LeftDashNavItem from './LeftDashNavItem'
 
-const Nav = styled('nav')<{isOpen: boolean}>(({isOpen}) => ({
-  // 70px is total height of 'Add meeting' block
-  height: 'calc(100% - 70px)',
-  userSelect: 'none',
-  transition: `all 300ms`,
-  transform: isOpen ? undefined : `translateX(-${NavSidebar.WIDTH}px)`,
-  width: isOpen ? NavSidebar.WIDTH : '70px'
-}))
-
-const NavMain = styled('div')({
-  overflowY: 'auto'
-})
-
-const NavList = styled(DashNavList)({
-  paddingLeft: 16
-})
-
-const NavItemsWrap = styled('div')({
-  paddingRight: 8
-})
+const navClassName = (isOpen: boolean) =>
+  cn(
+    // 70px is total height of 'Add meeting' block
+    'h-[calc(100%-70px)] select-none transition-all duration-300 ease-[ease]',
+    isOpen ? 'w-64' : '-translate-x-64 w-[70px]'
+  )
 
 interface Props {
   isOpen: boolean
@@ -80,12 +65,12 @@ const DashSidebar = (props: Props) => {
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
-      <div className='flex flex-col print:hidden'>
+      <div className='flex flex-col bg-surface-sidebar print:hidden'>
         <SideBarStartMeetingButton isOpen={isOpen} />
-        <Nav isOpen={isOpen}>
+        <nav className={navClassName(isOpen)}>
           <div className='flex h-full w-64 flex-col p-0'>
             <div className='px-3'>
-              <NavItemsWrap>
+              <div className='pr-2'>
                 <LeftDashNavItem
                   Icon={ArrowBackIcon}
                   href={'/me/organizations'}
@@ -93,7 +78,7 @@ const DashSidebar = (props: Props) => {
                   exact
                 />
                 <div className='mt-4 mb-1 flex min-h-[32px] items-center'>
-                  <span className='flex-1 pl-3 font-semibold text-base text-slate-700 leading-6'>
+                  <span className='flex-1 pl-3 font-semibold text-base text-fg-nav leading-6'>
                     {name}
                   </span>
                 </div>
@@ -127,18 +112,18 @@ const DashSidebar = (props: Props) => {
                   href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
                   label={'Authentication'}
                 />
-              </NavItemsWrap>
+              </div>
             </div>
           </div>
-        </Nav>
+        </nav>
       </div>
     )
   }
 
   return (
-    <div className='flex flex-col print:hidden'>
+    <div className='flex flex-col bg-surface-sidebar print:hidden'>
       <SideBarStartMeetingButton isOpen={isOpen} />
-      <Nav isOpen={isOpen}>
+      <nav className={navClassName(isOpen)}>
         <div className='flex h-full w-64 flex-col p-0'>
           <div className='px-3'>
             <LeftDashNavItem Icon={ForumIcon} href={'/meetings'} label={'Meetings'} />
@@ -147,11 +132,11 @@ const DashSidebar = (props: Props) => {
             <LeftDashNavItem Icon={PlaylistAddCheckIcon} href={'/me/tasks'} label={'Tasks'} />
             <LeftDashNavItem Icon={AddIcon} href={'/newteam'} label={'Add a Team'} />
           </div>
-          <NavMain>
-            <NavList viewerRef={viewer} />
-          </NavMain>
+          <div className='overflow-y-auto'>
+            <DashNavList viewerRef={viewer} />
+          </div>
         </div>
-      </Nav>
+      </nav>
     </div>
   )
 }

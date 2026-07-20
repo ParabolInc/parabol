@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingPhaseTypeEnum} from '~/__generated__/ActionMeeting_meeting.graphql'
@@ -6,30 +5,6 @@ import type {ColorBadge_reflection$key} from '~/__generated__/ColorBadge_reflect
 import {Tooltip} from '~/ui/Tooltip/Tooltip'
 import {TooltipContent} from '~/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '~/ui/Tooltip/TooltipTrigger'
-
-const DROP_SIZE = 32
-const DROP_SIZE_HALF = DROP_SIZE / 2
-
-const ColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
-  backgroundColor: groupColor,
-  borderRadius: 100,
-  height: DROP_SIZE,
-  left: -DROP_SIZE_HALF,
-  position: 'absolute',
-  top: -DROP_SIZE_HALF,
-  width: DROP_SIZE
-}))
-
-const BadgeWrapper = styled('div')({
-  borderRadius: '4px 0 0 0',
-  height: DROP_SIZE_HALF,
-  width: DROP_SIZE_HALF,
-  left: 0,
-  top: 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  zIndex: 4
-})
 
 interface Props {
   phaseType: NewMeetingPhaseTypeEnum
@@ -55,9 +30,13 @@ const ColorBadge = (props: Props) => {
   return (
     <Tooltip disableHoverableContent={phaseType !== 'discuss'}>
       <TooltipTrigger asChild>
-        <BadgeWrapper>
-          <ColorDrop groupColor={groupColor} />
-        </BadgeWrapper>
+        {/* a 32px drop clipped by a 16px wrapper so only the top-left quadrant shows */}
+        <div className='absolute top-0 left-0 z-4 h-4 w-4 overflow-hidden rounded-tl'>
+          <div
+            className='-top-4 -left-4 absolute h-8 w-8 rounded-[100px]'
+            style={{backgroundColor: groupColor}}
+          />
+        </div>
       </TooltipTrigger>
       <TooltipContent>{question}</TooltipContent>
     </Tooltip>

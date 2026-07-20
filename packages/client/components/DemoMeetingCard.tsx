@@ -1,109 +1,18 @@
-import styled from '@emotion/styled'
 import {useCallback} from 'react'
 import {Link} from 'react-router'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useBreakpoint from '../hooks/useBreakpoint'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 
-const CardWrapper = styled('div')<{
-  maybeTabletPlus: boolean
-}>(({maybeTabletPlus}) => ({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
-  flexShrink: 0,
-  maxWidth: '100%',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  marginBottom: maybeTabletPlus ? 0 : 16,
-  margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
-  userSelect: 'none',
-  ':hover': {
-    boxShadow: Elevation.CARD_SHADOW_HOVER
-  }
-}))
-
-const MeetingInfo = styled('div')({
-  // tighter padding for options, meta, avatars
-  // keep a nice left edge
-  padding: '4px 8px 12px 16px'
-})
-
-const Name = styled('span')({
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 20,
-  lineHeight: '24px',
-  // add right padding to keep a long name from falling under the options button
-  // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 4px 0',
-  wordBreak: 'break-word'
-})
-
-const Meta = styled('span')({
-  color: PALETTE.SLATE_600,
-  display: 'block',
-  fontSize: 14,
-  // partial grid bottom padding accounts for maybe avatar whitespace and offset
-  paddingBottom: '4px',
-  wordBreak: 'break-word'
-})
-
-const BACKGROUND_COLORS = {
-  retrospective: PALETTE.GRAPE_500,
-  action: PALETTE.AQUA_400,
-  poker: PALETTE.TOMATO_400,
-  teamPrompt: PALETTE.JADE_400
-}
-const MeetingImgBackground = styled.div<{
-  meetingType: keyof typeof BACKGROUND_COLORS
-}>(({meetingType}) => ({
-  background: BACKGROUND_COLORS[meetingType],
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'absolute',
-  top: 0,
-  bottom: '6px',
-  width: '100%'
-}))
-
-const MeetingImgWrapper = styled('div')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'relative'
-})
-
-const MeetingTypeLabel = styled('span')({
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const MeetingImg = styled('img')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  position: 'relative',
-  display: 'block',
-  overflow: 'hidden',
-  paddingTop: 24,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  height: '180px'
-})
-
-const TopLine = styled('div')({
-  position: 'relative',
-  display: 'flex'
-})
+const BACKGROUND_CLASSES = {
+  retrospective: 'bg-grape-500',
+  action: 'bg-aqua-400',
+  poker: 'bg-tomato-400',
+  teamPrompt: 'bg-jade-400'
+} as const
 
 const DemoMeetingCard = () => {
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmospehere = useAtmosphere()
 
   const onOpen = useCallback(() => {
@@ -111,21 +20,37 @@ const DemoMeetingCard = () => {
   }, [])
 
   return (
-    <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={onOpen}>
+    <div
+      className='m-3 fuzzy-tablet:w-80 w-[calc(100%-24px)] max-w-full shrink-0 select-none rounded-card bg-surface-card shadow-card [transition:box-shadow_100ms_cubic-bezier(0,0,.2,1),opacity_300ms_cubic-bezier(0,0,.2,1)] hover:shadow-card-hover'
+      onClick={onOpen}
+    >
       <Link to={`/retrospective-demo`}>
-        <MeetingImgWrapper>
-          <MeetingImgBackground meetingType='retrospective' />
-          <MeetingTypeLabel>Retro</MeetingTypeLabel>
-          <MeetingImg src={retrospective} alt='' />
-        </MeetingImgWrapper>
-        <MeetingInfo>
-          <TopLine>
-            <Name>Retrospective Demo</Name>
-          </TopLine>
-          <Meta>Demo team • Reflect</Meta>
-        </MeetingInfo>
+        <div className='relative block rounded-t-card'>
+          <div
+            className={cn(
+              'absolute top-0 bottom-1.5 block w-full rounded-t-card',
+              BACKGROUND_CLASSES.retrospective
+            )}
+          />
+          <span className='absolute top-2 left-2 font-semibold text-white text-xs'>Retro</span>
+          <img
+            src={retrospective}
+            alt=''
+            className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
+          />
+        </div>
+        <div className='pt-1 pr-2 pb-3 pl-4'>
+          <div className='relative flex'>
+            <span className='wrap-break-word block py-1 pr-8 text-fg-primary text-xl leading-6'>
+              Retrospective Demo
+            </span>
+          </div>
+          <span className='wrap-break-word block pb-1 text-fg-secondary text-sm'>
+            Demo team • Reflect
+          </span>
+        </div>
       </Link>
-    </CardWrapper>
+    </div>
   )
 }
 

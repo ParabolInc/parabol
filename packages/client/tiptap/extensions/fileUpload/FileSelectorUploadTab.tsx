@@ -28,7 +28,7 @@ export const FileSelectorUploadTab = (props: Props) => {
   }
   const accept = targetType === 'image' ? 'image/*' : '*'
   return (
-    <div className='flex min-w-44 items-center justify-center rounded-md bg-slate-100 p-2'>
+    <div className='flex min-w-44 items-center justify-center rounded-md bg-surface-raised p-2'>
       <Button variant='outline' shape='pill' className='w-full' onClick={onClick} autoFocus>
         Upload {targetType}
       </Button>

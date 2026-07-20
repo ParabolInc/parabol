@@ -21,7 +21,7 @@ export const EditMeetingSeriesModal = (props: Props) => {
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogTitle className='mb-1'>Edit scheduled meeting</DialogTitle>
-        <p className='mb-4 text-slate-600 text-sm'>
+        <p className='mb-4 text-fg-secondary text-sm'>
           Change the schedule, rename the series, or cancel it.
         </p>
         <MeetingSeriesEditForm seriesRef={seriesRef} onClose={onClose} />

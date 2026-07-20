@@ -56,12 +56,12 @@ const SubmitVoteButton = styled(PlainButton)({
   marginTop: '12px',
   fontSize: '14px',
   fontWeight: 500,
-  background: PALETTE.SLATE_300,
-  color: PALETTE.SLATE_700,
+  background: 'var(--color-surface-well)',
+  color: 'var(--color-fg-primary)',
   border: 'none',
   borderRadius: '24px',
   ':hover': {
-    background: PALETTE.SLATE_400
+    background: 'var(--color-surface-hover)'
   }
 })
 

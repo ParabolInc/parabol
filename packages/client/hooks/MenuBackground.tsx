@@ -43,7 +43,7 @@ interface BackgroundProps {
 
 const MenuBackground = styled('div')<BackgroundProps>(
   ({menuPosition, portalStatus, isDropdown}) => ({
-    background: '#FFFFFF',
+    background: 'var(--color-surface-card)',
     borderRadius: Radius.MENU,
     boxShadow: menuShadow,
     height: '100%',

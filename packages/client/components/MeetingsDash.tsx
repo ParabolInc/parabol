@@ -98,7 +98,7 @@ const MeetingsDash = (props: Props) => {
     <>
       <MeetingsDashHeader viewerRef={viewer} />
       {hasFilteredMeetings ? (
-        <div className={cn('relative flex flex-wrap', maybeTabletPlus ? 'p-0' : 'p-4')}>
+        <div className={cn('relative flex flex-wrap', maybeTabletPlus ? 'px-5' : 'p-4')}>
           <AnimatePresence initial={false}>
             {filteredScheduledSeries.map((series) => (
               <ScheduledSeriesCard key={`series-${series.id}`} series={series} />

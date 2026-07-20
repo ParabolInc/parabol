@@ -2241,6 +2241,16 @@ type Mutation {
   ): UpdateUserProfilePayload @scope(name: USERS_WRITE)
 
   """
+  Update the viewer's UI appearance preference (light, dark, or system)
+  """
+  updateUserTheme(
+    """
+    The new theme preference
+    """
+    theme: UserThemeEnum!
+  ): UpdateUserThemePayload! @scope(name: USERS_WRITE)
+
+  """
   Upload the IdP Metadata file for an org for those who cannot self-host the file
   """
   uploadIdPMetadata(

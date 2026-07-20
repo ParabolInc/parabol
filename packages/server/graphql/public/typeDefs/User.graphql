@@ -271,6 +271,11 @@ type User implements UserPartial {
   sendPageInvitationEmail: Boolean!
 
   """
+  The user's preferred UI appearance (light, dark, or follow the OS)
+  """
+  theme: UserThemeEnum!
+
+  """
   The reflection groups that are similar to the selected reflection in the Spotlight
   """
   similarReflectionGroups(

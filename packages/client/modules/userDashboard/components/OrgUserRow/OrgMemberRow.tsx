@@ -175,7 +175,7 @@ const OrgMemberRow = (props: Props) => {
   }
 
   return (
-    <tr className='border-slate-300 border-b last:border-b-0'>
+    <tr className='border-hairline border-b last:border-b-0'>
       <td className='px-2 py-3 align-middle'>
         <div className='flex items-center justify-center'>
           {isViewerOrgAdmin && (
@@ -183,7 +183,7 @@ const OrgMemberRow = (props: Props) => {
               type='checkbox'
               checked={isSelected}
               onChange={handleCheckboxChange}
-              className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+              className='h-4 w-4 rounded border-hairline-field text-grape-700 focus:ring-grape-500'
             />
           )}
         </div>

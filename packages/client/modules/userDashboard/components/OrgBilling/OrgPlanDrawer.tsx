@@ -10,7 +10,6 @@ import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {desktopSidebarShadow} from '../../../../styles/elevation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import {
   BezierCurve,
@@ -33,7 +32,7 @@ const DrawerHeader = styled('div')({
 
 const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
   boxShadow: isDesktop ? desktopSidebarShadow : undefined,
-  backgroundColor: '#FFFFFF',
+  backgroundColor: 'var(--color-surface-card)',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -56,7 +55,7 @@ const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop,
 }))
 
 const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   '&:hover': {
     opacity: 0.5

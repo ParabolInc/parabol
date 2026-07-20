@@ -34,7 +34,7 @@ const EmptyDiscussionContainer = styled('div')({
 })
 
 const Message = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 14,
   textAlign: 'center',
   lineHeight: '20px',
@@ -42,8 +42,8 @@ const Message = styled('div')({
 })
 
 const StyledButton = styled(FlatButton)({
-  background: PALETTE.SKY_500,
-  borderColor: PALETTE.SLATE_400,
+  background: 'var(--color-accent)',
+  borderColor: 'var(--color-hairline-strong)',
   color: PALETTE.WHITE,
   fontSize: 12,
   fontWeight: 600,
@@ -130,7 +130,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
           }}
         >
           <input
-            className='mt-4 w-full appearance-none rounded-sm border border-slate-400 bg-transparent p-3 text-slate-600 text-sm outline-hidden'
+            className='mt-4 w-full appearance-none rounded-sm border border-hairline-field bg-transparent p-3 text-fg-secondary text-sm outline-hidden'
             autoFocus
             placeholder='Zoom meeting URL'
             onChange={onChange}

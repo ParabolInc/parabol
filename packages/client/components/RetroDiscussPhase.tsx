@@ -110,7 +110,7 @@ const RetroDiscussPhase = (props: Props) => {
             <div className='mx-auto max-w-456 select-none px-5'>
               <div className='mb-3 flex items-center'>
                 <div className='relative text-2xl'>{`"${title}"`}</div>
-                <div className='ml-4 flex items-center rounded-[5em] bg-slate-600 px-3 py-0.5 font-semibold text-base text-white'>
+                <div className='ml-4 flex items-center rounded-[5em] bg-surface-well px-3 py-0.5 font-semibold text-accent text-base'>
                   <ThumbUp sx={{fontSize: 18}} className='mr-0.5' />
                   {voteCount || 0}
                 </div>
@@ -118,7 +118,7 @@ const RetroDiscussPhase = (props: Props) => {
             </div>
             <div className='mx-auto flex h-full w-full max-w-456 flex-1 single-reflection-column:flex-row flex-col overflow-hidden'>
               <div className='flex single-reflection-column:h-full w-full single-reflection-column:flex-1 flex-col overflow-hidden'>
-                <LabelHeading className='normal-case! sticky top-0 z-2 mx-4 bg-slate-200 single-reflection-column:pb-2'>
+                <LabelHeading className='normal-case! sticky top-0 z-2 mx-4 bg-surface-app single-reflection-column:pb-2'>
                   {reflections.length} {plural(reflections.length, 'Reflection')}
                 </LabelHeading>
                 <div className='single-reflection-column:block flex h-full w-full justify-center single-reflection-column:p-0 pb-2 single-reflection-column:pb-4'>

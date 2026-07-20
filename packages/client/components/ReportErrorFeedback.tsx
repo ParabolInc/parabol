@@ -71,7 +71,7 @@ const ReportErrorFeedback = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle className='mb-4'>Report Error</DialogTitle>
-        <div className='mb-4 pl-0 text-slate-700 text-sm'>
+        <div className='mb-4 pl-0 text-fg-primary text-sm'>
           What were you doing when the error happened?
         </div>
         <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />

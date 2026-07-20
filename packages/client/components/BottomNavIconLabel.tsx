@@ -11,7 +11,8 @@ import {PALETTE} from '../styles/paletteV3'
 
 const paletteColors = {
   warm: PALETTE.ROSE_500,
-  midGray: PALETTE.SLATE_600,
+  // theme-aware so the neutral icon tone doesn't render dark-on-dark in dark mode
+  midGray: 'var(--color-fg-secondary)',
   red: PALETTE.TOMATO_600,
   green: PALETTE.JADE_400,
   blue: PALETTE.SKY_500
@@ -28,7 +29,7 @@ interface Props {
 }
 
 const StyledIcon = styled('div')<{iconColor?: keyof typeof paletteColors}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'inherit',
+  color: iconColor ? paletteColors[iconColor] : 'var(--color-fg-secondary)',
   height: 24,
   width: 24
 }))
@@ -41,7 +42,8 @@ const Inner = styled('div')({
 })
 
 const Label = styled('div')({
-  color: 'inherit',
+  // mockup 02: control-bar labels use the primary text tone, not the button's inherited gray
+  color: 'var(--color-fg-primary)',
   fontSize: 12,
   height: 16,
   lineHeight: '16px'

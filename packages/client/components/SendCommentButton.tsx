@@ -24,7 +24,7 @@ const SendCommentButton = (props: Props) => {
     <>
       <button
         data-disabled={commentSubmitState === 'idle' ? '' : undefined}
-        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-sky-500 transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-slate-200'
+        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-surface-well'
         onClick={onSubmit}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
@@ -33,7 +33,7 @@ const SendCommentButton = (props: Props) => {
       >
         <ArrowUpward
           data-disabled={commentSubmitState === 'idle' ? '' : undefined}
-          className='m-1 h-5 w-5 text-white transition-colors data-disabled:text-slate-500'
+          className='m-1 h-5 w-5 text-white transition-colors data-disabled:text-fg-muted'
         />
       </button>
       {tooltipPortal(<div>{'Send comment'}</div>)}

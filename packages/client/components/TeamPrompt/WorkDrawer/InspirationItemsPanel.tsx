@@ -164,7 +164,7 @@ const InspirationItemsPanel = (props: Props) => {
           <DialogTitle className='mb-4'>Custom instructions</DialogTitle>
           <textarea
             autoFocus
-            className='min-h-32 w-full resize-y rounded-md border border-slate-300 p-2 text-slate-700 text-sm focus:border-sky-500 focus:outline-none'
+            className='min-h-32 w-full resize-y rounded-md border border-hairline-field p-2 text-fg-primary text-sm focus:border-accent focus:outline-none'
             value={userPrompt}
             onChange={(e) => setUserPrompt(e.target.value)}
             placeholder={customInstructionsPlaceholder}
@@ -181,7 +181,7 @@ const InspirationItemsPanel = (props: Props) => {
           </DialogActions>
         </DialogContent>
       </Dialog>
-      {error && <div className='text-sm text-tomato-500'>{error}</div>}
+      {error && <div className='text-fg-error text-sm'>{error}</div>}
       {items.map((item) =>
         isRetro ? (
           <RetroInspirationItemCard

@@ -47,10 +47,10 @@ const MeetingSubnavItem = (props: Props) => {
     <div
       ref={ref}
       className={cn(
-        'relative flex min-h-10 w-full shrink-0 select-none items-center rounded-r py-2 font-normal text-slate-700 text-sm',
-        isActive ? 'bg-slate-200' : isDragging ? 'bg-slate-100' : 'bg-transparent',
+        'relative flex min-h-10 w-full shrink-0 select-none items-center rounded-r py-2 font-normal text-fg-primary text-sm',
+        isActive ? 'bg-surface-phase-active' : isDragging ? 'bg-surface-raised' : 'bg-transparent',
         !isActive && isComplete && 'opacity-50',
-        onClick && !isActive && 'hover:bg-slate-200',
+        onClick && !isActive && 'hover:bg-surface-phase-active',
         !isActive && onClick && 'hover:cursor-pointer',
         !isDisabled && 'hover:opacity-100',
         isUnsyncedFacilitatorStage && 'text-rose-500 opacity-100'

@@ -1,14 +1,13 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon, Warning} from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
 
 const Message = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  border: `1px dashed ${PALETTE.SLATE_400}`,
+  border: `1px dashed var(--color-hairline-strong)`,
   borderRadius: 4,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 14,
   fontStyle: 'italic',
   lineHeight: '32px',

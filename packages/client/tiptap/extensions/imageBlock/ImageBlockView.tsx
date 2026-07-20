@@ -55,15 +55,15 @@ export const ImageBlockView = (props: NodeViewProps) => {
           <div
             contentEditable={false}
             onClick={onClick}
-            className='w-full rounded-md border border-slate-200 bg-slate-50 px-4 py-3'
+            className='w-full rounded-md border border-hairline bg-surface-raised px-4 py-3'
           >
             <div className='flex items-start gap-3'>
-              <div className='flex size-10 shrink-0 items-center justify-center rounded-md bg-slate-200'>
-                <BrokenImageIcon className='size-5 text-slate-500' />
+              <div className='flex size-10 shrink-0 items-center justify-center rounded-md bg-surface-well'>
+                <BrokenImageIcon className='size-5 text-fg-muted' />
               </div>
               <div className='min-w-0 flex-1'>
-                <p className='font-medium text-slate-700 text-sm'>Image couldn't be embedded</p>
-                <p className='mt-0.5 text-slate-500 text-xs'>
+                <p className='font-medium text-fg-primary text-sm'>Image couldn't be embedded</p>
+                <p className='mt-0.5 text-fg-muted text-xs'>
                   The source requires authentication or is behind a firewall.
                 </p>
                 {isSafeUrl ? (
@@ -71,13 +71,13 @@ export const ImageBlockView = (props: NodeViewProps) => {
                     href={src}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='mt-1 block truncate text-blue-600 text-xs underline decoration-blue-300 hover:text-blue-700'
+                    className='mt-1 block truncate text-accent text-xs underline decoration-accent/40 hover:text-sky-600'
                     onClick={(e) => e.stopPropagation()}
                   >
                     {displayUrl}
                   </a>
                 ) : (
-                  <span className='mt-1 block truncate text-slate-500 text-xs'>{displayUrl}</span>
+                  <span className='mt-1 block truncate text-fg-muted text-xs'>{displayUrl}</span>
                 )}
               </div>
             </div>

@@ -54,13 +54,11 @@ const DeleteTeamDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Delete Team</DialogTitle>
 
         <fieldset className='mx-0 mb-6 flex w-full flex-col p-0'>
-          <label className='mb-3 text-left font-semibold text-slate-600 text-sm'>
+          <label className='mb-3 text-left font-semibold text-fg-secondary text-sm'>
             Please type your team name to confirm. <b>This action can't be undone.</b>
           </label>
           <Input autoFocus onChange={handleTypeTeamName} placeholder={teamName} />
-          {error && (
-            <div className='mt-2 font-semibold text-sm text-tomato-500'>{error.message}</div>
-          )}
+          {error && <div className='mt-2 font-semibold text-fg-error text-sm'>{error.message}</div>}
         </fieldset>
 
         <DialogActions>

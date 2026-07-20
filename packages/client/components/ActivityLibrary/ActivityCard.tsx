@@ -36,9 +36,9 @@ export const ActivityCardImage = (props: PropsWithChildren<ActivityCardImageProp
         className
       )}
     >
-      <img className='object-contain' src={backgroundSrc} alt='' />
+      <img className='object-contain dark:brightness-[.94]' src={backgroundSrc} alt='' />
       <img
-        className='absolute top-0 left-0 h-full w-full object-contain p-10'
+        className='absolute top-0 left-0 h-full w-full object-contain p-10 dark:brightness-[.94]'
         src={src}
         alt='Card Illustration'
       />
@@ -114,7 +114,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
               side='bottom'
               align='center'
               sideOffset={20}
-              className='max-w-md whitespace-normal rounded-lg bg-white p-4 text-left text-slate-700 shadow-lg hover:cursor-pointer sm:max-w-sm'
+              className='max-w-md whitespace-normal rounded-lg bg-surface-card p-4 text-left text-fg-primary shadow-lg hover:cursor-pointer sm:max-w-sm'
             >
               <div className='mb-2 text-left font-semibold text-lg'>{title}</div>
               <ActivityLibraryCardDescription templateRef={template} />
@@ -124,7 +124,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
       </div>
       {title && category && (
         <div className='mt-2 px-2 pb-2'>
-          <div className='truncate pb-1 text-lg text-slate-800 leading-5'>{title}</div>
+          <div className='truncate pb-1 text-fg-primary text-lg leading-5'>{title}</div>
           <div className={cn('font-semibold italic', `${theme.text}`)}>{upperFirst(category)}</div>
         </div>
       )}

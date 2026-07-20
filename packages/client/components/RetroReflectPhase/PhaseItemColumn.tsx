@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type RefObject, useEffect, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,108 +8,12 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useForceUpdate from '../../hooks/useForceUpdate'
 import useTooltip from '../../hooks/useTooltip'
 import SetPhaseFocusMutation from '../../mutations/SetPhaseFocusMutation'
-import {DECELERATE} from '../../styles/animation'
-import {PALETTE} from '../../styles/paletteV3'
-import {BezierCurve, ElementWidth, Gutters} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import getNextSortOrder from '../../utils/getNextSortOrder'
 import RetroPrompt from '../RetroPrompt'
 import PhaseItemChits from './PhaseItemChits'
 import PhaseItemEditor from './PhaseItemEditor'
 import ReflectionStack from './ReflectionStack'
-
-const ColumnWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  justifyContent: 'flex-start',
-  margin: isDesktop ? '0 8px 16px' : undefined,
-  minHeight: isDesktop ? undefined : '100%'
-}))
-
-const ColumnHighlight = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  backgroundColor: PALETTE.SLATE_300,
-  borderRadius: 8,
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  flexShrink: 0,
-  height: isDesktop ? undefined : '100%',
-  maxHeight: isDesktop ? 600 : undefined,
-  overflow: 'hidden',
-  padding: `${Gutters.ROW_INNER_GUTTER} ${Gutters.COLUMN_INNER_GUTTER}`,
-  position: 'relative',
-  transition: `background 150ms ${DECELERATE}`,
-  width: '100%'
-}))
-
-const ColumnContent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: '100%',
-  justifyContent: 'space-between',
-  margin: '0 auto',
-  width: ElementWidth.REFLECTION_CARD,
-  paddingBottom: isDesktop ? '6px' : '4px',
-  // must be greater than the highlighted el
-  zIndex: 1
-}))
-
-const EditorSection = styled('div')({
-  margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`
-})
-
-const Description = styled('div')({
-  color: PALETTE.SLATE_700,
-  fontSize: 12,
-  fontStyle: 'italic',
-  fontWeight: 400,
-  lineHeight: '16px',
-  paddingLeft: 16
-})
-
-const ColorSpacer = styled('div')({
-  position: 'relative',
-  height: 8,
-  width: 8,
-  marginRight: 8
-})
-const ColumnColorDrop = styled('div')<{
-  groupColor: string
-  isDesktop: boolean
-  isFocused: boolean
-}>(({groupColor, isDesktop, isFocused}) => ({
-  backgroundColor: groupColor,
-  boxShadow: `0 0 0 1px ${PALETTE.SLATE_200}`,
-  borderRadius: '50%',
-  display: 'inline-block',
-  verticalAlign: 'middle',
-  position: 'absolute',
-  marginRight: 8,
-  height: 8,
-  width: 8,
-  top: 20, // must be out of layout  so it doesn't color the text
-  transform: `scale(${isFocused ? (isDesktop ? 200 : 350) : 1})`,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  opacity: isFocused ? 0.35 : 1
-}))
-
-const PromptHeader = styled('div')<{isClickable: boolean}>(({isClickable}) => ({
-  cursor: isClickable ? 'pointer' : undefined,
-  padding: `0 0 ${Gutters.ROW_INNER_GUTTER} 0`,
-  position: 'relative',
-  userSelect: 'none',
-  width: '100%'
-}))
-
-interface EditorAndStatusProps {
-  isGroupingComplete: boolean
-}
-
-const EditorAndStatus = styled('div')<EditorAndStatusProps>(({isGroupingComplete}) => ({
-  visibility: isGroupingComplete ? 'hidden' : undefined
-}))
 
 export interface ReflectColumnCardInFlight {
   key: string
@@ -250,24 +153,54 @@ const PhaseItemColumn = (props: Props) => {
   )
 
   return (
-    <ColumnWrapper data-cy={`reflection-column-${question}`} isDesktop={isDesktop}>
-      <ColumnHighlight isDesktop={isDesktop}>
-        <ColumnColorDrop isDesktop={isDesktop} isFocused={isFocused} groupColor={groupColor} />
-        <ColumnContent isDesktop={isDesktop}>
+    <div
+      data-cy={`reflection-column-${question}`}
+      className={cn(
+        'flex flex-1 flex-col items-center justify-start',
+        isDesktop ? 'mx-2 mb-4' : 'min-h-full'
+      )}
+    >
+      <div
+        className={cn(
+          'relative flex w-full flex-1 shrink-0 flex-col overflow-hidden rounded-lg border border-hairline bg-surface-well p-3 transition-[background] duration-150 ease-out',
+          isDesktop ? 'max-h-150' : 'h-full'
+        )}
+      >
+        <div
+          className={cn(
+            // top-5 keeps the dot out of layout so it doesn't color the text
+            'absolute top-5 mr-2 inline-block h-2 w-2 rounded-full align-middle shadow-[0_0_0_1px_var(--color-surface-app)] transition-all duration-300 ease-out',
+            isFocused ? (isDesktop ? 'scale-[200]' : 'scale-[350]') : 'scale-100',
+            isFocused ? 'opacity-35' : 'opacity-100'
+          )}
+          style={{backgroundColor: groupColor}}
+        />
+        {/* z-1: must be greater than the highlighted el */}
+        <div
+          className={cn(
+            'z-1 mx-auto flex h-full w-74 flex-1 flex-col justify-between',
+            isDesktop ? 'pb-1.5' : 'pb-1'
+          )}
+        >
           <div className='flex-1'>
-            <PromptHeader isClickable={isFacilitator && !isComplete} onClick={setColumnFocus}>
+            <div
+              className={cn(
+                'relative w-full select-none pb-3',
+                isFacilitator && !isComplete && 'cursor-pointer'
+              )}
+              onClick={setColumnFocus}
+            >
               <RetroPrompt onMouseEnter={openTooltip} onMouseLeave={closeTooltip} ref={originRef}>
-                <ColorSpacer />
+                <div className='relative mr-2 h-2 w-2' />
                 {question}
               </RetroPrompt>
               {tooltipPortal(<div>Tap to highlight prompt for everybody</div>)}
-              <Description>{description}</Description>
-            </PromptHeader>
-            <EditorSection data-cy={`editor-section-${question}`}>
-              <EditorAndStatus
-                data-cy={`editor-status-${question}`}
-                isGroupingComplete={!!isComplete}
-              >
+              <div className='pl-4 font-normal text-fg-primary text-xs italic leading-4'>
+                {description}
+              </div>
+            </div>
+            <div className='mb-3' data-cy={`editor-section-${question}`}>
+              <div data-cy={`editor-status-${question}`} className={cn(isComplete && 'invisible')}>
                 <PhaseItemEditor
                   cardsInFlightRef={cardsInFlightRef}
                   dataCy={`phase-item-editor-${question}`}
@@ -280,8 +213,8 @@ const PhaseItemColumn = (props: Props) => {
                   readOnly={!!endedAt}
                   meetingRef={meeting}
                 />
-              </EditorAndStatus>
-            </EditorSection>
+              </div>
+            </div>
           </div>
           <div className='flex-1'>
             <ReflectionStack
@@ -298,9 +231,9 @@ const PhaseItemColumn = (props: Props) => {
             count={columnStack.length - reflectionStack.length}
             editorCount={editorIds ? editorIds.length : 0}
           />
-        </ColumnContent>
-      </ColumnHighlight>
-    </ColumnWrapper>
+        </div>
+      </div>
+    </div>
   )
 }
 

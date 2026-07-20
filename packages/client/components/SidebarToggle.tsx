@@ -1,28 +1,23 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {cn} from '../ui/cn'
 import type {BaseButtonProps} from './BaseButton'
 import IconButton from './IconButton'
-
-const StyledButton = styled(IconButton)({
-  height: 24,
-  padding: 0,
-  ':hover,:focus,:active': {
-    color: PALETTE.SLATE_600
-  }
-})
 
 interface Props extends BaseButtonProps {}
 
 const SidebarToggle = (props: Props) => {
-  const {dataCy} = props
+  const {dataCy, className, ...rest} = props
   return (
-    <StyledButton
-      {...props}
+    <IconButton
+      {...rest}
+      className={cn(
+        // hover stays fg-secondary (the source overrode the hover color back to the base)
+        'h-6 p-0 text-fg-secondary hover:text-fg-secondary focus:text-fg-secondary active:text-fg-secondary',
+        className
+      )}
       dataCy={`${dataCy}-toggle`}
       aria-label='Toggle the sidebar'
       icon='menu'
       iconLarge
-      palette='midGray'
     />
   )
 }

@@ -33,7 +33,7 @@ const Bold = (props: ComponentPropsWithoutRef<'span'>) => {
   const {children, className, ...rest} = props
 
   return (
-    <span className={cn('font-semibold text-slate-800', className)} {...rest}>
+    <span className={cn('font-semibold text-fg-primary', className)} {...rest}>
       {children}
     </span>
   )
@@ -224,7 +224,7 @@ export const CreateNewActivity = (props: Props) => {
   }
 
   return (
-    <div className='flex h-full w-full flex-col bg-white'>
+    <div className='flex h-full w-full flex-col bg-surface-card'>
       <div className='mx-1'>
         <div className='flex basis-[15%] items-center justify-start gap-x-2 px-2'>
           <Link className='p-4' to={`/activity-library/`} replace={true}>
@@ -249,7 +249,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-slate-100 focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-raised focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
                 value={activity.type}
               >
                 <ActivityCard
@@ -294,8 +294,8 @@ export const CreateNewActivity = (props: Props) => {
             />
           </div>
         </div>
-        {error && <div className='px-4 text-tomato-500'>{error.message}</div>}
-        <div className='mt-auto flex w-full bg-slate-200 p-2 shadow-card-1'>
+        {error && <div className='px-4 text-fg-error'>{error.message}</div>}
+        <div className='mt-auto flex w-full bg-surface-well p-2 shadow-card-1'>
           {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
             <div className='flex w-full items-center justify-center gap-4'>
               <span className='pr-4 text-center'>

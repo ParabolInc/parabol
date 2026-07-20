@@ -28,15 +28,15 @@ export type AllCategoryID = (typeof ALL_CATEGORIES)[number]
 
 export const DEFAULT_CARD_THEME: CardTheme = {
   primary: 'bg-slate-500',
-  secondary: 'bg-slate-200',
-  text: 'text-slate-500'
+  secondary: 'bg-surface-well',
+  text: 'text-fg-muted'
 }
 
 export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   [QUICK_START_CATEGORY_ID]: {
     primary: 'bg-grape-700',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   },
   standup: {
     primary: 'bg-aqua-400',
@@ -50,7 +50,7 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   },
   retrospective: {
     primary: 'bg-grape-500',
-    secondary: 'bg-[#F2E1F7]',
+    secondary: 'bg-starter',
     text: 'text-grape-500'
   },
   feedback: {
@@ -75,13 +75,13 @@ export const CATEGORY_THEMES: Record<AllCategoryID, CardTheme> = {
   },
   [CUSTOM_CATEGORY_ID]: {
     primary: 'bg-fuscia-400',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   },
   [FAVORITE_CATEGORY_ID]: {
     primary: 'bg-grape-700',
-    secondary: 'bg-slate-200',
-    text: 'text-slate-500'
+    secondary: 'bg-surface-well',
+    text: 'text-fg-muted'
   }
 }
 

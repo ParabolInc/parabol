@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -7,37 +6,7 @@ import type {PasswordResetLink_viewer$key} from '../__generated__/PasswordResetL
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import StyledError from './StyledError'
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center'
-})
-
-const Link = styled('div')({
-  fontWeight: 600,
-  color: PALETTE.SKY_500,
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
-
-const StyledIcon = styled('img')({
-  paddingRight: 8,
-  filter: `invert(56%) sepia(10%) saturate(643%) hue-rotate(205deg) brightness(89%) contrast(92%)` // make svg slate_600
-})
-
-const Text = styled('div')({
-  fontWeight: 600,
-  paddingRight: 8
-})
-
-const ErrorMessage = styled(StyledError)({
-  fontSize: 12,
-  paddingRight: 8
-})
 
 type Props = {
   viewerRef: PasswordResetLink_viewer$key
@@ -64,22 +33,34 @@ const PasswordResetLink = (props: Props) => {
     EmailPasswordResetMutation(atmosphere, {email}, {onError, onCompleted})
   }
 
+  const link = (onClick: () => void, children: string) => (
+    <div className='cursor-pointer font-semibold text-accent' onClick={onClick}>
+      {children}
+    </div>
+  )
+
   return (
-    <Wrapper>
-      <StyledIcon crossOrigin='' src={passwordIcon} alt='Password icon' />
+    <div className='flex items-center justify-start'>
+      {/* the source svg is black; the filter tints it slate-600 in light, a soft gray in dark */}
+      <img
+        className='pr-2 [filter:invert(56%)_sepia(10%)_saturate(643%)_hue-rotate(205deg)_brightness(89%)_contrast(92%)] dark:[filter:invert(75%)]'
+        crossOrigin=''
+        src={passwordIcon}
+        alt='Password icon'
+      />
       {isClicked ? (
         <>
           {error ? (
-            <ErrorMessage>{error.message}</ErrorMessage>
+            <StyledError className='pr-2 text-xs'>{error.message}</StyledError>
           ) : (
-            <Text>Sent! Check your email...</Text>
+            <div className='pr-2 font-semibold'>Sent! Check your email...</div>
           )}
-          <Link onClick={() => setIsClicked(false)}>Resend a password reset email?</Link>
+          {link(() => setIsClicked(false), 'Resend a password reset email?')}
         </>
       ) : (
-        <Link onClick={handleReset}>Send a password reset email</Link>
+        link(handleReset, 'Send a password reset email')
       )}
-    </Wrapper>
+    </div>
   )
 }
 
