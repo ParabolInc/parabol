@@ -38,7 +38,7 @@ export const PageAccessComboboxControl = (props: Props) => {
   return (
     <Menu
       trigger={
-        <MenuLabelTrigger labelClassName={'pr-0 text-md font-medium text-slate-700'}>
+        <MenuLabelTrigger labelClassName={'pr-0 text-md font-medium text-fg-primary'}>
           {roleLabel}
         </MenuLabelTrigger>
       }
@@ -55,15 +55,15 @@ export const PageAccessComboboxControl = (props: Props) => {
               }}
             >
               <div className='flex flex-col'>
-                <div className='text-slate-700'>{label}</div>
-                <div className='font-semibold text-slate-600 text-xs'>{description}</div>
+                <div className='text-fg-primary'>{label}</div>
+                <div className='font-semibold text-fg-secondary text-xs'>{description}</div>
               </div>
             </MenuItem>
           )
         })}
         {canRemove && (
           <>
-            <hr className={'my-1 h-0.25 bg-slate-500'}></hr>
+            <hr className={'my-1 h-0.25 bg-hairline-strong'}></hr>
             <MenuItem
               className={'hover:text-tomato-700'}
               key={'remove'}

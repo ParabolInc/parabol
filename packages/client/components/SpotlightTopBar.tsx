@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 
 const StyledCloseButton = styled(PlainButton)({
@@ -10,15 +9,15 @@ const StyledCloseButton = styled(PlainButton)({
 })
 
 const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   '&:hover,:focus': {
-    color: PALETTE.SLATE_800
+    color: 'var(--color-fg-primary)'
   }
 })
 
 const Title = styled('div')({
-  color: PALETTE.SLATE_800,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   fontWeight: 600,
   textAlign: 'center'

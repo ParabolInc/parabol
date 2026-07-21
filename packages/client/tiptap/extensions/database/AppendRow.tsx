@@ -20,7 +20,7 @@ export const AppendRow = (props: Props) => {
   return (
     <PlainButton
       {...focusProps}
-      className='h-full w-full cursor-pointer hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'
+      className='h-full w-full cursor-pointer hover:bg-surface-raised focus:outline-2 focus:outline-accent'
       onClick={() => appendRow(doc, userId)}
     >
       <div className='sticky left-0 flex w-fit items-center gap-2 p-2'>

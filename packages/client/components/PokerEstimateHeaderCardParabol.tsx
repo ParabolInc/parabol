@@ -35,12 +35,12 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   return (
     <div className={`flex ${isDesktop ? 'px-4 pb-1' : 'px-2 pb-1'}`}>
       <div
-        className='relative mx-auto flex w-full items-start rounded bg-white p-3 pl-4 shadow-md'
+        className='relative mx-auto flex w-full items-start rounded bg-surface-card p-3 pl-4 shadow-card'
         style={{maxWidth: '1504px'}}
       >
         <div className='flex-1 pr-1'>
           <div
-            className={`m-0 font-normal text-slate-700 text-sm leading-5 transition-all duration-300 ${
+            className={`m-0 font-normal text-fg-primary text-sm leading-5 transition-all duration-300 ${
               isExpanded ? 'overflow-y-auto' : 'overflow-y-hidden'
             }`}
             style={{maxHeight: isExpanded ? '300px' : '38px'}}

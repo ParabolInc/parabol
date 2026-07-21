@@ -89,7 +89,7 @@ const MeetingOptions = (props: Props) => {
       trigger={
         <OptionsButton>
           <IconLabel icon='tune' iconLarge />
-          <div className='text-slate-700'>Options</div>
+          <div className='text-fg-primary'>Options</div>
         </OptionsButton>
       }
     >
@@ -98,7 +98,7 @@ const MeetingOptions = (props: Props) => {
           <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
             <TooltipTrigger asChild>
               <MenuItem onSelect={handleClick} isDisabled={isDisabled}>
-                <div className='mr-3 flex text-slate-700'>{<SwapHorizIcon />}</div>
+                <div className='mr-3 flex text-fg-primary'>{<SwapHorizIcon />}</div>
                 Change template
               </MenuItem>
             </TooltipTrigger>

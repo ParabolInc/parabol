@@ -11,7 +11,6 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ICON_SIZE} from '../../../../styles/typographyV2'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
@@ -27,13 +26,13 @@ const StyledButton = styled(FlatButton)<{showMenuButton: boolean}>(({showMenuBut
   display: showMenuButton ? 'flex' : 'none',
   fontSize: ICON_SIZE.MD18,
   padding: 0,
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 }))
 
 const Name = styled('div')({
   fontSize: 14,
   fontWeight: 400,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   lineHeight: '20px',
   padding: '0px 16px',
   wordBreak: 'break-word'
@@ -58,7 +57,7 @@ const StyledIcon = styled('div')({
 const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
   display: isLead ? 'flex' : 'none',
   padding: '0px 16px',
-  color: PALETTE.SLATE_800,
+  color: 'var(--color-fg-primary)',
   fontSize: 12,
   lineHeight: '12px'
 }))

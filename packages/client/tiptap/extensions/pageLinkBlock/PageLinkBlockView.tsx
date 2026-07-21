@@ -94,7 +94,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
     // ProseMirror-selectednode goes away if the cursor is in between nodes, which is what we want
     <NodeViewWrapper
       className={
-        'group rounded-sm p-1 transition-colors hover:bg-slate-200 group-[.ProseMirror-selectednode]:bg-slate-200'
+        'group rounded-sm p-1 transition-colors hover:bg-surface-hover group-[.ProseMirror-selectednode]:bg-surface-hover'
       }
     >
       <PageDropTarget data-drop-in={canDropIn ? pageKey : undefined}>
@@ -110,11 +110,11 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
             <span className='relative inline-flex size-6 shrink-0 items-center justify-center'>
               <span className='text-base leading-none'>{emoji}</span>
               {!canonical && (
-                <NorthEastIcon className='absolute right-0 bottom-0 size-3 text-slate-500' />
+                <NorthEastIcon className='absolute right-0 bottom-0 size-3 text-fg-muted' />
               )}
             </span>
           ) : (
-            Icon && <Icon className='text-slate-600' />
+            Icon && <Icon className='text-fg-secondary' />
           )}
           <div className='flex-1 pl-1'>
             {(emoji ? stripPageEmoji(title, emoji) : title) || '<Untitled>'}
@@ -146,7 +146,7 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
                   e.stopPropagation()
                 }}
               >
-                <DeleteIcon className='text-slate-600' />
+                <DeleteIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Delete page'}</span>
               </MenuItem>
             </MenuContent>

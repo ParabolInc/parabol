@@ -12,7 +12,7 @@ import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
 
 const FacilitatorBlock = styled('div')({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+  borderBottom: '1px solid var(--color-hairline)',
   fontWeight: 700,
   marginBottom: 8,
   padding: '0 8px 8px'
@@ -31,25 +31,25 @@ const FacilitatorToggle = styled('div')<{
   padding: '2px 4px',
   // StyledIcon when toggle isActive or not
   span: {
-    backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
-    color: isActive ? PALETTE.SLATE_700 : PALETTE.SLATE_600
+    backgroundColor: isActive ? 'var(--color-surface-phase-active)' : undefined,
+    color: isActive ? 'var(--color-fg-primary)' : 'var(--color-fg-secondary)'
   },
   // StyledIcon when toggle hovered
   '&:hover > span': {
-    backgroundColor: PALETTE.SLATE_200,
-    color: PALETTE.SLATE_700
+    backgroundColor: 'var(--color-surface-phase-active)',
+    color: 'var(--color-fg-primary)'
   }
 }))
 
 const Label = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 14,
   fontWeight: 600,
   lineHeight: '20px'
 })
 
 const Subtext = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 13,
   fontWeight: 400,
   lineHeight: '16px',
@@ -70,7 +70,7 @@ const StyledIcon = styled('span')({
 
 const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected}) => ({
   border: '2px solid',
-  borderColor: isConnected ? PALETTE.JADE_400 : PALETTE.SLATE_600,
+  borderColor: isConnected ? PALETTE.JADE_400 : 'var(--color-fg-muted)',
   borderRadius: 30,
   flexShrink: 0,
   height: 30,

@@ -20,10 +20,10 @@ interface StyleProps {
   isPastDue?: boolean
 }
 
-const DUE_DATE_BG = PALETTE.SLATE_200
-const DUE_DATE_BG_HOVER = PALETTE.SLATE_300
-const DUE_DATE_COLOR = PALETTE.SLATE_600
-const DUE_DATE_COLOR_HOVER = PALETTE.SLATE_700
+const DUE_DATE_BG = 'var(--color-surface-well)'
+const DUE_DATE_BG_HOVER = 'var(--color-surface-raised)'
+const DUE_DATE_COLOR = 'var(--color-fg-secondary)'
+const DUE_DATE_COLOR_HOVER = 'var(--color-fg-primary)'
 
 const DUE_DATE_PAST_BG = PALETTE.TOMATO_100
 const DUE_DATE_PAST_BG_HOVER = PALETTE.TOMATO_200

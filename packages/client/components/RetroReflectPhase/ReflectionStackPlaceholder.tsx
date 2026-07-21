@@ -1,33 +1,8 @@
-import styled from '@emotion/styled'
 import {forwardRef, type Ref} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
-import {Breakpoint, Card, ElementHeight, ElementWidth, Gutters} from '../../types/constEnums'
 
 interface Props {
   idx: number
 }
-
-const PlaceholderCard = styled('div')({
-  alignItems: 'center',
-  border: `1px ${PALETTE.SLATE_500} dashed`,
-  borderRadius: Card.BORDER_RADIUS,
-  display: 'flex',
-  justifyContent: 'center',
-  margin: `0 0 ${Gutters.ROW_INNER_GUTTER}`,
-  width: ElementWidth.REFLECTION_CARD,
-  [`@media screen and (min-width: ${Breakpoint.SINGLE_REFLECTION_COLUMN}px)`]: {
-    minHeight: ElementHeight.REFLECTION_CARD_MAX,
-    margin: '0 0 24px' // matches Reflection Stack
-  }
-})
-
-const Tip = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 13,
-  padding: 16,
-  textAlign: 'center',
-  userSelect: 'none'
-})
 
 const placeholders = [
   'Your anonymous reflections end up here',
@@ -43,9 +18,13 @@ const ReflectionStackPlaceholder = forwardRef((props: Props, ref: Ref<HTMLDivEle
   const {idx} = props
   const tip = placeholders[(seed + idx) % placeholders.length]
   return (
-    <PlaceholderCard ref={ref}>
-      <Tip>{tip}</Tip>
-    </PlaceholderCard>
+    // min-[704px] = Breakpoint.SINGLE_REFLECTION_COLUMN; mb-6 there matches Reflection Stack
+    <div
+      ref={ref}
+      className='mb-3 flex w-74 items-center justify-center rounded border border-hairline-strong border-dashed min-[704px]:mb-6 min-[704px]:min-h-26'
+    >
+      <div className='select-none p-4 text-center text-[13px] text-fg-secondary'>{tip}</div>
+    </div>
   )
 })
 

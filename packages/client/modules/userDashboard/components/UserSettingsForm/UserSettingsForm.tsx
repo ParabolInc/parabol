@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {useState} from 'react'
 import type {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.graphql'
@@ -11,52 +10,9 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateUserProfileMutation from '../../../../mutations/UpdateUserProfileMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
-import {Breakpoint, Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
 import NotificationErrorMessage from '../../../notifications/components/NotificationErrorMessage'
-
-const SettingsForm = styled('form')({
-  alignItems: 'center',
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
-  display: 'flex',
-  flexDirection: 'column',
-  padding: Layout.ROW_GUTTER,
-  width: '100%',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    flexDirection: 'row'
-  }
-})
-
-const InfoBlock = styled('div')({
-  flex: 1,
-  paddingLeft: Layout.ROW_GUTTER
-})
-
-const FieldBlock = styled('div')({
-  flex: 1,
-  minWidth: 0,
-  padding: '0 0 16px',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    padding: '0 16px 0 0'
-  }
-})
-
-const ControlBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    flexDirection: 'row',
-    flex: 1
-  }
-})
-
-const StyledButton = styled(SecondaryButton)({
-  width: 112
-})
 
 interface UserSettingsProps {
   viewer: UserProfileQuery['response']['viewer']
@@ -91,7 +47,10 @@ function UserSettings(props: UserSettingsProps) {
   const [isAvatarOpen, setIsAvatarOpen] = useState(false)
   const {value, error: fieldError} = fields.preferredName
   return (
-    <SettingsForm onSubmit={onSubmit}>
+    <form
+      className='flex w-full flex-col items-center border-hairline border-t p-4 lg:flex-row'
+      onSubmit={onSubmit}
+    >
       <div onClick={() => setIsAvatarOpen(true)}>
         <EditableAvatar picture={pictureOrDefault} className='h-24 w-24' />
       </div>
@@ -100,7 +59,7 @@ function UserSettings(props: UserSettingsProps) {
         onClose={() => setIsAvatarOpen(false)}
         picture={pictureOrDefault}
       />
-      <InfoBlock>
+      <div className='flex-1 pl-4'>
         <FieldLabel
           customStyles={{paddingBottom: 8}}
           label='Name'
@@ -108,8 +67,8 @@ function UserSettings(props: UserSettingsProps) {
           indent
           htmlFor='preferredName'
         />
-        <ControlBlock>
-          <FieldBlock>
+        <div className='flex w-full flex-col items-center lg:flex-1 lg:flex-row'>
+          <div className='min-w-0 flex-1 pb-4 lg:pr-4 lg:pb-0'>
             {/* TODO: Make me Editable.js (TA) */}
             <BasicInput
               value={value}
@@ -119,12 +78,14 @@ function UserSettings(props: UserSettingsProps) {
               name='preferredName'
               placeholder='My name'
             />
-          </FieldBlock>
-          <StyledButton size='medium'>{'Update'}</StyledButton>
-        </ControlBlock>
+          </div>
+          <SecondaryButton size='medium' className='w-28'>
+            {'Update'}
+          </SecondaryButton>
+        </div>
         <NotificationErrorMessage error={error} />
-      </InfoBlock>
-    </SettingsForm>
+      </div>
+    </form>
   )
 }
 

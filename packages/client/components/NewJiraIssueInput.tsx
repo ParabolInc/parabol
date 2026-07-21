@@ -7,7 +7,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
-import {PALETTE} from '~/styles/paletteV3'
 import type {NewJiraIssueInput_meeting$key} from '../__generated__/NewJiraIssueInput_meeting.graphql'
 import type {NewJiraIssueInput_viewer$key} from '../__generated__/NewJiraIssueInput_viewer.graphql'
 import useForm from '../hooks/useForm'
@@ -40,7 +39,7 @@ const StyledButton = styled(PlainButton)({
 })
 
 const StyledIcon = styled(ExpandMore)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   height: 20,
   width: 20,
   padding: 0,
@@ -48,7 +47,7 @@ const StyledIcon = styled(ExpandMore)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',
@@ -65,7 +64,7 @@ const Form = styled('form')({
 })
 
 const Item = styled('div')({
-  backgroundColor: PALETTE.SLATE_100,
+  backgroundColor: 'var(--color-surface-raised)',
   cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
@@ -84,7 +83,7 @@ const NewIssueInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   margin: 0,
   padding: '0px 8px 0px 0px',

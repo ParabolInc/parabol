@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type ReactNode, useRef} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -6,7 +5,6 @@ import type {ThreadedTaskBase_discussion$key} from '~/__generated__/ThreadedTask
 import type {ThreadedTaskBase_task$key} from '~/__generated__/ThreadedTaskBase_task.graphql'
 import type {ThreadedTaskBase_viewer$key} from '~/__generated__/ThreadedTaskBase_viewer.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
-import {PALETTE} from '~/styles/paletteV3'
 import DiscussionThreadInput from './DiscussionThreadInput'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import NullableTask from './NullableTask/NullableTask'
@@ -14,23 +12,6 @@ import ThreadedAvatarColumn from './ThreadedAvatarColumn'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedItemWrapper from './ThreadedItemWrapper'
 import ThreadedReplyButton from './ThreadedReplyButton'
-
-const BodyCol = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingBottom: 8,
-  width: '100%'
-})
-
-const HeaderActions = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontWeight: 60,
-  paddingRight: 32
-})
-
-const StyledNullableTask = styled(NullableTask)({
-  maxWidth: 296
-})
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
@@ -102,14 +83,15 @@ const ThreadedTaskBase = (props: Props) => {
   return (
     <ThreadedItemWrapper isReply={isReply} ref={ref}>
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
-      <BodyCol>
+      <div className='flex w-full flex-col pb-2'>
         <ThreadedItemHeaderDescription title={preferredName} subTitle={'added a Task'}>
-          <HeaderActions>
+          {/* fontWeight was a pre-existing `60` typo — corrected to 600 (font-semibold) */}
+          <div className='pr-8 font-semibold text-fg-secondary'>
             <ThreadedReplyButton onReply={onReply} />
-          </HeaderActions>
+          </div>
         </ThreadedItemHeaderDescription>
         <div className='py-2'>
-          <StyledNullableTask area='meeting' task={task} />
+          <NullableTask className='max-w-[296px]' area='meeting' task={task} />
         </div>
         {repliesList}
         {replyingTo?.id === task.id && (
@@ -121,7 +103,7 @@ const ThreadedTaskBase = (props: Props) => {
             getMaxSortOrder={getMaxSortOrder}
           />
         )}
-      </BodyCol>
+      </div>
     </ThreadedItemWrapper>
   )
 }

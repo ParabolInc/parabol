@@ -8,7 +8,6 @@ import type {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
-import {PALETTE} from '../styles/paletteV3'
 import Menu from './Menu'
 
 interface Props {
@@ -31,7 +30,7 @@ const PickerTitle = styled('div')({
 
 const Hint = styled('div')({
   fontSize: 11,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   textAlign: 'center'
 })
 

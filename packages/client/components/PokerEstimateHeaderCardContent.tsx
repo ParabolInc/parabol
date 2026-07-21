@@ -5,8 +5,6 @@ import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {PokerEstimateHeaderCardContent_task$key} from '~/__generated__/PokerEstimateHeaderCardContent_task.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {Elevation} from '~/styles/elevation'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import sanitizeExternalHtml from '../utils/sanitizeExternalHtml'
 import CardButton from './CardButton'
@@ -21,9 +19,10 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
-  background: PALETTE.WHITE,
+  background: 'var(--color-surface-card)',
   borderRadius: 4,
-  boxShadow: Elevation.Z1,
+  // theme-aware: dark adds a hairline ring + top highlight so the card reads on near-black
+  boxShadow: 'var(--shadow-card)',
   height: '100%',
   padding: '12px 16px',
   maxWidth: 1504, // matches widest dimension column 1600 - padding etc.
@@ -49,7 +48,7 @@ const CardTitleWrapper = styled('div')({
 })
 
 const CardDescriptionWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,
@@ -64,7 +63,7 @@ const CardDescriptionContent = styled('div')`
     text-decoration: underline;
     :hover,
     :focus {
-      color: ${PALETTE.SLATE_700};
+      color: var(--color-fg-primary);
     }
   }
 `
@@ -76,7 +75,7 @@ const StyledIcon = styled(Launch)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'flex',
   fontSize: 12,
   lineHeight: '20px',

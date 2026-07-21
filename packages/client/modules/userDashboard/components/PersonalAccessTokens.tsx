@@ -103,21 +103,21 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
     <>
       <Panel label='Personal Access Tokens' casing='capitalize' controls={controls}>
         {activeTokens.length === 0 ? (
-          <div className='border-slate-300 border-t p-8 text-center text-slate-500 text-sm'>
+          <div className='border-hairline border-t p-8 text-center text-fg-muted text-sm'>
             No personal access tokens. Create one to get programmatic API access.
           </div>
         ) : (
           <>
-            <div className='border-slate-300 border-t px-4 py-3 text-slate-600 text-sm'>
+            <div className='border-hairline border-t px-4 py-3 text-fg-secondary text-sm'>
               Ready to test? Try your token in the{' '}
               <Link to='/graphql' className='font-semibold text-sky-500 hover:text-sky-700'>
                 GraphiQL explorer
               </Link>
             </div>
-            <div className='overflow-x-auto border-slate-300 border-t'>
+            <div className='overflow-x-auto border-hairline border-t'>
               <table className='w-full text-sm'>
                 <thead>
-                  <tr className='border-slate-200 border-b bg-slate-50 text-left text-slate-500 text-xs uppercase tracking-wider'>
+                  <tr className='border-hairline border-b bg-surface-raised text-left text-fg-muted text-xs uppercase tracking-wider'>
                     <th className='px-4 py-2 font-semibold'>Name</th>
                     <th className='px-4 py-2 font-semibold'>Token</th>
                     <th className='px-4 py-2 font-semibold'>Scopes</th>
@@ -133,26 +133,26 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                     .map((token) => (
                       <tr
                         key={token.id}
-                        className='border-slate-100 border-b last:border-0 hover:bg-slate-50'
+                        className='border-hairline border-b last:border-0 hover:bg-surface-raised'
                       >
-                        <td className='px-4 py-3 font-medium text-slate-800'>{token.name}</td>
-                        <td className='px-4 py-3 font-medium text-slate-800'>{token.id}</td>
-                        <td className='max-w-[200px] px-4 py-3 text-slate-800'>
+                        <td className='px-4 py-3 font-medium text-fg-primary'>{token.name}</td>
+                        <td className='px-4 py-3 font-medium text-fg-primary'>{token.id}</td>
+                        <td className='max-w-[200px] px-4 py-3 text-fg-primary'>
                           {token.scopes.map(formatScope).join(', ')}
                         </td>
-                        <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
                           {new Date(token.createdAt).toLocaleDateString()}
                         </td>
-                        <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
                           {token.lastUsedAt ? new Date(token.lastUsedAt).toLocaleDateString() : '—'}
                         </td>
-                        <td className='whitespace-nowrap px-4 py-3 text-slate-800'>
+                        <td className='whitespace-nowrap px-4 py-3 text-fg-primary'>
                           {token.expiresAt ? new Date(token.expiresAt).toLocaleDateString() : '—'}
                         </td>
                         <td className='px-4 py-3 text-right'>
                           <Menu
                             trigger={
-                              <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-slate-400 outline-none hover:bg-slate-100 hover:text-slate-60'>
+                              <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-fg-muted outline-none hover:bg-surface-raised hover:text-fg-secondary'>
                                 <MoreVertIcon className='size-5' />
                               </button>
                             }

@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import type {ArchiveTeam_team$key} from '~/__generated__/ArchiveTeam_team.graphql'
 import IconLabel from '../../../../components/IconLabel'
 import LinkButton from '../../../../components/LinkButton'
-import {PALETTE} from '../../../../styles/paletteV3'
 import ArchiveTeamForm from './ArchiveTeamForm'
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
 }
 
 const Hint = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 13,
   marginTop: 8
 })

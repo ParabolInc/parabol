@@ -76,9 +76,9 @@ export const SearchDialogResult = ({
         setSelectedIndex()
       }}
       data-highlighted={isActive ? '' : undefined}
-      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 outline-none transition-colors hover:bg-slate-200 data-highlighted:bg-slate-200`}
+      className={`group flex cursor-pointer scroll-mt-4 items-center gap-3 rounded-md px-3 py-1 outline-none transition-colors hover:bg-surface-well data-highlighted:bg-surface-well`}
     >
-      <div className='text-slate-600 transition-colors group-hover:text-slate-700 group-data-highlighted:text-slate-700'>
+      <div className='text-fg-secondary transition-colors group-hover:text-fg-primary group-data-highlighted:text-fg-primary'>
         {icon}
       </div>
       <Link
@@ -92,11 +92,11 @@ export const SearchDialogResult = ({
           <TypeAheadLabel
             query={wordPattern}
             label={title || '<Untitled>'}
-            className='font-normal text-[14px] text-slate-800'
+            className='font-normal text-[14px] text-fg-primary'
           />
           {firstSnippet && (
             <span
-              className='text-slate-700 text-xs'
+              className='text-fg-secondary text-xs'
               dangerouslySetInnerHTML={{
                 __html: firstSnippet
               }}

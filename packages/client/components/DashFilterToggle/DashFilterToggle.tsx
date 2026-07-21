@@ -1,7 +1,6 @@
-import styled from '@emotion/styled'
 import {FilterList, Group, Person} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
+import {cn} from '../../ui/cn'
 import LinkButton from '../LinkButton'
 
 interface Props {
@@ -15,33 +14,21 @@ interface Props {
   onMouseEnter: () => void
 }
 
-const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
-  flexShrink: 0,
-  fontWeight: 600,
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
-
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {className, label, value, iconText, onClick, onMouseEnter, dataCy} = props
   return (
-    <StyledLinkButton
+    <LinkButton
       aria-label={`Filter by ${label}`}
-      className={className}
+      className={cn(
+        'shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary',
+        className
+      )}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       ref={ref}
       dataCy={dataCy}
     >
-      <StyledIcon>
+      <div className='mr-2 h-6 w-6'>
         {
           {
             person: <Person />,
@@ -49,9 +36,9 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
           }[iconText!]
         }
         {!iconText && <FilterList />}
-      </StyledIcon>
+      </div>
       {value}
-    </StyledLinkButton>
+    </LinkButton>
   )
 })
 

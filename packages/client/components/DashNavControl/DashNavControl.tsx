@@ -1,13 +1,12 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
 import IconLabel from '../IconLabel'
 import LinkButton from '../LinkButton'
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontWeight: 600,
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   }
 })
 

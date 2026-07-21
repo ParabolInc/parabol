@@ -11,13 +11,13 @@ import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
 
 const InvoiceAmount = styled('span')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   lineHeight: '24px'
 })
 
 const FileIcon = styled(Receipt)<{isEstimate: boolean}>(({isEstimate}) => ({
-  color: isEstimate ? PALETTE.SKY_500 : PALETTE.SLATE_600
+  color: isEstimate ? 'var(--color-accent)' : 'var(--color-fg-secondary)'
 }))
 
 const InvoiceInfo = styled(RowInfo)({
@@ -45,11 +45,11 @@ const StyledDate = styled('span')<{
   styledPaid?: boolean
 }>(({styledToPay, styledPaid}) => ({
   fontSize: 13,
-  color: styledToPay || styledPaid ? PALETTE.SLATE_600 : PALETTE.TOMATO_500
+  color: styledToPay || styledPaid ? 'var(--color-fg-secondary)' : PALETTE.TOMATO_500
 }))
 
 const PayURL = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontWeight: 600,
   textDecoration: 'none'
 })
@@ -81,7 +81,7 @@ const InvoiceRow = (props: Props) => {
         href={payUrl}
         target='_blank'
         rel='noopener noreferrer'
-        className='flex w-full flex-row items-center justify-between text-slate-700 no-underline'
+        className='flex w-full flex-row items-center justify-between text-fg-primary no-underline'
       >
         <FileIcon isEstimate={isEstimate} />
         <InvoiceInfo>

@@ -13,7 +13,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     <RadixSelect.Item
       ref={ref}
       className={cn(
-        'mx-1 flex h-10 cursor-pointer select-none items-center justify-between rounded-md text-sm outline-hidden hover:bg-slate-100 focus:bg-slate-100 data-disabled:pointer-events-none data-disabled:opacity-50',
+        'mx-1 flex h-10 cursor-pointer select-none items-center justify-between rounded-md text-sm outline-hidden hover:bg-surface-raised focus:bg-surface-raised data-disabled:pointer-events-none data-disabled:opacity-50',
         className
       )}
       {...props}

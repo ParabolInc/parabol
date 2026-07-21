@@ -5,7 +5,6 @@ import {Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
@@ -19,10 +18,10 @@ import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
 
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
-  backgroundColor: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
+  backgroundColor: disabled ? 'var(--color-surface-well)' : 'var(--color-accent)',
   opacity: 1,
   borderRadius: Radius.BUTTON_PILL,
-  color: disabled ? PALETTE.SLATE_600 : '#FFFFFF',
+  color: disabled ? 'var(--color-fg-muted)' : '#FFFFFF',
   outline: 0,
   marginTop: 12,
   padding: '4px 12px 4px 12px',
@@ -32,9 +31,9 @@ const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
 }))
 
 const CancelButton = styled(SubmitButton)({
-  backgroundColor: PALETTE.SLATE_200,
+  backgroundColor: 'var(--color-surface-well)',
   marginRight: 12,
-  color: PALETTE.SLATE_700
+  color: 'var(--color-fg-primary)'
 })
 
 interface Props {

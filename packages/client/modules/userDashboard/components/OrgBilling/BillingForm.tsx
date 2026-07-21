@@ -34,15 +34,16 @@ const ButtonBlock = styled('div')({
 })
 
 const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
+  background: PALETTE.SKY_500,
+  color: PALETTE.WHITE,
   boxShadow: 'none',
   marginTop: 16,
   width: '100%',
   elevation: 0,
+  opacity: isDisabled ? 0.5 : 1,
   '&:hover, &:focus': {
     boxShadow: 'none',
-    background: isDisabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    background: isDisabled ? PALETTE.SKY_500 : PALETTE.SKY_600
   }
 }))
 
@@ -51,16 +52,20 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-const CARD_ELEMENT_OPTIONS: StripeCardNumberElementOptions = {
-  disableLink: true,
-  style: {
-    base: {
-      color: PALETTE.SLATE_800,
-      fontFamily: '"IBM Plex Sans", sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': {
-        color: PALETTE.SLATE_600
+// Stripe elements render inside iframes, so CSS custom properties can't reach them — compute theme colors at runtime
+const getCardElementOptions = (): StripeCardNumberElementOptions => {
+  const isDark = document.documentElement.classList.contains('theme-dark')
+  return {
+    disableLink: true,
+    style: {
+      base: {
+        color: isDark ? '#EEEDF7' : PALETTE.SLATE_800,
+        fontFamily: '"IBM Plex Sans", sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: isDark ? '#938CBF' : PALETTE.SLATE_600
+        }
       }
     }
   }
@@ -92,6 +97,7 @@ const BillingForm = (props: Props) => {
     !expiryDateError &&
     !cvcError
   const isUpgradeDisabled = submitting || !stripe || !elements || !hasValidCCDetails
+  const cardElementOptions = getCardElementOptions()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -180,7 +186,7 @@ const BillingForm = (props: Props) => {
   return (
     <form onSubmit={handleSubmit}>
       <div className='mb-4'>
-        <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+        <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
           Card number
         </label>
 
@@ -189,8 +195,8 @@ const BillingForm = (props: Props) => {
             onReady={(e) => {
               cardNumberRef.current = e
             }}
-            className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-            options={CARD_ELEMENT_OPTIONS}
+            className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+            options={cardElementOptions}
             onChange={handleChange('CardNumber')}
           />
           {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
@@ -199,26 +205,26 @@ const BillingForm = (props: Props) => {
 
       <div className='flex space-x-5'>
         <div className='w-1/2'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             Expiry date
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('ExpiryDate')}
             />
             {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
           </div>
         </div>
         <div className='w-1/2'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             CVC
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('CVC')}
             />
             {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}

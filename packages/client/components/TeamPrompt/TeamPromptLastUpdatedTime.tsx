@@ -2,12 +2,11 @@ import styled from '@emotion/styled'
 import useRefreshInterval from '~/hooks/useRefreshInterval'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
-import {PALETTE} from '../../styles/paletteV3'
 import absoluteDate from '../../utils/date/absoluteDate'
 import relativeDate from '../../utils/date/relativeDate'
 
 const Timestamp = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-muted)',
   fontWeight: 600,
   fontSize: 12
 })

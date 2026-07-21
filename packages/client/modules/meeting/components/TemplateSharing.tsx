@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PALETTE} from '../../../styles/paletteV3'
 import lazyPreload from '../../../utils/lazyPreload'
 
 const SelectSharingScopeDropdown = lazyPreload(
@@ -17,7 +16,7 @@ const SelectSharingScopeDropdown = lazyPreload(
 )
 
 const HR = styled('hr')({
-  backgroundColor: PALETTE.SLATE_400,
+  backgroundColor: 'var(--color-hairline-strong)',
   border: 'none',
   flexShrink: 0,
   height: 1,
@@ -28,7 +27,7 @@ const HR = styled('hr')({
 
 const DropdownDecoratorIcon = styled('div')({
   marginRight: '16px',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   svg: {
     fontSize: 18
@@ -52,7 +51,7 @@ const DropdownIcon = styled('div')({
 })
 
 const DropdownBlock = styled('div')<{readOnly?: boolean}>(({readOnly}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   cursor: readOnly ? undefined : 'pointer',
   alignItems: 'center',
   display: 'flex',
@@ -60,7 +59,7 @@ const DropdownBlock = styled('div')<{readOnly?: boolean}>(({readOnly}) => ({
   lineHeight: '24px',
   userSelect: 'none',
   ':hover': {
-    color: PALETTE.SLATE_900
+    color: 'var(--color-fg-primary)'
   }
 }))
 

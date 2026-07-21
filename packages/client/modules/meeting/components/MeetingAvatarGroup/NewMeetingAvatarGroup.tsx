@@ -11,7 +11,8 @@ import {useAvatarOverflowThreshold} from './useAvatarOverflowThreshold'
 
 const MOTION_TRANSITION = {duration: 0.3, ease: [0, 0, 0.2, 1]} as const
 
-const overlappingBlockCls = 'relative -ml-3 rounded-full bg-slate-200 p-[1px] first:ml-0'
+// the ring cuts each avatar out of the meeting canvas, so it must track the canvas token
+const overlappingBlockCls = 'relative -ml-3 rounded-full bg-surface-app p-[1px] first:ml-0'
 
 const AvatarSlot = forwardRef<HTMLDivElement, {children: React.ReactNode}>(({children}, ref) => (
   <motion.div

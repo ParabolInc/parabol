@@ -51,9 +51,10 @@ const MEETING_TYPE_LABEL = {
   teamPrompt: 'Standup'
 }
 
-const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-white shadow-card'
+const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-surface-card shadow-card'
 const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
-const MEETING_IMG = 'relative mx-auto block h-[180px] overflow-hidden rounded-t-card pt-6'
+const MEETING_IMG =
+  'relative mx-auto block h-[180px] overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
 
 const timeFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
@@ -133,7 +134,7 @@ const ScheduledSeriesCard = (props: Props) => {
 
   return (
     <motion.div
-      className='relative m-2 fuzzy-tablet:mb-0 mb-4 fuzzy-tablet:w-80 w-[calc(100%-16px)] max-w-full shrink-0 select-none'
+      className='relative m-3 fuzzy-tablet:mb-3 mb-4 fuzzy-tablet:w-80 w-[calc(100%-24px)] max-w-full shrink-0 select-none'
       initial={{opacity: 0}}
       animate={{opacity: 1}}
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
@@ -152,7 +153,7 @@ const ScheduledSeriesCard = (props: Props) => {
             <img className={MEETING_IMG} src={illustration} alt='' />
           </div>
         </div>
-        <div className='relative rounded-card bg-white shadow-card'>
+        <div className='relative rounded-card bg-surface-card shadow-card'>
           <div className={MEETING_IMG_WRAPPER}>
             <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -173,7 +174,7 @@ const ScheduledSeriesCard = (props: Props) => {
           <div className='pt-1 pr-2 pb-3 pl-4'>
             <div className='relative flex items-center'>
               <Link to={seriesLink} onClick={openEdit}>
-                <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                   {title}
                 </span>
                 <Tooltip>
@@ -185,8 +186,8 @@ const ScheduledSeriesCard = (props: Props) => {
               </Link>
               <Menu
                 trigger={
-                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent opacity-50 outline-hidden hover:bg-slate-200 hover:opacity-100'>
-                    <MoreVert className='text-lg text-slate-700' />
+                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-well hover:opacity-100'>
+                    <MoreVert className='text-fg-primary text-lg' />
                   </button>
                 }
               >
@@ -197,7 +198,7 @@ const ScheduledSeriesCard = (props: Props) => {
               </Menu>
             </div>
             <Link to={seriesLink} onClick={openEdit}>
-              <span className='block pt-1 pb-2 text-slate-600 text-sm'>
+              <span className='block pt-1 pb-2 text-fg-secondary text-sm'>
                 {MEETING_TYPE_LABEL[meetingType]} • Awaiting first meeting
               </span>
             </Link>

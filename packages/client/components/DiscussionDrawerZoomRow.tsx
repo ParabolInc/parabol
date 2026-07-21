@@ -62,12 +62,12 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
   }
 
   return (
-    <div className='flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2.5'>
+    <div className='flex items-center justify-between rounded-lg border border-hairline px-3 py-2.5'>
       <div className='flex items-center gap-2.5'>
         <div className='h-6 w-6'>
           <ZoomSVG />
         </div>
-        <span className='font-medium text-slate-700 text-sm'>Zoom</span>
+        <span className='font-medium text-fg-primary text-sm'>Zoom</span>
       </div>
       {zoom.isActive ? (
         <div className='flex items-center gap-1'>
@@ -75,7 +75,7 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
           <Menu
             trigger={
               <Button variant='ghost' className='h-6 w-6 p-0'>
-                <MoreVert className='text-base text-slate-500' />
+                <MoreVert className='text-base text-fg-secondary' />
               </Button>
             }
           >
@@ -87,7 +87,7 @@ const DiscussionDrawerZoomRow = ({zoomRef, teamId}: Props) => {
         </div>
       ) : (
         <button
-          className='cursor-pointer whitespace-nowrap rounded border border-slate-400 bg-transparent px-1.5 py-0.5 font-semibold text-slate-600 text-xs hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50'
+          className='cursor-pointer whitespace-nowrap rounded border border-hairline-strong bg-transparent px-1.5 py-0.5 font-semibold text-fg-secondary text-xs hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-50'
           onClick={clickCount >= 3 ? handleConnect : () => setClickCount((c) => c + 1)}
           disabled={submitting}
         >

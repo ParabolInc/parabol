@@ -69,12 +69,12 @@ const JiraServerObjectCard = (props: Props) => {
   const {summary, url, issueKey, projectName, updatedAt} = result
 
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex gap-2 text-fg-secondary text-xs'>
         <a
           href={url}
           target='_blank'
-          className='font-semibold text-slate-600 hover:underline'
+          className='font-semibold text-fg-secondary hover:underline'
           rel='noreferrer'
           onClick={trackLinkClick}
         >
@@ -98,11 +98,11 @@ const JiraServerObjectCard = (props: Props) => {
           <div className='h-4 w-4'>
             <img src={jiraSVG} />
           </div>
-          <div className='text-slate-600 text-xs'>{projectName}</div>
+          <div className='text-fg-secondary text-xs'>{projectName}</div>
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
+            className='h-6 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}

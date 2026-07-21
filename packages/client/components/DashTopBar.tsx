@@ -1,13 +1,8 @@
-import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {DashTopBar_query$key} from '~/__generated__/DashTopBar_query.graphql'
-import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import {AppBar, Breakpoint, Layout, NavSidebar} from '~/types/constEnums'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import parabolLogo from '../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import PinnedSnackbarNotifications from './PinnedSnackbarNotifications'
 import PlainButton from './PlainButton/PlainButton'
@@ -16,66 +11,10 @@ import TopBarHelp from './TopBarHelp'
 import TopBarNotifications from './TopBarNotifications'
 import TopBarSearch from './TopBarSearch'
 
-const dashWidestBreakpoint = makeMinWidthMediaQuery(Breakpoint.DASH_BREAKPOINT_WIDEST)
-
 interface Props {
   toggle: () => void
   queryRef: DashTopBar_query$key
 }
-
-const LeftNavToggle = styled(PlainButton)({
-  borderRadius: 100,
-  fontSize: ICON_SIZE.MD24,
-  lineHeight: '16px',
-  margin: 12,
-  padding: 4,
-  ':focus': {
-    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`
-  }
-})
-
-const LeftNavHeader = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_200,
-  display: 'flex',
-  flexShrink: 0,
-  width: NavSidebar.WIDTH
-})
-
-const LogoWrapper = styled('button')({
-  background: 'transparent',
-  border: 'none',
-  borderRadius: 4,
-  cursor: 'pointer',
-  margin: '8px 0 8px -8px',
-  padding: '8px 8px 4px 8px',
-  ':focus': {
-    boxShadow: `0 0 0 2px ${PALETTE.SKY_400}`,
-    outline: 'none'
-  }
-})
-
-const TopBarIcons = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_200,
-  display: 'flex',
-  justifyContent: 'flex-end',
-  maxWidth: 560,
-  paddingRight: 16
-})
-
-const TopBarMain = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  height: AppBar.HEIGHT,
-  justifyContent: 'space-between',
-  width: '100%',
-  [dashWidestBreakpoint]: {
-    margin: '0 auto',
-    maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH
-  }
-})
 
 const DashTopBar = (props: Props) => {
   const {toggle, queryRef} = props
@@ -98,24 +37,32 @@ const DashTopBar = (props: Props) => {
     navigate('/meetings')
   }
   return (
-    <div className='flex h-14 w-full justify-between bg-grape-700 dashboard-widest:pr-64 print:hidden'>
-      <LeftNavHeader>
-        <LeftNavToggle onClick={toggle} aria-label='Toggle dashboard menu'>
+    <div className='flex h-14 w-full justify-between bg-surface-topbar dashboard-widest:pr-64 print:hidden'>
+      <div className='flex w-64 shrink-0 items-center text-fg-topbar'>
+        <PlainButton
+          onClick={toggle}
+          aria-label='Toggle dashboard menu'
+          className='m-3 rounded-full p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
+        >
           <Menu />
-        </LeftNavToggle>
-        <LogoWrapper onClick={gotoHome}>
+        </PlainButton>
+        <button
+          type='button'
+          onClick={gotoHome}
+          className='-ml-2 my-2 mr-0 cursor-pointer rounded border-none bg-transparent px-2 pt-2 pb-1 focus:shadow-[0_0_0_2px_var(--color-sky-400)] focus:outline-none'
+        >
           <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
-        </LogoWrapper>
-      </LeftNavHeader>
-      <TopBarMain>
+        </button>
+      </div>
+      <div className='dashboard-widest:mx-auto flex h-14 w-full dashboard-widest:max-w-[1360px] flex-1 items-center justify-between'>
         <TopBarSearch viewer={data.viewer} />
-        <TopBarIcons>
+        <div className='flex max-w-[560px] items-center justify-end pr-4 text-fg-topbar'>
           <TopBarHelp />
           <TopBarNotifications queryRef={data} />
           <PinnedSnackbarNotifications queryRef={data} />
           <TopBarAvatar viewer={data.viewer || null} />
-        </TopBarIcons>
-      </TopBarMain>
+        </div>
+      </div>
     </div>
   )
 }

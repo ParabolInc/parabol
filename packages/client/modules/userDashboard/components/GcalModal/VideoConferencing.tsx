@@ -22,13 +22,13 @@ const VideoConferencing = (props: Props) => {
   return (
     <div>
       {videoType ? (
-        <div className='flex items-center rounded-sm bg-gray-100 px-2 py-3'>
+        <div className='flex items-center rounded-sm bg-surface-well px-2 py-3'>
           {videoType === 'meet' ? <GoogleMeetProviderLogo /> : <ZoomProviderLogo />}
-          <span className='h-[38px] py-2 pl-2 font-normal text-base text-gray-500'>
+          <span className='h-[38px] py-2 pl-2 font-normal text-base text-fg-secondary'>
             {selectedOptionLabel}
           </span>
           <Close
-            className='ml-auto cursor-pointer text-gray-500 hover:opacity-50'
+            className='ml-auto cursor-pointer text-fg-secondary hover:opacity-50'
             onClick={() => handleChangeVideoType(null)}
           />
         </div>
@@ -45,7 +45,7 @@ const VideoConferencing = (props: Props) => {
               <MenuItem onClick={() => handleChangeVideoType('meet')}>
                 <div className='flex items-center p-1'>
                   <GoogleMeetProviderLogo />
-                  <label className='cursor-pointer pl-2 font-normal text-gray-500 text-sm'>
+                  <label className='cursor-pointer pl-2 font-normal text-fg-secondary text-sm'>
                     Google Meet
                   </label>
                 </div>
@@ -53,7 +53,7 @@ const VideoConferencing = (props: Props) => {
               <MenuItem isDisabled>
                 <div className='flex items-center p-1'>
                   <ZoomProviderLogo />
-                  <label className='cursor-not-allowed pl-2 font-normal text-gray-500 text-sm'>
+                  <label className='cursor-not-allowed pl-2 font-normal text-fg-secondary text-sm'>
                     Zoom (Coming Soon!)
                   </label>
                 </div>

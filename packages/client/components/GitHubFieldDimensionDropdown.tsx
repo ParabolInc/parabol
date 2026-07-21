@@ -3,7 +3,6 @@ import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
@@ -20,7 +19,7 @@ interface Props {
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
   paddingRight: isFacilitator ? undefined : 8,

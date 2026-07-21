@@ -186,6 +186,12 @@ const subscription = graphql`
           enabled
         }
       }
+      UpdateUserThemeSuccess {
+        user {
+          id
+          theme
+        }
+      }
       CreatePagePayload {
         ...useCreatePageMutation_notification @relay(mask: false)
       }

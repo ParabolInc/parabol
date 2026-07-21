@@ -41,7 +41,7 @@ const NewMeetingTeamPickerAvatars = (props: Props) => {
           key={member.id}
           picture={member.user.picture}
           className={cn(
-            'flex-wrap border border-slate-200 border-solid',
+            'flex-wrap border border-hairline border-solid',
             avatars.length < 2 ? 'h-7 w-7' : 'h-6 w-6',
             i % 2 && '-ml-2',
             i > 1 && '-mt-2',
