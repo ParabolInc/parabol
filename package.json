@@ -133,7 +133,7 @@
     "mini-css-extract-plugin": "^2.7.2",
     "minimist": "^1.2.5",
     "node-loader": "^2.0.0",
-    "pm2": "^7.0.1",
+    "pm2": "^7.0.3",
     "postcss": "^8.5.10",
     "postcss-loader": "^8.1.1",
     "react-refresh": "^0.17.0",
