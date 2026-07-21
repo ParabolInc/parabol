@@ -84,6 +84,7 @@ jobs:
         run: |
           VERSION="${REF_NAME#v}"
           BRANCH="feat/${REF_NAME}"
+          NODE_VERSION_SUFFIX='-npm11-yarn4'
 
           git clone --branch master "https://oauth2:${REPO1_TOKEN}@repo1.dso.mil/dsop/parabol/parabol.git" ironbank-repo
           cd ironbank-repo
@@ -93,12 +94,12 @@ jobs:
           git checkout -b "${BRANCH}"
 
           # Update Dockerfile line 16
-          sed -i "3s|.*|ARG BASE_TAG=${NODE_VERSION}|" Dockerfile
+          sed -i "3s|.*|ARG BASE_TAG=${NODE_VERSION}${NODE_VERSION_SUFFIX}|" Dockerfile
           sed -i "16s|.*|COPY ${REF_NAME}.zip /home/node/app.zip|" Dockerfile
 
           # Update hardening_manifest.yaml
           sed -i "11s|.*|- \"${VERSION}\"|" hardening_manifest.yaml
-          sed -i "17s|.*|  BASE_TAG: \"${NODE_VERSION}\"|" hardening_manifest.yaml
+          sed -i "17s|.*|  BASE_TAG: \"${NODE_VERSION}${NODE_VERSION_SUFFIX}\"|" hardening_manifest.yaml
           sed -i "36s|.*|  org.opencontainers.image.version: \"${VERSION}\"|" hardening_manifest.yaml
           sed -i "46s|.*|  - url: \"https://storage.googleapis.com/parabol-ironbank-resources/${REF_NAME}.zip\"|" hardening_manifest.yaml
           sed -i "47s|.*|    filename: \"${REF_NAME}.zip\"|" hardening_manifest.yaml
