@@ -84,7 +84,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
         <DialogTitle>Add teammate</DialogTitle>
         {!domainJoinRequest ? (
           <>
-            <div className='py-4 text-slate-700 text-sm leading-relaxed'>
+            <div className='py-4 text-fg-primary text-sm leading-relaxed'>
               Request expired or deleted
             </div>
             <div className='flex w-full justify-end'>
@@ -99,7 +99,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               Which teams would you like to add <strong>{domainJoinRequest.createdByEmail}</strong>{' '}
               to?
             </div>
-            <div className='overflow-y-scroll pb-2 text-slate-700 text-sm leading-relaxed'>
+            <div className='overflow-y-scroll pb-2 text-fg-primary text-sm leading-relaxed'>
               {sortedTeams.map((team) => {
                 const {id: teamId, name: teamName, organization, teamMembers} = team
                 const {name: orgName} = organization
@@ -126,7 +126,7 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
                     <Checkbox
                       active={active}
                       disabled={isAlreadyMember}
-                      className={active && !isAlreadyMember ? 'text-sky-500' : undefined}
+                      className={active && !isAlreadyMember ? 'text-accent' : undefined}
                     />
                     <label
                       className={`ml-2 ${

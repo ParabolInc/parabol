@@ -46,26 +46,23 @@ const OrgTeamsRow = (props: Props) => {
     </div>
   )
   return (
-    <tr className='border-slate-300 border-b hover:bg-slate-50'>
+    <tr className='border-hairline border-b hover:bg-surface-raised'>
       <td className='flex items-center p-3'>
         <td className='flex items-center p-3'>
           {isLead || isMember || isOrgAdmin ? (
-            <Link
-              to={teamId}
-              className='flex items-center font-bold text-gray-700 text-lg hover:text-gray-900'
-            >
+            <Link to={teamId} className='flex items-center font-bold text-fg-primary text-lg'>
               {teamNameAndTags}
-              <ChevronRight className='ml-2 text-slate-600' />
+              <ChevronRight className='ml-2 text-fg-secondary' />
             </Link>
           ) : (
-            <div className='flex items-center font-bold text-gray-700 text-lg'>
+            <div className='flex items-center font-bold text-fg-primary text-lg'>
               {teamNameAndTags}
             </div>
           )}
         </td>
       </td>
-      <td className='p-3 text-gray-600'>{teamMembersCount}</td>
-      <td className='p-3 text-gray-600'>
+      <td className='p-3 text-fg-secondary'>{teamMembersCount}</td>
+      <td className='p-3 text-fg-secondary'>
         {lastMetAt ? format(new Date(lastMetAt), 'yyyy-MM-dd') : 'Never'}
       </td>
     </tr>

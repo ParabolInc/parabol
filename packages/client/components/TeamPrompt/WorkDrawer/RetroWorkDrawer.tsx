@@ -141,7 +141,7 @@ const RetroWorkDrawer = (props: Props) => {
     ...(GitHubClientManager.isAvailable
       ? [
           {
-            icon: <GitHubSVG />,
+            icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
             service: 'github',
             label: 'GitHub',
             Component: GitHubIntegrationPanel
@@ -195,7 +195,7 @@ const RetroWorkDrawer = (props: Props) => {
     <WorkDrawerConsumeContext.Provider
       value={{mode: 'retro', getNextReflectionSortOrder, getReflectPrompt, isReflectionAdded}}
     >
-      <div className='flex min-h-0 flex-1 flex-col bg-slate-50'>
+      <div className='flex min-h-0 flex-1 flex-col bg-surface-well'>
         <div className='flex justify-center pt-3 pb-2'>
           <div className='flex gap-1'>
             {baseTabs.map((tab, idx) => (
@@ -213,8 +213,8 @@ const RetroWorkDrawer = (props: Props) => {
                 className={cn(
                   'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',
                   idx === activeIdx
-                    ? 'bg-grape-700/10 text-grape-700'
-                    : 'cursor-pointer text-slate-500 hover:bg-slate-200'
+                    ? 'bg-accent-active/10 text-accent-active'
+                    : 'cursor-pointer text-fg-muted hover:bg-surface-raised'
                 )}
               >
                 {tab.icon}

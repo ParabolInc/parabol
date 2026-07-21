@@ -36,7 +36,7 @@ export const TableBody = ({table}: {table: Table<string>}) => {
             {row.getVisibleCells().map((cell) => (
               <td
                 key={cell.id}
-                className='h-12 border-slate-400 border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
+                className='h-12 border-hairline-strong border-b-1 border-l-1 first:border-l-0 first:pl-1 last:pr-1'
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>

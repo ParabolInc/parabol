@@ -140,10 +140,10 @@ export const ScheduleDialog = (props: Props) => {
   return (
     <div className='space-y-4 overflow-auto p-4'>
       <div className='font-semibold text-lg leading-none'>Schedule Your Meeting</div>
-      <div className='text-slate-800 text-sm'>{subTitle}</div>
+      <div className='text-fg-primary text-sm'>{subTitle}</div>
       <div className='flex flex-col'>
         <input
-          className='form-input rounded-sm border border-slate-500 border-solid p-2 font-sans text-base hover:border-slate-600 focus:border-slate-600 focus:outline-hidden focus:ring-1 focus:ring-slate-600'
+          className='form-input rounded-sm border border-hairline-field border-solid bg-surface-input p-2 font-sans text-base hover:border-fg-secondary focus:border-fg-secondary focus:outline-hidden focus:ring-1 focus:ring-fg-secondary'
           type='text'
           name='title'
           placeholder={placeholder}
@@ -157,7 +157,7 @@ export const ScheduleDialog = (props: Props) => {
       {gcal?.cloudProvider &&
         (gcal?.auth && addedInvite ? (
           <Collapsible.Root
-            className='flex flex-col rounded-sm border border-slate-500'
+            className='flex flex-col rounded-sm border border-hairline-strong'
             open={openGcalEvent}
             onOpenChange={setOpenGcalEvent}
           >
@@ -184,12 +184,12 @@ export const ScheduleDialog = (props: Props) => {
         ))}
       {withRecurrence && (
         <Collapsible.Root
-          className='flex flex-col rounded-sm border border-slate-500'
+          className='flex flex-col rounded-sm border border-hairline-strong'
           open={openRecurrence}
           onOpenChange={setOpenRecurrence}
         >
           <Collapsible.Trigger className='flex cursor-pointer items-center justify-between bg-transparent p-2'>
-            <EventRepeat className='mr-2 text-slate-600' />
+            <EventRepeat className='mr-2 text-fg-secondary' />
             <div className='grow text-left font-semibold text-lg leading-none'>
               {rrule
                 ? toHumanReadable(rrule, {

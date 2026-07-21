@@ -16,14 +16,14 @@ export const StyledCheckbox = styled('input')({
   left: 0,
   right: 0,
   bottom: 0,
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: `1px solid var(--color-hairline-field)`,
   borderRadius: 8,
   '&:checked': {
     border: `1px solid ${PALETTE.SKY_500}`,
     backgroundColor: PALETTE.SKY_500
   },
   ':hover, :focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SLATE_500}`,
+    outline: `1px solid var(--color-fg-secondary)`,
     borderRadius: 4
   }
 })
@@ -38,7 +38,7 @@ export const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChe
   lineHeight: '26px',
   fontWeight: 600,
   display: 'flex',
-  color: isChecked ? PALETTE.WHITE : PALETTE.SLATE_800,
+  color: isChecked ? PALETTE.WHITE : 'var(--color-fg-primary)',
   justifyContent: 'center',
   alignItems: 'center',
   cursor: 'pointer'

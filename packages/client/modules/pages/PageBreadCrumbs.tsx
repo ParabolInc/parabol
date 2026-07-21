@@ -96,7 +96,7 @@ export const PageBreadCrumbs = (props: Props) => {
           <Link
             draggable={false}
             to={`/team/${team.id}`}
-            className='rounded-md px-1 hover:bg-slate-200'
+            className='rounded-md px-1 hover:bg-surface-hover'
           >
             {team.name}
           </Link>
@@ -122,7 +122,7 @@ export const PageBreadCrumbs = (props: Props) => {
           <Link
             draggable={false}
             to={`/pages/${getPageSlug(Number(page.id.split(':')[1]), page.title)}`}
-            className='rounded-md px-1 hover:bg-slate-200'
+            className='rounded-md px-1 hover:bg-surface-hover'
           >
             {page.title}
           </Link>
@@ -133,7 +133,7 @@ export const PageBreadCrumbs = (props: Props) => {
   }
 
   return (
-    <nav className='flex items-center pl-2 text-slate-600 text-sm'>
+    <nav className='flex items-center pl-2 text-fg-secondary text-sm'>
       {/* Oldest ancestor (if any) */}
       {visibleAncestors.length > 0 && renderBreadcrumbItem(visibleAncestors[0]!)}
 
@@ -147,7 +147,7 @@ export const PageBreadCrumbs = (props: Props) => {
             }}
             trigger={
               <button
-                className='cursor-pointer rounded-md bg-white px-1 hover:bg-slate-200'
+                className='cursor-pointer rounded-md bg-surface-document px-1 hover:bg-surface-hover'
                 aria-label='Open ancestor menu'
                 onDragEnter={() => {
                   if (draggingPageId) {
@@ -159,14 +159,17 @@ export const PageBreadCrumbs = (props: Props) => {
               </button>
             }
           >
-            <DropdownMenu.Content className='rounded bg-white p-2 shadow-md' sideOffset={5}>
+            <DropdownMenu.Content
+              className='rounded border border-hairline bg-surface-raised p-2 shadow-md'
+              sideOffset={5}
+            >
               {hiddenAncestors.map((page) => {
                 const isSelf = page.id === draggingPageId
                 const canDropIn = draggingPageId && !isSelf && !isSourceDragParent && hasDragAccess
                 return (
                   <MenuItem key={page.id} className='p-0'>
                     <PageDropTarget
-                      className='rounded p-1 hover:bg-slate-200'
+                      className='rounded p-1 hover:bg-surface-hover'
                       data-drop-in={canDropIn ? page.id : undefined}
                     >
                       <Link
@@ -190,7 +193,7 @@ export const PageBreadCrumbs = (props: Props) => {
 
       {/* Self (not a link) */}
       {ancestors.length === 0 && team && renderTeamCrumb(team)}
-      <span className='font-medium text-slate-900'>{self.title}</span>
+      <span className='font-medium text-fg-primary'>{self.title}</span>
     </nav>
   )
 }

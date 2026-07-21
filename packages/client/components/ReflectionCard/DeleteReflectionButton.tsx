@@ -15,7 +15,7 @@ const DeleteReflectionButton = (props: PlainButtonProps) => {
       title={userLabel}
       {...rest}
     >
-      <Cancel className='size-4.5 text-slate-600' />
+      <Cancel className='size-4.5 text-fg-secondary' />
     </PlainButton>
   )
 }

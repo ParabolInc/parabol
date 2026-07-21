@@ -22,7 +22,7 @@ interface Props {
   isOpen: boolean
 }
 
-const Divider = () => <div className='mx-1 h-4 w-px bg-slate-300' />
+const Divider = () => <div className='mx-1 h-4 w-px bg-hairline' />
 const alignButtons = [
   {name: 'left', Icon: FormatAlignLeftIcon},
   {name: 'center', Icon: FormatAlignCenterIcon},
@@ -49,7 +49,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
       <Popover.Anchor className='pointer-events-none absolute top-0 h-full w-full' />
       <Popover.Portal>
         <Popover.Content
-          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-slate-600 border-solid bg-white p-[3px] shadow-sm'
+          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-raised p-[3px] shadow-sm'
           sideOffset={8}
           side='top'
           onOpenAutoFocus={(e) => e.preventDefault()}
@@ -83,7 +83,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
           {/* Dimensions */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className='flex cursor-default items-center justify-center px-2 font-mono text-slate-500 text-xs'>
+              <span className='flex cursor-default items-center justify-center px-2 font-mono text-fg-muted text-xs'>
                 {isFullWidth ? '100%' : width ? `${Math.round(width)}px` : 'Auto'}
               </span>
             </TooltipTrigger>

@@ -109,7 +109,7 @@ const TimelineHeader = (props: Props) => {
           <TimelineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
         )}
         <LinkButton
-          className='my-1 sidebar-left:my-0 shrink-0 font-semibold text-slate-600 hover:text-slate-700 focus:text-slate-700 active:text-slate-700'
+          className='my-1 sidebar-left:my-0 shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() =>
             navigate(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
           }

@@ -15,9 +15,9 @@ export const LeftNavPagesTrash = (_props: Props) => {
           <Popover.Root>
             <Popover.Trigger asChild>
               <div>
-                <div className='group flex flex-1 cursor-pointer rounded-md font-semibold text-xs leading-5 hover:bg-slate-300'>
+                <div className='group flex flex-1 cursor-pointer rounded-md font-semibold text-xs leading-5 hover:bg-surface-nav-active'>
                   <LeftNavHeader>
-                    <DeleteIcon className='text-slate-600' />
+                    <DeleteIcon className='text-fg-nav-muted' />
                     <span className='pl-1'>{'Trash'}</span>
                   </LeftNavHeader>
                 </div>

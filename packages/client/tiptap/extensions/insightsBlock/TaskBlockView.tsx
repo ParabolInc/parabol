@@ -28,7 +28,7 @@ export const TaskBlockView = (props: NodeViewProps) => {
         <div className='select-none pt-2'>
           <div className='flex'>
             <Avatar className='size-6' picture={avatar} />
-            <div className='break-words pl-2 font-semibold text-slate-600 text-xs leading-6'>
+            <div className='break-words pl-2 font-semibold text-fg-secondary text-xs leading-6'>
               {preferredName}
             </div>
           </div>

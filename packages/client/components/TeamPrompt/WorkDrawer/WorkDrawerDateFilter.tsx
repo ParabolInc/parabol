@@ -51,7 +51,7 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
         <Button
           variant='flat'
           data-dirty={dateRange ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-slate-600 text-sm hover:bg-slate-200 data-dirty:text-slate-700'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-raised data-dirty:text-fg-primary'
         >
           <DateRangeIcon className='pr-1' />
           <span>{dateRangeText}</span>
@@ -62,7 +62,7 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
       <MenuContent
         align='start'
         sideOffset={4}
-        className='z-30 h-fit max-h-96 w-auto min-w-[300px] max-w-none border border-slate-200 p-4 shadow-xl'
+        className='z-30 h-fit max-h-96 w-auto min-w-[300px] max-w-none border border-hairline p-4 shadow-xl'
       >
         <div className='flex flex-col'>
           <div className='flex justify-between'>
@@ -76,14 +76,14 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
             {PRESETS.map((preset) => (
               <button
                 key={preset.label}
-                className='cursor-pointer rounded p-1 text-left text-slate-700 text-sm hover:bg-slate-200'
+                className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-raised'
                 onClick={() => handlePreset(preset.hours)}
               >
                 {preset.label}
               </button>
             ))}
           </div>
-          <div className='flex justify-center border-slate-200 border-t pt-4'>
+          <div className='flex justify-center border-hairline border-t pt-4'>
             <DayPicker
               mode='range'
               selected={selectedDates}

@@ -135,10 +135,10 @@ const GitHubIntegrationPanel = (props: Props) => {
               <div
                 key={tab.key}
                 className={cn(
-                  'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-slate-800 text-sm leading-3',
+                  'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-fg-primary text-sm leading-3',
                   tab.key === githubType
                     ? 'bg-grape-700 font-semibold text-white focus:text-white'
-                    : 'border border-slate-300 bg-white'
+                    : 'border border-hairline bg-surface-card'
                 )}
                 onClick={() => {
                   trackTabNavigated(tab.label)
@@ -184,7 +184,7 @@ const GitHubIntegrationPanel = (props: Props) => {
           >
             Connect
           </button>
-          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
+          {error && <div className='text-fg-error'>Error: {error.message}</div>}
         </div>
       )}
     </>

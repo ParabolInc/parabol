@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import {Polls, PollsAriaLabels} from '~/types/constEnums'
 import type {EditablePollTitle_poll$key} from '../../__generated__/EditablePollTitle_poll.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -12,8 +11,8 @@ const PollTitleInput = styled('input')({
   padding: `10px 12px`,
   fontSize: '14px',
   border: 'none',
-  color: PALETTE.SLATE_900,
-  borderBottom: `1px solid ${PALETTE.SLATE_400}`,
+  color: 'var(--color-fg-primary)',
+  borderBottom: `1px solid var(--color-hairline-strong)`,
   ':hover, :focus, :active': {
     outline: 'none'
   }

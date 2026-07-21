@@ -17,7 +17,11 @@ const OutcomeCardStatusIndicator = (props: Props) => {
   const {className, status} = props
   return (
     <div
-      className={cn('mr-1 h-1 w-8 rounded-sm bg-gold', taskStatusColors[status], className)}
+      className={cn(
+        'mr-1 h-1 w-8 rounded-sm shadow-status-ring',
+        taskStatusColors[status],
+        className
+      )}
     ></div>
   )
 }

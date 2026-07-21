@@ -63,7 +63,7 @@ export const SlashCommandMenu = forwardRef(
 
     if (!items.length) return null
     return (
-      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden'>
+      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
         {items.map((item) => (
           <Fragment key={item.group}>
             <div className='mx-1 px-3 py-1 font-semibold text-xs'>{item.group}</div>
@@ -73,16 +73,16 @@ export const SlashCommandMenu = forwardRef(
                   ref={command === activeItem ? activeRef : undefined}
                   data-highlighted={command === activeItem ? '' : undefined}
                   className={
-                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-slate-700 text-sm leading-8 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                    'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
                   }
                   onClick={() => selectItem(command.title)}
                 >
-                  <div className='flex size-7 items-center justify-center rounded-sm bg-slate-200 group-hover:bg-slate-300 group-data-highlighted:bg-slate-300'>
+                  <div className='flex size-7 items-center justify-center rounded-sm bg-surface-well group-hover:bg-hairline-strong group-data-highlighted:bg-hairline-strong'>
                     <command.icon className='size-5' />
                   </div>
                   <div className='flex flex-col text-sm'>
                     <span>{command.title}</span>
-                    <span className='text-slate-600 text-xs'>{command.description}</span>
+                    <span className='text-fg-secondary text-xs'>{command.description}</span>
                   </div>
                 </div>
               </div>

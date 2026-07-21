@@ -118,7 +118,7 @@ export const Header = (props: Props) => {
   return (
     <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild {...focusProps}>
-        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'>
+        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-surface-raised focus:outline-2 focus:outline-accent'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>
         </button>
@@ -126,7 +126,7 @@ export const Header = (props: Props) => {
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           asChild
-          className='bg-white p-2 text-slate-800'
+          className='bg-surface-card p-2 text-fg-primary'
           align='start'
           collisionPadding={8}
         >
@@ -138,7 +138,7 @@ export const Header = (props: Props) => {
               }}
             >
               <DropdownMenuInputItem
-                className='mb-2 w-full border-slate-300 border-b pb-1'
+                className='mb-2 w-full border-hairline border-b pb-1'
                 name='newTitle'
                 defaultValue={name}
                 onChange={onChange}
@@ -146,19 +146,19 @@ export const Header = (props: Props) => {
               />
             </form>
             <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-slate-100'>
+              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'>
                 <SwapHoriz />
                 Change type
                 <ChevronRight className='ml-auto' />
               </DropdownMenu.SubTrigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.SubContent className='min-w-[200px] bg-white p-2 text-slate-800'>
+                <DropdownMenu.SubContent className='min-w-[200px] bg-surface-card p-2 text-fg-primary'>
                   <DropdownMenu.RadioGroup value={type} onValueChange={changeType}>
                     {Object.entries(DataTypeIcons).map(([type, icon]) => (
                       <DropdownMenu.RadioItem
                         key={type}
                         value={type}
-                        className='group flex cursor-pointer items-center gap-2 rounded-md p-2 capitalize hover:bg-slate-100'
+                        className='group flex cursor-pointer items-center gap-2 rounded-md p-2 capitalize hover:bg-surface-raised'
                       >
                         {icon}
                         {type}
@@ -169,11 +169,11 @@ export const Header = (props: Props) => {
                 </DropdownMenu.SubContent>
               </DropdownMenu.Portal>
             </DropdownMenu.Sub>
-            <DropdownMenu.Separator className='my-1 h-px bg-slate-200' />
+            <DropdownMenu.Separator className='my-1 h-px bg-hairline' />
             {dataActions.map(({label, icon, action}) => (
               <DropdownMenu.Item
                 key={label}
-                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-slate-100'
+                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'
                 onSelect={action}
               >
                 {icon}

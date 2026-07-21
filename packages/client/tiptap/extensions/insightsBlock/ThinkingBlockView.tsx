@@ -17,7 +17,7 @@ export const ThinkingBlockView = (props: NodeViewProps) => {
   return (
     <NodeViewWrapper>
       <span
-        className='dura inline-block size-3 animate-pulse rounded-full bg-slate-600'
+        className='dura inline-block size-3 animate-pulse rounded-full bg-fg-secondary'
         style={{animationDuration: '750ms'}}
       />
     </NodeViewWrapper>

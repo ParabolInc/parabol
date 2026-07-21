@@ -8,7 +8,6 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleFeatureFlagMutation from '../../../../mutations/ToggleFeatureFlagMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
@@ -19,7 +18,7 @@ const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
 }))
 
 const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER
 })
 
@@ -86,7 +85,7 @@ const OrgFeatureFlags = (props: Props) => {
               <span>{FEATURE_NAME_LOOKUP[feature.featureName] || feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
-                  <InfoIcon className='h-4 w-4 text-slate-600' />
+                  <InfoIcon className='h-4 w-4 text-fg-secondary' />
                 </TooltipTrigger>
                 <TooltipContent>{feature.description}</TooltipContent>
               </Tooltip>
@@ -95,7 +94,7 @@ const OrgFeatureFlags = (props: Props) => {
           </FeatureRow>
         ))}
         {error && (
-          <div className='mt-2 pr-4 font-semibold text-tomato-500 text-xs'>{error.message}</div>
+          <div className='mt-2 pr-4 font-semibold text-fg-error text-xs'>{error.message}</div>
         )}
       </PanelRow>
     </StyledPanel>

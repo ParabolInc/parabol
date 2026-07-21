@@ -7,13 +7,12 @@ import IconLabel from '../../components/IconLabel'
 import LinkButton from '../../components/LinkButton'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {cardShadow} from '../../styles/elevation'
-import {PALETTE} from '../../styles/paletteV3'
 import {ExternalLinks} from '../../types/constEnums'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
 
 const NewTeamLayout = styled('div')({
   alignItems: 'center',
-  backgroundColor: PALETTE.SLATE_200,
+  backgroundColor: 'var(--color-surface-app)',
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -33,10 +32,10 @@ const HelpLayout = styled('div')({
 })
 
 const HelpBlock = styled('div')({
-  backgroundColor: '#FFFFFF',
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: 4,
   boxShadow: cardShadow,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   margin: '16px 0',
   padding: 16,
   width: 272

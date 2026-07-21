@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
@@ -7,8 +6,8 @@ import type {NewMeetingSidebar_meeting$key} from '~/__generated__/NewMeetingSide
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {PALETTE} from '../styles/paletteV3'
-import {Breakpoint, GlobalBanner, NavSidebar} from '../types/constEnums'
+import {Breakpoint} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import isDemoRoute from '../utils/isDemoRoute'
 import EditableText from './EditableText'
 import Facilitator from './Facilitator'
@@ -19,62 +18,11 @@ import SidebarToggle from './SidebarToggle'
 import InactiveTag from './Tag/InactiveTag'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
-const sidebarHeight = isGlobalBannerEnabled ? `calc(100vh - ${GlobalBanner.HEIGHT}px)` : '100vh'
-const sidebarPaddingTop = isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
+// GlobalBanner.HEIGHT === 24px
+const sidebarHeightCls = isGlobalBannerEnabled ? 'h-[calc(100vh-24px)]' : 'h-screen'
+const sidebarPaddingTopCls = isGlobalBannerEnabled ? 'pt-6' : 'pt-0'
 
-const SidebarParent = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  backgroundColor: '#FFFFFF',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  height: isDesktop ? sidebarHeight : '100vh',
-  maxWidth: NavSidebar.WIDTH,
-  minWidth: NavSidebar.WIDTH,
-  paddingTop: isDesktop ? 0 : sidebarPaddingTop,
-  userSelect: 'none'
-}))
-
-const MeetingName = styled('div')({
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px',
-  wordBreak: 'break-word'
-})
-
-const EditableMeetingName = MeetingName.withComponent(EditableText)
-
-const SidebarHeader = styled('div')({
-  alignItems: 'flex-start',
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-  display: 'flex',
-  marginBottom: 8,
-  padding: 16,
-  paddingRight: 8,
-  position: 'relative'
-})
-
-const StyledToggle = styled(SidebarToggle)({
-  paddingRight: 16
-})
-
-const TeamDashboardLink = styled(Link)({
-  color: PALETTE.SKY_500,
-  display: 'block',
-  fontSize: 13,
-  fontWeight: 400,
-  lineHeight: '16px',
-  marginTop: 4,
-  wordBreak: 'break-word',
-  '&:hover': {
-    color: PALETTE.SKY_500,
-    cursor: 'pointer'
-  }
-})
-
-const MeetingCompletedTag = styled(InactiveTag)({
-  display: 'inline-flex',
-  margin: '4px 0 0 0'
-})
+const meetingNameCls = 'wrap-break-word font-semibold text-xl leading-6'
 
 interface Props {
   children: ReactNode
@@ -117,12 +65,20 @@ const NewMeetingSidebar = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
 
   return (
-    <SidebarParent isDesktop={isDesktop} data-cy='sidebar'>
-      <SidebarHeader>
-        <StyledToggle dataCy={`sidebar`} onClick={toggleSidebar} />
+    <div
+      data-cy='sidebar'
+      className={cn(
+        // NavSidebar.WIDTH === 256px
+        'flex min-w-64 max-w-64 flex-1 select-none flex-col bg-surface-meeting-sidebar',
+        isDesktop ? cn(sidebarHeightCls, 'pt-0') : cn('h-screen', sidebarPaddingTopCls)
+      )}
+    >
+      <div className='relative mb-2 flex items-start border-hairline border-b p-4 pr-2'>
+        <SidebarToggle className='pr-4' dataCy={`sidebar`} onClick={toggleSidebar} />
         <div className='min-w-0 flex-1'>
           {isFacilitator ? (
-            <EditableMeetingName
+            <EditableText
+              className={meetingNameCls}
               error={error?.message}
               handleSubmit={handleSubmit}
               initialValue={meetingName || ''}
@@ -132,16 +88,19 @@ const NewMeetingSidebar = (props: Props) => {
               placeholder={'Best Meeting Ever!'}
             />
           ) : (
-            <MeetingName>{meetingName}</MeetingName>
+            <div className={meetingNameCls}>{meetingName}</div>
           )}
           <MeetingDateLabel meetingRef={meeting} />
-          <TeamDashboardLink to={teamLink}>
+          <Link
+            to={teamLink}
+            className='wrap-break-word mt-1 block font-normal text-[13px] text-accent leading-4 hover:cursor-pointer hover:text-accent'
+          >
             {'Team: '}
             {teamName}
-          </TeamDashboardLink>
-          {endedAt && <MeetingCompletedTag>Meeting Completed</MeetingCompletedTag>}
+          </Link>
+          {endedAt && <InactiveTag className='m-0 mt-1 inline-flex'>Meeting Completed</InactiveTag>}
         </div>
-      </SidebarHeader>
+      </div>
       <Facilitator meetingRef={meeting} />
       {children}
       {tierLimitExceededAt && (
@@ -152,7 +111,7 @@ const NewMeetingSidebar = (props: Props) => {
         />
       )}
       <LogoBlock onClick={handleMenuClick} />
-    </SidebarParent>
+    </div>
   )
 }
 

@@ -92,7 +92,7 @@ const GitLabProviderRow = (props: Props) => {
 
   return (
     <>
-      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-white shadow-card'>
+      <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-card'>
         <div className='flex justify-start p-row-gutter pb-0'>
           <GitLabProviderLogo />
           <div className='flex w-full flex-col'>
@@ -103,7 +103,7 @@ const GitLabProviderRow = (props: Props) => {
               return (
                 <div key={id} className='flex w-full flex-row pb-4'>
                   <RowInfo>
-                    <div className='mr-4 flex items-center align-middle font-semibold text-slate-700 leading-6'>
+                    <div className='mr-4 flex items-center align-middle font-semibold text-fg-primary leading-6'>
                       {isCloudProvider ? 'GitLab' : serverBaseUrl.replace(/https:\/\//, '')}
                     </div>
                     <RowInfoCopy>
@@ -112,7 +112,7 @@ const GitLabProviderRow = (props: Props) => {
                         : 'Connect to your own GitLab server.'}
                     </RowInfoCopy>
                     {!!error?.message && (
-                      <div className='text-sm text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+                      <div className='text-fg-error text-sm [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
                         {error.message}
                       </div>
                     )}
@@ -130,12 +130,12 @@ const GitLabProviderRow = (props: Props) => {
                           <>
                             <div className='flex items-center pr-6'>
                               <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
-                              <div className='pl-[6px] font-semibold text-slate-700 text-sm'>
+                              <div className='pl-[6px] font-semibold text-fg-primary text-sm'>
                                 Connected
                               </div>
                             </div>
                             <FlatButton
-                              className='min-w-[30px] border-slate-400 pr-0 pl-0 font-semibold text-slate-700 text-sm'
+                              className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                               onClick={togglePortal}
                               ref={menuRef}
                             >
@@ -144,7 +144,7 @@ const GitLabProviderRow = (props: Props) => {
                           </>
                         ) : (
                           <FlatButton
-                            className='min-w-[36px] border-slate-400 pr-0 pl-0 font-semibold text-slate-700 text-sm'
+                            className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                             onClick={togglePortal}
                             ref={menuRef}
                           >

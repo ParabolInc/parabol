@@ -16,8 +16,7 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useMatch} from 'react-router'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
-import {PALETTE} from '../../styles/paletteV3'
-import {GlobalBanner, NavSidebar} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {
   AUTHENTICATION_PAGE,
   BILLING_PAGE,
@@ -38,18 +37,11 @@ interface Props {
   viewerRef: DashSidebar_viewer$key | null
 }
 
-const DashSidebarStyles = styled('div')({
-  backgroundColor: '#fff',
-  color: PALETTE.SLATE_600,
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100vh',
-  maxWidth: NavSidebar.WIDTH,
-  minWidth: NavSidebar.WIDTH,
-  overflow: 'hidden',
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
-  userSelect: 'none'
-})
+// NavSidebar.WIDTH = 256px (max-w-64/min-w-64); GlobalBanner.HEIGHT = 24px (pt-6)
+const dashSidebarClassName = cn(
+  'flex h-screen min-w-64 max-w-64 select-none flex-col overflow-hidden bg-surface-sidebar text-fg-nav-muted',
+  isGlobalBannerEnabled && 'pt-6'
+)
 
 const NavBlock = styled('div')({
   flex: 1,
@@ -78,11 +70,7 @@ const NavItemsWrap = styled('div')({
   padding: '10px 12px 0'
 })
 
-const DashHR = styled('div')({
-  borderBottom: `solid ${PALETTE.SLATE_400} 1px`,
-  marginLeft: -8,
-  width: 'calc(100% + 8px)'
-})
+const dashHRClassName = '-ml-2 w-[calc(100%+8px)] border-hairline-strong border-b'
 
 const Footer = styled('div')({
   display: 'flex',
@@ -120,7 +108,7 @@ const MobileDashSidebar = (props: Props) => {
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
-      <DashSidebarStyles>
+      <div className={dashSidebarClassName}>
         <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
         <NavBlock>
           <Nav>
@@ -139,7 +127,7 @@ const MobileDashSidebar = (props: Props) => {
                 exact
               />
             </TopNavItemsWrap>
-            <DashHR />
+            <div className={dashHRClassName} />
             <NavItemsWrap>
               <LeftDashNavItem
                 onClick={handleMenuClick}
@@ -149,7 +137,7 @@ const MobileDashSidebar = (props: Props) => {
                 exact
               />
               <div className='mt-4 mb-1 flex min-h-[32px] items-center'>
-                <span className='flex-1 pl-3 font-semibold text-base text-slate-700 leading-6'>
+                <span className='flex-1 pl-3 font-semibold text-base text-fg-nav leading-6'>
                   {name}
                 </span>
               </div>
@@ -192,18 +180,18 @@ const MobileDashSidebar = (props: Props) => {
             </NavItemsWrap>
           </Nav>
         </NavBlock>
-        <DashHR />
+        <div className={dashHRClassName} />
         <Footer>
           <FooterBottom>
             <LeftDashParabol />
           </FooterBottom>
         </Footer>
-      </DashSidebarStyles>
+      </div>
     )
   }
 
   return (
-    <DashSidebarStyles>
+    <div className={dashSidebarClassName}>
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
       <NavBlock>
         <Nav>
@@ -222,7 +210,7 @@ const MobileDashSidebar = (props: Props) => {
               exact
             />
           </TopNavItemsWrap>
-          <DashHR />
+          <div className={dashHRClassName} />
           <NavItemsWrap>
             <LeftDashNavItem
               onClick={handleMenuClick}
@@ -253,13 +241,13 @@ const MobileDashSidebar = (props: Props) => {
           <DashNavList closeMobileSidebar={handleMenuClick} viewerRef={viewer} />
         </Nav>
       </NavBlock>
-      <DashHR />
+      <div className={dashHRClassName} />
       <Footer>
         <FooterBottom>
           <LeftDashParabol />
         </FooterBottom>
       </Footer>
-    </DashSidebarStyles>
+    </div>
   )
 }
 

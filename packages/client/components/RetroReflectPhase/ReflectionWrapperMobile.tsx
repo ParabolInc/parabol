@@ -1,5 +1,5 @@
 import {Children, type ReactNode} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
+import {cn} from '../../ui/cn'
 import SwipeablePanel from '../SwipeablePanel'
 
 interface Props {
@@ -31,15 +31,10 @@ const ReflectWrapperMobile = (props: Props) => {
           return (
             <div
               key={idx}
-              className='mx-0.5 h-2 w-2 cursor-pointer rounded-full'
-              style={{
-                backgroundColor: isLocal
-                  ? PALETTE.GRAPE_700
-                  : isFocused
-                    ? PALETTE.ROSE_500
-                    : PALETTE.SLATE_600,
-                opacity: isLocal ? undefined : isFocused ? undefined : 0.35
-              }}
+              className={cn(
+                'mx-0.5 h-2 w-2 cursor-pointer rounded-full',
+                isLocal ? 'bg-accent-active' : isFocused ? 'bg-rose-500' : 'bg-fg-muted opacity-35'
+              )}
               onClick={() => setActiveIdx(idx)}
             />
           )

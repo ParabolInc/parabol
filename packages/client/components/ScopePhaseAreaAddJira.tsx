@@ -20,7 +20,7 @@ const AddJiraArea = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   cursor: 'pointer',
   outline: 0,
   ':hover, :focus, :active': {
@@ -84,7 +84,7 @@ const ScopePhaseAreaAddJira = (props: Props) => {
         Import issues from Jira
       </AddJiraButton>
       {errorMessage && (
-        <div className='p-4 pb-0 text-tomato-500 [&_a]:font-semibold [&_a]:text-tomato-500 [&_a]:underline'>
+        <div className='p-4 pb-0 text-fg-error [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
           {errorMessage}
         </div>
       )}

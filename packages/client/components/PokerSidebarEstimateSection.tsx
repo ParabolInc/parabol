@@ -8,7 +8,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
 import {navItemRaised} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
 import {ESTIMATING_TASK} from '../utils/constants'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
@@ -41,7 +40,7 @@ const Title = styled('div')({
 })
 
 const Subtitle = styled('div')({
-  color: PALETTE.SLATE_500,
+  color: 'var(--color-fg-muted)',
   fontSize: 11,
   fontWeight: 600,
   lineHeight: '12px'

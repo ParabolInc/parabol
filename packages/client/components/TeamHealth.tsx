@@ -121,7 +121,7 @@ const TeamHealth = (props: Props) => {
                       key={label}
                       value={label}
                       className={cn(
-                        'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded-sm bg-slate-300 p-0 data-[state=checked]:bg-grape-300',
+                        'group m-3 flex h-32 w-20 flex-col items-center justify-start rounded-sm bg-surface-well p-0 data-[state=checked]:bg-grape-300',
                         canVote
                           ? 'hover:cursor-pointer hover:bg-grape-100'
                           : 'hover:cursor-not-allowed'
@@ -144,7 +144,7 @@ const TeamHealth = (props: Props) => {
                   <RaisedButton
                     palette='white'
                     onClick={onRevealVotes}
-                    className='mt-4 h-14 w-44 rounded-full text-slate-600 disabled:bg-slate-300 disabled:text-slate-600'
+                    className='mt-4 h-14 w-44 rounded-full text-fg-secondary disabled:opacity-50'
                     disabled={!canReveal}
                   >
                     Reveal Results

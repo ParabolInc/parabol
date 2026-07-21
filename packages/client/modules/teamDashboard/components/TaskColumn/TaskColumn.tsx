@@ -6,7 +6,6 @@ import {useFragment} from 'react-relay'
 import type {TaskColumn_teams$key} from '~/__generated__/TaskColumn_teams.graphql'
 import type {AreaEnum, TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import type {TaskColumn_tasks$key} from '../../../../__generated__/TaskColumn_tasks.graphql'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {BezierCurve, DroppableType} from '../../../../types/constEnums'
 import {DONE, TEAM_DASH, USER_DASH} from '../../../../utils/constants'
 import {taskStatusLabels} from '../../../../utils/taskStatus'
@@ -15,7 +14,7 @@ import TaskColumnAddTask from './TaskColumnAddTask'
 import TaskColumnInner from './TaskColumnInner'
 
 const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-  background: isDragging ? PALETTE.SLATE_300 : undefined,
+  background: isDragging ? 'var(--color-surface-well)' : undefined,
   display: 'flex',
   flex: 1,
   flexDirection: 'column',
@@ -24,7 +23,7 @@ const Column = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
 }))
 
 const ColumnHeader = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex !important',
   lineHeight: '24px',
   padding: 12,
@@ -47,7 +46,7 @@ const StatusLabel = styled('div')({
 })
 
 const TasksCount = styled('div')({
-  color: PALETTE.SLATE_500,
+  color: 'var(--color-fg-muted)',
   marginLeft: 8
 })
 
@@ -108,7 +107,7 @@ const TaskColumn = (props: Props) => {
     <Droppable droppableId={status} type={DroppableType.TASK}>
       {(dropProvided: DroppableProvided, dropSnapshot: DroppableStateSnapshot) => (
         <Column isDragging={dropSnapshot.isDraggingOver}>
-          <ColumnHeader>
+          <ColumnHeader className='border-hairline border-b-2'>
             <TaskColumnAddTask
               area={area}
               isViewerMeetingSection={isViewerMeetingSection}
@@ -125,7 +124,7 @@ const TaskColumn = (props: Props) => {
               {status === DONE && (
                 <a
                   onClick={() => setIsArchiveOpen(true)}
-                  className='ml-auto cursor-pointer text-slate-600 text-sm'
+                  className='ml-auto cursor-pointer text-fg-secondary text-sm'
                 >
                   Archive all
                 </a>

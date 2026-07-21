@@ -25,7 +25,7 @@ const AddReactjiButton = (props: Props) => {
         <PlainButton
           className={`block h-6 w-6 py-0.75 leading-6 opacity-50 hover:opacity-100 focus:opacity-100 ${className ?? ''}`}
         >
-          <img alt='' src={addReactjiSvg} className='h-4.5 w-4.5' />
+          <img alt='' src={addReactjiSvg} className='h-4.5 w-4.5 dark:[filter:invert(.75)]' />
         </PlainButton>
       </Popover.Trigger>
       <Popover.Portal>

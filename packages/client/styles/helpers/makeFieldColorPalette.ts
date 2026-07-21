@@ -1,27 +1,26 @@
 import {Radius} from '../../types/constEnums'
-import {PALETTE} from '../paletteV3'
 import makePlaceholderStyles from './makePlaceholderStyles'
 
 const fieldPalettes = {
   // emphasize fields e.g. agenda input
   cool: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'var(--color-surface-input)',
     borderColor: 'transparent',
-    color: PALETTE.SLATE_700,
-    focusBorderColor: PALETTE.SKY_500,
-    placeholder: makePlaceholderStyles(PALETTE.SKY_500),
-    placeholderColorFocusActive: makePlaceholderStyles(PALETTE.SKY_500),
-    selection: PALETTE.SLATE_300
+    color: 'var(--color-fg-primary)',
+    focusBorderColor: 'var(--color-accent)',
+    placeholder: makePlaceholderStyles('var(--color-accent)'),
+    placeholderColorFocusActive: makePlaceholderStyles('var(--color-accent)'),
+    selection: 'var(--color-hairline-strong)'
   },
   // all fields
   white: {
-    backgroundColor: '#FFFFFF',
-    borderColor: PALETTE.SLATE_500,
-    color: PALETTE.SLATE_700,
-    focusBorderColor: PALETTE.SLATE_700,
-    placeholder: makePlaceholderStyles(PALETTE.SLATE_600),
-    placeholderColorFocusActive: makePlaceholderStyles(PALETTE.SLATE_400),
-    selection: PALETTE.SLATE_300
+    backgroundColor: 'var(--color-surface-input)',
+    borderColor: 'var(--color-hairline-field)',
+    color: 'var(--color-fg-primary)',
+    focusBorderColor: 'var(--color-fg-primary)',
+    placeholder: makePlaceholderStyles('var(--color-fg-muted)'),
+    placeholderColorFocusActive: makePlaceholderStyles('var(--color-hairline-strong)'),
+    selection: 'var(--color-hairline-strong)'
   }
 }
 

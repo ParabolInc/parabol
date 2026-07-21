@@ -142,7 +142,7 @@ const ReflectionGroupTitleEditor = (props: Props) => {
                 'm-0 block w-[172px] appearance-none rounded-sm border-0 font-sans outline-0',
                 'px-[.4375rem] py-[.3125rem] text-sm leading-5',
                 'bg-transparent text-left font-semibold shadow-none transition-all duration-200',
-                isExpanded ? 'text-white' : 'text-slate-700',
+                isExpanded ? 'text-white' : 'text-fg-primary',
                 readOnly ? 'cursor-default' : 'cursor-text'
               )}
               onBlur={onSubmit}

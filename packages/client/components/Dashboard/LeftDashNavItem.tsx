@@ -23,19 +23,19 @@ const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       <div
         data-highlighted={isActive ? '' : undefined}
         className={cn(
-          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-slate-700 text-sm leading-8 outline-hidden',
-          'hover:bg-slate-300 focus:bg-slate-300 data-highlighted:bg-slate-300 data-highlighted:text-slate-900'
+          'peer group relative my-0.5 flex w-full cursor-pointer items-center space-x-2 rounded-md px-1 py-1 text-fg-nav text-sm leading-8 outline-hidden',
+          'hover:bg-surface-nav-active focus:bg-surface-nav-active data-highlighted:bg-surface-nav-active data-highlighted:text-fg-primary data-highlighted:shadow-[var(--shadow-nav-active)]'
         )}
       >
         <LinkWrapper
           draggable={false}
           to={href}
-          className={'flex w-full items-center'}
+          className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={onClick}
         >
           <div
             className={cn(
-              'flex size-6 shrink-0 items-center justify-center rounded-sm bg-inherit text-slate-600 group-data-highlighted:bg-slate-300'
+              'flex size-6 shrink-0 items-center justify-center rounded-sm bg-inherit text-fg-nav-muted group-data-highlighted:bg-surface-nav-active'
               // className
             )}
           >

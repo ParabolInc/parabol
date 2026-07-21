@@ -55,7 +55,7 @@ const RevealLabel = styled('div')<{color: string}>(({color}) => ({
 }))
 
 const RevealButton = styled(RaisedButton)<{color: string}>(({color}) => ({
-  backgroundColor: '#fff',
+  backgroundColor: 'var(--color-surface-card)',
   color,
   fontWeight: 600,
   height: 56,
@@ -222,18 +222,22 @@ const PokerActiveVoting = (props: Props) => {
           users={isClosing ? [] : users}
           size={PokerCards.AVATAR_WIDTH as 46}
           isAnimated={!isInitialStageRender}
-          borderColor={PALETTE.SLATE_300}
+          borderColor='var(--color-surface-well)'
           emptyEl={<PokerVotingNoVotes />}
         />
       </PokerVotingRowBase>
       <RevealButtonBlock>
         {showRevealButton && (
-          <RevealButton disabled={submitting} onClick={() => reveal()} color={PALETTE.SLATE_600}>
+          <RevealButton
+            disabled={submitting}
+            onClick={() => reveal()}
+            color={'var(--color-fg-secondary)'}
+          >
             <Progress radius={22} thickness={4} stroke={PALETTE.JADE_400} progress={votePercent} />
-            <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_400}>
+            <RevealButtonIcon color={allVotesIn ? PALETTE.JADE_400 : 'var(--color-fg-muted)'}>
               <CheckIcon />
             </RevealButtonIcon>
-            <RevealLabel color={allVotesIn ? PALETTE.JADE_400 : PALETTE.SLATE_600}>
+            <RevealLabel color={allVotesIn ? PALETTE.JADE_400 : 'var(--color-fg-secondary)'}>
               {'Reveal Votes'}
             </RevealLabel>
           </RevealButton>

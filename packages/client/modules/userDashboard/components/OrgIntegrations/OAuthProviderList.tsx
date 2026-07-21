@@ -9,11 +9,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
 import type {OAuthProviderList_organization$key} from '../../../../__generated__/OAuthProviderList_organization.graphql'
-import RaisedButton from '../../../../components/RaisedButton'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useSubscription from '../../../../hooks/useSubscription'
 import organizationSubscription from '../../../../subscriptions/OrganizationSubscription'
+import {Button} from '../../../../ui/Button/Button'
 import plural from '../../../../utils/plural'
 import OAuthAppFormDialog from './OAuthAppFormDialog'
 
@@ -148,18 +147,18 @@ const OAuthProviderList = ({organizationRef}: Props) => {
 
   return (
     <div className='space-y-4'>
-      <div className='flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-4'>
-        <div className='font-medium text-slate-700'>
+      <div className='flex items-center justify-between rounded-lg border border-hairline bg-surface-raised p-4'>
+        <div className='font-medium text-fg-primary'>
           {providers.length} OAuth {plural(providers.length, 'application')}
         </div>
-        <SecondaryButton size='small' onClick={handleAdd}>
+        <Button variant='outline' size='sm' shape='pill' onClick={handleAdd}>
           <AddIcon className='mr-2' />
           Add Application
-        </SecondaryButton>
+        </Button>
       </div>
 
       {providers.length === 0 && (
-        <div className='py-8 text-center text-slate-500 italic'>
+        <div className='py-8 text-center text-fg-muted italic'>
           No OAuth 2.0 applications configured.
         </div>
       )}
@@ -168,19 +167,19 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         {providers.map((provider) => (
           <div
             key={provider.id}
-            className='flex cursor-pointer items-center justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:bg-slate-50 hover:shadow-md'
+            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-raised hover:shadow-md'
             onClick={() => {
               setEditingProviderId(provider.id)
               setDialogOpen(true)
             }}
           >
             <div className='flex items-center gap-4'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-600'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent'>
                 <WebIcon />
               </div>
               <div className='flex flex-col'>
-                <span className='font-semibold text-lg text-slate-900'>{provider.name}</span>
-                <span className='text-slate-500 text-xs'>
+                <span className='font-semibold text-fg-primary text-lg'>{provider.name}</span>
+                <span className='text-fg-muted text-xs'>
                   Last updated {new Date(provider.updatedAt).toLocaleDateString()}
                 </span>
               </div>
@@ -191,7 +190,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
                 handleMenuOpen(e, provider.id)
               }}
             >
-              <MoreVertIcon className='text-slate-400' />
+              <MoreVertIcon className='text-fg-muted' />
             </IconButton>
           </div>
         ))}
@@ -205,7 +204,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
       >
         <MenuItem onClick={handleEdit}>Edit application</MenuItem>
-        <MenuItem onClick={handleDeleteClick} className='text-red-600'>
+        <MenuItem onClick={handleDeleteClick} className='text-tomato-600'>
           Delete application
         </MenuItem>
       </Menu>
@@ -226,17 +225,24 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         fullWidth
       >
         <div className='p-6'>
-          <h3 className='mb-4 font-semibold text-lg text-slate-900'>Delete Application?</h3>
-          <p className='mb-6 text-slate-600'>
+          <h3 className='mb-4 font-semibold text-fg-primary text-lg'>Delete Application?</h3>
+          <p className='mb-6 text-fg-secondary'>
             Are you sure you want to delete{' '}
             <span className='font-semibold'>{providerToDelete?.name}</span>? This action cannot be
             undone.
           </p>
           <div className='flex justify-end gap-3'>
-            <SecondaryButton onClick={() => setDeleteDialogOpen(false)}>Cancel</SecondaryButton>
-            <RaisedButton palette='pink' onClick={handleConfirmDelete}>
+            <Button
+              variant='outline'
+              size='md'
+              shape='pill'
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant='destructive' size='md' shape='pill' onClick={handleConfirmDelete}>
               Delete
-            </RaisedButton>
+            </Button>
           </div>
         </div>
       </Dialog>

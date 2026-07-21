@@ -3,7 +3,6 @@ import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -17,7 +16,7 @@ const Wrapper = styled('div')({
 const SearchInput = styled('input')({
   appearance: 'none',
   border: '1px solid transparent',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   margin: 0,
   outline: 0,
@@ -26,7 +25,7 @@ const SearchInput = styled('input')({
 })
 
 const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   margin: 12,
   visibility: isEmpty ? 'hidden' : undefined

@@ -9,7 +9,6 @@ import orgAuthenticationMetadataQuery, {
   type OrgAuthenticationMetadataQuery
 } from '../../../../__generated__/OrgAuthenticationMetadataQuery.graphql'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import {useUploadIdPMetadata} from '../../../../mutations/useUploadIdPMetadataMutation'
@@ -141,10 +140,10 @@ const OrgAuthenticationMetadata = (props: Props) => {
   return (
     <>
       {!isOrgAdmin && (
-        <div className='px-6 pb-3 text-slate-700 text-sm'>
+        <div className='px-6 pb-3 text-fg-primary text-sm'>
           {orgId ? (
             <Link
-              className='font-semibold text-sky-500 hover:text-sky-600'
+              className='font-semibold text-accent hover:text-sky-600'
               to={`/me/organizations/${orgId}/members`}
             >
               Contact an Org Admin
@@ -156,9 +155,9 @@ const OrgAuthenticationMetadata = (props: Props) => {
         </div>
       )}
       <div className={!isOrgAdmin ? 'pointer-events-none select-none opacity-50' : ''}>
-        <div className='px-6 pb-3'>
-          <div className='font-semibold text-base text-slate-700 leading-6'>Metadata URL</div>
-          <div className='text-slate-700 text-sm'>
+        <div className='px-6 pt-2 pb-4'>
+          <div className='font-semibold text-base text-fg-primary leading-6'>Metadata URL</div>
+          <div className='mb-3 text-fg-primary text-sm'>
             Paste the metadata URL from your identity provider
           </div>
           <BasicInput
@@ -170,7 +169,7 @@ const OrgAuthenticationMetadata = (props: Props) => {
             error={undefined}
           />
           <Button
-            className='px-0'
+            className='mt-3 px-0'
             variant='ghost'
             shape='pill'
             size='sm'
@@ -188,15 +187,17 @@ const OrgAuthenticationMetadata = (props: Props) => {
             ref={uploadInputRef}
           />
         </div>
-        <div className={'px-6 text-tomato-500 empty:hidden'}>{error?.message}</div>
+        <div className={'px-6 text-fg-error empty:hidden'}>{error?.message}</div>
         <div className='flex justify-end px-6 pb-8'>
-          <SecondaryButton
-            size='medium'
+          <Button
+            variant='outline'
+            size='md'
+            shape='pill'
             onClick={submitMetadataURL}
-            disabled={!isOrgAdmin || submitting || isMetadataURLSaved}
+            disabled={!isOrgAdmin || submitting || isMetadataURLSaved || !metadataURL}
           >
             Update Metadata
-          </SecondaryButton>
+          </Button>
         </div>
       </div>
     </>
