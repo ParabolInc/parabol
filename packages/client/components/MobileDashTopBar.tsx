@@ -1,9 +1,6 @@
-import styled from '@emotion/styled'
 import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
-import {ICON_SIZE} from '~/styles/typographyV2'
 import type {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'
@@ -14,37 +11,6 @@ interface Props {
   toggle: () => void
   queryRef: MobileDashTopBar_query$key
 }
-
-const LeftNavToggle = styled(PlainButton)({
-  fontSize: ICON_SIZE.MD24,
-  lineHeight: '16px',
-  paddingLeft: 16
-})
-
-const LeftNavHeader = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_200,
-  display: 'flex',
-  flex: 1,
-  minWidth: 0
-})
-
-const TopBarIcons = styled('div')({
-  alignItems: 'center',
-  color: PALETTE.SLATE_200,
-  display: 'flex',
-  justifyContent: 'flex-end',
-  maxWidth: 560,
-  paddingRight: 16
-})
-
-const Title = styled('div')({
-  fontSize: 20,
-  overflow: 'hidden',
-  paddingLeft: 16,
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
-})
 
 const MobileDashTopBar = (props: Props) => {
   const {toggle, queryRef} = props
@@ -62,19 +28,21 @@ const MobileDashTopBar = (props: Props) => {
   const {viewer} = data
   const pageName = viewer?.pageName ?? 'Parabol'
   return (
-    <div className='maw-w-full flex h-14 bg-grape-700 print:hidden'>
-      <LeftNavHeader>
-        <LeftNavToggle onClick={toggle}>
+    <div className='flex h-14 max-w-full bg-surface-topbar print:hidden'>
+      <div className='flex min-w-0 flex-1 items-center text-fg-topbar'>
+        <PlainButton onClick={toggle} className='pl-4 text-[24px] leading-4'>
           <Menu />
-        </LeftNavToggle>
-        <Title>{pageName}</Title>
-      </LeftNavHeader>
-      <TopBarIcons>
+        </PlainButton>
+        <div className='overflow-hidden text-ellipsis whitespace-nowrap pl-4 text-[20px]'>
+          {pageName}
+        </div>
+      </div>
+      <div className='flex max-w-[560px] items-center justify-end pr-4 text-fg-topbar'>
         {/* Disable search in mobile for now
-            <TopBarIcon icon={'search'} ariaLabel={'Search'} />*/}
+            <TopBarIcon icon={'search'} ariaLabel={'Search'} /> */}
         <TopBarHelp />
         <TopBarNotifications queryRef={data || null} />
-      </TopBarIcons>
+      </div>
     </div>
   )
 }

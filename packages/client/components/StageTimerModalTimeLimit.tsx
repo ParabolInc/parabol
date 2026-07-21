@@ -10,7 +10,6 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
 import plural from '../utils/plural'
 import DropdownMenuToggle from './DropdownMenuToggle'
@@ -44,7 +43,7 @@ const SetLimit = styled('div')({
 })
 
 const StyledIcon = styled(Timer)({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const StyledButton = styled(SecondaryButton)({

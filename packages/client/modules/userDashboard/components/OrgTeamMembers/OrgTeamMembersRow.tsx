@@ -60,7 +60,7 @@ export const OrgTeamMembersRow = (props: Props) => {
         <Avatar className='h-8 w-8' picture={picture} alt={preferredName} />
       </div>
       <div className='flex w-full flex-col gap-y-1 py-1'>
-        <div className='inline-flex items-center gap-x-2 font-bold text-gray-700 text-lg'>
+        <div className='inline-flex items-center gap-x-2 font-bold text-fg-primary text-lg'>
           {preferredName}{' '}
           {teamMember.isLead ? (
             <span className='rounded-full bg-primary px-2 py-0.5 text-white text-xs'>
@@ -69,9 +69,12 @@ export const OrgTeamMembersRow = (props: Props) => {
           ) : null}
         </div>
         <div>
-          <Button asChild variant='link'>
-            <a href={`mailto:${email}`}>{email}</a>
-          </Button>
+          <a
+            href={`mailto:${email}`}
+            className='text-fg-secondary text-sm underline-offset-4 hover:underline'
+          >
+            {email}
+          </a>
         </div>
       </div>
       <div>

@@ -138,12 +138,12 @@ const TeamPickerModal = (props: Props) => {
               this team.
             </div>
           )}
-          {error?.message && <div className='w-full text-tomato-500'>{error.message}</div>}
+          {error?.message && <div className='w-full text-fg-error'>{error.message}</div>}
           <div className='flex gap-2.5 self-end'>
             <button
               className={cn(
                 ACTION_BUTTON_CLASSES,
-                'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-200'
+                'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-well'
               )}
               onClick={closeModal}
             >

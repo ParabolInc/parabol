@@ -17,7 +17,7 @@ import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
 const ButtonRow = styled(PlainButton)({
-  background: PALETTE.SLATE_200,
+  background: 'var(--color-surface-well)',
   borderRadius: '8px',
   display: 'flex',
   fontSize: 14,
@@ -26,7 +26,7 @@ const ButtonRow = styled(PlainButton)({
   userSelect: 'none',
   width: '100%',
   ':hover': {
-    backgroundColor: PALETTE.SLATE_300
+    backgroundColor: 'var(--color-surface-raised)'
   },
   padding: '22px 16px',
   alignItems: 'center'
@@ -39,21 +39,21 @@ const Label = styled('div')({
   whiteSpace: 'nowrap',
   fontSize: 20,
   fontWeight: 600,
-  color: PALETTE.SLATE_900
+  color: 'var(--color-fg-primary)'
 })
 
 const StyledDeleteIcon = styled(DeleteIcon)({
   fontSize: 28,
   cursor: 'pointer',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   '&:hover': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   }
 })
 
 const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
   '&&': {
-    color: active ? PALETTE.SKY_500 : PALETTE.SLATE_700,
+    color: active ? 'var(--color-accent)' : 'var(--color-fg-primary)',
     svg: {
       fontSize: 28
     },
@@ -78,7 +78,7 @@ const StyledInput = styled('input')({
   appearance: 'none',
   background: 'inherit',
   border: 'none',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   margin: 0,
   padding: '0px 8px 0px 0px',

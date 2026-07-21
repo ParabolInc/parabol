@@ -4,11 +4,10 @@ import {ExpandMore} from '@mui/icons-material'
 import {forwardRef, type ReactElement, type Ref} from 'react'
 import type useMenu from '../hooks/useMenu'
 import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
-import {PALETTE} from '../styles/paletteV3'
 import ui from '../styles/ui'
 
 const DropdownIcon = styled(ExpandMore)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginLeft: 8
 })
 

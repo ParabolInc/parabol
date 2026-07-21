@@ -26,7 +26,7 @@ import EditTableSVG from './icons/EditTableSVG'
 import Toolbar from './icons/ToolbarSVG'
 
 const Item = twStyled(DropdownMenu.Item)`
-flex items-center gap-2 text-slate-700 hover:bg-slate-200 rounded px-2 py-1 cursor-pointer text-sm
+flex items-center gap-2 text-fg-primary hover:bg-surface-hover rounded px-2 py-1 cursor-pointer text-sm
 `
 
 type Highlight =
@@ -153,7 +153,7 @@ function Component(props: NodeViewProps) {
     >
       <NodeViewContent
         as={'table' as 'div'}
-        className='w-full table-fixed border-collapse border-slate-300 text-slate-800'
+        className='w-full table-fixed border-collapse border-hairline text-fg-primary'
         {...props.HTMLAttributes}
       />
       <DropdownMenu.Root onOpenChange={onOpenChange}>
@@ -163,7 +163,7 @@ function Component(props: NodeViewProps) {
               <PlainButton
                 onMouseDown={(e) => e.preventDefault()}
                 className={cn(
-                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-white text-slate-700 transition-opacity duration-300 hover:bg-slate-300',
+                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-surface-card text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
                   selected ? 'opacity-100' : 'pointer-events-none opacity-0'
                 )}
               >
@@ -177,7 +177,7 @@ function Component(props: NodeViewProps) {
           <DropdownMenu.Content
             side='bottom'
             align='start'
-            className='z-1 rounded bg-white p-2 shadow-lg'
+            className='z-1 rounded bg-surface-card p-2 shadow-lg'
           >
             <Item
               onFocus={focus('header')}
@@ -239,7 +239,7 @@ function Component(props: NodeViewProps) {
         <TooltipTrigger asChild>
           <PlainButton
             className={cn(
-              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-white text-slate-700 transition-opacity duration-300 hover:bg-slate-300',
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-surface-card text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
               selected ? 'opacity-100' : 'pointer-events-none opacity-0'
             )}
             onClick={exportToCSV}

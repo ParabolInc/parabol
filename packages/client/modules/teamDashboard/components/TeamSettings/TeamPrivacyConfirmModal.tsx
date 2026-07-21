@@ -20,7 +20,7 @@ const TeamPrivacyConfirmModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent className='w-[400px] p-4'>
         <DialogTitle>Make team public?</DialogTitle>
-        <div className='my-4 text-slate-700'>
+        <div className='my-4 text-fg-primary'>
           <p>
             You're about to make <b>{teamName}</b> public. This means:
           </p>

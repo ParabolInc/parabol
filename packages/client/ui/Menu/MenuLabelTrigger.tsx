@@ -12,13 +12,13 @@ export const MenuLabelTrigger = forwardRef<
       {...rest}
       ref={ref}
       className={cn(
-        'group flex cursor-pointer items-center justify-between rounded-md bg-white px-2',
+        'group flex cursor-pointer items-center justify-between rounded-md bg-surface-card px-2',
         className
       )}
     >
       <div className={cn('p-2 leading-4', labelClassName)}>{children}</div>
       {icon || (
-        <ExpandMore className='text-slate-600 transition-transform group-open:rotate-180 group-data-[state=open]:rotate-180' />
+        <ExpandMore className='text-fg-secondary transition-transform group-open:rotate-180 group-data-[state=open]:rotate-180' />
       )}
     </div>
   )

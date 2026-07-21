@@ -4,7 +4,6 @@ import {useFragment} from 'react-relay'
 import type {NewMeetingTeamPicker_selectedTeam$key} from '~/__generated__/NewMeetingTeamPicker_selectedTeam.graphql'
 import type {NewMeetingTeamPicker_teams$key} from '~/__generated__/NewMeetingTeamPicker_teams.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
 import {SelectGroup} from '../ui/Select/SelectGroup'
@@ -60,7 +59,7 @@ const NewMeetingTeamPicker = (props: Props) => {
   return (
     <Select value={selectedTeamId} onValueChange={handleSelectTeam}>
       <SelectTrigger
-        className='h-auto border-0 bg-slate-200 p-2 hover:bg-slate-300 data-[state=open]:border-0'
+        className='h-auto border-0 bg-surface-well p-2 hover:bg-surface-hover data-[state=open]:border-0'
         iconClassName='mr-2'
       >
         <div className='p-2'>
@@ -88,19 +87,19 @@ const NewMeetingTeamPicker = (props: Props) => {
                 e.stopPropagation()
                 onShareToOrg()
               }}
-              className='mt-4 flex w-max cursor-pointer items-center rounded-full border border-slate-400 border-solid bg-white px-3 py-2 text-center font-sans font-semibold text-slate-700 text-sm hover:bg-slate-100'
+              className='mt-4 flex w-max cursor-pointer items-center rounded-full border border-hairline-strong border-solid bg-surface-card px-3 py-2 text-center font-sans font-semibold text-fg-primary text-sm hover:bg-surface-hover'
             >
-              <LockOpen style={{marginRight: '8px', color: PALETTE.SLATE_600}} />
+              <LockOpen className='mr-2 text-fg-secondary' />
               Allow other teams to use this activity
             </button>
           </div>
         ) : (
           <SelectGroup>
             <div className='px-3 py-2 font-semibold text-base'>Select Team:</div>
-            <div className='border-slate-300 border-b' />
+            <div className='border-hairline border-b' />
             <div className='py-2'>
               {teams.map((team) => (
-                <SelectItem key={team.id} value={team.id} checkClassName='text-grape-700'>
+                <SelectItem key={team.id} value={team.id} checkClassName='text-accent-active'>
                   {team.name}
                 </SelectItem>
               ))}

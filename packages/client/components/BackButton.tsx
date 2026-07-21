@@ -1,22 +1,6 @@
-import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import {Link} from 'react-router'
-import {PALETTE} from '~/styles/paletteV3'
 import FlatButton from './FlatButton'
-
-const IconButton = styled(FlatButton)({
-  color: PALETTE.SLATE_600,
-  marginRight: 16,
-  padding: '3px 0',
-  width: 32,
-  ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
-  }
-})
-
-const BackIcon = styled(ArrowBack)({
-  color: 'inherit'
-})
 
 interface Props {
   ariaLabel: string
@@ -26,9 +10,12 @@ interface Props {
 const BackButton = ({ariaLabel, to}: Props) => {
   return (
     <Link to={to}>
-      <IconButton aria-label={ariaLabel}>
-        <BackIcon />
-      </IconButton>
+      <FlatButton
+        aria-label={ariaLabel}
+        className='mr-4 w-8 px-0 py-[3px] text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+      >
+        <ArrowBack className='text-inherit' />
+      </FlatButton>
     </Link>
   )
 }

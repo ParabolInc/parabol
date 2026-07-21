@@ -9,7 +9,7 @@ import BaseButton, {type BaseButtonProps} from './BaseButton'
 const paletteColors = {
   warm: PALETTE.GOLD_500,
   mid: PALETTE.GRAPE_700,
-  dark: PALETTE.SLATE_700,
+  dark: 'var(--color-fg-primary)',
   blue: PALETTE.SKY_500
 }
 
@@ -33,7 +33,7 @@ const FlatButton = styled(BaseButton)<FlatButtonProps>((props) => {
     color: paletteColors[palette],
     outline: 0,
     ':hover,:focus,:active': {
-      backgroundColor: !visuallyDisabled ? PALETTE.SLATE_200 : undefined,
+      backgroundColor: !visuallyDisabled ? 'var(--color-surface-hover)' : undefined,
       boxShadow: 'none'
     }
   }

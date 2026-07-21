@@ -1,105 +1,12 @@
-import styled from '@emotion/styled'
 import {useCallback, useState} from 'react'
 import pokerTutorialThumb from '../../../static/images/illustrations/pokerTutorialThumb.jpg'
 import retroTutorialThumb from '../../../static/images/illustrations/retroTutorialThumb.png'
 import standupTutorialThumb from '../../../static/images/illustrations/standupTutorialThumb.jpg'
 import useAtmosphere from '../hooks/useAtmosphere'
-import useBreakpoint from '../hooks/useBreakpoint'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve, Breakpoint, Card, ElementWidth} from '../types/constEnums'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import MeetingsDashTutorialModal from './MeetingsDashTutorialModal'
-
-const CardWrapper = styled('div')<{
-  maybeTabletPlus: boolean
-}>(({maybeTabletPlus}) => ({
-  background: Card.BACKGROUND_COLOR,
-  borderRadius: Card.BORDER_RADIUS,
-  boxShadow: Elevation.CARD_SHADOW,
-  flexShrink: 0,
-  maxWidth: '100%',
-  transition: `box-shadow 100ms ${BezierCurve.DECELERATE}, opacity 300ms ${BezierCurve.DECELERATE}`,
-  marginBottom: maybeTabletPlus ? 0 : 16,
-  margin: 8,
-  width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)',
-  userSelect: 'none',
-  cursor: 'pointer',
-  ':hover': {
-    boxShadow: Elevation.CARD_SHADOW_HOVER
-  }
-}))
-
-const MeetingInfo = styled('div')({
-  // tighter padding for options, meta, avatars
-  // keep a nice left edge
-  padding: '4px 8px 12px 16px'
-})
-
-const Name = styled('span')({
-  color: PALETTE.SLATE_700,
-  display: 'block',
-  fontSize: 20,
-  lineHeight: '24px',
-  // add right padding to keep a long name from falling under the options button
-  // add top and bottom padding to keep a single line at 32px to match the options button
-  padding: '4px 32px 4px 0',
-  wordBreak: 'break-word'
-})
-
-const Meta = styled('span')({
-  color: PALETTE.SLATE_600,
-  display: 'block',
-  fontSize: 14,
-  // partial grid bottom padding accounts for maybe avatar whitespace and offset
-  paddingBottom: '4px',
-  wordBreak: 'break-word'
-})
-
-const MeetingImgBackground = styled('div')({
-  background: PALETTE.FUSCIA_400,
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'absolute',
-  top: 0,
-  bottom: '0px',
-  width: '100%'
-})
-
-const MeetingImgWrapper = styled('div')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  display: 'block',
-  position: 'relative',
-  bottom: 0,
-  marginBottom: '6px'
-})
-
-const MeetingTypeLabel = styled('span')({
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const MeetingImg = styled('img')({
-  borderRadius: `${Card.BORDER_RADIUS}px ${Card.BORDER_RADIUS}px 0 0`,
-  position: 'relative',
-  display: 'block',
-  overflow: 'hidden',
-  paddingTop: 24,
-  marginLeft: 'auto',
-  marginRight: 'auto',
-  height: '174px'
-})
-
-const TopLine = styled('div')({
-  position: 'relative',
-  display: 'flex'
-})
 
 interface Props {
   type: 'retro' | 'poker' | 'standup'
@@ -124,7 +31,6 @@ const TUTORIAL_MAP = {
 }
 
 const TutorialMeetingCard = (props: Props) => {
-  const maybeTabletPlus = useBreakpoint(Breakpoint.FUZZY_TABLET)
   const atmosphere = useAtmosphere()
   const config = TUTORIAL_MAP[props.type]
   const [isOpen, setIsOpen] = useState(false)
@@ -141,19 +47,30 @@ const TutorialMeetingCard = (props: Props) => {
 
   return (
     <>
-      <CardWrapper maybeTabletPlus={maybeTabletPlus} onClick={onOpen}>
-        <MeetingImgWrapper>
-          <MeetingImgBackground />
-          <MeetingTypeLabel>Tutorial</MeetingTypeLabel>
-          <MeetingImg src={config.thumbnail} alt='' />
-        </MeetingImgWrapper>
-        <MeetingInfo>
-          <TopLine>
-            <Name>{config.label}</Name>
-          </TopLine>
-          <Meta>Video tutorial</Meta>
-        </MeetingInfo>
-      </CardWrapper>
+      <div
+        className='m-3 fuzzy-tablet:w-80 w-[calc(100%-24px)] max-w-full shrink-0 cursor-pointer select-none rounded-card bg-surface-card shadow-card [transition:box-shadow_100ms_cubic-bezier(0,0,.2,1),opacity_300ms_cubic-bezier(0,0,.2,1)] hover:shadow-card-hover'
+        onClick={onOpen}
+      >
+        <div className='relative bottom-0 mb-1.5 block rounded-t-card'>
+          <div className='absolute top-0 bottom-0 block w-full rounded-t-card bg-fuscia-400' />
+          <span className='absolute top-2 left-2 font-semibold text-white text-xs'>Tutorial</span>
+          <img
+            src={config.thumbnail}
+            alt=''
+            className='relative mx-auto block h-[174px] overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
+          />
+        </div>
+        <div className='pt-1 pr-2 pb-3 pl-4'>
+          <div className='relative flex'>
+            <span className='wrap-break-word block py-1 pr-8 text-fg-primary text-xl leading-6'>
+              {config.label}
+            </span>
+          </div>
+          <span className='wrap-break-word block pb-1 text-fg-secondary text-sm'>
+            Video tutorial
+          </span>
+        </div>
+      </div>
       <Dialog isOpen={isOpen} onClose={onClose}>
         <DialogContent>
           <MeetingsDashTutorialModal label={config.label} src={config.url} />

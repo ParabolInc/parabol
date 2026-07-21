@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 const RootBlock = styled('div')({
   alignItems: 'center',
@@ -24,7 +23,7 @@ const Heading = styled('div')({
 })
 
 const StyledIcon = styled(Archive)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 

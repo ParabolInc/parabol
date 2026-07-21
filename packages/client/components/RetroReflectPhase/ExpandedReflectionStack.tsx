@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import type * as React from 'react'
 import {type ReactNode, type Ref, type RefObject, useEffect, useMemo} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
 import type {BBox} from '../../types/animations'
 import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
 import type {RefCallbackInstance} from '../../types/generics'
@@ -43,15 +42,6 @@ const ModalArea = styled('div')({
   flexDirection: 'column',
   maxHeight: 'calc(100vh - 32px)',
   position: 'relative'
-})
-
-const BackgroundBlock = styled('div')({
-  position: 'absolute',
-  background: PALETTE.SLATE_700_80,
-  borderRadius: 4,
-  height: '100%',
-  width: '100%',
-  zIndex: -1 // keep scrollbar visible
 })
 
 const ScrollBlock = styled('div')({
@@ -134,7 +124,8 @@ const ExpandedReflectionStack = (props: Props) => {
               )
             })}
           </ScrollBlock>
-          <BackgroundBlock ref={bgRef} />
+          {/* z-[-1] keeps the scrollbar visible */}
+          <div ref={bgRef} className='absolute z-[-1] h-full w-full rounded bg-slate-700/80' />
         </ModalArea>
       </PhaseArea>
     </PortalBlock>

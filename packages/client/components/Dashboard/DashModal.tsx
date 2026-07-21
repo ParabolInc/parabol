@@ -38,7 +38,7 @@ const Backdrop = styled('div')({
 const Modal = styled('div')({
   animationIterationCount: 1,
   animation: `${animateIn.toString()} 200ms ${DECELERATE}`,
-  background: '#FFFFFF',
+  background: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   overflow: 'hidden',

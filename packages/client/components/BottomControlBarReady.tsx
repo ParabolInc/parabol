@@ -137,7 +137,7 @@ const BottomControlBarReady = (props: Props) => {
     label = isViewerReady ? 'Undo ready status' : 'Tap when ready'
   }
 
-  const iconColor = isNext ? 'text-rose-500' : isViewerReady ? 'text-jade-400' : 'text-slate-600'
+  const iconColor = isNext ? 'text-rose-500' : isViewerReady ? 'text-jade-400' : 'text-fg-secondary'
 
   return (
     <>

@@ -58,12 +58,12 @@ export default forwardRef(
     }))
     if (items.length === 0) return null
     return (
-      <div className='z-10 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up rounded-md border-rad bg-white py-1 shadow-lg outline-hidden'>
+      <div className='z-10 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
         {items.map((item, idx) => (
           <div
             data-highlighted={idx === selectedIndex ? '' : undefined}
             className={
-              'mx-1 flex cursor-pointer items-center rounded-md px-4 py-1 text-slate-700 text-sm outline-hidden hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+              'mx-1 flex cursor-pointer items-center rounded-md px-4 py-1 text-fg-primary text-sm outline-hidden hover:bg-surface-hover hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
             }
             key={item.userId}
             onClick={() => selectItem(idx)}

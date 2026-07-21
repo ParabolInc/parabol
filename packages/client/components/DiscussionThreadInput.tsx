@@ -210,7 +210,7 @@ const DiscussionThreadInput = (props: Props) => {
   if (!editor) return null
   return (
     <div
-      className='data-[reply=true]:-ml-3 z-0 flex flex-col shadow-discussion-input data-disabled:pointer-events-none data-[reply=true]:mt-2 data-[reply=true]:rounded-t data-disabled:opacity-50 data-[reply=true]:shadow-discussion-thread'
+      className='data-[reply=true]:-ml-3 z-0 flex flex-col border border-hairline-field bg-surface-input shadow-discussion-input data-disabled:pointer-events-none data-[reply=true]:mt-2 data-[reply=true]:rounded-t data-disabled:opacity-50 data-[reply=true]:shadow-discussion-thread'
       data-disabled={isDisabled ? '' : undefined}
       data-reply={isReply}
       ref={containerRef}
@@ -221,7 +221,7 @@ const DiscussionThreadInput = (props: Props) => {
         <SendCommentButton commentSubmitState={commentSubmitState} onSubmit={onSubmit} />
       </div>
       {isActionsContainerVisible && (
-        <div className='flex items-center justify-center border-t-[1px] border-t-slate-200 border-solid py-1'>
+        <div className='flex items-center justify-center border-t-[1px] border-t-hairline border-solid py-1'>
           {allowTasks && <AddTaskButton onClick={addTask} disabled={isActionsContainerDisabled} />}
           {allowPolls && <AddPollButton onClick={addPoll} disabled={isActionsContainerDisabled} />}
         </div>

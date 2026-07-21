@@ -60,7 +60,7 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
         <Button
           variant='flat'
           data-dirty={teamIds.length > 0 ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-slate-600 text-sm hover:bg-slate-200 data-dirty:text-slate-700'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-well data-dirty:text-fg-primary'
         >
           <GroupsIcon className='pr-1' />
           <span>{displayLabel}</span>
@@ -77,7 +77,7 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
       <MenuContent
         align='start'
         sideOffset={4}
-        className='z-30 h-fit max-h-96 w-auto min-w-[200px] max-w-none border border-slate-200 p-2 shadow-xl'
+        className='z-30 h-fit max-h-96 w-auto min-w-[200px] max-w-none border border-hairline p-2 shadow-xl'
       >
         <div className='flex flex-col gap-1'>
           {teamIds.length > 0 && (
@@ -118,7 +118,7 @@ export const TeamFilter = (props: Props) => {
   return (
     <Suspense
       fallback={
-        <Button variant='flat' className='text-slate-400'>
+        <Button variant='flat' className='text-fg-muted'>
           <GroupsIcon />
         </Button>
       }

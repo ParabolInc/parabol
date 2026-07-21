@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.0](https://github.com/ParabolInc/parabol/compare/v13.30.0...v13.31.0) (2026-07-21)
+
+
+### Added
+
+* darkMode pre-login LightIsland, fix ups ([#13300](https://github.com/ParabolInc/parabol/issues/13300)) ([2f40910](https://github.com/ParabolInc/parabol/commit/2f40910415a596e0673da11c8226d046f1c1dafe))
+
+
+### Fixed
+
+* security deps bump ([#13298](https://github.com/ParabolInc/parabol/issues/13298)) ([e43371c](https://github.com/ParabolInc/parabol/commit/e43371cbacd0bb25553bf4e55a182a913620cee0))
+
+## [13.30.0](https://github.com/ParabolInc/parabol/compare/v13.29.2...v13.30.0) (2026-07-21)
+
+
+### Added
+
+* dark mode (draft) ([#13285](https://github.com/ParabolInc/parabol/issues/13285)) ([dc503d7](https://github.com/ParabolInc/parabol/commit/dc503d7213caec9615e82fe9886d9f6cebe54f35))
+
 ## [13.29.2](https://github.com/ParabolInc/parabol/compare/v13.29.1...v13.29.2) (2026-07-17)
 
 

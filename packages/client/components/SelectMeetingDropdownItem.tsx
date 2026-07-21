@@ -60,7 +60,7 @@ const SelectMeetingDropdownItem = (props: Props) => {
   return (
     <MenuItem onSelect={gotoMeeting}>
       {typeof IconOrSVG === 'string' ? (
-        <div className='m-2 size-6 text-slate-600'>
+        <div className='m-2 size-6 text-fg-secondary'>
           {
             {
               group_work: <GroupWork />,
@@ -75,8 +75,8 @@ const SelectMeetingDropdownItem = (props: Props) => {
         </div>
       )}
       <div className='flex flex-col px-2'>
-        <div className='font-semibold text-base text-slate-700'>{name}</div>
-        <div className='text-slate-600 text-xs'>
+        <div className='font-semibold text-base text-fg-primary'>{name}</div>
+        <div className='text-fg-secondary text-xs'>
           {teamName} • {meetingPhaseLabel}
         </div>
       </div>

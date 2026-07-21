@@ -127,7 +127,7 @@ const OutcomeCard = memo((props: Props) => {
   return (
     <div
       className={cn(
-        'relative w-full min-w-[256px] max-w-[300px] rounded bg-white pt-4 transition-shadow duration-100 ease-in',
+        'relative w-full min-w-[256px] max-w-[300px] rounded bg-surface-card pt-4 transition-shadow duration-100 ease-in',
         isDraggingOver
           ? 'shadow-card-dragging'
           : isHighlighted

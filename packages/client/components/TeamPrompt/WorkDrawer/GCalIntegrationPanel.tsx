@@ -133,7 +133,7 @@ const GCalPanel = (props: Props) => {
           >
             Connect
           </button>
-          {error && <div className='text-tomato-500'>{error.message}</div>}
+          {error && <div className='text-fg-error'>{error.message}</div>}
         </div>
       )}
     </>

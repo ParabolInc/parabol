@@ -98,7 +98,7 @@ const AutocompleteInput = ({
   return (
     <Popover.Content
       sideOffset={5}
-      className='z-50 max-h-64 w-[300px] overflow-y-auto rounded-sm bg-white p-2 shadow-card-1'
+      className='z-50 max-h-64 w-[300px] overflow-y-auto rounded-sm bg-surface-card p-2 shadow-card-1'
     >
       <div {...getRootProps()}>
         <div
@@ -162,7 +162,7 @@ export const StatusCell = ({
       <Popover.Trigger asChild>
         <button
           {...focusProps}
-          className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-slate-100 focus:outline-2 focus:outline-sky-400'
+          className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-surface-raised focus:outline-2 focus:outline-accent'
           onClick={() => {
             setIsOpen(true)
           }}

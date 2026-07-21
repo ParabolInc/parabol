@@ -61,7 +61,7 @@ export const LeftNavTeamsSection = (props: Props) => {
   return (
     <div>
       {/* TODO: handle no teams? e.g. {!org.teams.some((team) => team.isViewerOnTeam) && <EmptyTeams organizationRef={org} />} */}
-      <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 hover:bg-slate-300'>
+      <div className='group flex flex-1 cursor-pointer items-center justify-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5 hover:bg-surface-nav-active'>
         <LeftNavHeader>{'Teams'}</LeftNavHeader>
         <LeftNavItemButtons>
           <LeftNavHeaderButton

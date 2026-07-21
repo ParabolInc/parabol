@@ -29,7 +29,7 @@ export const CopyServiceProviderURL = (props: Props) => {
           <div className='break-all'>{url}</div>
           <Tooltip open={isOpen}>
             <TooltipTrigger asChild>
-              <ContentCopy className='h-5 w-5 text-sky-500 hover:text-sky-700' />
+              <ContentCopy className='h-5 w-5 text-accent hover:text-fg-primary' />
             </TooltipTrigger>
             <TooltipContent>{tooltip}</TooltipContent>
           </Tooltip>

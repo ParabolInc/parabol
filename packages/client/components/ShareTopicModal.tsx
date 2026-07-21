@@ -164,14 +164,14 @@ const ShareTopicModal = (props: Props) => {
   }
 
   const comingSoonBadge = (
-    <div className='flex items-center justify-center rounded-full bg-slate-300 px-3 py-1'>
-      <div className='text-center font-semibold text-slate-600 text-xs'>coming soon</div>
+    <div className='flex items-center justify-center rounded-full bg-surface-well px-3 py-1'>
+      <div className='text-center font-semibold text-fg-secondary text-xs'>coming soon</div>
     </div>
   )
 
   const connectButton = (
-    <div className='flex cursor-pointer items-center justify-center rounded-full border bg-white px-3 py-1'>
-      <div className='text-center font-semibold text-slate-700 text-xs'>connect</div>
+    <div className='flex cursor-pointer items-center justify-center rounded-full border bg-surface-card px-3 py-1'>
+      <div className='text-center font-semibold text-fg-primary text-xs'>connect</div>
     </div>
   )
 
@@ -197,7 +197,7 @@ const ShareTopicModal = (props: Props) => {
               {selectedIntegration !== '' ? (
                 <SelectValue />
               ) : (
-                <span className='text-slate-600'>Select Integration</span>
+                <span className='text-fg-muted'>Select Integration</span>
               )}
             </SelectTrigger>
             <SelectContent>

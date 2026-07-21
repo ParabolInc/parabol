@@ -192,7 +192,7 @@ const TeamPromptResponseCard = (props: Props) => {
         {response && (
           <CopyToClipboard text={responsePermalink} onCopy={handleCopy}>
             <div
-              className='ml-auto h-7 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-300 hover:text-slate-600'
+              className='ml-auto h-7 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised hover:text-fg-secondary'
               onMouseEnter={openTooltip}
               onMouseLeave={closeTooltip}
               ref={mergeRefs(originRef, copiedTooltipRef)}
@@ -205,7 +205,7 @@ const TeamPromptResponseCard = (props: Props) => {
       <div
         className={cn(
           'flex flex-1 flex-col justify-between rounded-card p-4',
-          isEmptyResponse ? 'bg-slate-300 text-slate-600' : 'bg-white shadow-card',
+          isEmptyResponse ? 'bg-surface-well text-fg-muted' : 'bg-surface-card shadow-card',
           meeting?.rightDrawerOpen != null && meeting?.localStageId === responseStage.id
             ? 'outline-2 outline-sky-300'
             : 'outline-none'
@@ -229,7 +229,7 @@ const TeamPromptResponseCard = (props: Props) => {
               <div className='flex flex-wrap items-center justify-start pt-1'>
                 <TeamPromptResponseEmojis responseRef={response} meetingId={meetingId} />
                 <PlainButton
-                  className='flex items-start pt-2 font-semibold text-sky-500 leading-6 hover:text-sky-400 focus:text-sky-400'
+                  className='flex items-start pt-2 font-semibold text-accent leading-6 hover:text-sky-400 focus:text-sky-400'
                   onClick={() => onSelectDiscussion()}
                 >
                   {replyCount > 0 ? (

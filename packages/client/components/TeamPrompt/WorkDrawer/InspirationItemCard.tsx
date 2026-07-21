@@ -28,11 +28,11 @@ const InspirationItemCard = (props: Props) => {
   const itemText = editor.getText().trim()
   const isAdded = !!itemText && responsePlaintext.includes(itemText)
   return (
-    <div className='flex flex-col gap-2 rounded-card bg-white p-3 shadow-card'>
-      {title && <div className='font-semibold text-slate-700 text-sm'>{title}</div>}
+    <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-card'>
+      {title && <div className='font-semibold text-fg-primary text-sm'>{title}</div>}
       <TipTapEditor
         editor={editor}
-        className='max-h-48 overflow-auto rounded-md border border-slate-300 p-2 text-slate-700 focus-within:border-sky-500'
+        className='max-h-48 overflow-auto rounded-md border border-hairline-field p-2 text-fg-primary focus-within:border-accent'
       />
       <div className='flex justify-end'>
         {isAdded ? (

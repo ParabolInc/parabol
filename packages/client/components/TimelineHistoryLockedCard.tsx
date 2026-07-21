@@ -17,7 +17,7 @@ interface Props {
 }
 
 const Card = styled('div')({
-  background: '#FFFFFF',
+  background: 'var(--color-surface-card)',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',
@@ -53,7 +53,7 @@ const Icon = styled(Lock)({
 const HeaderText = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 20,
   fontWeight: 600,
   lineHeight: '20px',

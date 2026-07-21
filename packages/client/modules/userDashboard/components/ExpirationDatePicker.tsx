@@ -17,19 +17,19 @@ export const ExpirationDatePicker = ({selected, onSelect}: Props) => {
 
   return (
     <div className='flex flex-col gap-1'>
-      <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+      <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
         Expiration Date
       </label>
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild>
-          <button className='w-full rounded-md border border-slate-300 px-3 py-2 text-left text-slate-700 text-sm hover:border-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'>
+          <button className='w-full rounded-md border border-hairline-field px-3 py-2 text-left text-fg-primary text-sm hover:border-hairline-strong focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent'>
             {formatDate(selected)}
           </button>
         </Popover.Trigger>
         <Popover.Portal>
           <Popover.Content
             align='start'
-            className='z-50 rounded-lg border border-slate-200 bg-white shadow-lg'
+            className='z-50 rounded-lg border border-hairline bg-surface-raised shadow-lg'
           >
             <DayPicker
               mode='single'

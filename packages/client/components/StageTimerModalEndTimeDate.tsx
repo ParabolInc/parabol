@@ -4,7 +4,6 @@ import ms from 'ms'
 import {type DayModifiers, DayPicker} from 'react-day-picker'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import {shortDays, shortMonths} from '../utils/makeDateString'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
 import DropdownMenuToggle from './DropdownMenuToggle'
@@ -21,7 +20,7 @@ const Toggle = styled(DropdownMenuToggle)({
 })
 
 const StyledIcon = styled(Event)({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const NEXT_YEAR = new Date(Date.now() + ms('1y'))

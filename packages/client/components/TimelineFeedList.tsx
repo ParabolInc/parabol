@@ -132,7 +132,7 @@ const TimelineFeedList = (props: Props) => {
     return (
       <div className='text-base'>
         Looks like you have no events with these filters.
-        <Link to={'/me'} className='font-sans font-semibold text-sky-500 no-underline'>
+        <Link to={'/me'} className='font-sans font-semibold text-accent no-underline'>
           {' '}
           Show all events.
         </Link>
@@ -145,11 +145,11 @@ const TimelineFeedList = (props: Props) => {
       {groupedFreeHistory.map(({label, events}) => (
         <div key={label}>
           <div className='my-2 flex items-center gap-4 py-4'>
-            <div className='h-[1px] flex-1 bg-slate-400' />
-            <div className='rounded-full border border-slate-200 bg-slate-50 px-3 py-1 font-medium text-slate-600 text-sm'>
+            <div className='h-[1px] flex-1 bg-hairline-strong' />
+            <div className='rounded-full border border-hairline bg-surface-raised px-3 py-1 font-medium text-fg-secondary text-sm'>
               {label}
             </div>
-            <div className='h-[1px] flex-1 bg-slate-400' />
+            <div className='h-[1px] flex-1 bg-hairline-strong' />
           </div>
           {events.map(({node: timelineEvent}) => (
             <TimelineEvent key={timelineEvent.id} timelineEvent={timelineEvent} />

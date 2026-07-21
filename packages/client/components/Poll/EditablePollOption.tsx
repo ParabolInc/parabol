@@ -4,7 +4,6 @@ import * as React from 'react'
 import {useFragment} from 'react-relay'
 import type {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {PALETTE} from '../../styles/paletteV3'
 import {Polls, PollsAriaLabels} from '../../types/constEnums'
 import {updateLocalPollOption} from './local/newPoll'
 
@@ -20,12 +19,12 @@ const Input = styled('input')({
   width: '100%',
   padding: `8px 12px`,
   fontSize: '14px',
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   borderRadius: '7px',
-  border: `1.5px solid ${PALETTE.SLATE_400}`,
+  border: `1.5px solid var(--color-hairline-field)`,
   ':hover, :focus, :active': {
     outline: `none`,
-    border: `1.5px solid ${PALETTE.SKY_500}`
+    border: `1.5px solid var(--color-accent)`
   }
 })
 
@@ -39,7 +38,7 @@ const Counter = styled('div')<{
   right: '0',
   margin: '2px 6px',
   fontSize: '10px',
-  color: isMax ? PALETTE.TOMATO_500 : PALETTE.SLATE_600
+  color: isMax ? 'var(--color-fg-error)' : 'var(--color-fg-secondary)'
 }))
 
 interface Props {

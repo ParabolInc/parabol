@@ -10,7 +10,6 @@ import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
 import BillingLeader from './BillingLeader'
@@ -25,13 +24,13 @@ const StyledRow = styled(Row)<{isAddingBillingLeader?: boolean}>(({isAddingBilli
   padding: '12px 16px',
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: isAddingBillingLeader ? PALETTE.SLATE_200 : 'inherit'
+  backgroundColor: isAddingBillingLeader ? 'var(--color-surface-well)' : 'inherit'
 }))
 
 const InfoText = styled('span')({
   fontSize: 16,
   paddingTop: 8,
-  color: PALETTE.SLATE_900
+  color: 'var(--color-fg-primary)'
 })
 
 const StyledButton = styled(FlatButton)({
@@ -49,11 +48,11 @@ const BillingLeaderLabel = styled(RowInfoHeading)({
 })
 
 const ButtonWrapper = styled('div')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   flexDirection: 'row',
   display: 'flex',
   ':hover': {
-    color: PALETTE.SKY_600,
+    color: 'var(--color-fg-primary)',
     cursor: 'pointer'
   }
 })

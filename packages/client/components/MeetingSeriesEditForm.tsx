@@ -115,7 +115,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
   return (
     <>
       <input
-        className='w-full border-0 border-slate-300 border-b border-solid py-2 text-lg outline-hidden focus:border-sky-500 focus:border-b-2'
+        className='w-full border-0 border-hairline border-b border-solid py-2 text-lg outline-hidden focus:border-accent focus:border-b-2'
         type='text'
         name='title'
         placeholder='Meeting title'
@@ -123,29 +123,29 @@ export const MeetingSeriesEditForm = (props: Props) => {
         onChange={onTitleChange}
         maxLength={50}
       />
-      {titleErr && <div className='mt-1 text-sm text-tomato-500'>{titleErr}</div>}
+      {titleErr && <div className='mt-1 text-fg-error text-sm'>{titleErr}</div>}
       <RecurrenceSettings rrule={rrule} onRruleUpdated={setRrule} />
-      <div className='mt-6 flex items-center justify-between border-slate-200 border-t pt-4'>
+      <div className='mt-6 flex items-center justify-between border-hairline border-t pt-4'>
         {isActive ? (
           <button
-            className='h-9 cursor-pointer rounded-full border border-slate-300 border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-slate-100 disabled:cursor-not-allowed'
+            className='h-9 cursor-pointer rounded-full border border-hairline border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-surface-hover disabled:cursor-not-allowed'
             onClick={cancelDialog.open}
             disabled={submitting}
           >
             Cancel series
           </button>
         ) : (
-          <span className='text-slate-500 text-sm'>Series cancelled</span>
+          <span className='text-fg-muted text-sm'>Series cancelled</span>
         )}
         <button
-          className='h-9 cursor-pointer rounded-full bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:bg-slate-300'
+          className='h-9 cursor-pointer rounded-full bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
           onClick={onUpdate}
           disabled={!canUpdate}
         >
           Update
         </button>
       </div>
-      {error && <div className='mt-3 text-tomato-500'>{error.message}</div>}
+      {error && <div className='mt-3 text-fg-error'>{error.message}</div>}
       <CancelSeriesConfirmationModal
         isOpen={cancelDialog.isOpen}
         onClose={cancelDialog.close}

@@ -7,7 +7,6 @@ import Panel from '../../../../components/Panel/Panel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout, TierLabel} from '../../../../types/constEnums'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 import TeamPrivacyToggle from './TeamPrivacyToggle'
@@ -26,7 +25,7 @@ const PanelsLayout = styled('div')({
 })
 
 const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER
 })
 
@@ -120,7 +119,7 @@ const TeamSettings = (props: Props) => {
                 This team is currently on a <b className='capitalize'>{billingTier} plan</b>. Only
                 Team Leads can <b>delete a team</b>.<br />
                 The <b>Team Lead</b> for {teamName} is{' '}
-                <a href={`mailto:${contact.email}`} className='text-sky-500 underline'>
+                <a href={`mailto:${contact.email}`} className='text-accent underline'>
                   {contact.preferredName}
                 </a>
                 .

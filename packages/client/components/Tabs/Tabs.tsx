@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   Children,
   cloneElement,
@@ -9,7 +8,7 @@ import {
   useRef,
   useState
 } from 'react'
-import {PALETTE} from '../../styles/paletteV3'
+import {cn} from '../../ui/cn'
 import getBBox from '../RetroReflectPhase/getBBox'
 
 interface Props {
@@ -17,31 +16,6 @@ interface Props {
   children: ReactNode
   className?: string
 }
-
-const INKBAR_HEIGHT = 2
-
-const InkBar = styled('div')({
-  background: PALETTE.GRAPE_700,
-  bottom: 0,
-  height: INKBAR_HEIGHT,
-  left: 0,
-  position: 'absolute',
-  transformOrigin: 'left',
-  transition: 'all 300ms',
-  width: 1000
-})
-
-const TabsAndBar = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  position: 'relative',
-  width: '100%'
-})
-
-const TabHeaders = styled('div')({
-  display: 'flex',
-  width: '100%'
-})
 
 const Tabs = (props: Props) => {
   const {activeIdx, children, className} = props
@@ -90,10 +64,13 @@ const Tabs = (props: Props) => {
   })
 
   return (
-    <TabsAndBar className={className} ref={setParentRef}>
-      <TabHeaders>{properChildren}</TabHeaders>
-      <InkBar style={{transform}} />
-    </TabsAndBar>
+    <div className={cn('relative flex w-full flex-col', className)} ref={setParentRef}>
+      <div className='flex w-full'>{properChildren}</div>
+      <div
+        className='absolute bottom-0 left-0 h-0.5 w-[1000px] origin-left bg-accent-active transition-all duration-300 ease-[ease]'
+        style={{transform}}
+      />
+    </div>
   )
 }
 

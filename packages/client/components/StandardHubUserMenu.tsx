@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
 import type {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
@@ -15,11 +14,11 @@ import MenuItemIcon from './MenuItemIcon'
 import MenuItemLabel from './MenuItemLabel'
 
 const UpgradeIcon = styled(MenuItemIcon)({
-  color: PALETTE.SKY_500
+  color: 'var(--color-accent)'
 })
 
 const UpgradeCTA = styled('span')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontSize: 15,
   lineHeight: '32px',
   marginRight: '2rem'

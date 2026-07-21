@@ -37,7 +37,7 @@ const ParabolTasksSubPanel = (props: Props) => {
   return (
     <>
       <ParabolTasksResultsRoot selectedStatuses={selectedStatuses} dateRange={dateRange} />
-      <div className='flex items-center justify-center border-slate-200 border-t border-solid p-2'>
+      <div className='flex items-center justify-center border-hairline border-t border-solid p-2'>
         <AddTaskButton onClick={handleAddTask} />
       </div>
     </>
