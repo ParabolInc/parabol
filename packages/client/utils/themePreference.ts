@@ -17,23 +17,25 @@ export const resolveTheme = (
   return preference
 }
 
+// Dark mode is feature-flagged, and the theme is applied above Relay (Root.tsx) where the
+// flag isn't readable. So the default must be the opted-out theme: users only ever reach
+// dark by explicitly choosing 'dark' or 'system', which the flagged Appearance panel gates.
+const DEFAULT_THEME_PREFERENCE: ThemePreference = 'light'
+
 export const getStoredThemePreference = (): ThemePreference => {
   try {
     const stored = window.localStorage.getItem(LocalStorageKey.THEME)
-    return isThemePreference(stored) ? stored : 'system'
+    return isThemePreference(stored) ? stored : DEFAULT_THEME_PREFERENCE
   } catch {
-    return 'system'
+    return DEFAULT_THEME_PREFERENCE
   }
 }
 
 export const setStoredThemePreference = (preference: ThemePreference) => {
   try {
-    if (preference === 'system') {
-      // absent key = system, matching the boot script's fallback
-      window.localStorage.removeItem(LocalStorageKey.THEME)
-    } else {
-      window.localStorage.setItem(LocalStorageKey.THEME, preference)
-    }
+    // 'system' is persisted explicitly: an absent key now means light, so removing the
+    // key would silently downgrade a deliberate "follow my OS" choice to light.
+    window.localStorage.setItem(LocalStorageKey.THEME, preference)
   } catch {
     // localStorage unavailable (e.g. private mode) — theme just won't persist
   }

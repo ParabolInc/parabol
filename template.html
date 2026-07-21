@@ -26,13 +26,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#493272" />
-    <!-- Dark mode boot: apply .theme-dark before first paint. 'theme' mirrors LocalStorageKey.THEME -->
+    <!-- Dark mode boot: apply .theme-dark before first paint. 'theme' mirrors LocalStorageKey.THEME.
+         Dark mode is feature-flagged, so an absent/unrecognized value must resolve to light:
+         only an explicit 'dark', or an explicit 'system' on a dark OS, opts in. -->
     <script>
       try {
         var themePref = localStorage.getItem('theme')
         if (
           themePref === 'dark' ||
-          (themePref !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+          (themePref === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
         ) {
           document.documentElement.className += ' theme-dark'
           var themeMeta = document.querySelector('meta[name="theme-color"]')

@@ -130,6 +130,7 @@ const Dashboard = (props: Props) => {
           ...Page_viewer
           overLimitCopy
           theme
+          hasDarkMode: featureFlag(featureName: "darkMode")
           teams {
             activeMeetings {
               ...useSnacksForNewMeetings_meetings
@@ -153,7 +154,7 @@ const Dashboard = (props: Props) => {
 
   return (
     <SearchProvider>
-      <ThemeSync theme={viewer.theme} />
+      <ThemeSync theme={viewer.theme} enabled={viewer.hasDarkMode} />
       <GlobalSearchDialog />
       <DashLayout>
         <SkipLink href='#main'>Skip to content</SkipLink>
