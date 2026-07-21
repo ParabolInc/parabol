@@ -9,7 +9,6 @@ import InviteTeamMemberAvatar from '~/components/InviteTeamMemberAvatar'
 import Tab from '~/components/Tab/Tab'
 import Tabs from '~/components/Tabs/Tabs'
 import AgendaToggle from '~/modules/teamDashboard/components/AgendaToggle/AgendaToggle'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import type {TeamDashHeader_team$key} from '../../../../__generated__/TeamDashHeader_team.graphql'
@@ -37,7 +36,7 @@ const TeamLinks = styled('div')({
 
 const DashHeading = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   fontSize: 20,
   fontWeight: 600,
@@ -46,7 +45,7 @@ const DashHeading = styled('div')({
 })
 
 const linkStyles = {
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   cursor: 'pointer',
   fontWeight: 600,
   fontSize: 12,
@@ -54,7 +53,7 @@ const linkStyles = {
   marginRight: 8,
   outline: 0,
   ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
+    color: 'var(--color-fg-primary)'
   }
 }
 
@@ -167,7 +166,7 @@ const TeamDashHeader = (props: Props) => {
       </TeamHeaderAndAvatars>
       <Tabs
         activeIdx={activeIdx}
-        className='full-w max-w-none border-slate-300 border-b border-solid'
+        className='full-w max-w-none border-hairline border-b border-solid'
       >
         {tabs.map((tab) => (
           <Tab key={tab.path} label={tab.label} onClick={() => handleTabClick(tab.path)} />

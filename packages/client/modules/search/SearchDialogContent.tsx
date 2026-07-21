@@ -37,7 +37,7 @@ export const SearchDialogContent = (props: Props) => {
       <div className='flex items-center px-2 py-2'>
         <SearchIcon
           data-dirty={inputQuery ? '' : undefined}
-          className='mr-3 text-slate-500 data-dirty:text-slate-700'
+          className='mr-3 text-fg-muted data-dirty:text-fg-primary'
           sx={{fontSize: 22}}
         />{' '}
         <Input
@@ -46,7 +46,7 @@ export const SearchDialogContent = (props: Props) => {
           onChange={onChange}
           onKeyDown={handleKeyDown}
           defaultValue={initialQuery}
-          className='flex-1 border-none bg-transparent font-light text-lg outline-none placeholder:text-slate-500 focus:outline-none focus-visible:border-none'
+          className='flex-1 border-none bg-transparent font-light text-lg outline-none placeholder:text-fg-muted focus:outline-none focus-visible:border-none'
           placeholder='Search pages…'
           type='text'
           autoComplete='off'
@@ -76,13 +76,14 @@ export const SearchDialogContent = (props: Props) => {
         </section>
       </div>
       {/* Footer */}
-      <div className='flex items-center justify-between border-slate-100 border-t px-4 py-2.5 text-[11px] text-slate-500'>
+      <div className='flex items-center justify-between border-hairline border-t px-4 py-2.5 text-[11px] text-fg-muted'>
         <div className='flex items-center gap-4'>
           <span className='flex items-center gap-1'>
             <ModIcon sx={{fontSize: 12}} /> + Enter to open in new tab
           </span>
           <span className='flex items-center gap-1'>
-            <span className='rounded border bg-white px-1'>↑↓</span> to navigate
+            <span className='rounded border border-hairline-strong bg-surface-well px-1'>↑↓</span>{' '}
+            to navigate
           </span>
         </div>
         <div className='flex items-center gap-2'>

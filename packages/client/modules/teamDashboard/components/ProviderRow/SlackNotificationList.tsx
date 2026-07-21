@@ -14,13 +14,12 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import useSlackChannels from '../../../../hooks/useSlackChannels'
 import SetSlackNotificationMutation from '../../../../mutations/SetSlackNotificationMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import SlackChannelPicker from './SlackChannelPicker'
 import SlackNotificationRow from './SlackNotificationRow'
 
 const SlackNotificationListStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER
 })
 

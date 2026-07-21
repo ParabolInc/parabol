@@ -17,7 +17,6 @@ import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
-import {PALETTE} from '../../../../styles/paletteV3'
 import defaultOrgAvatar from '../../../../styles/theme/images/avatar-organization.svg'
 import {Breakpoint} from '../../../../types/constEnums'
 import plural from '../../../../utils/plural'
@@ -55,7 +54,7 @@ const StyledButton = styled(SecondaryButton)({
 })
 
 const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 18,
   width: 18,
   svg: {

@@ -6,7 +6,7 @@ import {PALETTE} from '../styles/paletteV3'
 const Input = styled('input')({
   appearance: 'none',
   background: 'inherit',
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: '1px solid var(--color-hairline-field)',
   borderRadius: 2,
   display: 'block',
   fontSize: 14,
@@ -15,7 +15,7 @@ const Input = styled('input')({
   padding: '3px 0 3px 39px',
   width: '100%',
   '&:focus, &:active': {
-    border: `1px solid ${PALETTE.SKY_500}`,
+    border: '1px solid var(--color-accent)',
     boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`
   }
 })

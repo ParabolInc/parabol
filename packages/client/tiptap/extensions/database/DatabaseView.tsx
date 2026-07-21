@@ -43,7 +43,7 @@ export default function DatabaseView(props: Props) {
         header: () => (
           <>
             <Header provider={provider} columnId={columnId} />
-            {DEBUG && <div className='p-1 text-slate-600 text-xs'>{columnId}</div>}
+            {DEBUG && <div className='p-1 text-fg-secondary text-xs'>{columnId}</div>}
           </>
         ),
         cell: ({row}) => (
@@ -61,7 +61,7 @@ export default function DatabaseView(props: Props) {
             maxSize: 80,
             enableResizing: false,
             header: () => <div className='p-2 text-xs'>Row ID</div>,
-            cell: ({row}) => <div className='p-2 text-slate-600 text-xs'>{row.id}</div>
+            cell: ({row}) => <div className='p-2 text-fg-secondary text-xs'>{row.id}</div>
           },
           ...['_createdAt', '_createdBy', '_updatedAt', '_updatedBy'].map(
             (metaId) =>
@@ -109,7 +109,7 @@ export default function DatabaseView(props: Props) {
       <div className='overflow-x-auto pb-2'>
         <table
           className={cn(
-            'relative min-w-full table-fixed border-collapse bg-white',
+            'relative min-w-full table-fixed border-collapse bg-surface-card',
             isResizing && 'select-none'
           )}
           style={{
@@ -119,18 +119,18 @@ export default function DatabaseView(props: Props) {
         >
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className='text-slate-600'>
+              <tr key={hg.id} className='text-fg-secondary'>
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className='h-12 border-slate-400 border-b-1 pt-1 first:pl-1 last:pr-1'
+                    className='h-12 border-hairline-strong border-b-1 pt-1 first:pl-1 last:pr-1'
                     style={header.column.getCanResize() ? {width: header.getSize()} : {}}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {header.column.getCanResize() && (
                       <div
                         className={cn(
-                          '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-slate-300',
+                          '-right-1 absolute top-0 h-full w-2 cursor-col-resize touch-none select-none hover:bg-surface-hover',
                           header.column.getIsResizing() &&
                             '-right-1 w-2 bg-sky-300 hover:bg-sky-300'
                         )}
@@ -145,10 +145,10 @@ export default function DatabaseView(props: Props) {
           </thead>
           <TableBody table={table} />
           <tfoot>
-            <tr className='text-slate-600'>
+            <tr className='text-fg-secondary'>
               <td
                 colSpan={columns.length + 1}
-                className='h-12 cursor-pointer p-1 pt-0 hover:bg-slate-100'
+                className='h-12 cursor-pointer p-1 pt-0 hover:bg-surface-raised'
                 contentEditable={false}
               >
                 <AppendRow provider={provider} userId={userId} />

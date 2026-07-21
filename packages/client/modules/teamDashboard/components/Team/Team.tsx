@@ -8,18 +8,17 @@ import {Layout} from '~/types/constEnums'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import FlatButton from '../../../../components/FlatButton'
-import {PALETTE} from '../../../../styles/paletteV3'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
 
 const IconButton = styled(FlatButton)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 16,
   padding: '3px 0',
   width: 32,
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   }
 })
 

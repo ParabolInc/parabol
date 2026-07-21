@@ -28,7 +28,7 @@ const LabelGroup = styled('div')({
 })
 
 const ActionLabel = styled('div')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontSize: 16,
   lineHeight: 1.5,
   fontWeight: 600,
@@ -45,7 +45,7 @@ const UL = styled('ul')({margin: 0})
 const LI = styled('li')({
   fontSize: 16,
   lineHeight: '32px',
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   textTransform: 'none',
   fontWeight: 400,
   textAlign: 'left'
@@ -62,7 +62,7 @@ const Label = styled('div')({
   paddingLeft: 8,
   fontSize: 16,
   lineHeight: '32px',
-  color: PALETTE.SLATE_900,
+  color: 'var(--color-fg-primary)',
   width: '100%'
 })
 
@@ -75,23 +75,23 @@ const StyledCheckbox = styled(Checkbox)({
 })
 
 const StyledInput = styled('textarea')({
-  background: PALETTE.SLATE_200,
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  background: 'var(--color-surface-well)',
+  border: '1px solid var(--color-hairline-field)',
   borderRadius: 4,
-  color: PALETTE.SLATE_800,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   font: 'inherit',
   marginTop: 16,
   padding: '12px 16px',
   outline: 0,
-  '::placeholder': {color: PALETTE.SLATE_600}
+  '::placeholder': {color: 'var(--color-fg-muted)'}
 })
 
 const Message = styled('div')({fontSize: 15, paddingLeft: 4})
 
 const ErrorRow = styled('div')<{isError: boolean}>(({isError}) => ({
   alignItems: 'center',
-  color: isError ? PALETTE.TOMATO_500 : PALETTE.SLATE_600,
+  color: isError ? PALETTE.TOMATO_500 : 'var(--color-fg-secondary)',
   display: isError ? 'flex' : 'none',
   lineHeight: '24px'
 }))
@@ -156,7 +156,7 @@ const DowngradeModal = (props: Props) => {
         <DialogTitle>Downgrade</DialogTitle>
         {hasConfirmedDowngrade ? (
           <>
-            <p className='text-slate-900'>Why did you choose to go? Choose all that apply</p>
+            <p className='text-fg-primary'>Why did you choose to go? Choose all that apply</p>
             <div className='flex flex-col'>
               {readableReasonsToDowngrade.map((reason) => (
                 <ButtonRow key={reason} onClick={() => handleCheck(reason)}>
@@ -189,7 +189,7 @@ const DowngradeModal = (props: Props) => {
           </>
         ) : (
           <>
-            <p className='text-slate-900'>
+            <p className='text-fg-primary'>
               We're sorry to see you go! Please confirm that you're aware of the following features
               and would still like to downgrade:
             </p>

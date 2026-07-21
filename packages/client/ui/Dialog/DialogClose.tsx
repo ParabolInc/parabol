@@ -17,7 +17,7 @@ export const DialogClose = forwardRef<
       aria-label='Close'
       {...props}
     >
-      <CloseIcon className='text-slate-500 hover:opacity-50' />
+      <CloseIcon className='text-fg-muted hover:opacity-50' />
     </button>
   </RadixDialog.Close>
 ))

@@ -7,7 +7,6 @@ import type {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_s
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'
 import textOverflow from '../styles/helpers/textOverflow'
-import {PALETTE} from '../styles/paletteV3'
 import {FONT_FAMILY} from '../styles/typographyV2'
 import {SprintPokerDefaults} from '../types/constEnums'
 import {MenuContent} from '../ui/Menu/MenuContent'
@@ -29,7 +28,7 @@ const LabelOptionBlock = styled('div')({
 })
 
 const LabelOptionName = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   lineHeight: '24px'
@@ -37,7 +36,7 @@ const LabelOptionName = styled('div')({
 
 const LabelOptionSub = styled('div')({
   ...textOverflow,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 11,
   lineHeight: '16px'
@@ -127,7 +126,7 @@ const GitHubFieldMenu = (props: Props) => {
             <LabelOptionSub>{serviceFieldTemplate}</LabelOptionSub>
           </LabelOptionBlock>
           <button
-            className='mr-2 flex h-8 w-8 items-center justify-center rounded text-slate-600 hover:bg-slate-100'
+            className='mr-2 flex h-8 w-8 items-center justify-center rounded text-fg-secondary hover:bg-surface-raised'
             onClick={openEditModal}
           >
             <Edit style={{height: 18, width: 18}} />

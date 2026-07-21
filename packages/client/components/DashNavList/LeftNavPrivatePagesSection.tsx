@@ -82,7 +82,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         data-drop-in={canDropIn ? '' : undefined}
         className={cn(
           'group flex flex-1 cursor-pointer items-center rounded-md py-0.5 pl-3 font-semibold text-xs leading-5',
-          !draggingPageId && 'hover:bg-slate-300'
+          !draggingPageId && 'hover:bg-surface-nav-active'
         )}
       >
         <LeftNavHeader>{'Private Pages'}</LeftNavHeader>

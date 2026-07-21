@@ -10,6 +10,7 @@ import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
 
 const ResultsWrapper = styled('div')({
+  background: 'var(--color-surface-well)',
   padding: '40px 0px 24px',
   height: '100%',
   width: '100%',

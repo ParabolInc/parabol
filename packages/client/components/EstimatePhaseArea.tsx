@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import type {EstimatePhaseArea_meeting$key} from '~/__generated__/EstimatePhaseArea_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import type useGotoStageId from '~/hooks/useGotoStageId'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import EstimateDimensionColumn from './EstimateDimensionColumn'
 import PokerCardDeck from './PokerCardDeck'
@@ -82,7 +81,9 @@ const EstimatePhaseArea = (props: Props) => {
                 key={idx}
                 className='mx-0.5 h-2 w-2 cursor-pointer rounded-full'
                 style={{
-                  backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_600,
+                  backgroundColor: isActive
+                    ? 'var(--color-accent-active)'
+                    : 'var(--color-fg-muted)',
                   opacity: isActive ? undefined : 0.35
                 }}
                 onClick={() => onChangeIdx(idx)}
@@ -103,7 +104,7 @@ const EstimatePhaseArea = (props: Props) => {
             key={idx}
             className='flex-1 rounded-t-lg'
             style={{
-              background: PALETTE.SLATE_300,
+              background: 'var(--color-surface-well)',
               paddingBottom: isDesktop ? 8 * 19 : 8 * 12,
               padding: isDesktop ? '0 8px' : '0 4px'
             }}

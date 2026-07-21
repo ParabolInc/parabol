@@ -38,7 +38,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, BaseProps>(
               <motion.div
                 ref={ref}
                 className={cn(
-                  'fixed top-[50%] left-[50%] z-20 flex max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg bg-white shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl',
+                  'fixed top-[50%] left-[50%] z-20 flex max-h-[85vh] w-[95vw] max-w-[95vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg bg-surface-card shadow-dialog focus:outline-hidden md:w-2xl md:max-w-2xl dark:border dark:border-hairline-strong',
                   className
                 )}
                 initial={{opacity: 0, y: 8}}

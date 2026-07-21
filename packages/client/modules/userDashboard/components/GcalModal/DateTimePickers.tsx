@@ -3,14 +3,13 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
 import type {Dayjs} from 'dayjs'
 import type * as React from 'react'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 const customStyles = {
   width: '100%',
   '& .MuiOutlinedInput-root': {
     '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline, &.focus-within .MuiOutlinedInput-notchedOutline':
       {
-        borderColor: PALETTE.SLATE_400,
+        borderColor: 'var(--color-hairline-strong)',
         borderWidth: '1px'
       },
     '&.Mui-focused': {
@@ -18,20 +17,20 @@ const customStyles = {
     }
   },
   '& label': {
-    color: PALETTE.SLATE_600,
+    color: 'var(--color-fg-secondary)',
     '&.Mui-focused': {
-      color: PALETTE.SLATE_600
+      color: 'var(--color-fg-secondary)'
     }
   },
   '& .MuiPickersDay-dayWithMargin': {
     '&:hover, &:focus': {
-      borderColor: PALETTE.SLATE_400,
+      borderColor: 'var(--color-hairline-strong)',
       outline: 'none'
     }
   },
   '& .MuiPickersCalendarHeader-switchHeader button:focus': {
     outline: 'none',
-    color: PALETTE.SLATE_600
+    color: 'var(--color-fg-secondary)'
   }
 }
 

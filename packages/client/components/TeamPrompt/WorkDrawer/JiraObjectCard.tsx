@@ -73,13 +73,13 @@ const JiraObjectCard = (props: Props) => {
   const {summary, url, issueKey, project, cloudName, issueIcon, lastUpdated} = result
 
   return (
-    <div className='rounded-sm border border-slate-300 border-solid p-4 hover:border-slate-600'>
-      <div className='flex gap-2 text-slate-600 text-xs'>
+    <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
+      <div className='flex gap-2 text-fg-secondary text-xs'>
         <img src={issueIcon} />
         <a
           href={url}
           target='_blank'
-          className='font-semibold text-slate-600 hover:underline'
+          className='font-semibold text-fg-secondary hover:underline'
           rel='noreferrer'
           onClick={trackLinkClick}
         >
@@ -107,7 +107,7 @@ const JiraObjectCard = (props: Props) => {
             <a
               href={`https://${cloudName}.atlassian.net/browse/${project.key}`}
               target='_blank'
-              className='text-slate-600 text-xs hover:underline'
+              className='text-fg-secondary text-xs hover:underline'
               rel='noreferrer'
               onClick={trackLinkClick}
             >
@@ -117,7 +117,7 @@ const JiraObjectCard = (props: Props) => {
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 rounded-full bg-transparent p-0 text-slate-500 hover:bg-slate-200'
+            className='h-6 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}

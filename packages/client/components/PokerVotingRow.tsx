@@ -3,7 +3,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PokerVotingRow_scaleValue$key} from '../__generated__/PokerVotingRow_scaleValue.graphql'
 import type {PokerVotingRow_scores$key} from '../__generated__/PokerVotingRow_scores.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import {PokerCards} from '../types/constEnums'
 import AvatarList from './AvatarList'
 import MiniPokerCard from './MiniPokerCard'
@@ -57,7 +56,7 @@ const PokerVotingRow = (props: Props) => {
         size={PokerCards.AVATAR_WIDTH as 46}
         users={users}
         isAnimated={!isInitialStageRender}
-        borderColor={PALETTE.SLATE_300}
+        borderColor='var(--color-surface-well)'
         emptyEl={<PokerVotingNoVotes />}
       />
     </PokerVotingRowBase>

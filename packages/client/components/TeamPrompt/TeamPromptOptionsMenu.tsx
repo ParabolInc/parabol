@@ -8,7 +8,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import type {MenuProps} from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import EndTeamPromptMutation from '~/mutations/EndTeamPromptMutation'
-import {PALETTE} from '../../styles/paletteV3'
 import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import Menu from '../Menu'
@@ -17,17 +16,17 @@ import {MenuItemLabelStyle} from '../MenuItemLabel'
 import SlackSVG from '../SlackSVG'
 
 const LinkIcon = styled(MuiLink)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 
 const ReplayIcon = styled(Replay)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 
 const FlagIcon = styled(Flag)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 
@@ -137,7 +136,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
             <OptionMenuItem>
               <SlackSVG />
               <span className='ml-2'>Configure Slack</span>
-              <OpenInNew className='ml-auto text-base text-slate-600' />
+              <OpenInNew className='ml-auto text-base text-fg-secondary' />
             </OptionMenuItem>
           </Link>
         }

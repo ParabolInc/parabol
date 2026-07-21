@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../styles/paletteV3'
 
 const StyledError = styled('div')({
-  color: PALETTE.TOMATO_500,
+  color: 'var(--color-fg-error)',
   fontWeight: 600,
   fontSize: 14,
   textAlign: 'center'

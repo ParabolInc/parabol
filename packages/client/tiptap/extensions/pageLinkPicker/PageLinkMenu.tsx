@@ -53,10 +53,10 @@ export const PageLinkMenu = forwardRef(
     }))
 
     return (
-      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md bg-white py-1 shadow-lg outline-hidden'>
+      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
         <div className='mx-1 px-3 py-1 font-semibold text-xs'>{'Select a page'}</div>
         {items.length === 0 && (
-          <div className='mx-1 px-3 py-1 font-semibold text-slate-500 text-xs italic'>
+          <div className='mx-1 px-3 py-1 font-semibold text-fg-muted text-xs italic'>
             {'No pages found'}
           </div>
         )}
@@ -66,7 +66,7 @@ export const PageLinkMenu = forwardRef(
               ref={item === activeItem ? activeRef : undefined}
               data-highlighted={item === activeItem ? '' : undefined}
               className={
-                'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-slate-700 text-sm leading-8 outline-hidden hover:bg-slate-200! hover:text-slate-900 focus:bg-slate-200 data-highlighted:bg-slate-100 data-highlighted:text-slate-900'
+                'group flex w-full cursor-pointer items-center space-x-2 rounded-md px-3 py-2 text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover data-highlighted:bg-surface-hover data-highlighted:text-fg-primary'
               }
               onClick={() => selectItem(item.pageId)}
             >

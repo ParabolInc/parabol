@@ -9,7 +9,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
 import type {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
-import {PALETTE} from '../../../styles/paletteV3'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
 
@@ -31,7 +30,7 @@ interface StyledProps {
 const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'center',
-    backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isOwner && (isHover || isDragging) ? 'var(--color-surface-raised)' : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -42,7 +41,7 @@ const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
 )
 
 const RemoveDimensionIcon = styled('div')<StyledProps>(({isHover, enabled}) => ({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   svg: {
     fontSize: 18

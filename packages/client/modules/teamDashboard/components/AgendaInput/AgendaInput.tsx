@@ -16,7 +16,6 @@ import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import {positionAfter} from '../../../../shared/sortOrder'
 import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
 import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
-import {PALETTE} from '../../../../styles/paletteV3'
 import ui from '../../../../styles/ui'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
 
@@ -36,7 +35,7 @@ const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
   }
 }))
 
-const inputPlaceholderStyles = makePlaceholderStyles(PALETTE.SKY_500)
+const inputPlaceholderStyles = makePlaceholderStyles('var(--color-accent)')
 
 const InputField = styled('input')<{disabled: boolean}>(
   {
@@ -70,7 +69,7 @@ const InputField = styled('input')<{disabled: boolean}>(
 )
 
 const StyledIcon = styled(Add)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'block',
   left: 16,
   pointerEvents: 'none',

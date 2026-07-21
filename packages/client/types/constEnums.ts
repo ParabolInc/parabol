@@ -209,7 +209,8 @@ export enum LocalStorageKey {
   INVITATION_TOKEN = 'invitationToken',
   GRAPHIQL_SCHEMA = 'gqlSchema',
   EMAIL = 'email',
-  ERROR_PRONE_AT = 'errorProneAt'
+  ERROR_PRONE_AT = 'errorProneAt',
+  THEME = 'theme'
 }
 
 export enum LOCKED_MESSAGE {

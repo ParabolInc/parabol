@@ -343,6 +343,7 @@
           "UpdateTeamSortOrderPayload": "./types/UpdateTeamSortOrderPayload#UpdateTeamSortOrderPayloadSource",
           "UpdateTemplateCategorySuccess": "./types/UpdateTemplateCategorySuccess#UpdateTemplateCategorySuccessSource",
           "UpdateUserProfilePayload": "./types/UpdateUserProfilePayload#UpdateUserProfilePayloadSource",
+          "UpdateUserThemeSuccess": "./types/UpdateUserThemeSuccess#UpdateUserThemeSuccessSource",
           "UngroupReflectionSuccess": "./types/UngroupReflectionSuccess#UngroupReflectionSuccessSource",
           "UpgradeToTeamTierSuccess": "./types/UpgradeToTeamTierSuccess#UpgradeToTeamTierSuccessSource",
           "UpsertTeamPromptResponseSuccess": "./types/UpsertTeamPromptResponseSuccess#UpsertTeamPromptResponseSuccessSource",

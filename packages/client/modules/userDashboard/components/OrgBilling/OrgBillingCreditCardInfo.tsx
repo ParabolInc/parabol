@@ -9,7 +9,6 @@ import type {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/Or
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import SecondaryButton from '../../../../components/SecondaryButton'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Breakpoint, ElementWidth, Layout} from '../../../../types/constEnums'
 import UpdatePayment from './UpdatePayment'
 
@@ -19,14 +18,14 @@ const StyledPanel = styled(Panel)({
 
 const CreditCardInfo = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   fontSize: 14,
   lineHeight: '20px'
 })
 
 const CreditCardIcon = styled(CreditCard)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 16
 })
 
@@ -45,7 +44,7 @@ const CreditCardExpiresLabel = styled('span')({
 })
 
 const InfoAndUpdate = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER,
   alignItems: 'center',
   display: 'flex',

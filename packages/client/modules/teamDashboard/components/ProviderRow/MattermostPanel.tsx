@@ -18,7 +18,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
 import NotificationSettings from './NotificationSettings'
@@ -29,7 +28,7 @@ interface Props {
 }
 
 const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 24,
   width: 24,
   marginLeft: 4,
@@ -39,7 +38,7 @@ const StyledIcon = styled('div')({
 })
 
 const MattermostPanelStyles = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER
 })
 
@@ -69,8 +68,8 @@ const Label = styled('span')({
 })
 
 const StyledButton = styled(FlatButton)({
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.SLATE_700,
+  borderColor: 'var(--color-hairline-strong)',
+  color: 'var(--color-fg-primary)',
   fontSize: 12,
   fontWeight: 600,
   minWidth: 36,

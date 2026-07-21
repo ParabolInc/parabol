@@ -15,13 +15,18 @@ const CreateActivityCard = (props: Props) => {
 
   return (
     <Link
-      className={cn('flex rounded-2xl hover:bg-slate-100 focus:outline-sky-500', className)}
+      className={cn('flex rounded-2xl hover:bg-surface-raised focus:outline-accent', className)}
       to={`/activity-library/new-activity/${category}`}
     >
-      <ActivityCard className={'flex-1 cursor-pointer'} theme={CATEGORY_THEMES[category]}>
+      <ActivityCard
+        className={
+          'flex-1 cursor-pointer border border-hairline-strong border-dashed bg-surface-raised'
+        }
+        theme={CATEGORY_THEMES[category]}
+      >
         <div className='flex h-full w-full flex-col items-center justify-center pb-2 font-semibold'>
           <div className='h-12 w-12'>
-            <AddIcon className='h-full w-full text-slate-700' />
+            <AddIcon className='h-full w-full text-fg-primary' />
           </div>
           Create Custom {category !== 'recommended' ? CATEGORY_ID_TO_NAME[category] : ''} Activity
         </div>

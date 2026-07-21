@@ -9,13 +9,14 @@
 @config '../../../../tailwind.config.js';
 
 @custom-variant no-hover (@media not all and (hover: hover));
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
 @theme {
   /* Fonts */
   --font-sans:
     'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
   --font-mono:
-    'IBM Plex Mono' ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
 
   /* Palette */
@@ -114,8 +115,15 @@
   --color-grape-500: #a06bd6;
   --color-grape-600: #7340b5;
   --color-grape-700: #493272;
+  --color-grape-725: #3d3175;
+  --color-grape-750: #362b63;
+  --color-grape-775: #332965;
   --color-grape-800: #2d1d53;
+  --color-grape-850: #251c48;
+  --color-grape-875: #1e1638;
   --color-grape-900: #170f34;
+  --color-grape-925: #171029;
+  --color-grape-950: #130d24;
   --color-fuscia-100: #edd5f1;
   --color-fuscia-200: #e4b5e8;
   --color-fuscia-300: #de94e1;
@@ -146,7 +154,62 @@
   --color-success-light: #2db553;
   --color-starter: #f2e1f7;
   --color-team: #cbecf0;
-  --color-enterprise: #FFE2E;
+  --color-enterprise: #ffe2e0;
+
+  --color-surface-app: var(--color-slate-100);
+  --color-surface-sidebar: var(--color-slate-200);
+  --color-surface-well: var(--color-slate-300);
+  --color-surface-card: var(--color-white);
+  --color-surface-raised: var(--color-slate-100);
+  --color-surface-document: var(--color-white);
+  --color-surface-hover: var(--color-slate-300);
+  --color-surface-meeting-sidebar: var(--color-white);
+  --color-surface-topbar: var(--color-grape-700);
+  --color-surface-input: var(--color-white);
+  --color-surface-nav-active: var(--color-slate-300);
+  --color-surface-phase-active: var(--color-slate-200);
+  --color-fg-primary: #444258;
+  --color-fg-secondary: #82809a;
+  --color-fg-muted: #a7a3c2;
+  --color-fg-topbar: #f1f0fa;
+  --color-fg-nav: #444258;
+  --color-fg-nav-muted: #82809a;
+  --color-hairline: #e0ddec;
+  --color-hairline-strong: #c3c0d8;
+  --color-hairline-field: #c3c0d8;
+  --color-accent: #329ae5;
+  --color-accent-active: #493272;
+  /* Error/destructive TEXT. Light = tomato-500 (unchanged from production);
+     dark uses tomato-400 — tomato-500 on surface-card is 4.27:1, under AA.
+     Fills/icons keep raw tomato classes. */
+  --color-fg-error: #fd6157;
+  --color-search-bg: rgba(255, 255, 255, 0.125);
+  --color-search-placeholder: #c3c0d8;
+
+  --shadow-card: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
+  --shadow-card-hover: rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 8px 0px;
+  --shadow-card-focus: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 5px 8px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 14px 0px;
+  --shadow-card-dragging: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px,
+    rgba(0, 0, 0, 0.14) 0px 8px 10px 1px, rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+  --shadow-card-raised: rgba(0, 0, 0, 0.2) 0px 5px 5px -3px, rgba(0, 0, 0, 0.14) 0px 8px 10px 1px,
+    rgba(0, 0, 0, 0.12) 0px 3px 14px 2px;
+  --shadow-card-grounded: rgba(0, 0, 0, 0.2) 0px 0px 0px 0px, rgba(0, 0, 0, 0.14) 0px 0px 0px 0px,
+    rgba(0, 0, 0, 0.12) 0px 0px 0px 0px;
+  --shadow-card-1: 0px 6px 10px rgba(68, 66, 88, 0.14), 0px 1px 18px rgba(68, 66, 88, 0.12),
+    0px 3px 5px rgba(68, 66, 88, 0.2);
+  --shadow-dialog: 0px 11px 15px -7px rgba(0, 0, 0, 0.2), 0px 24px 38px 3px rgba(0, 0, 0, 0.14),
+    0px 9px 46px 8px rgba(0, 0, 0, 0.12);
+  --shadow-discussion-input: 0px 0px 16px 0px rgba(0, 0, 0, 0.3);
+  --shadow-discussion-thread: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+    rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+  --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
+  --shadow-status-ring: 0 0 0 0 transparent;
+  --shadow-nav-active: none;
+  --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
 
   /* V3 default-- ring outlines are blue */
   --default-ring-color: var(--color-sky-500);
@@ -237,10 +300,222 @@
       transform: translateX(0);
     }
   }
+
+  /* Retro reflect-phase chits (see PhaseItemChits) */
+  --animate-chit-fade-in: chit-fade-in 300ms cubic-bezier(0, 0, 0.2, 1);
+  @keyframes chit-fade-in {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  /* One shared sweep; each chit is phased by a negative animation-delay so the
+     gradient reads as a single continuous progress bar. 296px = REFLECTION_CARD. */
+  --animate-chit-shift: chit-shift 2000ms linear infinite;
+  @keyframes chit-shift {
+    from {
+      background-position: 0px;
+    }
+    to {
+      background-position: 296px;
+    }
+  }
 }
 
 :root {
   --global-banner-height: 24px;
+  color-scheme: light;
+}
+
+.theme-dark {
+  color-scheme: dark;
+
+  --color-surface-app: var(--color-grape-875);
+  --color-surface-sidebar: var(--color-grape-950);
+  --color-surface-well: var(--color-grape-925);
+  --color-surface-card: var(--color-grape-775);
+  --color-surface-raised: var(--color-grape-725);
+  --color-surface-document: var(--color-grape-850);
+  --color-surface-hover: rgba(183, 180, 233, 0.22);
+  --color-surface-meeting-sidebar: var(--color-grape-850);
+  --color-surface-topbar: var(--color-grape-800);
+  --color-surface-input: var(--color-grape-925);
+  --color-surface-nav-active: var(--color-grape-725);
+  --color-surface-phase-active: var(--color-grape-750);
+  --color-fg-primary: #eeedf7;
+  --color-fg-secondary: #cac7f2;
+  --color-fg-muted: #938cbf;
+  --color-fg-topbar: #eeedf7;
+  --color-fg-nav: #d4d2ef;
+  /* lifted from #9b94c2 (exactly 4.50:1 on surface-nav-active — zero AA margin)
+     to #a19ac7 for AA headroom */
+  --color-fg-nav-muted: #a19ac7;
+  --color-hairline: rgba(183, 180, 233, 0.16);
+  --color-hairline-strong: rgba(183, 180, 233, 0.32);
+  --color-hairline-field: rgba(183, 180, 233, 0.32);
+  --color-accent: #61b1eb;
+  --color-accent-active: #a86bd6;
+  --color-fg-error: #fd7f77;
+  --color-search-bg: rgba(255, 255, 255, 0.1);
+  --color-search-placeholder: #b7b4e9;
+  --color-starter: #3a2857;
+  --color-team: #12404c;
+  --color-enterprise: #4a2430;
+  --default-ring-color: var(--color-accent);
+  --shadow-card: inset 0 0 0 1px var(--color-hairline), inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 6px 16px -6px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 22px -8px rgba(0, 0, 0, 0.65);
+  --shadow-card-focus: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 26px -8px rgba(0, 0, 0, 0.7);
+  --shadow-card-dragging: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 36px -10px rgba(0, 0, 0, 0.75);
+  --shadow-card-raised: inset 0 0 0 1px var(--color-hairline-strong),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px -10px rgba(0, 0, 0, 0.7);
+  --shadow-bar: 0 4px 12px rgba(0, 0, 0, 0.55);
+  --shadow-status-ring: 0 0 0 1px rgba(238, 237, 247, 0.28);
+  /* lilac ring (fg-nav-muted #a19ac7 -> 6.5:1 on the sidebar) + faint top
+     highlight; the selected-state indicator that replaces the acid-blue bar */
+  --shadow-nav-active: inset 0 0 0 1px #a19ac7, inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.light-island {
+  color-scheme: light;
+  color: var(--color-fg-primary);
+
+  --color-surface-app: var(--color-slate-100);
+  --color-surface-sidebar: var(--color-slate-200);
+  --color-surface-well: var(--color-slate-300);
+  --color-surface-card: var(--color-white);
+  --color-surface-raised: var(--color-slate-100);
+  --color-surface-document: var(--color-white);
+  --color-surface-hover: var(--color-slate-300);
+  --color-surface-meeting-sidebar: var(--color-white);
+  --color-surface-topbar: var(--color-grape-700);
+  --color-surface-input: var(--color-white);
+  --color-surface-nav-active: var(--color-slate-300);
+  --color-surface-phase-active: var(--color-slate-200);
+  --color-fg-primary: #444258;
+  --color-fg-secondary: #82809a;
+  --color-fg-muted: #a7a3c2;
+  --color-fg-topbar: #f1f0fa;
+  --color-fg-nav: #444258;
+  --color-fg-nav-muted: #82809a;
+  --color-hairline: #e0ddec;
+  --color-hairline-strong: #c3c0d8;
+  --color-hairline-field: #c3c0d8;
+  --color-accent: #329ae5;
+  --color-accent-active: #493272;
+  --color-fg-error: #fd6157;
+  --color-search-bg: rgba(255, 255, 255, 0.125);
+  --color-search-placeholder: #c3c0d8;
+  --color-starter: #f2e1f7;
+  --color-team: #cbecf0;
+  --color-enterprise: #ffe2e0;
+  --default-ring-color: var(--color-sky-500);
+}
+
+/* ---- MUI dark overrides ----------------------------------------------
+   There is no MUI ThemeProvider — MUI components (Checkbox, CircularProgress,
+   x-date-pickers, the OAuth list's Menu/Dialog) render Emotion-injected stock
+   light styles that never see our tokens. MUI portals mount on document.body,
+   which is inside <html class="theme-dark">, so descendant selectors reach
+   them. Un-layered on purpose; selectors include MUI state classes to beat
+   Emotion's injected specificity regardless of injection order. */
+.theme-dark .MuiCheckbox-root {
+  color: var(--color-fg-muted);
+}
+.theme-dark .MuiCheckbox-root.Mui-checked,
+.theme-dark .MuiCheckbox-root.MuiCheckbox-indeterminate {
+  color: var(--color-accent);
+}
+
+.theme-dark .MuiCircularProgress-colorPrimary {
+  color: var(--color-accent);
+}
+
+.theme-dark .MuiDivider-root {
+  border-color: var(--color-hairline);
+}
+
+/* Any MUI Paper: picker popups, OAuth provider Menu/Dialog */
+.theme-dark .MuiPaper-root {
+  background-color: var(--color-surface-card);
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiBackdrop-root {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+.theme-dark .MuiMenuItem-root {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiMenuItem-root:hover,
+.theme-dark .MuiMenuItem-root.Mui-focusVisible {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiIconButton-root {
+  color: var(--color-fg-secondary);
+}
+
+/* Date/Time picker text field */
+.theme-dark .MuiInputBase-input,
+.theme-dark .MuiOutlinedInput-input {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiFormLabel-root,
+.theme-dark .MuiFormLabel-root.Mui-focused {
+  color: var(--color-fg-secondary);
+}
+.theme-dark .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hairline-field);
+}
+.theme-dark .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline,
+.theme-dark .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--color-hairline-strong);
+}
+
+/* Date/Time picker popup internals */
+.theme-dark .MuiPickersCalendarHeader-label,
+.theme-dark .MuiPickersArrowSwitcher-button,
+.theme-dark .MuiPickersCalendarHeader-switchViewButton {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiDayCalendar-weekDayLabel {
+  color: var(--color-fg-muted);
+}
+.theme-dark .MuiPickersDay-root,
+.theme-dark .MuiPickersYear-yearButton,
+.theme-dark .MuiPickersMonth-monthButton {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiPickersDay-root:hover,
+.theme-dark .MuiPickersDay-root:focus {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiPickersDay-root.Mui-selected,
+.theme-dark .MuiPickersYear-yearButton.Mui-selected,
+.theme-dark .MuiPickersMonth-monthButton.Mui-selected {
+  background-color: var(--color-accent);
+  color: var(--color-surface-card);
+}
+.theme-dark .MuiPickersDay-today:not(.Mui-selected) {
+  border-color: var(--color-hairline-strong);
+}
+
+/* TimePicker desktop = MultiSectionDigitalClock (x-date-pickers v7) */
+.theme-dark .MuiMultiSectionDigitalClockSection-item {
+  color: var(--color-fg-primary);
+}
+.theme-dark .MuiMultiSectionDigitalClockSection-item:hover {
+  background-color: var(--color-surface-hover);
+}
+.theme-dark .MuiMultiSectionDigitalClockSection-item.Mui-selected {
+  background-color: var(--color-accent);
+  color: var(--color-surface-card);
 }
 
 /*
@@ -350,7 +625,7 @@
     2) prevent a horizontal scrollbar from causing a vertical scrollbar due to the 100vh
   */
   #root {
-    @apply m-0 h-screen w-full bg-slate-200 p-0;
+    @apply m-0 h-screen w-full bg-surface-app p-0;
   }
 
   *,
@@ -366,17 +641,17 @@
   }
 
   body {
-    @apply m-0 p-0 font-sans text-[16px] leading-[normal] font-normal text-slate-700 antialiased;
+    @apply m-0 p-0 font-sans text-[16px] leading-[normal] font-normal text-fg-primary antialiased;
   }
 
   a {
-    @apply text-slate-700;
+    @apply text-fg-primary;
     text-decoration: none;
   }
 
   a:hover,
   a:focus {
-    @apply text-grape-700;
+    @apply text-accent-active;
     text-decoration: none;
   }
 
@@ -418,15 +693,15 @@
   }
 
   ::placeholder {
-    @apply text-slate-600;
+    @apply text-fg-muted;
   }
 
   ::-webkit-input-placeholder {
-    @apply text-slate-600;
+    @apply text-fg-muted;
   }
 
   :-ms-input-placeholder {
-    @apply text-slate-600;
+    @apply text-fg-muted;
   }
 
   @media print {
@@ -474,18 +749,6 @@
   z-index: 24; /* portal needs to float above other components, especially sidebars */
 }
 
-@utility shadow-card {
-  box-shadow: rgba(0,0,0,.2) 0px 2px 1px -1px, rgba(0,0,0,.14) 0px 1px 1px 0px, rgba(0,0,0,.12) 0px 1px 3px 0px;
-}
-@utility shadow-card-hover {
-  box-shadow: rgba(0,0,0,.2) 0px 3px 3px -2px, rgba(0,0,0,.14) 0px 3px 4px 0px, rgba(0,0,0,.12) 0px 1px 8px 0px;
-}
-@utility shadow-card-focus {
-  box-shadow: rgba(0,0,0,.2) 0px 3px 5px -1px, rgba(0,0,0,.14) 0px 5px 8px 0px, rgba(0,0,0,.12) 0px 1px 14px 0px;
-}
-@utility shadow-card-dragging {
-  box-shadow: rgba(0,0,0,.2) 0px 5px 5px -3px, rgba(0,0,0,.14) 0px 8px 10px 1px, rgba(0,0,0,.12) 0px 3px 14px 2px;
-}
 
 /** Customize daypicker styles */
 .rdp {
@@ -511,7 +774,7 @@
   /* Gap cursor is 2px above the top of an element */
   padding-top: 2px;
   blockquote {
-    border-left: 3px solid var(--color-slate-500);
+    border-left: 3px solid var(--color-hairline-strong);
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
@@ -585,14 +848,18 @@
   }
   .search-result {
     background-color: rgba(255, 217, 0, 0.5);
+
+    .theme-dark & {
+      background-color: rgba(255, 217, 0, 0.28);
+    }
   }
 
   .page-user-mention {
-    color: var(--color-slate-600);
+    color: var(--color-fg-secondary);
   }
 
   .page-user-mentioning {
-    background-color: var(--color-slate-200);
+    background-color: var(--color-surface-well);
     border-radius: 4px;
   }
 
@@ -600,9 +867,14 @@
     background-color: var(--color-gold-100);
     border-radius: 2px;
     font-weight: 600;
+
+    .theme-dark & {
+      background-color: rgba(255, 204, 99, 0.25);
+    }
   }
 
   [data-type='taskTag'] {
+    color: var(--color-fg-muted);
     font-weight: 600;
   }
 
@@ -619,7 +891,7 @@
 
   a {
     text-decoration: underline;
-    color: var(--color-slate-700);
+    color: var(--color-fg-primary);
     :hover {
       cursor: pointer;
     }
@@ -643,7 +915,7 @@
   }
 
   hr {
-    border-top: 1px solid var(--color-slate-400);
+    border-top: 1px solid var(--color-hairline-strong);
   }
 }
 
@@ -655,7 +927,7 @@
 .page-editor .tiptap {
   font-size: 1rem;
   line-height: 1.625;
-  color: var(--color-slate-800);
+  color: var(--color-fg-primary);
   text-rendering: optimizeLegibility;
 
   /* Page title — always the first h1 in the document */
@@ -664,7 +936,7 @@
     line-height: 1.15;
     letter-spacing: -0.025em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 0;
     margin-bottom: 2.5rem;
   }
@@ -675,7 +947,7 @@
     line-height: 1.25;
     letter-spacing: -0.015em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 2.25rem;
     margin-bottom: 0.5rem;
   }
@@ -685,7 +957,7 @@
     line-height: 1.3;
     letter-spacing: -0.01em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 2rem;
     margin-bottom: 0.375rem;
   }
@@ -695,7 +967,7 @@
     line-height: 1.35;
     letter-spacing: -0.005em;
     font-weight: 600;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
     margin-top: 1.5rem;
     margin-bottom: 0.25rem;
   }
@@ -703,35 +975,35 @@
   p {
     font-size: 1rem;
     line-height: 1.625;
-    color: var(--color-slate-800);
+    color: var(--color-fg-primary);
     margin-block: 0.5rem;
   }
 
   blockquote {
-    border-left: 4px solid var(--color-slate-400);
+    border-left: 4px solid var(--color-hairline-strong);
     margin: 1.25rem 0;
     padding: 0.5rem 0 0.5rem 1.25em;
-    color: var(--color-slate-700);
+    color: var(--color-fg-primary);
     font-style: normal;
-    background-color: var(--color-slate-100);
+    background-color: var(--color-surface-raised);
     border-radius: 0 4px 4px 0;
   }
 
   pre {
-    background-color: var(--color-slate-100);
-    border: 1px solid var(--color-slate-300);
+    background-color: var(--color-surface-well);
+    border: 1px solid var(--color-hairline);
     border-radius: 6px;
     padding: 1rem 1.25rem;
     margin: 1rem 0;
     font-family: var(--font-mono);
     font-size: 0.875rem;
     line-height: 1.5;
-    color: var(--color-slate-900);
+    color: var(--color-fg-primary);
   }
 
   :not(pre) > code {
-    background-color: var(--color-slate-200);
-    color: var(--color-slate-900);
+    background-color: var(--color-surface-well);
+    color: var(--color-fg-primary);
     border-radius: 4px;
     padding: 0.125em 0.375em;
     font-family: var(--font-mono);
@@ -740,14 +1012,14 @@
 
   hr {
     border: none;
-    border-top: 1px solid var(--color-slate-300);
+    border-top: 1px solid var(--color-hairline);
     margin: 2rem 0;
   }
 
   a {
     color: inherit;
     text-decoration: underline;
-    text-decoration-color: var(--color-slate-400);
+    text-decoration-color: var(--color-hairline-strong);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
     transition: text-decoration-color 150ms ease;
@@ -807,7 +1079,7 @@
 .details div[data-type="detailsContent"].is-empty::before {
   content: attr(data-placeholder);
   float: left;
-  color: hsl(from var(--color-slate-700) h s l / 0.5);
+  color: var(--color-fg-muted);
   pointer-events: none;
   height: 0;
 }
@@ -831,13 +1103,17 @@
   z-index: 50;
   cursor: grab;
 
+  .theme-dark & {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' style='fill: rgba(255, 255, 255, 0.55)'%3E%3Cpath d='M3,2 C2.44771525,2 2,1.55228475 2,1 C2,0.44771525 2.44771525,0 3,0 C3.55228475,0 4,0.44771525 4,1 C4,1.55228475 3.55228475,2 3,2 Z M3,6 C2.44771525,6 2,5.55228475 2,5 C2,4.44771525 2.44771525,4 3,4 C3.55228475,4 4,4.44771525 4,5 C4,5.55228475 3.55228475,6 3,6 Z M3,10 C2.44771525,10 2,9.55228475 2,9 C2,8.44771525 2.44771525,8 3,8 C3.55228475,8 4,8.44771525 4,9 C4,9.55228475 3.55228475,10 3,10 Z M7,2 C6.44771525,2 6,1.55228475 6,1 C6,0.44771525 6.44771525,0 7,0 C7.55228475,0 8,0.44771525 8,1 C8,1.55228475 7.55228475,2 7,2 Z M7,6 C6.44771525,6 6,5.55228475 6,5 C6,4.44771525 6.44771525,4 7,4 C7.55228475,4 8,4.44771525 8,5 C8,5.55228475 7.55228475,6 7,6 Z M7,10 C6.44771525,10 6,9.55228475 6,9 C6,8.44771525 6.44771525,8 7,8 C7.55228475,8 8,8.44771525 8,9 C8,9.55228475 7.55228475,10 7,10 Z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
   &:hover {
-    background-color: var(--color-slate-100);
+    background-color: var(--color-surface-hover);
     transition: background-color 0.2s;
   }
 
   &:active {
-    background-color: var(--color-slate-200);
+    background-color: var(--color-surface-nav-active);
     transition: background-color 0.2s;
     cursor: grabbing;
   }
@@ -873,13 +1149,17 @@
     cursor: pointer;
 
     &:hover {
-      background-color: var(--color-slate-300);
+      background-color: var(--color-surface-hover);
     }
 
     &::before {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M10 17l5-5-5-5v10z'%3E%3C/path%3E%3C/svg%3E");
       width: 24px;
       height: 24px;
+    }
+
+    .theme-dark &::before {
+      content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4d2ef' d='M10 17l5-5-5-5v10z'%3E%3C/path%3E%3C/svg%3E");
     }
 
   }

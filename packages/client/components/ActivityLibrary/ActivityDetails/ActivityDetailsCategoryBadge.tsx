@@ -47,7 +47,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className='rounded-sm border-rad bg-white shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          className='rounded-sm bg-surface-card shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
           sideOffset={5}
         >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>
@@ -56,7 +56,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
               return (
                 <DropdownMenu.RadioItem
                   key={categoryId}
-                  className='flex cursor-pointer select-none px-4 py-3 outline-hidden data-[state=checked]:bg-slate-200 data-highlighted:bg-slate-100'
+                  className='flex cursor-pointer select-none px-4 py-3 outline-hidden data-[state=checked]:bg-surface-well data-highlighted:bg-surface-raised'
                   value={categoryId}
                 >
                   <span

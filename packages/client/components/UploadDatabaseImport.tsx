@@ -73,7 +73,7 @@ export const UploadDatabaseImport = (props: Props) => {
   }
 
   return (
-    <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
+    <div className='mb-3 text-left font-semibold text-fg-secondary text-sm'>
       Upload a CSV or XLSX file into the database.
       <input
         className='hidden'
@@ -84,7 +84,7 @@ export const UploadDatabaseImport = (props: Props) => {
       />
       <div
         className={
-          'mt-3 flex h-50 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-slate-400 border-dashed bg-slate-50 text-slate-500 hover:border-slate-600 data-drop:border-slate-600 data-drop:bg-slate-100'
+          'mt-3 flex h-50 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-hairline-strong border-dashed text-fg-muted hover:border-fg-secondary data-drop:border-fg-secondary data-drop:bg-surface-raised'
         }
         onDragEnter={onDragEnter}
         onDragOver={onDragOver}

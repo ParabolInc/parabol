@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {Check} from '@mui/icons-material'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
-import {PALETTE} from '~/styles/paletteV3'
 import PlainButton from '../PlainButton/PlainButton'
 
 interface Props {
@@ -17,7 +16,7 @@ interface Props {
 
 const Border = styled('div')<{isAvailable: boolean}>(({isAvailable}) => ({
   alignItems: 'center',
-  border: `2px solid ${isAvailable ? '#fff' : PALETTE.SLATE_400}`,
+  border: `2px solid ${isAvailable ? 'var(--color-surface-card)' : 'var(--color-hairline-strong)'}`,
   borderRadius: '50%',
   display: 'flex',
   height: 40,
@@ -30,7 +29,7 @@ const ColorItem = styled(PlainButton)<{color: string}>(({color}) => ({
   justifyContent: 'center',
   display: 'flex',
   backgroundColor: color,
-  border: `2px solid #fff`,
+  border: `2px solid var(--color-surface-card)`,
   height: 34,
   width: 34,
   borderRadius: '50%',

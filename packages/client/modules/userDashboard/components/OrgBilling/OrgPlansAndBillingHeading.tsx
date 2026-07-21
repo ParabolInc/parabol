@@ -5,13 +5,12 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth} from '../../../../types/constEnums'
 import {upperFirst} from '../../../../utils/upperFirst'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   justifyContent: 'space-between',
   lineHeight: '24px',
@@ -40,7 +39,7 @@ const SubtitleBlock = styled('p')({
 })
 
 const StyledIcon = styled('div')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   height: 20,
   width: 20,
   padding: 0,

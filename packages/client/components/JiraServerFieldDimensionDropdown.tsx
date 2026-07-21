@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import type {JiraServerFieldDimensionDropdown_stage$key} from '../__generated__/JiraServerFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import {SprintPokerDefaults} from '../types/constEnums'
 import JiraServerFieldMenu from './JiraServerFieldMenu'
 import PlainButton from './PlainButton/PlainButton'
@@ -18,7 +17,7 @@ interface Props {
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
   paddingRight: isFacilitator ? undefined : 8,

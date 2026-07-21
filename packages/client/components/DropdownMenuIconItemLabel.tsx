@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import {Business, Group, Public} from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
 
 const Label = styled('span')({
   alignItems: 'center',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'flex',
   fontSize: 15,
   lineHeight: '32px',
@@ -13,7 +12,7 @@ const Label = styled('span')({
 })
 
 const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 24,
   width: 24,
   marginRight: 12

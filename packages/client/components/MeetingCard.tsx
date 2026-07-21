@@ -172,25 +172,25 @@ const MeetingCard = (props: Props) => {
       <img
         src={ILLUSTRATIONS[meetingType]}
         alt=''
-        className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6'
+        className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
       />
     </div>
   )
 
   return (
     <motion.div
-      className='relative m-2 max-w-full shrink-0 select-none'
-      style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 16px)'}}
+      className='relative m-3 max-w-full shrink-0 select-none'
+      style={{width: maybeTabletPlus ? ElementWidth.MEETING_CARD : 'calc(100% - 24px)'}}
       initial={{opacity: 0}}
       animate={{opacity: 1}}
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
       transition={{duration: 0.25, ease: 'easeIn'}}
     >
-      <div className='relative hover:shadow-[rgba(0,0,0,.2)_0px_3px_3px_-2px,rgba(0,0,0,.14)_0px_3px_4px_0px,rgba(0,0,0,.12)_0px_1px_8px_0px]'>
+      <div className='relative hover:shadow-card-hover'>
         {isRecurring && (
           <>
             <div
-              className='absolute block h-full w-full rounded-card bg-white shadow-card'
+              className='absolute block h-full w-full rounded-card bg-surface-card shadow-card'
               style={{
                 left: STACK_OFFSET_LEFT[0],
                 top: STACK_OFFSET_TOP[0],
@@ -200,7 +200,7 @@ const MeetingCard = (props: Props) => {
               {imgSection}
             </div>
             <div
-              className='absolute block h-full w-full rounded-card bg-white shadow-card'
+              className='absolute block h-full w-full rounded-card bg-surface-card shadow-card'
               style={{
                 left: STACK_OFFSET_LEFT[1],
                 top: STACK_OFFSET_TOP[1],
@@ -211,7 +211,7 @@ const MeetingCard = (props: Props) => {
             </div>
           </>
         )}
-        <div className='relative rounded-card bg-white shadow-card'>
+        <div className='relative rounded-card bg-surface-card shadow-card'>
           <div className='relative block rounded-t-card'>
             <div
               className={cn(
@@ -236,7 +236,7 @@ const MeetingCard = (props: Props) => {
               <img
                 src={ILLUSTRATIONS[meetingType]}
                 alt=''
-                className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6'
+                className='relative mx-auto block h-45 overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
               />
             </Link>
           </div>
@@ -250,7 +250,7 @@ const MeetingCard = (props: Props) => {
               <Link to={meetingLink}>
                 {isRecurring ? (
                   <>
-                    <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                    <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                       {meetingSeries.title}
                     </span>
                     <Tooltip text={readableNextMeetingDate}>
@@ -258,13 +258,13 @@ const MeetingCard = (props: Props) => {
                     </Tooltip>
                   </>
                 ) : (
-                  <span className='wrap-break-word block pt-1 pr-8 text-slate-700 text-xl leading-6'>
+                  <span className='wrap-break-word block pt-1 pr-8 text-fg-primary text-xl leading-6'>
                     {name}
                   </span>
                 )}
               </Link>
               <CardButton
-                className='absolute top-0 right-0 h-8 w-8 text-slate-700 opacity-100 hover:bg-slate-200'
+                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-well'
                 ref={originRef}
                 onClick={togglePortal}
               >
@@ -272,11 +272,11 @@ const MeetingCard = (props: Props) => {
               </CardButton>
             </div>
             <Link to={meetingLink}>
-              <span className='wrap-break-word block pt-1 pb-2 text-slate-600 text-sm'>
+              <span className='wrap-break-word block pt-1 pb-2 text-fg-secondary text-sm'>
                 {teamName} • {meetingPhaseLabel}
               </span>
             </Link>
-            <AvatarList users={connectedUsers} size={28} />
+            <AvatarList users={connectedUsers} size={28} borderColor='var(--color-surface-card)' />
           </div>
           {menuPortal(
             <MeetingCardOptionsMenuRoot

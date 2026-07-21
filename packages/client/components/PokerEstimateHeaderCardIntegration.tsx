@@ -65,7 +65,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
   return (
     <div className={`flex ${isDesktop ? 'px-4 pb-1' : 'px-2 pb-1'}`}>
       <div
-        className='mx-auto w-full rounded bg-white p-3 px-4 shadow-md'
+        className='mx-auto w-full rounded bg-surface-card p-3 px-4 shadow-card'
         style={{maxWidth: '1504px'}}
       >
         <div className='mb-2 flex w-full items-start justify-between'>
@@ -98,7 +98,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
           </div>
         </div>
         <div
-          className={`font-normal text-slate-700 text-sm leading-5 transition-all duration-300 ${
+          className={`font-normal text-fg-primary text-sm leading-5 transition-all duration-300 ${
             isExpanded ? 'overflow-y-auto' : 'overflow-y-hidden'
           }`}
           style={{maxHeight: isExpanded ? 300 : 30}}
@@ -125,7 +125,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
           rel='noopener noreferrer'
           target='_blank'
           title={headerFields.linkTitle}
-          className='mt-2.5 flex items-center text-sky-500 text-xs leading-5 no-underline'
+          className='mt-2.5 flex items-center text-accent text-xs leading-5 no-underline'
         >
           <span className='text-xs'>{headerFields.linkText}</span>
           <Launch sx={{height: 18, width: 18, marginLeft: '4px'}} />

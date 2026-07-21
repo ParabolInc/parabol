@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
 import purpleLines from '../styles/theme/images/purpleLines.svg'
 
 const EmptyState = styled('div')<{height: number | string}>(({height}) => ({
@@ -35,7 +34,7 @@ const Message = styled('div')({
   fontSize: 14,
   lineHeight: '20px',
   textAlign: 'center',
-  color: PALETTE.SLATE_700
+  color: 'var(--color-fg-primary)'
 })
 
 const Content = styled('div')({

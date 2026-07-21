@@ -1,0 +1,19 @@
+"""
+The user's preferred UI appearance
+"""
+enum UserThemeEnum {
+  """
+  Always use the light theme
+  """
+  light
+
+  """
+  Always use the dark theme
+  """
+  dark
+
+  """
+  Follow the operating system's appearance setting
+  """
+  system
+}

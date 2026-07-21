@@ -130,7 +130,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
   }
   if (!isLoggedIn) {
     return (
-      <div className='font-semibold text-slate-700 text-sm'>Please login to generate insights</div>
+      <div className='font-semibold text-fg-primary text-sm'>Please login to generate insights</div>
     )
   }
   return (

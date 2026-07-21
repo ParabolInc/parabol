@@ -3,12 +3,11 @@ import {ContentCopy, Delete, Edit} from '@mui/icons-material'
 import type * as React from 'react'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import {PALETTE} from '../styles/paletteV3'
 import FlatButton from './FlatButton'
 
 const Button = styled(FlatButton)({
   alignItems: 'center',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 32,
   justifyContent: 'center',
   padding: 0,

@@ -5,7 +5,6 @@ import MenuItem from '~/components/MenuItem'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {MenuProps} from '~/hooks/useMenu'
 import ArchiveTimelineEventMutation from '~/mutations/ArchiveTimelineEventMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import {MenuItemLabelStyle} from './MenuItemLabel'
 
 interface Props {
@@ -14,7 +13,7 @@ interface Props {
 }
 
 const StyledIcon = styled(Archive)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 

@@ -22,9 +22,9 @@ const SUB_TABS = [
 ] as const
 type SubTab = (typeof SUB_TABS)[number]['key']
 
-const PILL = 'shrink-0 cursor-pointer rounded-full px-4 py-2 text-slate-800 text-sm leading-3'
+const PILL = 'shrink-0 cursor-pointer rounded-full px-4 py-2 text-fg-primary text-sm leading-3'
 const PILL_ACTIVE = 'bg-grape-700 font-semibold text-white focus:text-white'
-const PILL_INACTIVE = 'border border-slate-300 bg-white'
+const PILL_INACTIVE = 'border border-hairline bg-surface-card'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -103,7 +103,7 @@ const ParabolTasksPanel = (props: Props) => {
           {meetingColumnArray.map((status) => (
             <label
               key={status}
-              className='flex min-w-0 cursor-pointer items-center text-slate-800 text-sm'
+              className='flex min-w-0 cursor-pointer items-center text-fg-primary text-sm'
             >
               <Checkbox
                 checked={selectedStatuses.includes(status)}

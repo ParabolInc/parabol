@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
-import {PALETTE} from '~/styles/paletteV3'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddToAzureMenuItem from './AddToAzureMenuItem'
@@ -26,7 +25,7 @@ const NarrowMenu = styled(Menu)({
 })
 
 const Label = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 14,
   padding: '8px 16px 0'
 })

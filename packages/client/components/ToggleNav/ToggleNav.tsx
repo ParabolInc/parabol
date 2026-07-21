@@ -47,7 +47,7 @@ const Item = styled('div')<{
   textDecoration: 'none',
   padding: '0px 8px',
   ':hover,:focus': {
-    backgroundColor: isActive ? PALETTE.GRAPE_700 : PALETTE.SLATE_300,
+    backgroundColor: isActive ? PALETTE.GRAPE_700 : 'var(--color-surface-hover)',
     color: isActive ? '#FFFFFF' : PALETTE.GRAPE_800,
     textDecoration: 'none'
   }
