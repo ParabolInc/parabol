@@ -101,7 +101,8 @@ export const LeftNavTeamLink = (props: Props) => {
         <Link
           draggable={false}
           to={`/team/${teamId}`}
-          className={'flex w-full items-center'}
+          // inherit so the base `a:hover` rule can't repaint the label — see LeftDashNavItem
+          className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {
             if (draggingPageId) {
               e.preventDefault()

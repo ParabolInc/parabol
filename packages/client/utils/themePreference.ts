@@ -17,10 +17,9 @@ export const resolveTheme = (
   return preference
 }
 
-// Dark mode is feature-flagged, and the theme is applied above Relay (Root.tsx) where the
-// flag isn't readable. So the default must be the opted-out theme: users only ever reach
-// dark by explicitly choosing 'dark' or 'system', which the flagged Appearance panel gates.
-const DEFAULT_THEME_PREFERENCE: ThemePreference = 'light'
+// Dark mode is generally available, so an untouched install follows the OS.
+// Keep this in sync with the boot script in template.html / devTemplate.html.
+const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system'
 
 export const getStoredThemePreference = (): ThemePreference => {
   try {

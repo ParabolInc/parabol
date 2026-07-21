@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import * as React from 'react'
 import UnderlineInput from './InputField/UnderlineInput'
 import TinyLabel from './TinyLabel'
@@ -12,16 +11,12 @@ interface Props {
   onBlur: (e: React.FocusEvent<HTMLInputElement>) => void
 }
 
-const Label = styled(TinyLabel)({
-  fontSize: 12,
-  fontWeight: 600
-})
-
 const PasswordInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
-      <Label>Password</Label>
+      {/* classes, not styled(TinyLabel) — see EmailInputField */}
+      <TinyLabel className='font-semibold text-[12px]'>Password</TinyLabel>
       <UnderlineInput
         ariaLabel={'Password'}
         autoComplete='current-password'

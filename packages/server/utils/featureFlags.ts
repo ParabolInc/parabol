@@ -35,16 +35,6 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2025-11-20T12:18:02.763416+00:00'),
     updatedAt: new Date('2025-11-20T12:18:02.763416+00:00'),
     isPublic: true
-  },
-  darkMode: {
-    featureName: 'darkMode',
-    scope: 'User',
-    description: 'Grape Dusk dark mode appearance setting',
-    // GA checklist: remove this flag (and the Appearance panel gate) before expiry
-    expiresAt: new Date('2027-06-30T23:59:59.999+00:00'),
-    createdAt: new Date('2026-07-15T00:00:00.000+00:00'),
-    updatedAt: new Date('2026-07-15T00:00:00.000+00:00'),
-    isPublic: true
   }
 } as const satisfies Record<string, FeatureFlag>
 

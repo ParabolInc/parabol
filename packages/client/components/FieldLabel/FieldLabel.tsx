@@ -1,8 +1,11 @@
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
-import LabelHeading from '../LabelHeading/LabelHeading'
 
-const FieldLabelStyles = styled(LabelHeading)<
+// Styles the <label> directly rather than composing styled(LabelHeading).withComponent().
+// withComponent swaps the base element, so once LabelHeading moved to Tailwind its classes
+// were dropped on the floor and this label lost its color/size/weight/tracking entirely.
+// These base values mirror LabelHeading, minus the uppercase this has always overridden.
+const FieldLabelStyles = styled('label')<
   Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
 >(({customStyles, fieldSize, indent, inline}) => {
   const size = (fieldSize || ui.buttonSizeOptions[1]) as 'small' | 'medium' | 'large'
@@ -15,6 +18,12 @@ const FieldLabelStyles = styled(LabelHeading)<
   }
   const useInlineStyles = fieldSize && inline && inlineStyles
   return {
+    color: 'var(--color-fg-secondary)',
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '.03em',
+    lineHeight: '16px',
+    userSelect: 'none',
     display: 'block',
     padding: 0,
     textTransform: 'none',
@@ -27,7 +36,7 @@ const FieldLabelStyles = styled(LabelHeading)<
   }
 })
 
-const FieldLabelBlock = FieldLabelStyles.withComponent('label')
+const FieldLabelBlock = FieldLabelStyles
 
 interface Props {
   customStyles?: object

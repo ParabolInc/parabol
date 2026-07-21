@@ -30,7 +30,10 @@ const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
         <LinkWrapper
           draggable={false}
           to={href}
-          className={'flex w-full items-center'}
+          // inherit: the row owns the text color across states. Without this the base
+          // `a:hover` rule repaints the label with accent-active when the cursor is over
+          // the link itself, so the row and its label disagree mid-hover.
+          className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={onClick}
         >
           <div

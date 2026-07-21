@@ -42,18 +42,18 @@ describe('stored theme preference', () => {
     store.clear()
   })
 
-  it('defaults to light so the flagged dark theme never applies unopted', () => {
-    expect(getStoredThemePreference()).toBe('light')
+  it('defaults to system so an untouched install follows the OS', () => {
+    expect(getStoredThemePreference()).toBe('system')
   })
 
-  it('defaults to light when the stored value is unrecognized', () => {
+  it('defaults to system when the stored value is unrecognized', () => {
     window.localStorage.setItem('theme', 'grape')
-    expect(getStoredThemePreference()).toBe('light')
+    expect(getStoredThemePreference()).toBe('system')
   })
 
-  it('round-trips every preference, including system', () => {
-    // regression: 'system' was once stored by REMOVING the key, which now reads back as
-    // 'light' and would silently downgrade a deliberate "follow my OS" choice
+  it('round-trips every preference, including an explicit light', () => {
+    // 'light' is the one value the boot script treats specially, so it must survive
+    // a round trip rather than collapsing into the system default
     setStoredThemePreference('light')
     expect(getStoredThemePreference()).toBe('light')
     setStoredThemePreference('dark')

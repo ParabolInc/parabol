@@ -4,7 +4,8 @@ import {Radius} from '../types/constEnums'
 
 const DialogContainer = styled('div')({
   display: 'flex',
-  backgroundColor: 'white',
+  // themed: matches ui/Dialog/DialogContent's bg-surface-card
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   flexDirection: 'column',
