@@ -8,6 +8,8 @@ interface CreateOAuthCodeParams {
   redirectUri: string
   scopes: string[]
   userId: string
+  codeChallenge?: string
+  codeChallengeMethod?: string
 }
 
 interface CreateOAuthCodeResult {
@@ -17,7 +19,7 @@ interface CreateOAuthCodeResult {
 export async function createOAuthCode(
   params: CreateOAuthCodeParams
 ): Promise<CreateOAuthCodeResult> {
-  const {clientId, redirectUri, scopes, userId} = params
+  const {clientId, redirectUri, scopes, userId, codeChallenge, codeChallengeMethod} = params
   const pg = getKysely()
 
   const provider = await pg
@@ -32,6 +34,10 @@ export async function createOAuthCode(
 
   if (!provider.redirectUris || !provider.redirectUris.includes(redirectUri)) {
     throw new Error(`Invalid redirect_uri: '${redirectUri}' is not registered for this client.`)
+  }
+
+  if (provider.isPublicClient && !codeChallenge) {
+    throw new Error('code_challenge is required for public clients')
   }
 
   const allowedScopes = (provider.scopes as string[]) || []
@@ -51,7 +57,8 @@ export async function createOAuthCode(
       redirectUri,
       userId,
       scopes: scopes as Oauthscopeenum[],
-      expiresAt: expiresAt.toISOString()
+      expiresAt: expiresAt.toISOString(),
+      ...(codeChallenge && {codeChallenge, codeChallengeMethod: codeChallengeMethod ?? 'S256'})
     })
     .returning('id')
     .executeTakeFirstOrThrow()

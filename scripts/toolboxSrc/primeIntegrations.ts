@@ -39,13 +39,6 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET
     },
     {
-      service: 'mattermost',
-      authStrategy: 'sharedSecret',
-      scope: 'global',
-      serverBaseUrl: process.env.MATTERMOST_URL,
-      sharedSecret: process.env.MATTERMOST_SECRET
-    },
-    {
       service: 'linear',
       authStrategy: 'oauth2',
       scope: 'global',
@@ -64,21 +57,8 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
   ] as const
 
   const validProviders = providers.filter(
-    ({authStrategy, clientId, clientSecret, serverBaseUrl, sharedSecret}) =>
-      (authStrategy === 'oauth2' && clientId && clientSecret && serverBaseUrl) ||
-      (authStrategy === 'sharedSecret' && sharedSecret && serverBaseUrl)
+    ({clientId, clientSecret, serverBaseUrl}) => clientId && clientSecret && serverBaseUrl
   )
-
-  // it's a security risk to have a misconfigured mattermost provider
-  if (!process.env.MATTERMOST_URL || !process.env.MATTERMOST_SECRET) {
-    const pg = getKysely()
-    await pg
-      .deleteFrom('IntegrationProvider')
-      .where('service', '=', 'mattermost')
-      .where('authStrategy', '=', 'sharedSecret')
-      .where('scope', '=', 'global')
-      .execute()
-  }
 
   await Promise.all(
     validProviders.map((provider) => {

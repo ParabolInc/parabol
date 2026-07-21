@@ -1,7 +1,9 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
+import {createHash} from 'crypto'
 import {sql} from 'kysely'
 import ms from 'ms'
 import AuthToken from '../database/types/AuthToken'
+import {getNewDataLoader} from '../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../graphql/uWSAsyncHandler'
 import parseBody from '../parseBody'
 import getKysely from '../postgres/getKysely'
@@ -28,7 +30,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     body[key] = value
   })
 
-  const {grant_type, code, redirect_uri, client_id, client_secret} = body
+  const {grant_type, code, redirect_uri, client_id, client_secret, code_verifier} = body
 
   // SCIM OAuth client credentials
   if (grant_type === 'client_credentials') {
@@ -89,7 +91,7 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
-  if (!code || !redirect_uri || !client_id || !client_secret) {
+  if (!code || !redirect_uri || !client_id) {
     res.writeStatus('400 Bad Request')
     res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_request'}))
@@ -102,21 +104,45 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     .selectAll()
     .where('clientId', '=', client_id)
     .executeTakeFirst()
-  if (!provider || provider.clientSecret !== client_secret) {
+  if (!provider) {
     res.writeStatus('401 Unauthorized')
     res.writeHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({error: 'invalid_client'}))
     return
   }
 
+  if (provider.isPublicClient) {
+    if (!code_verifier) {
+      res.writeStatus('400 Bad Request')
+      res.writeHeader('Content-Type', 'application/json')
+      res.end(
+        JSON.stringify({
+          error: 'invalid_request',
+          error_description: 'code_verifier is required for public clients'
+        })
+      )
+      return
+    }
+  } else {
+    if (!client_secret || provider.clientSecret !== client_secret) {
+      res.writeStatus('401 Unauthorized')
+      res.writeHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({error: 'invalid_client'}))
+      return
+    }
+  }
+
   const oauthCode = await pg
     .deleteFrom('OAuthAPICode')
     .where('id', '=', code)
+    .where('clientId', '=', client_id)
     .returning([
       'id',
       'userId',
       'expiresAt',
       'redirectUri',
+      'codeChallenge',
+      'codeChallengeMethod',
       sql<string[]>`to_json(scopes)`.as('scopes')
     ])
     .executeTakeFirst()
@@ -148,14 +174,48 @@ const tokenHandler = uWSAsyncHandler(async (res: HttpResponse, _req: HttpRequest
     return
   }
 
+  if (oauthCode.codeChallenge) {
+    if (!code_verifier) {
+      res.writeStatus('400 Bad Request')
+      res.writeHeader('Content-Type', 'application/json')
+      res.end(
+        JSON.stringify({error: 'invalid_request', error_description: 'code_verifier required'})
+      )
+      return
+    }
+    const hash = createHash('sha256').update(code_verifier).digest()
+    const computed = Buffer.from(hash)
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+    if (computed !== oauthCode.codeChallenge) {
+      res.writeStatus('400 Bad Request')
+      res.writeHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({error: 'invalid_grant', error_description: 'code_verifier mismatch'}))
+      return
+    }
+  }
+
   const {scopes, userId} = oauthCode
-  const authToken = new AuthToken({
-    sub: userId,
-    tms: [],
-    scope: scopes,
-    lifespan_ms: ms('30d'),
-    aud: 'action-oauth2'
-  })
+  let authToken: AuthToken
+  if (provider.isPublicClient) {
+    const dataLoader = getNewDataLoader('tokenHandler')
+    try {
+      const tms = await dataLoader.get('teamIdsByUserId').load(userId)
+      authToken = new AuthToken({sub: userId, tms})
+    } finally {
+      dataLoader.dispose()
+    }
+  } else {
+    authToken = new AuthToken({
+      sub: userId,
+      tms: [],
+      scope: scopes,
+      lifespan_ms: ms('30d'),
+      aud: 'action-oauth2'
+    })
+  }
   const accessToken = encodeAuthToken(authToken)
 
   res.writeStatus('200 OK')
