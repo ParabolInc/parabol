@@ -20,8 +20,6 @@ const Input = styled('input')({
   padding: '.3125rem 1rem .3125rem 0',
   width: '100%',
   ':hover,:focus,:active': {
-    // light resolves to #493272, identical to the GRAPE_700 this replaced; dark gets a
-    // lilac that stays visible against the card instead of purple-on-purple
     borderColor: 'var(--color-accent-active)'
   }
 })

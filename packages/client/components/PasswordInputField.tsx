@@ -15,7 +15,6 @@ const PasswordInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
-      {/* classes, not styled(TinyLabel) — see EmailInputField */}
       <TinyLabel className='font-semibold text-[12px]'>Password</TinyLabel>
       <UnderlineInput
         ariaLabel={'Password'}

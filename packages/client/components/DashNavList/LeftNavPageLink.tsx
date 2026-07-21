@@ -172,7 +172,6 @@ export const LeftNavPageLink = (props: Props) => {
           draggable={false}
           to={`/pages/${slug}`}
           key={slug}
-          // inherit so the base `a:hover` rule can't repaint the label — see LeftDashNavItem
           className={'ml-1 flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {
             if (draggingPageId) {

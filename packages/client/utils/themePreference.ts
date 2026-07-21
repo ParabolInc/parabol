@@ -17,8 +17,6 @@ export const resolveTheme = (
   return preference
 }
 
-// Dark mode is generally available, so an untouched install follows the OS.
-// Keep this in sync with the boot script in template.html / devTemplate.html.
 const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system'
 
 export const getStoredThemePreference = (): ThemePreference => {
@@ -32,8 +30,6 @@ export const getStoredThemePreference = (): ThemePreference => {
 
 export const setStoredThemePreference = (preference: ThemePreference) => {
   try {
-    // 'system' is persisted explicitly: an absent key now means light, so removing the
-    // key would silently downgrade a deliberate "follow my OS" choice to light.
     window.localStorage.setItem(LocalStorageKey.THEME, preference)
   } catch {
     // localStorage unavailable (e.g. private mode) — theme just won't persist

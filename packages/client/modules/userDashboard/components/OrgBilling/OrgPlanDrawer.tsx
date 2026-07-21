@@ -109,8 +109,6 @@ const OrgPlanDrawer = (props: Props) => {
       >
         <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
           <DrawerHeader>
-            {/* classes, not styled(LabelHeading): Emotion overrides lose to LabelHeading's
-                own utilities, so `normal-case` here is what actually un-uppercases it */}
             <LabelHeading className='text-xs normal-case leading-[18px]'>
               {'Plan Details'}
             </LabelHeading>

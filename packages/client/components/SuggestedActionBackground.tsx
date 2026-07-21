@@ -33,10 +33,6 @@ const ColorBackground = styled(FullBackground)<{backgroundColor: string}>(({back
 }))
 
 const BackgroundClip = styled('div')({
-  // Deliberately theme-invariant. Both layers above are translucent (0.5 / 0.35), so they
-  // composite against whatever is behind them — the card's surface token. On the dark card
-  // that muddied the illustration, so pin the backdrop to white and keep the artwork at its
-  // intended contrast in both themes.
   backgroundColor: PALETTE.WHITE,
   height: BACKGROUND_HEIGHT,
   overflow: 'hidden',

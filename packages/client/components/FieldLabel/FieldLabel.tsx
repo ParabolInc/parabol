@@ -1,10 +1,6 @@
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
 
-// Styles the <label> directly rather than composing styled(LabelHeading).withComponent().
-// withComponent swaps the base element, so once LabelHeading moved to Tailwind its classes
-// were dropped on the floor and this label lost its color/size/weight/tracking entirely.
-// These base values mirror LabelHeading, minus the uppercase this has always overridden.
 const FieldLabelStyles = styled('label')<
   Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
 >(({customStyles, fieldSize, indent, inline}) => {

@@ -66,10 +66,6 @@ const Action = memo(() => {
             )}
           >
             <Routes>
-              {/* Pre-login routes are pinned light — their chrome is raw palette and
-                  never flips with the theme. The demo and public /pages routes below are
-                  deliberately excluded: they're real product surfaces that were migrated
-                  to dark mode, so they follow the viewer's theme. */}
               <Route
                 path='/'
                 element={

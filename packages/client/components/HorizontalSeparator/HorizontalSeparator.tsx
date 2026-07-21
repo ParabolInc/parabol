@@ -8,8 +8,6 @@ import styled from '@emotion/styled'
 import {Fragment} from 'react'
 import LabelHeading from '../LabelHeading/LabelHeading'
 
-// font size lives in the className below, not here: an Emotion fontSize can't beat
-// LabelHeading's own `text-xs`, but tailwind-merge resolves `text-[11px]` against it
 const SeparatorContainer = styled(LabelHeading)<{
   margin: string | number | undefined
 }>(({margin}) => ({
@@ -46,8 +44,6 @@ interface Props {
   text?: string
 }
 
-// leading-4 is restated alongside text-[11px] because tailwind-merge treats font-size as
-// conflicting with leading (a `text-*` may carry its own), so it drops LabelHeading's
 export default ({margin, text}: Props) => (
   <SeparatorContainer className='text-[11px] leading-4' margin={margin}>
     {text ? (

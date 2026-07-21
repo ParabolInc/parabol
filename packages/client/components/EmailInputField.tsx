@@ -15,10 +15,6 @@ const EmailInputField = (props: Props) => {
   const {autoFocus, dirty, error, onChange, onBlur, value} = props
   return (
     <React.Fragment>
-      {/* classes, not styled(TinyLabel): an Emotion override can't beat TinyLabel's own
-          Tailwind text size, but tailwind-merge resolves this against its text-[11px].
-          Arbitrary 12px rather than text-xs, which would also impose a 16px leading the
-          original styled(TinyLabel) never set. */}
       <TinyLabel className='font-semibold text-[12px]'>Email</TinyLabel>
       <UnderlineInput
         ariaLabel={'Email'}
