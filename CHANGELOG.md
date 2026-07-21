@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.30.1](https://github.com/ParabolInc/parabol/compare/v13.30.0...v13.30.1) (2026-07-21)
+
+
+### Fixed
+
+* security deps bump ([#13298](https://github.com/ParabolInc/parabol/issues/13298)) ([e43371c](https://github.com/ParabolInc/parabol/commit/e43371cbacd0bb25553bf4e55a182a913620cee0))
+
 ## [13.30.0](https://github.com/ParabolInc/parabol/compare/v13.29.2...v13.30.0) (2026-07-21)
 
 
