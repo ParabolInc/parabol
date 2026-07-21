@@ -68,12 +68,6 @@ const StyledCloseButton = styled(PlainButton)({
   alignItems: 'center'
 })
 
-const StyledLabelHeading = styled(LabelHeading)({
-  fontSize: 12,
-  lineHeight: '18px',
-  textTransform: 'none'
-})
-
 type Props = {
   organizationRef: OrgPlanDrawer_organization$key
 }
@@ -115,7 +109,9 @@ const OrgPlanDrawer = (props: Props) => {
       >
         <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
           <DrawerHeader>
-            <StyledLabelHeading>{'Plan Details'}</StyledLabelHeading>
+            <LabelHeading className='text-xs normal-case leading-[18px]'>
+              {'Plan Details'}
+            </LabelHeading>
             <StyledCloseButton onClick={toggleSidebar}>
               <CloseIcon />
             </StyledCloseButton>

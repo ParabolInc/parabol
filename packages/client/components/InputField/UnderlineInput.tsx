@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import * as React from 'react'
 import {forwardRef, type Ref} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
 import {FONT_FAMILY} from '../../styles/typographyV2'
 import StyledError from '../StyledError'
 
@@ -21,7 +20,7 @@ const Input = styled('input')({
   padding: '.3125rem 1rem .3125rem 0',
   width: '100%',
   ':hover,:focus,:active': {
-    borderColor: PALETTE.GRAPE_700
+    borderColor: 'var(--color-accent-active)'
   }
 })
 

@@ -17,23 +17,20 @@ export const resolveTheme = (
   return preference
 }
 
+const DEFAULT_THEME_PREFERENCE: ThemePreference = 'system'
+
 export const getStoredThemePreference = (): ThemePreference => {
   try {
     const stored = window.localStorage.getItem(LocalStorageKey.THEME)
-    return isThemePreference(stored) ? stored : 'system'
+    return isThemePreference(stored) ? stored : DEFAULT_THEME_PREFERENCE
   } catch {
-    return 'system'
+    return DEFAULT_THEME_PREFERENCE
   }
 }
 
 export const setStoredThemePreference = (preference: ThemePreference) => {
   try {
-    if (preference === 'system') {
-      // absent key = system, matching the boot script's fallback
-      window.localStorage.removeItem(LocalStorageKey.THEME)
-    } else {
-      window.localStorage.setItem(LocalStorageKey.THEME, preference)
-    }
+    window.localStorage.setItem(LocalStorageKey.THEME, preference)
   } catch {
     // localStorage unavailable (e.g. private mode) — theme just won't persist
   }

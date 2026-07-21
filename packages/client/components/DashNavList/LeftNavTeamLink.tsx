@@ -101,7 +101,7 @@ export const LeftNavTeamLink = (props: Props) => {
         <Link
           draggable={false}
           to={`/team/${teamId}`}
-          className={'flex w-full items-center'}
+          className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {
             if (draggingPageId) {
               e.preventDefault()

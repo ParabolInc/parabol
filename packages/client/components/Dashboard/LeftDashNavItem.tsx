@@ -30,7 +30,7 @@ const LeftDashNavItem = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
         <LinkWrapper
           draggable={false}
           to={href}
-          className={'flex w-full items-center'}
+          className={'flex w-full items-center text-inherit hover:text-inherit'}
           onClick={onClick}
         >
           <div

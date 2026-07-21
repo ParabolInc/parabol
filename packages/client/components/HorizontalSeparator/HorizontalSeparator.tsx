@@ -12,7 +12,6 @@ const SeparatorContainer = styled(LabelHeading)<{
   margin: string | number | undefined
 }>(({margin}) => ({
   display: 'flex',
-  fontSize: 11,
   margin,
   maxWidth: '100%',
   padding: '16px 0',
@@ -46,7 +45,7 @@ interface Props {
 }
 
 export default ({margin, text}: Props) => (
-  <SeparatorContainer margin={margin}>
+  <SeparatorContainer className='text-[11px] leading-4' margin={margin}>
     {text ? (
       <Fragment>
         <LeftSeparator />

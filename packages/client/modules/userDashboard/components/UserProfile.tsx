@@ -26,7 +26,6 @@ const query = graphql`
       ...PersonalAccessTokens_viewer
       preferredName
       picture
-      hasDarkMode: featureFlag(featureName: "darkMode")
       identities {
         type
       }
@@ -37,7 +36,7 @@ const query = graphql`
 const UserProfile = ({queryRef}: Props) => {
   const data = usePreloadedQuery<UserProfileQuery>(query, queryRef)
   const {viewer} = data
-  const {identities, hasDarkMode} = viewer
+  const {identities} = viewer
   const isLocal = identities?.find((identity) => identity?.type === AuthIdentityTypeEnum.LOCAL)
   useDocumentTitle('My Profile | Parabol', 'My Profile')
   return (
@@ -46,7 +45,7 @@ const UserProfile = ({queryRef}: Props) => {
         <Panel label='Profile' casing={'capitalize'}>
           <UserSettingsForm viewer={viewer} />
         </Panel>
-        {hasDarkMode && <AppearancePanel />}
+        <AppearancePanel />
         {isLocal && (
           <Panel label='Authentication' casing={'capitalize'}>
             <div className='border-hairline border-t p-4 text-center'>

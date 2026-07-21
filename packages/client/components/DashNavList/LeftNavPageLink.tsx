@@ -172,7 +172,7 @@ export const LeftNavPageLink = (props: Props) => {
           draggable={false}
           to={`/pages/${slug}`}
           key={slug}
-          className={'ml-1 flex w-full items-center'}
+          className={'ml-1 flex w-full items-center text-inherit hover:text-inherit'}
           onClick={(e) => {
             if (draggingPageId) {
               e.preventDefault()
