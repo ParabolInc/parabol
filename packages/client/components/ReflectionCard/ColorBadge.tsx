@@ -30,7 +30,6 @@ const ColorBadge = (props: Props) => {
   return (
     <Tooltip disableHoverableContent={phaseType !== 'discuss'}>
       <TooltipTrigger asChild>
-        {/* a 32px drop clipped by a 16px wrapper so only the top-left quadrant shows */}
         <div className='absolute top-0 left-0 z-4 h-4 w-4 overflow-hidden rounded-tl'>
           <div
             className='-top-4 -left-4 absolute h-8 w-8 rounded-[100px]'

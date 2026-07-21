@@ -31,9 +31,7 @@ export const getStoredThemePreference = (): ThemePreference => {
 export const setStoredThemePreference = (preference: ThemePreference) => {
   try {
     window.localStorage.setItem(LocalStorageKey.THEME, preference)
-  } catch {
-    // localStorage unavailable (e.g. private mode) — theme just won't persist
-  }
+  } catch {}
 }
 
 export const applyTheme = (theme: ResolvedTheme) => {

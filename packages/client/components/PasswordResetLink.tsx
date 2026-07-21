@@ -41,7 +41,6 @@ const PasswordResetLink = (props: Props) => {
 
   return (
     <div className='flex items-center justify-start'>
-      {/* the source svg is black; the filter tints it slate-600 in light, a soft gray in dark */}
       <img
         className='pr-2 [filter:invert(56%)_sepia(10%)_saturate(643%)_hue-rotate(205deg)_brightness(89%)_contrast(92%)] dark:[filter:invert(75%)]'
         crossOrigin=''

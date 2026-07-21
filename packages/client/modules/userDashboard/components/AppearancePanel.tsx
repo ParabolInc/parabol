@@ -17,11 +17,9 @@ const AppearancePanel = () => {
   const handleSelect = (next: ThemePreference) => {
     if (next === preference) return
     const previous = preference
-    // apply locally first so the flip is instant; the mutation persists it
     setPreference(next)
     execute({
       variables: {theme: next},
-      // revert the optimistic flip if the server rejects it (the hook shows the error)
       onCompleted: (res) => {
         if (res.updateUserTheme.error) {
           setPreference(previous)

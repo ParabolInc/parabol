@@ -4,7 +4,6 @@ import logoMarkPurple from '../../styles/theme/images/brand/mark-color.svg'
 
 const RootBlock = styled('div')({
   alignItems: 'flex-end',
-  borderTop: `1px solid var(--color-hairline)`,
   boxSizing: 'content-box',
   display: 'flex',
   padding: 8,

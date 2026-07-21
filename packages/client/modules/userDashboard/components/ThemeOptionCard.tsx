@@ -12,8 +12,6 @@ interface Props {
 
 const ICONS = {light: LightMode, dark: DarkMode, system: Computer}
 
-/* Fixed swatches: each card previews its own theme regardless of the active one,
-   so Grape Dusk surface hexes are intentionally literal here */
 const LIGHT = {canvas: 'bg-slate-100', bar: 'bg-grape-700', rail: 'bg-slate-200', card: 'bg-white'}
 const DARK = {
   canvas: 'bg-[#1e1638]',

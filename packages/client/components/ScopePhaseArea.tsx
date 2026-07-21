@@ -99,7 +99,7 @@ const ScopePhaseArea = (props: Props) => {
 
   const baseTabs = [
     {
-      icon: <GitHubSVG />,
+      icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
       label: 'GitHub',
       allow: GitHubClientManager.isAvailable,
       Component: ScopePhaseAreaGitHub

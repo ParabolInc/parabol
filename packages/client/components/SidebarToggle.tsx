@@ -10,7 +10,6 @@ const SidebarToggle = (props: Props) => {
     <IconButton
       {...rest}
       className={cn(
-        // hover stays fg-secondary (the source overrode the hover color back to the base)
         'h-6 p-0 text-fg-secondary hover:text-fg-secondary focus:text-fg-secondary active:text-fg-secondary',
         className
       )}

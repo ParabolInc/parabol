@@ -9,8 +9,6 @@
 @config '../../../../tailwind.config.js';
 
 @custom-variant no-hover (@media not all and (hover: hover));
-/* Class-based dark variant. Escape hatch only (e.g. dark:brightness-[.94] on
-   illustrations) — theming flows through the semantic tokens below. */
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
 @theme {
   /* Fonts */
@@ -117,8 +115,6 @@
   --color-grape-500: #a06bd6;
   --color-grape-600: #7340b5;
   --color-grape-700: #493272;
-  /* Fine-grained dark-surface ramp steps (Grape Dusk), consumed by the
-     surface-* tokens in .theme-dark. Monotonic by luminance; darkest = 950. */
   --color-grape-725: #3d3175;
   --color-grape-750: #362b63;
   --color-grape-775: #332965;
@@ -160,19 +156,12 @@
   --color-team: #cbecf0;
   --color-enterprise: #ffe2e0;
 
-  /* Semantic theme tokens — light values (= current production).
-     Dark values live in the .theme-dark block below the @theme block.
-     Dictionary: docs/superpowers/specs/2026-07-14-dark-mode-design.md §3 */
   --color-surface-app: var(--color-slate-100);
   --color-surface-sidebar: var(--color-slate-200);
   --color-surface-well: var(--color-slate-300);
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
-  /* Full-bleed document canvas (Pages). White in light like a doc; in dark a
-     calmer step between app and card so in-page cards/wells still elevate. */
   --color-surface-document: var(--color-white);
-  /* Button/interactive hover fill. Light: subtle darken; dark: subtle LIGHTEN
-     (a translucent plum overlay) so hover moves toward the foreground in both. */
   --color-surface-hover: var(--color-slate-300);
   --color-surface-meeting-sidebar: var(--color-white);
   --color-surface-topbar: var(--color-grape-700);
@@ -197,9 +186,6 @@
   --color-search-bg: rgba(255, 255, 255, 0.125);
   --color-search-placeholder: #c3c0d8;
 
-  /* Shadows. Class names unchanged (shadow-card etc.) — consolidated here from
-     tailwind.config.js boxShadow + the former @utility shadow-card* blocks.
-     Dark overrides for the themed subset live in .theme-dark. */
   --shadow-card: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
   --shadow-card-hover: rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px,
@@ -221,8 +207,6 @@
     rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
   --shadow-status-ring: 0 0 0 0 transparent;
-  /* Selected left-nav item ring. No-op in light (state reads from fill + text);
-     .theme-dark supplies a lilac ring that carries the selected state (WCAG 1.4.11). */
   --shadow-nav-active: none;
   --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
@@ -347,15 +331,9 @@
   color-scheme: light;
 }
 
-/* Grape Dusk dark theme. Applied to <html> (never #root — Radix/usePortal
-   attach to document.body). This rule is deliberately un-layered so it beats
-   the layered :root emission of @theme regardless of source order.
-   Values: dark mode design spec §3 (canonical source: design project themes.js). */
 .theme-dark {
   color-scheme: dark;
 
-  /* Elevation ramp, lightest→darkest: raised < phase-active < card < topbar
-     < document/meeting-sidebar < app < well/input < sidebar (see grape-7xx–9xx) */
   --color-surface-app: var(--color-grape-875);
   --color-surface-sidebar: var(--color-grape-950);
   --color-surface-well: var(--color-grape-925);
@@ -366,8 +344,6 @@
   --color-surface-meeting-sidebar: var(--color-grape-850);
   --color-surface-topbar: var(--color-grape-800);
   --color-surface-input: var(--color-grape-925);
-  /* selected nav lifts one ramp step (grape-775 -> 725); the lilac ring in
-     --shadow-nav-active supplies the WCAG 1.4.11 selected-state indicator */
   --color-surface-nav-active: var(--color-grape-725);
   --color-surface-phase-active: var(--color-grape-750);
   --color-fg-primary: #eeedf7;
@@ -390,10 +366,6 @@
   --color-team: #12404c;
   --color-enterprise: #4a2430;
   --default-ring-color: var(--color-accent);
-  /* On near-black, a drop shadow alone is invisible. Each elevation layers a
-     hairline ring (defines the edge) + a top highlight (catches light) + a soft
-     drop (grounds it). The ring uses var(--color-hairline*) so it re-resolves to
-     the light value inside .light-island. */
   --shadow-card: inset 0 0 0 1px var(--color-hairline), inset 0 1px 0 rgba(255, 255, 255, 0.05),
     0 6px 16px -6px rgba(0, 0, 0, 0.6);
   --shadow-card-hover: inset 0 0 0 1px var(--color-hairline-strong),
@@ -411,12 +383,6 @@
   --shadow-nav-active: inset 0 0 0 1px #a19ac7, inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-/* Deliberate light island (dark mode design spec §8). The in-app meeting
-   summary renders the literal email markup, whose inline styles are light by
-   design — the wrapper re-declares the semantic tokens to their light values
-   so token-based descendants match, and re-inherits color from the island
-   (not from the dark body). Keep the values in sync with the @theme block.
-   Shadows are left alone: they're all black alphas and read fine on light. */
 .light-island {
   color-scheme: light;
   color: var(--color-fg-primary);
@@ -685,7 +651,6 @@
 
   a:hover,
   a:focus {
-    /* grape-700 in light (unchanged), lifted to grape-400 in dark */
     @apply text-accent-active;
     text-decoration: none;
   }
@@ -784,7 +749,6 @@
   z-index: 24; /* portal needs to float above other components, especially sidebars */
 }
 
-/* shadow-card* utilities now come from the --shadow-* tokens in @theme */
 
 /** Customize daypicker styles */
 .rdp {
@@ -904,8 +868,6 @@
     border-radius: 2px;
     font-weight: 600;
 
-    /* gold-100 is a light pastel; in dark, a translucent gold keeps the
-       highlight without forcing dark text into the light island */
     .theme-dark & {
       background-color: rgba(255, 204, 99, 0.25);
     }
@@ -1141,8 +1103,6 @@
   z-index: 50;
   cursor: grab;
 
-  /* the dot glyph is a data-URI SVG, so its fill can't read CSS vars —
-     swap in a light-filled copy for dark */
   .theme-dark & {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' style='fill: rgba(255, 255, 255, 0.55)'%3E%3Cpath d='M3,2 C2.44771525,2 2,1.55228475 2,1 C2,0.44771525 2.44771525,0 3,0 C3.55228475,0 4,0.44771525 4,1 C4,1.55228475 3.55228475,2 3,2 Z M3,6 C2.44771525,6 2,5.55228475 2,5 C2,4.44771525 2.44771525,4 3,4 C3.55228475,4 4,4.44771525 4,5 C4,5.55228475 3.55228475,6 3,6 Z M3,10 C2.44771525,10 2,9.55228475 2,9 C2,8.44771525 2.44771525,8 3,8 C3.55228475,8 4,8.44771525 4,9 C4,9.55228475 3.55228475,10 3,10 Z M7,2 C6.44771525,2 6,1.55228475 6,1 C6,0.44771525 6.44771525,0 7,0 C7.55228475,0 8,0.44771525 8,1 C8,1.55228475 7.55228475,2 7,2 Z M7,6 C6.44771525,6 6,5.55228475 6,5 C6,4.44771525 6.44771525,4 7,4 C7.55228475,4 8,4.44771525 8,5 C8,5.55228475 7.55228475,6 7,6 Z M7,10 C6.44771525,10 6,9.55228475 6,9 C6,8.44771525 6.44771525,8 7,8 C7.55228475,8 8,8.44771525 8,9 C8,9.55228475 7.55228475,10 7,10 Z'%3E%3C/path%3E%3C/svg%3E");
   }
@@ -1198,7 +1158,6 @@
       height: 24px;
     }
 
-    /* data-URI SVG defaults to a black fill — light copy for dark */
     .theme-dark &::before {
       content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23d4d2ef' d='M10 17l5-5-5-5v10z'%3E%3C/path%3E%3C/svg%3E");
     }

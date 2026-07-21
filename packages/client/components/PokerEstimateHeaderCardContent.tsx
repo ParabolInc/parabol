@@ -21,7 +21,6 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 const HeaderCard = styled('div')({
   background: 'var(--color-surface-card)',
   borderRadius: 4,
-  // theme-aware: dark adds a hairline ring + top highlight so the card reads on near-black
   boxShadow: 'var(--shadow-card)',
   height: '100%',
   padding: '12px 16px',

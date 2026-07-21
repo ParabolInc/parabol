@@ -141,7 +141,7 @@ const RetroWorkDrawer = (props: Props) => {
     ...(GitHubClientManager.isAvailable
       ? [
           {
-            icon: <GitHubSVG />,
+            icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
             service: 'github',
             label: 'GitHub',
             Component: GitHubIntegrationPanel

@@ -47,7 +47,6 @@ export const ThemeProvider = (props: {children: ReactNode}) => {
   }, [preference])
 
   useEffect(() => {
-    // another tab changed the preference
     const onStorage = () => setPreferenceState(getStoredThemePreference())
     window.addEventListener('storage', onStorage)
     return () => window.removeEventListener('storage', onStorage)

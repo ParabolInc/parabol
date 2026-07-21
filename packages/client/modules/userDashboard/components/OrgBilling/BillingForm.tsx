@@ -52,7 +52,6 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-// Stripe elements render inside iframes, so CSS custom properties can't reach them — compute theme colors at runtime
 const getCardElementOptions = (): StripeCardNumberElementOptions => {
   const isDark = document.documentElement.classList.contains('theme-dark')
   return {

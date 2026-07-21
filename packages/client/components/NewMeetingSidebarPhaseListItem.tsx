@@ -118,7 +118,6 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       <span className='inline-block align-middle text-sm'>{label}</span>
       {showPhaseCount && (
         <div className='ml-auto flex items-center'>
-          {/* INVARIANT: slate-600/white in both themes */}
           <Badge className='mr-2 h-6 min-w-6 rounded-xl bg-slate-600 text-xs leading-6 shadow-none'>
             {phaseCount}
           </Badge>
