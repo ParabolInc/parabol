@@ -13,7 +13,6 @@ const updateUserTheme: MutationResolvers['updateUserTheme'] = async (
   const pg = getKysely()
   await pg.updateTable('User').set({theme}).where('id', '=', viewerId).execute()
 
-  // let the viewer's other devices/tabs pick up the new preference live
   const operationId = dataLoader.share()
   const subOptions = {operationId}
   const data = {viewerId}

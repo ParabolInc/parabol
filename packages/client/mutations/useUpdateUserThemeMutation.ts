@@ -28,8 +28,6 @@ const useUpdateUserThemeMutation = () => {
     const {onCompleted, ...rest} = config
     return commit({
       ...rest,
-      // always surface the mutation error; callers layer their own handling
-      // (e.g. reverting an optimistic flip) through their onCompleted
       onCompleted: (res, errors) => {
         const error = res.updateUserTheme.error
         if (error) {

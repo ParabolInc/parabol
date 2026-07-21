@@ -14,7 +14,6 @@ const keyframesOpacity = keyframes`
   }
 }`
 
-// animation only — colors/layout live in the Tailwind classes below
 const AnimatedIcon = styled('div')({
   animationDuration: '800ms',
   animationIterationCount: 'infinite',
@@ -40,7 +39,6 @@ const UserDraggingHeader = (props: Props) => {
   const {viewerId} = atmosphere
   const label = userId === viewerId ? 'Your ghost 👻' : name
   const arrowEl = (
-    // little margin separates the arrow from the username
     <AnimatedIcon className='m-0.75 flex items-center justify-center [&_svg]:fill-white [&_svg]:stroke-2 [&_svg]:stroke-white [&_svg]:text-[11px]'>
       {
         {

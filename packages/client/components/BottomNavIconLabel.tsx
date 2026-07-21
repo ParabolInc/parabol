@@ -11,7 +11,6 @@ import {PALETTE} from '../styles/paletteV3'
 
 const paletteColors = {
   warm: PALETTE.ROSE_500,
-  // theme-aware so the neutral icon tone doesn't render dark-on-dark in dark mode
   midGray: 'var(--color-fg-secondary)',
   red: PALETTE.TOMATO_600,
   green: PALETTE.JADE_400,
@@ -42,7 +41,6 @@ const Inner = styled('div')({
 })
 
 const Label = styled('div')({
-  // mockup 02: control-bar labels use the primary text tone, not the button's inherited gray
   color: 'var(--color-fg-primary)',
   fontSize: 12,
   height: 16,

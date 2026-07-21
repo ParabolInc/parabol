@@ -20,8 +20,6 @@ describe('resolveTheme', () => {
 })
 
 describe('stored theme preference', () => {
-  // jest runs the client suite in the `node` environment and jest-environment-jsdom isn't
-  // installed, so stand up the minimal window.localStorage surface these helpers touch
   const store = new Map<string, string>()
   beforeAll(() => {
     Object.defineProperty(globalThis, 'window', {
@@ -52,8 +50,6 @@ describe('stored theme preference', () => {
   })
 
   it('round-trips every preference, including an explicit light', () => {
-    // 'light' is the one value the boot script treats specially, so it must survive
-    // a round trip rather than collapsing into the system default
     setStoredThemePreference('light')
     expect(getStoredThemePreference()).toBe('light')
     setStoredThemePreference('dark')

@@ -16,7 +16,6 @@ interface Props {
 
 const Border = styled('div')<{isAvailable: boolean}>(({isAvailable}) => ({
   alignItems: 'center',
-  // available swatches blend into the menu background; taken ones get a visible ring
   border: `2px solid ${isAvailable ? 'var(--color-surface-card)' : 'var(--color-hairline-strong)'}`,
   borderRadius: '50%',
   display: 'flex',

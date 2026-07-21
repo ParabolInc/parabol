@@ -168,7 +168,6 @@ const PhaseItemColumn = (props: Props) => {
       >
         <div
           className={cn(
-            // top-5 keeps the dot out of layout so it doesn't color the text
             'absolute top-5 mr-2 inline-block h-2 w-2 rounded-full align-middle shadow-[0_0_0_1px_var(--color-surface-app)] transition-all duration-300 ease-out',
             isFocused ? (isDesktop ? 'scale-[200]' : 'scale-[350]') : 'scale-100',
             isFocused ? 'opacity-35' : 'opacity-100'

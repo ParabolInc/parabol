@@ -114,7 +114,7 @@ export const ActivityCard = (props: ActivityCardProps) => {
               side='bottom'
               align='center'
               sideOffset={20}
-              className='max-w-md whitespace-normal rounded-lg bg-surface-card p-4 text-left text-fg-primary shadow-lg hover:cursor-pointer sm:max-w-sm'
+              className='max-w-md whitespace-normal rounded-lg border border-hairline bg-surface-raised p-4 text-left text-fg-primary shadow-lg hover:cursor-pointer sm:max-w-sm'
             >
               <div className='mb-2 text-left font-semibold text-lg'>{title}</div>
               <ActivityLibraryCardDescription templateRef={template} />

@@ -78,7 +78,6 @@ const StyledButton = styled(PrimaryButton)({
 
 const WarningMsg = styled('div')({
   background: 'var(--color-gold-100)',
-  // static text on the static gold banner; identical to fg-primary in light, stays readable in dark
   color: 'var(--color-slate-700)',
   padding: '16px 24px',
   fontSize: 16,

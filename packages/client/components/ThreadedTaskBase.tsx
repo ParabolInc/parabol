@@ -85,7 +85,6 @@ const ThreadedTaskBase = (props: Props) => {
       <ThreadedAvatarColumn isReply={isReply} picture={picture} />
       <div className='flex w-full flex-col pb-2'>
         <ThreadedItemHeaderDescription title={preferredName} subTitle={'added a Task'}>
-          {/* fontWeight was a pre-existing `60` typo — corrected to 600 (font-semibold) */}
           <div className='pr-8 font-semibold text-fg-secondary'>
             <ThreadedReplyButton onReply={onReply} />
           </div>

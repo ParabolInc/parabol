@@ -11,7 +11,6 @@ interface Props {
   showDismissButton?: boolean
 }
 
-// The snackbar chip is invariant: dark slate-700 chip in both light and dark modes
 const SnackbarMessage = (props: Props) => {
   const {action, secondaryAction, message, dismissSnack, showDismissButton} = props
   return (

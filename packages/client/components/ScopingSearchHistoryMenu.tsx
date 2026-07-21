@@ -56,8 +56,6 @@ const ScopingSearchHistoryMenu = (props: Props) => {
                 </div>
                 <IconButton
                   className='m-1'
-                  // transition conflicts with BaseButton's un-layered box-shadow
-                  // transition; inline style guarantees it wins the cascade
                   style={{transition: 'opacity .1s ease-in'}}
                   aria-label={'Remove this search query'}
                   icon='cancel'

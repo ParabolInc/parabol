@@ -1,8 +1,6 @@
 import {forwardRef} from 'react'
 import {Button, type ButtonProps} from '../ui/Button/Button'
 
-// Gray, neutral emphasis. Thin adapter over the canonical ui/Button
-// (variant='outline'); preserves the legacy small/medium/large size prop.
 const SIZE_MAP = {
   small: 'sm',
   medium: 'md',
