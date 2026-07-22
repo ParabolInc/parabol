@@ -65,7 +65,7 @@ const DashSidebar = (props: Props) => {
     const currentOrg = organizations.find((org) => org.id === orgIdFromParams)
     const {id: orgId, name} = currentOrg ?? {}
     return (
-      <div className='flex flex-col bg-surface-sidebar print:hidden'>
+      <div className='flex flex-col bg-surface-app print:hidden'>
         <SideBarStartMeetingButton isOpen={isOpen} />
         <nav className={navClassName(isOpen)}>
           <div className='flex h-full w-64 flex-col p-0'>
@@ -121,7 +121,7 @@ const DashSidebar = (props: Props) => {
   }
 
   return (
-    <div className='flex flex-col bg-surface-sidebar print:hidden'>
+    <div className='flex flex-col bg-surface-app print:hidden'>
       <SideBarStartMeetingButton isOpen={isOpen} />
       <nav className={navClassName(isOpen)}>
         <div className='flex h-full w-64 flex-col p-0'>

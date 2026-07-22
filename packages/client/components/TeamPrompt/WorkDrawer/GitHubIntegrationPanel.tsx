@@ -7,6 +7,7 @@ import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
@@ -132,13 +133,16 @@ const GitHubIntegrationPanel = (props: Props) => {
           />
           <div className='mb-2 flex w-full gap-2 px-4'>
             {GITHUB_QUERY_TABS.map((tab) => (
-              <div
+              <Button
                 key={tab.key}
+                size='md'
+                shape='pill'
+                aria-pressed={tab.key === githubType}
                 className={cn(
-                  'w-1/2 cursor-pointer rounded-full px-4 py-2 text-center text-fg-primary text-sm leading-3',
+                  'w-1/2 text-fg-primary',
                   tab.key === githubType
-                    ? 'bg-grape-700 font-semibold text-white focus:text-white'
-                    : 'border border-hairline bg-surface-card'
+                    ? 'bg-grape-600 font-semibold text-white hover:bg-grape-600 focus:text-white'
+                    : 'bg-surface-card hover:bg-surface-hover'
                 )}
                 onClick={() => {
                   trackTabNavigated(tab.label)
@@ -146,7 +150,7 @@ const GitHubIntegrationPanel = (props: Props) => {
                 }}
               >
                 {tab.label}
-              </div>
+              </Button>
             ))}
           </div>
           <div className='mb-2 flex w-full px-2'>

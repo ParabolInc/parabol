@@ -13,8 +13,8 @@ const Tab = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   return (
     <button
       className={cn(
-        'flex cursor-default select-none appearance-none items-center justify-center border-0 bg-inherit px-4 py-3 text-sm leading-5 outline-0',
-        isActive ? 'text-accent-active' : 'cursor-pointer text-fg-secondary',
+        'flex cursor-default select-none appearance-none items-center justify-center border-0 bg-inherit px-4 py-3 text-fg-secondary text-sm leading-5 outline-0',
+        !isActive && 'cursor-pointer',
         className
       )}
       onClick={onClick}

@@ -1,42 +1,24 @@
-import styled from '@emotion/styled'
 import {AccountBalance, AccountBox, ExitToApp, Star} from '@mui/icons-material'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {StandardHubUserMenu_viewer$key} from '../__generated__/StandardHubUserMenu_viewer.graphql'
-import type {MenuProps} from '../hooks/useMenu'
+import {cn} from '../ui/cn'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
-import DropdownMenuLabel from './DropdownMenuLabel'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemHR from './MenuItemHR'
-import MenuItemIcon from './MenuItemIcon'
-import MenuItemLabel from './MenuItemLabel'
 
-const UpgradeIcon = styled(MenuItemIcon)({
-  color: 'var(--color-accent)'
-})
-
-const UpgradeCTA = styled('span')({
-  color: 'var(--color-accent)',
-  fontSize: 15,
-  lineHeight: '32px',
-  marginRight: '2rem'
-})
-
-const TallMenu = styled(Menu)({
-  maxHeight: 256
-})
-
-const MenuItemLink = MenuItemLabel.withComponent(Link)
+const linkClassName =
+  'flex w-full items-center gap-2 py-0.5 text-sm leading-6 hover:text-fg-primary focus:text-fg-primary'
+const iconClassName = 'size-[18px] text-[18px] text-fg-secondary'
 
 interface Props {
-  menuProps: MenuProps
   viewerRef: StandardHubUserMenu_viewer$key
 }
 
 const StandardHubUserMenu = (props: Props) => {
-  const {menuProps, viewerRef} = props
+  const {viewerRef} = props
   const viewer = useFragment(
     graphql`
       fragment StandardHubUserMenu_viewer on User {
@@ -55,53 +37,45 @@ const StandardHubUserMenu = (props: Props) => {
   const routeSuffix = ownedFreeOrgs.length === 1 ? `/${ownedFreeOrgs[0]!.id}` : ''
 
   return (
-    <TallMenu ariaLabel={'Select your settings'} {...menuProps}>
-      <DropdownMenuLabel>{email}</DropdownMenuLabel>
-      <MenuItem
-        label={
-          <MenuItemLink to={'/me/profile'}>
-            <MenuItemIcon>
-              <AccountBox />
-            </MenuItemIcon>
-            {'My Settings'}
-          </MenuItemLink>
-        }
-      />
-      <MenuItem
-        label={
-          <MenuItemLink to={'/me/organizations'}>
-            <MenuItemIcon>
-              <AccountBalance />
-            </MenuItemIcon>
-            {'Organizations'}
-          </MenuItemLink>
-        }
-      />
-      {showUpgradeCTA && <MenuItemHR key='HR0' />}
+    <MenuContent
+      align='end'
+      sideOffset={4}
+      aria-label='Select your settings'
+      className='min-w-0 max-w-[280px]'
+    >
+      <DropdownMenu.Label className='mb-1 select-none truncate px-4 font-semibold text-[15px] text-fg-primary leading-8'>
+        {email}
+      </DropdownMenu.Label>
+      <MenuItem>
+        <Link to={'/me/profile'} className={linkClassName}>
+          <AccountBox className={iconClassName} />
+          {'My Settings'}
+        </Link>
+      </MenuItem>
+      <MenuItem>
+        <Link to={'/me/organizations'} className={linkClassName}>
+          <AccountBalance className={iconClassName} />
+          {'Organizations'}
+        </Link>
+      </MenuItem>
       {showUpgradeCTA && (
-        <MenuItem
-          label={
-            <MenuItemLink to={`/me/organizations${routeSuffix}`}>
-              <UpgradeIcon>
-                <Star />
-              </UpgradeIcon>
-              <UpgradeCTA>{'Upgrade'}</UpgradeCTA>
-            </MenuItemLink>
-          }
-        />
+        <MenuItem>
+          <Link
+            to={`/me/organizations${routeSuffix}`}
+            className={cn(linkClassName, 'text-accent hover:text-accent focus:text-accent')}
+          >
+            <Star className={cn(iconClassName, 'text-accent')} />
+            {'Upgrade'}
+          </Link>
+        </MenuItem>
       )}
-      <MenuItemHR key='HR1' />
-      <MenuItem
-        label={
-          <MenuItemLink to={`/${SIGNOUT_SLUG}`}>
-            <MenuItemIcon>
-              <ExitToApp />
-            </MenuItemIcon>
-            {SIGNOUT_LABEL}
-          </MenuItemLink>
-        }
-      />
-    </TallMenu>
+      <MenuItem>
+        <Link to={`/${SIGNOUT_SLUG}`} className={linkClassName}>
+          <ExitToApp className={iconClassName} />
+          {SIGNOUT_LABEL}
+        </Link>
+      </MenuItem>
+    </MenuContent>
   )
 }
 

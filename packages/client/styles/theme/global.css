@@ -115,14 +115,10 @@
   --color-grape-500: #a06bd6;
   --color-grape-600: #7340b5;
   --color-grape-700: #493272;
-  --color-grape-725: #3d3175;
   --color-grape-750: #362b63;
-  --color-grape-775: #332965;
   --color-grape-800: #2d1d53;
   --color-grape-850: #251c48;
-  --color-grape-875: #1e1638;
   --color-grape-900: #170f34;
-  --color-grape-925: #171029;
   --color-grape-950: #130d24;
   --color-fuscia-100: #edd5f1;
   --color-fuscia-200: #e4b5e8;
@@ -166,7 +162,10 @@
   --color-surface-meeting-sidebar: var(--color-white);
   --color-surface-topbar: var(--color-grape-700);
   --color-surface-input: var(--color-white);
-  --color-surface-nav-active: var(--color-slate-300);
+  --color-surface-nav-active: var(--color-slate-400);
+  /* hover sits one step lighter than the selected state so both read distinctly
+     without needing a border on the selected item */
+  --color-surface-nav-hover: var(--color-slate-300);
   --color-surface-phase-active: var(--color-slate-200);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;
@@ -207,7 +206,6 @@
     rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
   --shadow-bar: 0 4px 8px rgba(0, 0, 0, 0.14), 0 0 2px rgba(0, 0, 0, 0.12);
   --shadow-status-ring: 0 0 0 0 transparent;
-  --shadow-nav-active: none;
   --shadow-snackbar: rgba(0, 0, 0, 0.2) 0px 3px 5px -1px, rgba(0, 0, 0, 0.14) 0px 6px 10px 0px,
     rgba(0, 0, 0, 0.12) 0px 1px 18px 0px;
 
@@ -334,17 +332,18 @@
 .theme-dark {
   color-scheme: dark;
 
-  --color-surface-app: var(--color-grape-875);
+  --color-surface-app: var(--color-grape-900);
   --color-surface-sidebar: var(--color-grape-950);
-  --color-surface-well: var(--color-grape-925);
-  --color-surface-card: var(--color-grape-775);
-  --color-surface-raised: var(--color-grape-725);
+  --color-surface-well: var(--color-grape-950);
+  --color-surface-card: var(--color-grape-750);
+  --color-surface-raised: var(--color-grape-700);
   --color-surface-document: var(--color-grape-850);
   --color-surface-hover: rgba(183, 180, 233, 0.22);
   --color-surface-meeting-sidebar: var(--color-grape-850);
   --color-surface-topbar: var(--color-grape-800);
-  --color-surface-input: var(--color-grape-925);
-  --color-surface-nav-active: var(--color-grape-725);
+  --color-surface-input: var(--color-grape-950);
+  --color-surface-nav-active: var(--color-grape-750);
+  --color-surface-nav-hover: var(--color-grape-700);
   --color-surface-phase-active: var(--color-grape-750);
   --color-fg-primary: #eeedf7;
   --color-fg-secondary: #cac7f2;
@@ -378,9 +377,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px -10px rgba(0, 0, 0, 0.7);
   --shadow-bar: 0 4px 12px rgba(0, 0, 0, 0.55);
   --shadow-status-ring: 0 0 0 1px rgba(238, 237, 247, 0.28);
-  /* lilac ring (fg-nav-muted #a19ac7 -> 6.5:1 on the sidebar) + faint top
-     highlight; the selected-state indicator that replaces the acid-blue bar */
-  --shadow-nav-active: inset 0 0 0 1px #a19ac7, inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .light-island {
@@ -397,7 +393,10 @@
   --color-surface-meeting-sidebar: var(--color-white);
   --color-surface-topbar: var(--color-grape-700);
   --color-surface-input: var(--color-white);
-  --color-surface-nav-active: var(--color-slate-300);
+  --color-surface-nav-active: var(--color-slate-400);
+  /* hover sits one step lighter than the selected state so both read distinctly
+     without needing a border on the selected item */
+  --color-surface-nav-hover: var(--color-slate-300);
   --color-surface-phase-active: var(--color-slate-200);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;

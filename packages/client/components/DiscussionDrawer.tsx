@@ -3,6 +3,7 @@ import type {ReactNode} from 'react'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
 import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import DiscussionDrawerThread from './DiscussionDrawerThread'
 import DiscussionDrawerTranscripts from './DiscussionDrawerTranscripts'
 import type {DiscussionThreadables} from './DiscussionThreadList'
@@ -72,9 +73,16 @@ const DiscussionDrawer = ({
     paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0
   }
 
+  // the tab bar has no fill of its own, so the drawer takes the surface of whichever
+  // panel is showing: the inspiration panel is an inset well, the others sit on a card
+  const surface = activeTabId === 'inspiration' ? 'bg-surface-well' : 'bg-surface-card'
+
   return (
     <div
-      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-card'
+      className={cn(
+        'flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l',
+        surface
+      )}
       style={drawerStyle}
     >
       <div className='flex w-full select-none items-center border-hairline border-b'>

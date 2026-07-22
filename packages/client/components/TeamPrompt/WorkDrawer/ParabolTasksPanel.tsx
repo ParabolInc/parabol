@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {TaskStatus} from '../../../types/constEnums'
+import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {meetingColumnArray} from '../../../utils/constants'
@@ -22,9 +23,10 @@ const SUB_TABS = [
 ] as const
 type SubTab = (typeof SUB_TABS)[number]['key']
 
-const PILL = 'shrink-0 cursor-pointer rounded-full px-4 py-2 text-fg-primary text-sm leading-3'
-const PILL_ACTIVE = 'bg-grape-700 font-semibold text-white focus:text-white'
-const PILL_INACTIVE = 'border border-hairline bg-surface-card'
+const PILL = 'shrink-0 text-fg-primary'
+// the panel sits on bg-surface-well, so the resting pill uses the card surface to lift off it
+const PILL_ACTIVE = 'bg-grape-600 font-semibold text-white hover:bg-grape-600 focus:text-white'
+const PILL_INACTIVE = 'bg-surface-card hover:bg-surface-hover'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -85,8 +87,11 @@ const ParabolTasksPanel = (props: Props) => {
       {/* Row 1: content type */}
       <div className='flex gap-2 px-4 pt-3 pb-1'>
         {SUB_TABS.map((tab) => (
-          <div
+          <Button
             key={tab.key}
+            size='md'
+            shape='pill'
+            aria-pressed={tab.key === subTab}
             className={cn(PILL, tab.key === subTab ? PILL_ACTIVE : PILL_INACTIVE)}
             onClick={() => {
               trackTabNavigated(tab.label)
@@ -94,7 +99,7 @@ const ParabolTasksPanel = (props: Props) => {
             }}
           >
             {tab.label}
-          </div>
+          </Button>
         ))}
       </div>
       {/* Row 2: task status (Tasks only) */}
