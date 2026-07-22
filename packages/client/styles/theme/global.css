@@ -158,8 +158,9 @@
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
   --color-surface-document: var(--color-white);
-  /* The right-hand meeting drawer. A plain sheet in light, the darkest well in dark, so the
-     comment composer (surface-input) reads as part of the panel rather than a hole in it. */
+  /* The right-hand drawers (meeting discussion/inspiration, team dash agenda/manage team).
+     A plain sheet in light, the darkest well in dark, so the comment composer (surface-input)
+     reads as part of the panel rather than a hole in it. */
   --color-surface-drawer: var(--color-white);
   /* The single hover fill for any interactive surface. Translucent on purpose so
      it reads the same over app/well/card/raised instead of each control picking
