@@ -14,7 +14,7 @@ import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
-import ParabolTasksSubPanel from './ParabolTasksSubPanel'
+import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const SUB_TABS = [
@@ -24,9 +24,10 @@ const SUB_TABS = [
 type SubTab = (typeof SUB_TABS)[number]['key']
 
 const PILL = 'shrink-0 text-fg-primary'
-// the panel sits on bg-surface-well, so the resting pill uses the card surface to lift off it
-const PILL_ACTIVE = 'bg-grape-600 font-semibold text-white hover:bg-grape-600 focus:text-white'
-const PILL_INACTIVE = 'bg-surface-card hover:bg-surface-hover'
+// the panel shares the drawer surface, so the resting pill is outlined rather than filled
+const PILL_ACTIVE =
+  'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
+const PILL_INACTIVE = 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -135,12 +136,7 @@ const ParabolTasksPanel = (props: Props) => {
           initialItems={meeting.parabolInspirationItems}
         />
         {subTab === 'tasks' ? (
-          <ParabolTasksSubPanel
-            meetingId={meeting.id}
-            teamId={meeting.teamId}
-            selectedStatuses={selectedStatuses}
-            dateRange={dateRange}
-          />
+          <ParabolTasksResultsRoot selectedStatuses={selectedStatuses} dateRange={dateRange} />
         ) : (
           <ParabolStandupsResultsRoot teamId={meeting.teamId} dateRange={dateRange} />
         )}

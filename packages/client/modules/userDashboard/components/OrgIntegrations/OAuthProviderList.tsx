@@ -167,7 +167,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         {providers.map((provider) => (
           <div
             key={provider.id}
-            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-raised hover:shadow-md'
+            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-hover hover:shadow-md'
             onClick={() => {
               setEditingProviderId(provider.id)
               setDialogOpen(true)

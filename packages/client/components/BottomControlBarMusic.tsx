@@ -94,7 +94,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                         'box-border flex w-full appearance-none items-center gap-2 rounded-lg border bg-surface-well px-3 py-2 font-normal text-base leading-tight outline-none transition-colors focus:outline-none',
                         isSelected
                           ? 'font-semibold shadow'
-                          : 'cursor-pointer border-transparent text-fg-primary hover:bg-surface-raised hover:text-fg-primary'
+                          : 'cursor-pointer border-transparent text-fg-primary hover:bg-surface-hover hover:text-fg-primary'
                       )}
                     >
                       <span className='flex-1 truncate'>{track.name}</span>

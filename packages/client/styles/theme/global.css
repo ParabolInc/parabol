@@ -158,7 +158,13 @@
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
   --color-surface-document: var(--color-white);
-  --color-surface-hover: var(--color-slate-300);
+  /* The right-hand meeting drawer. A plain sheet in light, the darkest well in dark, so the
+     comment composer (surface-input) reads as part of the panel rather than a hole in it. */
+  --color-surface-drawer: var(--color-white);
+  /* The single hover fill for any interactive surface. Translucent on purpose so
+     it reads the same over app/well/card/raised instead of each control picking
+     its own solid step — always hover:bg-surface-hover, never hover:bg-surface-raised. */
+  --color-surface-hover: rgba(68, 66, 88, 0.1);
   --color-surface-meeting-sidebar: var(--color-white);
   --color-surface-topbar: var(--color-grape-700);
   --color-surface-input: var(--color-white);
@@ -167,6 +173,11 @@
      without needing a border on the selected item */
   --color-surface-nav-hover: var(--color-slate-300);
   --color-surface-phase-active: var(--color-slate-200);
+  /* The single "this toggle/tab is selected" fill. Same in both themes so a
+     selected control reads identically everywhere — never hand-roll a tinted
+     accent for selection, use bg-surface-selected/text-fg-selected. */
+  --color-surface-selected: var(--color-grape-600);
+  --color-fg-selected: var(--color-white);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;
   --color-fg-muted: #a7a3c2;
@@ -337,6 +348,7 @@
   --color-surface-well: var(--color-grape-950);
   --color-surface-card: var(--color-grape-750);
   --color-surface-raised: var(--color-grape-700);
+  --color-surface-drawer: var(--color-grape-950);
   --color-surface-document: var(--color-grape-850);
   --color-surface-hover: rgba(183, 180, 233, 0.22);
   --color-surface-meeting-sidebar: var(--color-grape-850);
@@ -345,6 +357,8 @@
   --color-surface-nav-active: var(--color-grape-750);
   --color-surface-nav-hover: var(--color-grape-700);
   --color-surface-phase-active: var(--color-grape-750);
+  --color-surface-selected: var(--color-grape-600);
+  --color-fg-selected: var(--color-white);
   --color-fg-primary: #eeedf7;
   --color-fg-secondary: #cac7f2;
   --color-fg-muted: #938cbf;
@@ -389,7 +403,8 @@
   --color-surface-card: var(--color-white);
   --color-surface-raised: var(--color-slate-100);
   --color-surface-document: var(--color-white);
-  --color-surface-hover: var(--color-slate-300);
+  --color-surface-drawer: var(--color-white);
+  --color-surface-hover: rgba(68, 66, 88, 0.1);
   --color-surface-meeting-sidebar: var(--color-white);
   --color-surface-topbar: var(--color-grape-700);
   --color-surface-input: var(--color-white);
@@ -398,6 +413,8 @@
      without needing a border on the selected item */
   --color-surface-nav-hover: var(--color-slate-300);
   --color-surface-phase-active: var(--color-slate-200);
+  --color-surface-selected: var(--color-grape-600);
+  --color-fg-selected: var(--color-white);
   --color-fg-primary: #444258;
   --color-fg-secondary: #82809a;
   --color-fg-muted: #a7a3c2;

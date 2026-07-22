@@ -133,7 +133,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                     .map((token) => (
                       <tr
                         key={token.id}
-                        className='border-hairline border-b last:border-0 hover:bg-surface-raised'
+                        className='border-hairline border-b last:border-0 hover:bg-surface-hover'
                       >
                         <td className='px-4 py-3 font-medium text-fg-primary'>{token.name}</td>
                         <td className='px-4 py-3 font-medium text-fg-primary'>{token.id}</td>
@@ -152,7 +152,7 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
                         <td className='px-4 py-3 text-right'>
                           <Menu
                             trigger={
-                              <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-fg-muted outline-none hover:bg-surface-raised hover:text-fg-secondary'>
+                              <button className='flex size-8 cursor-pointer items-center justify-center rounded-lg p-1 text-fg-muted outline-none hover:bg-surface-hover hover:text-fg-secondary'>
                                 <MoreVertIcon className='size-5' />
                               </button>
                             }

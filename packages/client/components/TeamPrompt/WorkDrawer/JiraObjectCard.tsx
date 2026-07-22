@@ -117,7 +117,7 @@ const JiraObjectCard = (props: Props) => {
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
+            className='h-6 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-hover'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}

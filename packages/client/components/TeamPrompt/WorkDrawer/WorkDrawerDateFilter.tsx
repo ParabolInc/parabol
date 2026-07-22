@@ -51,7 +51,7 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
         <Button
           variant='flat'
           data-dirty={dateRange ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-raised data-dirty:text-fg-primary'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-hover data-dirty:text-fg-primary'
         >
           <DateRangeIcon className='pr-1' />
           <span>{dateRangeText}</span>
@@ -76,7 +76,7 @@ export const WorkDrawerDateFilter = ({dateRange, setDateRange}: Props) => {
             {PRESETS.map((preset) => (
               <button
                 key={preset.label}
-                className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-raised'
+                className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-hover'
                 onClick={() => handlePreset(preset.hours)}
               >
                 {preset.label}

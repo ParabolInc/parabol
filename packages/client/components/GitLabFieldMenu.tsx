@@ -134,7 +134,7 @@ const GitLabFieldMenu = (props: Props) => {
             <LabelOptionSub>{serviceFieldTemplate}</LabelOptionSub>
           </LabelOptionBlock>
           <button
-            className='mr-2 flex h-8 w-8 items-center justify-center rounded text-fg-secondary hover:bg-surface-raised'
+            className='mr-2 flex h-8 w-8 items-center justify-center rounded text-fg-secondary hover:bg-surface-hover'
             onClick={openEditModal}
           >
             <Edit style={{height: 18, width: 18}} />

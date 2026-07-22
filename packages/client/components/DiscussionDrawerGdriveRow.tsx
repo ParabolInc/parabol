@@ -91,7 +91,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
           </div>
         ) : (
           <button
-            className='cursor-pointer whitespace-nowrap rounded border border-hairline-strong bg-transparent px-1.5 py-0.5 font-semibold text-fg-secondary text-xs hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-50'
+            className='cursor-pointer whitespace-nowrap rounded border border-hairline-strong bg-transparent px-1.5 py-0.5 font-semibold text-fg-secondary text-xs hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50'
             onClick={handleConnect}
             disabled={submitting}
           >

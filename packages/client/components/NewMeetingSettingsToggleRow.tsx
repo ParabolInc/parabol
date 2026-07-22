@@ -15,7 +15,7 @@ const NewMeetingSettingsToggleRow = ({active, className, label, onClick}: Props)
     onClick={onClick}
     className={cn(
       'flex w-full select-none items-center rounded-lg bg-surface-well px-4 py-[22px]',
-      'font-semibold text-sm leading-6 hover:bg-surface-raised',
+      'font-semibold text-sm leading-6 hover:bg-surface-hover',
       className
     )}
   >

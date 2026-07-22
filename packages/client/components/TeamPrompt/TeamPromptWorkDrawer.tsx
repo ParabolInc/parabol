@@ -159,7 +159,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
 
   return (
     <WorkDrawerConsumeContext.Provider value={{mode: 'teamPrompt', viewerResponse}}>
-      <div className='flex min-h-0 flex-1 flex-col bg-surface-well'>
+      <div className='flex min-h-0 flex-1 flex-col'>
         <div className='flex justify-center pt-3 pb-2'>
           <div className='flex gap-1'>
             {baseTabs.map((tab, idx) => (
@@ -177,8 +177,9 @@ const TeamPromptWorkDrawer = (props: Props) => {
                 className={cn(
                   'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',
                   idx === activeIdx
-                    ? 'bg-accent-active/10 text-accent-active'
-                    : 'cursor-pointer text-fg-muted hover:bg-surface-raised'
+                    ? // the logos are dark brand colors, so they go monochrome on the selected fill
+                      'bg-surface-selected text-fg-selected [&_path]:fill-current'
+                    : 'cursor-pointer text-fg-muted hover:bg-surface-hover'
                 )}
               >
                 {tab.icon}

@@ -141,8 +141,8 @@ const GitHubIntegrationPanel = (props: Props) => {
                 className={cn(
                   'w-1/2 text-fg-primary',
                   tab.key === githubType
-                    ? 'bg-grape-600 font-semibold text-white hover:bg-grape-600 focus:text-white'
-                    : 'bg-surface-card hover:bg-surface-hover'
+                    ? 'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
+                    : 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
                 )}
                 onClick={() => {
                   trackTabNavigated(tab.label)

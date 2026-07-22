@@ -27,7 +27,7 @@ const getUpvoteButtonHoverClass = (isExpanded: boolean, disabled: boolean) =>
   (isExpanded
     ? // sits on the dark expanded-stack scrim — invariant
       'hover:bg-slate-500 focus:bg-slate-500 active:bg-slate-500'
-    : 'hover:bg-surface-raised focus:bg-surface-raised active:bg-surface-raised')
+    : 'hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover')
 
 const makeHandleCompleted =
   (onCompleted: () => void, atmosphere: Atmosphere): CompletedHandler =>
