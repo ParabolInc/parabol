@@ -48,7 +48,7 @@ const ReactjiCount = (props: Props) => {
   return (
     <PlainButton
       className={cn(
-        'flex h-6 w-max items-center rounded-full bg-surface-well px-1.5 leading-6',
+        'flex h-6 w-max items-center rounded-md bg-surface-well px-1.5 leading-6',
         isViewerReactji ? 'text-accent' : 'text-fg-primary'
       )}
       onClick={onClick}

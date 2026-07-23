@@ -56,7 +56,7 @@ export const PersonalAccessTokenPageGrant = ({
         displayList.map((page) => (
           <label
             key={page.id}
-            className='flex cursor-pointer select-none items-center gap-2 border-hairline border-b px-3 py-2 last:border-0 hover:bg-surface-raised'
+            className='flex cursor-pointer select-none items-center gap-2 border-hairline border-b px-3 py-2 last:border-0 hover:bg-surface-hover'
           >
             <Checkbox
               checked={selectedPageIds.has(page.id)}

@@ -249,7 +249,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-raised focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-hover focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
                 value={activity.type}
               >
                 <ActivityCard
@@ -312,7 +312,7 @@ export const CreateNewActivity = (props: Props) => {
             </div>
           ) : (
             <BaseButton
-              className='mx-auto h-12 rounded-full bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+              className='mx-auto h-12 rounded-md bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
               onClick={createCustomActivityLookup[selectedActivity.type]}
             >
               Confirm Format & Team

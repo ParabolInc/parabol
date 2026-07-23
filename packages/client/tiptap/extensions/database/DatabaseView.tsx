@@ -148,7 +148,7 @@ export default function DatabaseView(props: Props) {
             <tr className='text-fg-secondary'>
               <td
                 colSpan={columns.length + 1}
-                className='h-12 cursor-pointer p-1 pt-0 hover:bg-surface-raised'
+                className='h-12 cursor-pointer p-1 pt-0 hover:bg-surface-hover'
                 contentEditable={false}
               >
                 <AppendRow provider={provider} userId={userId} />

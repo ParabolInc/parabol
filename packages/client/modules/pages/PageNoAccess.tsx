@@ -46,7 +46,6 @@ export const PageNoAccess = (props: Props) => {
           </DialogDescription>
           <DialogActions className='mt-0'>
             <Button
-              shape='pill'
               variant='dialogPrimary'
               className='p-3 px-6'
               onClick={() => {

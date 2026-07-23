@@ -294,7 +294,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -325,7 +325,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(clientId)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -392,7 +392,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     <button
                       type='button'
                       onClick={() => copyToClipboard(clientSecret)}
-                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                      className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                     >
                       <ContentCopyIcon fontSize='small' />
                     </button>
@@ -421,7 +421,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(authorizeEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -447,7 +447,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(tokenEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>
@@ -473,7 +473,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                   <button
                     type='button'
                     onClick={() => copyToClipboard(graphqlEndpoint)}
-                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-raised'
+                    className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
                     <ContentCopyIcon fontSize='small' />
                   </button>

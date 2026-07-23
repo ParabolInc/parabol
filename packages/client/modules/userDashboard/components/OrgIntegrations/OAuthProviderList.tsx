@@ -151,7 +151,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         <div className='font-medium text-fg-primary'>
           {providers.length} OAuth {plural(providers.length, 'application')}
         </div>
-        <Button variant='outline' size='sm' shape='pill' onClick={handleAdd}>
+        <Button variant='outline' size='sm' onClick={handleAdd}>
           <AddIcon className='mr-2' />
           Add Application
         </Button>
@@ -167,7 +167,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         {providers.map((provider) => (
           <div
             key={provider.id}
-            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-raised hover:shadow-md'
+            className='flex cursor-pointer items-center justify-between rounded-lg border border-hairline bg-surface-card p-4 shadow-sm transition-shadow hover:bg-surface-hover hover:shadow-md'
             onClick={() => {
               setEditingProviderId(provider.id)
               setDialogOpen(true)
@@ -232,15 +232,10 @@ const OAuthProviderList = ({organizationRef}: Props) => {
             undone.
           </p>
           <div className='flex justify-end gap-3'>
-            <Button
-              variant='outline'
-              size='md'
-              shape='pill'
-              onClick={() => setDeleteDialogOpen(false)}
-            >
+            <Button variant='outline' size='md' onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant='destructive' size='md' shape='pill' onClick={handleConfirmDelete}>
+            <Button variant='destructive' size='md' onClick={handleConfirmDelete}>
               Delete
             </Button>
           </div>

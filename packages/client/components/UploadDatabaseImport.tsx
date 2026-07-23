@@ -91,12 +91,7 @@ export const UploadDatabaseImport = (props: Props) => {
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
-        <Button
-          shape='pill'
-          variant='dialogPrimary'
-          className='m-2 px-6 py-2'
-          onClick={onChooseFile}
-        >
+        <Button variant='dialogPrimary' className='m-2 px-6 py-2' onClick={onChooseFile}>
           Browse
         </Button>
         <span> or drop a file here.</span>

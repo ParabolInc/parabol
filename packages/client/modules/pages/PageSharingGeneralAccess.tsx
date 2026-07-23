@@ -79,8 +79,8 @@ export const PageSharingGeneralAccess = (props: Props) => {
             <Menu
               trigger={
                 <MenuLabelTrigger
-                  className='px-0'
-                  labelClassName='ml-0 px-0 text-md font-medium text-fg-primary'
+                  className='border border-hairline-field bg-surface-input'
+                  labelClassName='text-md font-medium text-fg-primary'
                 >
                   {label}
                 </MenuLabelTrigger>

@@ -81,7 +81,7 @@ export const OrgTeamMembersRow = (props: Props) => {
         {showMenuButton && (
           <Button
             disabled={!showMenuButton}
-            shape='circle'
+            shape='icon'
             variant='ghost'
             onClick={togglePortal}
             ref={originRef}

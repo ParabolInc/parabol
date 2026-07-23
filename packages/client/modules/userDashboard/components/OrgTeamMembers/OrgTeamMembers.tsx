@@ -59,7 +59,7 @@ export const OrgTeamMembers = (props: Props) => {
   return (
     <div className='max-w-4xl pb-4'>
       <div className='flex items-center justify-center py-1'>
-        <Button size='md' shape='circle' variant='ghost' asChild>
+        <Button size='md' shape='icon' variant='ghost' asChild>
           <Link to={`/me/${ORGANIZATIONS}/${team.orgId}/teams`}>
             <ArrowBack />
           </Link>

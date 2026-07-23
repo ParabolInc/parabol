@@ -11,7 +11,7 @@ import {
   useRef,
   useState
 } from 'react'
-import type {PortalStatus} from '../hooks/usePortal'
+import {PortalStatus} from '../hooks/usePortal'
 import {cn} from '../ui/cn'
 import MenuItemAnimation from './MenuItemAnimation'
 
@@ -168,7 +168,13 @@ const Menu = forwardRef((props: Props, ref: any) => {
     <div
       role='menu'
       aria-label={ariaLabel}
-      className={cn('max-h-56 max-w-md select-none outline-none', className)}
+      className={cn(
+        // this element owns the height cap, so it has to be the scroller too.
+        // hidden until entered so the per-item fadeUp isn't clipped, matching MenuContents
+        'max-h-56 max-w-md select-none outline-none',
+        portalStatus >= PortalStatus.Entered ? 'overflow-y-auto' : 'overflow-y-hidden',
+        className
+      )}
       tabIndex={-1}
       onMouseDown={handleMouseDown}
       onKeyDown={handleKeyDown}

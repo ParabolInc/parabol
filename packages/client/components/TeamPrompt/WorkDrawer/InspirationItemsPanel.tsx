@@ -146,7 +146,7 @@ const InspirationItemsPanel = (props: Props) => {
           <TooltipTrigger asChild>
             <Button
               variant='secondary'
-              shape='circle'
+              shape='icon'
               aria-label='Customize instructions'
               data-dirty={userPrompt.trim() ? '' : undefined}
               className='h-9 w-9 shrink-0 p-0 data-dirty:ring-2 data-dirty:ring-sky-300'

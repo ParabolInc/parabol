@@ -19,7 +19,7 @@ import sortByTier from '../../utils/sortByTier'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 
 const ACTION_BUTTON_CLASSES =
-  'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
+  'w-max cursor-pointer rounded-md px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
   preferredTeamId: string | null | undefined

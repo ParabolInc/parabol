@@ -170,7 +170,7 @@ const ShareTopicModal = (props: Props) => {
   )
 
   const connectButton = (
-    <div className='flex cursor-pointer items-center justify-center rounded-full border bg-surface-card px-3 py-1'>
+    <div className='flex cursor-pointer items-center justify-center rounded-md border bg-surface-card px-3 py-1'>
       <div className='text-center font-semibold text-fg-primary text-xs'>connect</div>
     </div>
   )

@@ -15,7 +15,7 @@ const CreateActivityCard = (props: Props) => {
 
   return (
     <Link
-      className={cn('flex rounded-2xl hover:bg-surface-raised focus:outline-accent', className)}
+      className={cn('flex rounded-2xl hover:bg-surface-hover focus:outline-accent', className)}
       to={`/activity-library/new-activity/${category}`}
     >
       <ActivityCard

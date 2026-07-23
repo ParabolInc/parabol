@@ -12,7 +12,7 @@ type Variant =
   | 'flat'
   | 'dialogPrimary'
 type Size = 'sm' | 'md' | 'lg' | 'default'
-type Shape = 'pill' | 'circle' | 'default'
+type Shape = 'icon' | 'default'
 
 const BASE_STYLES =
   'cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50'
@@ -28,7 +28,7 @@ const VARIANT_STYLES: Record<Variant, string> = {
   secondary: 'bg-sky-500 text-white hover:bg-sky-500/80 font-semibold',
   ghost: 'hover:opacity-80 bg-transparent font-semibold',
   link: 'text-primary underline-offset-4 hover:underline',
-  flat: 'rounded-full bg-transparent outline-hidden shadow-none hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover focus-visible:ring-0'
+  flat: 'bg-transparent outline-hidden shadow-none hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover focus-visible:ring-0'
 }
 
 const SIZE_STYLES: Record<Size, string> = {
@@ -39,8 +39,7 @@ const SIZE_STYLES: Record<Size, string> = {
 }
 
 const SHAPE_STYLES: Record<Shape, string> = {
-  pill: 'rounded-full',
-  circle: 'rounded-full aspect-square',
+  icon: 'aspect-square',
   default: ''
 }
 

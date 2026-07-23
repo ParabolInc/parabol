@@ -61,7 +61,7 @@ const TeamDrawer = (props: Props) => {
 
   return (
     <ResponsiveDashSidebar isOpen={openDrawer !== null} isRightDrawer onToggle={toggleDrawer}>
-      <div className='flex h-full w-64 flex-col bg-surface-card'>
+      <div className='flex h-full w-64 flex-col bg-surface-drawer'>
         <div className='flex min-h-0 flex-1 flex-col'>
           <div className='min-h-0 flex-1 overflow-y-auto'>
             <div className='flex items-center justify-between py-4 pr-2 pl-4'>
@@ -78,7 +78,8 @@ const TeamDrawer = (props: Props) => {
           </div>
           {drawerTypeRef.current === 'manageTeam' && (
             <div className='mt-auto p-4'>
-              <div className='rounded-lg bg-surface-well p-4'>
+              {/* raised, not well: the drawer is already the darkest surface in dark mode */}
+              <div className='rounded-lg bg-surface-raised p-4'>
                 <h2 className='my-0 flex items-center py-0 pb-1 text-base leading-[21px]'>
                   Invite to Team
                 </h2>

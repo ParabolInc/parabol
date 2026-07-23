@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
 import {TaskStatus} from '../../../types/constEnums'
+import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {meetingColumnArray} from '../../../utils/constants'
@@ -13,7 +14,7 @@ import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import {taskStatusDotColors, taskStatusLabels} from '../../../utils/taskStatus'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import ParabolStandupsResultsRoot from './ParabolStandupsResultsRoot'
-import ParabolTasksSubPanel from './ParabolTasksSubPanel'
+import ParabolTasksResultsRoot from './ParabolTasksResultsRoot'
 import {WorkDrawerDateFilter} from './WorkDrawerDateFilter'
 
 const SUB_TABS = [
@@ -22,9 +23,11 @@ const SUB_TABS = [
 ] as const
 type SubTab = (typeof SUB_TABS)[number]['key']
 
-const PILL = 'shrink-0 cursor-pointer rounded-full px-4 py-2 text-fg-primary text-sm leading-3'
-const PILL_ACTIVE = 'bg-grape-700 font-semibold text-white focus:text-white'
-const PILL_INACTIVE = 'border border-hairline bg-surface-card'
+const PILL = 'shrink-0 text-fg-primary'
+// the panel shares the drawer surface, so the resting pill is outlined rather than filled
+const PILL_ACTIVE =
+  'bg-surface-selected font-semibold text-fg-selected hover:bg-surface-selected focus:text-fg-selected'
+const PILL_INACTIVE = 'border border-hairline-strong bg-transparent hover:bg-surface-hover'
 
 interface Props {
   meetingRef: ParabolTasksPanel_meeting$key
@@ -85,8 +88,10 @@ const ParabolTasksPanel = (props: Props) => {
       {/* Row 1: content type */}
       <div className='flex gap-2 px-4 pt-3 pb-1'>
         {SUB_TABS.map((tab) => (
-          <div
+          <Button
             key={tab.key}
+            size='md'
+            aria-pressed={tab.key === subTab}
             className={cn(PILL, tab.key === subTab ? PILL_ACTIVE : PILL_INACTIVE)}
             onClick={() => {
               trackTabNavigated(tab.label)
@@ -94,7 +99,7 @@ const ParabolTasksPanel = (props: Props) => {
             }}
           >
             {tab.label}
-          </div>
+          </Button>
         ))}
       </div>
       {/* Row 2: task status (Tasks only) */}
@@ -130,12 +135,7 @@ const ParabolTasksPanel = (props: Props) => {
           initialItems={meeting.parabolInspirationItems}
         />
         {subTab === 'tasks' ? (
-          <ParabolTasksSubPanel
-            meetingId={meeting.id}
-            teamId={meeting.teamId}
-            selectedStatuses={selectedStatuses}
-            dateRange={dateRange}
-          />
+          <ParabolTasksResultsRoot selectedStatuses={selectedStatuses} dateRange={dateRange} />
         ) : (
           <ParabolStandupsResultsRoot teamId={meeting.teamId} dateRange={dateRange} />
         )}

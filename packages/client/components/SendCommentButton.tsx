@@ -24,7 +24,7 @@ const SendCommentButton = (props: Props) => {
     <>
       <button
         data-disabled={commentSubmitState === 'idle' ? '' : undefined}
-        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-surface-well'
+        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-surface-well'
         onClick={onSubmit}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}

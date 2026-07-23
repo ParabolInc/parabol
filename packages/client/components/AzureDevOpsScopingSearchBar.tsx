@@ -3,6 +3,7 @@ import {Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
+import {Radius} from '../types/constEnums'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
 
@@ -18,7 +19,7 @@ const SearchBar = styled('div')({
 const SearchBarWrapper = styled('div')({
   alignItems: 'center',
   border: `1px solid var(--color-hairline-field)`,
-  borderRadius: '40px',
+  borderRadius: Radius.FIELD,
   display: 'flex',
   height: 44,
   padding: '0 16px',

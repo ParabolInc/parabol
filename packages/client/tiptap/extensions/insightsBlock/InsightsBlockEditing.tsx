@@ -158,13 +158,7 @@ export const InsightsBlockEditing = (props: NodeViewProps) => {
       )}
       <InsightsBlockPromptRoot updateAttributes={updateAttributes} attrs={attrs} />
       <div className='flex select-none justify-end p-4'>
-        <Button
-          variant='secondary'
-          shape='pill'
-          size='md'
-          onClick={generateInsights}
-          disabled={disabled}
-        >
+        <Button variant='secondary' size='md' onClick={generateInsights} disabled={disabled}>
           Generate Insights
           {submitting ? <Ellipsis /> : undefined}
         </Button>

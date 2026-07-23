@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
+import {Radius} from '../../types/constEnums'
 
 const PollOptionTitle = styled('div')({
   width: '100%',
@@ -9,7 +10,7 @@ const PollOptionTitle = styled('div')({
   fontSize: '14px',
   padding: `0 12px`,
   border: `1px solid var(--color-hairline-strong)`,
-  borderRadius: '18px',
+  borderRadius: Radius.BUTTON,
   display: 'flex',
   alignItems: 'center'
 })

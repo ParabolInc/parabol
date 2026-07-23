@@ -213,7 +213,7 @@ export const TemplateDetails = (props: Props) => {
               <div
                 className={cn(
                   'w-max',
-                  isEditing && 'rounded-full border border-hairline-strong border-solid pl-3'
+                  isEditing && 'rounded-md border border-hairline-strong border-solid pl-3'
                 )}
               >
                 <UnstyledTemplateSharing
@@ -224,7 +224,7 @@ export const TemplateDetails = (props: Props) => {
               </div>
               <div className='flex gap-2'>
                 {isEditing ? (
-                  <div className='rounded-full border border-hairline-strong border-solid'>
+                  <div className='rounded-md border border-hairline-strong border-solid'>
                     <DetailAction
                       icon={'delete'}
                       tooltip={'Delete template'}
@@ -233,14 +233,14 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div className='rounded-full border border-hairline-strong border-solid'>
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
                         onClick={() => setIsEditing(true)}
                       />
                     </div>
-                    <div className='rounded-full border border-hairline-strong border-solid'>
+                    <div className='rounded-md border border-hairline-strong border-solid'>
                       <CloneTemplate onClick={() => setTeamPickerOpen(true)} />
                     </div>
                   </>
@@ -255,9 +255,9 @@ export const TemplateDetails = (props: Props) => {
                 <ActivityCardFavorite
                   templateId={activityId}
                   viewerRef={viewer}
-                  className='rounded-full border border-hairline-strong border-solid hover:bg-surface-hover'
+                  className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div className='rounded-full border border-hairline-strong border-solid'>
+                <div className='rounded-md border border-hairline-strong border-solid'>
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
@@ -307,7 +307,7 @@ export const TemplateDetails = (props: Props) => {
         <div className='fixed right-0 bottom-0 left-0 flex h-20 w-full items-center justify-center bg-surface-well'>
           <button
             onClick={() => setIsEditing(false)}
-            className='w-max cursor-pointer rounded-full bg-sky-500 px-10 py-3 text-center font-sans font-semibold text-lg text-white hover:bg-sky-600'
+            className='w-max cursor-pointer rounded-md bg-sky-500 px-10 py-3 text-center font-sans font-semibold text-lg text-white hover:bg-sky-600'
           >
             Done Editing
           </button>

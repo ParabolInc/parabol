@@ -46,7 +46,7 @@ const OrgTeamsRow = (props: Props) => {
     </div>
   )
   return (
-    <tr className='border-hairline border-b hover:bg-surface-raised'>
+    <tr className='border-hairline border-b hover:bg-surface-hover'>
       <td className='flex items-center p-3'>
         <td className='flex items-center p-3'>
           {isLead || isMember || isOrgAdmin ? (

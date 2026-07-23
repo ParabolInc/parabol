@@ -366,7 +366,7 @@ export const ActivityLibrary = (props: Props) => {
             </div>
 
             <Link
-              className='rounded-full bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600'
+              className='rounded-md bg-sky-500 px-4 py-2 font-medium text-sm text-white hover:bg-sky-600'
               to={`/activity-library/new-activity/${categoryId}`}
             >
               Create custom activity
@@ -391,7 +391,7 @@ export const ActivityLibrary = (props: Props) => {
               (category) => (
                 <Link
                   className={cn(
-                    'flex shrink-0 cursor-pointer items-center rounded-full px-4 text-fg-primary text-sm leading-9',
+                    'flex shrink-0 cursor-pointer items-center rounded-md px-4 text-fg-primary text-sm leading-9',
                     category === categoryId && searchQuery.length === 0
                       ? [
                           `${CategoryIDToColorClass[category]}`,

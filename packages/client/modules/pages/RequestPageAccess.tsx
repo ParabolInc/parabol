@@ -100,10 +100,10 @@ export const RequestPageAccess = (props: Props) => {
             />
           </DialogDescription>
           <DialogActions className='mt-0 flex w-full justify-between gap-4'>
-            <Button shape='pill' variant='outline' className='p-3 px-6' onClick={cancel}>
+            <Button variant='outline' className='p-3 px-6' onClick={cancel}>
               Cancel
             </Button>
-            <Button shape='pill' variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
+            <Button variant='dialogPrimary' className='grow p-3 px-6' onClick={submit}>
               Request Access
             </Button>
           </DialogActions>

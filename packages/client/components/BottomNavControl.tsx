@@ -22,7 +22,7 @@ const BottomNavControl = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         'min-h-14 w-24 origin-bottom rounded-none border-0 p-0',
         confirming ? 'opacity-50' : 'opacity-100',
         !visuallyDisabled &&
-          'hover:bg-surface-raised focus:bg-surface-raised active:bg-surface-raised',
+          'hover:bg-surface-hover focus:bg-surface-hover active:bg-surface-hover',
         className
       )}
       style={{transition: `opacity 300ms ${BezierCurve.DECELERATE}`, ...style}}

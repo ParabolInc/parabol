@@ -56,7 +56,7 @@ const TaskFooterTeamAssignee = (props: Props) => {
         onMouseLeave={closeTooltip}
       >
         <CardButton
-          className='-ml-2 block h-6 max-w-full truncate rounded-full border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
+          className='-ml-2 block h-6 max-w-full truncate rounded-md border-0 px-2 text-left font-semibold text-fg-secondary text-xs leading-6 opacity-100 outline-0 hover:text-fg-primary focus:text-fg-primary'
           aria-label='Assign this task to another team'
           onClick={canAssign ? togglePortal : undefined}
           onMouseEnter={TaskFooterTeamAssigneeMenuRoot.preload}
