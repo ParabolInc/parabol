@@ -44,7 +44,6 @@ const InspirationItemCard = (props: Props) => {
           <Button
             variant='secondary'
             size='sm'
-            shape='pill'
             disabled={disabled || editor.isEmpty}
             onClick={() => onAddToResponse(editor)}
           >

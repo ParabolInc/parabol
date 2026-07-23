@@ -12,7 +12,7 @@ interface Props {
 export const LeftNavItemButton = (props: Props) => {
   const {Icon, tooltip, onClick} = props
   return (
-    <div className='flex size-6 items-center justify-center rounded-sm hover:bg-hairline-strong'>
+    <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
       <Tooltip>
         <TooltipTrigger asChild>
           <Icon className='hidden size-4 cursor-pointer group-hover:block' onClick={onClick} />

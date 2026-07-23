@@ -197,11 +197,11 @@ export const AdhocTeamMultiSelect = (props: Props) => {
                 key={option.id ?? option.email}
                 className={`[&.Mui-focused]:bg-surface-raised ${
                   isSelected ? 'bg-surface-raised' : ''
-                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-hidden hover:bg-surface-raised focus:bg-surface-raised data-disabled:pointer-events-none data-disabled:opacity-50`}
+                } flex h-10 w-full cursor-pointer select-none items-center justify-between rounded px-3 text-sm outline-hidden hover:bg-surface-hover focus:bg-surface-hover data-disabled:pointer-events-none data-disabled:opacity-50`}
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 {option.id && (
-                  <div className='relative mr-2 h-6 w-6 rounded-sm border border-hairline'>
+                  <div className='relative mr-2 h-6 w-6 rounded-full border border-hairline'>
                     <div
                       className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
                       style={{backgroundImage: `url('${option.picture}')`}}

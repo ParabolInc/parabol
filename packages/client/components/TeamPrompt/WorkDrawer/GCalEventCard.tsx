@@ -211,7 +211,7 @@ const GCalEventCard = (props: Props) => {
             <TooltipTrigger asChild>
               <button
                 type='button'
-                className='shrink-0 rounded-full bg-transparent p-0 text-fg-muted hover:bg-surface-raised'
+                className='shrink-0 rounded-md bg-transparent p-0 text-fg-muted hover:bg-surface-hover'
                 onClick={handleCopy}
               >
                 <Link className='h-6 w-6 cursor-pointer p-0.5' />

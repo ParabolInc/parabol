@@ -87,7 +87,7 @@ const NewMeetingTeamPicker = (props: Props) => {
                 e.stopPropagation()
                 onShareToOrg()
               }}
-              className='mt-4 flex w-max cursor-pointer items-center rounded-full border border-hairline-strong border-solid bg-surface-card px-3 py-2 text-center font-sans font-semibold text-fg-primary text-sm hover:bg-surface-hover'
+              className='mt-4 flex w-max cursor-pointer items-center rounded-md border border-hairline-strong border-solid bg-surface-card px-3 py-2 text-center font-sans font-semibold text-fg-primary text-sm hover:bg-surface-hover'
             >
               <LockOpen className='mr-2 text-fg-secondary' />
               Allow other teams to use this activity

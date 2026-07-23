@@ -42,7 +42,7 @@ export const PageSharing = (props: Props) => {
     setValue
   } = usePageSharingAutocomplete(query)
   return (
-    <div className='flex w-96 flex-col bg-surface-raised pt-3 text-fg-primary'>
+    <div className='flex w-96 flex-col bg-surface-card pt-3 text-fg-primary'>
       <div className='flex max-h-96 flex-col px-3'>
         <PageSharingInput
           pageId={page.id}

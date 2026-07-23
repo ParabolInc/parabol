@@ -84,12 +84,7 @@ const OrgTeams = (props: Props) => {
           <h1 className='font-semibold text-2xl leading-7'>Teams</h1>
         </div>
         <div className='ml-auto'>
-          <Button
-            variant='secondary'
-            shape='pill'
-            className='w-32 py-2 text-base'
-            onClick={openAddTeamDialog}
-          >
+          <Button variant='secondary' className='w-32 py-2 text-base' onClick={openAddTeamDialog}>
             Add team
           </Button>
         </div>

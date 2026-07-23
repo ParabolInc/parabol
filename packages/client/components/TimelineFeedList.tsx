@@ -146,7 +146,7 @@ const TimelineFeedList = (props: Props) => {
         <div key={label}>
           <div className='my-2 flex items-center gap-4 py-4'>
             <div className='h-[1px] flex-1 bg-hairline-strong' />
-            <div className='rounded-full border border-hairline bg-surface-raised px-3 py-1 font-medium text-fg-secondary text-sm'>
+            <div className='rounded border border-hairline bg-surface-card px-3 py-1 font-medium text-fg-secondary text-sm'>
               {label}
             </div>
             <div className='h-[1px] flex-1 bg-hairline-strong' />

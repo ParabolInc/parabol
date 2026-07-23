@@ -46,7 +46,7 @@ const ActivityCardFavorite = (props: Props) => {
       <div
         className={cn(
           className,
-          `flex h-10 w-10 items-center justify-center rounded-full border border-slate-600 bg-slate-700`
+          `flex h-10 w-10 items-center justify-center rounded-md border border-slate-600 bg-slate-700`
         )}
       >
         <TooltipTrigger asChild>

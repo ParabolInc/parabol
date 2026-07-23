@@ -29,7 +29,7 @@ export const ExpirationDatePicker = ({selected, onSelect}: Props) => {
         <Popover.Portal>
           <Popover.Content
             align='start'
-            className='z-50 rounded-lg border border-hairline bg-surface-raised shadow-lg'
+            className='z-50 rounded-lg border border-hairline bg-surface-card shadow-lg'
           >
             <DayPicker
               mode='single'

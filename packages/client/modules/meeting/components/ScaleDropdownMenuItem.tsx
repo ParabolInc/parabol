@@ -67,7 +67,7 @@ const ScaleDropdownMenuItem = (props: Props) => {
 
   return (
     <DropdownMenu.Item
-      className='mx-1 flex min-w-[300px] cursor-pointer justify-between rounded-md outline-hidden hover:bg-surface-raised focus:bg-surface-raised'
+      className='mx-1 flex min-w-[300px] cursor-pointer justify-between rounded-md outline-hidden hover:bg-surface-hover focus:bg-surface-hover'
       data-scale-id={scaleId}
       onClick={setScale}
     >

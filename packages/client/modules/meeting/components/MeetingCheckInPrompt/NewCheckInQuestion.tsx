@@ -211,7 +211,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('SERIOUS')}
@@ -220,7 +219,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('FUNNY')}
@@ -229,7 +227,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('EXCITING')}
@@ -240,7 +237,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='secondary'
-              shape='pill'
               size='md'
               disabled={aiUpdatedIcebreaker === '' || isModifyingCheckInQuestion || submitting}
               onClick={updateCheckInQuestionWithGeneratedContent}

@@ -61,7 +61,7 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
     <>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-full p-2 hover:bg-surface-raised'>
+          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-md p-2 hover:bg-surface-hover'>
             <MoreVert />
           </div>
         </DropdownMenu.Trigger>
@@ -74,14 +74,14 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
           >
             <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
               <DropdownMenu.Item
-                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'
+                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'
                 onSelect={() => setImportDialogOpen(true)}
               >
                 <FileUpload />
                 Import Data
               </DropdownMenu.Item>
               <DropdownMenu.Item
-                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'
+                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'
                 onSelect={exportCSV}
               >
                 <FileDownload />

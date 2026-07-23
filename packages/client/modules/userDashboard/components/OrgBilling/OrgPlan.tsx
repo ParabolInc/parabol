@@ -128,7 +128,7 @@ const CTAButton = styled(BaseButton)<{
   opacity: 1,
   bottom: 0,
   fontWeight: 600,
-  borderRadius: Radius.BUTTON_PILL,
+  borderRadius: Radius.BUTTON,
   background:
     buttonStyle === 'primary'
       ? PALETTE.GRADIENT_TOMATO_600_ROSE_500

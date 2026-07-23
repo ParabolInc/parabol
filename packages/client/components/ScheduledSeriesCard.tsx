@@ -186,7 +186,7 @@ const ScheduledSeriesCard = (props: Props) => {
               </Link>
               <Menu
                 trigger={
-                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-well hover:opacity-100'>
+                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-well hover:opacity-100'>
                     <MoreVert className='text-fg-primary text-lg' />
                   </button>
                 }

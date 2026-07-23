@@ -24,7 +24,7 @@ const StyledBaseButton = styled(BaseButton)<{
   const color = buttonLightThemes.includes(palette) ? PALETTE.SLATE_700 : '#FFFFFF'
   return {
     backgroundColor,
-    borderRadius: Radius.BUTTON_PILL,
+    borderRadius: Radius.BUTTON,
     color,
     fontWeight: 600,
     outline: 0
