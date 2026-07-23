@@ -1,23 +1,20 @@
 import {HelpOutline, Notifications, Search} from '@mui/icons-material'
-import {forwardRef} from 'react'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
 import PlainButton from './PlainButton/PlainButton'
 
-interface Props {
+interface Props extends ComponentPropsWithoutRef<'button'> {
   //FIXME 6062: change to React.ComponentType
   icon: string
-  onClick?: () => void
-  onMouseEnter?: () => void
   hasBadge?: boolean
   ariaLabel: string
 }
 
-const TopBarIcon = forwardRef((props: Props, ref: any) => {
-  const {icon, hasBadge, onClick, onMouseEnter, ariaLabel} = props
+const TopBarIcon = forwardRef<HTMLButtonElement, Props>((props, ref) => {
+  const {icon, hasBadge, ariaLabel, ...rest} = props
   return (
     <PlainButton
-      onClick={onClick}
+      {...rest}
       ref={ref}
-      onMouseEnter={onMouseEnter}
       aria-label={ariaLabel}
       className='relative mx-1 my-2 flex cursor-pointer justify-center rounded-md p-1 focus:shadow-[0_0_0_2px_var(--color-sky-400)] active:shadow-[0_0_0_2px_transparent]'
     >

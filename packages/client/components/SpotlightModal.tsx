@@ -9,10 +9,11 @@ import SpotlightSearchBar from './SpotlightSearchBar'
 import SpotlightSourceGroup from './SpotlightSourceGroup'
 import SpotlightTopBar from './SpotlightTopBar'
 
-// z-24 = ZIndex.DIALOG; shadow = Elevation.Z8; sidebar-left width =
+// z-24 = ZIndex.DIALOG; shadow/border match DialogContent so the modal lifts off the
+// meeting behind it; sidebar-left width =
 // ElementWidth.REFLECTION_COLUMN (320) * MAX_SPOTLIGHT_COLUMNS (3) + 72px modal padding
 const modalClass =
-  'fixed inset-0 z-24 m-auto flex h-[90vh] w-[90vw] flex-col justify-start rounded-lg bg-surface-card shadow-[rgba(0,0,0,.2)_0px_5px_5px_-3px,rgba(0,0,0,.14)_0px_8px_10px_1px,rgba(0,0,0,.12)_0px_3px_14px_2px] sidebar-left:h-full sidebar-left:w-[1032px]'
+  'fixed inset-0 z-24 m-auto flex h-[90vh] w-[90vw] flex-col justify-start rounded-lg bg-surface-card shadow-dialog sidebar-left:h-full sidebar-left:w-[1032px] dark:border dark:border-hairline-strong'
 
 // min-h-[236px] = SPOTLIGHT_TOP_SECTION_HEIGHT
 const sourceSectionClass =

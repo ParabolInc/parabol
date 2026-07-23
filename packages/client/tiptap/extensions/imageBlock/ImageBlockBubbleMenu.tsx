@@ -49,7 +49,7 @@ export const ImageBlockBubbleMenu = (props: Props) => {
       <Popover.Anchor className='pointer-events-none absolute top-0 h-full w-full' />
       <Popover.Portal>
         <Popover.Content
-          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-raised p-[3px] shadow-sm'
+          className='fade-in zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-10 flex animate-in items-center rounded-sm border border-hairline border-solid bg-surface-card p-[3px] shadow-sm'
           sideOffset={8}
           side='top'
           onOpenAutoFocus={(e) => e.preventDefault()}

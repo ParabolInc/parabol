@@ -41,7 +41,7 @@ export const FileSelector = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const {Component} = tabs[activeIdx]!
   return (
-    <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md border border-hairline bg-surface-raised p-2'>
+    <div className='flex h-full min-w-44 flex-col overflow-hidden rounded-md border border-hairline bg-surface-card p-2'>
       <Tabs activeIdx={activeIdx} className='max-w-sm'>
         {tabs
           .filter(

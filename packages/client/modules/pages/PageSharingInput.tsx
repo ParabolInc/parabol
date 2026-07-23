@@ -70,10 +70,10 @@ export const PageSharingInput = (props: Props) => {
     setValue([])
   }
   return (
-    <div {...getRootProps()} className='flex grow space-x-2'>
+    <div {...getRootProps()} className='flex grow items-start space-x-2'>
       <div
         ref={setAnchorEl}
-        className='flex w-full flex-wrap rounded-sm border border-hairline-field bg-surface-input px-1 py-0.5 align-center text-sm'
+        className='flex w-full flex-wrap items-center rounded-sm border border-hairline-field bg-surface-input px-1 py-0.5 text-sm'
       >
         {value.map((option, index: number) => (
           <Chip
@@ -99,14 +99,16 @@ export const PageSharingInput = (props: Props) => {
           className='m-0 box-border w-0 min-w-[30px] grow border-0 bg-surface-input py-1.5 pl-1 text-fg-primary leading-5 outline-hidden'
         />
       </div>
-      <div className='flex shrink-0 flex-col self-center'>
-        <Button variant='dialogPrimary' className='h-8 px-5' onClick={onSubmit}>
+      <div className='flex shrink-0 flex-col gap-1 self-center'>
+        <Button
+          variant='dialogPrimary'
+          className='h-8 bg-grape-600 px-5 hover:bg-grape-500'
+          onClick={onSubmit}
+        >
           Share
         </Button>
         {value.length > 0 && (
-          <div className=''>
-            <PageAccessComboboxControl defaultRole={inviteeRole!} onClick={setInviteeRole} />
-          </div>
+          <PageAccessComboboxControl defaultRole={inviteeRole!} onClick={setInviteeRole} />
         )}
       </div>
     </div>

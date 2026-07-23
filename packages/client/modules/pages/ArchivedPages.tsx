@@ -60,7 +60,7 @@ export const ArchivedPages = (props: Props) => {
   }
   const header = edges.length === 0 ? 'No deleted pages' : 'Deleted pages'
   return (
-    <div className='flex max-h-96 min-h-56 min-w-96 flex-col space-y-1 overflow-x-auto rounded-lg border border-hairline bg-surface-raised p-4 pb-0 text-fg-primary'>
+    <div className='flex max-h-96 min-h-56 min-w-96 flex-col space-y-1 overflow-x-auto rounded-lg border border-hairline bg-surface-card p-4 pb-0 text-fg-primary'>
       <div className='self-center font-semibold text-sm'>{header}</div>
       {edges.map(({node}) => {
         const {id: pageId, title} = node

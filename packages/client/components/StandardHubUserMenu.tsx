@@ -9,8 +9,7 @@ import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'
 import {SIGNOUT_LABEL, SIGNOUT_SLUG} from '../utils/constants'
 
-const linkClassName =
-  'flex w-full items-center gap-2 py-0.5 text-sm leading-6 hover:text-fg-primary focus:text-fg-primary'
+const linkClassName = 'gap-2 leading-6 hover:text-fg-primary focus:text-fg-primary'
 const iconClassName = 'size-[18px] text-[18px] text-fg-secondary'
 
 interface Props {
@@ -46,20 +45,20 @@ const StandardHubUserMenu = (props: Props) => {
       <DropdownMenu.Label className='mb-1 select-none truncate px-4 font-semibold text-[15px] text-fg-primary leading-8'>
         {email}
       </DropdownMenu.Label>
-      <MenuItem>
+      <MenuItem asChild>
         <Link to={'/me/profile'} className={linkClassName}>
           <AccountBox className={iconClassName} />
           {'My Settings'}
         </Link>
       </MenuItem>
-      <MenuItem>
+      <MenuItem asChild>
         <Link to={'/me/organizations'} className={linkClassName}>
           <AccountBalance className={iconClassName} />
           {'Organizations'}
         </Link>
       </MenuItem>
       {showUpgradeCTA && (
-        <MenuItem>
+        <MenuItem asChild>
           <Link
             to={`/me/organizations${routeSuffix}`}
             className={cn(linkClassName, 'text-accent hover:text-accent focus:text-accent')}
@@ -69,7 +68,7 @@ const StandardHubUserMenu = (props: Props) => {
           </Link>
         </MenuItem>
       )}
-      <MenuItem>
+      <MenuItem asChild>
         <Link to={`/${SIGNOUT_SLUG}`} className={linkClassName}>
           <ExitToApp className={iconClassName} />
           {SIGNOUT_LABEL}

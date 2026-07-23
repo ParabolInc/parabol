@@ -201,7 +201,7 @@ export const AdhocTeamMultiSelect = (props: Props) => {
               >
                 {!option.id && <SendIcon className='mr-2 text-base' />}
                 {option.id && (
-                  <div className='relative mr-2 h-6 w-6 rounded-sm border border-hairline'>
+                  <div className='relative mr-2 h-6 w-6 rounded-full border border-hairline'>
                     <div
                       className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
                       style={{backgroundImage: `url('${option.picture}')`}}

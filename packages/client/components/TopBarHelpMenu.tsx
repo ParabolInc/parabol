@@ -1,19 +1,19 @@
+import {Bookmark, Comment, Keyboard} from '@mui/icons-material'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, ExternalLinks} from '~/types/constEnums'
-import type {MenuProps} from '../hooks/useMenu'
 import useSWVersion from '../hooks/useSWVersion'
-import Menu from './Menu'
-import MenuItem from './MenuItem'
-import MenuItemWithIcon from './MenuItemWithIcon'
+import {MenuContent} from '../ui/Menu/MenuContent'
+import {MenuItem} from '../ui/Menu/MenuItem'
+
+const itemClassName = 'gap-2 py-2 leading-6'
+const iconClassName = 'size-[18px] text-[18px] text-fg-secondary'
 
 interface Props {
-  menuProps: MenuProps
   toggleShortcuts(): void
-  dataCy: string
 }
 
 const TopBarHelpMenu = (props: Props) => {
-  const {menuProps, toggleShortcuts, dataCy} = props
+  const {toggleShortcuts} = props
   const swVersion = useSWVersion()
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const gotoSupport = () => {
@@ -30,33 +30,26 @@ const TopBarHelpMenu = (props: Props) => {
     )
   }
   return (
-    <Menu ariaLabel={'How may we help?'} {...menuProps}>
-      <MenuItem
-        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Documentation'} icon={'bookmark'} />}
-        onClick={gotoSupport}
-      />
+    <MenuContent align='end' sideOffset={4} aria-label='How may we help?'>
+      <MenuItem className={itemClassName} onSelect={gotoSupport}>
+        <Bookmark className={iconClassName} />
+        {'Documentation'}
+      </MenuItem>
       {isDesktop && (
-        <MenuItem
-          label={
-            <MenuItemWithIcon dataCy={`${dataCy}`} label={'Keyboard Shortcuts'} icon={'keyboard'} />
-          }
-          onClick={toggleShortcuts}
-        />
+        <MenuItem className={itemClassName} onSelect={toggleShortcuts}>
+          <Keyboard className={iconClassName} />
+          {'Keyboard Shortcuts'}
+        </MenuItem>
       )}
-      <MenuItem
-        label={<MenuItemWithIcon dataCy={`${dataCy}`} label={'Get help'} icon={'comment'} />}
-        onClick={gotoContact}
-      />
-      <MenuItem
-        label={
-          <div className='py-1 pl-4 text-fg-muted text-xs'>
-            Version {__APP_VERSION__}
-            {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
-          </div>
-        }
-        onClick={gotoVersion}
-      />
-    </Menu>
+      <MenuItem className={itemClassName} onSelect={gotoContact}>
+        <Comment className={iconClassName} />
+        {'Get help'}
+      </MenuItem>
+      <MenuItem className='py-1 text-fg-muted text-xs' onSelect={gotoVersion}>
+        Version {__APP_VERSION__}
+        {swVersion !== __APP_VERSION__ && ` (sw${swVersion ?? ' unknown'})`}
+      </MenuItem>
+    </MenuContent>
   )
 }
 

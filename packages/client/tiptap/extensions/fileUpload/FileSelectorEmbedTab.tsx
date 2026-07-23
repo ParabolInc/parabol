@@ -48,7 +48,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
   }
   return (
     <form
-      className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-surface-raised p-2'
+      className='flex w-full min-w-44 flex-col items-center justify-center space-y-3 rounded-md bg-surface-card p-2'
       onSubmit={onSubmit}
     >
       <input

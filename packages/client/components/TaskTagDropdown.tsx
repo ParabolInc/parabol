@@ -50,7 +50,7 @@ export const TaskTagDropdown = forwardRef(
     }))
     if (items.length === 0) return null
     return (
-      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
+      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-card py-1 shadow-lg outline-hidden'>
         {items.map((item, idx) => {
           const isActive = idx === selectedIndex
           return (
