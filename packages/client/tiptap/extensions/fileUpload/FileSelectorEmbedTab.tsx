@@ -59,7 +59,7 @@ export const FileSelectorEmbedTab = (props: Props) => {
         className='w-full outline-hidden focus:ring-2'
         ref={ref}
       />
-      <Button variant='outline' shape='pill' className='w-full' type='submit' disabled={submitting}>
+      <Button variant='outline' className='w-full' type='submit' disabled={submitting}>
         Embed {targetType}
       </Button>
     </form>

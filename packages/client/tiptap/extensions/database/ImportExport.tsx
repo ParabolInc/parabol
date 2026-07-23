@@ -61,7 +61,7 @@ export const ImportExport = (props: {doc: Y.Doc; editor: Editor}) => {
     <>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger asChild>
-          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-full p-2 hover:bg-surface-hover'>
+          <div className='items-cursor-pointer flex w-10 items-center justify-center rounded-md p-2 hover:bg-surface-hover'>
             <MoreVert />
           </div>
         </DropdownMenu.Trigger>

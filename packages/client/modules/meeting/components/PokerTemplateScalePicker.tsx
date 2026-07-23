@@ -43,7 +43,7 @@ const PokerTemplateScalePicker = (props: Props) => {
   const trigger = (
     <div
       onMouseEnter={SelectScaleDropdown.preload}
-      className={`flex min-w-36 select-none rounded-full text-[13px] leading-5 ${
+      className={`flex min-w-36 select-none rounded-md text-[13px] leading-5 ${
         readOnly
           ? 'bg-surface-input'
           : !isOwner

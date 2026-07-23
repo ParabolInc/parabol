@@ -211,7 +211,7 @@ const RetroWorkDrawer = (props: Props) => {
                   setActiveService(tab.service)
                 }}
                 className={cn(
-                  'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',
+                  'flex h-10 w-10 appearance-none items-center justify-center rounded-md transition-colors',
                   idx === activeIdx
                     ? // the logos are dark brand colors, so they go monochrome on the selected fill
                       'bg-surface-selected text-fg-selected [&_path]:fill-current'

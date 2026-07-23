@@ -100,7 +100,7 @@ export const PageSharingInput = (props: Props) => {
         />
       </div>
       <div className='flex shrink-0 flex-col self-center'>
-        <Button variant='dialogPrimary' shape='pill' className='h-8 px-5' onClick={onSubmit}>
+        <Button variant='dialogPrimary' className='h-8 px-5' onClick={onSubmit}>
           Share
         </Button>
         {value.length > 0 && (

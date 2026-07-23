@@ -16,7 +16,6 @@ const ProviderRowActionButton = (props: Props) => {
     <Button
       variant='outline'
       size='md'
-      shape='pill'
       onClick={onClick}
       disabled={disabled || waiting}
       className={cn('w-full min-w-9 whitespace-nowrap', className)}

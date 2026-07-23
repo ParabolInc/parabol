@@ -19,7 +19,6 @@ const SecondaryButton = forwardRef<HTMLButtonElement, SecondaryButtonProps>((pro
       ref={ref}
       variant='outline'
       size={SIZE_MAP[size]}
-      shape='pill'
       disabled={disabled || waiting}
       {...rest}
     />

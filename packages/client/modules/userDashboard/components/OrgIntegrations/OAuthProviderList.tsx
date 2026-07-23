@@ -151,7 +151,7 @@ const OAuthProviderList = ({organizationRef}: Props) => {
         <div className='font-medium text-fg-primary'>
           {providers.length} OAuth {plural(providers.length, 'application')}
         </div>
-        <Button variant='outline' size='sm' shape='pill' onClick={handleAdd}>
+        <Button variant='outline' size='sm' onClick={handleAdd}>
           <AddIcon className='mr-2' />
           Add Application
         </Button>
@@ -232,15 +232,10 @@ const OAuthProviderList = ({organizationRef}: Props) => {
             undone.
           </p>
           <div className='flex justify-end gap-3'>
-            <Button
-              variant='outline'
-              size='md'
-              shape='pill'
-              onClick={() => setDeleteDialogOpen(false)}
-            >
+            <Button variant='outline' size='md' onClick={() => setDeleteDialogOpen(false)}>
               Cancel
             </Button>
-            <Button variant='destructive' size='md' shape='pill' onClick={handleConfirmDelete}>
+            <Button variant='destructive' size='md' onClick={handleConfirmDelete}>
               Delete
             </Button>
           </div>

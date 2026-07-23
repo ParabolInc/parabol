@@ -59,7 +59,7 @@ const OrgBillingInvoices = (props: Props) => {
           <InvoiceRow key={`invoiceRow${invoice.id}`} invoice={invoice} />
         ))}
         <div className='flex justify-center pb-4'>
-          <Button variant={'outline'} shape={'pill'}>
+          <Button variant={'outline'}>
             <a href={portalUrl} rel='noopener noreferrer'>
               {'See All Invoices'}
             </a>

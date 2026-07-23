@@ -79,7 +79,7 @@ const JiraServerIntegrationPanel = (props: Props) => {
             Connect to Jira Data Center to view your issues.
           </div>
           <button
-            className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
+            className='mt-4 cursor-pointer rounded-md bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
             onClick={authJiraServer}
           >
             Connect

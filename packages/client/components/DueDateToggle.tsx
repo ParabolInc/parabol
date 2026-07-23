@@ -9,6 +9,7 @@ import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
+import {Radius} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import CardButton from './CardButton'
@@ -38,7 +39,7 @@ const DUE_DATE_SOON_COLOR_HOVER = PALETTE.TERRA_500
 const Toggle = styled(CardButton)<StyleProps>(
   {
     alignItems: 'center',
-    borderRadius: '4em',
+    borderRadius: Radius.BUTTON,
     display: 'flex',
     justifyContent: 'center',
     opacity: 0

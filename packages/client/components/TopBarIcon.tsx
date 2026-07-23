@@ -19,7 +19,7 @@ const TopBarIcon = forwardRef((props: Props, ref: any) => {
       ref={ref}
       onMouseEnter={onMouseEnter}
       aria-label={ariaLabel}
-      className='relative mx-1 my-2 flex cursor-pointer justify-center rounded-full p-1 focus:shadow-[0_0_0_2px_var(--color-sky-400)] active:shadow-[0_0_0_2px_transparent]'
+      className='relative mx-1 my-2 flex cursor-pointer justify-center rounded-md p-1 focus:shadow-[0_0_0_2px_var(--color-sky-400)] active:shadow-[0_0_0_2px_transparent]'
     >
       <div className='h-6 w-6'>
         {

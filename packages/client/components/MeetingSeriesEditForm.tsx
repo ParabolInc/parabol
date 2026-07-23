@@ -128,7 +128,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
       <div className='mt-6 flex items-center justify-between border-hairline border-t pt-4'>
         {isActive ? (
           <button
-            className='h-9 cursor-pointer rounded-full border border-hairline border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-surface-hover disabled:cursor-not-allowed'
+            className='h-9 cursor-pointer rounded-md border border-hairline border-solid bg-transparent px-4 text-center text-tomato-500 hover:bg-surface-hover disabled:cursor-not-allowed'
             onClick={cancelDialog.open}
             disabled={submitting}
           >
@@ -138,7 +138,7 @@ export const MeetingSeriesEditForm = (props: Props) => {
           <span className='text-fg-muted text-sm'>Series cancelled</span>
         )}
         <button
-          className='h-9 cursor-pointer rounded-full bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
+          className='h-9 cursor-pointer rounded-md bg-sky-500 px-4 text-center text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
           onClick={onUpdate}
           disabled={!canUpdate}
         >

@@ -130,7 +130,7 @@ const LinearObjectCard = memo((props: Props) => {
         </div>
         <CopyToClipboard text={url} onCopy={handleCopy}>
           <div
-            className='h-6 w-6 cursor-pointer rounded-full bg-transparent p-0.5 text-fg-muted hover:bg-surface-hover'
+            className='h-6 w-6 cursor-pointer rounded-md bg-transparent p-0.5 text-fg-muted hover:bg-surface-hover'
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={mergeRefs(originRef, copiedTooltipRef)}

@@ -275,7 +275,6 @@ const OrgAuthenticationSCIM = (props: Props) => {
             <Button
               variant='outline'
               size='md'
-              shape='pill'
               disabled={!isOrgAdmin || nextScimAuthenticationType === scimAuthenticationType}
               onClick={() => updateSCIM(nextScimAuthenticationType)}
             >

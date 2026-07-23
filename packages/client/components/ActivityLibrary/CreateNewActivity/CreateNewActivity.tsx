@@ -312,7 +312,7 @@ export const CreateNewActivity = (props: Props) => {
             </div>
           ) : (
             <BaseButton
-              className='mx-auto h-12 rounded-full bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+              className='mx-auto h-12 rounded-md bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
               onClick={createCustomActivityLookup[selectedActivity.type]}
             >
               Confirm Format & Team

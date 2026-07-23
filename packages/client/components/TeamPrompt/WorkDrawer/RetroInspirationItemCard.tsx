@@ -91,7 +91,6 @@ const RetroInspirationItemCard = (props: Props) => {
           <Button
             variant='secondary'
             size='sm'
-            shape='pill'
             className='shrink-0'
             disabled={submitting || editor.isEmpty || !promptId}
             onClick={onAddReflection}

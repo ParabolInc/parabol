@@ -144,7 +144,7 @@ const TeamHealth = (props: Props) => {
                   <RaisedButton
                     palette='white'
                     onClick={onRevealVotes}
-                    className='mt-4 h-14 w-44 rounded-full text-fg-secondary disabled:opacity-50'
+                    className='mt-4 h-14 w-44 rounded-md text-fg-secondary disabled:opacity-50'
                     disabled={!canReveal}
                   >
                     Reveal Results

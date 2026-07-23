@@ -113,7 +113,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 onClick={() => playTrack(currentTrackSrc)}
                 disabled={!playEnabled}
                 className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 font-semibold text-sm transition',
+                  'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
                   playEnabled
                     ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
                     : 'cursor-not-allowed bg-jade-100 text-jade-300'
@@ -127,7 +127,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 onClick={stop}
                 disabled={!stopEnabled}
                 className={cn(
-                  'flex min-w-[48px] items-center justify-center rounded-full px-3 py-2 font-semibold text-sm transition',
+                  'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
                   stopEnabled
                     ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
                     : 'cursor-not-allowed bg-tomato-100 text-tomato-400'

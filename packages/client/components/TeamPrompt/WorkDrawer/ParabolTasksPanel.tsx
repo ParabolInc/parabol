@@ -91,7 +91,6 @@ const ParabolTasksPanel = (props: Props) => {
           <Button
             key={tab.key}
             size='md'
-            shape='pill'
             aria-pressed={tab.key === subTab}
             className={cn(PILL, tab.key === subTab ? PILL_ACTIVE : PILL_INACTIVE)}
             onClick={() => {
