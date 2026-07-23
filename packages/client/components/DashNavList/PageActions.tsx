@@ -105,7 +105,7 @@ export const PageActions = (props: Props) => {
   return (
     <LeftNavItemButtons>
       {viewerAccess === 'owner' && (
-        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-hairline-strong'>
+        <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
           <Menu
             trigger={
               <div>

@@ -173,6 +173,10 @@
   /* hover sits one step lighter than the selected state so both read distinctly
      without needing a border on the selected item */
   --color-surface-nav-hover: var(--color-slate-300);
+  /* hover fill for the small icon buttons that sit inside a nav row. Must be a
+     step darker than surface-nav-active so it still reads as a hover when the
+     row underneath it is the selected page */
+  --color-surface-nav-button-hover: var(--color-slate-500);
   --color-surface-phase-active: var(--color-slate-200);
   /* The single "this toggle/tab is selected" fill. Same in both themes so a
      selected control reads identically everywhere — never hand-roll a tinted
@@ -357,6 +361,8 @@
   --color-surface-input: var(--color-grape-950);
   --color-surface-nav-active: var(--color-grape-750);
   --color-surface-nav-hover: var(--color-grape-700);
+  /* translucent, so it lightens whatever row fill sits under it (hover or active) */
+  --color-surface-nav-button-hover: rgba(183, 180, 233, 0.32);
   --color-surface-phase-active: var(--color-grape-750);
   --color-surface-selected: var(--color-grape-600);
   --color-fg-selected: var(--color-white);
@@ -413,6 +419,10 @@
   /* hover sits one step lighter than the selected state so both read distinctly
      without needing a border on the selected item */
   --color-surface-nav-hover: var(--color-slate-300);
+  /* hover fill for the small icon buttons that sit inside a nav row. Must be a
+     step darker than surface-nav-active so it still reads as a hover when the
+     row underneath it is the selected page */
+  --color-surface-nav-button-hover: var(--color-slate-500);
   --color-surface-phase-active: var(--color-slate-200);
   --color-surface-selected: var(--color-grape-600);
   --color-fg-selected: var(--color-white);

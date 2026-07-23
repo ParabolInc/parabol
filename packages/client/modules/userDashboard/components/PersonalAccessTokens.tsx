@@ -93,11 +93,9 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   }
 
   const controls = (
-    <div className='py-2'>
-      <SecondaryButton size='small' onClick={() => setIsCreateOpen(true)}>
-        New Token
-      </SecondaryButton>
-    </div>
+    <SecondaryButton size='small' onClick={() => setIsCreateOpen(true)}>
+      New Token
+    </SecondaryButton>
   )
   return (
     <>

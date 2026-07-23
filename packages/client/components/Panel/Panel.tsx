@@ -30,7 +30,7 @@ const Panel = (props: Props) => {
           <LabelHeading className={cn('px-4 py-2', casing && CASING_CLASS[casing])}>
             {label}
           </LabelHeading>
-          <div className='flex h-11 flex-1 justify-end px-4 leading-[44px]'>{controls}</div>
+          <div className='flex h-11 flex-1 items-center justify-end px-4'>{controls}</div>
         </div>
       )}
       <div className='block w-full'>{children}</div>
