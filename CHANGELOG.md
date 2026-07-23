@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.2](https://github.com/ParabolInc/parabol/compare/v13.31.1...v13.31.2) (2026-07-23)
+
+
+### Fixed
+
+* Dark Mode touchups ([#13308](https://github.com/ParabolInc/parabol/issues/13308)) ([fa9240b](https://github.com/ParabolInc/parabol/commit/fa9240b7215c48c5849e5ecce212c6348b7e6202))
+
 ## [13.31.1](https://github.com/ParabolInc/parabol/compare/v13.31.0...v13.31.1) (2026-07-21)
 
 

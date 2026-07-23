@@ -46,7 +46,7 @@ export const PublicTeamsOverflow = (props: Props) => {
       {publicTeamsCount > 0 && (
         <div
           onClick={handleClick}
-          className='cursor-pointer rounded-md py-1 text-fg-nav-muted text-sm leading-5 hover:bg-surface-nav-active hover:text-fg-primary'
+          className='cursor-pointer rounded-md py-1 text-fg-nav-muted text-sm leading-5 hover:bg-surface-nav-hover hover:text-fg-primary'
         >
           <button className='w-full cursor-pointer select-none items-center justify-center rounded-md bg-inherit font-semibold'>
             {`View ${publicTeamsCount} ${plural(publicTeamsCount, 'Public Team', 'Public Teams')}`}

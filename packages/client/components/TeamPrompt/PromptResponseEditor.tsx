@@ -20,7 +20,7 @@ import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent
 const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
   backgroundColor: disabled ? 'var(--color-surface-well)' : 'var(--color-accent)',
   opacity: 1,
-  borderRadius: Radius.BUTTON_PILL,
+  borderRadius: Radius.BUTTON,
   color: disabled ? 'var(--color-fg-muted)' : '#FFFFFF',
   outline: 0,
   marginTop: 12,

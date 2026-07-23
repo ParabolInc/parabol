@@ -162,7 +162,7 @@ export const StatusCell = ({
       <Popover.Trigger asChild>
         <button
           {...focusProps}
-          className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-surface-raised focus:outline-2 focus:outline-accent'
+          className='items-cursor-pointer flex h-full w-full cursor-pointer items-center gap-2 p-2 hover:bg-surface-hover focus:outline-2 focus:outline-accent'
           onClick={() => {
             setIsOpen(true)
           }}

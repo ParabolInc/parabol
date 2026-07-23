@@ -29,7 +29,7 @@ const FlatButton = styled(BaseButton)<FlatButtonProps>((props) => {
   const visuallyDisabled = disabled || waiting
   return {
     backgroundColor: 'transparent',
-    borderRadius: Radius.BUTTON_PILL,
+    borderRadius: Radius.BUTTON,
     color: paletteColors[palette],
     outline: 0,
     ':hover,:focus,:active': {

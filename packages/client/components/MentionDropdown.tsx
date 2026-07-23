@@ -58,7 +58,7 @@ export default forwardRef(
     }))
     if (items.length === 0) return null
     return (
-      <div className='z-10 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
+      <div className='z-10 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up rounded-md border border-hairline bg-surface-card py-1 shadow-lg outline-hidden'>
         {items.map((item, idx) => (
           <div
             data-highlighted={idx === selectedIndex ? '' : undefined}

@@ -12,7 +12,7 @@ interface Props {
 
 const getStepperClass = (isDisabled: boolean) =>
   cn(
-    'h-6 w-6 rounded-full p-0.75 shadow-[0px_1px_1px_1px_rgba(0,0,0,0.3)]',
+    'h-6 w-6 rounded-md p-0.75 shadow-[0px_1px_1px_1px_rgba(0,0,0,0.3)]',
     isDisabled && 'opacity-35'
   )
 

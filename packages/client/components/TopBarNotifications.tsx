@@ -1,11 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef} from 'react'
+import {Suspense, useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import type {TopBarNotifications_query$key} from '~/__generated__/TopBarNotifications_query.graphql'
-import {MenuPosition} from '~/hooks/useCoords'
-import useMenu from '~/hooks/useMenu'
 import lazyPreload from '~/utils/lazyPreload'
+import {Menu} from '../ui/Menu/Menu'
 import TopBarIcon from './TopBarIcon'
 
 const NotificationDropdown = lazyPreload(
@@ -44,39 +43,34 @@ const TopBarNotifications = ({queryRef}: Props) => {
   const notifications = viewer?.notifications || {edges: []}
   const {edges} = notifications
   const hasNotifications = edges.some(({node}) => node.status === 'UNREAD')
-  const menuContentRef = useRef<HTMLDivElement>(null)
-  const {togglePortal, openPortal, originRef, menuPortal, menuProps} = useMenu<HTMLDivElement>(
-    MenuPosition.UPPER_RIGHT,
-    {
-      menuContentRef,
-      id: 'topBarNotificationsMenu'
-    }
-  )
+  const [isOpen, setIsOpen] = useState(false)
   const location = useLocation()
   useEffect(() => {
     const parsed = new URLSearchParams(location.search)
     if (parsed.get('openNotifs')) {
-      // :HACK: Opening the portal immediately sometimes leads to rendering just off the left side
-      // of the window, so delay a bit before opening. This might be benefial regardless, as it
-      // catches the user's attention when it opens shortly after the rest of the page loads.
-      setTimeout(openPortal, 500)
+      // delay a bit so the menu catches the user's attention by opening shortly
+      // after the rest of the page loads
+      setTimeout(() => setIsOpen(true), 500)
     }
   }, [])
 
   return (
-    <>
-      <TopBarIcon
-        ref={originRef}
-        onClick={togglePortal}
-        onMouseEnter={NotificationDropdown.preload}
-        icon={'notifications'}
-        hasBadge={hasNotifications}
-        ariaLabel={'Notifications'}
-      />
-      {menuPortal(
-        <NotificationDropdown parentRef={menuContentRef} menuProps={menuProps} queryRef={data} />
-      )}
-    </>
+    <Menu
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      trigger={
+        <TopBarIcon
+          onMouseEnter={NotificationDropdown.preload}
+          icon={'notifications'}
+          hasBadge={hasNotifications}
+          ariaLabel={'Notifications'}
+        />
+      }
+    >
+      <Suspense fallback={null}>
+        <NotificationDropdown queryRef={data} />
+      </Suspense>
+    </Menu>
   )
 }
 

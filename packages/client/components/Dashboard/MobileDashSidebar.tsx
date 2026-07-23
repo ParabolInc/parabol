@@ -39,7 +39,7 @@ interface Props {
 
 // NavSidebar.WIDTH = 256px (max-w-64/min-w-64); GlobalBanner.HEIGHT = 24px (pt-6)
 const dashSidebarClassName = cn(
-  'flex h-screen min-w-64 max-w-64 select-none flex-col overflow-hidden bg-surface-sidebar text-fg-nav-muted',
+  'flex h-screen min-w-64 max-w-64 select-none flex-col overflow-hidden bg-surface-app text-fg-nav-muted',
   isGlobalBannerEnabled && 'pt-6'
 )
 

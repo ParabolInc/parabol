@@ -24,7 +24,6 @@ interface Props {
 }
 
 const PriorityTasksHeader = styled('div')({
-  background: 'var(--color-surface-well)',
   color: 'var(--color-fg-secondary)',
   fontSize: 14,
   fontWeight: 600,

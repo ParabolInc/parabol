@@ -53,7 +53,7 @@ export const PageLinkMenu = forwardRef(
     }))
 
     return (
-      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-raised py-1 shadow-lg outline-hidden'>
+      <div className='z-10 max-h-56 in-data-[placement="bottom-start"]:animate-slide-down in-data-[placement="top-start"]:animate-slide-up overflow-auto rounded-md border border-hairline bg-surface-card py-1 shadow-lg outline-hidden'>
         <div className='mx-1 px-3 py-1 font-semibold text-xs'>{'Select a page'}</div>
         {items.length === 0 && (
           <div className='mx-1 px-3 py-1 font-semibold text-fg-muted text-xs italic'>

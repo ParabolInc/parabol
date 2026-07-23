@@ -34,7 +34,7 @@ export const TipTapLinkEditor = (props: props) => {
   return (
     <div
       className={
-        'flex items-center rounded-md border border-hairline bg-surface-raised p-2 shadow-lg'
+        'flex items-center rounded-md border border-hairline bg-surface-card p-2 shadow-lg'
       }
     >
       <form onSubmit={handleSubmit} className='flex flex-col items-center'>

@@ -74,7 +74,8 @@ const DiscussionDrawer = ({
 
   return (
     <div
-      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-card'
+      // One surface for every tab, so the tab bar reads the same whichever panel is showing
+      className='flex h-full w-[360px] flex-col justify-start overflow-hidden border-hairline border-l bg-surface-drawer'
       style={drawerStyle}
     >
       <div className='flex w-full select-none items-center border-hairline border-b'>

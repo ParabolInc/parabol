@@ -320,7 +320,7 @@ export enum Providers {
 
 // Use power of 2 for cheap sense of scale (e.g. 2, 4, 8)
 export enum Radius {
-  BUTTON_PILL = '10em',
+  BUTTON = 6,
   FIELD = 4,
   DIALOG = 8,
   MENU = 4,

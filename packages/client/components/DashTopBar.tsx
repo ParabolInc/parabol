@@ -42,7 +42,7 @@ const DashTopBar = (props: Props) => {
         <PlainButton
           onClick={toggle}
           aria-label='Toggle dashboard menu'
-          className='m-3 rounded-full p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
+          className='m-3 rounded-md p-1 text-[24px] leading-4 focus:shadow-[0_0_0_2px_var(--color-sky-400)]'
         >
           <Menu />
         </PlainButton>

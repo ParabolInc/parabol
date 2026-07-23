@@ -9,11 +9,11 @@ const ScopingSearchBar = (props: Props) => {
   const {children, currentFilters} = props
   return (
     <div className='p-4'>
-      <div className='flex h-11 w-full items-center rounded-[40px] border border-hairline-strong px-4'>
+      <div className='flex h-11 w-full items-center rounded border border-hairline-strong px-4'>
         {children}
       </div>
       {currentFilters && (
-        <div className='flex w-full pt-2 pl-[72px]'>
+        <div className='flex w-full pt-2 pl-18'>
           <div className='whitespace-nowrap font-medium text-base text-fg-secondary'>
             Current filters:
           </div>

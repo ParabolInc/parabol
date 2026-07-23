@@ -29,7 +29,7 @@ export const PageSharingInviteOptions = (props: Props) => {
   return (
     <ul
       {...getListboxProps()}
-      className='mt-0.5 mb-0 list-none overflow-y-auto rounded-sm bg-surface-raised p-0 pb-2'
+      className='mt-0.5 mb-0 list-none overflow-y-auto rounded-sm bg-surface-card p-0 pb-2'
     >
       {(groupedOptions as AutocompleteGroupedOption<Option>[]).map((option) => {
         const {options, index} = option
@@ -62,7 +62,7 @@ export const PageSharingInviteOptions = (props: Props) => {
                       <TeamAvatar teamId={option.orgId} teamName={option.name} />
                     )}
                     {'picture' in option && option.picture && (
-                      <div className='relative mr-2 h-6 w-6 rounded-sm border border-hairline'>
+                      <div className='relative mr-2 h-6 w-6 rounded-full border border-hairline'>
                         <div
                           className='h-6 w-6 rounded-full bg-center bg-cover bg-no-repeat'
                           style={{

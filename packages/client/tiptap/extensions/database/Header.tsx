@@ -118,7 +118,7 @@ export const Header = (props: Props) => {
   return (
     <DropdownMenu.Root open={menuOpen} onOpenChange={onOpenChange}>
       <DropdownMenu.Trigger asChild {...focusProps}>
-        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-surface-raised focus:outline-2 focus:outline-accent'>
+        <button className='items-cursor-pointer flex h-full w-full items-center gap-2 p-2 hover:bg-surface-hover focus:outline-2 focus:outline-accent'>
           {DataTypeIcons[type as DataType] || <Notes />}
           <span className='truncate'>{name}</span>
         </button>
@@ -146,7 +146,7 @@ export const Header = (props: Props) => {
               />
             </form>
             <DropdownMenu.Sub>
-              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'>
+              <DropdownMenu.SubTrigger className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'>
                 <SwapHoriz />
                 Change type
                 <ChevronRight className='ml-auto' />
@@ -158,7 +158,7 @@ export const Header = (props: Props) => {
                       <DropdownMenu.RadioItem
                         key={type}
                         value={type}
-                        className='group flex cursor-pointer items-center gap-2 rounded-md p-2 capitalize hover:bg-surface-raised'
+                        className='group flex cursor-pointer items-center gap-2 rounded-md p-2 capitalize hover:bg-surface-hover'
                       >
                         {icon}
                         {type}
@@ -173,7 +173,7 @@ export const Header = (props: Props) => {
             {dataActions.map(({label, icon, action}) => (
               <DropdownMenu.Item
                 key={label}
-                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-raised'
+                className='flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-surface-hover'
                 onSelect={action}
               >
                 {icon}

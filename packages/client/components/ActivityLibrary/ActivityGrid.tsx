@@ -32,7 +32,7 @@ const ActivityGrid = (props: ActivityGridProps) => {
             key={template.id}
             to={`/activity-library/details/${template.id}`}
             state={{prevCategory: selectedCategory}}
-            className='flex rounded-2xl hover:bg-surface-raised focus:outline-sky-500'
+            className='flex rounded-2xl hover:bg-surface-hover focus:outline-sky-500'
           >
             <ActivityCard
               className='group aspect-256/160 flex-1'

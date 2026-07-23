@@ -14,7 +14,7 @@ export const TipTapLinkPreview = (props: Props) => {
   return (
     <div
       className={
-        'flex items-center justify-center truncate rounded-md border border-hairline bg-surface-raised p-1 text-sm shadow-lg'
+        'flex items-center justify-center truncate rounded-md border border-hairline bg-surface-card p-1 text-sm shadow-lg'
       }
     >
       <Link className='flex-none pr-1 text-base text-fg-primary' />

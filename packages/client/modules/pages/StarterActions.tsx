@@ -29,7 +29,7 @@ export const StarterActions = (props: Props) => {
     <div className='w-full px-6'>
       <Button
         variant='outline'
-        className='rounded-full text-fg-secondary text-sm'
+        className='text-fg-secondary text-sm'
         onClick={() => {
           editor.chain().focus().setInsights().run()
         }}

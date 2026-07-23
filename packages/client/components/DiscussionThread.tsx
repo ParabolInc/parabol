@@ -90,7 +90,8 @@ const DiscussionThread = (props: Props) => {
     <div
       className={cn(
         // sidebar-left height offset = MeetingControlBarEnum.COVER_HEIGHT (68px); width = DiscussionThreadEnum.WIDTH (360px)
-        'flex h-full sidebar-left:w-[360px] w-(--discussion-thread-width) flex-col justify-between overflow-hidden rounded bg-surface-card shadow-discussion-thread',
+        // no card of its own — the thread sits directly on the drawer well, like the other tabs
+        'flex h-full sidebar-left:w-[360px] w-(--discussion-thread-width) flex-col justify-between overflow-hidden',
         !isExpanded && 'sidebar-left:h-[calc(100%-68px)]'
       )}
       style={{'--discussion-thread-width': width || '100%'} as CSSProperties}

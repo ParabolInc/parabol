@@ -171,7 +171,6 @@ const OrgAuthenticationMetadata = (props: Props) => {
           <Button
             className='mt-3 px-0'
             variant='ghost'
-            shape='pill'
             size='sm'
             onClick={onUploadClick}
             disabled={!isOrgAdmin}
@@ -192,7 +191,6 @@ const OrgAuthenticationMetadata = (props: Props) => {
           <Button
             variant='outline'
             size='md'
-            shape='pill'
             onClick={submitMetadataURL}
             disabled={!isOrgAdmin || submitting || isMetadataURLSaved || !metadataURL}
           >

@@ -75,7 +75,6 @@ export const PageSharingPendingRequests = (props: Props) => {
 
               <Button
                 variant='outline'
-                shape='pill'
                 className='mt-1 flex shrink-0 items-center gap-1 px-3 py-1 text-fg-primary text-sm'
                 onClick={() => acceptRequest(userId, role)}
                 disabled={submitting}
