@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.3](https://github.com/ParabolInc/parabol/compare/v13.31.2...v13.31.3) (2026-07-24)
+
+
+### Fixed
+
+* bump nodejs to v24.17.0 ([#13301](https://github.com/ParabolInc/parabol/issues/13301)) ([f64aa03](https://github.com/ParabolInc/parabol/commit/f64aa03990c36197abd5de2360238e6f4a96a954))
+* Dark mode touchups ([#13312](https://github.com/ParabolInc/parabol/issues/13312)) ([bf01ecd](https://github.com/ParabolInc/parabol/commit/bf01ecdbcca41f4ff89d91ca476756c54cf7f93c))
+* race condition for re-joining an org ([#13314](https://github.com/ParabolInc/parabol/issues/13314)) ([fb2a1d2](https://github.com/ParabolInc/parabol/commit/fb2a1d24d23f91686b23e7870c021ffd9f6445b7))
+
 ## [13.31.2](https://github.com/ParabolInc/parabol/compare/v13.31.1...v13.31.2) (2026-07-23)
 
 
