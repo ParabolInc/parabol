@@ -15,6 +15,7 @@ interface Props {
   children: ReactNode
   metaContent: any
   onClick: ((e: React.MouseEvent) => void) | undefined
+  labelClassName?: string
 }
 
 const MeetingSubnavItem = (props: Props) => {
@@ -26,7 +27,8 @@ const MeetingSubnavItem = (props: Props) => {
     isUnsyncedFacilitatorStage,
     children,
     metaContent,
-    onClick
+    onClick,
+    labelClassName
   } = props
   const ref = useRef<HTMLDivElement>(null)
   const labelRef = useRef<HTMLDivElement>(null)
@@ -47,10 +49,14 @@ const MeetingSubnavItem = (props: Props) => {
     <div
       ref={ref}
       className={cn(
-        'relative flex min-h-10 w-full shrink-0 select-none items-center rounded-r py-2 font-normal text-fg-primary text-sm',
-        isActive ? 'bg-surface-phase-active' : isDragging ? 'bg-surface-raised' : 'bg-transparent',
+        'relative my-0.5 flex min-h-10 w-full shrink-0 select-none items-center rounded-md border-l-[3px] border-l-transparent py-2 font-normal text-fg-primary text-sm',
+        isActive
+          ? 'border-l-(--color-accent-active) bg-surface-nav-active'
+          : isDragging
+            ? 'bg-surface-raised'
+            : 'bg-transparent',
         !isActive && isComplete && 'opacity-50',
-        onClick && !isActive && 'hover:bg-surface-phase-active',
+        onClick && !isActive && 'hover:bg-surface-nav-hover',
         !isActive && onClick && 'hover:cursor-pointer',
         !isDisabled && 'hover:opacity-100',
         isUnsyncedFacilitatorStage && 'text-rose-500 opacity-100'
@@ -62,8 +68,9 @@ const MeetingSubnavItem = (props: Props) => {
           <div
             ref={labelRef}
             className={cn(
-              'wrap-break-word flex-1 overflow-hidden text-ellipsis whitespace-pre pl-14 text-inherit',
-              isComplete && 'line-through'
+              'wrap-break-word flex-1 overflow-hidden text-ellipsis whitespace-pre pl-7 text-inherit',
+              isComplete && 'line-through',
+              labelClassName
             )}
           >
             {children}

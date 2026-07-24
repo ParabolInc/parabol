@@ -1,12 +1,12 @@
 import styled from '@emotion/styled'
-import {Card} from '../types/constEnums'
+import {Card, Radius} from '../types/constEnums'
 import BaseButton from './BaseButton'
 
 const buttonSize = Card.BUTTON_HEIGHT
 
 const CardButton = styled(BaseButton)({
   alignItems: 'center',
-  borderRadius: buttonSize,
+  borderRadius: Radius.BUTTON,
   color: 'var(--color-fg-primary)',
   display: 'flex',
   height: buttonSize,

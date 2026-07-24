@@ -180,9 +180,11 @@ const RetroWorkDrawer = (props: Props) => {
       : [])
   ] as const
 
+  // Default to the first enabled non-Parabol integration, falling back to the Parabol section
+  const defaultService = baseTabs.find((tab) => tab.service !== 'PARABOL')?.service ?? 'PARABOL'
   const [activeService, setActiveService] = useSessionStorageState<string>(
     `Inspiration:tab:${meeting.id}`,
-    'PARABOL'
+    defaultService
   )
   const activeIdx = Math.max(
     0,

@@ -29,7 +29,7 @@ const Wrapper = styled('div')({
   ':hover': {
     cursor: 'pointer'
   },
-  ':hover i': {
+  ':hover svg': {
     color: PALETTE.SKY_600
   }
 })

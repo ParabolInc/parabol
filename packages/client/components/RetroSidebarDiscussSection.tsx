@@ -105,7 +105,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
           {(provided) => {
             return (
               <div
-                className='h-full overflow-auto pr-2 pb-2'
+                className='h-full overflow-auto pb-2'
                 data-cy='discussion-section'
                 ref={provided.innerRef}
               >

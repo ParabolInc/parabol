@@ -67,10 +67,10 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   return (
     <div
       className={cn(
-        'mr-2 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-r border-l-[3px] border-l-transparent font-semibold text-fg-primary no-underline hover:bg-surface-phase-active focus:bg-surface-phase-active',
+        'my-0.5 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-md border-l-[3px] border-l-transparent px-1 py-1 font-semibold text-fg-primary text-sm leading-8 no-underline hover:bg-surface-nav-hover focus:bg-surface-nav-hover',
         isDisabled && 'cursor-not-allowed hover:bg-transparent focus:bg-transparent',
         isActive &&
-          'cursor-default border-l-(--color-accent-active) bg-surface-phase-active hover:bg-surface-phase-active focus:bg-surface-phase-active',
+          'cursor-default border-l-(--color-accent-active) bg-surface-nav-active hover:bg-surface-nav-active focus:bg-surface-nav-active',
         isCollapsible && isActive && 'bg-transparent hover:cursor-pointer focus:cursor-pointer',
         isCollapsible &&
           isFacilitatorPhase &&
@@ -84,7 +84,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       {icon && (
         <div
           className={cn(
-            'mx-4 h-6 w-6 text-fg-nav-muted',
+            'flex size-6 shrink-0 items-center justify-center text-fg-nav-muted [&_svg]:size-5',
             isUnsyncedFacilitatorPhase && 'text-rose-500'
           )}
         >
@@ -106,7 +106,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
       {Image && (
         <div
           className={cn(
-            'mx-4 h-6 w-6',
+            'flex size-6 shrink-0 items-center justify-center [&_svg]:size-5',
             isUnsyncedFacilitatorPhase
               ? '[&_svg_path]:fill-rose-500'
               : '[&_svg_path]:fill-fg-nav-muted'
@@ -115,7 +115,7 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
           <Image />
         </div>
       )}
-      <span className='inline-block align-middle text-sm'>{label}</span>
+      <span className='inline-block pl-2 align-middle text-sm'>{label}</span>
       {showPhaseCount && (
         <div className='ml-auto flex items-center'>
           <Badge className='mr-2 h-6 min-w-6 rounded-xl bg-slate-600 text-xs leading-6 shadow-none'>

@@ -1,12 +1,13 @@
 import styled from '@emotion/styled'
 import {AccessTime} from '@mui/icons-material'
+import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
 import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
 import {Radius} from '../types/constEnums'
@@ -145,7 +146,7 @@ const DueDateToggle = (props: Props) => {
     taskRef
   )
   const {dueDate} = task
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const [open, setOpen] = useState(false)
   const {
     tooltipPortal,
     openTooltip,
@@ -153,17 +154,16 @@ const DueDateToggle = (props: Props) => {
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
+  if (isArchived) return null
   return (
-    <>
-      {!isArchived && (
+    <RadixPopover.Root open={open} onOpenChange={setOpen}>
+      <RadixPopover.Trigger asChild>
         <Toggle
           cardIsActive={!dueDate && cardIsActive}
           tabIndex={0}
           dueDate={!!dueDate}
           isPastDue={isPastDue}
           isDueSoon={isDueSoon}
-          ref={originRef}
-          onClick={togglePortal}
           onMouseEnter={DueDatePicker.preload}
         >
           <DueDateIcon
@@ -176,10 +176,25 @@ const DueDateToggle = (props: Props) => {
           </DueDateIcon>
           {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
         </Toggle>
-      )}
+      </RadixPopover.Trigger>
       {tooltipPortal(<div>{title}</div>)}
-      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
-    </>
+      <RadixPopover.Portal>
+        <RadixPopover.Content
+          align='end'
+          sideOffset={4}
+          collisionPadding={8}
+          className='z-10 rounded-lg border border-hairline bg-surface-raised shadow-2xl'
+        >
+          <Suspense fallback={<div className='h-90 w-78' />}>
+            <DueDatePicker
+              closePopover={() => setOpen(false)}
+              task={task}
+              useTaskChild={useTaskChild}
+            />
+          </Suspense>
+        </RadixPopover.Content>
+      </RadixPopover.Portal>
+    </RadixPopover.Root>
   )
 }
 

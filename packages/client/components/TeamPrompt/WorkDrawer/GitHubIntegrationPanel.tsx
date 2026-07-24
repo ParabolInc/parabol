@@ -76,7 +76,7 @@ const GitHubIntegrationPanel = (props: Props) => {
 
   const [githubType, setGithubType] = useSessionStorageState<'issue' | 'pullRequest'>(
     `Inspiration:github:type:${meeting.id}`,
-    'issue'
+    'pullRequest'
   )
   const [selectedRepos, setSelectedRepos] = useSessionStorageState<string[]>(
     `Inspiration:github:repos:${meeting.id}`,

@@ -163,7 +163,7 @@ function Component(props: NodeViewProps) {
               <PlainButton
                 onMouseDown={(e) => e.preventDefault()}
                 className={cn(
-                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-surface-card text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
+                  '-top-8 absolute right-8 flex size-7 items-center justify-center rounded bg-transparent text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
                   selected ? 'opacity-100' : 'pointer-events-none opacity-0'
                 )}
               >
@@ -239,7 +239,7 @@ function Component(props: NodeViewProps) {
         <TooltipTrigger asChild>
           <PlainButton
             className={cn(
-              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-surface-card text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
+              '-top-8 absolute right-0 flex size-7 items-center justify-center rounded bg-transparent text-fg-primary transition-opacity duration-300 hover:bg-surface-hover',
               selected ? 'opacity-100' : 'pointer-events-none opacity-0'
             )}
             onClick={exportToCSV}
