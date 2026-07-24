@@ -1,41 +1,20 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type DayModifiers, DayPicker} from 'react-day-picker'
 import {useFragment} from 'react-relay'
 import type {DueDatePicker_task$key} from '../__generated__/DueDatePicker_task.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import type {MenuProps} from '../hooks/useMenu'
 import useMutationProps from '../hooks/useMutationProps'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import UpdateTaskDueDateMutation from '../mutations/UpdateTaskDueDateMutation'
-import Menu from './Menu'
 
 interface Props {
-  menuProps: MenuProps
+  closePopover: () => void
   task: DueDatePicker_task$key
   useTaskChild: UseTaskChild
 }
 
-const TallMenu = styled(Menu)({
-  maxHeight: 360
-})
-
-const PickerTitle = styled('div')({
-  fontSize: 14,
-  paddingTop: 8,
-  textAlign: 'center',
-  userSelect: 'none',
-  width: '100%'
-})
-
-const Hint = styled('div')({
-  fontSize: 11,
-  color: 'var(--color-fg-secondary)',
-  textAlign: 'center'
-})
-
 const DueDatePicker = (props: Props) => {
-  const {menuProps, task: taskRef, useTaskChild} = props
+  const {closePopover, task: taskRef, useTaskChild} = props
   const task = useFragment(
     graphql`
       fragment DueDatePicker_task on Task {
@@ -54,29 +33,24 @@ const DueDatePicker = (props: Props) => {
     submitMutation()
     const dueDate = selected ? null : day
     UpdateTaskDueDateMutation(atmosphere, {taskId, dueDate}, {onCompleted, onError})
-    menuProps.closePortal()
-    ;(document as any).activeElement?.blur()
+    closePopover()
   }
 
   const selectedDate = dueDate ? new Date(dueDate) : undefined
-  const showHint = false
   const now = new Date()
   const nextYear = new Date(new Date().setFullYear(now.getFullYear() + 1))
   return (
-    <TallMenu ariaLabel='Pick a due date' {...menuProps}>
-      <>
-        <PickerTitle>{'Change Due Date'}</PickerTitle>
-        {showHint && <Hint>{'To remove, tap selected date'}</Hint>}
-        <DayPicker
-          disabled={{before: now}}
-          fromMonth={now}
-          defaultMonth={selectedDate || now}
-          onDayClick={handleDayClick}
-          selected={selectedDate}
-          toMonth={nextYear}
-        />
-      </>
-    </TallMenu>
+    <div className='select-none'>
+      <div className='w-full pt-2 text-center text-sm'>{'Change Due Date'}</div>
+      <DayPicker
+        disabled={{before: now}}
+        fromMonth={now}
+        defaultMonth={selectedDate || now}
+        onDayClick={handleDayClick}
+        selected={selectedDate}
+        toMonth={nextYear}
+      />
+    </div>
   )
 }
 

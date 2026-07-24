@@ -74,9 +74,14 @@ const addUser = async (orgIds: string[], user: User, dataLoader: DataLoaderWorke
       })
     )
     .execute()
+  // best effort, the org membership above is what callers depend on
   await Promise.all(
-    orgIds.map((orgId) => {
-      return maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
+    orgIds.map(async (orgId) => {
+      try {
+        await maybeUpdateOrganizationActiveDomain(orgId, user.email, dataLoader)
+      } catch (e) {
+        Logger.error(`Failed to update activeDomain for org ${orgId}`, e)
+      }
     })
   )
 }
@@ -108,7 +113,9 @@ const auditEventTypeLookup = {
 } as {[key in InvoiceItemType]: OrganizationUserAudit['eventType']}
 
 /**
- * Also adds the organization user if not present
+ * Also adds the organization user if not present.
+ * Only the OrganizationUser write rejects; audit & Stripe sync are best effort, so callers may
+ * treat a rejection as "the user is not in the org" and roll back accordingly.
  */
 export default async function adjustUserCount(
   userId: string,
@@ -124,17 +131,22 @@ export default async function adjustUserCount(
   const dbAction = dbActionTypeLookup[type]
   await dbAction(orgIds, user, dataLoader)
   const auditEventType = auditEventTypeLookup[type]
+  // best effort, a missing audit row must not fail the membership change above
   await Promise.all(
-    orgIds.map((orgId) => {
-      return pg
-        .insertInto('OrganizationUserAudit')
-        .values({
-          orgId,
-          userId,
-          eventDate: new Date(),
-          eventType: auditEventType
-        })
-        .execute()
+    orgIds.map(async (orgId) => {
+      try {
+        await pg
+          .insertInto('OrganizationUserAudit')
+          .values({
+            orgId,
+            userId,
+            eventDate: new Date(),
+            eventType: auditEventType
+          })
+          .execute()
+      } catch (e) {
+        Logger.error(`Failed to write OrganizationUserAudit for ${userId} in ${orgId}`, e)
+      }
     })
   )
 

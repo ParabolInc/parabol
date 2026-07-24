@@ -61,7 +61,7 @@ const StyledButton = styled(PlainButton)({
   height: 16,
   lineHeight: '16px',
   fontWeight: 600,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   textAlign: 'center',
   width: '100%',
   WebkitTapHighlightColor: 'transparent',

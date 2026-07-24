@@ -37,17 +37,16 @@ export const removeTeamMember = async (
       reassignedTaskIds: [] as string[]
     }
   }
-  const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)!
-  if (!currentTeamLeader) {
-    throw new Error('Team lead does not exist')
-  }
-
+  const currentTeamLeader = activeTeamMembers.find((t) => t.isLead)
   const {isLead} = teamMember
   const willArchive = activeTeamMembers.length === 1
-  const nextTeamLead =
-    isLead && !willArchive
-      ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
-      : currentTeamLeader
+  // a leaderless team is a data error, but promoting a member is always safer than throwing here.
+  // Callers like removeFromOrg cannot roll back the work they've already done, so a throw would
+  // leave the user off the org but still on the team, failing every isViewerOnOrg check
+  const needsNewLead = !willArchive && (isLead || !currentTeamLeader)
+  const nextTeamLead = needsNewLead
+    ? activeTeamMembers.find((teamMember) => teamMember.id !== teamMemberId)!
+    : (currentTeamLeader ?? teamMember)
 
   if (willArchive) {
     await pg
@@ -58,12 +57,15 @@ export const removeTeamMember = async (
       .set({isArchived: true})
       .where('id', '=', teamId)
       .execute()
-  } else if (isLead) {
+  } else if (needsNewLead) {
     // assign new leader, remove old leader flag
     await pg
+      .with('OldLead', (qb) =>
+        qb.updateTable('TeamMember').set({isLead: false}).where('id', '=', teamMemberId)
+      )
       .updateTable('TeamMember')
-      .set(({not}) => ({isLead: not('isLead')}))
-      .where('id', 'in', [teamMemberId, nextTeamLead.id])
+      .set({isLead: true})
+      .where('id', '=', nextTeamLead.id)
       .execute()
   }
 
