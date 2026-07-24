@@ -32,7 +32,6 @@ export type PortalId =
   | 'StageTimerModal'
   | 'StageTimerEndTimePicker'
   | 'StageTimerStartTimePicker'
-  | 'StageTimerMinutePicker'
   | 'taskFooterTeamAssigneeAddIntegration'
   | 'taskFooterTeamAssigneeMenu'
   | 'newMeetingRoot'
