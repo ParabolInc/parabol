@@ -21,7 +21,6 @@ const ScrollStageItems = styled('div')<{isActive: boolean}>(({isActive}) => ({
   // @hello-pangea/dnd supports scrolling on 1 parent
   // this is where we need it, in order to scroll a long list
   overflow: isActive ? 'auto' : 'hidden',
-  paddingRight: 8,
   width: '100%'
 }))
 

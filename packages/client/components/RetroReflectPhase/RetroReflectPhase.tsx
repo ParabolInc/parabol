@@ -53,7 +53,8 @@ const RetroReflectPhase = (props: Props) => {
   const [activeIdx, setActiveIdx] = useState(0)
   const isDesktop = useBreakpoint(Breakpoint.SINGLE_REFLECTION_COLUMN)
   const {disableAnonymity, localPhase, endedAt, showSidebar, rightDrawerOpen} = meeting
-  const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', false)
+  // autoToggle: open the inspiration drawer by default when the reflect phase mounts (desktop)
+  const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', true)
   if (!localPhase || !localPhase.reflectPrompts) return null
   const reflectPrompts = localPhase!.reflectPrompts
   const focusedPromptId = localPhase!.focusedPromptId

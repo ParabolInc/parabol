@@ -69,7 +69,7 @@ const NewMeetingSidebar = (props: Props) => {
       data-cy='sidebar'
       className={cn(
         // NavSidebar.WIDTH === 256px
-        'flex min-w-64 max-w-64 flex-1 select-none flex-col bg-surface-meeting-sidebar',
+        'meeting-sidebar flex min-w-64 max-w-64 flex-1 select-none flex-col bg-surface-meeting-sidebar',
         isDesktop ? cn(sidebarHeightCls, 'pt-0') : cn('h-screen', sidebarPaddingTopCls)
       )}
     >
