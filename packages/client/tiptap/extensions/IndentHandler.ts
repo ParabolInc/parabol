@@ -1,6 +1,34 @@
 import type {Editor} from '@tiptap/core'
 import {Extension} from '@tiptap/core'
 import {TextSelection} from '@tiptap/pm/state'
+import {indentItem, outdentItem} from './listNestingCommands'
+import {isListNode} from './nestListDrop'
+
+const ITEM_TYPES = new Set(['listItem', 'taskItem'])
+
+interface ListContext {
+  itemType: 'listItem' | 'taskItem'
+  itemPos: number
+}
+
+// Resolve, from the current selection, the innermost list item and its position.
+// Innermost matters: in a mixed nest both isActive checks are true, but only the
+// deepest item should drive Tab/Shift-Tab.
+const getListContext = (editor: Editor): ListContext | null => {
+  const {$from} = editor.state.selection
+  for (let d = $from.depth; d >= 1; d--) {
+    const node = $from.node(d)
+    if (ITEM_TYPES.has(node.type.name)) {
+      const listNode = $from.node(d - 1)
+      if (!isListNode(listNode)) return null
+      return {
+        itemType: node.type.name === 'taskItem' ? 'taskItem' : 'listItem',
+        itemPos: $from.before(d)
+      }
+    }
+  }
+  return null
+}
 
 // See also: https://github.com/ueberdosis/tiptap/issues/457#issuecomment-2285456957
 // TipTap has troble receiving the Tab input in certain contexts
@@ -111,12 +139,16 @@ export const IndentHandler = Extension.create({
   addKeyboardShortcuts() {
     return {
       Tab: ({editor}) => {
-        if (editor.isActive('listItem')) {
-          editor.chain().sinkListItem('listItem').run()
-          return true
-        }
-        if (editor.isActive('taskItem')) {
-          editor.chain().sinkListItem('taskItem').run()
+        const ctx = getListContext(editor)
+        if (ctx) {
+          // Adopt the previous item's sublist type if one exists…
+          const tr = indentItem(editor.state, ctx.itemPos)
+          if (tr) {
+            editor.view.dispatch(tr)
+            return true
+          }
+          // …otherwise stock sink (creates a same-type sublist)
+          editor.chain().sinkListItem(ctx.itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {
@@ -125,12 +157,16 @@ export const IndentHandler = Extension.create({
         return true
       },
       'Shift-Tab': ({editor}) => {
-        if (editor.isActive('listItem')) {
-          editor.chain().liftListItem('listItem').run()
-          return true
-        }
-        if (editor.isActive('taskItem')) {
-          editor.chain().liftListItem('taskItem').run()
+        const ctx = getListContext(editor)
+        if (ctx) {
+          // Lift into the ancestor list, adopting its type…
+          const tr = outdentItem(editor.state, ctx.itemPos)
+          if (tr) {
+            editor.view.dispatch(tr)
+            return true
+          }
+          // …otherwise stock lift (top-level list / same-type)
+          editor.chain().liftListItem(ctx.itemType).run()
           return true
         }
         if (editor.isActive('detailsSummary')) {
