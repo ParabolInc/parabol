@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.4](https://github.com/ParabolInc/parabol/compare/v13.31.3...v13.31.4) (2026-07-27)
+
+
+### Fixed
+
+* dangling team members from org member change ([#13316](https://github.com/ParabolInc/parabol/issues/13316)) ([9a68d64](https://github.com/ParabolInc/parabol/commit/9a68d646ac1e8b4f6a6871e53088d3f1536d0400))
+
 ## [13.31.3](https://github.com/ParabolInc/parabol/compare/v13.31.2...v13.31.3) (2026-07-24)
 
 
