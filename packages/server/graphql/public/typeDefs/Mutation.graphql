@@ -11,7 +11,15 @@ type Mutation {
   """
   Connect the current user's Atlassian (Jira Cloud) account to a team
   """
-  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
+  addAtlassianAuth(
+    code: ID!
+    teamId: ID!
+    """
+    The OAuth scopes that were requested and consented to. Defaults to the Jira scope set.
+    Pass the Jira + Confluence sets when the user enables Confluence export.
+    """
+    scopes: [String!]
+  ): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Add a comment to a discussion

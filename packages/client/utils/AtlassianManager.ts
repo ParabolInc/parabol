@@ -38,6 +38,14 @@ export type JiraPermissionScope =
   | 'offline_access'
   | 'manage:jira-project'
 
+export type ConfluencePermissionScope =
+  | 'write:confluence-content'
+  | 'read:confluence-space.summary'
+  | 'write:confluence-file'
+  | 'read:confluence-content.all'
+
+export type AtlassianPermissionScope = JiraPermissionScope | ConfluencePermissionScope
+
 export class RateLimitError {
   retryAt: Date
   name = 'RateLimitError' as const
@@ -57,6 +65,12 @@ export default abstract class AtlassianManager {
     'read:jira-work',
     'write:jira-work',
     'offline_access'
+  ]
+  static CONFLUENCE_SCOPE: ConfluencePermissionScope[] = [
+    'write:confluence-content',
+    'read:confluence-space.summary',
+    'write:confluence-file',
+    'read:confluence-content.all'
   ]
   accessToken: string
   protected headers = {

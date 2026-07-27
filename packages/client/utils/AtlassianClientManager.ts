@@ -1,7 +1,7 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
-import AtlassianManager, {type JiraPermissionScope} from './AtlassianManager'
+import AtlassianManager, {type AtlassianPermissionScope} from './AtlassianManager'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complete'
@@ -14,7 +14,7 @@ class AtlassianClientManager extends AtlassianManager {
     atmosphere: Atmosphere,
     teamId: string,
     mutationProps: MenuMutationProps,
-    scopes: JiraPermissionScope[] = AtlassianManager.SCOPE
+    scopes: AtlassianPermissionScope[] = AtlassianManager.SCOPE
   ) {
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)
@@ -52,7 +52,7 @@ class AtlassianClientManager extends AtlassianManager {
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
       submitMutation()
-      AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      AddAtlassianAuthMutation(atmosphere, {code, teamId, scopes}, {onError, onCompleted})
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

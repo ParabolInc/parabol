@@ -8,15 +8,22 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
+import {validateAtlassianScopes} from './helpers/validateAtlassianScopes'
 
 const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
   _source,
-  {code, teamId},
+  {code, teamId, scopes},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
+
+  const validatedScope = validateAtlassianScopes(scopes)
+  if (scopes && scopes.length > 0 && !validatedScope) {
+    return standardError(new Error('Invalid scopes requested'), {userId: viewerId})
+  }
+  const scopeToStore = validatedScope ?? AtlassianServerManager.SCOPE.join(' ')
 
   // RESOLUTION
   const [oauthResponse, viewer] = await Promise.all([
@@ -55,12 +62,14 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
     .where('userId', '=', viewerId)
     .where('isActive', '=', true)
     .execute()
+  // sibling-team rows receive the new token, so their scope must match it, too
   const atlassianAuthsToUpdate = userAtlassianAuths
     .filter((auth) => auth.accountId === self.accountId && auth.teamId !== teamId)
     .map((auth) => ({
       ...auth,
       accessToken,
-      refreshToken: refreshToken!
+      refreshToken: refreshToken!,
+      scope: scopeToStore
     }))
 
   await upsertAtlassianAuths([
@@ -71,7 +80,7 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
       refreshToken: refreshToken!,
       cloudIds,
       teamId,
-      scope: AtlassianServerManager.SCOPE.join(' ')
+      scope: scopeToStore
     },
     ...atlassianAuthsToUpdate
   ])

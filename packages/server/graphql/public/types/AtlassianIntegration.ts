@@ -4,6 +4,7 @@ import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
+import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
@@ -120,6 +121,18 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),
 
   isActive: ({accessToken}) => !!accessToken,
+
+  hasConfluenceScopes: ({scope}) => hasConfluenceScopes(scope),
+
+  confluenceSites: async ({accessToken}) => {
+    if (!accessToken) return []
+    const manager = new AtlassianServerManager(accessToken)
+    const res = await manager.getAccessibleResources()
+    if (!Array.isArray(res)) return []
+    return res
+      .filter(({scopes}) => scopes.some((scope) => scope.includes('confluence')))
+      .map(({id, name, url}) => ({cloudId: id, name, url}))
+  },
 
   accessToken: async ({accessToken, userId}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)

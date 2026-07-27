@@ -10,14 +10,22 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
+  showEnableConfluence?: boolean
 }
 
 const AtlassianConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {menuProps, mutationProps, teamId, showEnableConfluence} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
   const openOAuth = () => {
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+  }
+
+  const enableConfluence = () => {
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
+      ...AtlassianClientManager.SCOPE,
+      ...AtlassianClientManager.CONFLUENCE_SCOPE
+    ])
   }
 
   const removeAtlassian = () => {
@@ -28,6 +36,7 @@ const AtlassianConfigMenu = (props: Props) => {
   return (
     <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>
       <MenuItem label='Refresh token' onClick={openOAuth} />
+      {showEnableConfluence && <MenuItem label='Enable Confluence' onClick={enableConfluence} />}
       <MenuItem label='Remove Atlassian' onClick={removeAtlassian} />
     </Menu>
   )

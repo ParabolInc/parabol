@@ -120,4 +120,16 @@ type AtlassianIntegration {
     """
     projectKeyFilters: [ID!]
   ): JiraIssueConnection!
+
+  """
+  Whether the stored OAuth grant includes all Confluence scopes needed for Pages export.
+  False for Jira-only connections until the user runs the Enable Confluence re-consent.
+  """
+  hasConfluenceScopes: Boolean!
+
+  """
+  The Atlassian sites on this connection where Confluence access was granted. Empty when
+  the account has no Confluence product or Confluence scopes were never consented.
+  """
+  confluenceSites: [ConfluenceSite!]!
 }
