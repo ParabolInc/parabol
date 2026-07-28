@@ -30,11 +30,12 @@ interface Props {
   pageAncestors: string[]
   pageLinks: PageLinkBlockAttrs[] | null | undefined
   parentPageViewerAccess?: PageRoleEnum
+  showConfluenceExport: boolean
 }
 
 export const SubPages = (props: Props) => {
   const connectionKey = 'User_pages'
-  const {pageAncestors, queryRef, pageLinks, parentPageViewerAccess} = props
+  const {pageAncestors, queryRef, pageLinks, parentPageViewerAccess, showConfluenceExport} = props
   const data = usePreloadedQuery<SubPagesQuery>(query, queryRef)
   const {viewer} = data
   const {
@@ -90,6 +91,7 @@ export const SubPages = (props: Props) => {
             draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
             draggingPageViewerAccess={draggingPageViewerAccess || null}
             parentPageViewerAccess={parentPageViewerAccess}
+            showConfluenceExport={showConfluenceExport}
           />
         )
       })}

@@ -22,6 +22,7 @@ graphql`
 graphql`
   fragment useIsIntegratedAtlassianIntegration on AtlassianIntegration {
     isActive
+    hasJiraScopes
   }
 `
 graphql`
@@ -92,7 +93,8 @@ export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$k
     return null
   }
   const {atlassian, github, jiraServer, gitlab, azureDevOps, linear} = integrations
-  const hasAtlassian = atlassian?.isActive ?? false
+  // an active grant may be Confluence-only — Jira task integration needs Jira scopes
+  const hasAtlassian = (atlassian?.isActive && atlassian?.hasJiraScopes) ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
   const hasJiraServer = jiraServer?.auth?.isActive ?? false

@@ -4,6 +4,7 @@ import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuer
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
+import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
 import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
@@ -23,6 +24,7 @@ const query = graphql`
   query ProviderListQuery($teamId: ID!) {
     viewer {
       ...AtlassianProviderRow_viewer
+      ...ConfluenceProviderRow_viewer
       ...JiraServerProviderRow_viewer
       ...GitHubProviderRow_viewer
       ...GitLabProviderRow_viewer
@@ -36,6 +38,8 @@ const query = graphql`
         integrations {
           atlassian {
             accessToken
+            hasConfluenceScopes
+            hasJiraScopes
           }
           jiraServer {
             auth {
@@ -102,11 +106,17 @@ const ProviderList = (props: Props) => {
 
   const allIntegrations = [
     {
-      name: 'Atlassian',
-      connected: !!integrations?.atlassian?.accessToken,
+      name: 'Atlassian Jira',
+      connected: !!integrations?.atlassian?.accessToken && !!integrations?.atlassian?.hasJiraScopes,
       component: (
         <AtlassianProviderRow key='atlassian' teamId={teamId} retry={retry} viewer={viewer} />
       )
+    },
+    {
+      name: 'Atlassian Confluence',
+      connected:
+        !!integrations?.atlassian?.accessToken && !!integrations?.atlassian?.hasConfluenceScopes,
+      component: <ConfluenceProviderRow key='confluence' teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'Jira Data Center',

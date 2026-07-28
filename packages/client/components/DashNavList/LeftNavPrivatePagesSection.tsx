@@ -25,6 +25,9 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
         draggingPageIsPrivate
         draggingPageParentSection
         draggingPageViewerAccess
+        organizations {
+          hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
+        }
         privatePages: pages(parentPageId: $nullId, first: 500, isPrivate: true)
           @connection(key: "User_privatePages") {
           edges {
@@ -119,6 +122,7 @@ export const LeftNavPrivatePagesSection = (props: Props) => {
               draggingPageIsPrivate={draggingPageIsPrivate || null}
               draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
               draggingPageViewerAccess={draggingPageViewerAccess || null}
+              showConfluenceExport={viewer.organizations.some((org) => org.hasConfluenceExport)}
             />
           )
         })}

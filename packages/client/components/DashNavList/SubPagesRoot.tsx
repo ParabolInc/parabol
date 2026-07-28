@@ -12,10 +12,11 @@ interface Props {
   teamId?: string
   pageAncestors: string[]
   parentPageViewerAccess?: PageRoleEnum
+  showConfluenceExport: boolean
 }
 
 export const SubPagesRoot = (props: Props) => {
-  const {parentPageId, pageAncestors, teamId, parentPageViewerAccess} = props
+  const {parentPageId, pageAncestors, teamId, parentPageViewerAccess, showConfluenceExport} = props
   const queryRef = useQueryLoaderNow<SubPagesQuery>(query, {
     parentPageId,
     teamId
@@ -32,6 +33,7 @@ export const SubPagesRoot = (props: Props) => {
           pageAncestors={pageAncestors}
           pageLinks={pageLinks}
           parentPageViewerAccess={parentPageViewerAccess}
+          showConfluenceExport={showConfluenceExport}
         />
       )}
     </Suspense>

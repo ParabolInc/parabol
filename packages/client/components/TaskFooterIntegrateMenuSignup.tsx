@@ -25,6 +25,12 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const integrations = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuSignup_TeamMemberIntegrations on TeamMemberIntegrations {
+        atlassian {
+          # fetched so openOAuth's held-scope union can see them in the store
+          isActive
+          hasJiraScopes
+          hasConfluenceScopes
+        }
         gitlab {
           ...AddToGitLabMenuItem_GitLabIntegration
         }

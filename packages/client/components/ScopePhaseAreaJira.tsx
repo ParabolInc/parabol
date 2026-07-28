@@ -22,6 +22,9 @@ const ScopePhaseAreaJira = (props: Props) => {
             integrations {
               atlassian {
                 isActive
+                # fetched so openOAuth's held-scope union can see them in the store
+                hasJiraScopes
+                hasConfluenceScopes
               }
             }
           }
@@ -35,7 +38,10 @@ const ScopePhaseAreaJira = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = integrations?.atlassian?.isActive ?? false
+  // an active grant may be Confluence-only — Jira scoping needs Jira capability,
+  // and AddJira's OAuth unions the held Confluence scopes so nothing is lost
+  const hasAuth =
+    (integrations?.atlassian?.isActive && integrations?.atlassian?.hasJiraScopes) ?? false
   if (!hasAuth) return <ScopePhaseAreaAddJira gotoParabol={gotoParabol} meetingRef={meeting} />
   return <ScopePhaseAreaJiraScoping meetingRef={meeting} />
 }

@@ -7,6 +7,7 @@ import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
+import {hasJiraScopes} from '../../../utils/hasJiraScopes'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
@@ -125,6 +126,7 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   isActive: ({accessToken}) => !!accessToken,
 
   hasConfluenceScopes: ({scope}) => hasConfluenceScopes(scope),
+  hasJiraScopes: ({scope}) => hasJiraScopes(scope),
 
   confluenceSites: async ({accessToken}) => {
     if (!accessToken) return []

@@ -15,7 +15,9 @@ const query = graphql`
     viewer {
       atlassianConnection {
         id
+        isActive
         hasConfluenceScopes
+        hasJiraScopes
         confluenceSites {
           cloudId
           name
@@ -87,6 +89,8 @@ export const ExportToConfluenceModal = (props: Props) => {
   const shownExportId = activeExportId ?? reportExportId
   const activeExport = exports.find(({id}) => id === shownExportId) ?? null
   const state = deriveConfluenceDialogState({connection, activeExport})
+  // TODO: a teamless page owned by a multi-team viewer silently auths against the first
+  // team; a team picker is needed to disambiguate (deferred per 2026-07-28 design spec)
   const teamIdForAuth = page.team?.id ?? viewer.teams[0]?.id ?? null
 
   return (

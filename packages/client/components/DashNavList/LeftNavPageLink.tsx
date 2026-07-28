@@ -32,6 +32,7 @@ interface Props {
   connectionKey: PageConnectionKey
   // pass this down from the parent to reduce query complexity, since it's only needed in dragging edge cases
   parentPageViewerAccess?: PageRoleEnum
+  showConfluenceExport: boolean
 }
 export const LeftNavPageLink = (props: Props) => {
   const {
@@ -45,7 +46,8 @@ export const LeftNavPageLink = (props: Props) => {
     isLastChild,
     nextPeerId,
     connectionKey,
-    parentPageViewerAccess
+    parentPageViewerAccess,
+    showConfluenceExport
   } = props
   const depth = pageAncestors.length
   const page = useFragment(
@@ -196,7 +198,11 @@ export const LeftNavPageLink = (props: Props) => {
               {(emoji ? stripPageEmoji(title ?? '', emoji) : title) || '<Untitled>'}
             </span>
           </LeftNavItem>
-          <PageActions expandChildren={() => setShowChildren(true)} pageRef={page} />
+          <PageActions
+            expandChildren={() => setShowChildren(true)}
+            pageRef={page}
+            showConfluenceExport={showConfluenceExport}
+          />
         </Link>
       </PageDropTarget>
       {showChildren && (
@@ -208,6 +214,7 @@ export const LeftNavPageLink = (props: Props) => {
             parentPageId={id}
             pageAncestors={nextPageAncestors}
             parentPageViewerAccess={viewerAccess ?? undefined}
+            showConfluenceExport={showConfluenceExport}
           />
         </div>
       )}

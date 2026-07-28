@@ -47,6 +47,37 @@ export type ConfluencePermissionScope =
 
 export type AtlassianPermissionScope = JiraPermissionScope | ConfluencePermissionScope
 
+export interface HeldAtlassianProducts {
+  jira: boolean
+  confluence: boolean
+}
+
+/**
+ * Atlassian re-consent REPLACES the token's grant, so every authorize request must
+ * include the union of the requested product scopes and whatever the user already
+ * holds — otherwise connecting/refreshing one product silently breaks the other.
+ * If the union would contain no product scopes at all, falls back to the Jira set
+ * (the legacy default) so a bare call can never mint a useless token.
+ */
+export const unionAtlassianScopes = (
+  requested: readonly AtlassianPermissionScope[],
+  held: HeldAtlassianProducts
+): AtlassianPermissionScope[] => {
+  const scopes = new Set<AtlassianPermissionScope>(requested)
+  if (held.jira) {
+    AtlassianManager.SCOPE.forEach((scope) => scopes.add(scope))
+  }
+  if (held.confluence) {
+    AtlassianManager.CONFLUENCE_SCOPE.forEach((scope) => scopes.add(scope))
+    scopes.add('offline_access')
+  }
+  const hasProductScope = [...scopes].some((scope) => scope !== 'offline_access')
+  if (!hasProductScope) {
+    AtlassianManager.SCOPE.forEach((scope) => scopes.add(scope))
+  }
+  return [...scopes]
+}
+
 export class RateLimitError {
   retryAt: Date
   name = 'RateLimitError' as const
@@ -87,6 +118,19 @@ export default abstract class AtlassianManager {
   }
 
   protected readonly get = async <T extends object>(url: string) => {
+    const res = await this.getOnce<T>(url)
+    // Freshly-minted OAuth tokens can lag at Atlassian's edge and transiently 401
+    // with this exact message right after consent. One bounded retry absorbs the
+    // blip; a genuine scope mismatch just surfaces the same error 750ms later.
+    // GETs only — mutating requests must never auto-retry.
+    if (res instanceof Error && res.message === 'Unauthorized; scope does not match') {
+      await new Promise((resolve) => setTimeout(resolve, 750))
+      return this.getOnce<T>(url)
+    }
+    return res
+  }
+
+  private readonly getOnce = async <T extends object>(url: string) => {
     try {
       const res = await this.fetch(url, {
         headers: this.headers,

@@ -28,6 +28,7 @@ const query = graphql`
           id
           atlassian {
             isActive
+            hasJiraScopes
           }
           github {
             isActive
@@ -138,7 +139,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         const safeRes = result instanceof Error ? undefined : result
         const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
 
-        if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
+        if (
+          (isGitHubTask && !github?.isActive) ||
+          (isJiraTask && !(atlassian?.isActive && atlassian?.hasJiraScopes))
+        ) {
           setNewTeam(nextTeam)
           setIsAddIntegrationOpen(true)
           return

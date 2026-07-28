@@ -4,6 +4,7 @@ import {selectAtlassianAuth} from '../../../postgres/select'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import {hasJiraScopes} from '../../../utils/hasJiraScopes'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
@@ -48,11 +49,26 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
   if (!cloudId) {
     return standardError(new Error('Missing cloudId'), {userId: viewerId})
   }
-  const self = await manager.getMyself(cloudId)
-  if (!('accountId' in self)) {
-    return standardError(new Error(`Jira: ${self.message}`), {
-      userId: viewerId
-    })
+  // getMyself is a Jira API call — a Confluence-only grant 401s on it. The account id
+  // is also the sub claim of the OAuth access token (a JWT), which needs no scopes.
+  const getAccountId = async (): Promise<string | Error> => {
+    if (hasJiraScopes(scopeToStore)) {
+      const self = await manager.getMyself(cloudId)
+      return 'accountId' in self ? self.accountId : new Error(`Jira: ${self.message}`)
+    }
+    try {
+      const payload = JSON.parse(
+        Buffer.from(accessToken.split('.')[1]!, 'base64url').toString('utf8')
+      )
+      const sub = typeof payload.sub === 'string' ? payload.sub : ''
+      return sub || new Error('Atlassian: token missing account id')
+    } catch {
+      return new Error('Atlassian: could not read account id from token')
+    }
+  }
+  const accountId = await getAccountId()
+  if (accountId instanceof Error) {
+    return standardError(accountId, {userId: viewerId})
   }
 
   // if there are the same Jira integrations existing we need to update them with new credentials as well
@@ -64,7 +80,7 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
     .execute()
   // sibling-team rows receive the new token, so their scope must match it, too
   const atlassianAuthsToUpdate = userAtlassianAuths
-    .filter((auth) => auth.accountId === self.accountId && auth.teamId !== teamId)
+    .filter((auth) => auth.accountId === accountId && auth.teamId !== teamId)
     .map((auth) => ({
       ...auth,
       accessToken,
@@ -74,7 +90,7 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
 
   await upsertAtlassianAuths([
     {
-      accountId: self.accountId,
+      accountId,
       userId: viewerId,
       accessToken,
       refreshToken: refreshToken!,

@@ -11,28 +11,36 @@ const hasThinkingBlock = (doc: Y.Doc) => {
     .some((node) => node instanceof XmlElement && node.nodeName === 'thinkingBlock')
 }
 
-export const useEditablePage = (provider: HocuspocusProvider, editor: Editor) => {
-  const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
-  const [isStreaming, setIsStreaming] = useState(() => hasThinkingBlock(provider.document))
-
+// The thinkingBlock is inserted at publish time and removed once streaming
+// finishes; its presence is the authoritative signal that the summary is
+// still generating (edit lock, export lock).
+export const useIsPageStreaming = (provider: HocuspocusProvider | null) => {
+  const [isStreaming, setIsStreaming] = useState(() =>
+    provider ? hasThinkingBlock(provider.document) : false
+  )
   useEffect(() => {
-    const handler = ({scope}: {scope: AuthorizedScope}) => setAuthorizedScope(scope)
-    provider.on('authenticated', handler)
-    return () => {
-      provider.off('authenticated', handler)
-    }
-  }, [provider])
-
-  // Lock edits while the server is streaming summary blocks. The thinkingBlock
-  // is inserted at publish time and removed once streaming finishes; its
-  // presence is the authoritative signal that edits must not land yet.
-  useEffect(() => {
+    if (!provider) return
     const frag = provider.document.getXmlFragment('default')
     const check = () => setIsStreaming(hasThinkingBlock(provider.document))
     check()
     frag.observe(check)
     return () => {
       frag.unobserve(check)
+    }
+  }, [provider])
+  return isStreaming
+}
+
+export const useEditablePage = (provider: HocuspocusProvider, editor: Editor) => {
+  const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
+  // Lock edits while the server is streaming summary blocks
+  const isStreaming = useIsPageStreaming(provider)
+
+  useEffect(() => {
+    const handler = ({scope}: {scope: AuthorizedScope}) => setAuthorizedScope(scope)
+    provider.on('authenticated', handler)
+    return () => {
+      provider.off('authenticated', handler)
     }
   }, [provider])
 

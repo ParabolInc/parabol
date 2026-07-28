@@ -128,6 +128,12 @@ type AtlassianIntegration {
   hasConfluenceScopes: Boolean!
 
   """
+  Whether the stored OAuth grant includes the Jira scopes. False for Confluence-only
+  connections until the user connects Jira, which upgrades the shared grant.
+  """
+  hasJiraScopes: Boolean!
+
+  """
   The Atlassian sites on this connection where Confluence access was granted. Empty when
   the account has no Confluence product or Confluence scopes were never consented.
   """

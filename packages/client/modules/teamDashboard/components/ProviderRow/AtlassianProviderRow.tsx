@@ -41,11 +41,6 @@ const AtlassianProviderRow = (props: Props) => {
     graphql`
       fragment AtlassianProviderRow_viewer on User {
         teamMember(teamId: $teamId) {
-          team {
-            organization {
-              hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
-            }
-          }
           integrations {
             atlassian {
               ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
@@ -65,15 +60,14 @@ const AtlassianProviderRow = (props: Props) => {
     onCompleted
   } as MenuMutationProps
   const {teamMember} = viewer
-  const {integrations, team} = teamMember!
+  const {integrations} = teamMember!
   const {atlassian} = integrations
   const accessToken = atlassian?.accessToken ?? undefined
-  const hasConfluenceExport = team?.organization?.hasConfluenceExport ?? false
-  const showEnableConfluence =
-    hasConfluenceExport && !!accessToken && !(atlassian?.hasConfluenceScopes ?? false)
+  const jiraConnected = !!accessToken && (atlassian?.hasJiraScopes ?? false)
   useFreshToken(accessToken, retry)
 
   const openOAuth = () => {
+    // intent: Jira — openOAuth unions in whatever the grant already holds
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
 
@@ -104,7 +98,7 @@ const AtlassianProviderRow = (props: Props) => {
   return (
     <>
       <ProviderRow
-        connected={!!accessToken}
+        connected={jiraConnected}
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
@@ -115,12 +109,7 @@ const AtlassianProviderRow = (props: Props) => {
         error={errorMessage}
       />
       {menuPortal(
-        <AtlassianConfigMenu
-          mutationProps={mutationProps}
-          menuProps={menuProps}
-          teamId={teamId}
-          showEnableConfluence={showEnableConfluence}
-        />
+        <AtlassianConfigMenu mutationProps={mutationProps} menuProps={menuProps} teamId={teamId} />
       )}
     </>
   )
@@ -130,6 +119,7 @@ graphql`
   fragment AtlassianProviderRowAtlassianIntegration on AtlassianIntegration {
     accessToken
     hasConfluenceScopes
+    hasJiraScopes
   }
 `
 

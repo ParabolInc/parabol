@@ -3,28 +3,43 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
-import {MoreHoriz as MoreHorizIcon, PictureAsPdf as PictureAsPdfIcon} from '~/ui/icons'
+import {
+  CloudUpload as CloudUploadIcon,
+  MoreHoriz as MoreHorizIcon,
+  PictureAsPdf as PictureAsPdfIcon
+} from '~/ui/icons'
 import type {PageHeader_page$key} from '../../__generated__/PageHeader_page.graphql'
+import {
+  ConfluenceNewBadge,
+  dismissConfluenceBadge,
+  showConfluenceBadge
+} from '../../components/ExportToConfluence/ConfluenceNewBadge'
 import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
+import {Tooltip} from '../../ui/Tooltip/Tooltip'
+import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
+import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 import {PageBreadCrumbs} from './PageBreadCrumbs'
 import {PageDeletedHeader} from './PageDeletedHeader'
 import {PageSharingRoot} from './PageSharingRoot'
 
 interface Props {
   pageRef: PageHeader_page$key
+  showConfluenceExport: boolean
+  isPageGenerating: boolean
 }
 
 export const PageHeader = (props: Props) => {
-  const {pageRef} = props
+  const {pageRef, showConfluenceExport, isPageGenerating} = props
   const page = useFragment(
     graphql`
       fragment PageHeader_page on Page {
         ...PageBreadCrumbs_page
         ...PageDeletedHeader_page
         id
+        deletedBy
       }
     `,
     pageRef
@@ -35,8 +50,18 @@ export const PageHeader = (props: Props) => {
   const exportDeepLinked = searchParams.get('export') === 'confluence'
   const exportReport = searchParams.get('report') !== null
   const [exportOpen, setExportOpen] = useState(exportDeepLinked)
+  const [entryPoint, setEntryPoint] = useState(
+    searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'
+  )
 
-  const {id: pageId} = page
+  const {id: pageId, deletedBy} = page
+  const pageInTrash = !!deletedBy
+  const isExportDisabled = isPageGenerating || pageInTrash
+  const showBadge = showConfluenceExport && showConfluenceBadge()
+  const openExportDialog = () => {
+    setEntryPoint('pageKebab')
+    setExportOpen(true)
+  }
   return (
     <div className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>
@@ -68,8 +93,11 @@ export const PageHeader = (props: Props) => {
           </Popover.Root>
           <Menu
             trigger={
-              <button className='flex size-6 cursor-pointer items-center justify-center rounded-md bg-surface-document px-0.5 font-semibold text-md hover:bg-surface-hover focus:bg-surface-hover'>
+              <button className='relative flex size-6 cursor-pointer items-center justify-center rounded-md bg-surface-document px-0.5 font-semibold text-md hover:bg-surface-hover focus:bg-surface-hover'>
                 <MoreHorizIcon className={'p-0.5'} />
+                {showBadge && (
+                  <span className='-top-0.5 -right-0.5 absolute size-2 rounded-full bg-rose-500' />
+                )}
               </button>
             }
           >
@@ -82,13 +110,38 @@ export const PageHeader = (props: Props) => {
                 <PictureAsPdfIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Export to PDF'}</span>
               </MenuItem>
+              {showConfluenceExport && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <MenuItem
+                      isDisabled={isExportDisabled}
+                      onSelect={() => {
+                        if (isExportDisabled) return
+                        dismissConfluenceBadge()
+                        openExportDialog()
+                      }}
+                    >
+                      <CloudUploadIcon className='text-fg-secondary' />
+                      <span className='pl-1'>{'Export to Confluence'}</span>
+                      <ConfluenceNewBadge />
+                    </MenuItem>
+                  </TooltipTrigger>
+                  {isExportDisabled && (
+                    <TooltipContent side='left'>
+                      {isPageGenerating
+                        ? 'Available when the summary finishes generating'
+                        : 'Restore the page to export it'}
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              )}
             </MenuContent>
           </Menu>
-          {exportOpen && (
+          {exportOpen && showConfluenceExport && (
             <ExportToConfluenceRoot
               pageId={pageId}
               onClose={() => setExportOpen(false)}
-              entryPoint={searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'}
+              entryPoint={entryPoint}
               initialReport={exportReport}
             />
           )}

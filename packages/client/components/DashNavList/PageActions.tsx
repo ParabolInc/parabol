@@ -1,8 +1,14 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type * as Y from 'yjs'
-import {Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
+import {
+  Add as AddIcon,
+  CloudUpload as CloudUploadIcon,
+  Delete as DeleteIcon,
+  MoreVert as MoreVertIcon
+} from '~/ui/icons'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
@@ -15,15 +21,18 @@ import {MenuItem} from '../../ui/Menu/MenuItem'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import {ExportToConfluenceRoot} from '../ExportToConfluence/ExportToConfluenceRoot'
 import {LeftNavItemButton} from './LeftNavItemButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
 
 interface Props {
   pageRef: PageActions_page$key
   expandChildren: () => void
+  showConfluenceExport: boolean
 }
 export const PageActions = (props: Props) => {
-  const {pageRef, expandChildren} = props
+  const {pageRef, expandChildren, showConfluenceExport} = props
+  const [exportOpen, setExportOpen] = useState(false)
   const page = useFragment(
     graphql`
       fragment PageActions_page on Page {
@@ -102,7 +111,7 @@ export const PageActions = (props: Props) => {
 
   return (
     <LeftNavItemButtons>
-      {viewerAccess === 'owner' && (
+      {(viewerAccess === 'owner' || showConfluenceExport) && (
         <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
           <Menu
             trigger={
@@ -117,19 +126,40 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              <MenuItem
-                onSelect={archivePage}
-                onClick={(e) => {
-                  //  default is required in order to trigger onSelect
-                  e.stopPropagation()
-                }}
-              >
-                <DeleteIcon className='text-fg-secondary' />
-                <span className='pl-1'>{'Delete page'}</span>
-              </MenuItem>
+              {viewerAccess === 'owner' && (
+                <MenuItem
+                  onSelect={archivePage}
+                  onClick={(e) => {
+                    //  default is required in order to trigger onSelect
+                    e.stopPropagation()
+                  }}
+                >
+                  <DeleteIcon className='text-fg-secondary' />
+                  <span className='pl-1'>{'Delete page'}</span>
+                </MenuItem>
+              )}
+              {showConfluenceExport && (
+                <MenuItem
+                  onSelect={() => setExportOpen(true)}
+                  onClick={(e) => {
+                    //  default is required in order to trigger onSelect
+                    e.stopPropagation()
+                  }}
+                >
+                  <CloudUploadIcon className='text-fg-secondary' />
+                  <span className='pl-1'>{'Export to Confluence'}</span>
+                </MenuItem>
+              )}
             </MenuContent>
           </Menu>
         </div>
+      )}
+      {exportOpen && (
+        <ExportToConfluenceRoot
+          pageId={pageId}
+          onClose={() => setExportOpen(false)}
+          entryPoint={'navKebab'}
+        />
       )}
       {!isDatabase && canEdit && (
         <LeftNavItemButton Icon={AddIcon} onClick={addChildPage} tooltip='Add a page inside' />

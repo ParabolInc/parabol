@@ -35,6 +35,9 @@ const JiraIntegrationPanel = (props: Props) => {
             integrations {
               atlassian {
                 isActive
+                # fetched so openOAuth's held-scope union can see them in the store
+                hasJiraScopes
+                hasConfluenceScopes
               }
             }
           }
@@ -79,7 +82,8 @@ const JiraIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.atlassian?.isActive ? (
+      {teamMember?.integrations.atlassian?.isActive &&
+      teamMember?.integrations.atlassian?.hasJiraScopes ? (
         <>
           <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />

@@ -7,6 +7,9 @@ import type {ReqResolvers} from './ReqResolvers'
 // team is captured in PagePartial so it's not needed here
 const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
   access: ({id}) => ({id}),
+  isMeetingSummary: ({summaryMeetingId}) => !!summaryMeetingId,
+  teamHasAtlassianAuth: async ({teamId}, _args, {dataLoader}) =>
+    teamId ? (await dataLoader.get('atlassianAuthsByTeamId').load(teamId)).length > 0 : false,
   parentPage: async ({parentPageId}, _args, {authToken, dataLoader}) => {
     if (!parentPageId) return null
     const [parentPage, access] = await Promise.all([

@@ -10,22 +10,16 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
-  showEnableConfluence?: boolean
 }
 
 const AtlassianConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId, showEnableConfluence} = props
+  const {menuProps, mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
-  const openOAuth = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
-  }
-
-  const enableConfluence = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
-      ...AtlassianClientManager.SCOPE,
-      ...AtlassianClientManager.CONFLUENCE_SCOPE
-    ])
+  const refreshToken = () => {
+    // intent: keep what we have — openOAuth unions in the held products
+    // (falls back to the Jira set if the grant is unreadable)
+    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, ['offline_access'])
   }
 
   const removeAtlassian = () => {
@@ -35,9 +29,16 @@ const AtlassianConfigMenu = (props: Props) => {
   }
   return (
     <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>
-      <MenuItem label='Refresh token' onClick={openOAuth} />
-      {showEnableConfluence && <MenuItem label='Enable Confluence' onClick={enableConfluence} />}
-      <MenuItem label='Remove Atlassian' onClick={removeAtlassian} />
+      <MenuItem label='Refresh token' onClick={refreshToken} />
+      <MenuItem
+        label={
+          <div className='px-4 py-1'>
+            <div>{'Remove Atlassian connection'}</div>
+            <div className='text-fg-muted text-xs'>{'Disconnects Jira and Confluence'}</div>
+          </div>
+        }
+        onClick={removeAtlassian}
+      />
     </Menu>
   )
 }

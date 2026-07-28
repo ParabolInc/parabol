@@ -153,7 +153,15 @@ export const makeSummaryEmailV2 = async (
     storyCount
   } = meeting
   const [team] = await Promise.all([dataLoader.get('teams').loadNonNull(teamId)])
-  const {name: teamName} = team
+  const {name: teamName, orgId} = team
+  const [hasAtlassian, confluenceFlagOn] = await Promise.all([
+    dataLoader
+      .get('atlassianAuthsByTeamId')
+      .load(teamId)
+      .then((auths) => auths.length > 0),
+    dataLoader.get('featureFlagByOwnerId').load({ownerId: orgId, featureName: 'ConfluenceExport'})
+  ])
+  const showConfluenceCta = hasAtlassian && !!confluenceFlagOn
   const endTime = dayjs(endedAt)
   const main = {
     backgroundColor: '#ffffff',
@@ -196,6 +204,27 @@ export const makeSummaryEmailV2 = async (
   }
   const pageCode = CipherId.encrypt(pageId)
   const CTAURL = makeAppURL(appOrigin, `/pages/${pageCode}`)
+  const outlineCtaButton = {
+    ...ctaButton,
+    backgroundColor: '#ffffff',
+    color: PALETTE.SKY_500,
+    border: `1px solid ${PALETTE.SKY_500}`
+  }
+  const confluenceCtaUrl = makeAppURL(appOrigin, `/pages/${pageCode}`, {
+    searchParams: {
+      export: 'confluence',
+      utm_source: 'summary email',
+      utm_medium: 'email',
+      utm_campaign: 'confluence-export'
+    }
+  })
+  const confluenceCta = showConfluenceCta ? (
+    <Section style={{marginBottom: '16px'}}>
+      <Button style={outlineCtaButton} href={confluenceCtaUrl}>
+        Export to Confluence
+      </Button>
+    </Section>
+  ) : null
   const endLabel = endTime.format('MMM D, YYYY')
   const title = `${meetingName} Summary - ${endLabel}`
   const participantLabel = `${meetingMembers.length} ${plural(meetingMembers.length, 'Participant')}`
@@ -242,6 +271,7 @@ export const makeSummaryEmailV2 = async (
                 See Retro Insights & Tasks
               </Button>
             </Section>
+            {confluenceCta}
             <EmailFooter meetingName='Retro' />
           </Container>
         </Body>
@@ -294,6 +324,7 @@ export const makeSummaryEmailV2 = async (
                 See in Parabol
               </Button>
             </Section>
+            {confluenceCta}
             <Section>
               <table style={table} cellPadding={0} cellSpacing={0} role='presentation'>
                 <thead>
@@ -363,6 +394,7 @@ export const makeSummaryEmailV2 = async (
                 See Responses in Parabol
               </Button>
             </Section>
+            {confluenceCta}
             <EmailFooter meetingName='Standup' />
           </Container>
         </Body>
@@ -391,6 +423,7 @@ export const makeSummaryEmailV2 = async (
                 See New Tasks
               </Button>
             </Section>
+            {confluenceCta}
             <EmailFooter meetingName={'Check-in'} />
           </Container>
         </Body>
