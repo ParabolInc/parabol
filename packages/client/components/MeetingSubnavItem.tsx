@@ -49,9 +49,9 @@ const MeetingSubnavItem = (props: Props) => {
     <div
       ref={ref}
       className={cn(
-        'relative my-0.5 flex min-h-10 w-full shrink-0 select-none items-center rounded-md border-l-[3px] border-l-transparent py-2 font-normal text-fg-primary text-sm',
+        'relative my-0.5 flex min-h-10 w-full shrink-0 select-none items-center rounded-md border-l-[3px] border-l-transparent py-2 font-normal text-fg-primary text-sm before:absolute before:inset-y-1 before:left-px before:w-[3px] before:rounded-full before:bg-transparent',
         isActive
-          ? 'border-l-(--color-accent-active) bg-surface-nav-active'
+          ? 'bg-surface-nav-active before:bg-(--color-accent-active)'
           : isDragging
             ? 'bg-surface-raised'
             : 'bg-transparent',
