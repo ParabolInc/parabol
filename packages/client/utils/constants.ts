@@ -246,7 +246,6 @@ export const SALES_EMAIL = 'drew@parabol.co'
 
 /* Confluence export */
 export const CONFLUENCE_EXPORT_SEEN_KEY = 'confluenceExportSeen'
-// hard sunset for the first-run NEW badge: never render on/after this date
 export const CONFLUENCE_EXPORT_BADGE_SUNSET = '2026-09-30'
 export const confluenceExportDestKey = (teamId?: string | null) =>
   `confluenceExportDest:${teamId ?? 'personal'}`

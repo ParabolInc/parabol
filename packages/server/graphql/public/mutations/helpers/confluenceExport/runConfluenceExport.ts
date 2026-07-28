@@ -42,7 +42,10 @@ const ERROR_COPY: Record<string, string> = {
  * shared Atlassian OAuth rate pool.
  */
 export const runConfluenceExport = async (pageExportId: string, dataLoader: DataLoaderWorker) => {
-  const redisLock = new RedisLockQueue('confluenceExport', 30000)
+  // the ttl is the max HOLD time before the lock self-releases — it must exceed the
+  // worst-case job duration (100 pages × create/upload with 429 retries) or a second
+  // export starts running concurrently mid-job
+  const redisLock = new RedisLockQueue('confluenceExport', 1_800_000)
   await redisLock.lock(600_000)
   const startedAt = Date.now()
   const pg = getKysely()
@@ -291,6 +294,6 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
       analytics.confluenceExportCompleted(viewer, properties)
     }
   } finally {
-    redisLock.unlock()
+    await redisLock.unlock()
   }
 }

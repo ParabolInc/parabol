@@ -33,7 +33,6 @@ export const useIsPageStreaming = (provider: HocuspocusProvider | null) => {
 
 export const useEditablePage = (provider: HocuspocusProvider, editor: Editor) => {
   const [authorizedScope, setAuthorizedScope] = useState(provider.authorizedScope)
-  // Lock edits while the server is streaming summary blocks
   const isStreaming = useIsPageStreaming(provider)
 
   useEffect(() => {

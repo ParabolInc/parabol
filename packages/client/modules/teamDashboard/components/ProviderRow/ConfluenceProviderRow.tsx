@@ -16,8 +16,6 @@ interface Props {
   viewerRef: ConfluenceProviderRow_viewer$key
 }
 
-// Product row backed by the shared Atlassian grant. Connect requests Confluence scopes
-// plus whatever the grant already holds, so it never downgrades an existing Jira grant.
 const ConfluenceProviderRow = (props: Props) => {
   const {teamId, viewerRef} = props
   const viewer = useFragment(
@@ -52,8 +50,6 @@ const ConfluenceProviderRow = (props: Props) => {
   const flagOn = teamMember?.team?.organization?.hasConfluenceExport ?? false
 
   const connectConfluence = () => {
-    // intent: Confluence — openOAuth unions in whatever the grant already holds
-    // (offline_access is required for refresh tokens on a fresh grant)
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
       ...AtlassianClientManager.CONFLUENCE_SCOPE,
       'offline_access' as const

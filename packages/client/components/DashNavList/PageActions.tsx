@@ -21,6 +21,7 @@ import {MenuItem} from '../../ui/Menu/MenuItem'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {ExportToConfluenceRoot} from '../ExportToConfluence/ExportToConfluenceRoot'
 import {LeftNavItemButton} from './LeftNavItemButton'
 import {LeftNavItemButtons} from './LeftNavItemButtons'
@@ -140,7 +141,12 @@ export const PageActions = (props: Props) => {
               )}
               {showConfluenceExport && (
                 <MenuItem
-                  onSelect={() => setExportOpen(true)}
+                  onSelect={() => {
+                    SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {
+                      entryPoint: 'navKebab'
+                    })
+                    setExportOpen(true)
+                  }}
                   onClick={(e) => {
                     //  default is required in order to trigger onSelect
                     e.stopPropagation()

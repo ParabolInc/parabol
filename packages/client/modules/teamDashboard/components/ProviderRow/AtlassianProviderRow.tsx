@@ -67,7 +67,6 @@ const AtlassianProviderRow = (props: Props) => {
   useFreshToken(accessToken, retry)
 
   const openOAuth = () => {
-    // intent: Jira — openOAuth unions in whatever the grant already holds
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
   }
 

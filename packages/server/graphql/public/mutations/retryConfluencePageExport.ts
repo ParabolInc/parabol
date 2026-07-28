@@ -23,6 +23,13 @@ const retryConfluencePageExport: MutationResolvers['retryConfluencePageExport'] 
   if (!exportRow || exportRow.userId !== viewerId) {
     throw new GraphQLError('Export not found', {extensions: {code: 'NOT_FOUND'}})
   }
+  // page access can be revoked after the original export — re-validate on every retry
+  const access = await dataLoader
+    .get('pageAccessByPageIdUserId')
+    .load({pageId: exportRow.pageId, userId: viewerId})
+  if (!access) {
+    throw new GraphQLError('Export not found', {extensions: {code: 'NOT_FOUND'}})
+  }
   const [dbPageId] = CipherId.fromClient(pageId)
   const pagesJson = exportRow.pagesJson
   const entry = pagesJson.find((page) => page.pageId === dbPageId)

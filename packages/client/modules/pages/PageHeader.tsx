@@ -1,6 +1,6 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import {
@@ -15,12 +15,14 @@ import {
   showConfluenceBadge
 } from '../../components/ExportToConfluence/ConfluenceNewBadge'
 import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
+import useAtmosphere from '../../hooks/useAtmosphere'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import {PageBreadCrumbs} from './PageBreadCrumbs'
 import {PageDeletedHeader} from './PageDeletedHeader'
 import {PageSharingRoot} from './PageSharingRoot'
@@ -45,23 +47,35 @@ export const PageHeader = (props: Props) => {
     pageRef
   )
 
-  const searchParams = new URLSearchParams(useLocation().search)
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
   const sharePageDefaultOpen = searchParams.get('share') !== null
   const exportDeepLinked = searchParams.get('export') === 'confluence'
   const exportReport = searchParams.get('report') !== null
-  const [exportOpen, setExportOpen] = useState(exportDeepLinked)
-  const [entryPoint, setEntryPoint] = useState(
-    searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'
-  )
+  const [exportOpen, setExportOpen] = useState(false)
+  const [entryPoint, setEntryPoint] = useState('deepLink')
 
   const {id: pageId, deletedBy} = page
+  const atmosphere = useAtmosphere()
   const pageInTrash = !!deletedBy
   const isExportDisabled = isPageGenerating || pageInTrash
   const showBadge = showConfluenceExport && showConfluenceBadge()
   const openExportDialog = () => {
+    SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: 'pageKebab'})
     setEntryPoint('pageKebab')
     setExportOpen(true)
   }
+  // keyed on location.key so a same-route navigation (e.g. the completion toast's
+  // "View report" while already on the page) still opens the dialog
+  useEffect(() => {
+    if (exportDeepLinked && showConfluenceExport) {
+      const deepLinkEntry =
+        searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'
+      setEntryPoint(deepLinkEntry)
+      setExportOpen(true)
+      SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: deepLinkEntry})
+    }
+  }, [location.key])
   return (
     <div className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>

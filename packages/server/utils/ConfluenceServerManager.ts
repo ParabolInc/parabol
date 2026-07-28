@@ -97,7 +97,13 @@ export class ConfluenceServerManager {
     while (true) {
       let res: Response
       try {
-        res = await this.fetchFn(url, {method: init.method ?? 'GET', headers, body})
+        // a hung response would otherwise strand the export in 'exporting' forever
+        res = await this.fetchFn(url, {
+          method: init.method ?? 'GET',
+          headers,
+          body,
+          signal: AbortSignal.timeout(60_000)
+        })
       } catch (e) {
         throw new ConfluenceApiError(0, e instanceof Error ? e.message : 'fetch failed', 'network')
       }

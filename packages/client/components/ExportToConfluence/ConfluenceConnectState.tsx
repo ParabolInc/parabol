@@ -1,9 +1,11 @@
+import {useEffect} from 'react'
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
@@ -13,6 +15,9 @@ interface Props {
 export const ConfluenceConnectState = (props: Props) => {
   const {teamId, onAuthed} = props
   const atmosphere = useAtmosphere()
+  useEffect(() => {
+    SendClientSideEvent(atmosphere, 'Confluence Export Connect Shown')
+  }, [atmosphere])
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const mutationProps = {
     submitting,
@@ -26,8 +31,6 @@ export const ConfluenceConnectState = (props: Props) => {
 
   const connect = () => {
     if (submitting || !teamId) return
-    // fresh connection from the export flow: Confluence only — Jira is opt-in
-    // from /integrations (offline_access is required for refresh tokens)
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
       ...AtlassianClientManager.CONFLUENCE_SCOPE,
       'offline_access' as const

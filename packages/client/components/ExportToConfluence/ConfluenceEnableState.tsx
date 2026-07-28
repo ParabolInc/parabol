@@ -1,9 +1,11 @@
+import {useEffect} from 'react'
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../../hooks/useMutationProps'
 import {Button} from '../../ui/Button/Button'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../utils/AtlassianClientManager'
+import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
@@ -13,6 +15,9 @@ interface Props {
 export const ConfluenceEnableState = (props: Props) => {
   const {teamId, onAuthed} = props
   const atmosphere = useAtmosphere()
+  useEffect(() => {
+    SendClientSideEvent(atmosphere, 'Confluence Export Enable Shown')
+  }, [atmosphere])
   const {submitting, submitMutation, onError, onCompleted, error} = useMutationProps()
   const mutationProps = {
     submitting,
@@ -26,8 +31,6 @@ export const ConfluenceEnableState = (props: Props) => {
 
   const enable = () => {
     if (submitting || !teamId) return
-    // intent: Confluence — openOAuth unions in the held products (the modal query
-    // fetched hasJiraScopes, so an existing Jira grant is preserved automatically)
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
       ...AtlassianClientManager.CONFLUENCE_SCOPE,
       'offline_access' as const

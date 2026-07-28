@@ -16,9 +16,15 @@ const AtlassianConfigMenu = (props: Props) => {
   const {menuProps, mutationProps, teamId} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
+  const held = AtlassianClientManager.getHeldProducts(atmosphere, teamId)
+  const removeSubline =
+    held.jira && held.confluence
+      ? 'Disconnects Jira and Confluence'
+      : held.confluence
+        ? 'Disconnects Confluence'
+        : 'Disconnects Jira'
   const refreshToken = () => {
-    // intent: keep what we have — openOAuth unions in the held products
-    // (falls back to the Jira set if the grant is unreadable)
+    // offline_access-only base: openOAuth's union fills in the held products
     AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, ['offline_access'])
   }
 
@@ -34,7 +40,7 @@ const AtlassianConfigMenu = (props: Props) => {
         label={
           <div className='px-4 py-1'>
             <div>{'Remove Atlassian connection'}</div>
-            <div className='text-fg-muted text-xs'>{'Disconnects Jira and Confluence'}</div>
+            <div className='text-fg-muted text-xs'>{removeSubline}</div>
           </div>
         }
         onClick={removeAtlassian}

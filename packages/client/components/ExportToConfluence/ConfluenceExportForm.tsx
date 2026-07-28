@@ -47,11 +47,9 @@ export const ConfluenceExportForm = (props: Props) => {
   const [includeSubPages, setIncludeSubPages] = useState(true)
   const [executeExport, submitting] = useExportPagesToConfluenceMutation()
 
-  // preselect the remembered destination once the space list resolves inside the select
   const storedDest = readDest(teamId)
   useEffect(() => {
     if (storedDest && storedDest.cloudId !== cloudId) setCloudId(storedDest.cloudId)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const onSubmit = () => {
