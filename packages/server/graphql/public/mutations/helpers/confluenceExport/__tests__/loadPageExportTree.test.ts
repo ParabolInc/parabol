@@ -5,6 +5,8 @@ import {encodeStateAsUpdate} from 'yjs'
 import generateUID from '../../../../../../generateUID'
 import getKysely from '../../../../../../postgres/getKysely'
 import {CipherId} from '../../../../../../utils/CipherId'
+import getPubSub from '../../../../../../utils/getPubSub'
+import getRedis from '../../../../../../utils/getRedis'
 import {createNewPage} from '../../../../../../utils/tiptap/createNewPage'
 import {loadPageExportTree} from '../loadPageExportTree'
 
@@ -48,6 +50,10 @@ beforeAll(async () => {
 afterAll(async () => {
   await pg.deleteFrom('Page').where('userId', '=', userId).execute()
   await pg.deleteFrom('User').where('id', '=', userId).execute()
+  const pubSub = getPubSub()
+  pubSub.destroy()
+  await Promise.all([pubSub.publisher.quit(), pubSub.subscriber.quit(), getRedis().quit()])
+  await pg.destroy()
 })
 
 describe('loadPageExportTree', () => {

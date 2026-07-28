@@ -7,6 +7,8 @@ import generateUID from '../../../../../../generateUID'
 import getKysely from '../../../../../../postgres/getKysely'
 import {selectPageExports} from '../../../../../../postgres/select'
 import type {PageExportPageState} from '../../../../../../utils/confluence/types'
+import getPubSub from '../../../../../../utils/getPubSub'
+import getRedis from '../../../../../../utils/getRedis'
 import {runConfluenceExport} from '../runConfluenceExport'
 
 const mockConfluence = {
@@ -109,6 +111,10 @@ afterAll(async () => {
   await pg.deleteFrom('User').where('id', '=', userId).execute()
   await pg.deleteFrom('Team').where('id', '=', teamId).execute()
   await pg.deleteFrom('Organization').where('id', '=', orgId).execute()
+  const pubSub = getPubSub()
+  pubSub.destroy()
+  await Promise.all([pubSub.publisher.quit(), pubSub.subscriber.quit(), getRedis().quit()])
+  await pg.destroy()
 })
 
 describe('runConfluenceExport', () => {

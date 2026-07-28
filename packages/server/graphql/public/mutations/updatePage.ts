@@ -11,7 +11,6 @@ import {movePageToNewTeam} from './helpers/movePageToNewTeam'
 import {movePageToTopLevel} from './helpers/movePageToTopLevel'
 import {privatizePage} from './helpers/privatizePage'
 
-export const MAX_PAGE_DEPTH = 10
 const updatePage: MutationResolvers['updatePage'] = async (
   _source,
   {pageId, teamId, sortOrder, sourceSection, targetSection},
