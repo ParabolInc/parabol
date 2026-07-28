@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.5](https://github.com/ParabolInc/parabol/compare/v13.31.4...v13.31.5) (2026-07-28)
+
+
+### Fixed
+
+* correct profile URL typo in llms.txt ([#13319](https://github.com/ParabolInc/parabol/issues/13319)) ([184f571](https://github.com/ParabolInc/parabol/commit/184f571ef5c724bcb840061afb433b08205e1f35))
+* LeftNav selection, summary task style improvements ([#13324](https://github.com/ParabolInc/parabol/issues/13324)) ([28c55c0](https://github.com/ParabolInc/parabol/commit/28c55c002afb0d7d5b6a8386a03e36eae34eade3))
+
 ## [13.31.4](https://github.com/ParabolInc/parabol/compare/v13.31.3...v13.31.4) (2026-07-27)
 
 
