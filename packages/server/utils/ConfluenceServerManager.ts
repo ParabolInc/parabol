@@ -118,14 +118,17 @@ export class ConfluenceServerManager {
   private toApiError(res: Response, body: unknown): ConfluenceApiError {
     const message =
       (body as {errors?: {title?: string}[]})?.errors?.[0]?.title ??
+      (body as {message?: string})?.message ??
       `Confluence request failed with status ${res.status}`
     if (isTitleConflict(res.status, body)) {
       return new ConfluenceApiError(res.status, message, 'titleConflict')
     }
+    // Confluence returns 401 (not just 403) for "no permission here" — e.g. creating in a
+    // restricted space — verified live 2026-07-27
     const errorClass: ConfluenceErrorClass =
       res.status === 413
         ? 'tooLarge'
-        : res.status === 403
+        : res.status === 403 || res.status === 401
           ? 'forbidden'
           : res.status === 429
             ? 'rateLimit'
@@ -140,9 +143,13 @@ export class ConfluenceServerManager {
   }
 
   async getSpaces(): Promise<ConfluenceSpaceRes[]> {
+    // cap pagination: huge sites exist (ecosystem has 7,127 spaces = 72 sequential calls);
+    // 10 pages = 1,000 spaces is plenty for a picker that filters client-side
+    const MAX_SPACE_PAGES = 10
+    let pageCount = 0
     const spaces: ConfluenceSpaceRes[] = []
     let path: string | null = '/wiki/api/v2/spaces?limit=100'
-    while (path) {
+    while (path && pageCount++ < MAX_SPACE_PAGES) {
       type SpacesPage = {
         results: {id: string; key: string; name: string; type: string}[]
         _links?: {next?: string}

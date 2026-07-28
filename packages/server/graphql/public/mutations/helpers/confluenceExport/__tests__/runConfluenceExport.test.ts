@@ -50,7 +50,7 @@ const userId = `confluenceJob|${uid}`
 const orgId = `confluenceJobOrg|${uid}`
 const teamId = `confluenceJobTeam|${uid}`
 const CONF_SCOPE =
-  'read:jira-user read:jira-work write:jira-work offline_access read:page:confluence write:page:confluence read:space:confluence write:attachment:confluence'
+  'read:jira-user read:jira-work write:jira-work offline_access read:page:confluence write:page:confluence read:space:confluence write:attachment:confluence read:content-details:confluence'
 
 const b64 = (obj: object) => Buffer.from(JSON.stringify(obj)).toString('base64url')
 const fakeJwt = () =>

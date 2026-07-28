@@ -201,6 +201,11 @@ const subscription = graphql`
       UpdatePageAccessPayload {
         ...useUpdatePageAccessMutation_notification @relay(mask: false)
       }
+      PageExportProgressPayload {
+        pageExport {
+          ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
+        }
+      }
     }
   }
 `

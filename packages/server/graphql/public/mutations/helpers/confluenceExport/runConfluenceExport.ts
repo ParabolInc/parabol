@@ -19,6 +19,7 @@ import {convertDatabasePageToStorage} from '../../../../../utils/confluence/conv
 import {convertTipTapToConfluenceStorage} from '../../../../../utils/confluence/convertTipTapToConfluenceStorage'
 import type {DegradedItem, StorageConversionResult} from '../../../../../utils/confluence/types'
 import {hasConfluenceScopes} from '../../../../../utils/hasConfluenceScopes'
+import {Logger} from '../../../../../utils/Logger'
 import publish from '../../../../../utils/publish'
 import RedisLockQueue from '../../../../../utils/RedisLockQueue'
 import type {DataLoaderWorker} from '../../../../graphql'
@@ -45,6 +46,10 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
   await redisLock.lock(600_000)
   const startedAt = Date.now()
   const pg = getKysely()
+  // subscribers resolve published payloads with the dataloader registered under this
+  // operationId — publishing without it leaves them a null dataLoader and crashes resolvers
+  const operationId = dataLoader.share()
+  const subOptions = {operationId}
   try {
     const exportRow = await selectPageExports()
       .where('id', '=', pageExportId)
@@ -61,9 +66,13 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
         .where('id', '=', pageExportId)
         .execute()
       dataLoader.get('pageExports').clear(pageExportId)
-      publish(SubscriptionChannel.NOTIFICATION, userId, 'PageExportProgressPayload', {
-        pageExportId
-      })
+      publish(
+        SubscriptionChannel.NOTIFICATION,
+        userId,
+        'PageExportProgressPayload',
+        {pageExportId},
+        subOptions
+      )
     }
 
     const failAllPending = async (error: string) => {
@@ -191,13 +200,26 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
               })
               continue
             }
-            await confluence.uploadAttachment(
-              created.id,
-              asset.filename,
-              assetData.buffer,
-              assetData.mimeType
-            )
-            attachmentCount++
+            try {
+              await confluence.uploadAttachment(
+                created.id,
+                asset.filename,
+                assetData.buffer,
+                assetData.mimeType
+              )
+              attachmentCount++
+            } catch (e) {
+              // the page exists — a failed upload degrades that file, it doesn't fail the page
+              degraded.push({
+                pageId: entry.pageId,
+                blockType: 'asset',
+                count: 1,
+                treatment: 'file could not be attached'
+              })
+              Logger.error(
+                `confluenceExport ${pageExportId} attachment ${asset.filename}: ${e instanceof ConfluenceApiError ? `${e.status} ${e.message}` : e}`
+              )
+            }
           }
           confluenceIdByPageId.set(entry.pageId, created.id)
           entry.confluencePageId = created.id
@@ -211,9 +233,13 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
           if (e instanceof ConfluenceApiError) {
             entry.errorClass = e.errorClass
             entry.error = ERROR_COPY[e.errorClass] ?? e.message
+            Logger.error(
+              `confluenceExport ${pageExportId} page ${entry.pageId}: ${e.status} ${e.errorClass} ${e.message}`
+            )
           } else {
             entry.errorClass = 'unknown'
             entry.error = e instanceof Error ? e.message : 'Export failed'
+            Logger.error(e)
           }
           await persistAndPublish()
         }
@@ -247,7 +273,7 @@ export const runConfluenceExport = async (pageExportId: string, dataLoader: Data
       pageExportId
     }
     await pg.insertInto('Notification').values(notification).execute()
-    publishNotification(notification, {})
+    publishNotification(notification, subOptions)
 
     const viewer = await dataLoader.get('users').loadNonNull(userId)
     const properties = {

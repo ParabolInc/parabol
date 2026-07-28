@@ -10,7 +10,8 @@ describe('validateAtlassianScopes', () => {
       'read:page:confluence',
       'write:page:confluence',
       'read:space:confluence',
-      'write:attachment:confluence'
+      'write:attachment:confluence',
+      'read:content-details:confluence'
     ]
     expect(validateAtlassianScopes(scopes)).toBe(scopes.join(' '))
   })

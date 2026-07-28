@@ -1,9 +1,11 @@
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation} from 'react-router'
 import {MoreHoriz as MoreHorizIcon, PictureAsPdf as PictureAsPdfIcon} from '~/ui/icons'
 import type {PageHeader_page$key} from '../../__generated__/PageHeader_page.graphql'
+import {ExportToConfluenceRoot} from '../../components/ExportToConfluence/ExportToConfluenceRoot'
 import {Menu} from '../../ui/Menu/Menu'
 import {MenuContent} from '../../ui/Menu/MenuContent'
 import {MenuItem} from '../../ui/Menu/MenuItem'
@@ -30,6 +32,9 @@ export const PageHeader = (props: Props) => {
 
   const searchParams = new URLSearchParams(useLocation().search)
   const sharePageDefaultOpen = searchParams.get('share') !== null
+  const exportDeepLinked = searchParams.get('export') === 'confluence'
+  const exportReport = searchParams.get('report') !== null
+  const [exportOpen, setExportOpen] = useState(exportDeepLinked)
 
   const {id: pageId} = page
   return (
@@ -79,6 +84,14 @@ export const PageHeader = (props: Props) => {
               </MenuItem>
             </MenuContent>
           </Menu>
+          {exportOpen && (
+            <ExportToConfluenceRoot
+              pageId={pageId}
+              onClose={() => setExportOpen(false)}
+              entryPoint={searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'}
+              initialReport={exportReport}
+            />
+          )}
         </div>
       </div>
       <PageDeletedHeader pageRef={page} />
