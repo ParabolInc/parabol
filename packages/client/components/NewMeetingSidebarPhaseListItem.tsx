@@ -67,10 +67,10 @@ const NewMeetingSidebarPhaseListItem = (props: Props) => {
   return (
     <div
       className={cn(
-        'my-0.5 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-md border-l-[3px] border-l-transparent px-1 py-1 font-semibold text-fg-primary text-sm leading-8 no-underline hover:bg-surface-nav-hover focus:bg-surface-nav-hover',
+        'relative my-0.5 flex min-h-10 shrink-0 cursor-pointer select-none items-center rounded-md border-l-[3px] border-l-transparent px-1 py-1 font-semibold text-fg-primary text-sm leading-8 no-underline before:absolute before:inset-y-1 before:left-px before:w-[3px] before:rounded-full before:bg-transparent hover:bg-surface-nav-hover focus:bg-surface-nav-hover',
         isDisabled && 'cursor-not-allowed hover:bg-transparent focus:bg-transparent',
         isActive &&
-          'cursor-default border-l-(--color-accent-active) bg-surface-nav-active hover:bg-surface-nav-active focus:bg-surface-nav-active',
+          'cursor-default bg-surface-nav-active before:bg-(--color-accent-active) hover:bg-surface-nav-active focus:bg-surface-nav-active',
         isCollapsible && isActive && 'bg-transparent hover:cursor-pointer focus:cursor-pointer',
         isCollapsible &&
           isFacilitatorPhase &&

@@ -10,7 +10,7 @@ export const ResponseBlockView = (props: NodeViewProps) => {
   const {editor} = useTipTapTaskEditor(content, {readOnly: true})
   return (
     <NodeViewWrapper data-type='taskBlock'>
-      <div className='w-[268px] min-w-64 rounded-sm p-4 shadow-card'>
+      <div className='w-[268px] min-w-64 rounded bg-surface-card p-4 shadow-card'>
         <div className='pb-2'>
           <div className='flex'>
             <Avatar className='size-6' picture={avatar} />
