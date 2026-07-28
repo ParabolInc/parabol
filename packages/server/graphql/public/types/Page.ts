@@ -54,6 +54,9 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     if (!deletedBy) return null
     const user = await dataLoader.get('users').loadNonNull(deletedBy)
     return user
+  },
+  confluenceExports: ({id}, _args, {dataLoader}) => {
+    return dataLoader.get('pageExportsByPageId').load(id)
   }
 }
 

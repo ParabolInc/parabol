@@ -1,9 +1,11 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
 import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
+import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
@@ -132,6 +134,33 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     return res
       .filter(({scopes}) => scopes.some((scope) => scope.includes('confluence')))
       .map(({id, name, url}) => ({cloudId: id, name, url}))
+  },
+
+  confluenceSpaces: async ({accessToken}, {cloudId, query}) => {
+    if (!accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      const spaces = await manager.getSpaces()
+      const normalizedQuery = query?.trim().toLowerCase()
+      return normalizedQuery
+        ? spaces.filter(({name}) => name.toLowerCase().includes(normalizedQuery))
+        : spaces
+    } catch (e) {
+      if (e instanceof ConfluenceApiError && e.errorClass === 'forbidden') {
+        throw new GraphQLError('No permission to list Confluence spaces on this site')
+      }
+      return []
+    }
+  },
+
+  confluencePageSearch: async ({accessToken}, {cloudId, spaceId, query}) => {
+    if (!accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      return await manager.searchPagesInSpace(spaceId, query)
+    } catch {
+      return []
+    }
   },
 
   accessToken: async ({accessToken, userId}, _args, {authToken}) => {

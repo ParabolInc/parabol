@@ -33,4 +33,5 @@ type NotificationSubscriptionPayload {
   UpdatePagePayload: UpdatePagePayload
   UpdatePageAccessPayload: UpdatePageAccessPayload
   UpdateUserThemeSuccess: UpdateUserThemeSuccess
+  PageExportProgressPayload: PageExportProgressPayload
 }

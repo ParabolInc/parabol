@@ -2,6 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration'
+import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
@@ -357,6 +358,14 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
+
+export const selectPageExports = () => {
+  const query = getKysely().selectFrom('PageExport').selectAll()
+  return query as AssertedQuery<
+    typeof query,
+    {pagesJson: PageExportPageState[]; degradedJson: DegradedItem[]}
+  >
+}
 
 export const selectDescendantPages = (
   db: ControlledTransaction<DB, []> | Kysely<DB>,

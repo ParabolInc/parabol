@@ -55,6 +55,11 @@ type Page implements PagePartial {
   team: Team @scope(name: TEAMS_READ)
 
   """
+  Records of this page being exported to Confluence, newest first (max 10)
+  """
+  confluenceExports: [PageExport!]!
+
+  """
   true if this page is nested under a parent that links back to it
   """
   isParentLinked: Boolean!

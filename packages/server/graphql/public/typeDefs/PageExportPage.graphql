@@ -1,0 +1,34 @@
+"""
+The live per-page state of one Parabol page within an export job
+"""
+type PageExportPage {
+  """
+  The Parabol page id (client format, e.g. "page:123")
+  """
+  pageId: ID!
+
+  """
+  The page title at export time
+  """
+  title: String!
+
+  """
+  Depth in the exported tree (0 = the root page)
+  """
+  depth: Int!
+
+  """
+  Current status of this page within the job
+  """
+  status: PageExportPageStatusEnum!
+
+  """
+  Absolute URL of the created Confluence page, once created
+  """
+  targetUrl: String
+
+  """
+  Human-readable error when status is error or skipped
+  """
+  error: String
+}

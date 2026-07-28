@@ -16,6 +16,7 @@ import {
   selectNotifications,
   selectOAuthAPIProvider,
   selectOrganizations,
+  selectPageExports,
   selectPages,
   selectPersonalAccessToken,
   selectReflectPrompts,
@@ -226,4 +227,8 @@ export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const personalAccessTokens = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectPersonalAccessToken().where('id', 'in', ids).execute()
+})
+
+export const pageExports = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectPageExports().where('id', 'in', ids).execute()
 })

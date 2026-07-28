@@ -402,6 +402,39 @@ type Mutation {
   ): EditCommentingPayload @scope(name: MEETINGS_WRITE)
 
   """
+  Export a Parabol page (and optionally its sub-page tree, max 100 pages) to Confluence
+  Cloud as native pages. Runs asynchronously — subscribe to notificationSubscription for
+  per-page progress and completion.
+  """
+  exportPagesToConfluence(
+    "The page to export (client format, e.g. page:123)"
+    pageId: ID!
+    "True to export the canonical sub-page tree as nested Confluence child pages"
+    includeSubPages: Boolean!
+    "The Atlassian cloudId of the destination site"
+    cloudId: ID!
+    "The Confluence space id to create pages in"
+    spaceId: ID!
+    "The Confluence space name (denormalized for export history)"
+    spaceName: String!
+    "Optional Confluence parent page id; omitted = space root"
+    parentPageId: ID
+    "Which UI surface launched the export (analytics only)"
+    entryPoint: String
+  ): ExportPagesToConfluenceSuccess! @scope(name: PAGES_WRITE)
+
+  """
+  Re-run the failed page (and its skipped descendants) of a previous Confluence export,
+  reusing the already-created parent pages
+  """
+  retryConfluencePageExport(
+    "The export record id (format pageExport:<id>)"
+    pageExportId: ID!
+    "The failed page to retry (client format, e.g. page:123)"
+    pageId: ID!
+  ): RetryConfluencePageExportSuccess! @scope(name: PAGES_WRITE)
+
+  """
   Replace the content of a page. Warning: this deletes the content history.
   """
   editPageContent(

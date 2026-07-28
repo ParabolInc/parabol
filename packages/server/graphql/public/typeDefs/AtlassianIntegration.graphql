@@ -132,4 +132,17 @@ type AtlassianIntegration {
   the account has no Confluence product or Confluence scopes were never consented.
   """
   confluenceSites: [ConfluenceSite!]!
+
+  """
+  The Confluence spaces visible to the user on the given site, optionally filtered by a
+  case-insensitive name substring. Empty when Confluence scopes were never granted.
+  """
+  confluenceSpaces(cloudId: ID!, query: String): [ConfluenceSpace!]!
+
+  """
+  Recently modified pages in a Confluence space filtered by title substring (for picking
+  an export parent page). Not a full-text search — the search scope is unavailable to
+  granular OAuth apps, so this lists the space's recent pages instead.
+  """
+  confluencePageSearch(cloudId: ID!, spaceId: ID!, query: String!): [ConfluencePagePreview!]!
 }

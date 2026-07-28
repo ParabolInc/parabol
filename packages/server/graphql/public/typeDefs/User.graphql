@@ -357,6 +357,14 @@ type User implements UserPartial {
   ): TeamInvitationPayload! @scope(name: TEAMS_READ)
 
   """
+  The viewer's Atlassian connection from any of their teams, preferring one with
+  Confluence scopes. Null when the viewer never connected Atlassian, or when requested
+  for a user other than the viewer. This is what makes teamless (private) page export
+  possible — the token is user-level in practice (fanned out across teams).
+  """
+  atlassianConnection: AtlassianIntegration
+
+  """
   all the teams the user is on that the viewer can see.
   """
   teams(

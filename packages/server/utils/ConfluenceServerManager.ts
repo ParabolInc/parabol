@@ -156,14 +156,17 @@ export class ConfluenceServerManager {
     return spaces
   }
 
-  async searchPagesInSpace(spaceKey: string, query: string) {
-    const escapedQuery = query.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
-    const cql = `type=page AND space="${spaceKey}" AND title ~ "${escapedQuery}*"`
-    const res = await this.request<{results: {content?: {id: string; title: string}}[]}>(
-      `/wiki/rest/api/content/search?cql=${encodeURIComponent(cql)}&limit=15`
+  // v1 CQL search requires the `search:confluence` scope, which is not offered in the
+  // granular family — so list the space's most recently modified pages (read:page scope)
+  // and filter by title substring instead
+  async searchPagesInSpace(spaceId: string, query: string) {
+    const res = await this.request<{results: {id: string; title: string}[]}>(
+      `/wiki/api/v2/spaces/${spaceId}/pages?limit=250&sort=-modified-date`
     )
+    const normalizedQuery = query.trim().toLowerCase()
     return res.results
-      .flatMap(({content}) => (content ? [content] : []))
+      .filter(({title}) => !normalizedQuery || title.toLowerCase().includes(normalizedQuery))
+      .slice(0, 15)
       .map(({id, title}) => ({id, title}))
   }
 

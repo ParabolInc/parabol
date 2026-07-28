@@ -39,10 +39,10 @@ export type JiraPermissionScope =
   | 'manage:jira-project'
 
 export type ConfluencePermissionScope =
-  | 'write:confluence-content'
-  | 'read:confluence-space.summary'
-  | 'write:confluence-file'
-  | 'read:confluence-content.all'
+  | 'read:page:confluence'
+  | 'write:page:confluence'
+  | 'read:space:confluence'
+  | 'write:attachment:confluence'
 
 export type AtlassianPermissionScope = JiraPermissionScope | ConfluencePermissionScope
 
@@ -66,11 +66,19 @@ export default abstract class AtlassianManager {
     'write:jira-work',
     'offline_access'
   ]
+  // GRANULAR scopes, not classic: verified live 2026-07-27 — Confluence v2 endpoints
+  // (and even v1 CQL search) reject classic scopes with 401 "scope does not match",
+  // and the v1 endpoints classic covers are being removed (410 Gone)
+  // FINE-GRAINED granular scopes — verified live 2026-07-27: the Confluence OAuth gateway
+  // rejects classic scopes AND the coarse read/write:content umbrellas with 401
+  // "scope does not match" on both v1 and v2 content routes; only the page/attachment
+  // fine scopes authorize them. No search scope exists for granular apps (the parent
+  // picker lists recent space pages via read:page instead).
   static CONFLUENCE_SCOPE: ConfluencePermissionScope[] = [
-    'write:confluence-content',
-    'read:confluence-space.summary',
-    'write:confluence-file',
-    'read:confluence-content.all'
+    'read:page:confluence',
+    'write:page:confluence',
+    'read:space:confluence',
+    'write:attachment:confluence'
   ]
   accessToken: string
   protected headers = {

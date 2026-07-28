@@ -1,0 +1,24 @@
+"""
+The overall status of a page export job
+"""
+enum PageExportStatusEnum {
+  """
+  The export job is currently processing pages
+  """
+  running
+
+  """
+  Every page in the export was created successfully
+  """
+  success
+
+  """
+  Some pages succeeded and some failed or were skipped
+  """
+  partial
+
+  """
+  No pages could be exported
+  """
+  failed
+}

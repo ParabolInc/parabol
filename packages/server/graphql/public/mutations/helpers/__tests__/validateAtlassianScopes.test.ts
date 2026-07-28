@@ -7,10 +7,10 @@ describe('validateAtlassianScopes', () => {
       'read:jira-work',
       'write:jira-work',
       'offline_access',
-      'write:confluence-content',
-      'read:confluence-space.summary',
-      'write:confluence-file',
-      'read:confluence-content.all'
+      'read:page:confluence',
+      'write:page:confluence',
+      'read:space:confluence',
+      'write:attachment:confluence'
     ]
     expect(validateAtlassianScopes(scopes)).toBe(scopes.join(' '))
   })

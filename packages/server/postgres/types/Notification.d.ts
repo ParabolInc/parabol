@@ -125,6 +125,11 @@ export interface PageAccessRequestedNotification extends BaseNotification {
   role: Pageroleenum
 }
 
+export interface PageExportCompleteNotification extends BaseNotification {
+  type: 'PAGE_EXPORT_COMPLETE'
+  pageExportId: string
+}
+
 export type AnyNotification =
   | DiscussionMentionedNotification
   | KickedOutNotification

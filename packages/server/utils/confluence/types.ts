@@ -1,3 +1,5 @@
+export const MAX_CONFLUENCE_EXPORT_PAGES = 100
+
 export type DegradedItem = {
   pageId: number
   blockType: string

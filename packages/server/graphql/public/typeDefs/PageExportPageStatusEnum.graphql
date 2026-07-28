@@ -1,0 +1,29 @@
+"""
+The status of one page within an export job
+"""
+enum PageExportPageStatusEnum {
+  """
+  Queued, not yet processed
+  """
+  pending
+
+  """
+  Currently being converted and uploaded
+  """
+  exporting
+
+  """
+  Created in the destination with all attachments
+  """
+  success
+
+  """
+  Failed — see the error message
+  """
+  error
+
+  """
+  Not attempted because an ancestor page failed
+  """
+  skipped
+}

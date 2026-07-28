@@ -23,6 +23,36 @@ type TeamUserKey = {
   teamId: string
   userId: string
 }
+
+export const atlassianAuthsByUserId = (parent: RootDataLoader) => {
+  return new DataLoader<string, AtlassianAuth[], string>(
+    async (userIds) => {
+      const rows = await selectAtlassianAuth()
+        .where('userId', 'in', userIds as string[])
+        .where('isActive', '=', true)
+        .execute()
+      return userIds.map((userId) => rows.filter((row) => row.userId === userId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const atlassianAuthsByTeamId = (parent: RootDataLoader) => {
+  return new DataLoader<string, AtlassianAuth[], string>(
+    async (teamIds) => {
+      const rows = await selectAtlassianAuth()
+        .where('teamId', 'in', teamIds as string[])
+        .where('isActive', '=', true)
+        .execute()
+      return teamIds.map((teamId) => rows.filter((row) => row.teamId === teamId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
 export interface JiraRemoteProjectKey {
   userId: string
   teamId: string

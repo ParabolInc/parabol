@@ -147,17 +147,25 @@ describe('ConfluenceServerManager', () => {
     )
   })
 
-  it('searches pages in a space via v1 CQL with escaped quotes', async () => {
+  it('lists recent space pages via v2 and filters by title substring', async () => {
     const {fetchFn, calls} = scripted(
-      jsonRes(200, {results: [{content: {id: '9', title: 'Retros — 2026'}}]})
+      jsonRes(200, {
+        results: [
+          {id: '9', title: 'Retros — 2026'},
+          {id: '10', title: 'Roadmap'},
+          {id: '11', title: 'Old retros archive'}
+        ]
+      })
     )
     const mgr = new ConfluenceServerManager('tok', 'cloud1', fetchFn)
-    const pages = await mgr.searchPagesInSpace('ENG', 'Retro "Q3"')
-    expect(pages).toEqual([{id: '9', title: 'Retros — 2026'}])
-    const url = calls[0]!.url
-    expect(url).toContain('/wiki/rest/api/content/search?cql=')
-    expect(decodeURIComponent(url)).toContain('space="ENG"')
-    expect(decodeURIComponent(url)).toContain('title ~ "Retro \\"Q3\\"*"')
+    const pages = await mgr.searchPagesInSpace('98313', 'retro')
+    expect(pages).toEqual([
+      {id: '9', title: 'Retros — 2026'},
+      {id: '11', title: 'Old retros archive'}
+    ])
+    expect(calls[0]!.url).toBe(
+      'https://api.atlassian.com/ex/confluence/cloud1/wiki/api/v2/spaces/98313/pages?limit=250&sort=-modified-date'
+    )
   })
 
   it('updates a page body with a version bump', async () => {
