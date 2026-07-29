@@ -53,7 +53,6 @@ export const PageHeader = (props: Props) => {
   const exportDeepLinked = searchParams.get('export') === 'confluence'
   const exportReport = searchParams.get('report') !== null
   const [exportOpen, setExportOpen] = useState(false)
-  const [entryPoint, setEntryPoint] = useState('deepLink')
 
   const {id: pageId, deletedBy} = page
   const atmosphere = useAtmosphere()
@@ -62,18 +61,14 @@ export const PageHeader = (props: Props) => {
   const showBadge = showConfluenceExport && showConfluenceBadge()
   const openExportDialog = () => {
     SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: 'pageKebab'})
-    setEntryPoint('pageKebab')
     setExportOpen(true)
   }
   // keyed on location.key so a same-route navigation (e.g. the completion toast's
   // "View report" while already on the page) still opens the dialog
   useEffect(() => {
     if (exportDeepLinked && showConfluenceExport) {
-      const deepLinkEntry =
-        searchParams.get('utm_medium') === 'email' ? 'emailDeepLink' : 'deepLink'
-      setEntryPoint(deepLinkEntry)
       setExportOpen(true)
-      SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: deepLinkEntry})
+      SendClientSideEvent(atmosphere, 'Confluence Export CTA Clicked', {entryPoint: 'deepLink'})
     }
   }, [location.key])
   return (
@@ -155,7 +150,6 @@ export const PageHeader = (props: Props) => {
             <ExportToConfluenceRoot
               pageId={pageId}
               onClose={() => setExportOpen(false)}
-              entryPoint={entryPoint}
               initialReport={exportReport}
             />
           )}

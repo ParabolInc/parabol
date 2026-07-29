@@ -9,22 +9,15 @@ import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
 import updateRepoIntegrationsCacheByPerms from '../../queries/helpers/updateRepoIntegrationsCacheByPerms'
 import type {MutationResolvers} from '../resolverTypes'
-import {validateAtlassianScopes} from './helpers/validateAtlassianScopes'
 
 const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
   _source,
-  {code, teamId, scopes},
+  {code, teamId},
   {authToken, socketId: mutatorId, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
-
-  const validatedScope = validateAtlassianScopes(scopes)
-  if (scopes && scopes.length > 0 && !validatedScope) {
-    return standardError(new Error('Invalid scopes requested'), {userId: viewerId})
-  }
-  const scopeToStore = validatedScope ?? AtlassianServerManager.SCOPE.join(' ')
 
   // RESOLUTION
   const [oauthResponse, viewer] = await Promise.all([
@@ -37,6 +30,8 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
     })
   }
   const {accessToken, refreshToken} = oauthResponse
+  // RFC 6749 §5.1: the response may omit scope when identical to the request
+  const scopeToStore = oauthResponse.scopes ?? AtlassianServerManager.SCOPE.join(' ')
   const manager = new AtlassianServerManager(accessToken)
   const sites = await manager.getAccessibleResources()
   if (!Array.isArray(sites)) {

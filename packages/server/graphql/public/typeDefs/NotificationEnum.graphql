@@ -86,9 +86,4 @@ enum NotificationEnum {
   A page owner received a request to access their page
   """
   PAGE_ACCESS_REQUESTED
-
-  """
-  A page export to Confluence finished (successfully, partially, or not at all)
-  """
-  PAGE_EXPORT_COMPLETE
 }

@@ -15,7 +15,6 @@ export type ExportPage = {
 
 interface Props {
   page: ExportPage
-  onRetry?: (pageId: string) => void
 }
 
 const STATUS_ICONS = {
@@ -27,8 +26,8 @@ const STATUS_ICONS = {
 } as Record<string, React.ReactNode>
 
 export const PageExportRow = (props: Props) => {
-  const {page, onRetry} = props
-  const {pageId, title, depth, status, targetUrl, error} = page
+  const {page} = props
+  const {title, depth, status, targetUrl, error} = page
   return (
     <div className='flex items-center gap-2 py-1 text-sm' style={{paddingLeft: `${depth * 16}px`}}>
       {STATUS_ICONS[status] ?? STATUS_ICONS['pending']}
@@ -45,15 +44,6 @@ export const PageExportRow = (props: Props) => {
         <span className='truncate text-fg-primary'>{title}</span>
       )}
       {error && <span className='truncate text-fg-muted text-xs'>{error}</span>}
-      {status === 'error' && onRetry && (
-        <button
-          type='button'
-          className='cursor-pointer border-none bg-transparent p-0 font-semibold text-accent text-xs hover:underline'
-          onClick={() => onRetry(pageId)}
-        >
-          Retry
-        </button>
-      )}
     </div>
   )
 }

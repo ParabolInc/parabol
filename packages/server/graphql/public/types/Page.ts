@@ -7,9 +7,6 @@ import type {ReqResolvers} from './ReqResolvers'
 // team is captured in PagePartial so it's not needed here
 const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
   access: ({id}) => ({id}),
-  isMeetingSummary: ({summaryMeetingId}) => !!summaryMeetingId,
-  teamHasAtlassianAuth: async ({teamId}, _args, {dataLoader}) =>
-    teamId ? (await dataLoader.get('atlassianAuthsByTeamId').load(teamId)).length > 0 : false,
   parentPage: async ({parentPageId}, _args, {authToken, dataLoader}) => {
     if (!parentPageId) return null
     const [parentPage, access] = await Promise.all([
@@ -58,8 +55,10 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     const user = await dataLoader.get('users').loadNonNull(deletedBy)
     return user
   },
-  confluenceExports: ({id}, _args, {dataLoader}) => {
-    return dataLoader.get('pageExportsByPageId').load(id)
+  lastPageExport: async ({id}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const exports = await dataLoader.get('pageExportsByPageId').load(id)
+    return exports.find(({userId}) => userId === viewerId) ?? null
   }
 }
 

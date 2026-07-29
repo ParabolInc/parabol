@@ -1,7 +1,7 @@
 """
-The live per-page state of one Parabol page within an export job
+The live state of one Parabol page within an export job
 """
-type PageExportPage {
+type PageExportItem {
   """
   The Parabol page id (client format, e.g. "page:123")
   """
@@ -20,7 +20,7 @@ type PageExportPage {
   """
   Current status of this page within the job
   """
-  status: PageExportPageStatusEnum!
+  status: PageExportItemStatusEnum!
 
   """
   Absolute URL of the created Confluence page, once created

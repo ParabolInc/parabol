@@ -8,14 +8,14 @@ import {ExportToConfluenceModal} from './ExportToConfluenceModal'
 interface Props {
   pageId: string
   onClose: () => void
-  entryPoint: string
   initialReport?: boolean
 }
 
 // Mount this component only while the dialog should be open — unmounting closes it
 export const ExportToConfluenceRoot = (props: Props) => {
-  const {pageId, onClose, entryPoint, initialReport} = props
+  const {pageId, onClose, initialReport} = props
   const [activeExportId, setActiveExportId] = useState<string | null>(null)
+  const [reportDismissed, setReportDismissed] = useState(false)
   const {queryRef, retry} = useQueryLoaderNowWithRetry<ExportToConfluenceModalQuery>(
     exportToConfluenceModalQuery,
     {pageId},
@@ -28,10 +28,10 @@ export const ExportToConfluenceRoot = (props: Props) => {
           queryRef={queryRef}
           pageId={pageId}
           onClose={onClose}
-          entryPoint={entryPoint}
-          initialReport={initialReport}
+          initialReport={initialReport && !reportDismissed}
           activeExportId={activeExportId}
           setActiveExportId={setActiveExportId}
+          onDismissReport={() => setReportDismissed(true)}
           retry={retry}
         />
       )}

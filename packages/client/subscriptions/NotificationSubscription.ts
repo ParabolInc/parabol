@@ -201,7 +201,7 @@ const subscription = graphql`
       UpdatePageAccessPayload {
         ...useUpdatePageAccessMutation_notification @relay(mask: false)
       }
-      PageExportProgressPayload {
+      ExportPagesToConfluenceSuccess {
         pageExport {
           ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
         }

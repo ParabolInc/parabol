@@ -20,9 +20,6 @@ export const LeftNavSharedPagesSection = (props: Props) => {
         draggingPageIsPrivate
         draggingPageParentSection
         draggingPageViewerAccess
-        organizations {
-          hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
-        }
         sharedPages: pages(parentPageId: $nullId, first: 500, isPrivate: false)
           @connection(key: "User_sharedPages") {
           edges {
@@ -91,7 +88,6 @@ export const LeftNavSharedPagesSection = (props: Props) => {
               draggingPageIsPrivate={draggingPageIsPrivate || null}
               draggingPageParentSection={(draggingPageParentSection as PageParentSection) || null}
               draggingPageViewerAccess={draggingPageViewerAccess || null}
-              showConfluenceExport={viewer.organizations.some((org) => org.hasConfluenceExport)}
             />
           )
         })}

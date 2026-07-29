@@ -243,10 +243,3 @@ export const MAX_USER_UPLOAD_BYTES_PAID = 2_000_000_000
 export const BATCH_ORG_USER_REMOVAL_LIMIT = 100
 export const MAX_FREE_JIRA_EXPORTS = 100
 export const SALES_EMAIL = 'drew@parabol.co'
-
-/* Confluence export */
-export const CONFLUENCE_EXPORT_SEEN_KEY = 'confluenceExportSeen'
-export const CONFLUENCE_EXPORT_BADGE_SUNSET = '2026-09-30'
-export const confluenceExportDestKey = (teamId?: string | null) =>
-  `confluenceExportDest:${teamId ?? 'personal'}`
-export const CONFLUENCE_HELP_URL = 'https://www.parabol.co/integrations/confluence'

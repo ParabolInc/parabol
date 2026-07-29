@@ -24,35 +24,6 @@ type TeamUserKey = {
   userId: string
 }
 
-export const atlassianAuthsByUserId = (parent: RootDataLoader) => {
-  return new DataLoader<string, AtlassianAuth[], string>(
-    async (userIds) => {
-      const rows = await selectAtlassianAuth()
-        .where('userId', 'in', userIds as string[])
-        .where('isActive', '=', true)
-        .execute()
-      return userIds.map((userId) => rows.filter((row) => row.userId === userId))
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
-
-export const atlassianAuthsByTeamId = (parent: RootDataLoader) => {
-  return new DataLoader<string, AtlassianAuth[], string>(
-    async (teamIds) => {
-      const rows = await selectAtlassianAuth()
-        .where('teamId', 'in', teamIds as string[])
-        .where('isActive', '=', true)
-        .execute()
-      return teamIds.map((teamId) => rows.filter((row) => row.teamId === teamId))
-    },
-    {
-      ...parent.dataLoaderOptions
-    }
-  )
-}
 export interface JiraRemoteProjectKey {
   userId: string
   teamId: string
@@ -106,15 +77,17 @@ export const freshAtlassianAuth = (
               logError(oauthRes)
               return null
             }
-            const {accessToken, refreshToken: newRefreshToken} = oauthRes
+            const {accessToken, refreshToken: newRefreshToken, scopes} = oauthRes
             const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
+            const updatedScope = scopes ?? atlassianAuthToRefresh.scope
             // if user integrated the same Jira account with using different teams we need to update them as well
             // reference: https://github.com/ParabolInc/parabol/issues/5601
             await pg
               .updateTable('AtlassianAuth')
               .set({
                 accessToken,
-                refreshToken: updatedRefreshToken
+                refreshToken: updatedRefreshToken,
+                scope: updatedScope
               })
               .where('userId', '=', userId)
               .where('isActive', '=', true)
@@ -124,7 +97,8 @@ export const freshAtlassianAuth = (
             return {
               ...atlassianAuthToRefresh,
               accessToken,
-              refreshToken: updatedRefreshToken
+              refreshToken: updatedRefreshToken,
+              scope: updatedScope
             }
           }
 

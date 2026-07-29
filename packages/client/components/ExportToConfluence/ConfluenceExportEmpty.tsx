@@ -1,6 +1,6 @@
 import AtlassianProviderLogo from '../../AtlassianProviderLogo'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import {CONFLUENCE_HELP_URL} from '../../utils/constants'
+import {CONFLUENCE_HELP_URL} from './confluenceExportConstants'
 
 export const ConfluenceExportEmpty = () => {
   return (
@@ -8,8 +8,9 @@ export const ConfluenceExportEmpty = () => {
       <AtlassianProviderLogo />
       <DialogTitle>No Confluence sites on your Atlassian account</DialogTitle>
       <p className='m-0 text-fg-secondary text-sm'>
-        Your Atlassian account doesn&apos;t have access to a Confluence Cloud site, so there&apos;s
-        nowhere to export to yet.
+        {
+          "Your Atlassian account doesn't have access to a Confluence Cloud site, so there's nowhere to export to yet."
+        }
       </p>
       <a
         href={CONFLUENCE_HELP_URL}

@@ -11,8 +11,11 @@ import {
 /**
  * Builds the export tree in canonical order: children are discovered from the position of
  * canonical pageLinkBlock nodes inside each parent's yDoc (Page.sortOrder does NOT order
- * child pages). Skips unlinked, trashed, and inaccessible pages. Collects at most
- * MAX_CONFLUENCE_EXPORT_PAGES + 1 entries so callers can detect overflow.
+ * child pages). Skips trashed, viewer-inaccessible, and permission-unlinked pages —
+ * isParentLinked=false marks a sub-page whose access was deliberately restricted below
+ * its parent's, so exporting it alongside the parent would leak it to the parent's
+ * audience. Collects at most MAX_CONFLUENCE_EXPORT_PAGES + 1 entries so callers can
+ * detect overflow.
  */
 export const loadPageExportTree = async (
   rootPageId: number,
@@ -42,12 +45,14 @@ export const loadPageExportTree = async (
       status: 'pending'
     })
     if (!includeSubPages) return
-    if (page.isDatabase || !page.yDoc) return
-    const doc = new Doc()
-    applyUpdate(doc, page.yDoc)
-    const links = getPageLinks(doc, true)
-    for (const link of links) {
-      const pageCode = Number(link.getAttribute('pageCode'))
+    // database pages export as a static table snapshot; their rows are not child pages
+    const childCodes =
+      page.isDatabase || !page.yDoc
+        ? []
+        : getPageLinks(hydrateDoc(page.yDoc), true).map((link) =>
+            Number(link.getAttribute('pageCode'))
+          )
+    for (const pageCode of childCodes) {
       if (!Number.isFinite(pageCode)) continue
       const childId = CipherId.decrypt(pageCode)
       if (seen.has(childId)) continue
@@ -58,4 +63,10 @@ export const loadPageExportTree = async (
 
   await walk(rootPageId, null, 0)
   return result
+}
+
+const hydrateDoc = (yDoc: Buffer) => {
+  const doc = new Doc()
+  applyUpdate(doc, yDoc)
+  return doc
 }

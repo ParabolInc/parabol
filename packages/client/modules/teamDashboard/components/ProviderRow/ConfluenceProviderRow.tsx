@@ -9,6 +9,7 @@ import useMenu from '../../../../hooks/useMenu'
 import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMutationProps'
 import {Providers} from '../../../../types/constEnums'
 import AtlassianClientManager from '../../../../utils/AtlassianClientManager'
+import {hasConfluenceScopes} from '../../../../utils/atlassianScopes'
 import ProviderRow from './ProviderRow'
 
 interface Props {
@@ -30,8 +31,7 @@ const ConfluenceProviderRow = (props: Props) => {
           integrations {
             atlassian {
               accessToken
-              hasConfluenceScopes
-              hasJiraScopes
+              scope
             }
           }
         }
@@ -46,14 +46,17 @@ const ConfluenceProviderRow = (props: Props) => {
   const {teamMember} = viewer
   const atlassian = teamMember?.integrations.atlassian
   const accessToken = atlassian?.accessToken ?? undefined
-  const hasConfluenceScopes = atlassian?.hasConfluenceScopes ?? false
+  const connected = !!accessToken && hasConfluenceScopes(atlassian?.scope)
   const flagOn = teamMember?.team?.organization?.hasConfluenceExport ?? false
 
   const connectConfluence = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
-      ...AtlassianClientManager.CONFLUENCE_SCOPE,
-      'offline_access' as const
-    ])
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
+      atlassian?.scope
+    )
   }
 
   if (!flagOn) return null
@@ -62,7 +65,7 @@ const ConfluenceProviderRow = (props: Props) => {
   return (
     <>
       <ProviderRow
-        connected={!!accessToken && hasConfluenceScopes}
+        connected={connected}
         onConnectClick={connectConfluence}
         submitting={submitting}
         togglePortal={togglePortal}
@@ -78,7 +81,12 @@ const ConfluenceProviderRow = (props: Props) => {
         error={error?.message}
       />
       {menuPortal(
-        <AtlassianConfigMenu mutationProps={mutationProps} menuProps={menuProps} teamId={teamId} />
+        <AtlassianConfigMenu
+          mutationProps={mutationProps}
+          menuProps={menuProps}
+          teamId={teamId}
+          heldScopes={atlassian?.scope}
+        />
       )}
     </>
   )

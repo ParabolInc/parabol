@@ -38,9 +38,6 @@ export const LeftNavTeamLink = (props: Props) => {
         isDraggingFirstChild
         isDraggingLastChild
         orgId
-        organization {
-          hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
-        }
       }
     `,
     teamRef
@@ -134,11 +131,7 @@ export const LeftNavTeamLink = (props: Props) => {
       </PageDropTarget>
       {showChildren && (
         <div className={cn('rounded-md', canDropIn && 'peer-hover:bg-sky-200/70')}>
-          <SubPagesRoot
-            teamId={teamId}
-            pageAncestors={['', teamId]}
-            showConfluenceExport={team.organization.hasConfluenceExport}
-          />
+          <SubPagesRoot teamId={teamId} pageAncestors={['', teamId]} />
         </div>
       )}
     </div>

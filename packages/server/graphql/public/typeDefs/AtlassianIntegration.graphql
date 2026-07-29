@@ -122,26 +122,22 @@ type AtlassianIntegration {
   ): JiraIssueConnection!
 
   """
-  Whether the stored OAuth grant includes all Confluence scopes needed for Pages export.
-  False for Jira-only connections until the user runs the Enable Confluence re-consent.
+  The OAuth scopes Atlassian granted this connection, as returned by the token handshake.
+  Scopes are progressive — clients decide which specific scopes a feature needs.
   """
-  hasConfluenceScopes: Boolean!
-
-  """
-  Whether the stored OAuth grant includes the Jira scopes. False for Confluence-only
-  connections until the user connects Jira, which upgrades the shared grant.
-  """
-  hasJiraScopes: Boolean!
+  scope: [String!]!
 
   """
   The Atlassian sites on this connection where Confluence access was granted. Empty when
   the account has no Confluence product or Confluence scopes were never consented.
+  Viewer-only: empty for anyone but the connection owner.
   """
   confluenceSites: [ConfluenceSite!]!
 
   """
   The Confluence spaces visible to the user on the given site, optionally filtered by a
   case-insensitive name substring. Empty when Confluence scopes were never granted.
+  Viewer-only: empty for anyone but the connection owner.
   """
   confluenceSpaces(cloudId: ID!, query: String): [ConfluenceSpace!]!
 
@@ -149,6 +145,7 @@ type AtlassianIntegration {
   Recently modified pages in a Confluence space filtered by title substring (for picking
   an export parent page). Not a full-text search — the search scope is unavailable to
   granular OAuth apps, so this lists the space's recent pages instead.
+  Viewer-only: empty for anyone but the connection owner.
   """
   confluencePageSearch(cloudId: ID!, spaceId: ID!, query: String!): [ConfluencePagePreview!]!
 }

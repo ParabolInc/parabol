@@ -1,23 +1,10 @@
 import {fetch} from '@whatwg-node/fetch'
-import fs from 'fs'
-import path from 'path'
+import mime from 'mime-types'
 import appOrigin from '../../../../../appOrigin'
 import {pageAccessByUserIdBatchFn} from '../../../../../dataloader/pageAccessByUserIdBatchFn'
 import type {PartialPath} from '../../../../../fileStorage/FileStoreManager'
 import getFileStoreManager from '../../../../../fileStorage/getFileStoreManager'
 import {CipherId} from '../../../../../utils/CipherId'
-
-const MIME_BY_EXT: Record<string, string> = {
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-  webp: 'image/webp',
-  avif: 'image/avif',
-  heic: 'image/heic',
-  svg: 'image/svg+xml',
-  pdf: 'application/pdf'
-}
 
 /**
  * Validates that an asset src is an app-origin Page asset with a well-formed key.
@@ -59,21 +46,14 @@ export const fetchAssetBuffer = async (
   if (!parsed) return null
   const [role] = await pageAccessByUserIdBatchFn([{pageId: parsed.pageId, userId: viewerId}])
   if (!role) return null
-  const ext = parsed.partialPath.split('.').pop()?.toLowerCase() ?? ''
   try {
-    if (process.env.FILE_STORE_PROVIDER === 'local') {
-      // the local store's presign returns a self-URL (self-signed TLS in dev) — read
-      // straight from disk instead (same layout LocalFileStoreManager.putFile writes)
-      const absPath = path.join(process.cwd(), 'self-hosted', parsed.partialPath)
-      const buffer = await fs.promises.readFile(absPath)
-      return {buffer, mimeType: MIME_BY_EXT[ext] ?? 'application/octet-stream'}
-    }
     const manager = getFileStoreManager()
     const presignedUrl = await manager.presignUrl(parsed.partialPath)
     const res = await fetch(presignedUrl)
     if (!res.ok) return null
     const mimeType =
-      res.headers.get('Content-Type') ?? MIME_BY_EXT[ext] ?? 'application/octet-stream'
+      res.headers.get('Content-Type') ??
+      (mime.lookup(parsed.partialPath) || 'application/octet-stream')
     return {buffer: Buffer.from(await res.arrayBuffer()), mimeType}
   } catch {
     return null

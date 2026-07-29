@@ -5,7 +5,6 @@ import type {Page_viewer$key} from '../../__generated__/Page_viewer.graphql'
 import useDocumentTitle from '../../hooks/useDocumentTitle'
 import {usePageProvider} from '../../hooks/usePageProvider'
 import {cn} from '../../ui/cn'
-import {ConfluenceSummaryCta} from './ConfluenceSummaryCta'
 import {DatabaseEditor} from './DatabaseEditor'
 import {PageEditor} from './PageEditor'
 import {PageHeader} from './PageHeader'
@@ -38,25 +37,21 @@ export const Page = (props: Props) => {
     graphql`
       fragment Page_page on Page {
         ...PageHeader_page
-        ...ConfluenceSummaryCta_page
         id
         title
         ancestorIds
         isDatabase
-        isMeetingSummary
-        teamHasAtlassianAuth
       }
     `,
     pageRef
   )
 
-  const {id: pageId, isDatabase, title, isMeetingSummary, teamHasAtlassianAuth} = page
+  const {id: pageId, isDatabase, title} = page
   const showConfluenceExport = !!viewer?.organizations.some((org) => org.hasConfluenceExport)
   const documentTitle = title || 'Untitled'
   useDocumentTitle(`${documentTitle} | Parabol`, documentTitle)
   const {provider, synced} = usePageProvider(pageId)
   const isPageGenerating = useIsPageStreaming(provider)
-  const showSummaryCta = isMeetingSummary && teamHasAtlassianAuth && showConfluenceExport
   // The editor is conditionally loaded only after syncing so the forced schema is not injected before
   // The yjs document loads
   return (
@@ -69,9 +64,6 @@ export const Page = (props: Props) => {
           showConfluenceExport={showConfluenceExport}
           isPageGenerating={isPageGenerating}
         />
-      )}
-      {showSummaryCta && !isPublic && (
-        <ConfluenceSummaryCta pageRef={page} isPageGenerating={isPageGenerating} />
       )}
       <div
         className={cn(

@@ -1,23 +1,23 @@
-export type ConfluenceDialogState = 'S0' | 'S1' | 'EMPTY' | 'S2' | 'S3' | 'S4'
+export type ConfluenceDialogState =
+  | 'connectAtlassian'
+  | 'enableConfluence'
+  | 'form'
+  | 'exporting'
+  | 'report'
 
 type Input = {
-  connection:
-    | {
-        readonly hasConfluenceScopes: boolean
-        readonly confluenceSites: readonly unknown[]
-      }
-    | null
-    | undefined
+  hasAtlassianAuth: boolean
+  hasConfluenceAccess: boolean
   activeExport: {readonly status: string} | null | undefined
 }
 
 export const deriveConfluenceDialogState = ({
-  connection,
+  hasAtlassianAuth,
+  hasConfluenceAccess,
   activeExport
 }: Input): ConfluenceDialogState => {
-  if (!connection) return 'S0'
-  if (!connection.hasConfluenceScopes) return 'S1'
-  if (connection.confluenceSites.length === 0) return 'EMPTY'
-  if (!activeExport) return 'S2'
-  return activeExport.status === 'running' ? 'S3' : 'S4'
+  if (!hasAtlassianAuth) return 'connectAtlassian'
+  if (!hasConfluenceAccess) return 'enableConfluence'
+  if (!activeExport) return 'form'
+  return activeExport.status === 'running' ? 'exporting' : 'report'
 }

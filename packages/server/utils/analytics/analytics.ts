@@ -610,7 +610,7 @@ class Analytics {
 
   confluenceExportStarted = (
     user: AnalyticsUser,
-    properties: {pageExportId: string; pageCount: number; entryPoint?: string}
+    properties: {pageExportId: string; pageCount: number}
   ) => {
     this.track(user, 'Confluence Export Started', properties)
   }

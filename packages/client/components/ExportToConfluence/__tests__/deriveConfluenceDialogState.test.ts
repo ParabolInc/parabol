@@ -1,40 +1,49 @@
 import {deriveConfluenceDialogState} from '../deriveConfluenceDialogState'
 
-const conn = (
-  overrides: Partial<{hasConfluenceScopes: boolean; confluenceSites: unknown[]}> = {}
-) => ({
-  hasConfluenceScopes: true,
-  confluenceSites: [{cloudId: 'c1', name: 'S', url: ''}],
-  ...overrides
-})
-
 describe('deriveConfluenceDialogState', () => {
-  it('no connection → S0', () => {
-    expect(deriveConfluenceDialogState({connection: null, activeExport: null})).toBe('S0')
-  })
-  it('connection without scopes → S1', () => {
+  it('asks to connect Atlassian when no team has an Atlassian auth', () => {
     expect(
       deriveConfluenceDialogState({
-        connection: conn({hasConfluenceScopes: false}),
+        hasAtlassianAuth: false,
+        hasConfluenceAccess: false,
         activeExport: null
       })
-    ).toBe('S1')
+    ).toBe('connectAtlassian')
   })
-  it('scopes but zero sites → EMPTY', () => {
+  it('asks to enable Confluence when connected without Confluence scopes', () => {
     expect(
-      deriveConfluenceDialogState({connection: conn({confluenceSites: []}), activeExport: null})
-    ).toBe('EMPTY')
+      deriveConfluenceDialogState({
+        hasAtlassianAuth: true,
+        hasConfluenceAccess: false,
+        activeExport: null
+      })
+    ).toBe('enableConfluence')
   })
-  it('ready → S2; running export → S3; finished export → S4', () => {
-    expect(deriveConfluenceDialogState({connection: conn(), activeExport: null})).toBe('S2')
+  it('shows the form when Confluence access exists and no export is active', () => {
     expect(
-      deriveConfluenceDialogState({connection: conn(), activeExport: {status: 'running'}})
-    ).toBe('S3')
+      deriveConfluenceDialogState({
+        hasAtlassianAuth: true,
+        hasConfluenceAccess: true,
+        activeExport: null
+      })
+    ).toBe('form')
+  })
+  it('shows live progress while the active export is running', () => {
     expect(
-      deriveConfluenceDialogState({connection: conn(), activeExport: {status: 'partial'}})
-    ).toBe('S4')
+      deriveConfluenceDialogState({
+        hasAtlassianAuth: true,
+        hasConfluenceAccess: true,
+        activeExport: {status: 'running'}
+      })
+    ).toBe('exporting')
+  })
+  it.each(['success', 'partial', 'failed'])('shows the report when the export is %s', (status) => {
     expect(
-      deriveConfluenceDialogState({connection: conn(), activeExport: {status: 'success'}})
-    ).toBe('S4')
+      deriveConfluenceDialogState({
+        hasAtlassianAuth: true,
+        hasConfluenceAccess: true,
+        activeExport: {status}
+      })
+    ).toBe('report')
   })
 })

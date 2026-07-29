@@ -106,7 +106,6 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
-  await pg.deleteFrom('Notification').where('userId', '=', userId).execute()
   await pg.deleteFrom('Page').where('userId', '=', userId).execute()
   await pg.deleteFrom('User').where('id', '=', userId).execute()
   await pg.deleteFrom('Team').where('id', '=', teamId).execute()
@@ -118,7 +117,7 @@ afterAll(async () => {
 })
 
 describe('runConfluenceExport', () => {
-  it('scenario C: contains a failed page, skips its subtree, finishes partial, notifies', async () => {
+  it('scenario C: contains a failed page, skips its subtree, finishes partial', async () => {
     const rootId = await insertPage('Root', null)
     const childIds: number[] = []
     for (let i = 1; i <= 10; i++) {
@@ -147,6 +146,7 @@ describe('runConfluenceExport', () => {
       .values({
         pageId: rootId,
         userId,
+        teamId,
         cloudId: 'cloud-test',
         spaceId: 's1',
         spaceName: 'Test Space',
@@ -185,45 +185,30 @@ describe('runConfluenceExport', () => {
     const child1 = mockConfluence.created.find(({title}) => title === 'Child 1')!
     expect(child1.parentId).toBe(rootConfluenceId)
 
-    const notification = await pg
-      .selectFrom('Notification')
-      .selectAll()
-      .where('userId', '=', userId)
-      .where('type', '=', 'PAGE_EXPORT_COMPLETE')
-      .executeTakeFirst()
-    expect(notification).toBeTruthy()
-    expect(String(notification!.pageExportId)).toBe(exportId)
-
-    // retry: re-seed the failed page + skipped descendants, fix the failure, rerun
+    // re-export after fixing the failure: a fresh PageExport row runs the whole tree clean
     mockConfluence.failByTitle.clear()
-    const retryPages = row.pagesJson.map((p) =>
-      p.status === 'error' || p.status === 'skipped'
-        ? {...p, status: 'pending' as const, error: undefined, errorClass: undefined}
-        : p
-    )
-    await pg
-      .updateTable('PageExport')
-      .set({status: 'running', pagesJson: JSON.stringify(retryPages)})
-      .where('id', '=', exportId)
-      .execute()
+    const {id: secondExportId} = await pg
+      .insertInto('PageExport')
+      .values({
+        pageId: rootId,
+        userId,
+        teamId,
+        cloudId: 'cloud-test',
+        spaceId: 's1',
+        spaceName: 'Test Space',
+        includeSubPages: true,
+        pagesJson: JSON.stringify(entries.map((e) => ({...e, status: 'pending' as const})))
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    const secondLoader = getNewDataLoader('test')
+    await runConfluenceExport(secondExportId, secondLoader)
+    secondLoader.dispose()
 
-    const retryLoader = getNewDataLoader('test')
-    await runConfluenceExport(exportId, retryLoader)
-    retryLoader.dispose()
-
-    const retried = await selectPageExports().where('id', '=', exportId).executeTakeFirstOrThrow()
-    expect(retried.status).toBe('success')
-    expect(retried.pagesJson.every((p) => p.status === 'success')).toBe(true)
-    // the retried child was created under the ORIGINAL run's parent confluence page
-    const child7 = mockConfluence.created.find(({title}) => title === 'Child 7')!
-    expect(child7.parentId).toBe(rootConfluenceId)
-
-    const notifications = await pg
-      .selectFrom('Notification')
-      .selectAll()
-      .where('userId', '=', userId)
-      .where('type', '=', 'PAGE_EXPORT_COMPLETE')
-      .execute()
-    expect(notifications).toHaveLength(2)
+    const second = await selectPageExports()
+      .where('id', '=', secondExportId)
+      .executeTakeFirstOrThrow()
+    expect(second.status).toBe('success')
+    expect(second.pagesJson.every((p) => p.status === 'success')).toBe(true)
   }, 120_000)
 })

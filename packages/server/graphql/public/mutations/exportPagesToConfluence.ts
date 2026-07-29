@@ -2,22 +2,20 @@ import {GraphQLError} from 'graphql'
 import {applyUpdate, Doc, XmlElement} from 'yjs'
 import {getNewDataLoader} from '../../../dataloader/getNewDataLoader'
 import getKysely from '../../../postgres/getKysely'
-import {selectDescendantPages} from '../../../postgres/select'
-import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
 import {CipherId} from '../../../utils/CipherId'
 import {MAX_CONFLUENCE_EXPORT_PAGES} from '../../../utils/confluence/types'
-import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
 import {Logger} from '../../../utils/Logger'
 import type {MutationResolvers} from '../resolverTypes'
 import {isConfluenceExportEnabled} from './helpers/confluenceExport/isConfluenceExportEnabled'
 import {loadPageExportTree} from './helpers/confluenceExport/loadPageExportTree'
+import {resolveConfluenceAuth} from './helpers/confluenceExport/resolveConfluenceAuth'
 import {runConfluenceExport} from './helpers/confluenceExport/runConfluenceExport'
 
 const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = async (
   _source,
-  {pageId, includeSubPages, cloudId, spaceId, spaceName, parentPageId, entryPoint},
+  {pageId, teamId, includeSubPages, cloudId, spaceId, spaceName, targetParentPageId},
   {authToken, dataLoader}
 ) => {
   const viewerId = getUserId(authToken)
@@ -34,42 +32,14 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
   if (page.deletedAt) {
     throw new GraphQLError('Cannot export a page in the trash')
   }
-  const auths = await dataLoader.get('atlassianAuthsByUserId').load(viewerId)
-  const confluenceAuths = auths.filter(({scope}) => hasConfluenceScopes(scope))
-  if (confluenceAuths.length === 0) {
-    throw new GraphQLError('No Atlassian connection with Confluence access')
-  }
-  // the destination site must belong to one of the viewer's own Atlassian accounts.
-  // stored cloudIds can lag (sites added after consent), so fall back to a live
-  // accessible-resources check and self-heal the stored list on a match
-  const seenAccountIds = new Set<string>()
-  let siteAuth: (typeof confluenceAuths)[number] | null = null
-  for (const auth of confluenceAuths) {
-    if (seenAccountIds.has(auth.accountId)) continue
-    seenAccountIds.add(auth.accountId)
-    if (auth.cloudIds.includes(cloudId)) {
-      siteAuth = auth
-      break
-    }
-    const fresh = await dataLoader
-      .get('freshAtlassianAuth')
-      .load({teamId: auth.teamId, userId: viewerId})
-    if (!fresh) continue
-    const sites = await new AtlassianServerManager(fresh.accessToken).getAccessibleResources()
-    if (Array.isArray(sites) && sites.some(({id}) => id === cloudId)) {
-      await pg
-        .updateTable('AtlassianAuth')
-        .set({cloudIds: sites.map(({id}) => id)})
-        .where('userId', '=', viewerId)
-        .where('accountId', '=', auth.accountId)
-        .where('isActive', '=', true)
-        .execute()
-      siteAuth = auth
-      break
-    }
-  }
-  if (!siteAuth) {
-    throw new GraphQLError('Your Atlassian connection cannot access this Confluence site')
+  const {auth, error: authError} = await resolveConfluenceAuth(
+    dataLoader,
+    viewerId,
+    teamId,
+    cloudId
+  )
+  if (!auth) {
+    throw new GraphQLError(authError)
   }
 
   const rootRow = await pg
@@ -94,12 +64,8 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     throw new GraphQLError('Page not found', {extensions: {code: 'NOT_FOUND'}})
   }
   if (tree.length > MAX_CONFLUENCE_EXPORT_PAGES) {
-    const countRow = await selectDescendantPages(pg, dbPageId)
-      .selectFrom('descendants')
-      .select(({fn}) => fn.countAll().as('count'))
-      .executeTakeFirstOrThrow()
     throw new GraphQLError(
-      `This tree has ${Number(countRow.count)} pages — the limit is ${MAX_CONFLUENCE_EXPORT_PAGES}. Export a smaller branch.`
+      `This tree has more than ${MAX_CONFLUENCE_EXPORT_PAGES} linked pages. Export a smaller branch.`
     )
   }
 
@@ -108,10 +74,11 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
     .values({
       pageId: dbPageId,
       userId: viewerId,
+      teamId,
       cloudId,
       spaceId,
       spaceName,
-      parentPageId: parentPageId ?? null,
+      targetParentPageId: targetParentPageId ?? null,
       includeSubPages,
       pagesJson: JSON.stringify(tree)
     })
@@ -121,8 +88,7 @@ const exportPagesToConfluence: MutationResolvers['exportPagesToConfluence'] = as
   const viewer = await dataLoader.get('users').loadNonNull(viewerId)
   analytics.confluenceExportStarted(viewer, {
     pageExportId: pageExport.id,
-    pageCount: tree.length,
-    entryPoint: entryPoint ?? undefined
+    pageCount: tree.length
   })
 
   const jobDataLoader = getNewDataLoader('runConfluenceExport')

@@ -17,8 +17,8 @@ graphql`
 `
 
 const mutation = graphql`
-  mutation AddAtlassianAuthMutation($code: ID!, $teamId: ID!, $scopes: [String!]) {
-    addAtlassianAuth(code: $code, teamId: $teamId, scopes: $scopes) {
+  mutation AddAtlassianAuthMutation($code: ID!, $teamId: ID!) {
+    addAtlassianAuth(code: $code, teamId: $teamId) {
       error {
         message
       }

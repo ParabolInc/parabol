@@ -60,9 +60,6 @@ const typePicker: Record<NotificationEnum, LazyPreloadedComponent> = {
   ),
   PAGE_ACCESS_REQUESTED: lazyPreload(
     () => import(/* webpackChunkName: 'PageAccessRequested' */ './PageAccessRequested')
-  ),
-  PAGE_EXPORT_COMPLETE: lazyPreload(
-    () => import(/* webpackChunkName: 'PageExportComplete' */ './PageExportComplete')
   )
 }
 
@@ -94,7 +91,6 @@ const NotificationPicker = (props: Props) => {
         ...RequestToJoinOrgNotification_notification
         ...PageAccessGranted_notification
         ...PageAccessRequested_notification
-        ...PageExportComplete_notification
       }
     `,
     notificationRef

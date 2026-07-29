@@ -13,6 +13,7 @@ graphql`
     includeSubPages
     rootTargetUrl
     createdAt
+    errorSummary
     pages {
       pageId
       title
@@ -21,32 +22,27 @@ graphql`
       targetUrl
       error
     }
-    degradedItems {
-      blockType
-      count
-      treatment
-    }
   }
 `
 
 const mutation = graphql`
   mutation useExportPagesToConfluenceMutation(
     $pageId: ID!
+    $teamId: ID!
     $includeSubPages: Boolean!
     $cloudId: ID!
     $spaceId: ID!
     $spaceName: String!
-    $parentPageId: ID
-    $entryPoint: String
+    $targetParentPageId: ID
   ) {
     exportPagesToConfluence(
       pageId: $pageId
+      teamId: $teamId
       includeSubPages: $includeSubPages
       cloudId: $cloudId
       spaceId: $spaceId
       spaceName: $spaceName
-      parentPageId: $parentPageId
-      entryPoint: $entryPoint
+      targetParentPageId: $targetParentPageId
     ) {
       pageExport {
         ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)

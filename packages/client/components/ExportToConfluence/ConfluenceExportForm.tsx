@@ -1,34 +1,54 @@
-import {useEffect, useState} from 'react'
+import graphql from 'babel-plugin-relay/macro'
+import {useState} from 'react'
+import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import type {ConfluenceExportFormQuery} from '../../__generated__/ConfluenceExportFormQuery.graphql'
 import useExportPagesToConfluenceMutation from '../../mutations/useExportPagesToConfluenceMutation'
 import {Button} from '../../ui/Button/Button'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import {CONFLUENCE_HELP_URL, confluenceExportDestKey} from '../../utils/constants'
+import {ConfluenceExportEmpty} from './ConfluenceExportEmpty'
 import {ConfluenceParentPageSearch} from './ConfluenceParentPageSearch'
 import {ConfluenceSpaceSelect, type SpaceOption} from './ConfluenceSpaceSelect'
 import {ConfluenceSubPagesField} from './ConfluenceSubPagesField'
+import {CONFLUENCE_HELP_URL, confluenceExportDestKey} from './confluenceExportConstants'
 
-type Site = {readonly cloudId: string; readonly name: string; readonly url: string}
+const query = graphql`
+  query ConfluenceExportFormQuery($teamId: ID!) {
+    viewer {
+      teamMember(teamId: $teamId) {
+        integrations {
+          atlassian {
+            confluenceSites {
+              cloudId
+              name
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
 type PastExport = {
   readonly spaceName: string
   readonly rootTargetUrl: string | null | undefined
   readonly createdAt: string
 }
-type StoredDest = {cloudId: string; spaceId: string; spaceName: string; spaceKey?: string}
+type StoredDest = {cloudId: string; spaceId: string; spaceName: string}
 
-interface Props {
+export interface ConfluenceExportFormProps {
+  queryRef: PreloadedQuery<ConfluenceExportFormQuery>
   pageId: string
   pageTitle: string
-  teamId: string | null
-  sites: readonly Site[]
+  teamId: string
   subPages: readonly {readonly id: string; readonly title: string | null | undefined}[]
   lastExport: PastExport | null
-  entryPoint: string
   onClose: () => void
   onExported: (pageExportId: string) => void
 }
 
-const readDest = (teamId: string | null): StoredDest | null => {
+const readDest = (teamId: string): StoredDest | null => {
   try {
     const raw = window.localStorage.getItem(confluenceExportDestKey(teamId))
     return raw ? (JSON.parse(raw) as StoredDest) : null
@@ -37,32 +57,36 @@ const readDest = (teamId: string | null): StoredDest | null => {
   }
 }
 
-export const ConfluenceExportForm = (props: Props) => {
-  const {pageId, pageTitle, teamId, sites, subPages, lastExport, entryPoint, onClose, onExported} =
-    props
-  const [cloudId, setCloudId] = useState(() => readDest(teamId)?.cloudId ?? sites[0]!.cloudId)
-  const activeSite = sites.find((site) => site.cloudId === cloudId) ?? sites[0]!
-  const [space, setSpace] = useState<SpaceOption | null>(null)
+export const ConfluenceExportForm = (props: ConfluenceExportFormProps) => {
+  const {queryRef, pageId, pageTitle, teamId, subPages, lastExport, onClose, onExported} = props
+  const data = usePreloadedQuery<ConfluenceExportFormQuery>(query, queryRef)
+  const sites = data.viewer.teamMember?.integrations.atlassian?.confluenceSites ?? []
+  const storedDest = readDest(teamId)
+  // only preselect a remembered destination that still belongs to a live site
+  const validDest =
+    storedDest && sites.some(({cloudId}) => cloudId === storedDest.cloudId) ? storedDest : null
+  const [cloudId, setCloudId] = useState(() => validDest?.cloudId ?? sites[0]?.cloudId ?? null)
+  const [space, setSpace] = useState<SpaceOption | null>(() =>
+    validDest ? {id: validDest.spaceId, name: validDest.spaceName, isPersonal: false} : null
+  )
   const [parentPage, setParentPage] = useState<{id: string; title: string} | null>(null)
   const [includeSubPages, setIncludeSubPages] = useState(true)
   const [executeExport, submitting] = useExportPagesToConfluenceMutation()
 
-  const storedDest = readDest(teamId)
-  useEffect(() => {
-    if (storedDest && storedDest.cloudId !== cloudId) setCloudId(storedDest.cloudId)
-  }, [])
+  if (sites.length === 0) return <ConfluenceExportEmpty />
+  const activeSite = sites.find((site) => site.cloudId === cloudId) ?? sites[0]!
 
   const onSubmit = () => {
     if (!space || submitting) return
     executeExport({
       variables: {
         pageId,
+        teamId,
         includeSubPages: subPages.length > 0 ? includeSubPages : false,
         cloudId: activeSite.cloudId,
         spaceId: space.id,
         spaceName: space.name,
-        parentPageId: parentPage?.id ?? null,
-        entryPoint
+        targetParentPageId: parentPage?.id ?? null
       },
       onCompleted: (res, errors) => {
         if (errors?.length) return
@@ -79,13 +103,13 @@ export const ConfluenceExportForm = (props: Props) => {
   return (
     <div className='flex flex-col gap-4'>
       <DialogTitle>Export to Confluence</DialogTitle>
-      <p className='m-0 text-fg-secondary text-sm'>Where should &quot;{pageTitle}&quot; go?</p>
+      <p className='m-0 text-fg-secondary text-sm'>{`Where should "${pageTitle}" go?`}</p>
       {sites.length > 1 && (
         <fieldset className='m-0 flex flex-col gap-1 border-none p-0'>
           <label className='font-semibold text-fg-primary text-sm'>Site</label>
           <select
             className='rounded-md border border-hairline-field bg-surface-input p-2 text-fg-primary text-sm'
-            value={cloudId}
+            value={activeSite.cloudId}
             onChange={(e) => {
               setCloudId(e.target.value)
               setSpace(null)
@@ -101,15 +125,16 @@ export const ConfluenceExportForm = (props: Props) => {
         </fieldset>
       )}
       <ConfluenceSpaceSelect
+        teamId={teamId}
         cloudId={activeSite.cloudId}
         value={space}
         onChange={(nextSpace) => {
           setSpace(nextSpace)
           setParentPage(null)
         }}
-        preferredSpaceId={storedDest?.cloudId === activeSite.cloudId ? storedDest.spaceId : null}
       />
       <ConfluenceParentPageSearch
+        teamId={teamId}
         cloudId={activeSite.cloudId}
         spaceId={space?.id ?? null}
         value={parentPage}

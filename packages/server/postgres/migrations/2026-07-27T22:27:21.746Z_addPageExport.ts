@@ -11,11 +11,14 @@ export async function up(db: Kysely<any>): Promise<void> {
     .addColumn('userId', 'varchar(100)', (col) =>
       col.notNull().references('User.id').onDelete('cascade')
     )
+    .addColumn('teamId', 'varchar(100)', (col) =>
+      col.notNull().references('Team.id').onDelete('cascade')
+    )
     .addColumn('service', 'varchar(50)', (col) => col.notNull().defaultTo('confluence'))
     .addColumn('cloudId', 'varchar(120)', (col) => col.notNull())
     .addColumn('spaceId', 'varchar(120)', (col) => col.notNull())
     .addColumn('spaceName', 'varchar(255)', (col) => col.notNull())
-    .addColumn('parentPageId', 'varchar(120)')
+    .addColumn('targetParentPageId', 'varchar(120)')
     .addColumn('includeSubPages', 'boolean', (col) => col.notNull())
     .addColumn('status', 'varchar(20)', (col) => col.notNull().defaultTo('running'))
     .addColumn('rootTargetPageId', 'varchar(120)')
@@ -37,14 +40,8 @@ export async function up(db: Kysely<any>): Promise<void> {
     .on('PageExport')
     .column('userId')
     .execute()
-  await sql`ALTER TYPE "NotificationTypeEnum" ADD VALUE IF NOT EXISTS 'PAGE_EXPORT_COMPLETE'`.execute(
-    db
-  )
-  await sql`ALTER TABLE "Notification" ADD COLUMN IF NOT EXISTS "pageExportId" bigint`.execute(db)
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
-  await sql`ALTER TABLE "Notification" DROP COLUMN IF EXISTS "pageExportId"`.execute(db)
   await db.schema.dropTable('PageExport').ifExists().execute()
-  // enum values cannot be removed from NotificationTypeEnum; PAGE_EXPORT_COMPLETE stays (harmless)
 }

@@ -1,4 +1,7 @@
-import {CONFLUENCE_EXPORT_BADGE_SUNSET, CONFLUENCE_EXPORT_SEEN_KEY} from '../../utils/constants'
+import {
+  CONFLUENCE_EXPORT_BADGE_SUNSET,
+  CONFLUENCE_EXPORT_SEEN_KEY
+} from './confluenceExportConstants'
 
 export const showConfluenceBadge = () =>
   new Date() < new Date(CONFLUENCE_EXPORT_BADGE_SUNSET) &&

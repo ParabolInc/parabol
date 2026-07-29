@@ -47,30 +47,19 @@ export type ConfluencePermissionScope =
 
 export type AtlassianPermissionScope = JiraPermissionScope | ConfluencePermissionScope
 
-export interface HeldAtlassianProducts {
-  jira: boolean
-  confluence: boolean
-}
-
 /**
  * Atlassian re-consent REPLACES the token's grant, so every authorize request must
- * include the union of the requested product scopes and whatever the user already
- * holds — otherwise connecting/refreshing one product silently breaks the other.
- * If the union would contain no product scopes at all, falls back to the Jira set
- * (the legacy default) so a bare call can never mint a useless token.
+ * include the union of the requested product scopes and whatever the grant already
+ * holds (the server-stored scope list) — otherwise connecting/refreshing one product
+ * silently breaks the other. If the union would contain no product scopes at all,
+ * falls back to the Jira set (the legacy default) so a bare call can never mint a
+ * useless token.
  */
 export const unionAtlassianScopes = (
   requested: readonly AtlassianPermissionScope[],
-  held: HeldAtlassianProducts
-): AtlassianPermissionScope[] => {
-  const scopes = new Set<AtlassianPermissionScope>(requested)
-  if (held.jira) {
-    AtlassianManager.SCOPE.forEach((scope) => scopes.add(scope))
-  }
-  if (held.confluence) {
-    AtlassianManager.CONFLUENCE_SCOPE.forEach((scope) => scopes.add(scope))
-    scopes.add('offline_access')
-  }
+  heldScopes: readonly string[] | null | undefined
+): string[] => {
+  const scopes = new Set<string>([...(heldScopes ?? []), ...requested])
   const hasProductScope = [...scopes].some((scope) => scope !== 'offline_access')
   if (!hasProductScope) {
     AtlassianManager.SCOPE.forEach((scope) => scopes.add(scope))

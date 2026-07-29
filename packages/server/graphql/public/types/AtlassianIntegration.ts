@@ -6,8 +6,6 @@ import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
 import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
-import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
-import {hasJiraScopes} from '../../../utils/hasJiraScopes'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
@@ -125,11 +123,11 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
 
   isActive: ({accessToken}) => !!accessToken,
 
-  hasConfluenceScopes: ({scope}) => hasConfluenceScopes(scope),
-  hasJiraScopes: ({scope}) => hasJiraScopes(scope),
+  scope: ({scope}) => (scope ? scope.split(' ') : []),
 
-  confluenceSites: async ({accessToken}) => {
-    if (!accessToken) return []
+  confluenceSites: async ({accessToken, userId}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
     const manager = new AtlassianServerManager(accessToken)
     const res = await manager.getAccessibleResources()
     if (!Array.isArray(res)) return []
@@ -138,8 +136,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
       .map(({id, name, url}) => ({cloudId: id, name, url}))
   },
 
-  confluenceSpaces: async ({accessToken}, {cloudId, query}) => {
-    if (!accessToken) return []
+  confluenceSpaces: async ({accessToken, userId}, {cloudId, query}, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
     const manager = new ConfluenceServerManager(accessToken, cloudId)
     try {
       const spaces = await manager.getSpaces()
@@ -155,8 +154,9 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
     }
   },
 
-  confluencePageSearch: async ({accessToken}, {cloudId, spaceId, query}) => {
-    if (!accessToken) return []
+  confluencePageSearch: async ({accessToken, userId}, {cloudId, spaceId, query}, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
     const manager = new ConfluenceServerManager(accessToken, cloudId)
     try {
       return await manager.searchPagesInSpace(spaceId, query)

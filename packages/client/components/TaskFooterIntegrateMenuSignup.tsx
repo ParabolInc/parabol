@@ -26,10 +26,8 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
     graphql`
       fragment TaskFooterIntegrateMenuSignup_TeamMemberIntegrations on TeamMemberIntegrations {
         atlassian {
-          # fetched so openOAuth's held-scope union can see them in the store
           isActive
-          hasJiraScopes
-          hasConfluenceScopes
+          scope
         }
         gitlab {
           ...AddToGitLabMenuItem_GitLabIntegration
@@ -52,7 +50,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
         </>
       )}
       <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
-      <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
+      <AddToJiraMenuItem
+        mutationProps={mutationProps}
+        teamId={teamId}
+        heldScopes={integrations.atlassian?.scope}
+      />
       <AddToAzureMenuItem
         mutationProps={mutationProps}
         teamId={teamId}

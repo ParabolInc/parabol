@@ -9,11 +9,12 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
+  heldScopes?: readonly string[] | null
   onAuthed: () => void
 }
 
 export const ConfluenceEnableState = (props: Props) => {
-  const {teamId, onAuthed} = props
+  const {teamId, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Confluence Export Enable Shown')
@@ -31,19 +32,23 @@ export const ConfluenceEnableState = (props: Props) => {
 
   const enable = () => {
     if (submitting || !teamId) return
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
-      ...AtlassianClientManager.CONFLUENCE_SCOPE,
-      'offline_access' as const
-    ])
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
+      heldScopes
+    )
   }
 
   return (
     <div className='flex flex-col items-center gap-4 text-center'>
       <AtlassianProviderLogo />
-      <DialogTitle>Your Atlassian connection doesn&apos;t include Confluence yet</DialogTitle>
+      <DialogTitle>{"Your Atlassian connection doesn't include Confluence yet"}</DialogTitle>
       <p className='m-0 text-fg-secondary text-sm'>
-        Grant Confluence permissions to export pages. Jira keeps working as-is — this adds, it
-        doesn&apos;t replace. We&apos;ll open a secure Atlassian sign-in window.
+        {
+          "Grant Confluence permissions to export pages. Jira keeps working as-is — this adds, it doesn't replace. We'll open a secure Atlassian sign-in window."
+        }
       </p>
       <Button variant='dialogPrimary' size='md' onClick={enable} disabled={submitting || !teamId}>
         Enable Confluence

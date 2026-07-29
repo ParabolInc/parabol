@@ -1,7 +1,7 @@
 """
 The status of one page within an export job
 """
-enum PageExportPageStatusEnum {
+enum PageExportItemStatusEnum {
   """
   Queued, not yet processed
   """

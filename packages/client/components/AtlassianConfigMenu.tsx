@@ -3,6 +3,7 @@ import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
+import {hasConfluenceScopes, hasJiraScopes} from '../utils/atlassianScopes'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 
@@ -10,22 +11,29 @@ interface Props {
   menuProps: MenuProps
   mutationProps: MenuMutationProps
   teamId: string
+  heldScopes?: readonly string[] | null
 }
 
 const AtlassianConfigMenu = (props: Props) => {
-  const {menuProps, mutationProps, teamId} = props
+  const {menuProps, mutationProps, teamId, heldScopes} = props
   const {onError, onCompleted, submitMutation, submitting} = mutationProps
   const atmosphere = useAtmosphere()
-  const held = AtlassianClientManager.getHeldProducts(atmosphere, teamId)
+  const holdsJira = hasJiraScopes(heldScopes)
+  const holdsConfluence = hasConfluenceScopes(heldScopes)
   const removeSubline =
-    held.jira && held.confluence
+    holdsJira && holdsConfluence
       ? 'Disconnects Jira and Confluence'
-      : held.confluence
+      : holdsConfluence
         ? 'Disconnects Confluence'
         : 'Disconnects Jira'
   const refreshToken = () => {
-    // offline_access-only base: openOAuth's union fills in the held products
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, ['offline_access'])
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      ['offline_access'],
+      heldScopes
+    )
   }
 
   const removeAtlassian = () => {

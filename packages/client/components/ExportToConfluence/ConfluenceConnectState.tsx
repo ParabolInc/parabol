@@ -9,11 +9,12 @@ import SendClientSideEvent from '../../utils/SendClientSideEvent'
 
 interface Props {
   teamId: string | null
+  heldScopes?: readonly string[] | null
   onAuthed: () => void
 }
 
 export const ConfluenceConnectState = (props: Props) => {
-  const {teamId, onAuthed} = props
+  const {teamId, heldScopes, onAuthed} = props
   const atmosphere = useAtmosphere()
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Confluence Export Connect Shown')
@@ -31,10 +32,13 @@ export const ConfluenceConnectState = (props: Props) => {
 
   const connect = () => {
     if (submitting || !teamId) return
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps, [
-      ...AtlassianClientManager.CONFLUENCE_SCOPE,
-      'offline_access' as const
-    ])
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      [...AtlassianClientManager.CONFLUENCE_SCOPE, 'offline_access' as const],
+      heldScopes
+    )
   }
 
   return (
@@ -42,8 +46,9 @@ export const ConfluenceConnectState = (props: Props) => {
       <AtlassianProviderLogo />
       <DialogTitle>Connect your Atlassian account</DialogTitle>
       <p className='m-0 text-fg-secondary text-sm'>
-        Export this page as a native Confluence page — headings, tables, task lists, and images
-        included. We&apos;ll open a secure Atlassian sign-in window.
+        {
+          "Export this page as a native Confluence page — headings, tables, task lists, and images included. We'll open a secure Atlassian sign-in window."
+        }
       </p>
       <Button variant='dialogPrimary' size='md' onClick={connect} disabled={submitting || !teamId}>
         Connect Atlassian

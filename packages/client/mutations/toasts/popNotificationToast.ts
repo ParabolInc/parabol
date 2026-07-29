@@ -8,7 +8,6 @@ import type {OnNextHandler, OnNextNavigateContext} from '../../types/relayMutati
 import SetNotificationStatusMutation from '../SetNotificationStatusMutation'
 import mapDiscussionMentionedToToast from './mapDiscussionMentionedToToast'
 import mapMentionedToToast from './mapMentionedToToast'
-import mapPageExportCompleteToToast from './mapPageExportCompleteToToast'
 import mapPromptToJoinOrgToToast from './mapPromptToJoinOrgToToast'
 import mapRequestToJoinOrgToToast from './mapRequestToJoinOrgToToast'
 import mapResponseMentionedToToast from './mapResponseMentionedToToast'
@@ -24,8 +23,7 @@ const typePicker: Partial<
   RESPONSE_REPLIED: mapResponseRepliedToToast,
   TEAMS_LIMIT_REMINDER: mapTeamsLimitReminderToToast,
   PROMPT_TO_JOIN_ORG: mapPromptToJoinOrgToToast,
-  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast,
-  PAGE_EXPORT_COMPLETE: mapPageExportCompleteToToast
+  REQUEST_TO_JOIN_ORG: mapRequestToJoinOrgToToast
 }
 
 graphql`
@@ -40,7 +38,6 @@ graphql`
       ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
       ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
       ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
-      ...mapPageExportCompleteToToast_notification @relay(mask: false)
     }
   }
 `

@@ -55,9 +55,10 @@ type Page implements PagePartial {
   team: Team @scope(name: TEAMS_READ)
 
   """
-  Records of this page being exported to Confluence, newest first (max 10)
+  The viewer's most recent export of this page to an external service. Null when the
+  viewer has never exported it. Viewer-only: exports run by other users are not visible.
   """
-  confluenceExports: [PageExport!]!
+  lastPageExport: PageExport
 
   """
   true if this page is nested under a parent that links back to it
@@ -98,16 +99,6 @@ type Page implements PagePartial {
   The user who deleted this page, null if not deleted
   """
   deletedByUser: User
-
-  """
-  True when this page is a meeting summary page
-  """
-  isMeetingSummary: Boolean!
-
-  """
-  True when the page belongs to a team with at least one active Atlassian connection — used to gate Confluence-export awareness
-  """
-  teamHasAtlassianAuth: Boolean!
 
   """
   IDs of all ancestor pages from root to direct parent

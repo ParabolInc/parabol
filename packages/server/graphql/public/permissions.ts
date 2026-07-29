@@ -410,7 +410,6 @@ const permissionMap: PermissionMap<Resolvers> = {
       hasPageAccess<'Mutation.exportPagesToConfluence'>('args.pageId', 'viewer'),
       rateLimit({perMinute: 10, perHour: 100})
     ),
-    retryConfluencePageExport: rateLimit({perMinute: 10, perHour: 100}),
     updatePage: hasPageAccess<'Mutation.updatePage'>('args.pageId', 'viewer'),
     updatePageAccess: and(
       hasPageAccess<'Mutation.updatePageAccess'>('args.pageId', 'viewer'),

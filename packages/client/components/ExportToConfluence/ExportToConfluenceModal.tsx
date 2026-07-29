@@ -1,31 +1,29 @@
 import graphql from 'babel-plugin-relay/macro'
+import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ExportToConfluenceModalQuery} from '../../__generated__/ExportToConfluenceModalQuery.graphql'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
+import {hasConfluenceScopes} from '../../utils/atlassianScopes'
 import {ConfluenceConnectState} from './ConfluenceConnectState'
 import {ConfluenceEnableState} from './ConfluenceEnableState'
-import {ConfluenceExportEmpty} from './ConfluenceExportEmpty'
-import {ConfluenceExportForm} from './ConfluenceExportForm'
+import {ConfluenceExportFormRoot} from './ConfluenceExportFormRoot'
 import {ConfluenceExportProgress} from './ConfluenceExportProgress'
 import {deriveConfluenceDialogState} from './deriveConfluenceDialogState'
 
 const query = graphql`
   query ExportToConfluenceModalQuery($pageId: ID!) {
     viewer {
-      atlassianConnection {
-        id
-        isActive
-        hasConfluenceScopes
-        hasJiraScopes
-        confluenceSites {
-          cloudId
-          name
-          url
-        }
-      }
       teams {
         id
+        viewerTeamMember {
+          integrations {
+            atlassian {
+              accessToken
+              scope
+            }
+          }
+        }
       }
       organizations {
         hasConfluenceExport: featureFlag(featureName: "ConfluenceExport")
@@ -44,10 +42,7 @@ const query = graphql`
         id
         title
         deletedBy
-        team {
-          id
-        }
-        confluenceExports {
+        lastPageExport {
           ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
         }
       }
@@ -59,10 +54,10 @@ interface Props {
   queryRef: PreloadedQuery<ExportToConfluenceModalQuery>
   pageId: string
   onClose: () => void
-  entryPoint: string
   initialReport?: boolean
   activeExportId: string | null
   setActiveExportId: (id: string | null) => void
+  onDismissReport: () => void
   retry: () => void
 }
 
@@ -71,43 +66,72 @@ export const ExportToConfluenceModal = (props: Props) => {
     queryRef,
     pageId,
     onClose,
-    entryPoint,
     initialReport,
     activeExportId,
     setActiveExportId,
+    onDismissReport,
     retry
   } = props
   const data = usePreloadedQuery<ExportToConfluenceModalQuery>(query, queryRef)
   const {viewer} = data
   const page = data.public.page
-  const connection = viewer.atlassianConnection
+  const runningExport = page?.lastPageExport?.status === 'running' ? page.lastPageExport : null
+  // an export that is still running is unambiguously the active one, even after the
+  // dialog was closed and reopened (the copy promises close-is-safe)
+  useEffect(() => {
+    if (runningExport && !activeExportId) setActiveExportId(runningExport.id)
+  }, [runningExport?.id, activeExportId])
   const hasFlag = viewer.organizations.some((org) => org.hasConfluenceExport)
   if (!hasFlag || !page) return null
 
-  const exports = page.confluenceExports
-  const reportExportId = initialReport && !activeExportId ? (exports[0]?.id ?? null) : null
-  const shownExportId = activeExportId ?? reportExportId
-  const activeExport = exports.find(({id}) => id === shownExportId) ?? null
-  const state = deriveConfluenceDialogState({connection, activeExport})
-  // TODO: a teamless page owned by a multi-team viewer silently auths against the first
-  // team; a team picker is needed to disambiguate (deferred per 2026-07-28 design spec)
-  const teamIdForAuth = page.team?.id ?? viewer.teams[0]?.id ?? null
+  const teamsWithAtlassian = viewer.teams.filter(
+    ({viewerTeamMember}) => viewerTeamMember?.integrations.atlassian?.accessToken
+  )
+  const confluenceTeam =
+    teamsWithAtlassian.find(({viewerTeamMember}) =>
+      hasConfluenceScopes(viewerTeamMember?.integrations.atlassian?.scope)
+    ) ?? null
+  const authTeam = confluenceTeam ?? teamsWithAtlassian[0] ?? viewer.teams[0] ?? null
+  const heldScopes = authTeam?.viewerTeamMember?.integrations.atlassian?.scope
+
+  const lastExport = page.lastPageExport
+  const wantsReport = initialReport && !activeExportId
+  const activeExport =
+    lastExport &&
+    (lastExport.status === 'running' ||
+      (activeExportId ? lastExport.id === activeExportId : wantsReport))
+      ? lastExport
+      : null
+  const state = deriveConfluenceDialogState({
+    hasAtlassianAuth: teamsWithAtlassian.length > 0,
+    hasConfluenceAccess: !!confluenceTeam,
+    activeExport
+  })
 
   return (
     <Dialog isOpen onClose={onClose}>
       <DialogContent className='z-10'>
-        {state === 'S0' && <ConfluenceConnectState teamId={teamIdForAuth} onAuthed={retry} />}
-        {state === 'S1' && <ConfluenceEnableState teamId={teamIdForAuth} onAuthed={retry} />}
-        {state === 'EMPTY' && <ConfluenceExportEmpty />}
-        {state === 'S2' && (
-          <ConfluenceExportForm
+        {state === 'connectAtlassian' && (
+          <ConfluenceConnectState
+            teamId={authTeam?.id ?? null}
+            heldScopes={heldScopes}
+            onAuthed={retry}
+          />
+        )}
+        {state === 'enableConfluence' && (
+          <ConfluenceEnableState
+            teamId={authTeam?.id ?? null}
+            heldScopes={heldScopes}
+            onAuthed={retry}
+          />
+        )}
+        {state === 'form' && confluenceTeam && (
+          <ConfluenceExportFormRoot
             pageId={pageId}
             pageTitle={page.title ?? 'Untitled'}
-            teamId={page.team?.id ?? null}
-            sites={connection!.confluenceSites}
+            teamId={confluenceTeam.id}
             subPages={viewer.subPages.edges.map(({node}) => node)}
-            lastExport={exports[0] ?? null}
-            entryPoint={entryPoint}
+            lastExport={lastExport ?? null}
             onClose={onClose}
             onExported={(id) => {
               setActiveExportId(id)
@@ -115,10 +139,13 @@ export const ExportToConfluenceModal = (props: Props) => {
             }}
           />
         )}
-        {(state === 'S3' || state === 'S4') && activeExport && (
+        {(state === 'exporting' || state === 'report') && activeExport && (
           <ConfluenceExportProgress
             pageExport={activeExport}
-            onBackToForm={() => setActiveExportId(null)}
+            onBackToForm={() => {
+              setActiveExportId(null)
+              onDismissReport()
+            }}
           />
         )}
       </DialogContent>

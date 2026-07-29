@@ -11,15 +11,7 @@ type Mutation {
   """
   Connect the current user's Atlassian (Jira Cloud) account to a team
   """
-  addAtlassianAuth(
-    code: ID!
-    teamId: ID!
-    """
-    The OAuth scopes that were requested and consented to. Defaults to the Jira scope set.
-    Pass the Jira + Confluence sets when the user enables Confluence export.
-    """
-    scopes: [String!]
-  ): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
+  addAtlassianAuth(code: ID!, teamId: ID!): AddAtlassianAuthPayload! @scope(name: TEAMS_WRITE)
 
   """
   Add a comment to a discussion
@@ -409,6 +401,8 @@ type Mutation {
   exportPagesToConfluence(
     "The page to export (client format, e.g. page:123)"
     pageId: ID!
+    "The team whose Atlassian connection performs the export (the viewer's own auth)"
+    teamId: ID!
     "True to export the canonical sub-page tree as nested Confluence child pages"
     includeSubPages: Boolean!
     "The Atlassian cloudId of the destination site"
@@ -417,22 +411,9 @@ type Mutation {
     spaceId: ID!
     "The Confluence space name (denormalized for export history)"
     spaceName: String!
-    "Optional Confluence parent page id; omitted = space root"
-    parentPageId: ID
-    "Which UI surface launched the export (analytics only)"
-    entryPoint: String
-  ): ExportPagesToConfluenceSuccess! @scope(name: PAGES_WRITE)
-
-  """
-  Re-run the failed page (and its skipped descendants) of a previous Confluence export,
-  reusing the already-created parent pages
-  """
-  retryConfluencePageExport(
-    "The export record id (format pageExport:<id>)"
-    pageExportId: ID!
-    "The failed page to retry (client format, e.g. page:123)"
-    pageId: ID!
-  ): RetryConfluencePageExportSuccess! @scope(name: PAGES_WRITE)
+    "Optional id of the Confluence page to nest the export under; omitted = space root"
+    targetParentPageId: ID
+  ): ExportPagesToConfluenceSuccess! @scope(name: PAGES_READ)
 
   """
   Replace the content of a page. Warning: this deletes the content history.

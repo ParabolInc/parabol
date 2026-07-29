@@ -34,7 +34,6 @@ import getMonthlyStreak from '../../../utils/getMonthlyStreak'
 import getSAMLURLFromEmail from '../../../utils/getSAMLURLFromEmail'
 import {getSSOMetadataFromURL} from '../../../utils/getSSOMetadataFromURL'
 import {getUserSocketCount} from '../../../utils/getUserSocketCount'
-import {hasConfluenceScopes} from '../../../utils/hasConfluenceScopes'
 import logError from '../../../utils/logError'
 import standardError from '../../../utils/standardError'
 import errorFilter from '../../errorFilter'
@@ -434,15 +433,6 @@ const User: ReqResolvers<'User'> = {
       visibleOrgUsers = visibleOrgUsers.filter((_, i) => grantChecks[i])
     }
     return visibleOrgUsers
-  },
-
-  atlassianConnection: async ({id: userId}, _args, {authToken, dataLoader}) => {
-    const viewerId = getUserId(authToken)
-    if (viewerId !== userId) return null
-    const auths = await dataLoader.get('atlassianAuthsByUserId').load(userId)
-    const auth = auths.find(({scope}) => hasConfluenceScopes(scope)) ?? auths[0]
-    if (!auth) return null
-    return dataLoader.get('freshAtlassianAuth').load({teamId: auth.teamId, userId})
   },
 
   organizations: async ({id: userId}, _args, {authToken, dataLoader, resourceGrants}) => {

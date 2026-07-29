@@ -1,11 +1,11 @@
 """
 A record of one export of a Parabol page (and optionally its sub-tree) to an external
-service (Confluence Cloud in v1). Powers the export dialog's live progress, the
-prior-exports history line, and the completion notification.
+service (Confluence Cloud in v1). Powers the export dialog's live progress and the
+prior-exports history line.
 """
 type PageExport {
   """
-  Unique id in the format "pageExport:<dbId>"
+  Opaque unique id
   """
   id: ID!
 
@@ -42,12 +42,13 @@ type PageExport {
   """
   Per-page live state, in tree order (parents before children)
   """
-  pages: [PageExportPage!]!
+  pages: [PageExportItem!]!
 
   """
-  Blocks that exported with reduced fidelity, aggregated per block type
+  A short human-readable paragraph summarizing anything that did not export at full
+  fidelity (failed pages, degraded blocks). Null when the export was clean.
   """
-  degradedItems: [PageExportDegradedItem!]!
+  errorSummary: String
 
   """
   When the export was started

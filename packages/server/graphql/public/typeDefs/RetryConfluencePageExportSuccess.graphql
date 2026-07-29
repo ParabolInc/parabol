@@ -1,6 +1,0 @@
-type RetryConfluencePageExportSuccess {
-  """
-  The export record being retried; subscribe to notificationSubscription for live updates
-  """
-  pageExport: PageExport!
-}
