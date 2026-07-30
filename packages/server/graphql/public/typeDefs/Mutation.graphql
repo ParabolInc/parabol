@@ -970,6 +970,20 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Persist user-submitted feedback about a client error to Postgres
+  """
+  submitErrorFeedback(
+    "The error message shown to the user"
+    errorMessage: String!
+    "What the user was doing when the error happened"
+    content: String!
+    "Client-generated id correlating this feedback with Datadog RUM"
+    eventId: ID
+    "Fallback contact email when the submitter is not authenticated"
+    email: String
+  ): SubmitErrorFeedbackSuccess! @scope(name: USERS_WRITE)
+
+  """
   Update an agenda item
   """
   updateAgendaItem(

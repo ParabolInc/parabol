@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import {useState} from 'react'
 import PrimaryButton from '~/components/PrimaryButton'
-import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
+import ReportErrorFeedback from '~/components/ReportErrorFeedback'
 import {
   isExtensionError,
   isIgnoredError,
@@ -78,9 +78,7 @@ const ErrorComponent = (props: Props) => {
   return (
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
-      {ERROR_FEEDBACK_ENABLED && eventId && (
-        <Button onClick={() => setIsOpen(true)}>Report Feedback</Button>
-      )}
+      {eventId && <Button onClick={() => setIsOpen(true)}>Report Feedback</Button>}
       <ReportErrorFeedback
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
