@@ -31,7 +31,7 @@ const notifyMattermost = async (
   channel: {
     webhookUrl: string | null
     serverBaseUrl: string | null
-    sharedSecret: string | null
+    webhookToken: string | null
     channelId: string | null
   },
   user: User,
@@ -39,14 +39,14 @@ const notifyMattermost = async (
   textOrAttachmentsArray: string | unknown[],
   notificationText?: string
 ) => {
-  const {webhookUrl, serverBaseUrl, sharedSecret, channelId} = channel
+  const {webhookUrl, serverBaseUrl, webhookToken, channelId} = channel
   const notifyUrl = serverBaseUrl
     ? `${serverBaseUrl.replace(/\/+$/, '')}/plugins/co.parabol.action/notify/${channelId}`
     : webhookUrl
   if (!notifyUrl) {
     return 'success'
   }
-  const manager = new MattermostServerManager(notifyUrl, sharedSecret ?? undefined)
+  const manager = new MattermostServerManager(notifyUrl, webhookToken ?? undefined)
   const result = await manager.postMessage(textOrAttachmentsArray, notificationText)
   if (result instanceof Error) {
     logError(result, {userId: user.id, tags: {teamId, event, notifyUrl}})
@@ -111,7 +111,7 @@ type MattermostNotificationAuth = {
   teamId: string
   webhookUrl: string | null
   serverBaseUrl: string | null
-  sharedSecret: string | null
+  webhookToken: string | null
   channelId: string | null
 }
 
@@ -382,22 +382,24 @@ async function getMattermostPluginNotificationHelpers(
   userId: string,
   event: SlackNotificationEventEnum
 ) {
+  const team = await dataLoader.get('teams').load(teamId)
+  if (!team) return []
   const [mattermostProvider] = await dataLoader
     .get('sharedIntegrationProviders')
-    .load({service: 'mattermost', orgIds: [], teamIds: []})
+    .load({service: 'mattermost', orgIds: [team.orgId], teamIds: []})
   if (mattermostProvider && mattermostProvider.authStrategy === 'sharedSecret') {
-    const {id: providerId, serverBaseUrl, sharedSecret} = mattermostProvider
+    const {id: providerId, serverBaseUrl} = mattermostProvider
     const settings = await dataLoader
       .get('teamNotificationSettingsByProviderIdAndTeamId')
       .load({providerId, teamId})
     return settings
       .filter(({events, channelId}) => channelId && events.includes(event))
-      .map(({channelId}) =>
+      .map(({channelId, webhookToken}) =>
         MattermostNotificationHelper({
           userId,
           teamId,
           serverBaseUrl,
-          sharedSecret,
+          webhookToken,
           webhookUrl: null,
           channelId
         })
@@ -441,6 +443,7 @@ async function getMattermostWebhookNotificationHelpers(
       ...provider,
       teamId,
       userId,
+      webhookToken: null,
       channelId: null
     })
   )
