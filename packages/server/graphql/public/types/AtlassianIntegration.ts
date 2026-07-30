@@ -123,7 +123,11 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
 
   isActive: ({accessToken}) => !!accessToken,
 
-  scope: ({scope}) => (scope ? scope.split(' ') : []),
+  scope: ({scope, userId}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !scope) return []
+    return scope.split(' ')
+  },
 
   confluenceSites: async ({accessToken, userId}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)

@@ -1,3 +1,4 @@
+import getKysely from '../../../../../postgres/getKysely'
 import AtlassianServerManager from '../../../../../utils/AtlassianServerManager'
 import {hasConfluenceScopes} from '../../../../../utils/hasConfluenceScopes'
 import type {DataLoaderWorker} from '../../../../graphql'
@@ -34,6 +35,13 @@ export const resolveConfluenceAuth = async (
         error: 'Your Atlassian connection cannot access this Confluence site'
       } as const
     }
+    await getKysely()
+      .updateTable('AtlassianAuth')
+      .set({cloudIds: sites.map(({id}) => id)})
+      .where('userId', '=', userId)
+      .where('accountId', '=', auth.accountId)
+      .where('isActive', '=', true)
+      .execute()
   }
   return {auth, error: null} as const
 }

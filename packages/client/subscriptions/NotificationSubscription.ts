@@ -202,9 +202,7 @@ const subscription = graphql`
         ...useUpdatePageAccessMutation_notification @relay(mask: false)
       }
       ExportPagesToConfluenceSuccess {
-        pageExport {
-          ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
-        }
+        ...useExportPagesToConfluenceMutation_notification @relay(mask: false)
       }
     }
   }

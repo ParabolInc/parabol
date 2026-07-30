@@ -10,10 +10,14 @@ import {ConfluenceExportEmpty} from './ConfluenceExportEmpty'
 import {ConfluenceParentPageSearch} from './ConfluenceParentPageSearch'
 import {ConfluenceSpaceSelect, type SpaceOption} from './ConfluenceSpaceSelect'
 import {ConfluenceSubPagesField} from './ConfluenceSubPagesField'
-import {CONFLUENCE_HELP_URL, confluenceExportDestKey} from './confluenceExportConstants'
+import {
+  CONFLUENCE_HELP_URL,
+  confluenceExportDestKey,
+  readConfluenceExportDest
+} from './confluenceExportConstants'
 
 const query = graphql`
-  query ConfluenceExportFormQuery($teamId: ID!) {
+  query ConfluenceExportFormQuery($teamId: ID!, $preferredCloudId: ID!, $hasPreferred: Boolean!) {
     viewer {
       teamMember(teamId: $teamId) {
         integrations {
@@ -22,6 +26,10 @@ const query = graphql`
               cloudId
               name
               url
+            }
+            preferredSpaces: confluenceSpaces(cloudId: $preferredCloudId)
+              @include(if: $hasPreferred) {
+              id
             }
           }
         }
@@ -35,7 +43,6 @@ type PastExport = {
   readonly rootTargetUrl: string | null | undefined
   readonly createdAt: string
 }
-type StoredDest = {cloudId: string; spaceId: string; spaceName: string}
 
 export interface ConfluenceExportFormProps {
   queryRef: PreloadedQuery<ConfluenceExportFormQuery>
@@ -48,23 +55,20 @@ export interface ConfluenceExportFormProps {
   onExported: (pageExportId: string) => void
 }
 
-const readDest = (teamId: string): StoredDest | null => {
-  try {
-    const raw = window.localStorage.getItem(confluenceExportDestKey(teamId))
-    return raw ? (JSON.parse(raw) as StoredDest) : null
-  } catch {
-    return null
-  }
-}
-
 export const ConfluenceExportForm = (props: ConfluenceExportFormProps) => {
   const {queryRef, pageId, pageTitle, teamId, subPages, lastExport, onClose, onExported} = props
   const data = usePreloadedQuery<ConfluenceExportFormQuery>(query, queryRef)
-  const sites = data.viewer.teamMember?.integrations.atlassian?.confluenceSites ?? []
-  const storedDest = readDest(teamId)
-  // only preselect a remembered destination that still belongs to a live site
+  const atlassian = data.viewer.teamMember?.integrations.atlassian
+  const sites = atlassian?.confluenceSites ?? []
+  const liveSpaceIds = atlassian?.preferredSpaces?.map(({id}) => id)
+  const storedDest = readConfluenceExportDest(teamId)
+  // only preselect a remembered destination whose site and space are both still live
   const validDest =
-    storedDest && sites.some(({cloudId}) => cloudId === storedDest.cloudId) ? storedDest : null
+    storedDest &&
+    sites.some(({cloudId}) => cloudId === storedDest.cloudId) &&
+    liveSpaceIds?.includes(storedDest.spaceId)
+      ? storedDest
+      : null
   const [cloudId, setCloudId] = useState(() => validDest?.cloudId ?? sites[0]?.cloudId ?? null)
   const [space, setSpace] = useState<SpaceOption | null>(() =>
     validDest ? {id: validDest.spaceId, name: validDest.spaceName, isPersonal: false} : null

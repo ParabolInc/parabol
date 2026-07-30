@@ -30,8 +30,6 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
     })
   }
   const {accessToken, refreshToken} = oauthResponse
-  // RFC 6749 §5.1: the response may omit scope when identical to the request
-  const scopeToStore = oauthResponse.scopes ?? AtlassianServerManager.SCOPE.join(' ')
   const manager = new AtlassianServerManager(accessToken)
   const sites = await manager.getAccessibleResources()
   if (!Array.isArray(sites)) {
@@ -44,6 +42,16 @@ const addAtlassianAuth: MutationResolvers['addAtlassianAuth'] = async (
   if (!cloudId) {
     return standardError(new Error('Missing cloudId'), {userId: viewerId})
   }
+  // RFC 6749 §5.1: the token response may omit scope, so fall back to the granted
+  // scopes each site reports — still IdP-derived, never a guess at what was requested
+  const scopeToStore =
+    oauthResponse.scopes ??
+    [
+      ...new Set([
+        ...sites.flatMap(({scopes}) => scopes),
+        ...(refreshToken ? ['offline_access'] : [])
+      ])
+    ].join(' ')
   // getMyself is a Jira API call — a Confluence-only grant 401s on it. The account id
   // is also the sub claim of the OAuth access token (a JWT), which needs no scopes.
   const getAccountId = async (): Promise<string | Error> => {

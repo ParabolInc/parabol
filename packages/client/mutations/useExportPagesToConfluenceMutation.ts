@@ -4,6 +4,14 @@ import type {useExportPagesToConfluenceMutation as TExportPagesToConfluenceMutat
 import useAtmosphere from '../hooks/useAtmosphere'
 
 graphql`
+  fragment useExportPagesToConfluenceMutation_notification on ExportPagesToConfluenceSuccess {
+    pageExport {
+      ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
+    }
+  }
+`
+
+graphql`
   fragment useExportPagesToConfluenceMutation_pageExport on PageExport {
     id
     status
@@ -44,9 +52,7 @@ const mutation = graphql`
       spaceName: $spaceName
       targetParentPageId: $targetParentPageId
     ) {
-      pageExport {
-        ...useExportPagesToConfluenceMutation_pageExport @relay(mask: false)
-      }
+      ...useExportPagesToConfluenceMutation_notification @relay(mask: false)
     }
   }
 `
