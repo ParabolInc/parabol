@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.6](https://github.com/ParabolInc/parabol/compare/v13.31.5...v13.31.6) (2026-07-31)
+
+
+### Fixed
+
+* refactor fetchUntrusted. support allowlist of private IPs ([#13330](https://github.com/ParabolInc/parabol/issues/13330)) ([56a9909](https://github.com/ParabolInc/parabol/commit/56a9909b30aefc06b2f801cc071c9b2b727f3a05))
+* remove ICS endpoint ([#13326](https://github.com/ParabolInc/parabol/issues/13326)) ([4dc254e](https://github.com/ParabolInc/parabol/commit/4dc254e2a688c0f93fb6acc2fe3bd100132bdc53))
+
 ## [13.31.5](https://github.com/ParabolInc/parabol/compare/v13.31.4...v13.31.5) (2026-07-28)
 
 
