@@ -1,11 +1,12 @@
-import DataLoader from 'dataloader'
-import type dnsSync from 'dns'
+import {fetch, Response} from '@whatwg-node/fetch'
+import type {LookupAddress} from 'dns'
 import dns from 'dns/promises'
 import http from 'http'
 import https from 'https'
-import net from 'net'
-import {BoundedCache} from './BoundedCache'
+import net, {type LookupFunction} from 'net'
+import type {Duplex} from 'stream'
 import {Logger} from './Logger'
+import {isAllowlistedHostname, isBlockedAddress} from './privateIpGuard'
 
 const TIMEOUT_MS = 15_000
 const MAX_429_RETRIES = 1
@@ -61,131 +62,178 @@ function getRetryDelayMs(retryAfterHeader: string | null, attempt: number): numb
   return (attempt + 1) * 1000 + Math.random() * 1000
 }
 
-function isPrivateIP(ip: string): boolean {
-  if (net.isIPv4(ip)) {
-    const parts = ip.split('.').map(Number)
-    const [a, b] = parts as [number, number]
-
-    return (
-      a === 10 ||
-      a === 127 ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      a === 0 ||
-      (a === 169 && b === 254) ||
-      (a === 100 && b >= 64 && b <= 127)
-    )
+// The ponyfill fetch also resolves file:, data: and blob: URLs, so rejecting every other protocol
+// here is what keeps a user-supplied URL from reading the local disk.
+const parseHttpUrl = (input: string, base?: URL) => {
+  let url: URL
+  try {
+    url = new URL(input, base)
+  } catch {
+    throw new Error('Invalid URL')
   }
-
-  if (net.isIPv6(ip)) {
-    const low = ip.toLowerCase()
-    return (
-      low === '::1' ||
-      low === '::' ||
-      low.startsWith('fc') ||
-      low.startsWith('fd') ||
-      low.startsWith('fe80')
-    )
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('Only http/https allowed')
   }
-
-  return true
+  return url
 }
 
-// Resolve and validate hostname, returning the validated addresses.
-// Addresses are reused for the actual request to prevent DNS rebinding.
+// URL.hostname keeps the brackets around an IPv6 literal, which DNS & the guard don't want
+const getHostname = (url: URL) => url.hostname.replace(/^\[|\]$/g, '')
+
+// Resolve a hostname to the addresses we're allowed to connect to.
 // Use dns.resolve4/resolve6 instead of dns.lookup.
 // dns.lookup uses the libuv thread pool (default 4 threads), which
 // becomes a bottleneck under concurrent fetches. dns.resolve uses
 // c-ares which is fully async and doesn't consume thread pool threads.
-async function doResolveAndValidate(hostname: string): Promise<string[]> {
-  const results = await Promise.allSettled([dns.resolve4(hostname), dns.resolve6(hostname)])
-
-  const addresses: string[] = []
-  for (const result of results) {
-    if (result.status === 'fulfilled') {
-      addresses.push(...result.value)
+async function resolveSafeAddresses(hostname: string): Promise<LookupAddress[]> {
+  // A URL may point straight at an IP (http://10.0.0.5:8065), which c-ares won't resolve
+  if (net.isIP(hostname)) {
+    if (isBlockedAddress(hostname)) {
+      throw new Error(`Blocked private IP: ${hostname}`)
     }
+    return [{address: hostname, family: net.isIPv6(hostname) ? 6 : 4}]
+  }
+
+  // An allowlisted hostname is one the operator vouched for, so whatever it resolves to is fair game
+  const isAllowlisted = isAllowlistedHostname(hostname)
+  const [v4, v6] = await Promise.allSettled([dns.resolve4(hostname), dns.resolve6(hostname)])
+
+  const addresses: LookupAddress[] = []
+  if (v4.status === 'fulfilled') {
+    addresses.push(...v4.value.map((address) => ({address, family: 4})))
+  }
+  if (v6.status === 'fulfilled') {
+    addresses.push(...v6.value.map((address) => ({address, family: 6})))
+  }
+
+  if (addresses.length === 0 && isAllowlisted) {
+    // c-ares only talks to nameservers, so names that live in /etc/hosts (or mDNS) never resolve.
+    // Fall back to the OS resolver, but only for allowlisted hosts: dns.lookup burns a libuv
+    // thread pool slot, so arbitrary unresolvable hostnames must not reach it.
+    const lookedUp = await dns.lookup(hostname, {all: true}).catch(() => [])
+    addresses.push(...lookedUp)
   }
 
   if (addresses.length === 0) {
     throw new Error(`DNS resolution failed: ${hostname}`)
   }
+  if (isAllowlisted) return addresses
 
-  for (const address of addresses) {
-    if (isPrivateIP(address)) {
-      throw new Error(`Blocked private IP: ${address}`)
+  for (const {address} of addresses) {
+    if (isBlockedAddress(address)) {
+      throw new Error(`Blocked private IP: ${address} (${hostname})`)
     }
   }
-
   return addresses
 }
 
-// Deduplicates concurrent DNS lookups for the same hostname.
-// If many image fetches fire at once for the same host, only one DNS call is made.
-const dnsLoader = new DataLoader<string, string[]>(
-  (hostnames) => {
-    return Promise.all(
-      hostnames.map((h) =>
-        doResolveAndValidate(h).catch((e) => (e instanceof Error ? e : new Error(String(e))))
-      )
-    )
-  },
-  {cacheMap: new BoundedCache(50)}
-)
-
-async function resolveAndValidateHostname(hostname: string): Promise<string[]> {
-  return dnsLoader.load(hostname)
+// Validating inside the lookup is what makes DNS rebinding impossible: net.connect uses exactly the
+// addresses this callback returns and never re-resolves the hostname afterward, so there is no
+// window between the check and the connection for a record to change under us.
+const safeLookup: LookupFunction = (hostname, options, callback) => {
+  resolveSafeAddresses(hostname).then(
+    (addresses) => {
+      const first = addresses[0]!
+      if (options.all) {
+        callback(null, addresses)
+      } else {
+        callback(null, first.address, first.family)
+      }
+    },
+    (err) => callback(err, [])
+  )
 }
 
-// Create an HTTP(S) agent that pins DNS to pre-validated addresses,
-// preventing DNS rebinding between validation and connection.
-function createPinnedAgent(protocol: string, addresses: string[]) {
-  const Mod = protocol === 'https:' ? https : http
-  const lookupAddresses = addresses.map((addr) => ({
-    address: addr,
-    family: net.isIPv4(addr) ? 4 : 6
-  }))
-  return new Mod.Agent({
-    lookup: (_hostname: string, _options: dnsSync.LookupOptions, cb: any) => {
-      cb(null, lookupAddresses as any)
-    }
-  } as any)
+// Defense in depth. safeLookup only ever hands back validated addresses, but if the lookup option
+// were ever dropped, Node would silently fall back to dns.lookup and the guard would fail open.
+// A socket's real peer can't be faked by a config mistake.
+const verifyPeer = (socket: net.Socket, hostname: string | undefined) => {
+  const {remoteAddress} = socket
+  if (!remoteAddress) return
+  if (hostname && isAllowlistedHostname(hostname)) return
+  if (isBlockedAddress(remoteAddress)) {
+    socket.destroy(new Error(`Blocked private IP: ${remoteAddress} (${hostname})`))
+  }
 }
 
-interface PinnedResponse {
-  status: number
-  statusText: string
-  headers: http.IncomingHttpHeaders
-  body: http.IncomingMessage
+const guardSocket = (socket: Duplex | null | undefined, hostname: string | undefined) => {
+  if (socket instanceof net.Socket) {
+    socket.once('connect', () => verifyPeer(socket, hostname))
+    socket.once('secureConnect', () => verifyPeer(socket, hostname))
+  }
+  return socket
 }
 
-function pinnedRequest(
-  method: 'GET' | 'POST',
+type ConnectionCallback = (err: Error | null, stream: Duplex) => void
+
+class GuardedHttpAgent extends http.Agent {
+  createConnection(options: http.ClientRequestArgs, callback?: ConnectionCallback) {
+    const hostname = options.host ?? options.hostname ?? undefined
+    return guardSocket(super.createConnection(options, callback), hostname)
+  }
+}
+
+class GuardedHttpsAgent extends https.Agent {
+  createConnection(options: https.RequestOptions, callback?: ConnectionCallback) {
+    const hostname = options.host ?? options.hostname ?? undefined
+    return guardSocket(super.createConnection(options, callback), hostname)
+  }
+}
+
+// One agent per protocol, shared across requests. keepAlive reuses connections (which also means a
+// pooled socket stays validated even if DNS later changes), and timeout reaps sockets that stall.
+const agentOptions = {keepAlive: true, timeout: TIMEOUT_MS, lookup: safeLookup}
+const httpAgent = new GuardedHttpAgent(agentOptions)
+const httpsAgent = new GuardedHttpsAgent(agentOptions)
+
+const fetchOnce = (
   url: URL,
-  agent: http.Agent | https.Agent,
-  signal: AbortSignal,
-  extraHeaders?: Record<string, string>,
-  body?: string
-): Promise<PinnedResponse> {
-  const mod = url.protocol === 'https:' ? https : http
-  return new Promise((resolve, reject) => {
-    const req = mod.request(
-      url,
-      {agent, method, headers: {'User-Agent': USER_AGENT, ...extraHeaders}, signal},
-      (res) =>
-        resolve({
-          status: res.statusCode!,
-          statusText: res.statusMessage!,
-          headers: res.headers,
-          body: res
-        })
-    )
-    req.on('error', reject)
-    if (body !== undefined) {
-      req.write(body)
-    }
-    req.end()
+  options: {
+    method?: 'GET' | 'POST'
+    headers?: Record<string, string>
+    body?: string
+    signal?: AbortSignal
+  }
+) =>
+  fetch(url, {
+    method: options.method ?? 'GET',
+    headers: {'User-Agent': USER_AGENT, ...options.headers},
+    body: options.body,
+    // Never delegate redirects: the ponyfill's 'follow' has no hop limit and copies Authorization
+    // to the new origin. The loops below re-validate every hop instead.
+    redirect: 'manual',
+    signal: options.signal ?? AbortSignal.timeout(TIMEOUT_MS),
+    agent: url.protocol === 'https:' ? httpsAgent : httpAgent
   })
+
+/**
+ * Read a body with a hard size cap. Always settles the stream so keepAlive sockets are released
+ * rather than left half-read in the pool.
+ */
+const readBodyCapped = async (
+  body: ReadableStream<Uint8Array> | null,
+  maxSize: number,
+  onOverflow: 'throw' | 'truncate' = 'throw'
+) => {
+  if (!body) return Buffer.alloc(0)
+  const reader = body.getReader()
+  const chunks: Uint8Array[] = []
+  let total = 0
+  try {
+    while (true) {
+      const {done, value} = await reader.read()
+      if (done || !value) break
+      total += value.byteLength
+      if (total > maxSize) {
+        if (onOverflow === 'throw') throw new Error('File exceeds max size')
+        break
+      }
+      chunks.push(value)
+    }
+  } finally {
+    await reader.cancel().catch(() => {})
+  }
+  return Buffer.concat(chunks)
 }
 
 export const fetchUntrusted = async (
@@ -194,121 +242,55 @@ export const fetchUntrusted = async (
   options?: {headers?: Record<string, string>; maxRedirects?: number}
 ) => {
   try {
-    // 1. Validate URL (outside lock — synchronous, instant)
-    let currentUrl: URL
-    try {
-      currentUrl = new URL(input)
-    } catch {
-      throw new Error('Invalid URL')
-    }
-
-    if (currentUrl.protocol !== 'http:' && currentUrl.protocol !== 'https:') {
-      throw new Error('Only http/https allowed')
-    }
-
+    let currentUrl = parseHttpUrl(input)
     let currentHeaders = options?.headers
     let redirectsLeft = options?.maxRedirects ?? 0
 
     while (true) {
-      // 2. Resolve DNS and validate IPs are public (outside lock — doesn't hit the HTTP server).
-      //    Resolved addresses are pinned to the agent to prevent DNS rebinding.
-      const addresses = await resolveAndValidateHostname(currentUrl.hostname)
-      const agent = createPinnedAgent(currentUrl.protocol, addresses)
+      // Serialize per-domain: same-host requests queue, different hosts run concurrently.
+      // The timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
+      const outcome = await withDomainLimit(getHostname(currentUrl), async () => {
+        let response = await fetchOnce(currentUrl, {headers: currentHeaders})
 
-      // 3. Serialize per-domain: same-host requests queue, different hosts run concurrently.
-      //    Timeout starts AFTER acquiring the lock so queued requests don't expire while waiting.
-      const outcome = await withDomainLimit(currentUrl.hostname, async () => {
-        let controller = new AbortController()
-        let fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
-        try {
-          // 4. Request with pinned DNS (with retry for 429 rate-limiting)
-          let response = await pinnedRequest(
-            'GET',
-            currentUrl,
-            agent,
-            controller.signal,
-            currentHeaders
-          )
+        for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
+          await response.body?.cancel()
+          const delay = getRetryDelayMs(response.headers.get('retry-after'), attempt)
+          await new Promise((resolve) => setTimeout(resolve, delay))
+          response = await fetchOnce(currentUrl, {headers: currentHeaders})
+        }
 
-          for (let attempt = 0; response.status === 429 && attempt < MAX_429_RETRIES; attempt++) {
-            clearTimeout(fetchTimeout)
-            response.body.destroy()
-            const retryAfter = response.headers['retry-after'] ?? null
-            const delay = getRetryDelayMs(
-              Array.isArray(retryAfter) ? retryAfter[0]! : retryAfter,
-              attempt
-            )
-            await new Promise((resolve) => setTimeout(resolve, delay))
-            controller = new AbortController()
-            fetchTimeout = setTimeout(() => controller.abort(), TIMEOUT_MS)
-            response = await pinnedRequest(
-              'GET',
-              currentUrl,
-              agent,
-              controller.signal,
-              currentHeaders
-            )
-          }
+        if (response.status >= 300 && response.status < 400) {
+          const location = response.headers.get('location')
+          await response.body?.cancel()
+          // Return a sentinel so we can release the domain lock before re-resolving
+          return {redirect: location}
+        }
 
-          if (response.status >= 300 && response.status < 400) {
-            const location = Array.isArray(response.headers.location)
-              ? response.headers.location[0]
-              : response.headers.location
-            response.body.destroy()
-            // Return a sentinel so we can release the domain lock before re-resolving
-            return {redirect: location ?? null}
-          }
+        if (!response.ok) {
+          await response.body?.cancel()
+          throw new Error(`HTTP error: ${response.status}`)
+        }
 
-          if (response.status < 200 || response.status >= 300) {
-            response.body.destroy()
-            throw new Error(`HTTP error: ${response.status}`)
-          }
+        const contentType = response.headers.get('content-type')
+        if (!contentType) {
+          await response.body?.cancel()
+          throw new Error('Missing Content-Type')
+        }
 
-          // 5. Content-Type validation
-          const contentType = response.headers['content-type']
-          if (!contentType) {
-            response.body.destroy()
-            throw new Error('Missing Content-Type')
-          }
+        // Pre-check the declared size before streaming. The cap below is the real enforcement,
+        // since content-length is both optional and pre-decompression.
+        const declaredSize = Number(response.headers.get('content-length'))
+        if (declaredSize > maxSize) {
+          await response.body?.cancel()
+          throw new Error('File too large')
+        }
 
-          const normalized = contentType.split(';')[0]!.trim().toLowerCase()
-
-          // 6. Enforce max size (pre-check if possible)
-          const contentLength = response.headers['content-length']
-          if (contentLength) {
-            const declared = parseInt(contentLength, 10)
-            if (!isNaN(declared) && declared > maxSize) {
-              response.body.destroy()
-              throw new Error('File too large')
-            }
-          }
-
-          // 7. Stream with hard cap
-          const chunks: Buffer[] = []
-          let total = 0
-
-          for await (const chunk of response.body) {
-            const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array)
-            total += buf.byteLength
-            if (total > maxSize) {
-              response.body.destroy()
-              throw new Error('File exceeds max size')
-            }
-            chunks.push(buf)
-          }
-
-          clearTimeout(fetchTimeout)
-
-          return {
-            buffer: Buffer.concat(chunks) as Buffer<ArrayBufferLike>,
-            contentType: normalized,
-            size: total
-          }
-        } catch (e) {
-          clearTimeout(fetchTimeout)
-          throw e
-        } finally {
-          agent.destroy()
+        // widened so callers can pass it alongside other Buffers (e.g. compressImage output)
+        const buffer: Buffer<ArrayBufferLike> = await readBodyCapped(response.body, maxSize)
+        return {
+          buffer,
+          contentType: contentType.split(';')[0]!.trim().toLowerCase(),
+          size: buffer.byteLength
         }
       })
 
@@ -316,10 +298,7 @@ export const fetchUntrusted = async (
         if (redirectsLeft <= 0 || !outcome.redirect) {
           throw new Error('Redirects not allowed')
         }
-        const redirectUrl = new URL(outcome.redirect, currentUrl)
-        if (redirectUrl.protocol !== 'http:' && redirectUrl.protocol !== 'https:') {
-          throw new Error('Only http/https allowed')
-        }
+        const redirectUrl = parseHttpUrl(outcome.redirect, currentUrl)
         // Strip Authorization on cross-origin redirects to avoid leaking credentials
         if (redirectUrl.hostname !== currentUrl.hostname && currentHeaders?.Authorization) {
           const {Authorization: _dropped, ...rest} = currentHeaders
@@ -338,13 +317,6 @@ export const fetchUntrusted = async (
   }
 }
 
-export interface PostUntrustedResponse {
-  status: number
-  statusText: string
-  headers: {get: (name: string) => string | null}
-  json: () => Promise<any>
-}
-
 const MAX_WEBHOOK_RESPONSE_SIZE = 100_000
 
 export const postUntrusted = async (
@@ -354,62 +326,27 @@ export const postUntrusted = async (
     body: string
     signal?: AbortSignal
   }
-): Promise<PostUntrustedResponse | null> => {
+): Promise<Response | null> => {
+  // logged on failure. Never log the whole URL, webhook URLs carry a secret in the path
+  let host = 'invalid URL'
   try {
-    let parsed: URL
-    try {
-      parsed = new URL(url)
-    } catch {
-      throw new Error('Invalid URL')
-    }
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      throw new Error('Only http/https allowed')
-    }
-
-    const addresses = await resolveAndValidateHostname(parsed.hostname)
-    const agent = createPinnedAgent(parsed.protocol, addresses)
-
-    try {
-      const signal = options.signal ?? AbortSignal.timeout(TIMEOUT_MS)
-      const response = await pinnedRequest(
-        'POST',
-        parsed,
-        agent,
-        signal,
-        options.headers,
-        options.body
-      )
-
-      const chunks: Buffer[] = []
-      let total = 0
-      for await (const chunk of response.body) {
-        const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as Uint8Array)
-        total += buf.byteLength
-        if (total > MAX_WEBHOOK_RESPONSE_SIZE) {
-          response.body.destroy()
-          break
-        }
-        chunks.push(buf)
-      }
-      const rawBody = Buffer.concat(chunks)
-
-      return {
-        status: response.status,
-        statusText: response.statusText,
-        headers: {
-          get: (name: string): string | null => {
-            const val = response.headers[name.toLowerCase()]
-            if (Array.isArray(val)) return val[0] ?? null
-            return val ?? null
-          }
-        },
-        json: async () => JSON.parse(rawBody.toString('utf8'))
-      }
-    } finally {
-      agent.destroy()
-    }
+    const parsed = parseHttpUrl(url)
+    host = parsed.host
+    const response = await fetchOnce(parsed, {
+      method: 'POST',
+      headers: options.headers,
+      body: options.body,
+      signal: options.signal
+    })
+    // Buffer the (capped) body so the socket is released before the caller reads it
+    const buffer = await readBodyCapped(response.body, MAX_WEBHOOK_RESPONSE_SIZE, 'truncate')
+    return new Response(buffer, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    })
   } catch (e) {
-    Logger.log(e)
+    Logger.warn(`postUntrusted failed for ${host}`, e)
     return null
   }
 }
