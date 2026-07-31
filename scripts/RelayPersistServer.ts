@@ -68,11 +68,18 @@ export default class RelayPersistServer {
       .replace(/\s{2,}/g, ' ')
       // biome-ignore lint/suspicious/noControlCharactersInRegex: disallow null char
       .replace(/\u0000/g, '')
-    fs.writeFileSync(this.queryMapPath, JSON.stringify(this.queryMap))
+    this.writeQueryMap()
     res.writeHead(200, {
       'Content-Type': 'application/json'
     })
     res.end(JSON.stringify({id}))
+  }
+  // write via a temp file + rename so a reader (or a kill mid-write) never sees a truncated map.
+  // a corrupt map makes the next boot flush the whole artifact directory & recompile from scratch
+  writeQueryMap() {
+    const tmpPath = `${this.queryMapPath}.${process.pid}.tmp`
+    fs.writeFileSync(tmpPath, JSON.stringify(this.queryMap))
+    fs.renameSync(tmpPath, this.queryMapPath)
   }
   prepareArtifactDirectory(flushArtifacts: boolean) {
     const prepare = (config: {artifactDirectory: string}) => {

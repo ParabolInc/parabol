@@ -1,0 +1,24 @@
+"""
+One proposed cluster of reflections. A proposal only — generateSuggestedGroups never moves a
+card, and the deprecated autogroup mutation is the one remaining way to rearrange the board.
+The client renders these as an outline on hover.
+"""
+type SuggestedGroup {
+  """
+  Deterministic id, `<meetingId>:<createdAt>:<index>`, so republishing an unchanged suggestion
+  set normalizes onto the same Relay records instead of churning every consumer.
+  """
+  id: ID!
+
+  """
+  The proposed display title. Null in similarity mode, where the existing smart-title logic
+  (an AI title, or a Jaccard title when the org has AI off) names the group at apply time.
+  """
+  title: String
+
+  """
+  The RetroReflections proposed for this group, in proposal order. Reflections deleted since the
+  suggestions were generated are filtered out, so these are always safe to look up.
+  """
+  reflectionIds: [ID!]!
+}

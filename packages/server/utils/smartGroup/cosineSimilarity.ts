@@ -1,4 +1,4 @@
-export const cosineSimilarity = (a: number[], b: number[]): number => {
+export const cosineSimilarity = (a: readonly number[], b: readonly number[]): number => {
   let dot = 0
   let magA = 0
   let magB = 0

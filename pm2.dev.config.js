@@ -20,7 +20,12 @@ module.exports = {
       env: {
         SERVER_ID: 0
       },
-      watch: ['dev/web.js'],
+      // queryMap.json is read off disk at boot, so a newly persisted query needs a restart.
+      // it is deliberately not bundled into dev/web.js, else every new query would cost a
+      // full webpack rebuild of the 78MB server bundle just to become resolvable
+      watch: ['dev/web.js', 'queryMap.json'],
+      // relay persists a batch of queries concurrently, so debounce the burst of writes
+      watch_delay: 1000,
       // if the watched file doeesn't exist, wait for it instead of restarting
       autorestart: false
     },
