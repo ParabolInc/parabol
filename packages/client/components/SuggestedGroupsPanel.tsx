@@ -41,7 +41,7 @@ const SuggestedGroupsPanel = (props: Props) => {
             isAI ? 'bg-surface-card text-fg-primary' : 'bg-transparent text-fg-secondary'
           }`}
         >
-          {'Custom Instructions'}
+          {'Custom'}
         </button>
       </div>
 
