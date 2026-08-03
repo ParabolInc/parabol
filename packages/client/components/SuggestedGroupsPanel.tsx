@@ -1,6 +1,5 @@
 import type {SuggestedGroupsSettings} from '../hooks/useSuggestedGroupsSettings'
-import {Button} from '../ui/Button/Button'
-import Ellipsis from './Ellipsis/Ellipsis'
+import SuggestedGroupsSubmitButton from './SuggestedGroupsSubmitButton'
 
 type Props = {
   onSubmit: () => void
@@ -71,15 +70,12 @@ const SuggestedGroupsPanel = (props: Props) => {
         <span className='text-fg-primary text-sm'>{'Group across columns'}</span>
       </label>
 
-      <Button
-        variant='dialogPrimary'
-        size='md'
-        onClick={onSubmit}
-        disabled={submitting || isUpToDate}
-        className='mt-4 w-full bg-grape-500 hover:bg-grape-600'
-      >
-        {submitting ? <Ellipsis /> : 'Update suggestions'}
-      </Button>
+      <SuggestedGroupsSubmitButton
+        onSubmit={onSubmit}
+        submitting={submitting}
+        isUpToDate={isUpToDate}
+        mode={mode}
+      />
     </div>
   )
 }

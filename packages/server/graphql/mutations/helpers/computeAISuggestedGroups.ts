@@ -49,16 +49,32 @@ const computeAISuggestedGroups = async (
     promptIds.map((id) => dataLoader.get('reflectPrompts').loadNonNull(id))
   )
   const promptMap = new Map(prompts.map((p) => [p.id, p.question]))
-  const toInput = (reflection: RetroReflection) => ({
-    id: reflection.id,
-    text: reflection.plaintextContent,
-    prompt: promptMap.get(reflection.promptId) ?? ''
-  })
+
+  /**
+   * A batch confined to one column names its question once; a batch spanning columns has to spell
+   * out which prompt each card answers. Picking the smaller shape is worth real latency, since the
+   * question would otherwise be repeated on every line.
+   */
+  const toInput = (promptId: string | null, batch: RetroReflection[]) =>
+    promptId
+      ? {
+          prompt: promptMap.get(promptId) ?? '',
+          reflections: batch.map(({id, plaintextContent}) => ({id, text: plaintextContent}))
+        }
+      : {
+          reflections: batch.map((r) => ({
+            id: r.id,
+            text: r.plaintextContent,
+            prompt: promptMap.get(r.promptId) ?? ''
+          }))
+        }
 
   const manager = new OpenAIServerManager()
-  // One batch per column when constrained, otherwise a single batch over the whole board
+  // One batch per column when constrained, otherwise a single batch over the whole board. A board
+  // with only one reflect prompt is scoped either way: there is no second column to group across,
+  // so the cross-column shape would just repeat the same question on every line.
   const batches =
-    sameColumnOnly && promptIds.length > 1
+    sameColumnOnly || promptIds.length === 1
       ? promptIds.map((promptId) => ({
           promptId,
           reflections: groupable.filter((r) => r.promptId === promptId)
@@ -69,13 +85,14 @@ const computeAISuggestedGroups = async (
     batches.map(async ({promptId, reflections: batch}) => {
       const first = batch[0]
       if (!first) return null
-      // A lone card in a column is already its own group, no need to ask
+      // A batch of one is already its own group, so there is nothing to ask. Scoped batches hit
+      // this whenever a column holds a single card; the cross-column batch only when the whole
+      // board does.
       if (batch.length === 1) {
         return {groups: [{title: '', reflectionIds: [first.id]}], tokenCost: 0}
       }
-      return manager.groupReflectionsStructured(batch.map(toInput), {
+      return manager.groupReflectionsStructured(toInput(promptId, batch), {
         userPrompt,
-        columnQuestion: promptId ? promptMap.get(promptId) : null,
         signal: AbortSignal.timeout(LLM_TIMEOUT_MS)
       })
     })
