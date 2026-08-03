@@ -134,6 +134,13 @@ const parseAllowlist = (raw: string | undefined) => {
 
 const allowlist = parseAllowlist(process.env.SSRF_ALLOWED_HOSTS)
 
+/**
+ * True if the operator configured SSRF_ALLOWED_HOSTS at all. Without one, a block is the guard
+ * working as designed (a user pointed us at a private address) and nothing an operator can act on.
+ * With one, a block usually means the allowlist is missing an entry, which is worth surfacing.
+ */
+export const hasAllowlist = () => allowlist.hostnames.size > 0 || allowlist.ranges.length > 0
+
 /** True if the operator allowlisted this hostname, meaning whatever it resolves to is fair game. */
 export const isAllowlistedHostname = (hostname: string) =>
   allowlist.hostnames.has(hostname.toLowerCase())
