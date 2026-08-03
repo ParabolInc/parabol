@@ -12,7 +12,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import type {MenuProps} from '../hooks/useMenu'
-import {PALETTE} from '../styles/paletteV3'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import makeAppURL from '../utils/makeAppURL'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
@@ -30,7 +29,7 @@ interface Props {
 }
 
 const StyledIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 24,
   width: 24,
   svg: {
@@ -40,7 +39,7 @@ const StyledIcon = styled('div')({
 })
 
 const LinkIcon = styled(Link)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 8
 })
 

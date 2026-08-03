@@ -24,21 +24,21 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
 
   return (
     <div className='px-6 pb-8'>
-      <div className='flex flex-row rounded border border-slate-500 px-2 py-1'>
+      <div className='flex flex-row rounded border border-hairline-field px-2 py-1'>
         <div className='px-2'>
           {disabled ? (
-            <Add className='h-6 w-6 text-sky-500' />
+            <Add className='h-6 w-6 text-accent' />
           ) : (
-            <Check className='h-6 w-6 text-green-500' />
+            <Check className='h-6 w-6 text-jade-500' />
           )}
         </div>
         <div className='flex flex-col'>
-          <span className='font-semibold text-base text-slate-700'>
+          <span className='font-semibold text-base text-fg-primary'>
             {disabled ? 'Enable SSO' : 'SSO Enabled'}
           </span>
-          <span className='text-slate-700 text-sm'>
+          <span className='text-fg-primary text-sm'>
             <a
-              className='font-semibold text-sky-500 text-sm focus:text-sky-500 active:text-sky-500'
+              className='font-semibold text-accent text-sm focus:text-accent active:text-accent'
               href={`${ExternalLinks.CONTACT}?subject=${
                 disabled ? 'Enable SSO' : 'Update Email Domains'
               }`}
@@ -53,7 +53,7 @@ const OrgAuthenticationSSOFrame = (props: Props) => {
               return (
                 <div
                   key={domain}
-                  className='w-max select-none rounded-full bg-slate-200 px-3 py-1 font-semibold text-slate-800 text-xs'
+                  className='w-max select-none rounded-full bg-surface-well px-3 py-1 font-semibold text-fg-primary text-xs'
                 >
                   {domain}
                 </div>

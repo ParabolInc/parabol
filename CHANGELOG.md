@@ -5,6 +5,84 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.31.6](https://github.com/ParabolInc/parabol/compare/v13.31.5...v13.31.6) (2026-07-31)
+
+
+### Fixed
+
+* refactor fetchUntrusted. support allowlist of private IPs ([#13330](https://github.com/ParabolInc/parabol/issues/13330)) ([56a9909](https://github.com/ParabolInc/parabol/commit/56a9909b30aefc06b2f801cc071c9b2b727f3a05))
+* remove ICS endpoint ([#13326](https://github.com/ParabolInc/parabol/issues/13326)) ([4dc254e](https://github.com/ParabolInc/parabol/commit/4dc254e2a688c0f93fb6acc2fe3bd100132bdc53))
+
+## [13.31.5](https://github.com/ParabolInc/parabol/compare/v13.31.4...v13.31.5) (2026-07-28)
+
+
+### Fixed
+
+* correct profile URL typo in llms.txt ([#13319](https://github.com/ParabolInc/parabol/issues/13319)) ([184f571](https://github.com/ParabolInc/parabol/commit/184f571ef5c724bcb840061afb433b08205e1f35))
+* LeftNav selection, summary task style improvements ([#13324](https://github.com/ParabolInc/parabol/issues/13324)) ([28c55c0](https://github.com/ParabolInc/parabol/commit/28c55c002afb0d7d5b6a8386a03e36eae34eade3))
+
+## [13.31.4](https://github.com/ParabolInc/parabol/compare/v13.31.3...v13.31.4) (2026-07-27)
+
+
+### Fixed
+
+* dangling team members from org member change ([#13316](https://github.com/ParabolInc/parabol/issues/13316)) ([9a68d64](https://github.com/ParabolInc/parabol/commit/9a68d646ac1e8b4f6a6871e53088d3f1536d0400))
+
+## [13.31.3](https://github.com/ParabolInc/parabol/compare/v13.31.2...v13.31.3) (2026-07-24)
+
+
+### Fixed
+
+* bump nodejs to v24.17.0 ([#13301](https://github.com/ParabolInc/parabol/issues/13301)) ([f64aa03](https://github.com/ParabolInc/parabol/commit/f64aa03990c36197abd5de2360238e6f4a96a954))
+* Dark mode touchups ([#13312](https://github.com/ParabolInc/parabol/issues/13312)) ([bf01ecd](https://github.com/ParabolInc/parabol/commit/bf01ecdbcca41f4ff89d91ca476756c54cf7f93c))
+* race condition for re-joining an org ([#13314](https://github.com/ParabolInc/parabol/issues/13314)) ([fb2a1d2](https://github.com/ParabolInc/parabol/commit/fb2a1d24d23f91686b23e7870c021ffd9f6445b7))
+
+## [13.31.2](https://github.com/ParabolInc/parabol/compare/v13.31.1...v13.31.2) (2026-07-23)
+
+
+### Fixed
+
+* Dark Mode touchups ([#13308](https://github.com/ParabolInc/parabol/issues/13308)) ([fa9240b](https://github.com/ParabolInc/parabol/commit/fa9240b7215c48c5849e5ecce212c6348b7e6202))
+
+## [13.31.1](https://github.com/ParabolInc/parabol/compare/v13.31.0...v13.31.1) (2026-07-21)
+
+
+### Fixed
+
+* pre-prod darkMode fix ups ([#13305](https://github.com/ParabolInc/parabol/issues/13305)) ([ae7657f](https://github.com/ParabolInc/parabol/commit/ae7657f0d2529bdc0aba6f977db5cac525dc768c))
+
+## [13.31.0](https://github.com/ParabolInc/parabol/compare/v13.30.0...v13.31.0) (2026-07-21)
+
+
+### Added
+
+* darkMode pre-login LightIsland, fix ups ([#13300](https://github.com/ParabolInc/parabol/issues/13300)) ([2f40910](https://github.com/ParabolInc/parabol/commit/2f40910415a596e0673da11c8226d046f1c1dafe))
+
+
+### Fixed
+
+* security deps bump ([#13298](https://github.com/ParabolInc/parabol/issues/13298)) ([e43371c](https://github.com/ParabolInc/parabol/commit/e43371cbacd0bb25553bf4e55a182a913620cee0))
+
+## [13.30.0](https://github.com/ParabolInc/parabol/compare/v13.29.2...v13.30.0) (2026-07-21)
+
+
+### Added
+
+* dark mode (draft) ([#13285](https://github.com/ParabolInc/parabol/issues/13285)) ([dc503d7](https://github.com/ParabolInc/parabol/commit/dc503d7213caec9615e82fe9886d9f6cebe54f35))
+
+## [13.29.2](https://github.com/ParabolInc/parabol/compare/v13.29.1...v13.29.2) (2026-07-17)
+
+
+### Fixed
+
+* check for org before destructure ([#13290](https://github.com/ParabolInc/parabol/issues/13290)) ([c563016](https://github.com/ParabolInc/parabol/commit/c563016a51acd809f10217af07bfe8fee8f854bc))
+* Pages TODO style regression ([#13286](https://github.com/ParabolInc/parabol/issues/13286)) ([5ab8691](https://github.com/ParabolInc/parabol/commit/5ab86917d163c8b61e6d9fb572dc84980d3cea46))
+
+
+### Changed
+
+* split SMTP emails into batches ([#13284](https://github.com/ParabolInc/parabol/issues/13284)) ([66f1a30](https://github.com/ParabolInc/parabol/commit/66f1a30bff62f26bf4a8d2f6f40ef203bd80cbf4))
+
 ## [13.29.1](https://github.com/ParabolInc/parabol/compare/v13.29.0...v13.29.1) (2026-07-10)
 
 

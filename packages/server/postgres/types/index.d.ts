@@ -26,6 +26,7 @@ import {
   type selectPollOption,
   type selectReflectPrompts,
   type selectRetroReflections,
+  type selectRetroSuggestedGrouping,
   type selectSlackAuths,
   type selectSlackNotifications,
   type selectSuggestedAction,
@@ -90,6 +91,11 @@ export type AutogroupReflectionGroupType = {
   groupTitle: string
   reflectionIds: string[]
 }
+
+export type SuggestedGroupsModeType = 'similarity' | 'ai'
+export type RetroSuggestedGrouping = ExtractTypeFromQueryBuilderSelect<
+  typeof selectRetroSuggestedGrouping
+>
 
 export interface Organization
   extends ExtractTypeFromQueryBuilderSelect<typeof selectOrganizations> {}

@@ -8,7 +8,6 @@ import {
   useImperativeHandle,
   useRef
 } from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import MenuItemLabel from './MenuItemLabel'
 
 export interface MenuItemProps {
@@ -33,12 +32,12 @@ const MenuItemStyles = styled('div')<{
   isDisabled: boolean | undefined
 }>(({isActive, isDisabled}) => ({
   alignItems: 'center',
-  backgroundColor: isActive ? PALETTE.SLATE_200 : undefined,
-  color: isDisabled ? PALETTE.SLATE_600 : PALETTE.SLATE_700,
+  backgroundColor: isActive ? 'var(--color-surface-well)' : undefined,
+  color: isDisabled ? 'var(--color-fg-muted)' : 'var(--color-fg-primary)',
   cursor: isDisabled ? 'not-allowed' : 'pointer',
   display: 'flex',
   '&:hover,:focus': {
-    backgroundColor: isActive ? PALETTE.SLATE_200 : PALETTE.SLATE_100,
+    backgroundColor: isActive ? 'var(--color-surface-well)' : 'var(--color-surface-raised)',
     outline: 0
   }
 }))

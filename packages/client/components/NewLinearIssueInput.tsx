@@ -257,11 +257,11 @@ const NewLinearIssueInput = (props: Props) => {
 
   if (createTaskError) {
     return (
-      <div className='flex cursor-pointer bg-slate-100 py-2 pl-4'>
+      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
         <Checkbox active disabled />
         <div className='flex w-full flex-col pl-4'>
-          <div className='w-full text-left text-sm text-tomato-500'>{createTaskError}</div>
-          <a className='block text-sky-500 text-xs leading-5 no-underline hover:underline focus:underline'>
+          <div className='w-full text-left text-fg-error text-sm'>{createTaskError}</div>
+          <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
             {selectedProjectAndId.name}
           </a>
         </div>
@@ -271,7 +271,7 @@ const NewLinearIssueInput = (props: Props) => {
   if (!isEditing) return null
   return (
     <>
-      <div className='flex cursor-pointer bg-slate-100 py-2 pl-4'>
+      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
         <Checkbox active />
         <div className='flex w-full flex-col pl-4'>
           <form onSubmit={handleCreateNewIssue} className='flex w-full flex-col'>
@@ -284,10 +284,10 @@ const NewLinearIssueInput = (props: Props) => {
               placeholder='New issue title'
               ref={ref}
               type='text'
-              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-slate-700 outline-none'
+              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-base text-fg-primary outline-none'
             />
             {dirty && error && (
-              <div className='w-full text-left text-sm text-tomato-500'>{error}</div>
+              <div className='w-full text-left text-fg-error text-sm'>{error}</div>
             )}
           </form>
           <button
@@ -295,10 +295,10 @@ const NewLinearIssueInput = (props: Props) => {
             onMouseDown={togglePortal}
             className='m-0 flex w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
           >
-            <a className='block text-sky-500 text-xs leading-5 no-underline hover:underline focus:underline'>
+            <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
               {selectedProjectAndId.name}
             </a>
-            <ExpandMore className='h-5 w-5 p-0 text-sky-500' />
+            <ExpandMore className='h-5 w-5 p-0 text-accent' />
           </button>
         </div>
       </div>

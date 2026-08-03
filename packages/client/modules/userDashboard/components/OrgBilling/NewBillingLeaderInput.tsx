@@ -6,7 +6,6 @@ import {useFragment} from 'react-relay'
 import type {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV3'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
@@ -14,7 +13,7 @@ import {ElementWidth} from '../../../../types/constEnums'
 import NewBillingLeaderMenu from './NewBillingLeaderMenu'
 
 const StyledIcon = styled(Person)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   width: ElementWidth.BILLING_AVATAR,
   height: ElementWidth.BILLING_AVATAR
 })
@@ -26,7 +25,7 @@ const Form = styled('form')({
 })
 
 const Item = styled('div')({
-  backgroundColor: PALETTE.SLATE_200,
+  backgroundColor: 'var(--color-surface-well)',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
@@ -48,7 +47,7 @@ const NewLeaderInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   margin: 0,
   paddingRight: 8,

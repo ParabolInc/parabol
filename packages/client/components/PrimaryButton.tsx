@@ -12,7 +12,7 @@ const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
     backgroundImage: visuallyDisabled
       ? PALETTE.GRADIENT_TOMATO_400_ROSE_300
       : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
-    borderRadius: Radius.BUTTON_PILL,
+    borderRadius: Radius.BUTTON,
     color: '#FFFFFF',
     fontWeight: 600,
     opacity: visuallyDisabled ? 1 : undefined,

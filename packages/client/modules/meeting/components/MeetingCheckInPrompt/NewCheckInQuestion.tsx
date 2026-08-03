@@ -17,14 +17,13 @@ import UpdateNewCheckInQuestionMutation from '../../../../mutations/UpdateNewChe
 import {useModifyCheckInQuestionMutation} from '../../../../mutations/useModifyCheckInQuestionMutation'
 import {isEqualWhenSerialized} from '../../../../shared/isEqualWhenSerialized'
 import {plaintextToTipTap} from '../../../../shared/tiptap/plaintextToTipTap'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Button} from '../../../../ui/Button/Button'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 
 const CogIcon = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   cursor: 'pointer',
   height: 24,
   svg: {
@@ -198,7 +197,7 @@ const NewCheckInQuestion = (props: Props) => {
         )}
       </div>
       {showAiIcebreaker && (
-        <div className='flex flex-col gap-4 rounded-lg bg-slate-100 p-6'>
+        <div className='flex flex-col gap-4 rounded-lg border border-hairline bg-surface-well p-6'>
           <div className='flex flex-col items-center justify-center gap-2'>
             <div className='inline-flex gap-2'>
               <div className='font-semibold'>Modify current icebreaker with AI</div>
@@ -212,7 +211,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('SERIOUS')}
@@ -221,7 +219,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('FUNNY')}
@@ -230,7 +227,6 @@ const NewCheckInQuestion = (props: Props) => {
             </Button>
             <Button
               variant='outline'
-              shape='pill'
               size='sm'
               disabled={isModifyingCheckInQuestion}
               onClick={() => modifyCheckInQuestion('EXCITING')}
@@ -241,7 +237,6 @@ const NewCheckInQuestion = (props: Props) => {
           <div className='flex items-center justify-center gap-x-3'>
             <Button
               variant='secondary'
-              shape='pill'
               size='md'
               disabled={aiUpdatedIcebreaker === '' || isModifyingCheckInQuestion || submitting}
               onClick={updateCheckInQuestionWithGeneratedContent}

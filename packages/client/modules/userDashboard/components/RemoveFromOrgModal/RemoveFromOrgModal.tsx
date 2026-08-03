@@ -86,21 +86,21 @@ const RemoveFromOrgModal = (props: Props) => {
         )}
         {skippedCount > 0 && (
           <div className='mt-4'>
-            <div className='mb-2 font-medium text-slate-700 text-sm'>
+            <div className='mb-2 font-medium text-fg-primary text-sm'>
               {`The following ${plural(skippedCount, 'user')} will not be removed:`}
             </div>
-            <div className='max-h-60 overflow-auto rounded border border-slate-600'>
-              <div className='flex items-center justify-between border-slate-400 border-b bg-slate-100 px-3 py-2 font-semibold text-sm'>
+            <div className='max-h-60 overflow-auto rounded border border-hairline-strong'>
+              <div className='flex items-center justify-between border-hairline-strong border-b bg-surface-raised px-3 py-2 font-semibold text-sm'>
                 <div>Name</div>
                 <div>Reason</div>
               </div>
               {nonRemovableUsers.map((item) => (
                 <div
                   key={item.user.id}
-                  className='flex items-center justify-between border-slate-400 border-b px-3 py-2 last:border-0'
+                  className='flex items-center justify-between border-hairline-strong border-b px-3 py-2 last:border-0'
                 >
                   <div className='font-medium'>{item.user.preferredName}</div>
-                  <div className='text-slate-600 text-sm'>{item.reason}</div>
+                  <div className='text-fg-secondary text-sm'>{item.reason}</div>
                 </div>
               ))}
             </div>

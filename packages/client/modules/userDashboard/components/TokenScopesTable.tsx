@@ -20,28 +20,26 @@ interface Props {
 export const TokenScopesTable = ({selectedScopes, toggleScope}: Props) => {
   return (
     <div className='flex flex-col gap-2'>
-      <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
-        Scopes
-      </label>
-      <div className='overflow-hidden rounded-md border border-slate-200'>
+      <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>Scopes</label>
+      <div className='overflow-hidden rounded-md border border-hairline'>
         <table className='w-full text-sm'>
           <thead>
-            <tr className='border-slate-200 border-b bg-slate-50'>
-              <th className='py-2 pr-3 pl-3 text-left font-semibold text-slate-600 text-xs'>
+            <tr className='border-hairline border-b bg-surface-raised'>
+              <th className='py-2 pr-3 pl-3 text-left font-semibold text-fg-secondary text-xs'>
                 Resource
               </th>
-              <th className='w-10 py-2 pr-1 pl-1 text-center font-semibold text-slate-600 text-xs'>
+              <th className='w-10 py-2 pr-1 pl-1 text-center font-semibold text-fg-secondary text-xs'>
                 Read
               </th>
-              <th className='w-10 py-2 pr-1 pl-1 text-center font-semibold text-slate-600 text-xs'>
+              <th className='w-10 py-2 pr-1 pl-1 text-center font-semibold text-fg-secondary text-xs'>
                 Write
               </th>
             </tr>
           </thead>
           <tbody>
             {SCOPE_GROUPS.map((group) => (
-              <tr key={group.resource} className='border-slate-100 border-b last:border-0'>
-                <td className='py-2 pr-3 pl-3 text-slate-700'>{group.resource}</td>
+              <tr key={group.resource} className='border-hairline border-b last:border-0'>
+                <td className='py-2 pr-3 pl-3 text-fg-primary'>{group.resource}</td>
                 <td className='w-10 py-2'>
                   <Checkbox
                     checked={selectedScopes.has(group.read)}

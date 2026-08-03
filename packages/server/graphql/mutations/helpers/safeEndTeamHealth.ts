@@ -2,7 +2,7 @@ import type {GraphQLResolveInfo} from 'graphql'
 import {sql} from 'kysely'
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import TimelineEventTeamHealthComplete from '../../../database/types/TimelineEventTeamHealthComplete'
-import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
+import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
@@ -98,7 +98,7 @@ const safeEndTeamHealth = async ({
   )
   publish(SubscriptionChannel.TEAM, teamId, 'EndTeamHealthSuccess', data, subOptions)
   // do not await sending the email
-  if (page) sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   return data
 }
 

@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {JiraFieldDimensionDropdown_stage$key} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
@@ -18,7 +17,7 @@ interface Props {
 }
 
 const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   cursor: isFacilitator ? undefined : 'default',
   display: 'flex',
   paddingRight: isFacilitator ? undefined : 8,

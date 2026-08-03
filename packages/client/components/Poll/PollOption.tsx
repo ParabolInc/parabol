@@ -1,16 +1,16 @@
 import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
+import {Radius} from '../../types/constEnums'
 
 const PollOptionTitle = styled('div')({
   width: '100%',
   height: '36px',
   fontSize: '14px',
   padding: `0 12px`,
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  borderRadius: '18px',
+  border: `1px solid var(--color-hairline-strong)`,
+  borderRadius: Radius.BUTTON,
   display: 'flex',
   alignItems: 'center'
 })

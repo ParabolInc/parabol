@@ -6,14 +6,12 @@
 
 import styled from '@emotion/styled'
 import {Fragment} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
 import LabelHeading from '../LabelHeading/LabelHeading'
 
 const SeparatorContainer = styled(LabelHeading)<{
   margin: string | number | undefined
 }>(({margin}) => ({
   display: 'flex',
-  fontSize: 11,
   margin,
   maxWidth: '100%',
   padding: '16px 0',
@@ -21,7 +19,7 @@ const SeparatorContainer = styled(LabelHeading)<{
 }))
 
 const separatorLineStyles = {
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+  borderBottom: `1px solid var(--color-hairline)`,
   flex: 1,
   margin: 'auto'
 }
@@ -47,7 +45,7 @@ interface Props {
 }
 
 export default ({margin, text}: Props) => (
-  <SeparatorContainer margin={margin}>
+  <SeparatorContainer className='text-[11px] leading-4' margin={margin}>
     {text ? (
       <Fragment>
         <LeftSeparator />

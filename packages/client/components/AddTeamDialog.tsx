@@ -135,7 +135,7 @@ const AddTeamDialog = (props: Props) => {
           />
 
           {selectedUsers.some((user: Option) => !user.id) && (
-            <div className='mt-3 font-semibold text-slate-700 text-xs'>
+            <div className='mt-3 font-semibold text-fg-primary text-xs'>
               Email invitations expire in 30 days.
             </div>
           )}
@@ -149,16 +149,14 @@ const AddTeamDialog = (props: Props) => {
             }}
             value={teamName}
           />
-          {error && (
-            <div className='mt-2 font-semibold text-sm text-tomato-500'>{error.message}</div>
-          )}
+          {error && <div className='mt-2 font-semibold text-fg-error text-sm'>{error.message}</div>}
         </fieldset>
 
         <fieldset className={fieldsetStyles}>
           <div className='flex items-center justify-between'>
             <div className='flex-1'>
               <label className={labelStyles}>Team Privacy</label>
-              <div className='mt-1 text-slate-600 text-xs'>
+              <div className='mt-1 text-fg-secondary text-xs'>
                 {isPublic ? (
                   <>
                     <div>
@@ -169,7 +167,7 @@ const AddTeamDialog = (props: Props) => {
                       <div className='mt-1'>
                         <span
                           onClick={goToBilling}
-                          className='cursor-pointer font-semibold text-sky-500 outline-none hover:text-sky-600'
+                          className='cursor-pointer font-semibold text-accent outline-none hover:text-sky-600'
                         >
                           Upgrade
                         </span>{' '}

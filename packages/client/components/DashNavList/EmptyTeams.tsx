@@ -47,18 +47,18 @@ const EmptyTeams = (props: Props) => {
 
   return (
     <>
-      <div className='w-full rounded-md bg-white px-4 py-2 leading-5'>
+      <div className='w-full rounded-md bg-surface-card px-4 py-2 leading-5'>
         <p>You are not a member of any teams yet.</p>
         <p>
           {hasPublicTeams && (
             <>
-              <a className='cursor-pointer text-sky-500' onClick={() => setShowPublicTeams(true)}>
+              <a className='cursor-pointer text-accent' onClick={() => setShowPublicTeams(true)}>
                 Browse Teams
               </a>
               {' to join, or '}
             </>
           )}
-          <a className='cursor-pointer text-sky-500' onClick={() => setShowAddTeamDialog(true)}>
+          <a className='cursor-pointer text-accent' onClick={() => setShowAddTeamDialog(true)}>
             Add a Team
           </a>
         </p>
@@ -71,7 +71,7 @@ const EmptyTeams = (props: Props) => {
         actions={
           <DialogActions className='justify-start'>
             <a
-              className='cursor-pointer text-sky-500'
+              className='cursor-pointer text-accent'
               onClick={() => {
                 setShowPublicTeams(false)
                 setShowAddTeamDialog(true)

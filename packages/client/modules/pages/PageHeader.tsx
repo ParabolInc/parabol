@@ -34,7 +34,7 @@ export const PageHeader = (props: Props) => {
 
   const {id: pageId} = page
   return (
-    <div className='sticky top-0 z-10 w-full bg-white print:hidden'>
+    <div className='sticky top-0 z-10 w-full bg-surface-document print:hidden'>
       <div className='flex items-center justify-between px-4 py-2'>
         <PageBreadCrumbs pageRef={page} />
         <div className='flex items-center justify-center space-x-3 pt-1 font-semibold text-md'>
@@ -56,7 +56,7 @@ export const PageHeader = (props: Props) => {
                   e.preventDefault()
                 }}
               >
-                <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
+                <div className='top-0 left-0 flex max-h-[var(--radix-popper-available-height)] max-w-[var(--radix-popover-content-available-width)] flex-col overflow-hidden rounded-lg border border-hairline shadow-dialog data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up'>
                   <PageSharingRoot pageId={pageId} />
                 </div>
               </Popover.Content>
@@ -64,7 +64,7 @@ export const PageHeader = (props: Props) => {
           </Popover.Root>
           <Menu
             trigger={
-              <button className='flex size-6 cursor-pointer items-center justify-center rounded-md bg-white px-0.5 font-semibold text-md hover:bg-slate-200 focus:bg-slate-200'>
+              <button className='flex size-6 cursor-pointer items-center justify-center rounded-md bg-surface-document px-0.5 font-semibold text-md hover:bg-surface-hover focus:bg-surface-hover'>
                 <MoreHorizIcon className={'p-0.5'} />
               </button>
             }
@@ -75,7 +75,7 @@ export const PageHeader = (props: Props) => {
                   window.print()
                 }}
               >
-                <PictureAsPdfIcon className='text-slate-600' />
+                <PictureAsPdfIcon className='text-fg-secondary' />
                 <span className='pl-1'>{'Export to PDF'}</span>
               </MenuItem>
             </MenuContent>

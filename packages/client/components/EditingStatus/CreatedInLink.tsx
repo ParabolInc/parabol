@@ -15,7 +15,7 @@ const CreatedInLink = ({meetingId, meetingName, topicTitle, stageIdx, openInNewT
   const url = `/meet/${meetingId}/discuss/${stageIdx + 1}`
   const label = `${topicTitle} — ${meetingName}`
   const anchorClassName =
-    'ml-1 inline-flex align-middle text-slate-600 hover:text-slate-600 focus:text-slate-600'
+    'ml-1 inline-flex align-middle text-fg-secondary hover:text-fg-secondary focus:text-fg-secondary'
   const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLAnchorElement>(
     MenuPosition.UPPER_CENTER
   )

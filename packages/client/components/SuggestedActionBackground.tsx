@@ -1,4 +1,5 @@
 import styled from '@emotion/styled'
+import {PALETTE} from '../styles/paletteV3'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
 import {DashTimeline} from '../types/constEnums'
 import getRotatedBBox from '../utils/getRotatedBBox'
@@ -32,6 +33,7 @@ const ColorBackground = styled(FullBackground)<{backgroundColor: string}>(({back
 }))
 
 const BackgroundClip = styled('div')({
+  backgroundColor: PALETTE.WHITE,
   height: BACKGROUND_HEIGHT,
   overflow: 'hidden',
   position: 'relative',

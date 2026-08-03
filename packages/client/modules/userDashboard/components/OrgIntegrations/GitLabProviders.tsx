@@ -52,11 +52,11 @@ const GitLabProviders = (props: Props) => {
 
   return (
     <>
-      <div className='my-4 flex flex-col rounded-sm bg-white shadow-card'>
+      <div className='my-4 flex flex-col rounded-sm bg-surface-card shadow-card'>
         <div className='flex flex-center items-center p-4'>
           <GitLabProviderLogo />
           <div className='flex flex-col px-4'>
-            <div className='font-semibold text-slate-700'>GitLab</div>
+            <div className='font-semibold text-fg-primary'>GitLab</div>
             <RowInfoCopy>Add private servers for use by your teams.</RowInfoCopy>
           </div>
           <ProviderActions>

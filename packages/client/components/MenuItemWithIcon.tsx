@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
-import {PALETTE} from '~/styles/paletteV3'
 
 const Wrapper = styled('div')({
   alignItems: 'center',
@@ -11,14 +10,14 @@ const Wrapper = styled('div')({
 })
 
 const ItemIcon = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 24,
   width: 24,
   margin: 8
 })
 
 const Label = styled('div')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 14,
   lineHeight: '32px'
 })

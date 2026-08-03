@@ -10,7 +10,6 @@ import useMenu from '~/hooks/useMenu'
 import useMutationProps from '~/hooks/useMutationProps'
 import CreateTaskMutation from '~/mutations/CreateTaskMutation'
 import AzureDevOpsProjectId from '~/shared/gqlIds/AzureDevOpsProjectId'
-import {PALETTE} from '~/styles/paletteV3'
 import type {CreateTaskMutation as TCreateTaskMutation} from '../__generated__/CreateTaskMutation.graphql'
 import useForm from '../hooks/useForm'
 import {PortalStatus} from '../hooks/usePortal'
@@ -39,7 +38,7 @@ const StyledButton = styled(PlainButton)({
 })
 
 const StyledIcon = styled(ExpandMore)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   height: 20,
   width: 20,
   padding: 0,
@@ -47,7 +46,7 @@ const StyledIcon = styled(ExpandMore)({
 })
 
 const StyledLink = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'block',
   fontSize: 12,
   lineHeight: '20px',
@@ -64,7 +63,7 @@ const Form = styled('form')({
 })
 
 const Item = styled('div')({
-  backgroundColor: PALETTE.SLATE_100,
+  backgroundColor: 'var(--color-surface-raised)',
   cursor: 'pointer',
   display: 'flex',
   paddingLeft: 16,
@@ -83,7 +82,7 @@ const NewIssueInput = styled('input')({
   appearance: 'none',
   background: 'transparent',
   border: 'none',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   margin: 0,
   padding: '0px 8px 0px 0px',

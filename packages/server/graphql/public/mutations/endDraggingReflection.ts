@@ -62,10 +62,9 @@ const endDraggingReflection: MutationResolvers['endDraggingReflection'] = async 
     userId: viewerId,
     dropTargetType,
     dropTargetId,
-    remoteDrag: {
-      id: dragId,
-      dragUserId: viewerId
-    }
+    // Null when the move was not a drag at all, e.g. the Group button on a hovered card. The field
+    // is nullable, but RemoteReflectionDrag.id is not, so a stub drag here fails the whole payload
+    remoteDrag: dragId ? {id: dragId, dragUserId: viewerId} : null
   }
   publish(SubscriptionChannel.MEETING, meetingId, 'EndDraggingReflectionPayload', data, subOptions)
   return data

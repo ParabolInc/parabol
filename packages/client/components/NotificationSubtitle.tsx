@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import relativeDate from '../utils/date/relativeDate'
 
 const Row = styled('div')({
@@ -10,7 +9,7 @@ const Row = styled('div')({
 })
 
 const Timestamp = styled('div')({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 interface Props {

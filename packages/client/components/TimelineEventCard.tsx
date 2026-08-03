@@ -18,7 +18,7 @@ interface Props {
 }
 
 const Surface = styled('div')({
-  background: '#FFFFFF',
+  background: 'var(--color-surface-card)',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',

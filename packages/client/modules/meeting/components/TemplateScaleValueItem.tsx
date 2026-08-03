@@ -9,7 +9,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
 import type {TemplateScaleValueItem_scaleValue$key} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
-import {PALETTE} from '../../../styles/paletteV3'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
@@ -24,7 +23,7 @@ interface Props {
 const ScaleValueItem = styled('div')<{isHover: boolean; isDragging: boolean}>(
   ({isHover, isDragging}) => ({
     alignItems: 'center',
-    backgroundColor: isHover || isDragging ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isHover || isDragging ? 'var(--color-surface-raised)' : undefined,
     cursor: 'pointer',
     display: 'flex',
     fontSize: 14,
@@ -35,7 +34,7 @@ const ScaleValueItem = styled('div')<{isHover: boolean; isDragging: boolean}>(
 )
 
 const RemoveScaleValueIcon = styled('div')<{isHover: boolean}>(({isHover}) => ({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   svg: {
     fontSize: 18

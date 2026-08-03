@@ -63,7 +63,7 @@ interface Props {
 }
 
 const ACTION_BUTTON_CLASSES =
-  'font-sans text-base font-medium cursor-pointer text-center rounded-full px-4 py-2'
+  'font-sans text-base font-medium cursor-pointer text-center rounded-md px-4 py-2'
 
 export const EndRecurringMeetingModal = (props: Props) => {
   const {isOpen, meetingRef, nextMeetingDate, closeModal} = props
@@ -136,7 +136,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
         <div className='flex justify-end gap-2.5'>
           <button
             className={cn(
-              'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-100',
+              'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-hover',
               ACTION_BUTTON_CLASSES
             )}
             onClick={closeModal}

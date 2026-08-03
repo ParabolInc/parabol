@@ -1,14 +1,16 @@
 import styled from '@emotion/styled'
 import {AccessTime} from '@mui/icons-material'
+import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
+import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
 import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
 import {MenuPosition} from '../hooks/useCoords'
-import useMenu from '../hooks/useMenu'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
 import {PALETTE} from '../styles/paletteV3'
+import {Radius} from '../types/constEnums'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import CardButton from './CardButton'
@@ -20,10 +22,10 @@ interface StyleProps {
   isPastDue?: boolean
 }
 
-const DUE_DATE_BG = PALETTE.SLATE_200
-const DUE_DATE_BG_HOVER = PALETTE.SLATE_300
-const DUE_DATE_COLOR = PALETTE.SLATE_600
-const DUE_DATE_COLOR_HOVER = PALETTE.SLATE_700
+const DUE_DATE_BG = 'var(--color-surface-well)'
+const DUE_DATE_BG_HOVER = 'var(--color-surface-raised)'
+const DUE_DATE_COLOR = 'var(--color-fg-secondary)'
+const DUE_DATE_COLOR_HOVER = 'var(--color-fg-primary)'
 
 const DUE_DATE_PAST_BG = PALETTE.TOMATO_100
 const DUE_DATE_PAST_BG_HOVER = PALETTE.TOMATO_200
@@ -38,7 +40,7 @@ const DUE_DATE_SOON_COLOR_HOVER = PALETTE.TERRA_500
 const Toggle = styled(CardButton)<StyleProps>(
   {
     alignItems: 'center',
-    borderRadius: '4em',
+    borderRadius: Radius.BUTTON,
     display: 'flex',
     justifyContent: 'center',
     opacity: 0
@@ -144,7 +146,7 @@ const DueDateToggle = (props: Props) => {
     taskRef
   )
   const {dueDate} = task
-  const {menuProps, menuPortal, originRef, togglePortal} = useMenu(MenuPosition.UPPER_RIGHT)
+  const [open, setOpen] = useState(false)
   const {
     tooltipPortal,
     openTooltip,
@@ -152,17 +154,16 @@ const DueDateToggle = (props: Props) => {
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
+  if (isArchived) return null
   return (
-    <>
-      {!isArchived && (
+    <RadixPopover.Root open={open} onOpenChange={setOpen}>
+      <RadixPopover.Trigger asChild>
         <Toggle
           cardIsActive={!dueDate && cardIsActive}
           tabIndex={0}
           dueDate={!!dueDate}
           isPastDue={isPastDue}
           isDueSoon={isDueSoon}
-          ref={originRef}
-          onClick={togglePortal}
           onMouseEnter={DueDatePicker.preload}
         >
           <DueDateIcon
@@ -175,10 +176,25 @@ const DueDateToggle = (props: Props) => {
           </DueDateIcon>
           {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
         </Toggle>
-      )}
+      </RadixPopover.Trigger>
       {tooltipPortal(<div>{title}</div>)}
-      {menuPortal(<DueDatePicker menuProps={menuProps} task={task} useTaskChild={useTaskChild} />)}
-    </>
+      <RadixPopover.Portal>
+        <RadixPopover.Content
+          align='end'
+          sideOffset={4}
+          collisionPadding={8}
+          className='z-10 rounded-lg border border-hairline bg-surface-raised shadow-2xl'
+        >
+          <Suspense fallback={<div className='h-90 w-78' />}>
+            <DueDatePicker
+              closePopover={() => setOpen(false)}
+              task={task}
+              useTaskChild={useTaskChild}
+            />
+          </Suspense>
+        </RadixPopover.Content>
+      </RadixPopover.Portal>
+    </RadixPopover.Root>
   )
 }
 

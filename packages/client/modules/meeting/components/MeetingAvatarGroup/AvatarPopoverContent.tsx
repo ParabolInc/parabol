@@ -17,7 +17,10 @@ const AvatarPopoverContent = ({open, className, children, onMouseEnter, onMouseL
       <Popover.Portal forceMount>
         <Popover.Content forceMount side='top' sideOffset={8} align='center' asChild>
           <motion.div
-            className={cn('z-50 rounded-lg bg-white py-1 shadow-card-1 outline-none', className)}
+            className={cn(
+              'z-50 rounded-lg bg-surface-card py-1 shadow-card-1 outline-none',
+              className
+            )}
             initial={{opacity: 0, scale: 0.95, y: -8}}
             animate={{opacity: 1, scale: 1, y: 0}}
             exit={{opacity: 0, scale: 0.95, y: -8, transition: {duration: 0.15, ease: 'easeOut'}}}

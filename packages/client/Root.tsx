@@ -9,24 +9,27 @@ import {TipTapProvider} from './components/TipTapProvider'
 import {serverTipTapExtensions} from './shared/tiptap/serverTipTapExtensions'
 import './styles/theme/global.css'
 import {IsAuthenticatedProvider} from './components/IsAuthenticatedProvider'
+import {ThemeProvider} from './components/ThemeProvider'
 export default function Root() {
   return (
     <StrictMode>
-      <AtmosphereProvider>
-        <IsAuthenticatedProvider>
-          <Router>
-            <Tooltip.Provider>
-              <TipTapProvider
-                generateHTML={generateHTML}
-                generateJSON={generateJSON}
-                extensions={serverTipTapExtensions}
-              >
-                <Action />
-              </TipTapProvider>
-            </Tooltip.Provider>
-          </Router>
-        </IsAuthenticatedProvider>
-      </AtmosphereProvider>
+      <ThemeProvider>
+        <AtmosphereProvider>
+          <IsAuthenticatedProvider>
+            <Router>
+              <Tooltip.Provider>
+                <TipTapProvider
+                  generateHTML={generateHTML}
+                  generateJSON={generateJSON}
+                  extensions={serverTipTapExtensions}
+                >
+                  <Action />
+                </TipTapProvider>
+              </Tooltip.Provider>
+            </Router>
+          </IsAuthenticatedProvider>
+        </AtmosphereProvider>
+      </ThemeProvider>
     </StrictMode>
   )
 }

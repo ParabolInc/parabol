@@ -82,7 +82,7 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
       <div className={`flex flex-1 justify-end ${isDesktop ? '' : 'flex-col-reverse items-end'}`}>
         {error && (
           <div
-            className={`text-tomato-500 ${isDesktop ? 'pl-2 text-left font-semibold text-sm' : 'pt-2 text-right font-normal text-xs'}`}
+            className={`text-fg-error ${isDesktop ? 'pl-2 text-left font-semibold text-sm' : 'pt-2 text-right font-normal text-xs'}`}
           >
             {error}
           </div>

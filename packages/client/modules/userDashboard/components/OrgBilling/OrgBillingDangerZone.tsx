@@ -6,7 +6,6 @@ import {useNavigate} from 'react-router'
 import type {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
 import Panel from '../../../../components/Panel/Panel'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ElementWidth, Layout} from '../../../../types/constEnums'
 
 const EnvelopeIcon = styled('div')({
@@ -19,7 +18,7 @@ const EnvelopeIcon = styled('div')({
 })
 
 const PanelRow = styled('div')({
-  borderTop: `1px solid ${PALETTE.SLATE_300}`,
+  borderTop: '1px solid var(--color-hairline)',
   padding: Layout.ROW_GUTTER,
   textAlign: 'center'
 })
@@ -52,7 +51,7 @@ const OrgBillingDangerZone = (props: Props) => {
     return (
       <StyledPanel isWide={isWide} label='Danger Zone'>
         <PanelRow>
-          <div className='text-slate-700'>
+          <div className='text-fg-primary'>
             {'Only the billing leader can manage this organization'}
           </div>
         </PanelRow>
@@ -71,12 +70,12 @@ const OrgBillingDangerZone = (props: Props) => {
         {isStarter ? (
           <ArchiveOrganization organization={organization} />
         ) : isTeam ? (
-          <div className='flex items-center justify-center text-slate-700'>
+          <div className='flex items-center justify-center text-fg-primary'>
             <span>{'Need to cancel? '}</span>
             <a
               onClick={handleDowngrade}
               title='Downgrade'
-              className='mr-1 ml-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-accent'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Downgrade'}
@@ -85,12 +84,12 @@ const OrgBillingDangerZone = (props: Props) => {
             <span>{' to the Starter tier'}</span>
           </div>
         ) : (
-          <div className='flex items-center justify-center text-slate-700'>
+          <div className='flex items-center justify-center text-fg-primary'>
             <span>{'Need to cancel? It’s painless. '}</span>
             <a
               href='mailto:love@parabol.co?subject=Instant Unsubscribe from Team Plan'
               title='Instant Unsubscribe from Team Plan'
-              className='mr-1 ml-1 flex items-center text-sky-500'
+              className='mr-1 ml-1 flex items-center text-accent'
             >
               <u className='no-underline hover:cursor-pointer hover:underline focus:underline'>
                 {'Contact us'}

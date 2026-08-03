@@ -13,7 +13,7 @@ const UngroupButton = (props: Props) => {
   return (
     <ReflectionCardButton
       className={cn(
-        'invisible absolute bottom-1 left-1 bg-white hover:bg-slate-200',
+        'invisible absolute bottom-1 left-1 bg-surface-card hover:bg-surface-hover',
         showUngroupButton && 'visible'
       )}
       aria-label={label}

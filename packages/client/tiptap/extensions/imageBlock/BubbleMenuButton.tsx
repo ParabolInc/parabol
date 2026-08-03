@@ -23,11 +23,11 @@ export const BubbleMenuButton = (props: Props) => {
           onClick={onClick}
           data-active={isActive ? '' : undefined}
           className={cn(
-            'flex cursor-pointer items-center justify-center rounded-sm p-1 transition-colors hover:bg-slate-300 data-active:bg-slate-300',
+            'flex cursor-pointer items-center justify-center rounded-sm p-1 transition-colors hover:bg-surface-hover data-active:bg-surface-hover',
             className
           )}
         >
-          <Icon fontSize='small' className='text-slate-700' />
+          <Icon fontSize='small' className='text-fg-primary' />
         </button>
       </TooltipTrigger>
       <TooltipContent>{title}</TooltipContent>

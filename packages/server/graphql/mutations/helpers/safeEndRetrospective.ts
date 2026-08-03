@@ -5,7 +5,7 @@ import {DISCUSS} from 'parabol-client/utils/constants'
 import getMeetingPhase from 'parabol-client/utils/getMeetingPhase'
 import findStageById from 'parabol-client/utils/meetings/findStageById'
 import TimelineEventRetroComplete from '../../../database/types/TimelineEventRetroComplete'
-import {sendSummaryEmailV2} from '../../../email/sendSummaryEmailV2'
+import {sendSummaryEmail} from '../../../email/sendSummaryEmail'
 import getKysely from '../../../postgres/getKysely'
 import type {RetrospectiveMeeting} from '../../../postgres/types/Meeting'
 import archiveDoneTasksForMeeting from '../../../safeMutations/archiveDoneTasksForMeeting'
@@ -163,7 +163,7 @@ const safeEndRetrospective = async ({
   // don't await these, but put them after both "publish" calls so the dataloader has the same data
   summarizeRetroMeeting(completedRetrospective, context).catch(Logger.log)
   // do not await sending the email
-  if (page) sendSummaryEmailV2(meetingId, page.id, context, info).catch(Logger.log)
+  if (page) sendSummaryEmail(meetingId, page.id, context, info).catch(Logger.log)
   analytics
     .retrospectiveEnd(completedRetrospective, meetingMembers, template, dataLoader)
     .catch(Logger.log)

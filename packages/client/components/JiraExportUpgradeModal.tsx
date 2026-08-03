@@ -38,13 +38,13 @@ const JiraExportUpgradeModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={isHardBlock ? undefined : onClose}>
       <DialogContent noClose={isHardBlock} className='text-center'>
         <DialogTitle>{title}</DialogTitle>
-        <p className='mt-2 text-slate-700 text-sm leading-5'>
+        <p className='mt-2 text-fg-primary text-sm leading-5'>
           {isHardBlock ? (
             'The limit for the free tier has been reached. Upgrade to continue using Sprint Poker with Jira.'
           ) : (
             <span>
               {'Your team has voted on '}
-              <span className='font-semibold text-sky-500'>{exportCount}</span>
+              <span className='font-semibold text-accent'>{exportCount}</span>
               {' Jira issues! Please upgrade to a higher tier after your meeting.'}
             </span>
           )}

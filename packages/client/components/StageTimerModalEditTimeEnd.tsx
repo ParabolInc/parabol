@@ -7,7 +7,6 @@ import type {StageTimerModalEditTimeEnd_teamMember$key} from '../__generated__/S
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {MeetingLabels} from '../types/constEnums'
 import MenuItemHR from './MenuItemHR'
 import PlainButton from './PlainButton/PlainButton'
@@ -45,7 +44,7 @@ const HR = styled(MenuItemHR)({
 })
 
 const StyledIcon = styled(Stop)({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const StageTimerModalEditTimeEnd = (props: Props) => {

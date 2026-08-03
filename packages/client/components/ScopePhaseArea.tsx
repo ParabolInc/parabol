@@ -99,7 +99,7 @@ const ScopePhaseArea = (props: Props) => {
 
   const baseTabs = [
     {
-      icon: <GitHubSVG />,
+      icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
       label: 'GitHub',
       allow: GitHubClientManager.isAvailable,
       Component: ScopePhaseAreaGitHub
@@ -165,10 +165,10 @@ const ScopePhaseArea = (props: Props) => {
 
   return (
     <div
-      className={`flex flex-col rounded-lg bg-white ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-md`}
+      className={`flex flex-col rounded-lg bg-surface-card ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-card`}
     >
       <div className='max-w-full'>
-        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-slate-300 border-b border-solid'>
+        <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-hairline border-b border-solid'>
           <Tabs activeIdx={activeIdx} className='max-w-sm'>
             {tabs.map((tab, idx) => (
               <Tab

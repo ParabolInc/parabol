@@ -20,7 +20,7 @@ const ContactUsButton = (props: Props) => {
 
   return (
     <Form method='get' target='_blank' action={contactUsUrl} onSubmit={onContactUsSubmit}>
-      <ProviderRowActionButton key='request' palette='warm'>
+      <ProviderRowActionButton key='request'>
         {isDesktop ? 'Contact Us' : <MailOutlined />}
       </ProviderRowActionButton>
     </Form>

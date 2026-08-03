@@ -60,14 +60,14 @@ const ScopingSearchInput = (props: Props) => {
   return (
     <div className='flex flex-1 items-center'>
       <input
-        className='m-0 w-full appearance-none border-slate-400 border-l border-none bg-transparent p-3 text-base text-slate-700 outline-none placeholder:text-slate-500'
+        className='m-0 w-full appearance-none border-hairline-strong border-l border-none bg-transparent p-3 text-base text-fg-primary outline-none placeholder:text-fg-muted'
         value={queryString}
         placeholder={placeholder}
         onChange={handleOnChange}
         ref={inputRef}
       />
       <Close
-        className={cn('m-3 cursor-pointer text-slate-600', isEmpty && 'invisible')}
+        className={cn('m-3 cursor-pointer text-fg-secondary', isEmpty && 'invisible')}
         onClick={clearSearch}
       />
     </div>

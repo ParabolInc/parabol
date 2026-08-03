@@ -59,10 +59,7 @@ const OrgAvatarInput = (props: Props) => {
       <DialogContent>
         <DialogTitle>{'Upload a New Photo'}</DialogTitle>
         <AvatarBlock>
-          <Avatar
-            picture={picture}
-            className='h-24 w-24 shadow-[0_4px_5px_0px_rgba(218,218,218,1)]'
-          />
+          <Avatar picture={picture} className='h-24 w-24 shadow-[0_4px_5px_0px_rgba(0,0,0,0.15)]' />
         </AvatarBlock>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
       </DialogContent>

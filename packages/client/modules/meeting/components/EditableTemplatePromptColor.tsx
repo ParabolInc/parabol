@@ -9,7 +9,6 @@ import {BezierCurve} from '~/types/constEnums'
 import PalettePicker from '../../../components/PalettePicker/PalettePicker'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PALETTE} from '../../../styles/paletteV3'
 
 interface Props {
   isOwner: boolean
@@ -43,7 +42,7 @@ const ColorBadge = styled('div')<{groupColor?: string}>(({groupColor}) => ({
 
 const DropdownIcon = styled('div')({
   bottom: 0,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   svg: {
     fontSize: 18
   },

@@ -142,7 +142,11 @@ const RetroMeetingSidebar = (props: Props) => {
             <Fragment key={phaseType}>
               <NewMeetingSidebarPhaseListItem
                 handleClick={canNavigate ? handleClick : undefined}
-                isActive={phaseType === 'discuss' ? false : localPhaseType === phaseType}
+                isActive={
+                  phaseType === 'discuss' || phaseType === 'checkin' || phaseType === 'updates'
+                    ? false
+                    : localPhaseType === phaseType
+                }
                 isCollapsible={collapsiblePhases.includes(phaseType)}
                 isFacilitatorPhase={phaseType === facilitatorPhaseType}
                 isUnsyncedFacilitatorPhase={

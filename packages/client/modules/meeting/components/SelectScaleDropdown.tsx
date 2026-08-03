@@ -94,10 +94,10 @@ const SelectScaleDropdown = (props: Props) => {
           closePortal={onClose}
         />
       ))}
-      <hr className='my-2 border-0 border-slate-400 border-t' />
+      <hr className='my-2 border-0 border-hairline-strong border-t' />
       {sortedScales.length < Threshold.MAX_POKER_TEMPLATE_SCALES && (
         <button
-          className='flex w-full cursor-pointer items-center px-4 py-3 font-semibold text-base text-sky-500 hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
+          className='flex w-full cursor-pointer items-center px-4 py-3 font-semibold text-accent text-base hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-50'
           onClick={addScale}
           disabled={submitting}
         >

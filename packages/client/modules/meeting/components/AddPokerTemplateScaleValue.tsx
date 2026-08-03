@@ -1,11 +1,10 @@
 import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
-import {PALETTE} from '~/styles/paletteV3'
 import LinkButton from '../../../components/LinkButton'
 
 const AddScaleValueLink = styled(LinkButton)({
   alignItems: 'center',
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
+  borderBottom: `1px solid var(--color-hairline)`,
   display: 'flex',
   justifyContent: 'flex-start',
   fontSize: 14, // match the scale item font-size
@@ -14,7 +13,7 @@ const AddScaleValueLink = styled(LinkButton)({
   outline: 'none',
   padding: '8px 0',
   ':hover': {
-    backgroundColor: PALETTE.SLATE_100
+    backgroundColor: 'var(--color-surface-raised)'
   }
 })
 

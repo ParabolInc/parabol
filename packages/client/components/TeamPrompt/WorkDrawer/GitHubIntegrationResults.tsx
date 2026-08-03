@@ -108,7 +108,7 @@ const GitHubIntegrationResults = (props: Props) => {
                 <div className='mt-7 w-2/3 text-center'>{errors[0].message}</div>
                 <Link
                   to={`/team/${teamId}/integrations`}
-                  className='mt-4 font-semibold text-sky-500 hover:text-sky-400'
+                  className='mt-4 font-semibold text-accent hover:text-sky-400'
                 >
                   Review your GitHub configuration
                 </Link>

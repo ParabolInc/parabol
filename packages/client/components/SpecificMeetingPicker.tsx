@@ -87,12 +87,12 @@ export const SpecificMeetingPicker = (props: Props) => {
         orientation='vertical'
         className='z-20 flex h-full w-2.5 touch-none select-none border-l border-l-transparent p-[1px] transition-colors'
       >
-        <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-slate-600`} />
+        <ScrollArea.Thumb className={`relative flex-1 rounded-full bg-fg-secondary`} />
       </ScrollArea.Scrollbar>
       <ScrollArea.Viewport className='w-full'>
         <table className='size-full w-full border-collapse'>
-          <thead className='sticky top-0 z-10 bg-slate-200'>
-            <tr className='border-slate-400 border-b-[1px]'>
+          <thead className='sticky top-0 z-10 bg-surface-well'>
+            <tr className='border-hairline-strong border-b-[1px]'>
               <th className='w-8 border-b-[1px] border-b-transparent pt-2!'>
                 <Checkbox
                   onClick={() => {
@@ -107,7 +107,7 @@ export const SpecificMeetingPicker = (props: Props) => {
                   <th
                     key={column}
                     className={
-                      'border-slate-400 not-last-of-type:border-r-[1px] p-2 text-left font-bold'
+                      'border-hairline-strong not-last-of-type:border-r-[1px] p-2 text-left font-bold'
                     }
                   >
                     {column}
@@ -122,7 +122,7 @@ export const SpecificMeetingPicker = (props: Props) => {
               return (
                 <tr
                   key={id}
-                  className='cursor-pointer border-slate-400 not-last-of-type:border-b-[1px]'
+                  className='cursor-pointer border-hairline-strong not-last-of-type:border-b-[1px]'
                   onClick={() => {
                     const nextMeetingIds = checked
                       ? meetingIds.filter((id) => id !== row.id)
@@ -133,17 +133,17 @@ export const SpecificMeetingPicker = (props: Props) => {
                   <td className='w-5 border-b-[1px] border-b-transparent pt-2!'>
                     <Checkbox checked={checked} />
                   </td>
-                  <td className='border-slate-400 border-r-[1px] p-2'>{name}</td>
-                  <td className='border-slate-400 border-r-[1px] p-2 last-of-type:border-r-0'>
+                  <td className='border-hairline-strong border-r-[1px] p-2'>{name}</td>
+                  <td className='border-hairline-strong border-r-[1px] p-2 last-of-type:border-r-0'>
                     {date}
                   </td>
                   {columns.includes('Team') && (
-                    <td className='border-slate-400 border-r-[1px] p-2 last-of-type:border-r-0'>
+                    <td className='border-hairline-strong border-r-[1px] p-2 last-of-type:border-r-0'>
                       {teamName}
                     </td>
                   )}
                   {columns.includes('Type') && (
-                    <td className='border-slate-400 border-r-[1px] p-2 last-of-type:border-r-0'>
+                    <td className='border-hairline-strong border-r-[1px] p-2 last-of-type:border-r-0'>
                       {meetingType}
                     </td>
                   )}

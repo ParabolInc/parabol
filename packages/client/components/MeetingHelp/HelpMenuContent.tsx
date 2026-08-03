@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import type {ReactNode} from 'react'
-import {PALETTE} from '../../styles/paletteV3'
 
 const Content = styled('div')({
   fontSize: 13,
@@ -12,7 +11,7 @@ const Content = styled('div')({
 })
 
 const MenuClose = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   position: 'absolute',
   height: 18,

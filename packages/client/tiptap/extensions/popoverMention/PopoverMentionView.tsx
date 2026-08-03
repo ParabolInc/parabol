@@ -11,7 +11,7 @@ export const PopoverMentionView = (props: NodeViewProps) => {
     <NodeViewWrapper as='span' className='inline'>
       <Root>
         <Trigger asChild>
-          <span className='cursor-help font-semibold text-sky-500 underline decoration-dotted underline-offset-2'>
+          <span className='cursor-help font-semibold text-accent underline decoration-dotted underline-offset-2'>
             {label}
           </span>
         </Trigger>
@@ -20,7 +20,7 @@ export const PopoverMentionView = (props: NodeViewProps) => {
             <Content
               side='top'
               sideOffset={4}
-              className='z-20 max-h-80 max-w-sm animate-scale-in overflow-auto rounded-sm bg-white p-3 text-left text-slate-700 text-sm shadow-lg [&_h1]:mb-1 [&_h1]:font-semibold [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm'
+              className='z-20 max-h-80 max-w-sm animate-scale-in overflow-auto rounded-sm border border-hairline bg-surface-raised p-3 text-left text-fg-primary text-sm shadow-lg [&_h1]:mb-1 [&_h1]:font-semibold [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm'
             >
               <EditorContent editor={editor} />
             </Content>

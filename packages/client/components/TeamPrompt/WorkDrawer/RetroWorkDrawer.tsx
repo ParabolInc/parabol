@@ -141,7 +141,7 @@ const RetroWorkDrawer = (props: Props) => {
     ...(GitHubClientManager.isAvailable
       ? [
           {
-            icon: <GitHubSVG />,
+            icon: <GitHubSVG className='dark:[&_path]:fill-white' />,
             service: 'github',
             label: 'GitHub',
             Component: GitHubIntegrationPanel
@@ -180,9 +180,11 @@ const RetroWorkDrawer = (props: Props) => {
       : [])
   ] as const
 
+  // Default to the first enabled non-Parabol integration, falling back to the Parabol section
+  const defaultService = baseTabs.find((tab) => tab.service !== 'PARABOL')?.service ?? 'PARABOL'
   const [activeService, setActiveService] = useSessionStorageState<string>(
     `Inspiration:tab:${meeting.id}`,
-    'PARABOL'
+    defaultService
   )
   const activeIdx = Math.max(
     0,
@@ -195,7 +197,7 @@ const RetroWorkDrawer = (props: Props) => {
     <WorkDrawerConsumeContext.Provider
       value={{mode: 'retro', getNextReflectionSortOrder, getReflectPrompt, isReflectionAdded}}
     >
-      <div className='flex min-h-0 flex-1 flex-col bg-slate-50'>
+      <div className='flex min-h-0 flex-1 flex-col'>
         <div className='flex justify-center pt-3 pb-2'>
           <div className='flex gap-1'>
             {baseTabs.map((tab, idx) => (
@@ -211,10 +213,11 @@ const RetroWorkDrawer = (props: Props) => {
                   setActiveService(tab.service)
                 }}
                 className={cn(
-                  'flex h-10 w-10 appearance-none items-center justify-center rounded-full transition-colors',
+                  'flex h-10 w-10 appearance-none items-center justify-center rounded-md transition-colors',
                   idx === activeIdx
-                    ? 'bg-grape-700/10 text-grape-700'
-                    : 'cursor-pointer text-slate-500 hover:bg-slate-200'
+                    ? // the logos are dark brand colors, so they go monochrome on the selected fill
+                      'bg-surface-selected text-fg-selected [&_path]:fill-current'
+                    : 'cursor-pointer text-fg-muted hover:bg-surface-hover'
                 )}
               >
                 {tab.icon}

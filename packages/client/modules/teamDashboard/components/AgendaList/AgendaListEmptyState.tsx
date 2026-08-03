@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 interface Props {
   isComplete: boolean
@@ -13,7 +12,7 @@ const EmptyBlock = styled('div')({
 })
 
 const EmptyMessage = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   flex: 1,
   fontSize: 13,
   fontWeight: 400,

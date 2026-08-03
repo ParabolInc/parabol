@@ -7,7 +7,6 @@ import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import UpdateJiraDimensionFieldMutation from '../mutations/UpdateJiraDimensionFieldMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {ExternalLinks, SprintPokerDefaults} from '../types/constEnums'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Menu from './Menu'
@@ -27,7 +26,7 @@ const HintLabel = styled(MenuItemLabel)({
 
 const ExternalIcon = styled(OpenInNew)({
   marginLeft: 'auto',
-  color: PALETTE.SLATE_500,
+  color: 'var(--color-fg-muted)',
   paddingLeft: 12,
   width: 30,
   height: 18

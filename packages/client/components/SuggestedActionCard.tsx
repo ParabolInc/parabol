@@ -21,7 +21,7 @@ interface Props {
 const Surface = styled('div')({
   animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
   alignItems: 'center',
-  background: '#FFFFFF',
+  background: 'var(--color-surface-card)',
   borderRadius: 4,
   boxShadow: cardShadow,
   display: 'flex',

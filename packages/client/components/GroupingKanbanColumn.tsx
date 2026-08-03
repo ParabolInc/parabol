@@ -54,6 +54,10 @@ interface Props {
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting$key
   onHoverReflection: (reflectionId: string | null) => void
+  onGroupMatches: (reflectionGroupId: string) => void
+  onArmGroupMatches: (isArmed: boolean) => void
+  /** Hovering the Group button lights the source and every match in one shared color */
+  isGroupMatchArmed: boolean
   openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt$key
@@ -61,6 +65,8 @@ interface Props {
   reflectPromptsCount: number
   swipeColumn?: SwipeColumn
   showDragHintAnimation?: boolean
+  /** A one-off reveal outlines every matching group at once, so "N similar" would count the board */
+  isRevealingSuggestions?: boolean
 }
 
 const GroupingKanbanColumn = (props: Props) => {
@@ -70,13 +76,17 @@ const GroupingKanbanColumn = (props: Props) => {
     isDesktop,
     meeting: meetingRef,
     onHoverReflection,
+    onGroupMatches,
+    onArmGroupMatches,
+    isGroupMatchArmed,
     openSpotlight,
     reflectionGroups: reflectionGroupsRef,
     phaseRef,
     prompt: promptRef,
     reflectPromptsCount,
     swipeColumn,
-    showDragHintAnimation
+    showDragHintAnimation,
+    isRevealingSuggestions
   } = props
   const meeting = useFragment(
     graphql`
@@ -135,11 +145,12 @@ const GroupingKanbanColumn = (props: Props) => {
 
   const similarGroupIds = useMemo(() => {
     const ids = new Set<string>()
+    if (isRevealingSuggestions) return ids
     for (const group of reflectionGroups) {
       if (group.activeReflectionGroupSimilarity != null) ids.add(group.id)
     }
     return ids
-  }, [reflectionGroups])
+  }, [reflectionGroups, isRevealingSuggestions])
 
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.COVER_HEIGHT, phaseRef, columnsRef) ||
@@ -172,7 +183,7 @@ const GroupingKanbanColumn = (props: Props) => {
   }
   return (
     <div
-      className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-slate-300 p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-68px)]'} max-w-min`}
+      className={`relative mr-2 ml-2 flex h-full min-w-80 single-reflection-column:max-w-min flex-1 flex-col content-start rounded-lg bg-surface-well p-0 transition-all duration-100 ease-out first-of-type:ml-4 last-of-type:mr-4 ${isLengthExpanded ? '' : 'single-reflection-column:h-[calc(100%-68px)]'} max-w-min`}
       ref={columnRef}
       data-cy={`group-column-${question}`}
     >
@@ -207,6 +218,9 @@ const GroupingKanbanColumn = (props: Props) => {
                       key={reflectionGroup.id}
                       meetingRef={meeting}
                       onHoverReflection={onHoverReflection}
+                      onGroupMatches={onGroupMatches}
+                      onArmGroupMatches={onArmGroupMatches}
+                      isGroupMatchArmed={isGroupMatchArmed}
                       openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
                       reflectionGroupRef={reflectionGroup}

@@ -17,7 +17,6 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import Legitity from '../../../../validation/Legitity'
@@ -36,7 +35,7 @@ const StyledDialogContainer = styled(DialogContainer)({
 })
 
 const CloseIcon = styled(Close)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   '&:hover': {
     opacity: 0.5
@@ -49,9 +48,9 @@ const StyledCloseButton = styled(PlainButton)({
 })
 
 const StyledInput = styled('input')({
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: `1px solid var(--color-hairline-field)`,
   borderRadius: 4,
-  color: PALETTE.SLATE_800,
+  color: 'var(--color-fg-primary)',
   fontSize: 16,
   font: 'inherit',
   margin: '8px 0',
@@ -59,7 +58,7 @@ const StyledInput = styled('input')({
   outline: 0,
   width: '100%',
   '::placeholder': {
-    color: PALETTE.SLATE_600
+    color: 'var(--color-fg-muted)'
   }
 })
 
@@ -233,7 +232,7 @@ const GcalModal = (props: Props) => {
       <DialogTitle>
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
-          <div className='mt-1 font-normal text-gray-500 text-sm'>
+          <div className='mt-1 font-normal text-fg-secondary text-sm'>
             Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
@@ -273,7 +272,7 @@ const GcalModal = (props: Props) => {
           {hasTeamMemberEmails && (
             <div className='flex cursor-pointer items-center pt-1' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-fg-primary'>
                 {`Invite team members from ${teamName}`}
               </label>
             </div>

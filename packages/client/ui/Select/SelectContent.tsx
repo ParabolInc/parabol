@@ -9,7 +9,10 @@ export const SelectContent = React.forwardRef<
   <RadixSelect.Portal>
     <RadixSelect.Content
       ref={ref}
-      className={cn('relative z-50 overflow-hidden rounded-sm bg-white shadow-card-1', className)}
+      className={cn(
+        'relative z-50 overflow-hidden rounded-sm bg-surface-card shadow-card-1',
+        className
+      )}
       position={position}
       {...props}
     >

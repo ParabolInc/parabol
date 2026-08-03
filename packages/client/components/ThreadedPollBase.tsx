@@ -7,7 +7,7 @@ import type {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_p
 import useAtmosphere from '../hooks/useAtmosphere'
 import CreatePollMutation from '../mutations/CreatePollMutation'
 import {PALETTE} from '../styles/paletteV3'
-import {Polls, PollsAriaLabels} from '../types/constEnums'
+import {Polls, PollsAriaLabels, Radius} from '../types/constEnums'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import PlainButton from './PlainButton/PlainButton'
 import {AddPollOptionButton} from './Poll/AddPollOptionButton'
@@ -43,7 +43,7 @@ const StartPollButton = styled(PlainButton)({
   outline: 'none',
   color: PALETTE.WHITE,
   border: 'none',
-  borderRadius: '24px',
+  borderRadius: Radius.BUTTON,
   cursor: 'pointer',
   ':hover,:focus': {
     background: PALETTE.SKY_600
@@ -56,12 +56,12 @@ const SubmitVoteButton = styled(PlainButton)({
   marginTop: '12px',
   fontSize: '14px',
   fontWeight: 500,
-  background: PALETTE.SLATE_300,
-  color: PALETTE.SLATE_700,
+  background: 'var(--color-surface-well)',
+  color: 'var(--color-fg-primary)',
   border: 'none',
-  borderRadius: '24px',
+  borderRadius: Radius.BUTTON,
   ':hover': {
-    background: PALETTE.SLATE_400
+    background: 'var(--color-surface-hover)'
   }
 })
 

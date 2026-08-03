@@ -1,29 +1,16 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {
   ThreadedCommentHeader_comment$data,
   ThreadedCommentHeader_comment$key
 } from '~/__generated__/ThreadedCommentHeader_comment.graphql'
-import {PALETTE} from '~/styles/paletteV3'
 import relativeDate from '~/utils/date/relativeDate'
+import {cn} from '../ui/cn'
 import {PARABOL_AI_USER_ID} from '../utils/constants'
 import CommentAuthorOptionsButton from './CommentAuthorOptionsButton'
 import AddReactjiButton from './ReflectionCard/AddReactjiButton'
 import ThreadedItemHeaderDescription from './ThreadedItemHeaderDescription'
 import ThreadedReplyButton from './ThreadedReplyButton'
-
-const HeaderActions = styled('div')<{isEditable: boolean}>(({isEditable}) => ({
-  color: PALETTE.SLATE_600,
-  display: 'flex',
-  fontWeight: 600,
-  paddingRight: !isEditable ? 32 : 8
-}))
-
-const AddReactji = styled(AddReactjiButton)({
-  display: 'flex',
-  marginRight: 4
-})
 
 interface Props {
   comment: ThreadedCommentHeader_comment$key
@@ -75,10 +62,10 @@ const ThreadedCommentHeader = (props: Props) => {
   return (
     <ThreadedItemHeaderDescription title={name} subTitle={relativeDate(updatedAt)}>
       {isActive && (
-        <HeaderActions isEditable={isEditable}>
+        <div className={cn('flex font-semibold text-fg-secondary', isEditable ? 'pr-2' : 'pr-8')}>
           {!hasReactjis && (
             <>
-              <AddReactji onToggle={onToggleReactji} />
+              <AddReactjiButton className='mr-1 flex' onToggle={onToggleReactji} />
               <ThreadedReplyButton onReply={onReply} />
             </>
           )}
@@ -89,7 +76,7 @@ const ThreadedCommentHeader = (props: Props) => {
               meetingId={meetingId}
             />
           )}
-        </HeaderActions>
+        </div>
       )}
     </ThreadedItemHeaderDescription>
   )

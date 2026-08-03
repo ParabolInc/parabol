@@ -31,6 +31,17 @@ const removeFromOrg = async (
       return removeTeamMember(teamMemberId, {evictorUserId}, dataLoader)
     })
   )
+  const teamFailures = perTeamSettled.filter((res) => res.status === 'rejected')
+  if (teamFailures.length > 0) {
+    // Bail before touching the OrganizationUser. Leaving them on a team in an org they're no longer
+    // a member of passes isTeamMember but fails isViewerOnOrg, breaking org-scoped fields like
+    // Team.organization for them. Staying in the org is recoverable, this is not
+    Logger.error(
+      `removeFromOrg: could not remove ${userId} from every team in org ${orgId}`,
+      teamFailures.map((res) => res.reason)
+    )
+    throw new Error('Failed to remove the user from every team in the organization')
+  }
   const perTeamRes = perTeamSettled
     .filter((res) => res.status === 'fulfilled')
     .map((res) => res.value)

@@ -7,7 +7,7 @@ const StyledPlainButton = styled(PlainButton)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontWeight: 600,
   fontSize: 14,
   margin: '0 8px',

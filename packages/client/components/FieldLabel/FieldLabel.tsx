@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
 import ui from '../../styles/ui'
-import LabelHeading from '../LabelHeading/LabelHeading'
 
-const FieldLabelStyles = styled(LabelHeading)<
+const FieldLabelStyles = styled('label')<
   Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
 >(({customStyles, fieldSize, indent, inline}) => {
   const size = (fieldSize || ui.buttonSizeOptions[1]) as 'small' | 'medium' | 'large'
@@ -15,6 +14,12 @@ const FieldLabelStyles = styled(LabelHeading)<
   }
   const useInlineStyles = fieldSize && inline && inlineStyles
   return {
+    color: 'var(--color-fg-secondary)',
+    fontSize: 12,
+    fontWeight: 600,
+    letterSpacing: '.03em',
+    lineHeight: '16px',
+    userSelect: 'none',
     display: 'block',
     padding: 0,
     textTransform: 'none',
@@ -27,7 +32,7 @@ const FieldLabelStyles = styled(LabelHeading)<
   }
 })
 
-const FieldLabelBlock = FieldLabelStyles.withComponent('label')
+const FieldLabelBlock = FieldLabelStyles
 
 interface Props {
   customStyles?: object

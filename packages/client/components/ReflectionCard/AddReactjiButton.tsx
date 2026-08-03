@@ -1,7 +1,7 @@
+import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined'
 import * as Popover from '@radix-ui/react-popover'
 import {useState} from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
-import addReactjiSvg from '../../../../static/images/icons/add_reactji_24.svg'
 import ReactjiPicker from '../ReactjiPicker'
 
 interface Props {
@@ -23,9 +23,9 @@ const AddReactjiButton = (props: Props) => {
     <Popover.Root open={open} onOpenChange={onOpenChange} modal>
       <Popover.Trigger asChild>
         <PlainButton
-          className={`block h-6 w-6 py-0.75 leading-6 opacity-50 hover:opacity-100 focus:opacity-100 ${className ?? ''}`}
+          className={`block h-6 w-6 py-0.75 leading-6 hover:text-fg-primary focus:text-fg-primary active:text-fg-primary ${className ?? ''}`}
         >
-          <img alt='' src={addReactjiSvg} className='h-4.5 w-4.5' />
+          <AddReactionOutlinedIcon className='h-4.5 w-4.5' />
         </PlainButton>
       </Popover.Trigger>
       <Popover.Portal>

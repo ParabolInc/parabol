@@ -102,30 +102,30 @@ export const PageSharingAccessList = (props: Props) => {
   return (
     <div className='space-y-2 overflow-y-auto pt-3 pb-4'>
       {!isParentLinked && parentPageId && (
-        <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
+        <div className='mb-2 rounded-md border border-fg-primary p-2 text-fg-primary text-sm'>
           {'Share settings on this page differ from its '}
           <Link
             to={`/pages/${parentPageId.split(':')[1]}`}
-            className='font-semibold hover:text-sky-500'
+            className='font-semibold hover:text-accent'
           >
             {'parent page'}
           </Link>
           {'.'}
           <span className={cn('hidden', viewerRole === 'owner' && 'inline')}>
             {' To re-link and inherit parent access, '}
-            <span className='cursor-pointer font-semibold hover:text-sky-500' onClick={relink}>
+            <span className='cursor-pointer font-semibold hover:text-accent' onClick={relink}>
               {'Click here'}
             </span>
           </span>
         </div>
       )}
       {isOrphan && (
-        <div className='mb-2 rounded-md border border-slate-700 p-2 text-slate-800 text-sm'>
+        <div className='mb-2 rounded-md border border-fg-primary p-2 text-fg-primary text-sm'>
           {'The owner of this page has left Parabol.'}
           <span className={'inline'}>
             {' To claim ownership, '}
             <span
-              className='cursor-pointer font-semibold hover:text-sky-500'
+              className='cursor-pointer font-semibold hover:text-accent'
               onClick={claimOwnership}
             >
               {'Click here'}
@@ -140,7 +140,7 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-10 w-10' teamId={email} teamName={email} />
                 <div className='flex flex-col'>
-                  <div className='font-medium text-slate-700 text-sm'>{email}</div>
+                  <div className='font-medium text-fg-primary text-sm'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -160,8 +160,8 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <Avatar className='h-10 w-10' picture={picture} />
                 <div className='flex flex-col'>
-                  <div className='font-medium text-slate-700 text-sm'>{name}</div>
-                  <div className='text-slate-800 text-xs'>{email}</div>
+                  <div className='font-medium text-fg-primary text-sm'>{name}</div>
+                  <div className='text-fg-primary text-xs'>{email}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -180,7 +180,7 @@ export const PageSharingAccessList = (props: Props) => {
               <div className='flex items-center gap-3 pr-2'>
                 <TeamAvatar className='mr-0 h-10 w-10' teamId={teamId} teamName={teamName} />
                 <div className='flex flex-col'>
-                  <div className='font-medium text-slate-700 text-sm'>{teamName}</div>
+                  <div className='font-medium text-fg-primary text-sm'>{teamName}</div>
                 </div>
               </div>
               <PageAccessCombobox
@@ -203,7 +203,7 @@ export const PageSharingAccessList = (props: Props) => {
                   <TeamAvatar className='h-8 w-8' teamId={orgId} teamName={orgName} />
                 )}
                 <div className='flex flex-col'>
-                  <div className='font-medium text-slate-700 text-sm'>{orgName}</div>
+                  <div className='font-medium text-fg-primary text-sm'>{orgName}</div>
                 </div>
               </div>
               <PageAccessCombobox

@@ -111,7 +111,7 @@ const ParabolScopingSearchResultItem = (props: Props) => {
         if (isEditingThisItem) return
         updatePokerScope()
       }}
-      className={`flex py-2 pl-4 ${isEditingThisItem ? 'bg-slate-100' : 'bg-transparent'} ${isEditingThisItem ? '' : 'cursor-pointer'}`}
+      className={`flex py-2 pl-4 ${isEditingThisItem ? 'bg-surface-raised' : 'bg-transparent'} ${isEditingThisItem ? '' : 'cursor-pointer'}`}
       ref={ref}
     >
       <Checkbox active={isSelected || isEditingThisItem} disabled={disabled} />

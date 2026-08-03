@@ -39,7 +39,7 @@ const DialogOverlay = styled('div')({
 
 const DialogContainer = styled('div')({
   display: 'flex',
-  backgroundColor: 'white',
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   flexDirection: 'column',
@@ -55,7 +55,7 @@ const DialogContainer = styled('div')({
 const DialogTitle = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontSize: 14,
   justifyContent: 'space-around',
   fontWeight: 600,
@@ -105,8 +105,6 @@ const MeetingLockedOverlay = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, teamId, locked, organization} = meeting
-  const {id: orgId, name: orgName, viewerOrganizationUser, isPaid} = organization
-  const canUpgrade = !!viewerOrganizationUser
 
   const atmosphere = useAtmosphere()
   const navigate = useNavigate()
@@ -132,6 +130,13 @@ const MeetingLockedOverlay = (props: Props) => {
     return undefined
   }, [locked])
 
+  if (!locked) return null
+  // organization is a linked record that can be transiently absent from the Relay store.
+  // It's only needed when the overlay actually renders (locked), so read it after the guard.
+  if (!organization) return null
+  const {id: orgId, name: orgName, viewerOrganizationUser, isPaid} = organization
+  const canUpgrade = !!viewerOrganizationUser
+
   const onClick = () => {
     SendClientSideEvent(atmosphere, 'Upgrade CTA Clicked', {
       upgradeCTALocation: 'directMeetingLinkLock',
@@ -140,8 +145,6 @@ const MeetingLockedOverlay = (props: Props) => {
     })
     navigate(`/me/organizations/${orgId}`)
   }
-
-  if (!locked) return null
 
   if (!isPaid) {
     return (

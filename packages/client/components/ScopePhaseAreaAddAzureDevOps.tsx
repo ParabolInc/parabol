@@ -18,7 +18,7 @@ const AddAzureDevOpsArea = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   cursor: 'pointer',
   outline: 0,
   ':hover, :focus, :active': {

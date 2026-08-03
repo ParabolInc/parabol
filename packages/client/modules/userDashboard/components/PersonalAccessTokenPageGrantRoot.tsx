@@ -61,7 +61,7 @@ export const PersonalAccessTokenPageGrantRoot = ({
         value={pageSearch}
         onChange={(e) => setPageSearch(e.target.value)}
         placeholder='Search pages…'
-        className='rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500'
+        className='rounded-md border border-hairline-field bg-surface-input px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent'
       />
       <Suspense fallback={<Loader />}>
         {queryRef && (
@@ -74,7 +74,7 @@ export const PersonalAccessTokenPageGrantRoot = ({
           />
         )}
       </Suspense>
-      {summary && <p className='text-slate-500 text-xs'>{summary}</p>}
+      {summary && <p className='text-fg-muted text-xs'>{summary}</p>}
     </div>
   )
 }

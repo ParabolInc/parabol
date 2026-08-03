@@ -116,7 +116,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
       {hasLocal && (
         <form onSubmit={handlePasswordSubmit}>
           <div className='flex flex-col gap-1'>
-            <label className='font-semibold text-[11px] text-slate-600'>Password</label>
+            <label className='font-semibold text-[11px] text-fg-secondary'>Password</label>
             <UnderlineInput
               ariaLabel='Password'
               autoComplete='current-password'
@@ -134,7 +134,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
           </PrimaryButton>
         </form>
       )}
-      {showDivider && <div className='my-1 text-center text-slate-400 text-xs'>or</div>}
+      {showDivider && <div className='my-1 text-center text-fg-muted text-xs'>or</div>}
       <div className='flex flex-col items-start gap-2'>
         {hasGoogle && (
           <div>

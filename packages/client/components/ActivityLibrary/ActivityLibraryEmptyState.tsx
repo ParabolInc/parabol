@@ -15,7 +15,7 @@ const ActivityLibraryEmptyState = (props: Props) => {
 
   if (!searchQuery && categoryId === 'favorite') {
     return (
-      <div className='relative mx-auto flex justify-center p-2 align-middle text-slate-700'>
+      <div className='relative mx-auto flex justify-center p-2 align-middle text-fg-primary'>
         <div className='p-4 md:p-0'>
           <img
             className='w-[500px] md:w-[700px] lg:w-[900px]'
@@ -24,14 +24,7 @@ const ActivityLibraryEmptyState = (props: Props) => {
           />
           <div className='-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform'>
             <div className='flex flex-col items-center'>
-              <FavoriteIcon
-                className='icon-color-red icon-border-gold rounded-full p-3 text-5xl md:text-6xl lg:p-5 lg:text-8xl'
-                style={{
-                  color: 'red',
-                  border: '2px solid gold',
-                  borderRadius: '50%'
-                }}
-              />
+              <FavoriteIcon className='rounded-full border-2 border-gold-300 border-solid p-3 text-5xl text-tomato-500 md:text-6xl lg:p-5 lg:text-8xl' />
 
               <span className='mt-2 text-center md:text-lg'>
                 Activities you mark as favorite will show up here
@@ -44,7 +37,7 @@ const ActivityLibraryEmptyState = (props: Props) => {
   }
 
   return (
-    <div className='mx-auto flex p-2 text-slate-700'>
+    <div className='mx-auto flex p-2 text-fg-primary'>
       <div className='ml-10'>
         {showResultsNotFound && (
           <>

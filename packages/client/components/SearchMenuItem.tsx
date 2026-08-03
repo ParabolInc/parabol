@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {Search} from '@mui/icons-material'
 import type * as React from 'react'
 import {forwardRef} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
@@ -25,7 +24,7 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 const SearchIcon = styled(Search)({
   height: 18,
   width: 18,
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 interface Props {

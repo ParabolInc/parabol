@@ -22,7 +22,7 @@ import sortByTier from '../../utils/sortByTier'
 import NewMeetingTeamPicker from '../NewMeetingTeamPicker'
 
 const ACTION_BUTTON_CLASSES =
-  'w-max cursor-pointer rounded-full px-4 py-2 text-center font-sans text-base font-medium'
+  'w-max cursor-pointer rounded-md px-4 py-2 text-center font-sans text-base font-medium'
 
 interface Props {
   preferredTeamId: string | null | undefined
@@ -146,12 +146,12 @@ const TeamPickerModal = (props: Props) => {
               this team.
             </div>
           )}
-          {error && <div className='w-full text-tomato-500'>{error}</div>}
+          {error && <div className='w-full text-fg-error'>{error}</div>}
           <div className='flex gap-2.5 self-end'>
             <button
               className={cn(
                 ACTION_BUTTON_CLASSES,
-                'border border-slate-400 border-solid bg-white text-slate-700 hover:bg-slate-200'
+                'border border-hairline-strong border-solid bg-surface-card text-fg-primary hover:bg-surface-well'
               )}
               onClick={closeModal}
             >

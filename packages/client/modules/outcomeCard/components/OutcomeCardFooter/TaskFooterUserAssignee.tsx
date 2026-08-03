@@ -61,7 +61,7 @@ const TaskFooterUserAssignee = (props: Props) => {
         ref={tipRef}
       >
         <button
-          className='flex h-6 max-w-full border-0 bg-transparent p-0 text-inherit leading-inherit shadow-none outline-none hover:shadow-none focus:shadow-none [&:focus>div]:border-slate-700 [&:focus>div]:text-slate-700 [&:hover>div]:border-slate-700 [&:hover>div]:text-slate-700'
+          className='flex h-6 max-w-full border-0 bg-transparent p-0 text-inherit leading-inherit shadow-none outline-none hover:shadow-none focus:shadow-none [&:focus>div]:border-fg-primary [&:focus>div]:text-fg-primary [&:hover>div]:border-fg-primary [&:hover>div]:text-fg-primary'
           aria-label='Assign this task to a teammate'
           onClick={canAssign ? togglePortal : undefined}
           onMouseEnter={TaskFooterUserAssigneeMenuRoot.preload}
@@ -81,7 +81,7 @@ const TaskFooterUserAssignee = (props: Props) => {
               </div>
             )}
           </div>
-          <div className='block min-w-0 max-w-full flex-1 truncate break-words text-left font-semibold text-slate-600 text-xs leading-6'>
+          <div className='block min-w-0 max-w-full flex-1 truncate break-words text-left font-semibold text-fg-secondary text-xs leading-6'>
             {preferredName}
           </div>
         </button>

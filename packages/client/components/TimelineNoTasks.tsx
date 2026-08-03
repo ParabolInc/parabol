@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import {ThumbUp} from '@mui/icons-material'
 import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
-import {PALETTE} from '../styles/paletteV3'
 
 const Wrapper = styled('div')({
   display: 'flex',
@@ -19,7 +18,7 @@ const ThumbsUp = styled(ThumbUp)({
 
 const RallyLink = styled('span')({
   fontWeight: 600,
-  color: PALETTE.SKY_500
+  color: 'var(--color-accent)'
 })
 
 const TimelineNoTasks = () => {

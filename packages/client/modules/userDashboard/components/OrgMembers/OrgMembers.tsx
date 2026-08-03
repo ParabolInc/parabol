@@ -218,12 +218,12 @@ const OrgMembers = (props: Props) => {
           placeholder='Search by name or email'
           value={searchInput}
           onChange={handleSearchChange}
-          className='w-full rounded-md border border-slate-300 px-3 py-2 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500'
+          className='w-full rounded-md border border-hairline px-3 py-2 focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent'
         />
       </div>
 
-      <div className='divide-y divide-slate-300 overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
-        <div className='flex h-10 items-center bg-slate-100 px-4'>
+      <div className='divide-y divide-hairline overflow-hidden rounded-md border border-hairline bg-surface-card shadow-xs'>
+        <div className='flex h-10 items-center bg-surface-raised px-4'>
           <div className='flex w-full items-center justify-between'>
             <div className='flex items-center font-bold'>
               {searchInput
@@ -246,13 +246,13 @@ const OrgMembers = (props: Props) => {
                   <>
                     <button
                       onClick={exportToCSV}
-                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 font-medium text-slate-700 text-xs hover:bg-slate-200'
+                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-well'
                     >
                       Export Selected to CSV
                     </button>
                     <button
                       onClick={() => setIsBulkRemoveOpen(true)}
-                      className='flex h-6 items-center rounded border border-slate-300 bg-slate-100 px-3 font-medium text-slate-700 text-xs hover:bg-slate-200'
+                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-well'
                     >
                       Remove Selected
                     </button>
@@ -264,7 +264,7 @@ const OrgMembers = (props: Props) => {
         <div className='w-full overflow-x-auto px-4'>
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
-              <tr className='border-slate-300 border-b'>
+              <tr className='border-hairline border-b'>
                 <th className='w-[5%] p-3 text-left'>
                   <div className='flex items-center justify-center'>
                     {isOrgAdmin && filteredOrgUsers.length > 0 && (
@@ -272,7 +272,7 @@ const OrgMembers = (props: Props) => {
                         type='checkbox'
                         checked={isAllSelected}
                         onChange={handleSelectAll}
-                        className='h-4 w-4 rounded border-slate-300 text-grape-700 focus:ring-grape-500'
+                        className='h-4 w-4 rounded border-hairline text-grape-700 focus:ring-grape-500'
                       />
                     )}
                   </div>

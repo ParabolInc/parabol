@@ -28,7 +28,7 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={closeModal}>
       <DialogContent>
         <DialogTitle>{'Archive all'}</DialogTitle>
-        <div className='pb-4 text-base text-slate-700'>
+        <div className='pb-4 text-base text-fg-primary'>
           This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
         </div>
         <div className='flex w-full justify-end gap-2'>

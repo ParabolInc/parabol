@@ -1,6 +1,5 @@
 import {keyframes} from '@emotion/react'
 import styled from '@emotion/styled'
-import {PALETTE} from '~/styles/paletteV3'
 export const skeletonShine = keyframes`
   0% {
     background-position: -80px;
@@ -17,7 +16,7 @@ const MockTemplateItemBody = styled('div')({
 const MockTemplateItemTitle = styled('div')({
   height: 20,
   borderRadius: '20px',
-  backgroundImage: `linear-gradient(90deg, ${PALETTE.SLATE_400} 0px, ${PALETTE.SLATE_200} 40px, ${PALETTE.SLATE_400} 80px)`,
+  backgroundImage: `linear-gradient(90deg, var(--color-hairline-strong) 0px, var(--color-surface-well) 40px, var(--color-hairline-strong) 80px)`,
   backgroundSize: 600,
   animation: `${skeletonShine.toString()} 2400ms infinite linear`,
   width: 160

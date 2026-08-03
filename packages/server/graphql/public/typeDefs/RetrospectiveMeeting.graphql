@@ -14,14 +14,26 @@ type RetrospectiveMeeting implements NewMeeting {
   id: ID!
 
   """
-  The suggested reflection groups created by OpenAI
+  Always null on meetings whose reflect phase completed after the SuggestedGroups release: nothing
+  writes this any more. Only meetings grouped before that release still carry a value.
+  Use `suggestedGrouping`.
   """
   autogroupReflectionGroups: [AutogroupReflectionGroup!]
+    @deprecated(
+      reason: "Use suggestedGrouping. Nothing writes this field any more, so it is null for every meeting grouped after the SuggestedGroups release. Retained only so the deprecated autogroup mutation still works for meetings pre-warmed before it, and so clients loaded before it do not error on the selection. Delete together with the autogroup mutation and the NewMeeting.autogroupReflectionGroups column once analytics show no more 'Suggest Groups Clicked' events with source: legacyAutogroup."
+    )
 
   """
   The groups that existed before the autogrouping
   """
   resetReflectionGroups: [AutogroupReflectionGroup!]
+
+  """
+  The active grouping of suggested reflection groups. Populated by grouping on similar wording as
+  soon as the meeting enters the group phase, and replaced whenever generateSuggestedGroups is
+  called. Null only before the group phase, or when the automatic run found nothing to suggest.
+  """
+  suggestedGrouping: RetroSuggestedGrouping
 
   """
   The Zoom meeting URL for the meeting

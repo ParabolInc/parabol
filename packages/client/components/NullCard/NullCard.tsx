@@ -11,12 +11,12 @@ const NullCard = (props: Props) => {
   return (
     <div
       className={cn(
-        'flex w-full min-w-[256px] max-w-[300px] items-center justify-center rounded bg-white p-4 shadow-card',
+        'flex w-full min-w-[256px] max-w-[300px] items-center justify-center rounded bg-surface-card p-4 shadow-card',
         className
       )}
       style={{minHeight: 120}}
     >
-      <div className='w-full overflow-visible break-words text-center text-slate-600 text-sm'>
+      <div className='w-full overflow-visible break-words text-center text-fg-secondary text-sm'>
         {preferredName}
         {' is adding a Task'}
         <Ellipsis />

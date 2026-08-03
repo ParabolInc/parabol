@@ -22,12 +22,7 @@ const ConnectButton = (props: Props) => {
   } = props
 
   return (
-    <ProviderRowActionButton
-      key='linkAccount'
-      onClick={onConnectClick}
-      palette='warm'
-      waiting={submitting}
-    >
+    <ProviderRowActionButton key='linkAccount' onClick={onConnectClick} waiting={submitting}>
       {isDesktop ? connectButtonText : connectButtonIcon}
     </ProviderRowActionButton>
   )

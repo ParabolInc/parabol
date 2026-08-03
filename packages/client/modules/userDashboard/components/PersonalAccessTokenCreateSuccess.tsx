@@ -26,14 +26,16 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
     <Dialog isOpen onClose={onClose}>
       <DialogContent className='flex flex-col gap-4'>
         <DialogTitle>Token Created</DialogTitle>
-        <p className='text-slate-600 text-sm'>Copy your new token now — it won't be shown again.</p>
-        <div className='flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 p-3'>
-          <code className='flex-1 break-all font-mono text-slate-800 text-sm'>{token}</code>
+        <p className='text-fg-secondary text-sm'>
+          Copy your new token now — it won't be shown again.
+        </p>
+        <div className='flex items-center gap-2 rounded-md border border-hairline bg-surface-raised p-3'>
+          <code className='flex-1 break-all font-mono text-fg-primary text-sm'>{token}</code>
           <Tooltip open={isOpen}>
             <TooltipTrigger asChild>
               <button
                 onClick={onCopy}
-                className='flex shrink-0 cursor-pointer rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700'
+                className='flex shrink-0 cursor-pointer rounded p-1 text-fg-muted hover:bg-surface-hover hover:text-fg-primary'
                 title='Copy to clipboard'
               >
                 <ContentCopyIcon fontSize='small' />
@@ -45,7 +47,7 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
         <div className='flex justify-end'>
           <button
             onClick={onClose}
-            className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-slate-700'
+            className='cursor-pointer rounded-md bg-sky-500 px-4 py-2 text-sm text-white hover:bg-sky-600'
           >
             Done
           </button>

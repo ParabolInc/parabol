@@ -7,16 +7,16 @@ interface StyleProps {
 
 const UpgradeCreditCardFormFieldBlock = styled('div')<StyleProps>(({hasError}) => ({
   alignItems: 'center',
-  border: `1px solid ${PALETTE.SLATE_400}`,
+  border: `1px solid var(--color-hairline-field)`,
   borderRadius: 4,
   display: 'flex',
   input: {
     appearance: 'none',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'var(--color-surface-input)',
     border: 0,
     borderRadius: 4,
     boxShadow: 'none',
-    color: PALETTE.SLATE_700,
+    color: 'var(--color-fg-primary)',
     fontSize: '.9375rem',
     lineHeight: '24px',
     outline: 0,

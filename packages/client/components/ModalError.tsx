@@ -12,7 +12,7 @@ interface Props extends MenuContentsProps {
 }
 
 const ErrorBlock = styled(MenuContents)({
-  background: '#fff',
+  background: 'var(--color-surface-card)',
   padding: 16
 })
 

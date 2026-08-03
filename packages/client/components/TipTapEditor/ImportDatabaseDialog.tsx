@@ -172,11 +172,11 @@ export const ImportDatabaseDialog = (props: Props) => {
       <DialogContent className='absolute z-10 lg:w-4xl lg:max-w-4xl xl:w-5xl xl:max-w-5xl'>
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
-          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-white/50'>
+          <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
             <CircularProgress />
           </div>
         )}
-        <div className='mb-3 text-left font-semibold text-slate-600 text-sm'>
+        <div className='mb-3 text-left font-semibold text-fg-secondary text-sm'>
           Import settings
           <div
             className='flex cursor-pointer flex-row gap-2 p-1 align-center'
@@ -191,16 +191,16 @@ export const ImportDatabaseDialog = (props: Props) => {
           </div>
           <div
             className={
-              'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-slate-400 text-slate-500'
+              'mb-4 flex h-50 w-full flex-col overflow-auto rounded-lg border-2 border-hairline-strong text-fg-muted'
             }
           >
-            <table className={'relative min-w-full border-collapse bg-white'}>
+            <table className={'relative min-w-full border-collapse bg-surface-card'}>
               <thead>
-                <tr className='text-slate-600'>
+                <tr className='text-fg-secondary'>
                   {headers.map((name, index) => (
                     <th
                       key={index}
-                      className='w-24 min-w-24 truncate border-slate-400 border-b-1 p-2 text-left'
+                      className='w-24 min-w-24 truncate border-hairline-strong border-b-1 p-2 text-left'
                     >
                       {name}
                     </th>
@@ -215,7 +215,7 @@ export const ImportDatabaseDialog = (props: Props) => {
                       {record.map((cell, cellIndex) => (
                         <td
                           key={cellIndex}
-                          className='border-slate-400 border-b-1 border-l-1 p-2 text-left align-top first:border-l-0'
+                          className='border-hairline-strong border-b-1 border-l-1 p-2 text-left align-top first:border-l-0'
                         >
                           {cell}
                         </td>
@@ -226,7 +226,7 @@ export const ImportDatabaseDialog = (props: Props) => {
                   <tr>
                     <td
                       colSpan={headers.length}
-                      className='h-8 border-slate-400 border-b-1 border-dashed px-2'
+                      className='h-8 border-hairline-strong border-b-1 border-dashed px-2'
                     >
                       <div className='-translate-x-1/2 sticky left-1/2 w-fit'>
                         {`...${moreRecordsCount} more records`}

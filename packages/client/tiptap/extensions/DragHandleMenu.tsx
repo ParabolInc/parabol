@@ -90,15 +90,15 @@ const DragHandleMenu = (props: DragHandleMenuProps) => {
         className='z-50'
       >
         <MenuItem onSelect={handleDuplicate}>
-          <ContentCopy className='mr-2 text-base text-slate-600' />
+          <ContentCopy className='mr-2 text-base text-fg-secondary' />
           <span className='flex-1 text-left'>Duplicate block</span>
-          <span className='ml-4 text-slate-400 text-xs'>{modKey}+D</span>
+          <span className='ml-4 text-fg-muted text-xs'>{modKey}+D</span>
         </MenuItem>
         {showDelete && (
           <MenuItem onSelect={handleDelete}>
-            <DeleteOutlined className='mr-2 text-base text-slate-600' />
+            <DeleteOutlined className='mr-2 text-base text-fg-secondary' />
             <span className='flex-1 text-left'>Delete block</span>
-            <span className='ml-4 text-slate-400 text-xs'>Del</span>
+            <span className='ml-4 text-fg-muted text-xs'>Del</span>
           </MenuItem>
         )}
       </MenuContent>

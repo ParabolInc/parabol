@@ -4,7 +4,7 @@ import type {NotificationStatusEnum} from '../__generated__/NotificationDropdown
 import {PALETTE} from '../styles/paletteV3'
 
 const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
-  background: isNew ? PALETTE.SLATE_300 : '#fff',
+  background: isNew ? 'var(--color-surface-well)' : 'var(--color-surface-card)',
   cursor: 'default',
   display: 'flex',
   width: '100%'
@@ -13,7 +13,7 @@ const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
 const Avatar = styled('img')<{isParabol: boolean}>(({isParabol}) => ({
   background: '#fff',
   borderRadius: '100%',
-  border: isParabol ? `solid 1px ${PALETTE.SLATE_400}` : undefined,
+  border: isParabol ? `solid 1px var(--color-hairline-strong)` : undefined,
   height: 40,
   margin: 12,
   padding: isParabol ? 2 : undefined,

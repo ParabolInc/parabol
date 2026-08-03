@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -11,6 +10,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import {useSearchDialog} from '~/modules/search/SearchContext'
 import {Input} from '~/ui/Input/Input'
 import type Atmosphere from '../Atmosphere'
+import {cn} from '../ui/cn'
 
 const getShowSearch = (location: Location) => {
   const {pathname} = location
@@ -24,26 +24,6 @@ const getShowSearch = (location: Location) => {
 interface Props {
   viewer: TopBarSearch_viewer$key | null
 }
-
-const Wrapper = styled('div')<{location: Location}>(({location}) => ({
-  alignItems: 'center',
-  backgroundColor: 'hsla(0,0%,100%,.125)',
-  borderRadius: 4,
-  display: 'flex',
-  flex: 1,
-  height: 40,
-  margin: 8,
-  maxWidth: 480,
-  visibility: getShowSearch(location) ? undefined : 'hidden'
-}))
-
-const SearchIcon = styled('div')({
-  height: 24,
-  width: 24,
-  color: '#fff',
-  cursor: 'pointer',
-  margin: 12
-})
 
 const setSearch = (atmosphere: Atmosphere, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
@@ -88,20 +68,25 @@ const TopBarSearch = (props: Props) => {
   }
 
   return (
-    <Wrapper location={location}>
+    <div
+      className={cn(
+        'm-2 flex h-10 max-w-[480px] flex-1 items-center rounded bg-search-bg',
+        getShowSearch(location) ? 'visible' : 'invisible'
+      )}
+    >
       <Input
         ref={inputRef}
         onChange={onChange}
         onKeyDown={onKeyDown}
         placeholder={'Search'}
         value={dashSearch}
-        className='m-0 h-full w-full appearance-none border-transparent bg-transparent px-4 py-3 text-slate-200 text-xl leading-6 outline-none placeholder:text-slate-200/50 focus:outline-none focus-visible:border-transparent'
+        className='m-0 h-full w-full appearance-none border-transparent bg-transparent px-4 py-3 text-fg-topbar text-xl leading-6 outline-none placeholder:text-search-placeholder focus:outline-none focus-visible:border-transparent'
         maxLength={255}
       />
-      <SearchIcon onClick={onClick}>
+      <div className='m-3 h-6 w-6 cursor-pointer text-fg-topbar' onClick={onClick}>
         <Icon />
-      </SearchIcon>
-    </Wrapper>
+      </div>
+    </div>
   )
 }
 

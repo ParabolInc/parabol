@@ -20,7 +20,7 @@ const Label = ({
   ...rest
 }: PropsWithChildren<React.LabelHTMLAttributes<HTMLLabelElement>>) => {
   return (
-    <label className={cn('font-semibold text-slate-800 text-sm', className)} {...rest}>
+    <label className={cn('font-semibold text-fg-primary text-sm', className)} {...rest}>
       {children}
     </label>
   )
@@ -39,11 +39,11 @@ const Input = ({
   } & React.InputHTMLAttributes<HTMLInputElement>
 >) => {
   const focusStyles =
-    'focus:outline-hidden focus:border-slate-600 focus:ring-1 focus:ring-slate-600'
+    'focus:outline-hidden focus:border-fg-secondary focus:ring-1 focus:ring-fg-secondary'
   const activeStyles =
-    'active:border-slate-600 active:outline active:outline-slate-600 active:outline-1'
+    'active:border-fg-secondary active:outline active:outline-fg-secondary active:outline-1'
   const baseStyles =
-    'form-input text-base font-sans p-2 border border-solid border-slate-500 rounded-sm hover:border-slate-600'
+    'form-input text-base font-sans p-2 border border-solid border-hairline-field bg-surface-input rounded-sm hover:border-fg-secondary'
   const errorStyles =
     'border-tomato-600 focus:border-tomato-600 focus:ring-tomato-600 active:border-tomato-600 active:outline-tomato-600'
 
@@ -77,7 +77,7 @@ const Description = ({
   ...rest
 }: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className={cn('break-words text-slate-600 text-sm italic', className)} {...rest}>
+    <div className={cn('break-words text-fg-secondary text-sm italic', className)} {...rest}>
       {children}
     </div>
   )
@@ -85,7 +85,7 @@ const Description = ({
 
 const Error = ({children, ...rest}: PropsWithChildren<React.HTMLAttributes<HTMLDivElement>>) => {
   return (
-    <div className='text-sm text-tomato-500' {...rest}>
+    <div className='text-fg-error text-sm' {...rest}>
       {children}
     </div>
   )
@@ -172,7 +172,7 @@ export const RecurrenceSettings = (props: Props) => {
     <div className={cn('space-y-4 p-4', className)}>
       <div className='space-y-1'>
         <div className='flex items-center gap-2'>
-          <label className='block text-slate-800 text-sm' htmlFor='series-interval'>
+          <label className='block text-fg-primary text-sm' htmlFor='series-interval'>
             Restarts every
           </label>
           <Input

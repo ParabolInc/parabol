@@ -45,11 +45,13 @@ const EditVotingLabelTemplateModal = (props: Props) => {
             onChange={onChange}
             value={value}
             error={undefined}
-            className='mb-2 w-full bg-transparent text-base text-slate-700 outline-none'
+            className='mb-2 w-full bg-transparent text-base text-fg-primary outline-none'
           />
           <span className='p-1 text-base'>{'Use '}</span>
           <PlainButton onClick={addWildcard}>
-            <span className='rounded-lg bg-slate-300 p-1 font-semibold text-base'>{'{{#}}'}</span>
+            <span className='rounded-lg bg-surface-well p-1 font-semibold text-base'>
+              {'{{#}}'}
+            </span>
           </PlainButton>
           <span className='p-1 text-base'>{' as the value wildcard'}</span>
 

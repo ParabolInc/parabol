@@ -1,8 +1,6 @@
 import styled from '@emotion/styled'
 import DeleteIcon from '@mui/icons-material/Delete'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {Elevation} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
 import {Breakpoint} from '../types/constEnums'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
@@ -14,9 +12,9 @@ const HeaderCardWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => (
 }))
 
 const HeaderCard = styled('div')({
-  background: PALETTE.WHITE,
+  background: 'var(--color-surface-card)',
   borderRadius: 4,
-  boxShadow: Elevation.Z1,
+  boxShadow: 'var(--shadow-card)',
   height: '100%',
   padding: '12px 16px',
   position: 'relative',
@@ -39,7 +37,7 @@ const CardTitleWrapper = styled('div')({
 })
 
 const CardDescription = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   fontWeight: 'normal',
   lineHeight: '20px',
   fontSize: 14,

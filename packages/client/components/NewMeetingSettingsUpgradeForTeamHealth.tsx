@@ -5,12 +5,11 @@ import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PlainButton from './PlainButton/PlainButton'
 
 const ButtonRow = styled(PlainButton)({
-  background: PALETTE.SLATE_200,
+  background: 'var(--color-surface-well)',
   borderRadius: '8px',
   display: 'flex',
   fontSize: 14,
@@ -18,7 +17,7 @@ const ButtonRow = styled(PlainButton)({
   userSelect: 'none',
   width: '100%',
   ':hover': {
-    backgroundColor: PALETTE.SLATE_300
+    backgroundColor: 'var(--color-surface-hover)'
   },
   height: '72px',
   padding: '12px 16px',
@@ -65,14 +64,14 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   return (
     <ButtonRow className={className} onClick={handleUpgrade}>
       <div className='mt-1 flex w-full flex-col'>
-        <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-slate-600 text-xl'>
+        <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-fg-secondary text-xl'>
           Health Check
         </div>
-        <div className='w-full text-slate-800'>
+        <div className='w-full text-fg-primary'>
           <u>Upgrade</u> to enable team health checks
         </div>
       </div>
-      <Lock className='m-0.5 text-slate-600' />
+      <Lock className='m-0.5 text-fg-secondary' />
     </ButtonRow>
   )
 }

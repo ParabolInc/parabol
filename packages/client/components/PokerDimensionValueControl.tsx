@@ -19,7 +19,7 @@ const ControlWrap = styled('div')({
 
 const Control = styled('div')({
   alignItems: 'center',
-  backgroundColor: '#FFF',
+  backgroundColor: 'var(--color-surface-card)',
   borderRadius: 4,
   display: 'flex',
   padding: 8
@@ -28,7 +28,7 @@ const Control = styled('div')({
 const Input = styled('input')<{color?: string}>(({color}) => ({
   background: 'none',
   border: 0,
-  color: color || PALETTE.SLATE_700,
+  color: color || 'var(--color-fg-primary)',
   display: 'block',
   fontSize: 18,
   fontWeight: 600,
@@ -38,7 +38,7 @@ const Input = styled('input')<{color?: string}>(({color}) => ({
   textAlign: 'center',
   width: '100%',
   '::placeholder': {
-    color: 'rgba(125, 125, 125, .25)'
+    color: 'var(--color-fg-muted)'
   }
 }))
 
@@ -55,7 +55,7 @@ const Label = styled('div')({
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   fontSize: 14,
   fontWeight: 600,
   height: 40,

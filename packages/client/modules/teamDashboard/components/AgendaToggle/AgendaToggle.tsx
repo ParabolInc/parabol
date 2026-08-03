@@ -9,12 +9,12 @@ const Label = styled('div')({
   fontSize: 12,
   fontWeight: 600,
   lineHeight: '16px',
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   textAlign: 'center'
 })
 
 const StyledIcon = styled(Chat)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   alignSelf: 'center'
 })
 
@@ -29,7 +29,7 @@ const Wrapper = styled('div')({
   ':hover': {
     cursor: 'pointer'
   },
-  ':hover i': {
+  ':hover svg': {
     color: PALETTE.SKY_600
   }
 })

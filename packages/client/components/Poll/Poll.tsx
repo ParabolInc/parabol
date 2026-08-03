@@ -46,10 +46,10 @@ const Poll = (props: Props) => {
         />
         <div
           className={cn(
-            'flex w-full flex-col justify-start overflow-hidden rounded bg-white text-slate-600 outline-none transition-shadow duration-100 ease-in',
+            'flex w-full flex-col justify-start overflow-hidden rounded bg-surface-card text-fg-secondary outline-none transition-shadow duration-100 ease-in',
             isFocused
-              ? 'border-[1.5px] border-sky-400 shadow-card'
-              : 'border-[1.5px] border-slate-400 shadow-none'
+              ? 'border-[1.5px] border-accent shadow-card'
+              : 'border-[1.5px] border-hairline-strong shadow-none'
           )}
         >
           {children}

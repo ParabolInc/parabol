@@ -32,15 +32,16 @@ const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
 })
 
 const StyledSearchIcon = styled(SearchIcon)({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const SearchInput = styled('input')({
   appearance: 'none',
-  border: `1px solid ${PALETTE.SKY_500}`,
+  backgroundColor: 'var(--color-surface-input)',
+  border: '1px solid var(--color-accent)',
   borderRadius: 4,
   boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'block',
   fontSize: 14,
   lineHeight: '24px',
@@ -48,7 +49,7 @@ const SearchInput = styled('input')({
   padding: '6px 0 6px 40px',
   width: '100%',
   '::placeholder': {
-    color: PALETTE.SLATE_600
+    color: 'var(--color-fg-secondary)'
   }
 })
 

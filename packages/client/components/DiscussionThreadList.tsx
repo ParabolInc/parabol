@@ -1,22 +1,20 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {type ReactNode, useEffect, useRef, useState} from 'react'
+import {type ComponentProps, type ReactNode, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {DiscussionThreadList_discussion$key} from '~/__generated__/DiscussionThreadList_discussion.graphql'
 import type {DiscussionThreadList_threadables$key} from '~/__generated__/DiscussionThreadList_threadables.graphql'
 import type {DiscussionThreadList_viewer$key} from '~/__generated__/DiscussionThreadList_viewer.graphql'
-import {PALETTE} from '../styles/paletteV3'
+import {cn} from '../ui/cn'
 import CommentingStatusText from './CommentingStatusText'
 import LabelHeading from './LabelHeading/LabelHeading'
 import ThreadedItem from './ThreadedItem'
 
-export const Header = styled(LabelHeading)({
-  borderBottom: `1px solid ${PALETTE.SLATE_300}`,
-  margin: '0 0 8px',
-  padding: '12px',
-  textTransform: 'none',
-  width: '100%'
-})
+export const Header = ({className, ...rest}: ComponentProps<typeof LabelHeading>) => (
+  <LabelHeading
+    {...rest}
+    className={cn('m-0 mb-2 w-full border-hairline border-b p-3 normal-case', className)}
+  />
+)
 
 export type DiscussionThreadables = 'task' | 'comment' | 'poll'
 

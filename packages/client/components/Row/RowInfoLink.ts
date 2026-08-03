@@ -1,8 +1,7 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
 import RowInfoCopy from './RowInfoCopy'
 
-const color = PALETTE.SLATE_600
+const color = 'var(--color-fg-secondary)'
 
 const LinkComponent = RowInfoCopy.withComponent('a')
 

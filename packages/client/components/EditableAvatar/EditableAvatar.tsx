@@ -14,14 +14,14 @@ const EditableAvatar = (props: Props) => {
     <div className='relative cursor-pointer' onClick={onClick} aria-label='click to update photo'>
       <Avatar
         picture={picture}
-        className={cn(`h-16 w-16 border-4 border-slate-200 border-solid`, className)}
+        className={cn(`h-16 w-16 border-4 border-surface-raised border-solid`, className)}
       />
       <div className='absolute top-0 left-0 flex h-full w-full items-center justify-center rounded-full bg-slate-400 font-semibold text-slate-800 text-sm opacity-0 transition-opacity duration-300 hover:opacity-75'>
         EDIT
       </div>
       <div
         aria-hidden
-        className='icon-wrapper absolute top-0 right-0 z-10 rounded-full bg-slate-200 px-1.5 hover:bg-slate-200'
+        className='icon-wrapper absolute top-0 right-0 z-10 rounded-full bg-surface-raised px-1.5 hover:bg-surface-well'
       >
         <EditIcon className='mb-[-2px] w-3.5 pt-0.5' />
       </div>

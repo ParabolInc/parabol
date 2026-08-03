@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 const Hint = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   display: 'inline-block',
   fontSize: 13,
   lineHeight: '20px',

@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import type {ReactNode} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
 
 const Banner = styled('div')({
-  border: `1px dashed ${PALETTE.SLATE_400}`,
+  border: `1px dashed var(--color-hairline-strong)`,
   borderRadius: 4,
   display: 'flex',
   fontSize: 14,
@@ -16,7 +15,7 @@ const Banner = styled('div')({
 const StyledIcon = styled('div')({
   height: 24,
   width: 24,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   marginRight: 16
 })
 

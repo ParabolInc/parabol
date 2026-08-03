@@ -20,7 +20,7 @@ export const MeetingDatePicker = (props: Props) => {
   return (
     <Menu
       trigger={
-        <MenuLabelTrigger icon={<DateRangeIcon className='text-slate-600' />}>
+        <MenuLabelTrigger icon={<DateRangeIcon className='text-fg-secondary' />}>
           {dateRangeLabel}
         </MenuLabelTrigger>
       }

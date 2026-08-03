@@ -17,7 +17,6 @@ export const PageSharingCopyLink = (_props: {}) => {
           <Button
             onClick={handleCopyLink}
             variant='outline'
-            shape='pill'
             className='flex items-center gap-1 pr-4 pl-3'
           >
             <Link className='h-6 w-6' />

@@ -3,7 +3,7 @@ import {modalShadow} from '../styles/elevation'
 import {Radius} from '../types/constEnums'
 
 const InviteDialog = styled('div')({
-  background: 'white',
+  background: 'var(--color-surface-card)',
   borderRadius: Radius.DIALOG,
   boxShadow: modalShadow,
   display: 'flex',

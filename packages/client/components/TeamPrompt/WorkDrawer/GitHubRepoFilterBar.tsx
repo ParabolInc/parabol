@@ -41,15 +41,13 @@ const GitHubRepoFilterBar = (props: Props) => {
     <>
       <button
         className={cn(
-          'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-solid bg-white px-3 py-0.5 text-left transition',
-          isMenuOpen
-            ? 'border-sky-400 hover:border-sky-500'
-            : 'border-slate-300 hover:border-slate-500'
+          'mx-4 mt-4 mb-2 flex cursor-pointer items-center gap-2 rounded-sm border border-solid bg-surface-card px-3 py-0.5 text-left transition',
+          isMenuOpen ? 'border-accent' : 'border-hairline hover:border-hairline-strong'
         )}
         onClick={togglePortal}
         ref={originRef}
       >
-        <FilterList className='h-5 w-5 text-slate-600' />
+        <FilterList className='h-5 w-5 text-fg-secondary' />
         {selectedRepos.length === 0
           ? 'All repositories'
           : `${selectedRepos.length} ${plural(
@@ -61,7 +59,7 @@ const GitHubRepoFilterBar = (props: Props) => {
           className={cn(
             'ml-auto rounded-full transition duration-300',
             isMenuOpen ? 'rotate-180' : '',
-            selectedRepos.length > 0 && !isMenuOpen ? 'bg-sky-500 text-white' : ''
+            selectedRepos.length > 0 && !isMenuOpen ? 'bg-accent text-white' : ''
           )}
         />
       </button>

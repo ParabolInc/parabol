@@ -4,7 +4,6 @@ import {useFragment} from 'react-relay'
 import type {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV3'
 import {mergeRefs} from '~/utils/react/mergeRefs'
 import useTooltip from '../../hooks/useTooltip'
 import BaseButton from '../BaseButton'
@@ -14,7 +13,7 @@ import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
 export const OptionsButton = styled(BaseButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
@@ -22,7 +21,7 @@ export const OptionsButton = styled(BaseButton)({
   padding: '0px 8px',
   fontWeight: 600,
   ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
+    color: 'var(--color-accent)'
   }
 })
 
@@ -62,7 +61,7 @@ const TeamPromptOptions = (props: Props) => {
     <>
       <OptionsButton ref={mergeRefs(originRef, copiedTooltipRef)} onClick={togglePortal}>
         <IconLabel ref={originRef} icon='tune' iconLarge />
-        <div className='text-slate-700'>Options</div>
+        <div className='text-fg-primary'>Options</div>
       </OptionsButton>
       {copiedTooltipPortal('Copied!')}
       {menuPortal(

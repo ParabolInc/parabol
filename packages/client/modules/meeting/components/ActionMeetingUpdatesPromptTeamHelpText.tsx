@@ -3,10 +3,9 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember$key} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import {PALETTE} from '../../../styles/paletteV3'
 
 const AgendaControl = styled('span')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   cursor: 'pointer',
   '&:hover': {
     textDecoration: 'underline'

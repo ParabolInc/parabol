@@ -17,7 +17,7 @@ const Checkbox = (props: Props) => {
   return (
     <div
       className={cn(
-        'text-slate-600',
+        'text-fg-secondary',
         'h-6',
         'w-6',
         'block',

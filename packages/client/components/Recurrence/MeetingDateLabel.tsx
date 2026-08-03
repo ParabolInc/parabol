@@ -49,7 +49,7 @@ const MeetingDateLabel = (props: Props) => {
       <div className='flex flex-row items-center text-sm'>
         {dateLabel}
         <Tooltip
-          className='flex flex-row items-center pl-2 text-slate-600'
+          className='flex flex-row items-center pl-2 text-fg-secondary'
           text={humanReadableRecurrenceRule}
         >
           <Info className='size-4.5' />

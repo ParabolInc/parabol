@@ -52,10 +52,10 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
           <p className='mb-2 font-semibold text-base'>
             {'Bring your Jira Data Center issues into your retros and sprint planning.'}
           </p>
-          <p className='text-slate-600 text-sm'>
+          <p className='text-fg-secondary text-sm'>
             {'Ready to unlock it for your org? Reach out to '}
             <a
-              className='text-sky-500 no-underline hover:text-sky-600 focus:text-sky-600'
+              className='text-accent no-underline hover:text-sky-600 focus:text-sky-600'
               href={`mailto:${SALES_EMAIL}`}
             >
               {SALES_EMAIL}
@@ -77,7 +77,7 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
         Import issues from Jira Data Center
       </RaisedButton>
       <span
-        className='cursor-pointer pt-6 text-sky-500 outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+        className='cursor-pointer pt-6 text-accent outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
         onClick={gotoParabol}
       >
         Or add new tasks in Parabol

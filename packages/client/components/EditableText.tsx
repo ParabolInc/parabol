@@ -23,11 +23,11 @@ const StaticBlock = styled('div')<{disabled: boolean | undefined}>(({disabled}) 
 }))
 
 const Placeholder = styled('div')({
-  color: PALETTE.SLATE_600
+  color: 'var(--color-fg-secondary)'
 })
 
 const StaticValue = styled('div')({
-  color: PALETTE.SLATE_700
+  color: 'var(--color-fg-primary)'
 })
 
 const Error = styled('div')({
@@ -36,7 +36,7 @@ const Error = styled('div')({
 })
 
 const StyledIcon = styled(Edit)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 18,
   width: 18,
   marginLeft: 8
@@ -45,7 +45,7 @@ const StyledIcon = styled(Edit)({
 const Input = styled('input')({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'inline-block',
   fontSize: 'inherit',
   fontWeight: 'inherit',
@@ -71,7 +71,7 @@ const HiddenSpan = styled('span')({
 const TextArea = styled(TextAreaAutoSize)({
   backgroundColor: 'transparent',
   border: 0,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'block',
   fontSize: 'inherit',
   fontWeight: 'inherit',

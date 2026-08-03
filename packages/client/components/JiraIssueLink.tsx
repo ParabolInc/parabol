@@ -1,10 +1,9 @@
 import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
-import {PALETTE} from '../styles/paletteV3'
 import {Card} from '../types/constEnums'
 
 const StyledLink = styled('a')({
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
   display: 'block',
   fontSize: Card.FONT_SIZE,
   lineHeight: '1.25rem',

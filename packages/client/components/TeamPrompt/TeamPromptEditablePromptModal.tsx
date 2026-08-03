@@ -19,7 +19,7 @@ const LightbulbWrapper = styled('span')({
 const TextArea = styled(TextAreaAutoSize)<{isDesktop: boolean}>(({isDesktop}) => ({
   backgroundColor: 'transparent',
   padding: 24,
-  borderColor: PALETTE.SLATE_500,
+  borderColor: 'var(--color-hairline-field)',
   borderWidth: 1,
   borderRadius: 8,
   display: 'block',
@@ -40,7 +40,7 @@ const SuggestedPromptWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop})
   fontSize: isDesktop ? 18 : 16,
   cursor: 'pointer',
   '&:hover': {
-    backgroundColor: PALETTE.SLATE_200
+    backgroundColor: 'var(--color-surface-raised)'
   }
 }))
 
@@ -66,7 +66,7 @@ const ErrorWrapper = styled('div')({
 })
 
 const InfoIcon = styled(Info)({
-  color: PALETTE.SLATE_500,
+  color: 'var(--color-fg-muted)',
   height: 18,
   width: 18,
   marginRight: 8

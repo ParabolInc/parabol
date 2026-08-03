@@ -104,7 +104,7 @@ const EditingStatus = (props: Props) => {
     metaField === 'createdIn' ? 'createdAt' : metaField
 
   return (
-    <div className='flex min-h-[20px] items-start justify-between px-4 pb-1 text-left font-semibold text-[11px] text-slate-600 leading-5'>
+    <div className='flex min-h-[20px] items-start justify-between px-4 pb-1 text-left font-semibold text-fg-secondary text-xs leading-5'>
       <div className='w-full'>
         {children}
         <span

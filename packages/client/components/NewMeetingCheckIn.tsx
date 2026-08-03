@@ -8,7 +8,6 @@ import type useGotoStageId from '~/hooks/useGotoStageId'
 import useAtmosphere from '../hooks/useAtmosphere'
 import NewMeetingCheckInPrompt from '../modules/meeting/components/MeetingCheckInPrompt/NewMeetingCheckInPrompt'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
-import {PALETTE} from '../styles/paletteV3'
 import findStageAfterId from '../utils/meetings/findStageAfterId'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import MeetingContent from './MeetingContent'
@@ -30,7 +29,7 @@ const Hint = styled('div')({
 })
 
 const StyledIcon = styled(RecordVoiceOver)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   display: 'block',
   margin: '0 auto 4px'
 })

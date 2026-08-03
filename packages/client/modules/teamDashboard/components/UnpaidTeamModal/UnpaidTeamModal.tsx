@@ -11,7 +11,6 @@ import IconLabel from '../../../../components/IconLabel'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
@@ -27,7 +26,7 @@ const LockedAtContent = styled(DialogContent)({
 })
 
 const ContactUsLink = styled('a')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   textDecoration: 'underline'
 })
 

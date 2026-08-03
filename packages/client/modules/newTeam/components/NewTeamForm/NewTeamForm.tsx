@@ -19,7 +19,6 @@ import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {Threshold} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
@@ -78,7 +77,8 @@ const StyledButton = styled(PrimaryButton)({
 })
 
 const WarningMsg = styled('div')({
-  background: PALETTE.GOLD_100,
+  background: 'var(--color-gold-100)',
+  color: 'var(--color-slate-700)',
   padding: '16px 24px',
   fontSize: 16,
   borderRadius: 2,
@@ -88,12 +88,12 @@ const WarningMsg = styled('div')({
 })
 
 const StyledLink = styled('span')({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   cursor: 'pointer',
   outline: 0,
   fontWeight: 600,
   ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
+    color: 'var(--color-sky-600)'
   }
 })
 
@@ -338,9 +338,9 @@ const NewTeamForm = (props: Props) => {
             <div className='flex flex-1 items-start'>
               <div>
                 <div className='flex items-center'>
-                  <div className='font-medium text-slate-700 text-sm'>Team Privacy</div>
+                  <div className='font-medium text-fg-primary text-sm'>Team Privacy</div>
                 </div>
-                <div className='mt-1 w-full text-slate-600 text-xs'>
+                <div className='mt-1 w-full text-fg-secondary text-xs'>
                   {isPublic ? (
                     <>
                       <div>
@@ -400,7 +400,7 @@ const NewTeamForm = (props: Props) => {
           {showInviteAll && (
             <div className='flex cursor-pointer items-center pt-2' onClick={handleToggleInviteAll}>
               <Checkbox active={inviteAll} />
-              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-gray-700'>
+              <label htmlFor='checkbox' className='ml-2 cursor-pointer text-fg-primary'>
                 {`Invite team members from ${selectedOrg.name}`}
               </label>
             </div>

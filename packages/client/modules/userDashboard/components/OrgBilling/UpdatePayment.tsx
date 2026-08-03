@@ -19,15 +19,16 @@ import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMuta
 import {PALETTE} from '../../../../styles/paletteV3'
 
 const UpgradeButton = styled(PrimaryButton)<{disabled: boolean}>(({disabled}) => ({
-  background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_500,
-  color: disabled ? PALETTE.SLATE_600 : PALETTE.WHITE,
+  background: PALETTE.SKY_500,
+  color: PALETTE.WHITE,
   boxShadow: 'none',
   marginTop: 16,
   width: '100%',
   elevation: 0,
+  opacity: disabled ? 0.5 : 1,
   '&:hover, &:focus': {
     boxShadow: 'none',
-    background: disabled ? PALETTE.SLATE_200 : PALETTE.SKY_600
+    background: disabled ? PALETTE.SKY_500 : PALETTE.SKY_600
   }
 }))
 
@@ -40,15 +41,18 @@ const ErrorMsg = styled(StyledError)({
   textTransform: 'none'
 })
 
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: PALETTE.SLATE_800,
-      fontFamily: '"IBM Plex Sans", sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': {
-        color: PALETTE.SLATE_600
+const getCardElementOptions = () => {
+  const isDark = document.documentElement.classList.contains('theme-dark')
+  return {
+    style: {
+      base: {
+        color: isDark ? '#EEEDF7' : PALETTE.SLATE_800,
+        fontFamily: '"IBM Plex Sans", sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: isDark ? '#938CBF' : PALETTE.SLATE_600
+        }
       }
     }
   }
@@ -81,6 +85,7 @@ const UpdatePayment = (props: Props) => {
     !expiryDateError &&
     !cvcError
   const isUpdateDisabled = isLoading || !stripe || !elements || !hasValidCCDetails
+  const cardElementOptions = getCardElementOptions()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -166,13 +171,13 @@ const UpdatePayment = (props: Props) => {
     <form className='flex h-full w-full flex-col flex-wrap space-y-reverse' onSubmit={handleSubmit}>
       <div className='flex w-full'>
         <div className='w-3/5 pr-4'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             Card number
           </label>
           <div className='mt-1'>
             <CardNumberElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('CardNumber')}
             />
           </div>
@@ -180,13 +185,13 @@ const UpdatePayment = (props: Props) => {
         </div>
 
         <div className='w-1/4 pr-4'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             Expiry
           </label>
           <div className='mt-1'>
             <CardExpiryElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('ExpiryDate')}
             />
             {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
@@ -194,13 +199,13 @@ const UpdatePayment = (props: Props) => {
         </div>
 
         <div className='w-1/6'>
-          <label className='block text-left font-semibold text-slate-600 text-xs uppercase'>
+          <label className='block text-left font-semibold text-fg-secondary text-xs uppercase'>
             CVC
           </label>
           <div className='mt-1'>
             <CardCvcElement
-              className='block w-full border-slate-400 border-b bg-slate-200 px-4 py-3 shadow-xs outline-hidden focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm'
-              options={CARD_ELEMENT_OPTIONS}
+              className='block w-full border-hairline-field border-b bg-surface-well px-4 py-3 shadow-xs outline-hidden focus:border-accent focus:ring-accent sm:text-sm'
+              options={cardElementOptions}
               onChange={handleChange('CVC')}
             />
             {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}

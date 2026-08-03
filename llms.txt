@@ -16,7 +16,7 @@ Parabol uses Personal Access Tokens (PATs) for API access. Pass the token as a B
 Authorization: Bearer <your-token>
 ```
 
-Create and manage tokens at: https://action.parabol.c/me/profile
+Create and manage tokens at: https://action.parabol.co/me/profile
 
 Tokens are scoped — you must request only the scopes your integration needs. Available scopes:
 

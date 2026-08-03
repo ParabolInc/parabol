@@ -1,18 +1,17 @@
 import styled from '@emotion/styled'
 import {AddOutlined} from '@mui/icons-material'
 import {PollsAriaLabels} from '~/types/constEnums'
-import {PALETTE} from '../../styles/paletteV3'
 import PlainButton from '../PlainButton/PlainButton'
 
 const StyledPlainButton = styled(PlainButton)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontWeight: 600,
   fontSize: 14,
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   },
   transition: 'color 0.1s ease',
   marginRight: 'auto'

@@ -212,13 +212,13 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           </DialogTitle>
         </div>
         {error && (
-          <div className='mx-6 mb-4 shrink-0 animate-shake rounded-md py-2 font-medium text-sm text-tomato-500'>
+          <div className='mx-6 mb-4 shrink-0 animate-shake rounded-md py-2 font-medium text-fg-error text-sm'>
             {error}
           </div>
         )}
         <div className='flex-1 space-y-6 overflow-y-auto px-6 pb-4'>
           <div className='flex flex-col gap-1'>
-            <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+            <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
               Name
             </label>
             <BasicInput
@@ -234,10 +234,10 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
           <TokenScopesTable selectedScopes={selectedScopes} toggleScope={toggleScope} />
           <div className='flex flex-col gap-4'>
             <div>
-              <label className='font-semibold text-slate-500 text-xs uppercase tracking-wider'>
+              <label className='font-semibold text-fg-muted text-xs uppercase tracking-wider'>
                 Resource Grants
               </label>
-              <p className='mt-1 text-slate-500 text-xs'>
+              <p className='mt-1 text-fg-muted text-xs'>
                 By default, a token has access to all resources you can access. Optionally restrict
                 it to specific organizations, teams, or pages below.
               </p>
@@ -265,10 +265,10 @@ const PersonalAccessTokenUpsertDialog = ({viewerRef, onClose, personalAccessToke
             />
           </div>
         </div>
-        <div className='flex shrink-0 justify-end gap-2 border-slate-200 border-t bg-slate-50/50 px-6 py-4'>
+        <div className='flex shrink-0 justify-end gap-2 border-hairline border-t bg-surface-raised/50 px-6 py-4'>
           <button
             onClick={onClose}
-            className='cursor-pointer rounded-md border border-slate-300 bg-white px-4 py-2 text-slate-700 text-sm hover:bg-slate-100'
+            className='cursor-pointer rounded-md border border-hairline-strong bg-surface-card px-4 py-2 text-fg-primary text-sm hover:bg-surface-hover'
           >
             Cancel
           </button>

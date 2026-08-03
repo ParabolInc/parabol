@@ -9,7 +9,6 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import type {TemplatePromptItem_prompt$key} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
-import {PALETTE} from '../../../styles/paletteV3'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
@@ -30,7 +29,7 @@ interface StyledProps {
 const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
   ({isOwner, isHover, isDragging}) => ({
     alignItems: 'flex-start',
-    backgroundColor: isOwner && (isHover || isDragging) ? PALETTE.SLATE_100 : undefined,
+    backgroundColor: isOwner && (isHover || isDragging) ? 'var(--color-surface-raised)' : undefined,
     cursor: isOwner ? 'pointer' : undefined,
     display: 'flex',
     fontSize: 14,
@@ -41,7 +40,7 @@ const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
 )
 
 const RemovePromptIcon = styled('div')<StyledProps>(({isHover}) => ({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   cursor: 'pointer',
   svg: {
     fontSize: 18

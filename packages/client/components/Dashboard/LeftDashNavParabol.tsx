@@ -1,26 +1,13 @@
-import styled from '@emotion/styled'
 import PlainButton from '~/components/PlainButton/PlainButton'
-import {PALETTE} from '~/styles/paletteV3'
-import {NavSidebar} from '~/types/constEnums'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_dark_type.svg'
-
-const Parabol = styled(PlainButton)({
-  alignItems: 'center',
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  fontSize: NavSidebar.FONT_SIZE,
-  fontWeight: 600,
-  lineHeight: NavSidebar.LINE_HEIGHT,
-  padding: 8,
-  userSelect: 'none',
-  width: '100%'
-})
+import parabolLogoWhite from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 
 const LeftDashParabol = () => {
   return (
-    <Parabol>
-      <img crossOrigin='' src={parabolLogo} alt='Parabol logo' />
-    </Parabol>
+    <PlainButton className='flex w-full select-none items-center p-2 font-semibold text-fg-nav text-sm leading-[22px]'>
+      <img crossOrigin='' src={parabolLogo} alt='Parabol logo' className='dark:hidden' />
+      <img crossOrigin='' src={parabolLogoWhite} alt='Parabol logo' className='hidden dark:block' />
+    </PlainButton>
   )
 }
 

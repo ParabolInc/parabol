@@ -60,6 +60,10 @@ extend type RetrospectiveMeeting {
   spotlightSearchQuery: String
   showTranscription: Boolean!
   musicSettings: MusicSettings
+  # createdAt of the newest suggestions a person asked for, which the board flashes once.
+  # Suggestions the server refreshed on its own never land here, so an edited card updates the
+  # hover outlines without lighting up the whole board.
+  suggestedGroupingRevealAt: DateTime
 }
 
 extend type TeamPromptMeeting {

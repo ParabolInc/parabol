@@ -5,6 +5,9 @@ type MeetingSubscriptionPayload {
   fieldName: String!
   AddTranscriptionBotSuccess: AddTranscriptionBotSuccess
   AutogroupSuccess: AutogroupSuccess
+    @deprecated(
+      reason: "Superseded by SuggestedGroupsSuccess. Still selected by current clients so they re-render the board when a client loaded before the SuggestedGroups release calls the deprecated autogroup mutation. Delete with that mutation."
+    )
   AddCommentSuccess: AddCommentSuccess
   CreatePollSuccess: CreatePollSuccess
   AddReactjiToReactableSuccess: AddReactjiToReactableSuccess
@@ -20,6 +23,9 @@ type MeetingSubscriptionPayload {
   EndTeamPromptSuccess: EndTeamPromptSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
   GenerateGroupsSuccess: GenerateGroupsSuccess
+    @deprecated(
+      reason: "Superseded by SuggestedGroupsSuccess. Nothing publishes this any more: it announced the reflect-phase pre-warm, which was removed so AI grouping is only computed when a user asks for it. Safe to delete along with the GenerateGroupsSuccess type once clients loaded before the SuggestedGroups release have drained."
+    )
   NewMeetingCheckInPayload: NewMeetingCheckInPayload
   PromoteNewMeetingFacilitatorPayload: PromoteNewMeetingFacilitatorPayload
   RemoveReflectionPayload: RemoveReflectionPayload
@@ -53,4 +59,8 @@ type MeetingSubscriptionPayload {
   UpsertTeamPromptResponseSuccess: UpsertTeamPromptResponseSuccess
   UpdateMeetingTemplateSuccess: UpdateMeetingTemplateSuccess
   ReflectionEmbeddingSuccess: ReflectionEmbeddingSuccess
+    @deprecated(
+      reason: "Announces that RetroReflection.embeddingVector is ready, which no current client reads. Superseded by SuggestedGroupsSuccess, published once the new vector has been folded into the suggestions. Delete along with embeddingVector."
+    )
+  SuggestedGroupsSuccess: SuggestedGroupsSuccess
 }

@@ -6,7 +6,6 @@ import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/Po
 import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import textOverflow from '../../../styles/helpers/textOverflow'
-import {PALETTE} from '../../../styles/paletteV3'
 import {FONT_FAMILY} from '../../../styles/typographyV2'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
 import scaleValueString from './scaleValueString'
@@ -23,13 +22,13 @@ const ScaleHeader = styled('div')({
 
 const IconButton = styled(FlatButton)({
   alignItems: 'center',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   height: 32,
   justifyContent: 'center',
   padding: 0,
   width: 32,
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   }
 })
 
@@ -46,7 +45,7 @@ const ScaleDetailHeader = styled('div')({
 
 const ScaleValueEditor = styled('div')({
   alignItems: 'flex-start',
-  background: '#fff',
+  background: 'var(--color-surface-card)',
   borderRadius: 8,
   display: 'flex',
   flexDirection: 'column',
@@ -73,7 +72,7 @@ const ScaleDetailsTitle = styled('div')({
 
 const ScaleValues = styled('div')({
   ...textOverflow,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontFamily: FONT_FAMILY.SANS_SERIF,
   fontSize: 12,
   lineHeight: '16px',

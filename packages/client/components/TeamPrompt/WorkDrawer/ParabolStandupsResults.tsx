@@ -99,13 +99,13 @@ const ParabolStandupsResults = (props: Props) => {
       {groups.map((group) => (
         <div key={group.id} className='flex flex-col gap-y-2'>
           <div className='flex items-baseline justify-between'>
-            <span className='truncate font-semibold text-slate-700 text-sm'>{group.name}</span>
-            <span className='shrink-0 text-slate-500 text-xs'>
+            <span className='truncate font-semibold text-fg-primary text-sm'>{group.name}</span>
+            <span className='shrink-0 text-fg-muted text-xs'>
               {dayjs(group.createdAt).format('MMM D')}
             </span>
           </div>
           {group.responses.map((response) => (
-            <div key={response.id} className='rounded-card bg-white p-3 shadow-card'>
+            <div key={response.id} className='rounded-card bg-surface-card p-3 shadow-card'>
               <PromptResponseEditor teamId={teamId} content={response.content} readOnly />
             </div>
           ))}

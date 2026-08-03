@@ -1,68 +1,13 @@
-import styled from '@emotion/styled'
 import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
 import type {MouseEvent} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import FlatButton from './FlatButton'
 import RetroPrompt from './RetroPrompt'
 
-const AddReflectionButton = styled(FlatButton)({
-  border: 0,
-  height: 24,
-  lineHeight: '24px',
-  padding: 0,
-  width: 24
-})
-
-const ExpandButton = styled(AddReflectionButton)({
-  marginLeft: 4
-})
-
-const ButtonGroup = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex'
-})
-
-const ColumnColorDrop = styled('div')<{groupColor: string}>(({groupColor}) => ({
-  backgroundColor: groupColor,
-  borderRadius: '50%',
-  boxShadow: `0 0 0 1px ${PALETTE.SLATE_200}`,
-  marginRight: 8,
-  height: 8,
-  minWidth: 8
-}))
-
-const ColumnHeader = styled('div')({
-  color: PALETTE.SLATE_700,
-  display: 'flex',
-  justifyContent: 'space-between',
-  lineHeight: '24px',
-  margin: '0 auto',
-  padding: '12px 12px 0px',
-  width: '100%'
-})
-
-const Prompt = styled(RetroPrompt)({
-  alignItems: 'center',
-  display: 'flex',
-  marginRight: 8
-})
-
-const Wrapper = styled('div')({
-  width: '100%'
-})
-
-const StyledIcon = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: 24,
-  width: 24,
-  transform: 'rotate(45deg)'
-})
+const addReflectionButtonClass = 'h-6 w-6 border-0 p-0 leading-6'
 
 interface Props {
   canAdd: boolean
@@ -102,15 +47,19 @@ const GroupingKanbanColumnHeader = (props: Props) => {
   }
 
   return (
-    <Wrapper>
-      <ColumnHeader>
-        <Prompt>
-          <ColumnColorDrop groupColor={groupColor} />
+    <div className='w-full'>
+      <div className='mx-auto flex w-full justify-between px-3 pt-3 pb-0 text-fg-primary leading-6'>
+        <RetroPrompt className='mr-2 flex items-center'>
+          <div
+            className='mr-2 h-2 min-w-2 rounded-full shadow-[0_0_0_1px_var(--color-surface-app)]'
+            style={{backgroundColor: groupColor}}
+          />
           {question}
-        </Prompt>
-        <ButtonGroup>
+        </RetroPrompt>
+        <div className='flex items-start'>
           {phaseType === 'group' && (
-            <AddReflectionButton
+            <FlatButton
+              className={addReflectionButtonClass}
               dataCy={`add-reflection-${question}`}
               aria-label={'Add a reflection'}
               disabled={!canAdd}
@@ -121,25 +70,28 @@ const GroupingKanbanColumnHeader = (props: Props) => {
               waiting={submitting}
             >
               <Add />
-            </AddReflectionButton>
+            </FlatButton>
           )}
           {addReflectionPortal(<div>Add new reflection</div>)}
           {isDesktop && (
             <>
-              <ExpandButton
+              <FlatButton
+                className={`${addReflectionButtonClass} ml-1`}
                 onClick={toggleWidth}
                 onMouseEnter={openTooltip}
                 onMouseLeave={closeTooltip}
                 ref={originRef}
               >
-                <StyledIcon>{isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}</StyledIcon>
-              </ExpandButton>
+                <div className='flex h-6 w-6 rotate-45 items-center justify-center'>
+                  {isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}
+                </div>
+              </FlatButton>
               {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
             </>
           )}
-        </ButtonGroup>
-      </ColumnHeader>
-    </Wrapper>
+        </div>
+      </div>
+    </div>
   )
 }
 

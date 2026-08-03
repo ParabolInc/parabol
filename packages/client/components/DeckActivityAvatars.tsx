@@ -57,7 +57,7 @@ const DeckActivityAvatars = (props: Props) => {
             user={user}
             offset={(PokerCards.AVATAR_WIDTH - 10) * idx}
             isColumn
-            className='h-11.5 w-11.5 border border-slate-300'
+            className='h-11.5 w-11.5 border border-surface-well'
           />
         ))}
       </AnimatePresence>

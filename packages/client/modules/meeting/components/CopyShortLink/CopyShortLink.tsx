@@ -2,7 +2,6 @@ import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import type {ReactNode} from 'react'
 import CopyLink from '../../../../components/CopyLink'
-import {PALETTE} from '../../../../styles/paletteV3'
 
 const CopyIcon = styled('div')({
   color: 'inherit',
@@ -20,7 +19,7 @@ const CopyLabel = styled('div')({
 
 const CopyBlock = styled('div')({
   alignItems: 'center',
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   display: 'flex',
   flexShrink: 0,
   fontSize: 'inherit',
@@ -28,7 +27,7 @@ const CopyBlock = styled('div')({
   userSelect: 'none',
   overflow: 'auto',
   '&:hover': {
-    color: PALETTE.SLATE_700,
+    color: 'var(--color-fg-primary)',
     cursor: 'pointer'
   }
 })

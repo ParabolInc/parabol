@@ -195,7 +195,7 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
             Update
           </UpdateButton>
         </ActionsContainer>
-        {error && <div className='text-tomato-500'>{error.message}</div>}
+        {error && <div className='text-fg-error'>{error.message}</div>}
       </DialogContent>
     </Dialog>
   )

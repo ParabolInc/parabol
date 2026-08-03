@@ -30,7 +30,7 @@ const DeleteAccount = ({viewerRef}: Props) => {
         >
           <IconLabel iconLarge icon='remove_circle' label='Delete Account' />
         </LinkButton>
-        <div className='mt-2 text-[13px] text-slate-600'>
+        <div className='mt-2 text-[13px] text-fg-secondary'>
           <b>Note</b>: {"This can't be undone."}
         </div>
       </div>

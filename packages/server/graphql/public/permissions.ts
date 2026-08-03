@@ -157,6 +157,13 @@ const permissionMap: PermissionMap<Resolvers> = {
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
     generateInspirationItems:
       isMeetingMember<'Mutation.generateInspirationItems'>('args.input.meetingId'),
+    // Not facilitator-only: any team member can already dragReflection, ungroupReflection, and
+    // resetReflectionGroups, so restricting this while leaving drag open would protect nothing.
+    // The rate limit is what guards the LLM cost of regenerating with a custom instruction.
+    generateSuggestedGroups: and(
+      isTeamMemberOfMeeting<'Mutation.generateSuggestedGroups'>('args.meetingId'),
+      rateLimit({perMinute: 10, perHour: 60})
+    ),
     inviteToTeam: rateLimit({perMinute: 10, perHour: 100}),
     joinMeeting: isTeamMemberOfMeeting<'Mutation.joinMeeting'>('args.meetingId'),
     joinTeam: isViewerOnOrg<'Mutation.joinTeam'>('args.teamId', 'teams'),

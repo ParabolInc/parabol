@@ -106,12 +106,12 @@ const JiraIntegrationPanel = (props: Props) => {
           <b>Connect to Jira</b>
           <div className='w-1/2 text-center text-sm'>Connect to Jira to view your issues.</div>
           <button
-            className='mt-4 cursor-pointer rounded-full bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
+            className='mt-4 cursor-pointer rounded-md bg-sky-500 px-8 py-2 font-semibold text-white hover:bg-sky-600'
             onClick={authJira}
           >
             Connect
           </button>
-          {error && <div className='text-tomato-500'>Error: {error.message}</div>}
+          {error && <div className='text-fg-error'>Error: {error.message}</div>}
         </div>
       )}
     </>

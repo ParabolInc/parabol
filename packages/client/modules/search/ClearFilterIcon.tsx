@@ -13,7 +13,7 @@ export const ClearFilterIcon = (props: Props) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className='ml-0.5 flex size-4 cursor-pointer items-center justify-center rounded-md p-1 hover:bg-slate-400 group-hover:bg-slate-300'
+          className='ml-0.5 flex size-4 cursor-pointer items-center justify-center rounded-md p-1 hover:bg-hairline-strong group-hover:bg-surface-well'
           onClick={onClick}
           onPointerDown={(e) => e.stopPropagation()}
         >

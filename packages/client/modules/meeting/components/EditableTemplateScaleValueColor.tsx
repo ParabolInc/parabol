@@ -7,7 +7,6 @@ import PlainButton from '~/components/PlainButton/PlainButton'
 import {BezierCurve} from '~/types/constEnums'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
-import {PALETTE} from '../../../styles/paletteV3'
 import ScaleValuePalettePicker from './ScaleValuePalettePicker'
 
 interface Props {
@@ -43,7 +42,7 @@ const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
 
 const DropdownIcon = styled('div')({
   bottom: 0,
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   svg: {
     fontSize: 18
   },

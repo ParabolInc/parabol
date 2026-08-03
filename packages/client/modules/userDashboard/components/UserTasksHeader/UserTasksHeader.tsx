@@ -9,7 +9,6 @@ import type {
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
 import LinkButton from '~/components/LinkButton'
-import {PALETTE} from '~/styles/paletteV3'
 import {ICON_SIZE} from '~/styles/typographyV2'
 import {Breakpoint, FilterLabels} from '~/types/constEnums'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
@@ -49,12 +48,12 @@ const StyledDashFilterToggle = styled(DashFilterToggle)({
 })
 
 const StyledLinkButton = styled(LinkButton)({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   flexShrink: 0,
   fontWeight: 600,
   margin: '4px 0',
   ':hover, :focus, :active': {
-    color: PALETTE.SLATE_700
+    color: 'var(--color-fg-primary)'
   },
   [desktopBreakpoint]: {
     margin: 0

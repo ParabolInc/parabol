@@ -84,19 +84,14 @@ const OrgTeams = (props: Props) => {
           <h1 className='font-semibold text-2xl leading-7'>Teams</h1>
         </div>
         <div className='ml-auto'>
-          <Button
-            variant='secondary'
-            shape='pill'
-            className='w-32 py-2 text-base'
-            onClick={openAddTeamDialog}
-          >
+          <Button variant='secondary' className='w-32 py-2 text-base' onClick={openAddTeamDialog}>
             Add team
           </Button>
         </div>
       </div>
 
-      <div className='overflow-hidden rounded-md border border-slate-300 bg-white shadow-xs'>
-        <div className='bg-slate-100 px-4 py-2'>
+      <div className='overflow-hidden rounded-md border border-hairline bg-surface-card shadow-xs'>
+        <div className='bg-surface-raised px-4 py-2'>
           <div className='flex w-full justify-between'>
             <div className='flex items-center font-bold'>
               {allTeamsCount} {' total '}
@@ -107,7 +102,7 @@ const OrgTeams = (props: Props) => {
         <div className='w-full overflow-x-auto px-4'>
           <table className='w-full table-fixed border-collapse md:table-auto'>
             <thead>
-              <tr className='border-slate-300 border-b'>
+              <tr className='border-hairline border-b'>
                 <th
                   className='w-[60%] cursor-pointer p-3 text-left font-semibold'
                   onClick={() => handleSort('name')}
