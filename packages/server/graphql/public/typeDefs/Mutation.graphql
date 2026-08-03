@@ -529,6 +529,36 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Compute suggested reflection groups for a retrospective. Never moves a card: the suggestions are
+  stored on the meeting and previewed on hover until someone groups by hand.
+  """
+  generateSuggestedGroups(
+    """
+    The retrospective to suggest groups for. Must be in the group phase and not yet ended
+    """
+    meetingId: ID!
+
+    """
+    similarity compares embeddings and needs no AI entitlement. ai calls an LLM and requires that
+    the organization has AI enabled and is under its meeting limit.
+    """
+    mode: SuggestedGroupsMode! = similarity
+
+    """
+    Replaces the built-in grouping strategy, e.g. "group by root cause rather than by symptom".
+    Ignored unless mode is `ai`. Max 2000 characters. Whitespace-only is treated as absent, which
+    means the built-in strategy is used.
+    """
+    userPrompt: String
+
+    """
+    Never group reflections that answer different reflect prompts. Raises the total number of
+    groups, since cards that would have merged across columns now cannot.
+    """
+    sameColumnOnly: Boolean! = false
+  ): SuggestedGroupsSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Reorder a dimension within a poker template
   """
   movePokerTemplateDimension(
@@ -1614,9 +1644,13 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
-  Creates suggested reflection groups using OpenAI
+  Applies the meeting's pre-warmed default AI grouping to the board
   """
-  autogroup(meetingId: ID!): AutogroupPayload! @scope(name: MEETINGS_WRITE)
+  autogroup(meetingId: ID!): AutogroupPayload!
+    @scope(name: MEETINGS_WRITE)
+    @deprecated(
+      reason: "Use generateSuggestedGroups, which suggests groups without rearranging the board and also supports similarity mode, a custom instruction, and a same-column constraint. Kept so clients loaded before the SuggestedGroups release keep working."
+    )
 
   """
   Batch archive tasks

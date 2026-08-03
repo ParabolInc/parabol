@@ -1,20 +1,9 @@
 import OpenAI from 'openai'
 import type {ModifyType} from '../graphql/public/resolverTypes'
 import type {RetroReflection} from '../postgres/types'
+import groupReflections from './groupReflections/groupReflectionsStructured'
+import type {GroupReflectionsInput, GroupReflectionsOptions} from './groupReflections/types'
 import logError from './logError'
-
-type GroupReflectionsInput = {
-  id: string
-  text: string
-  prompt: string
-}
-
-type GroupReflectionsResult = {
-  groups: {
-    title: string
-    reflectionIds: string[]
-  }[]
-}
 
 class OpenAIServerManager {
   openAIApi
@@ -29,77 +18,20 @@ class OpenAIServerManager {
     })
   }
 
-  async groupReflectionsStructured(
-    reflections: GroupReflectionsInput[]
-  ): Promise<GroupReflectionsResult | null> {
+  groupReflectionsStructured(input: GroupReflectionsInput, options: GroupReflectionsOptions = {}) {
     if (!this.openAIApi) return null
-    if (reflections.length === 0) return null
-
-    const min = Math.max(1, Math.floor(reflections.length / 6))
-    const max = Math.ceil(reflections.length / 3)
-
-    const prompt = `You are an expert facilitator for agile team retrospective meetings. In a retrospective, team members write reflections about their recent work, then group them into themes for focused discussion. Your job is to group reflections in the way that will lead to the most productive team conversations.
-
-Each reflection was written in response to a specific prompt (shown in parentheses). Reflections from different prompts CAN be grouped together when they share a common actionable theme — the prompt category is context, not a hard boundary.
-
-Here are the reflections:
-${reflections.map((r) => `[${r.id}] (${r.prompt}): ${r.text}`).join('\n')}
-
-Group these reflections to maximize the value of team discussion. Rules:
-- Optimize for actionable conversations: group reflections that, when discussed together, will help the team identify root causes, recognize patterns, or decide on concrete improvements
-- Prefer groups that surface tensions or connections the team might not notice on their own (e.g. group a frustration with a related success to spark deeper insight)
-- Each reflection must belong to exactly one group
-- Aim for ${min} to ${max} groups, but adjust if the reflections naturally cluster differently
-- Reflections that don't clearly relate to others should remain in their own single-reflection group
-- Group titles should be 2-5 words, action-oriented, and describe what the team should discuss (e.g. "Speed Up Code Reviews" not "Code Reviews", "Celebrate Ship Velocity" not "Shipping")
-- Titles must be distinct from each other
-
-Return JSON: { "groups": [{ "title": "...", "reflectionIds": ["id1", "id2"] }] }`
-
-    try {
-      const response = await this.openAIApi.chat.completions.create({
-        model: 'gpt-5-mini',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        response_format: {type: 'json_object'}
-      })
-
-      const content = response.choices[0]?.message?.content
-      if (!content) return null
-
-      let parsed: GroupReflectionsResult
-      try {
-        parsed = JSON.parse(content)
-      } catch {
-        logError(new Error('Failed to parse groupReflectionsStructured JSON response'))
-        return null
-      }
-
-      if (!parsed.groups || !Array.isArray(parsed.groups)) return null
-
-      // Validate every input ID appears exactly once
-      const inputIds = new Set(reflections.map((r) => r.id))
-      const outputIds = new Set<string>()
-      for (const group of parsed.groups) {
-        if (!group.title || !Array.isArray(group.reflectionIds)) return null
-        for (const id of group.reflectionIds) {
-          if (!inputIds.has(id) || outputIds.has(id)) return null
-          outputIds.add(id)
-        }
-      }
-      if (outputIds.size !== inputIds.size) return null
-
-      return parsed
-    } catch (e) {
-      const error =
-        e instanceof Error ? e : new Error('OpenAI failed to groupReflectionsStructured')
-      logError(error)
-      return null
-    }
+    return groupReflections(
+      {
+        label: 'openai',
+        client: this.openAIApi,
+        model: 'gpt-5.6-luna',
+        // Hidden reasoning dominated grouping latency, and holding the effort down is only safe
+        // because repairGroups patches a forgotten card instead of discarding the whole batch
+        params: {reasoning_effort: 'low'}
+      },
+      input,
+      options
+    )
   }
 
   async getStandupSummary(

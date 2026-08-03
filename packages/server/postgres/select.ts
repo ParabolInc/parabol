@@ -5,6 +5,7 @@ import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration
 import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
 import getKysely from './getKysely'
 import type {
+  AutogroupReflectionGroupType,
   GitHubSearchQuery,
   JiraSearchQuery,
   ReactjiDB,
@@ -261,6 +262,14 @@ export const selectNewMeetings = () => {
       fn('to_json', ['resetReflectionGroups']).as('resetReflectionGroups')
     ])
   return query as AssertedQuery<typeof query, AnyMeeting>
+}
+
+export const selectRetroSuggestedGrouping = () => {
+  const query = getKysely()
+    .selectFrom('RetroSuggestedGrouping')
+    .selectAll()
+    .select(({fn}) => [fn<AutogroupReflectionGroupType[]>('to_json', ['groups']).as('groups')])
+  return query as AssertedQuery<typeof query, {groups: AutogroupReflectionGroupType[]}>
 }
 
 export const selectMeetingMembers = () =>

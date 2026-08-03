@@ -292,6 +292,8 @@
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",
           "StripeFailPaymentPayload": "./types/StripeFailPaymentPayload#StripeFailPaymentPayloadSource",
           "SuggestedAction": "../../postgres/types/index#SuggestedAction as SuggestedActionDB",
+          "RetroSuggestedGrouping": "../../postgres/types/index#RetroSuggestedGrouping as RetroSuggestedGroupingDB",
+          "SuggestedGroupsSuccess": "./types/SuggestedGroupsSuccess#SuggestedGroupsSuccessSource",
           "Task": "../../postgres/types/index#Task as TaskDB",
           "TaskEstimate": "../../postgres/types/index#TaskEstimate as TaskEstimateDB",
           "Team": "../../postgres/types/index#Team as TeamDB",

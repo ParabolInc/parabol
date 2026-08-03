@@ -103,4 +103,7 @@ type RetroReflection implements Reactable {
   Used client-side during the group phase to compute similarity between reflections.
   """
   embeddingVector: [Float!]
+    @deprecated(
+      reason: "Similarity is now computed on the server and served via RetrospectiveMeeting.suggestedGrouping, so no vectors need to reach the browser. Still selected by clients loaded before the SuggestedGroups release. Delete once those have drained."
+    )
 }

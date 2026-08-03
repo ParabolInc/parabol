@@ -537,6 +537,8 @@ const initNewMeeting = (
     nextAutoGroupThreshold: null,
     viewerMeetingMember,
     reflectionGroups: [] as any[],
+    // The demo has no server to generate suggestions, so the hover outline & modal stay inert
+    suggestedGrouping: null,
     votesRemaining: teamMembers.length * 5,
     phases: initPhases() as any[],
     summarySentAt: null,

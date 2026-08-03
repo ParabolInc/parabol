@@ -11,6 +11,8 @@ import type {RetrospectiveMeetingResolvers} from '../resolverTypes'
 
 const RetrospectiveMeeting: RetrospectiveMeetingResolvers = {
   autoGroupThreshold: resolveForSU('autoGroupThreshold'),
+  suggestedGrouping: ({id: meetingId}, _args, {dataLoader}) =>
+    dataLoader.get('retroSuggestedGroupingByMeetingId').load(meetingId),
   prevMeeting: async ({meetingSeriesId, createdAt}, _args, {dataLoader}) => {
     if (!meetingSeriesId) return null
     const series = await dataLoader.get('meetingSeries').load(meetingSeriesId)
