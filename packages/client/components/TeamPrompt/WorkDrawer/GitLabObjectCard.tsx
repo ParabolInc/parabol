@@ -3,39 +3,32 @@ import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
-import type {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCard_issue.graphql'
+import type {GitLabObjectCard_issue$key} from '../../../__generated__/GitLabObjectCard_issue.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
-import {getLinearRepoName} from '../../../utils/getLinearRepoName'
+import relativeDate from '../../../utils/date/relativeDate'
+import {parseWebPath} from '../../../utils/parseWebPath'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
-import LinearSVG from '../../LinearSVG'
+import GitLabSVG from '../../GitLabSVG'
 
 interface Props {
-  issueRef: LinearObjectCard_issue$key
+  issueRef: GitLabObjectCard_issue$key
 }
 
-const LinearObjectCard = memo((props: Props) => {
+const GitLabObjectCard = memo((props: Props) => {
   const {issueRef} = props
 
   const issue = useFragment(
     graphql`
-      fragment LinearObjectCard_issue on _xLinearIssue {
+      fragment GitLabObjectCard_issue on _xGitLabIssue {
         id
+        iid
         title
-        identifier
-        url
-        state {
-          name
-        }
-        project {
-          name
-          url
-        }
-        team {
-          displayName
-        }
+        webUrl
+        webPath
+        updatedAt
       }
     `,
     issueRef
@@ -56,13 +49,13 @@ const LinearObjectCard = memo((props: Props) => {
 
   const trackLinkClick = () => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Link Clicked', {
-      service: 'linear'
+      service: 'gitlab'
     })
   }
 
   const trackCopy = () => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Card Copied', {
-      service: 'linear'
+      service: 'gitlab'
     })
   }
 
@@ -78,27 +71,27 @@ const LinearObjectCard = memo((props: Props) => {
     return null
   }
 
-  const {
-    title,
-    identifier,
-    url,
-    state,
-    project,
-    team: {displayName: teamName}
-  } = issue
-  const repoStr = getLinearRepoName(project, teamName)
-  const repoUrl = project?.url
+  const {iid, title, webUrl, webPath, updatedAt} = issue
+  const {fullPath} = parseWebPath(webPath)
+  const projectUrl = webUrl.split('/-/')[0]
 
   return (
     <div className='rounded-sm border border-hairline border-solid p-4 hover:border-hairline-strong'>
-      <div className='flex items-center gap-2 text-fg-secondary text-xs'>
-        <span className='font-medium'>{identifier}</span>
-        <span>•</span>
-        <span>{state.name}</span>
+      <div className='flex gap-2 text-fg-secondary text-xs'>
+        <a
+          href={webUrl}
+          target='_blank'
+          className='font-medium hover:underline'
+          rel='noreferrer'
+          onClick={trackLinkClick}
+        >
+          #{iid}
+        </a>
+        <div>Updated {relativeDate(updatedAt)}</div>
       </div>
       <div className='my-2 text-sm'>
         <a
-          href={url}
+          href={webUrl}
           target='_blank'
           className='hover:underline'
           rel='noreferrer'
@@ -109,26 +102,20 @@ const LinearObjectCard = memo((props: Props) => {
       </div>
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
-          <div className='flex h-4 w-4 items-center justify-center'>
-            <LinearSVG className='h-4 w-4 dark:[&_path]:fill-white' />
+          <div className='h-4 w-4'>
+            <GitLabSVG className='h-4 w-4' />
           </div>
-          {repoUrl ? (
-            <a
-              href={repoUrl}
-              target='_blank'
-              className='flex items-center text-fg-secondary text-xs hover:underline'
-              rel='noreferrer'
-              onClick={trackLinkClick}
-            >
-              <span className='leading-none'>{repoStr}</span>
-            </a>
-          ) : (
-            <span className='flex items-center text-fg-secondary text-xs leading-none'>
-              {repoStr}
-            </span>
-          )}
+          <a
+            href={projectUrl}
+            target='_blank'
+            className='text-fg-secondary text-xs hover:underline'
+            rel='noreferrer'
+            onClick={trackLinkClick}
+          >
+            {fullPath}
+          </a>
         </div>
-        <CopyToClipboard text={url} onCopy={handleCopy}>
+        <CopyToClipboard text={webUrl} onCopy={handleCopy}>
           <div
             className='h-6 w-6 cursor-pointer rounded-md bg-transparent p-0.5 text-fg-muted hover:bg-surface-hover'
             onMouseEnter={openTooltip}
@@ -145,4 +132,4 @@ const LinearObjectCard = memo((props: Props) => {
   )
 })
 
-export default LinearObjectCard
+export default GitLabObjectCard
