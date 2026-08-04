@@ -58,6 +58,8 @@ interface Props {
   onArmGroupMatches: (isArmed: boolean) => void
   /** Hovering the Group button lights the source and every match in one shared color */
   isGroupMatchArmed: boolean
+  /** Groups a suggestion would still merge, so each one can hint at it before being hovered */
+  suggestedGroupIds: ReadonlySet<string>
   openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt$key
@@ -79,6 +81,7 @@ const GroupingKanbanColumn = (props: Props) => {
     onGroupMatches,
     onArmGroupMatches,
     isGroupMatchArmed,
+    suggestedGroupIds,
     openSpotlight,
     reflectionGroups: reflectionGroupsRef,
     phaseRef,
@@ -221,6 +224,7 @@ const GroupingKanbanColumn = (props: Props) => {
                       onGroupMatches={onGroupMatches}
                       onArmGroupMatches={onArmGroupMatches}
                       isGroupMatchArmed={isGroupMatchArmed}
+                      hasSuggestion={suggestedGroupIds.has(reflectionGroup.id)}
                       openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
                       reflectionGroupRef={reflectionGroup}

@@ -36,6 +36,28 @@ export const getSuggestedGroupIds = (
   return groupIds
 }
 
+/**
+ * Every board group named by a suggestion that still spans 2+ groups.
+ *
+ * This is the set with something left to offer: a suggestion whose cards already sit together is
+ * satisfied and points at nothing. Shared by the corner hint, which advertises a merge before the
+ * viewer hovers, and the reveal flash, which announces a freshly generated set.
+ */
+export const getMergeableSuggestedGroupIds = (
+  suggestions: readonly SuggestionGroup[] | null | undefined,
+  groups: readonly BoardGroup[]
+) => {
+  const mergeableGroupIds = new Set<string>()
+  if (!suggestions?.length) return mergeableGroupIds
+  const groupIdByReflectionId = getGroupIdByReflectionId(groups)
+  for (const suggestion of suggestions) {
+    const groupIds = getSuggestedGroupIds(suggestion, groupIdByReflectionId)
+    if (groupIds.size < 2) continue
+    for (const groupId of groupIds) mergeableGroupIds.add(groupId)
+  }
+  return mergeableGroupIds
+}
+
 export const findSuggestionForReflection = <T extends SuggestionGroup>(
   suggestions: readonly T[],
   reflectionId: string

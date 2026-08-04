@@ -10,6 +10,13 @@ import {
 import useAtmosphere from './useAtmosphere'
 
 /**
+ * 'group' answers for the whole stack the reflection sits in, 'card' for that reflection alone.
+ * A stack only ever hovers its top card, so a hover has to speak for its neighbors; a drag is about
+ * the one card in flight, and would mislead if it lit up what the cards left behind belong to.
+ */
+export type HoverIntent = 'group' | 'card'
+
+/**
  * Outlines what hovering a card would merge, by reading the meeting's stored suggestions.
  *
  * Both grouping modes answer from the same stored set, so what the outline promises is what the
@@ -26,7 +33,7 @@ const useHoverSuggestedGroup = (
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   return useCallback(
-    (reflectionId: string | null) => {
+    (reflectionId: string | null, intent: HoverIntent) => {
       const clearAll = () => {
         commitLocalUpdate(atmosphere, (store) => {
           for (const group of reflectionGroups) {
@@ -52,18 +59,21 @@ const useHoverSuggestedGroup = (
         return
       }
 
-      const suggestion = suggestions?.length
-        ? findSuggestionForReflection(suggestions, reflectionId)
-        : undefined
-      if (!suggestion) {
-        clearAll()
-        return
+      // Hovering a stack shows what the whole stack would merge with: the card on top needn't be
+      // the one the grouper named, and a badge on a stack has to answer for every card under it
+      const sourceReflectionIds =
+        intent === 'group' ? sourceGroup.reflections.map(({id}) => id) : [reflectionId]
+      const groupIdByReflectionId = getGroupIdByReflectionId(reflectionGroups)
+      const targetGroupIds = new Set<string>()
+      for (const sourceReflectionId of sourceReflectionIds) {
+        const suggestion = suggestions?.length
+          ? findSuggestionForReflection(suggestions, sourceReflectionId)
+          : undefined
+        if (!suggestion) continue
+        for (const groupId of getSuggestedGroupIds(suggestion, groupIdByReflectionId)) {
+          if (groupId !== sourceGroup.id) targetGroupIds.add(groupId)
+        }
       }
-      const targetGroupIds = getSuggestedGroupIds(
-        suggestion,
-        getGroupIdByReflectionId(reflectionGroups)
-      )
-      targetGroupIds.delete(sourceGroup.id)
 
       commitLocalUpdate(atmosphere, (store) => {
         for (const group of reflectionGroups) {

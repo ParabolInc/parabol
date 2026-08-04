@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import graphql from 'babel-plugin-relay/macro'
+import {AnimatePresence} from 'motion/react'
 import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {ReflectionGroup_meeting$key} from '../../__generated__/ReflectionGroup_meeting.graphql'
@@ -21,6 +21,7 @@ import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import ReflectionGroupHeader from '../ReflectionGroupHeader'
 import ExpandedReflectionStack from '../RetroReflectPhase/ExpandedReflectionStack'
 import DraggableReflectionCard from './DraggableReflectionCard'
+import SuggestedGroupBadge, {type SuggestedGroupBadgeState} from './SuggestedGroupBadge'
 import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 
 const CardStack = styled('div')({
@@ -73,6 +74,8 @@ interface Props {
   onArmGroupMatches?: (isArmed: boolean) => void
   /** The Group button is hovered, so the source and its matches all light up together */
   isGroupMatchArmed?: boolean
+  /** This group is named by a suggestion that would still merge it with another. See GroupingKanban */
+  hasSuggestion?: boolean
   openSpotlight?: OpenSpotlight
   reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
@@ -88,6 +91,7 @@ const ReflectionGroup = (props: Props) => {
     onGroupMatches,
     onArmGroupMatches,
     isGroupMatchArmed,
+    hasSuggestion,
     openSpotlight,
     phaseRef,
     reflectionGroupRef,
@@ -246,12 +250,23 @@ const ReflectionGroup = (props: Props) => {
   // Arming the merge lights the source and every match in the button's own hover color, so the set
   // reads as one unit. Grape is categorical and doesn't flip with the theme, hence the dark variant
   const litRingClass = isGroupMatchArmed ? 'ring-grape-700 dark:ring-grape-500' : 'ring-grape-600'
-  const litBadgeClass = isGroupMatchArmed ? 'bg-grape-700 dark:bg-grape-500' : 'bg-grape-600'
   // A dropping card is visibility:hidden while its clone flies to the slot, so the group's box is
   // partly empty space. Outlining it would ring where the card is headed, not the card the viewer
   // sees — so hold every highlight until the stack has settled
   const isSettled = !visibleReflections.some((reflection) => reflection.isDropping)
   const showRing = similarityScore != null && (similarityScore > 0 || isHoverSource) && isSettled
+  // The badge hangs off a card, so it needs one on screen to pin it to
+  const hasVisibleCard = isSettled && staticReflections.length > 0
+  const badgeState: SuggestedGroupBadgeState | null =
+    !hasVisibleCard || (isSpotlightSrcGroup && isBehindSpotlight)
+      ? null
+      : isHoverSource && onGroupMatches
+        ? 'source'
+        : similarityScore != null && similarityScore !== -1
+          ? 'match'
+          : hasSuggestion
+            ? 'idle'
+            : null
 
   return (
     <>
@@ -339,40 +354,22 @@ const ReflectionGroup = (props: Props) => {
               )
             })}
           </CardStack>
-          {isHoverSource && isSettled && onGroupMatches ? (
-            <button
-              type='button'
-              onClick={(e) => {
-                e.stopPropagation()
-                onGroupMatches(reflectionGroupId)
-              }}
-              // The button sits above the card, so reaching it fires the card's onMouseLeave.
-              // Re-asserting the hover here cancels that pending clear before the button unmounts
-              onMouseEnter={() => {
-                if (hoverReflectionId) onHoverReflection?.(hoverReflectionId)
-                onArmGroupMatches?.(true)
-              }}
-              onMouseLeave={() => onHoverReflection?.(null)}
-              // Grape is categorical, so it doesn't flip with the theme: darkening on hover reads
-              // as "pressed" on a light board but as fading into the surface on a dark one, where
-              // lifting to grape-500 (the Suggest Groups fill) is the legible direction
-              className='-top-2.5 absolute right-2 z-10 cursor-pointer whitespace-nowrap rounded-full bg-grape-600 px-2 py-0.5 font-semibold text-white text-xs shadow transition-colors hover:bg-grape-700 dark:hover:bg-grape-500'
-            >
-              {'Group ✨'}
-            </button>
-          ) : (
-            <div
-              className={cn(
-                '-top-2 pointer-events-none absolute right-2 z-10 rounded-full p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-[opacity,background-color] duration-150',
-                litBadgeClass,
-                similarityScore != null && similarityScore !== -1 && isSettled
-                  ? 'opacity-100'
-                  : 'opacity-0'
-              )}
-            >
-              <AddToPhotosIcon className='size-3' />
-            </div>
-          )}
+          <AnimatePresence>
+            {badgeState && (
+              <SuggestedGroupBadge
+                state={badgeState}
+                isGroupMatchArmed={isGroupMatchArmed}
+                onGroup={() => onGroupMatches?.(reflectionGroupId)}
+                // The badge sits above the card, so reaching it fires the card's onMouseLeave.
+                // Re-asserting the hover here cancels that pending clear before the badge shrinks
+                onHoverGroup={() => {
+                  if (hoverReflectionId) onHoverReflection?.(hoverReflectionId)
+                  onArmGroupMatches?.(true)
+                }}
+                onLeaveGroup={() => onHoverReflection?.(null)}
+              />
+            )}
+          </AnimatePresence>
         </div>
       </Group>
     </>

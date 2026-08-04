@@ -1,8 +1,11 @@
 import type {SuggestedGroupsSettings} from '../hooks/useSuggestedGroupsSettings'
+import {Button} from '../ui/Button/Button'
 import SuggestedGroupsSubmitButton from './SuggestedGroupsSubmitButton'
 
 type Props = {
   onSubmit: () => void
+  /** Clears the badges off this viewer's board. Absent until there is a set showing to remove */
+  onRemove?: () => void
   settings: SuggestedGroupsSettings
   updateSettings: (patch: Partial<SuggestedGroupsSettings>) => void
   submitting: boolean
@@ -13,7 +16,8 @@ type Props = {
 }
 
 const SuggestedGroupsPanel = (props: Props) => {
-  const {onSubmit, settings, updateSettings, submitting, isUpToDate, aiDisabledReason} = props
+  const {onSubmit, onRemove, settings, updateSettings, submitting, isUpToDate, aiDisabledReason} =
+    props
   const {mode, userPrompt, sameColumnOnly} = settings
   const isAI = mode === 'ai'
 
@@ -70,12 +74,25 @@ const SuggestedGroupsPanel = (props: Props) => {
         <span className='text-fg-primary text-sm'>{'Group across columns'}</span>
       </label>
 
-      <SuggestedGroupsSubmitButton
-        onSubmit={onSubmit}
-        submitting={submitting}
-        isUpToDate={isUpToDate}
-        mode={mode}
-      />
+      <div className='mt-4 flex items-center gap-2'>
+        {onRemove && (
+          <Button
+            variant='flat'
+            size='sm'
+            onClick={onRemove}
+            disabled={submitting}
+            className='shrink-0 font-semibold text-fg-secondary'
+          >
+            {'Remove suggestions'}
+          </Button>
+        )}
+        <SuggestedGroupsSubmitButton
+          onSubmit={onSubmit}
+          submitting={submitting}
+          isUpToDate={isUpToDate}
+          mode={mode}
+        />
+      </div>
     </div>
   )
 }
