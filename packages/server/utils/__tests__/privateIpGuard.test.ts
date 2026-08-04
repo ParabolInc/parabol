@@ -124,3 +124,21 @@ describe('isAllowlistedHostname', () => {
     expect(isAllowlistedHostname('localhost')).toBe(false)
   })
 })
+
+describe('hasAllowlist', () => {
+  test('is false when unset or blank', () => {
+    expect(loadGuard().hasAllowlist()).toBe(false)
+    expect(loadGuard('').hasAllowlist()).toBe(false)
+    expect(loadGuard(' , ').hasAllowlist()).toBe(false)
+  })
+
+  test('is false when every entry is invalid', () => {
+    expect(loadGuard('10.0.0.0/99,/8').hasAllowlist()).toBe(false)
+  })
+
+  test('is true for a hostname, an IP, or a CIDR entry', () => {
+    expect(loadGuard('mattermost.internal').hasAllowlist()).toBe(true)
+    expect(loadGuard('10.0.0.5').hasAllowlist()).toBe(true)
+    expect(loadGuard('192.168.1.0/24').hasAllowlist()).toBe(true)
+  })
+})

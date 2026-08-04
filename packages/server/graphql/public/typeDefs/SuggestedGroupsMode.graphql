@@ -1,0 +1,16 @@
+"""
+How a set of suggested reflection groups was computed.
+"""
+enum SuggestedGroupsMode {
+  """
+  Cluster reflections by the cosine similarity of their embeddings. Deterministic, needs no LLM
+  call, and is available to organizations that have AI turned off.
+  """
+  similarity
+
+  """
+  Cluster reflections with an LLM, which reads every card and groups them by theme.
+  Optionally steered by a custom instruction. Requires AI access.
+  """
+  ai
+}

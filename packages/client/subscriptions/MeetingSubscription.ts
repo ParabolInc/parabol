@@ -23,6 +23,7 @@ import {resetRetroMeetingToGroupStageUpdater} from '../mutations/ResetRetroMeeti
 import {setMeetingMusicMeetingUpdater} from '../mutations/SetMeetingMusicMutation'
 import {setStageTimerMeetingUpdater} from '../mutations/SetStageTimerMutation'
 import {startDraggingReflectionMeetingUpdater} from '../mutations/StartDraggingReflectionMutation'
+import {suggestedGroupsMeetingUpdater} from '../mutations/useGenerateSuggestedGroupsMutation'
 import {createSubscription} from './createSubscription'
 
 const subscription = graphql`
@@ -41,8 +42,8 @@ const subscription = graphql`
       UngroupReflectionSuccess {
         ...UngroupReflectionMutation_meeting @relay(mask: false)
       }
-      GenerateGroupsSuccess {
-        ...GenerateGroupsFrag_meeting @relay(mask: false)
+      SuggestedGroupsSuccess {
+        ...useGenerateSuggestedGroupsMutation_meeting @relay(mask: false)
       }
       UpdateMeetingPromptSuccess {
         ...UpdateMeetingPromptMutation_meeting @relay(mask: false)
@@ -164,12 +165,6 @@ const subscription = graphql`
       UpsertTeamPromptResponseSuccess {
         ...UpsertTeamPromptResponseMutation_meeting @relay(mask: false)
       }
-      ReflectionEmbeddingSuccess {
-        reflection {
-          id
-          embeddingVector
-        }
-      }
     }
   }
 `
@@ -193,7 +188,8 @@ const updateHandlers = {
   StartDraggingReflectionPayload: startDraggingReflectionMeetingUpdater,
   PokerAnnounceDeckHoverSuccess: pokerAnnounceDeckHoverMeetingUpdater,
   UpsertTeamPromptResponseSuccess: upsertTeamPromptResponseUpdater,
-  SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater
+  SetMeetingMusicSuccess: setMeetingMusicMeetingUpdater,
+  SuggestedGroupsSuccess: suggestedGroupsMeetingUpdater
 } as const
 
 const invalidator = (environment: Atmosphere, variables: MeetingSubscription$variables) => {

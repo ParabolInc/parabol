@@ -340,6 +340,19 @@
       background-position: 296px;
     }
   }
+
+  /* Indeterminate sweep for an element of unknown width (see SuggestedGroupsSubmitButton).
+     Pair with bg-[length:200%_100%] and a gradient whose first and last stop match, so one
+     tile of travel loops seamlessly. chit-shift cannot be reused: it is sized in px. */
+  --animate-gradient-sweep: gradient-sweep 2000ms linear infinite;
+  @keyframes gradient-sweep {
+    from {
+      background-position: 0% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
 :root {

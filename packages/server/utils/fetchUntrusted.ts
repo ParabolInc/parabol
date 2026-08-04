@@ -6,7 +6,7 @@ import https from 'https'
 import net, {type LookupFunction} from 'net'
 import type {Duplex} from 'stream'
 import {Logger} from './Logger'
-import {isAllowlistedHostname, isBlockedAddress} from './privateIpGuard'
+import {hasAllowlist, isAllowlistedHostname, isBlockedAddress} from './privateIpGuard'
 
 const TIMEOUT_MS = 15_000
 const MAX_429_RETRIES = 1
@@ -80,6 +80,20 @@ const parseHttpUrl = (input: string, base?: URL) => {
 // URL.hostname keeps the brackets around an IPv6 literal, which DNS & the guard don't want
 const getHostname = (url: URL) => url.hostname.replace(/^\[|\]$/g, '')
 
+// Refusing a private address is the guard doing its job, not a fault: on a deployment without an
+// allowlist it just means someone handed us a URL pointing at the local network. Only once the
+// operator has configured SSRF_ALLOWED_HOSTS does a block hint at a missing entry worth logging.
+class BlockedAddressError extends Error {
+  name = 'BlockedAddressError'
+}
+
+// The socket error travels back through the fetch ponyfill, which may wrap it in its own error
+const isBlockedAddressError = (e: unknown): boolean =>
+  e instanceof BlockedAddressError || (e instanceof Error && isBlockedAddressError(e.cause))
+
+/** Blocks that carry no signal for an operator, so they belong at debug instead of the usual level. */
+const isExpectedBlock = (e: unknown) => isBlockedAddressError(e) && !hasAllowlist()
+
 // Resolve a hostname to the addresses we're allowed to connect to.
 // Use dns.resolve4/resolve6 instead of dns.lookup.
 // dns.lookup uses the libuv thread pool (default 4 threads), which
@@ -89,7 +103,7 @@ async function resolveSafeAddresses(hostname: string): Promise<LookupAddress[]> 
   // A URL may point straight at an IP (http://10.0.0.5:8065), which c-ares won't resolve
   if (net.isIP(hostname)) {
     if (isBlockedAddress(hostname)) {
-      throw new Error(`Blocked private IP: ${hostname}`)
+      throw new BlockedAddressError(`Blocked private IP: ${hostname}`)
     }
     return [{address: hostname, family: net.isIPv6(hostname) ? 6 : 4}]
   }
@@ -121,7 +135,7 @@ async function resolveSafeAddresses(hostname: string): Promise<LookupAddress[]> 
 
   for (const {address} of addresses) {
     if (isBlockedAddress(address)) {
-      throw new Error(`Blocked private IP: ${address} (${hostname})`)
+      throw new BlockedAddressError(`Blocked private IP: ${address} (${hostname})`)
     }
   }
   return addresses
@@ -152,7 +166,7 @@ const verifyPeer = (socket: net.Socket, hostname: string | undefined) => {
   if (!remoteAddress) return
   if (hostname && isAllowlistedHostname(hostname)) return
   if (isBlockedAddress(remoteAddress)) {
-    socket.destroy(new Error(`Blocked private IP: ${remoteAddress} (${hostname})`))
+    socket.destroy(new BlockedAddressError(`Blocked private IP: ${remoteAddress} (${hostname})`))
   }
 }
 
@@ -312,7 +326,8 @@ export const fetchUntrusted = async (
       return outcome
     }
   } catch (e) {
-    Logger.log(e)
+    const log = isExpectedBlock(e) ? Logger.debug : Logger.log
+    log(e)
     return null
   }
 }
@@ -346,7 +361,8 @@ export const postUntrusted = async (
       headers: response.headers
     })
   } catch (e) {
-    Logger.warn(`postUntrusted failed for ${host}`, e)
+    const log = isExpectedBlock(e) ? Logger.debug : Logger.warn
+    log(`postUntrusted failed for ${host}`, e)
     return null
   }
 }
