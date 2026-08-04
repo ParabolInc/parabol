@@ -2,8 +2,7 @@ import {useEffect, useRef, useState} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import {
   type BoardGroup,
-  getGroupIdByReflectionId,
-  getSuggestedGroupIds,
+  getMergeableSuggestedGroupIds,
   type SuggestionGroup
 } from '../utils/smartGroup/suggestionLookup'
 import useAtmosphere from './useAtmosphere'
@@ -54,15 +53,7 @@ const useSuggestedGroupsReveal = (
 
     const currentSuggestions = suggestionsRef.current
     if (!currentSuggestions?.length) return
-    const groups = groupsRef.current
-    const groupIdByReflectionId = getGroupIdByReflectionId(groups)
-    const matchedGroupIds = new Set<string>()
-    for (const suggestion of currentSuggestions) {
-      const groupIds = getSuggestedGroupIds(suggestion, groupIdByReflectionId)
-      // A suggestion that already sits in one group has nothing to point out
-      if (groupIds.size < 2) continue
-      for (const groupId of groupIds) matchedGroupIds.add(groupId)
-    }
+    const matchedGroupIds = getMergeableSuggestedGroupIds(currentSuggestions, groupsRef.current)
     if (matchedGroupIds.size === 0) return
 
     setIsRevealing(true)

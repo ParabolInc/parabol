@@ -24,7 +24,8 @@ const SuggestedGroupsSubmitButton = (props: Props) => {
       disabled={submitting || isUpToDate}
       aria-busy={submitting}
       className={cn(
-        'mt-4 w-full bg-grape-500 hover:bg-grape-600',
+        // Flexes so it takes the footer's whole width when nothing sits beside it
+        'flex-1 bg-grape-500 hover:bg-grape-600',
         // Still disabled while submitting so a second click cannot fire, but the dimmer baked into
         // the Button base styles would wash the sweep out, so opt back out of it
         submitting && `${SWEEP} disabled:opacity-100`

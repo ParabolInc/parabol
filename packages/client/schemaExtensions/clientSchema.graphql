@@ -64,6 +64,10 @@ extend type RetrospectiveMeeting {
   # Suggestions the server refreshed on its own never land here, so an edited card updates the
   # hover outlines without lighting up the whole board.
   suggestedGroupingRevealAt: DateTime
+  # The viewer dismissed the current suggestions: no corner badges, no hover outlines. Local, so
+  # one person clearing the clutter does not take the suggestions away from their team. Asking for
+  # a fresh set brings them back.
+  isSuggestedGroupingHidden: Boolean
 }
 
 extend type TeamPromptMeeting {
