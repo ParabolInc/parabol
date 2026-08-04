@@ -11,6 +11,7 @@ import type {IntegrationProviderServiceEnumType} from '../../integrations/TaskIn
 import type {
   MeetingSeries,
   SlackNotification,
+  SuggestedGroupsModeType,
   TeamPromptResponse,
   TemplateScale
 } from '../../postgres/types'
@@ -659,12 +660,43 @@ class Analytics {
     this.track(user, 'Notification Email Sent', {type, orgId})
   }
 
-  suggestedGroupsGenerated = (user: AnalyticsUser, meetingId: string, teamId: string) => {
-    this.track(user, 'Suggested Groups Generated', {meetingId, teamId})
+  // userPrompt text is deliberately never tracked: it is free text authored inside a meeting and
+  // can quote reflection content. hasUserPrompt answers "do people steer it?" without that risk.
+  suggestedGroupsGenerated = (
+    user: AnalyticsUser,
+    meetingId: string,
+    teamId: string,
+    props: {
+      mode: SuggestedGroupsModeType
+      hasUserPrompt: boolean
+      sameColumnOnly: boolean
+      /** True when the stored result was reused, so no LLM call was made */
+      cacheHit: boolean
+      reflectionCount: number
+      /** Reflect columns considered, which is also the LLM call count when sameColumnOnly */
+      promptCount: number
+      suggestedGroupCount: number
+      /** Reflections in multi-card suggestions. 0 means the suggestions were a no-op */
+      mergedReflectionCount: number
+      durationMs: number
+    }
+  ) => {
+    this.track(user, 'Suggested Groups Generated', {meetingId, teamId, ...props})
   }
 
-  suggestGroupsClicked = (user: AnalyticsUser, meetingId: string, teamId: string) => {
-    this.track(user, 'Suggest Groups Clicked', {meetingId, teamId})
+  suggestGroupsClicked = (
+    user: AnalyticsUser,
+    meetingId: string,
+    teamId: string,
+    props: {
+      mode: SuggestedGroupsModeType
+      /** Only the deprecated autogroup rearranges the board, so this counts old clients left */
+      source: 'legacyAutogroup'
+      sameColumnOnly: boolean
+      suggestedGroupCount: number
+    }
+  ) => {
+    this.track(user, 'Suggest Groups Clicked', {meetingId, teamId, ...props})
   }
 
   resetGroupsClicked = (user: AnalyticsUser, meetingId: string, teamId: string) => {

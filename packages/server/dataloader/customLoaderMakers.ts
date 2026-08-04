@@ -14,6 +14,7 @@ import {
   selectMassInvitations,
   selectMeetingSettings,
   selectNewMeetings,
+  selectRetroSuggestedGrouping,
   selectTaskEstimate,
   selectTasks,
   selectTeams
@@ -24,6 +25,7 @@ import type {
   MassInvitation,
   MeetingSettings,
   OrganizationUser,
+  RetroSuggestedGrouping,
   Task,
   TaskEstimate,
   Team
@@ -1042,6 +1044,21 @@ export const retroReflectionEmbeddingByReflectionId = (parent: RootDataLoader) =
           .map((r) => [r.refId, r.embedding!.slice(1, -1).split(',').map(Number)])
       )
       return reflectionIds.map((id) => vectorByReflectionId.get(id) ?? null)
+    },
+    {...parent.dataLoaderOptions}
+  )
+}
+
+// A retro has at most one active set of suggested groups, so meetingId is the primary key.
+// Null means nothing has been suggested for the meeting yet.
+export const retroSuggestedGroupingByMeetingId = (parent: RootDataLoader) => {
+  return new DataLoader<string, RetroSuggestedGrouping | null, string>(
+    async (meetingIds) => {
+      const rows = await selectRetroSuggestedGrouping()
+        .where('meetingId', 'in', meetingIds as string[])
+        .execute()
+      const rowByMeetingId = new Map(rows.map((row) => [row.meetingId, row]))
+      return meetingIds.map((meetingId) => rowByMeetingId.get(meetingId) ?? null)
     },
     {...parent.dataLoaderOptions}
   )

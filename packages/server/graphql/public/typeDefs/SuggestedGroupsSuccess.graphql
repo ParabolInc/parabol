@@ -1,0 +1,19 @@
+"""
+Returned by generateSuggestedGroups and published on the meeting subscription.
+Select `meeting.suggestedGrouping` for the hover preview. The board itself is never rearranged by
+this operation, so `meeting.reflectionGroups` is unchanged.
+"""
+type SuggestedGroupsSuccess {
+  """
+  The retrospective the suggestions belong to. Select `meeting.suggestedGrouping` for the set that
+  was just computed
+  """
+  meeting: RetrospectiveMeeting!
+
+  """
+  True when someone asked for these suggestions, false when the server refreshed them on its own
+  after a reflection changed. Clients should announce the former and absorb the latter quietly,
+  since an automatic refresh can land while a viewer is mid-sentence on an unrelated card.
+  """
+  isUserInitiated: Boolean!
+}

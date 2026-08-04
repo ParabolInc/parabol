@@ -115,8 +115,9 @@ export const endDraggingReflectionMeetingUpdater: SharedUpdater<
   const reflectionGroup = payload.getLinkedRecord('reflectionGroup')
   const oldReflectionGroupId = payload.getLinkedRecord('oldReflectionGroup').getValue('id')
   const existingDrag = reflection.getLinkedRecord('remoteDrag')
-  if (!existingDrag) {
-    const remoteDrag = payload.getLinkedRecord('remoteDrag')
+  const remoteDrag = payload.getLinkedRecord('remoteDrag')
+  // Absent when the reflection was moved without a drag, so there is no late drag start to ignore
+  if (!existingDrag && remoteDrag) {
     const remoteDragId = remoteDrag.getValue('id')
     const existingDragStarts = (reflection.getValue('ignoreDragStarts') as string[]) || []
     const nextDragStarts = existingDragStarts.concat(remoteDragId)
