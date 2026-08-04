@@ -68,6 +68,11 @@ interface Props {
   phaseRef: RefObject<HTMLDivElement>
   meetingRef: ReflectionGroup_meeting$key
   onHoverReflection?: (reflectionId: string | null) => void
+  /** Merges every currently-matched group (similarity === 1) into this one. See GroupingKanban. */
+  onGroupMatches?: (reflectionGroupId: string) => void
+  onArmGroupMatches?: (isArmed: boolean) => void
+  /** The Group button is hovered, so the source and its matches all light up together */
+  isGroupMatchArmed?: boolean
   openSpotlight?: OpenSpotlight
   reflectionGroupRef: ReflectionGroup_reflectionGroup$key
   swipeColumn?: SwipeColumn
@@ -80,6 +85,9 @@ const ReflectionGroup = (props: Props) => {
   const {
     meetingRef,
     onHoverReflection,
+    onGroupMatches,
+    onArmGroupMatches,
+    isGroupMatchArmed,
     openSpotlight,
     phaseRef,
     reflectionGroupRef,
@@ -231,6 +239,20 @@ const ReflectionGroup = (props: Props) => {
     (phaseType !== GROUP || titleIsUserDefined || visibleReflections.length > 1 || isEditing) &&
     !isSpotlightSrcGroup
 
+  // This is the hovered/source card: its matches (score === 1, on other groups) are ringed too
+  const isHoverSource = similarityScore === -1 && !isSourceBeingDragged
+  // Similarity resolves a reflection to its group, so any card in the stack keeps this group hovered
+  const hoverReflectionId = visibleReflections[0]?.id
+  // Arming the merge lights the source and every match in the button's own hover color, so the set
+  // reads as one unit. Grape is categorical and doesn't flip with the theme, hence the dark variant
+  const litRingClass = isGroupMatchArmed ? 'ring-grape-700 dark:ring-grape-500' : 'ring-grape-600'
+  const litBadgeClass = isGroupMatchArmed ? 'bg-grape-700 dark:bg-grape-500' : 'bg-grape-600'
+  // A dropping card is visibility:hidden while its clone flies to the slot, so the group's box is
+  // partly empty space. Outlining it would ring where the card is headed, not the card the viewer
+  // sees — so hold every highlight until the stack has settled
+  const isSettled = !visibleReflections.some((reflection) => reflection.isDropping)
+  const showRing = similarityScore != null && (similarityScore > 0 || isHoverSource) && isSettled
+
   return (
     <>
       {portal(
@@ -274,12 +296,7 @@ const ReflectionGroup = (props: Props) => {
           />
         )}
         <div
-          className={cn(
-            'relative',
-            similarityScore != null &&
-              (similarityScore > 0 || (!isSourceBeingDragged && similarityScore === -1)) &&
-              'rounded ring-2 ring-grape-500'
-          )}
+          className={cn('relative', showRing && 'rounded ring-2', showRing && litRingClass)}
           style={{
             paddingBottom:
               isSpotlightSrcGroup && !isBehindSpotlight
@@ -322,18 +339,40 @@ const ReflectionGroup = (props: Props) => {
               )
             })}
           </CardStack>
-          <div
-            className={cn(
-              '-top-2 pointer-events-none absolute right-2 z-10 rounded-full bg-grape-500 p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-opacity duration-150',
-              similarityScore != null && similarityScore !== -1 ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            {similarityScore != null && similarityScore !== -1 && similarityScore !== 1 ? (
-              Math.abs(similarityScore).toFixed(2)
-            ) : (
+          {isHoverSource && isSettled && onGroupMatches ? (
+            <button
+              type='button'
+              onClick={(e) => {
+                e.stopPropagation()
+                onGroupMatches(reflectionGroupId)
+              }}
+              // The button sits above the card, so reaching it fires the card's onMouseLeave.
+              // Re-asserting the hover here cancels that pending clear before the button unmounts
+              onMouseEnter={() => {
+                if (hoverReflectionId) onHoverReflection?.(hoverReflectionId)
+                onArmGroupMatches?.(true)
+              }}
+              onMouseLeave={() => onHoverReflection?.(null)}
+              // Grape is categorical, so it doesn't flip with the theme: darkening on hover reads
+              // as "pressed" on a light board but as fading into the surface on a dark one, where
+              // lifting to grape-500 (the Suggest Groups fill) is the legible direction
+              className='-top-2.5 absolute right-2 z-10 cursor-pointer whitespace-nowrap rounded-full bg-grape-600 px-2 py-0.5 font-semibold text-white text-xs shadow transition-colors hover:bg-grape-700 dark:hover:bg-grape-500'
+            >
+              {'Group ✨'}
+            </button>
+          ) : (
+            <div
+              className={cn(
+                '-top-2 pointer-events-none absolute right-2 z-10 rounded-full p-0.5 px-2 font-semibold text-sm text-white leading-3 transition-[opacity,background-color] duration-150',
+                litBadgeClass,
+                similarityScore != null && similarityScore !== -1 && isSettled
+                  ? 'opacity-100'
+                  : 'opacity-0'
+              )}
+            >
               <AddToPhotosIcon className='size-3' />
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </Group>
     </>

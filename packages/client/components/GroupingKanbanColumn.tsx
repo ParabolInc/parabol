@@ -54,6 +54,10 @@ interface Props {
   isDesktop: boolean
   meeting: GroupingKanbanColumn_meeting$key
   onHoverReflection: (reflectionId: string | null) => void
+  onGroupMatches: (reflectionGroupId: string) => void
+  onArmGroupMatches: (isArmed: boolean) => void
+  /** Hovering the Group button lights the source and every match in one shared color */
+  isGroupMatchArmed: boolean
   openSpotlight: OpenSpotlight
   phaseRef: RefObject<HTMLDivElement>
   prompt: GroupingKanbanColumn_prompt$key
@@ -61,6 +65,8 @@ interface Props {
   reflectPromptsCount: number
   swipeColumn?: SwipeColumn
   showDragHintAnimation?: boolean
+  /** A one-off reveal outlines every matching group at once, so "N similar" would count the board */
+  isRevealingSuggestions?: boolean
 }
 
 const GroupingKanbanColumn = (props: Props) => {
@@ -70,13 +76,17 @@ const GroupingKanbanColumn = (props: Props) => {
     isDesktop,
     meeting: meetingRef,
     onHoverReflection,
+    onGroupMatches,
+    onArmGroupMatches,
+    isGroupMatchArmed,
     openSpotlight,
     reflectionGroups: reflectionGroupsRef,
     phaseRef,
     prompt: promptRef,
     reflectPromptsCount,
     swipeColumn,
-    showDragHintAnimation
+    showDragHintAnimation,
+    isRevealingSuggestions
   } = props
   const meeting = useFragment(
     graphql`
@@ -135,11 +145,12 @@ const GroupingKanbanColumn = (props: Props) => {
 
   const similarGroupIds = useMemo(() => {
     const ids = new Set<string>()
+    if (isRevealingSuggestions) return ids
     for (const group of reflectionGroups) {
       if (group.activeReflectionGroupSimilarity != null) ids.add(group.id)
     }
     return ids
-  }, [reflectionGroups])
+  }, [reflectionGroups, isRevealingSuggestions])
 
   const isLengthExpanded =
     useCoverable(promptId, columnRef, MeetingControlBarEnum.COVER_HEIGHT, phaseRef, columnsRef) ||
@@ -207,6 +218,9 @@ const GroupingKanbanColumn = (props: Props) => {
                       key={reflectionGroup.id}
                       meetingRef={meeting}
                       onHoverReflection={onHoverReflection}
+                      onGroupMatches={onGroupMatches}
+                      onArmGroupMatches={onArmGroupMatches}
+                      isGroupMatchArmed={isGroupMatchArmed}
                       openSpotlight={openSpotlight}
                       phaseRef={phaseRef}
                       reflectionGroupRef={reflectionGroup}
