@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.33.0](https://github.com/ParabolInc/parabol/compare/v13.32.0...v13.33.0) (2026-08-04)
+
+
+### Added
+
+* remove suggestions, show suggestable without hover ([#13346](https://github.com/ParabolInc/parabol/issues/13346)) ([45b4d2e](https://github.com/ParabolInc/parabol/commit/45b4d2edcdb674581bd04b7ded8cba82b255b0a4))
+
 ## [13.32.0](https://github.com/ParabolInc/parabol/compare/v13.31.6...v13.32.0) (2026-08-03)
 
 
