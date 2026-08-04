@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.32.0](https://github.com/ParabolInc/parabol/compare/v13.31.6...v13.32.0) (2026-08-03)
+
+
+### Added
+
+* Suggested Grouping ([#13332](https://github.com/ParabolInc/parabol/issues/13332)) ([4040f90](https://github.com/ParabolInc/parabol/commit/4040f900d2455d4df379f2034ccfdd74e002ee32))
+
+
+### Fixed
+
+* debug, dont warn, on blocked private IPs ([#13337](https://github.com/ParabolInc/parabol/issues/13337)) ([c81037c](https://github.com/ParabolInc/parabol/commit/c81037cedeae8781b80084640fed3b4b0ff53d9d))
+
 ## [13.31.6](https://github.com/ParabolInc/parabol/compare/v13.31.5...v13.31.6) (2026-07-31)
 
 
