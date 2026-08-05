@@ -2,3 +2,11 @@ Never cast a type `as any`
 Only 1 React component per file, typically <100 LOCs
 Tailwind color classes (e.g. `text-slate-700`, `bg-sky-500`) are defined in paletteV3, NOT in the default Tailwind palette. Always check paletteV3 for available colors — never use inline `style={{color: ...}}` when a Tailwind class exists
 For mutations, favor the `useMutation` hook pattern (see `useShareTopicMutation.ts`): a `use*Mutation` hook that wraps `useMutation`, returns `[execute, submitting] as const`, and merges caller config via `...config`. This replaces the older `commitMutation` + `StandardMutation` + `useMutationProps` pattern — components get `submitting` from the hook and pass `onCompleted`/`onError`/`variables` directly in the execute config.
+No code comments unless necessary to understand genuine complexity — sweep your diff for stray comments before staging
+Prefer the minimal change: before adding a migration, mutation, or table, check whether existing machinery covers it (e.g. fold into an existing mutation); avoid schema bloat
+Descriptive names always (never placeholders like S0..S4). Never use deprecated patterns: don't add to utils/constants.ts; Relay data loading uses the `*Root.tsx` + `useQueryLoaderNow`/`usePreloadedQuery` pattern, not `useEffect` + `atmosphere.fetchQuery`
+Auth checks live in permissions.ts (graphql-shield), not inline in resolvers. Never trust client-supplied security facts (granted scopes, team ids) — derive them server-side. Every new GraphQL field needs explicit viewer-scoping thought
+Never claim UI work is done without checking the rendered result. Finding one visual defect means auditing the whole changeset for that class of defect
+Styling refactors must leave untouched surfaces pixel-identical to baseline; root-cause visual regressions rather than patching symptoms
+Test full user flows (e.g. OAuth redirect round-trips, empty/unconnected states) and match feature parity with sibling integrations
+Contrast and color-blind legibility are acceptance criteria — color alone can't carry meaning. Prefer controls that make invalid states unrepresentable
