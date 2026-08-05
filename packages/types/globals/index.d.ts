@@ -7,6 +7,8 @@ declare module '*.png' {
 declare module '*.svg'
 declare module '*.mp3'
 declare module '*.woff2'
+// bundler-handled, imported for side effects only. TS7 errors (TS2882) without this
+declare module '*.css'
 
 declare module 'babel-plugin-relay/macro' {
   export {graphql as default} from 'react-relay'

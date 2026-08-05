@@ -79,7 +79,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
           {endedAt && resultStageId ? (
             <Button
               variant='primary'
-              shape='pill'
+              shape='default'
               size='lg'
               onClick={() => gotoStageId(resultStageId)}
             >
@@ -89,7 +89,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
             isOwner && (
               <Button
                 variant='primary'
-                shape='pill'
+                shape='default'
                 size='lg'
                 onClick={onReveal}
                 disabled={revealing}

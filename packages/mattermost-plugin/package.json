@@ -14,7 +14,7 @@
     "dev": "webpack serve",
     "precommit": "lint-staged",
     "test": "jest --verbose",
-    "typecheck": "pnpm tsgo --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "bugs": {
     "url": "https://github.com/ParabolInc/parabol/issues"

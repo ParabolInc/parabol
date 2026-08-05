@@ -117,11 +117,11 @@ const TeamHealthResponsePhase = (props: Props) => {
         {currentIdx === 0 ? (
           <div />
         ) : (
-          <Button variant='ghost' shape='pill' size='md' onClick={onPrev}>
+          <Button variant='ghost' shape='default' size='md' onClick={onPrev}>
             Back
           </Button>
         )}
-        <Button variant='primary' shape='pill' size='md' className='gap-1' onClick={onNext}>
+        <Button variant='primary' shape='default' size='md' className='gap-1' onClick={onNext}>
           {isLast ? 'Submit' : 'Next'}
           <ArrowForward className='size-5' />
         </Button>

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./packages/types"],
-    // allowJs causes some bugs using ts-loader, if we decide to use that in the future
+    // TS7 no longer auto-scans an @types dir that lives outside the project dir, so the root
+    // node_modules/@types is no longer picked up implicitly by packages/*. List the ones that
+    // contribute *globals* here; everything else is resolved on demand through its import.
+    // The shared ambient decls in packages/types are pulled in via each project's "include".
+    "types": ["node", "jest"],
+    // allowJs causes some bugs, if we decide to use it in the future
     // "allowJs": true,
     "checkJs": false,
     // composite is just not worth it. the savings come from persisting files (.d + maps) and it's buggy as heck

@@ -6,5 +6,6 @@
       "~/*": ["../client/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable"]
-  }
+  },
+  "include": ["**/*", "../types/**/*"]
 }

@@ -40,7 +40,7 @@
     "test:server": "NODE_TLS_REJECT_UNAUTHORIZED='0' pnpm --filter parabol-server test"
   },
   "resolutions": {
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "hoist-non-react-statics": "^3.3.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -106,7 +106,6 @@
     "@types/react-relay": "16.0.6",
     "@types/relay-runtime": "^18.2.5",
     "@types/sanitize-html": "^2.16.1",
-    "@typescript/native-preview": "7.0.0-dev.20251217.1",
     "autoprefixer": "^10.4.13",
     "babel-loader": "^9.1.2",
     "babel-plugin-inline-import": "^3.0.0",
@@ -144,9 +143,7 @@
     "sucrase": "^3.35.1",
     "tailwindcss": "^4.0.1",
     "terser-webpack-plugin": "^5.3.9",
-    "ts-jest": "^29.4.6",
-    "ts-loader": "9.2.6",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "vscode-apollo-relay": "^1.5.0",
     "webpack": "^5.104.1",
     "webpack-bundle-analyzer": "^4.10.2",
