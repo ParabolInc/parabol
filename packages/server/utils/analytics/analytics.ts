@@ -266,6 +266,24 @@ class Analytics {
       )
     )
 
+  teamHealthEnd = async (
+    completedMeeting: AnyMeeting,
+    meetingMembers: AnyMeetingMember[],
+    dataLoader: DataLoaderWorker
+  ) =>
+    Promise.all(
+      meetingMembers.map((meetingMember) =>
+        this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          undefined,
+          undefined
+        )
+      )
+    )
+
   retrospectiveEnd = async (
     completedMeeting: RetrospectiveMeeting,
     meetingMembers: AnyMeetingMember[],

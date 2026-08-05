@@ -4,7 +4,7 @@ import {motion} from 'motion/react'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import {Link, useNavigate} from 'react-router'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -13,6 +13,7 @@ import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSer
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
+import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {cn} from '../ui/cn'
 import {useDialogState} from '../ui/Dialog/useDialogState'
 import {Menu} from '../ui/Menu/Menu'
@@ -21,6 +22,7 @@ import {MenuItem} from '../ui/Menu/MenuItem'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
+import {MeetingTypeToReadable} from '../utils/meetings/lookups'
 import {CancelSeriesConfirmationModal} from './CancelSeriesConfirmationModal'
 import {EditMeetingSeriesModal} from './EditMeetingSeriesModal'
 
@@ -33,23 +35,20 @@ const MEETING_TYPE_BG = {
   retrospective: 'bg-grape-500',
   action: 'bg-aqua-400',
   poker: 'bg-tomato-400',
-  teamPrompt: 'bg-jade-400'
+  teamPrompt: 'bg-jade-400',
+  teamHealth: 'bg-rose-500'
 }
 
 const RECURRING_LABEL_COLORS = {
   retrospective: 'text-grape-600',
   action: 'text-aqua-600',
   poker: 'text-tomato-600',
-  teamPrompt: 'text-jade-600'
+  teamPrompt: 'text-jade-600',
+  teamHealth: 'text-rose-600'
 }
 
-const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt}
-const MEETING_TYPE_LABEL = {
-  retrospective: 'Retro',
-  action: 'Check-In',
-  poker: 'Sprint Poker',
-  teamPrompt: 'Standup'
-}
+// TODO: add a dedicated teamHealth illustration
+const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 
 const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-surface-card shadow-card'
 const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
@@ -94,9 +93,21 @@ const ScheduledSeriesCard = (props: Props) => {
 
   const {id, title, meetingType, nextMeetingDate} = series
   const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const cancelDialog = useDialogState()
+
+  const onStartNow = () => {
+    if (isStarting) return
+    startNow({
+      variables: {meetingSeriesId: id},
+      onCompleted: (res) => {
+        navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+      }
+    })
+  }
 
   const onCancelConfirmed = () => {
     if (submitting) return
@@ -157,7 +168,7 @@ const ScheduledSeriesCard = (props: Props) => {
           <div className={MEETING_IMG_WRAPPER}>
             <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
-              {MEETING_TYPE_LABEL[meetingType]}
+              {MeetingTypeToReadable[meetingType]}
             </span>
             <span
               className={cn(
@@ -192,6 +203,9 @@ const ScheduledSeriesCard = (props: Props) => {
                 }
               >
                 <MenuContent align='end' sideOffset={4}>
+                  {/* unconditional: the dash only renders this card while the series is
+                      awaiting its first meeting */}
+                  <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>
                   <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
                   <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
                 </MenuContent>
@@ -199,7 +213,7 @@ const ScheduledSeriesCard = (props: Props) => {
             </div>
             <Link to={seriesLink} onClick={openEdit}>
               <span className='block pt-1 pb-2 text-fg-secondary text-sm'>
-                {MEETING_TYPE_LABEL[meetingType]} • Awaiting first meeting
+                {MeetingTypeToReadable[meetingType]} • Awaiting first meeting
               </span>
             </Link>
           </div>

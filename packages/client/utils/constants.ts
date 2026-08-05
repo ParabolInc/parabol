@@ -212,7 +212,8 @@ export const timelineEventTypeMenuLabels: Record<TimelineEventEnum, string> = {
   joinedParabol: 'Joined Parabol',
   createdTeam: 'New Team Created',
   POKER_COMPLETE: 'Sprint Poker',
-  TEAM_PROMPT_COMPLETE: 'Standup'
+  TEAM_PROMPT_COMPLETE: 'Standup',
+  TEAM_HEALTH_COMPLETE: 'Team Health'
 }
 
 export const CUSTOMIZED_SVG = 'Customized SVG'
@@ -223,7 +224,8 @@ export const timelineEventTypeMenuIcons: Record<TimelineEventEnum, string | unde
   joinedParabol: 'account_circle',
   createdTeam: 'group_add',
   POKER_COMPLETE: CUSTOMIZED_SVG,
-  TEAM_PROMPT_COMPLETE: 'group_work'
+  TEAM_PROMPT_COMPLETE: 'group_work',
+  TEAM_HEALTH_COMPLETE: 'health_and_safety'
 }
 
 /* OpenAI */

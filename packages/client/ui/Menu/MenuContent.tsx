@@ -13,7 +13,10 @@ export const MenuContent = React.forwardRef<HTMLDivElement, MenuContentProps>(
     return (
       <DropdownMenu.Content
         className={cn(
-          'z-10 max-h-56 w-auto min-w-[200px] max-w-[400px] overflow-auto rounded-md bg-surface-card py-1 shadow-lg outline-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up',
+          // shadow-lg is a black-based drop shadow that all but disappears on a dark surface, so on
+          // dark the menu needs an explicit edge to separate it from a same-colored surface-card
+          // page behind it (same fix as DialogContent/SpotlightModal)
+          'z-10 max-h-56 w-auto min-w-[200px] max-w-[400px] overflow-auto rounded-md bg-surface-card py-1 shadow-lg outline-hidden data-[side=bottom]:animate-slide-down data-[side=top]:animate-slide-up dark:border dark:border-hairline-strong',
           className
         )}
         ref={ref}

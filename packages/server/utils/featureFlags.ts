@@ -35,6 +35,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2025-11-20T12:18:02.763416+00:00'),
     updatedAt: new Date('2025-11-20T12:18:02.763416+00:00'),
     isPublic: true
+  },
+  teamHealth: {
+    featureName: 'teamHealth',
+    scope: 'Organization',
+    description: 'Team Health check-in',
+    expiresAt: new Date('2026-12-31T23:59:59.999+00:00'),
+    createdAt: new Date('2026-07-10T00:00:00+00:00'),
+    updatedAt: new Date('2026-07-10T00:00:00+00:00'),
+    isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>
 

@@ -175,7 +175,8 @@ const makeStartMeetingNotificationLookup: Record<
   teamPrompt: makeTeamPromptStartMeetingNotification,
   action: makeGenericStartMeetingNotification,
   retrospective: makeGenericStartMeetingNotification,
-  poker: makeGenericStartMeetingNotification
+  poker: makeGenericStartMeetingNotification,
+  teamHealth: makeGenericStartMeetingNotification
 }
 
 const addStandupResponsesToThread = async (

@@ -1,0 +1,17 @@
+"""
+Returned when the editTeamHealthQuestion mutation succeeds. If the question had no responses it was
+edited in place; otherwise a new version was created and the original was hidden (replacedQuestionId
+is the id of the now-hidden original).
+"""
+type EditTeamHealthQuestionSuccess {
+  """
+  The current version of the question after the edit
+  """
+  question: TeamHealthQuestion!
+
+  """
+  The id of the original question that was replaced, if a new version was created (it had responses).
+  Null when the question was edited in place
+  """
+  replacedQuestionId: ID
+}

@@ -1,0 +1,7 @@
+"""
+Success result for the setTeamHealthSpectate mutation
+"""
+type SetTeamHealthSpectateSuccess {
+  "The meeting member with the updated isSpectating value"
+  meetingMember: TeamHealthMeetingMember!
+}

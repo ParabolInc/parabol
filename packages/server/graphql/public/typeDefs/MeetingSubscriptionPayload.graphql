@@ -19,6 +19,7 @@ type MeetingSubscriptionPayload {
   EditReflectionPayload: EditReflectionPayload
   EndDraggingReflectionPayload: EndDraggingReflectionPayload
   EndRetrospectiveSuccess: EndRetrospectiveSuccess
+  EndTeamHealthSuccess: EndTeamHealthSuccess
   EndTeamPromptSuccess: EndTeamPromptSuccess
   FlagReadyToAdvanceSuccess: FlagReadyToAdvanceSuccess
   GenerateGroupsSuccess: GenerateGroupsSuccess
@@ -37,6 +38,8 @@ type MeetingSubscriptionPayload {
   SetStageTimerPayload: SetStageTimerPayload
   SetTaskHighlightSuccess: SetTaskHighlightSuccess
   SetTeamHealthVoteSuccess: SetTeamHealthVoteSuccess
+  SetTeamHealthResponseSuccess: SetTeamHealthResponseSuccess
+  SetTeamHealthSpectateSuccess: SetTeamHealthSpectateSuccess
   StartDraggingReflectionPayload: StartDraggingReflectionPayload
   UpdateCommentContentSuccess: UpdateCommentContentSuccess
   UpdateDragLocationPayload: UpdateDragLocationPayload

@@ -28,7 +28,7 @@ export const createMeetingMember = (
   teamMember: Pick<TeamMember, 'userId' | 'teamId' | 'isSpectatingPoker'>
 ): Insertable<MeetingMember> => {
   const {userId, teamId, isSpectatingPoker} = teamMember
-  const {id: meetingId, meetingType} = meeting
+  const {id: meetingId, meetingType, facilitatorUserId} = meeting
   return {
     id: MeetingMemberId.join(meetingId, userId),
     updatedAt: new Date(),
@@ -36,7 +36,14 @@ export const createMeetingMember = (
     userId,
     meetingId,
     meetingType,
-    isSpectating: meetingType === 'poker' ? isSpectatingPoker : null,
+    // the team health owner is a data collector by default, excluded from the response set until
+    // they opt in. Unlike poker, this is per-meeting & never persisted back to the team member
+    isSpectating:
+      meetingType === 'poker'
+        ? isSpectatingPoker
+        : meetingType === 'teamHealth'
+          ? userId === facilitatorUserId
+          : null,
     votesRemaining: meetingType === 'retrospective' ? meeting.totalVotes : null
   }
 }

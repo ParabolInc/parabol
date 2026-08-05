@@ -1,0 +1,10 @@
+"""
+Success result for the startMeetingSeriesNow mutation
+"""
+type StartMeetingSeriesNowSuccess {
+  "The meeting that was just started"
+  meeting: NewMeeting!
+
+  "The team the meeting was started for"
+  team: Team!
+}

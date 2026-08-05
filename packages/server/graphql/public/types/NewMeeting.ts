@@ -11,7 +11,8 @@ const NewMeeting: NewMeetingResolvers = {
       retrospective: 'RetrospectiveMeeting',
       action: 'ActionMeeting',
       poker: 'PokerMeeting',
-      teamPrompt: 'TeamPromptMeeting'
+      teamPrompt: 'TeamPromptMeeting',
+      teamHealth: 'TeamHealthMeeting'
     } as const
     return resolveTypeLookup[meetingType as keyof typeof resolveTypeLookup]
   },

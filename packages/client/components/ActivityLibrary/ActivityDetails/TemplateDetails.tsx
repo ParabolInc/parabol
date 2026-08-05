@@ -1,7 +1,7 @@
 import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useLocation, useNavigate} from 'react-router'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
@@ -27,6 +27,7 @@ import DetailAction from '../../DetailAction'
 import FlatButton from '../../FlatButton'
 import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
+import TeamHealthTemplateQuestionEditor from '../TeamHealth/TeamHealthTemplateQuestionEditor'
 import TeamPickerModal from '../TeamPickerModal'
 import ActivityDetailsBadges from './ActivityDetailsBadges'
 import {IntegrationsTip} from './components/IntegrationsTip'
@@ -73,6 +74,17 @@ const ACTIVITY_TYPE_DATA_LOOKUP: Record<
       </>
     ),
     integrationsTip: <>push takeaway tasks to your backlog</>
+  },
+  teamHealth: {
+    description: (
+      <>
+        Take the pulse of your team by answering research-backed survey questions across categories
+        like psychological safety, dependability, and impact.
+        <br />
+        Each round we ask one new question from each category and track health trends over time.
+      </>
+    ),
+    integrationsTip: <>push takeaway tasks to your backlog</>
   }
 }
 
@@ -110,6 +122,9 @@ export const TemplateDetails = (props: Props) => {
             ...AddTemplatePrompt_prompts
             ...TemplatePromptList_prompts
           }
+        }
+        ... on TeamHealthTemplate {
+          ...TeamHealthTemplateQuestionEditor_template
         }
         ...ActivityDetailsBadges_template
         ...TemplateSharing_template
@@ -159,7 +174,8 @@ export const TemplateDetails = (props: Props) => {
       retrospective: RemoveReflectTemplateMutation,
       poker: RemovePokerTemplateMutation,
       action: null,
-      teamPrompt: null
+      teamPrompt: null,
+      teamHealth: null
     } as const
 
     const removeTemplateMutation = removeTemplateMutationLookup[type]
@@ -181,6 +197,23 @@ export const TemplateDetails = (props: Props) => {
 
   const [teamPickerOpen, setTeamPickerOpen] = useState(false)
   const [isScaleDetailsOpen, setIsScaleDetailsOpen] = useState(false)
+  const [highlightEdit, setHighlightEdit] = useState(false)
+  const editHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  // Called when a viewer tries to change a read-only template; pulse the Edit (owner) or
+  // Clone & Edit (non-owner) button to hint at what they need to do first
+  const flashEditHint = useCallback(() => {
+    setHighlightEdit(true)
+    if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
+    editHintTimeoutRef.current = setTimeout(() => setHighlightEdit(false), 1500)
+  }, [])
+
+  useEffect(
+    () => () => {
+      if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
+    },
+    []
+  )
 
   useEffect(() => {
     if (editingScaleId) {
@@ -233,7 +266,12 @@ export const TemplateDetails = (props: Props) => {
                   </div>
                 ) : (
                   <>
-                    <div className='rounded-md border border-hairline-strong border-solid'>
+                    <div
+                      className={cn(
+                        'rounded-md border border-hairline-strong border-solid',
+                        highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                      )}
+                    >
                       <DetailAction
                         icon={'edit'}
                         tooltip={'Edit template'}
@@ -257,7 +295,12 @@ export const TemplateDetails = (props: Props) => {
                   viewerRef={viewer}
                   className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div className='rounded-md border border-hairline-strong border-solid'>
+                <div
+                  className={cn(
+                    'rounded-md border border-hairline-strong border-solid',
+                    highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                  )}
+                >
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
@@ -273,7 +316,18 @@ export const TemplateDetails = (props: Props) => {
         </div>
         {activityDescription}
       </div>
-      <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
+      {type !== 'teamHealth' && (
+        <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
+      )}
+
+      {type === 'teamHealth' && (
+        <TeamHealthTemplateQuestionEditor
+          templateRef={activity}
+          isEditing={isEditing}
+          readOnly={!isOwner}
+          onEditHint={flashEditHint}
+        />
+      )}
 
       <div className='sm:-ml-14 pt-4'>
         {prompts && (

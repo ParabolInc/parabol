@@ -1,0 +1,18 @@
+"""
+Returned when the addTeamHealthTemplate mutation succeeds. Produced when a team clones an existing
+team health template via parentTemplateId: the new template is named "<original> Copy" (or
+"<original> Copy #N" for subsequent clones) and every question link from the source template is
+duplicated onto the new template.
+"""
+type AddTeamHealthTemplateSuccess {
+  """
+  The newly created team health template, containing copies of every question linked to the source
+  template. Use this to update the team's template list in the client cache.
+  """
+  teamHealthTemplate: TeamHealthTemplate!
+
+  """
+  The viewer (authenticated user) who performed the mutation.
+  """
+  user: User!
+}

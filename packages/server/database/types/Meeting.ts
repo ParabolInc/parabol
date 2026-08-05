@@ -20,7 +20,8 @@ interface Input {
 
 const namePrefix = {
   action: 'Check-in',
-  retrospective: 'Retro'
+  retrospective: 'Retro',
+  teamHealth: 'Team Health'
 } as Record<MeetingTypeEnum, string>
 export default abstract class Meeting {
   id: string

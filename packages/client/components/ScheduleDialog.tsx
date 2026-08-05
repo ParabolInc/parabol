@@ -16,6 +16,7 @@ import GcalSettings, {
 } from '../modules/userDashboard/components/GcalModal/GcalSettings'
 import logo from '../styles/theme/images/graphics/google.svg'
 import gcalLogo from '../styles/theme/images/graphics/google-calendar.svg'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import GcalClientManager from '../utils/GcalClientManager'
@@ -210,7 +211,9 @@ export const ScheduleDialog = (props: Props) => {
         </Collapsible.Root>
       )}
       <DialogActions>
-        <SecondaryButton onClick={onCancel}>Cancel</SecondaryButton>
+        <Button variant='flat' size='md' className='self-center' onClick={onCancel}>
+          Cancel
+        </Button>
         <PrimaryButton size='medium' onClick={handleSubmit}>
           Create Meeting
         </PrimaryButton>

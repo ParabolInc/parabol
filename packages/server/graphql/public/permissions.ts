@@ -72,6 +72,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     addSlackAuth: isTeamMember<'Mutation.addSlackAuth'>('args.teamId'),
     addTeam: rateLimit({perMinute: 15, perHour: 50}),
+    addTeamHealthTemplateQuestion: isTeamMember<'Mutation.addTeamHealthTemplateQuestion'>(
+      'args.templateId',
+      'meetingTemplates'
+    ),
     addTeamMemberIntegrationAuth:
       isTeamMember<'Mutation.addTeamMemberIntegrationAuth'>('args.teamId'),
     addTranscriptionBot: isTeamMemberOfMeeting<'Mutation.addTranscriptionBot'>('args.meetingId'),
@@ -107,6 +111,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     deleteComment: isMeetingMember<'Mutation.deleteComment'>('args.meetingId'),
     deleteOAuthAPIProvider: hasProviderAccess<'Mutation.deleteOAuthAPIProvider'>('args.providerId'),
     deleteTask: isTeamMember<'Mutation.deleteTask'>('args.taskId', 'tasks'),
+    deleteTeamHealthQuestion: isUserViewer<'Mutation.deleteTeamHealthQuestion'>(
+      'args.questionId',
+      'teamHealthQuestions',
+      'createdBy'
+    ),
     denyPushInvitation: rateLimit({perMinute: 10, perHour: 20}),
     downgradeToStarter: or(
       isSuperUser,
@@ -118,6 +127,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     editPageContent: hasPageAccess<'Mutation.editPageContent'>('args.pageId', 'editor'),
     editReflection: isTeamMemberOfMeeting<'Mutation.editReflection'>('args.meetingId'),
     editTask: isTeamMember<'Mutation.editTask'>('args.taskId', 'tasks'),
+    editTeamHealthQuestion: isUserViewer<'Mutation.editTeamHealthQuestion'>(
+      'args.questionId',
+      'teamHealthQuestions',
+      'createdBy'
+    ),
     emailPasswordReset: rateLimit({perMinute: 5, perHour: 50}),
     endCheckIn: or(isTeamMemberOfMeeting<'Mutation.endCheckIn'>('args.meetingId'), isSuperUser),
     endDraggingReflection: isMeetingMember<'Mutation.endDraggingReflection'>(
@@ -134,6 +148,10 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     endTeamPrompt: or(
       isTeamMemberOfMeeting<'Mutation.endTeamPrompt'>('args.meetingId'),
+      isSuperUser
+    ),
+    endTeamHealth: or(
+      isTeamMemberOfMeeting<'Mutation.endTeamHealth'>('args.meetingId'),
       isSuperUser
     ),
     flagReadyToAdvance: isMeetingMember<'Mutation.flagReadyToAdvance'>('args.meetingId'),
@@ -250,6 +268,10 @@ const permissionMap: PermissionMap<Resolvers> = {
       'creatorId'
     ),
     removeSlackAuth: isTeamMember<'Mutation.removeSlackAuth'>('args.teamId'),
+    removeTeamHealthTemplateQuestion: isTeamMember<'Mutation.removeTeamHealthTemplateQuestion'>(
+      'args.templateId',
+      'meetingTemplates'
+    ),
     removeTeamMember: or(
       isUser<'Mutation.removeTeamMember'>('args.userId'),
       isViewerTeamLead<'Mutation.removeTeamMember'>('args.teamId'),
@@ -306,6 +328,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       isUser<'Mutation.setTaskHighlight'>('args.taskId', 'tasks')
     ),
     setTeamHealthVote: isTeamMember<'Mutation.setTeamHealthVote'>('args.meetingId', 'newMeetings'),
+    setTeamHealthResponse: isTeamMember<'Mutation.setTeamHealthResponse'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    // not facilitator-only: spectating is a choice each member makes for themselves
+    setTeamHealthSpectate: isMeetingMember<'Mutation.setTeamHealthSpectate'>('args.meetingId'),
     shareTopic: isTeamMember<'Mutation.shareTopic'>('args.meetingId', 'newMeetings'),
     signOut: allow,
     signUpWithPassword: and(
@@ -317,8 +345,14 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.reflectionId',
       'retroReflections'
     ),
+    // startMeetingSeriesNow: auth lives in the resolver (args.meetingSeriesId is a global ID
+    // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
+    startTeamHealth: or(
+      isTeamMember<'Mutation.startTeamHealth'>('args.teamIds'),
+      isViewerBillingLeader<'Mutation.startTeamHealth'>('args.teamIds', 'teams')
+    ),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
     toggleAIFeatures: or(
       isSuperUser,
@@ -414,6 +448,11 @@ const permissionMap: PermissionMap<Resolvers> = {
     ),
     uploadIdPMetadata: hasOrgRole<'Mutation.uploadIdPMetadata'>('args.orgId', 'ORG_ADMIN'),
     uploadOrgImage: isViewerBillingLeader<'Mutation.uploadOrgImage'>('args.orgId'),
+    upsertTeamHealthQuestionCategory: isUserViewer<'Mutation.upsertTeamHealthQuestionCategory'>(
+      'args.questionId',
+      'teamHealthQuestions',
+      'createdBy'
+    ),
     upsertTeamPromptResponse:
       isMeetingMember<'Mutation.upsertTeamPromptResponse'>('args.meetingId'),
     verifyEmail: rateLimit({perMinute: 50, perHour: 100}),

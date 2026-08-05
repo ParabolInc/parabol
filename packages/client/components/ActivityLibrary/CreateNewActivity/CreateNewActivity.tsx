@@ -7,12 +7,12 @@ import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
-import type {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
-import type {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
+import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
+import type {useAddReflectTemplateMutation$data} from '../../../__generated__/useAddReflectTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
+import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
 import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
@@ -148,6 +148,8 @@ export const CreateNewActivity = (props: Props) => {
   )
 
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
+  const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
+  const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
@@ -162,22 +164,19 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddReflectTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddReflectTemplateMutation$data) => {
-          const templateId = res.addReflectTemplate?.reflectTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
+    executeAddReflectTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddReflectTemplateMutation$data) => {
+        const templateId = res.addReflectTemplate?.reflectTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
         }
+        onCompleted()
       }
-    )
+    })
   }
 
   const handleCreatePokerTemplate = () => {
@@ -186,22 +185,19 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddPokerTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddPokerTemplateMutation$data) => {
-          const templateId = res.addPokerTemplate?.pokerTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
+    executeAddPokerTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddPokerTemplateMutation$data) => {
+        const templateId = res.addPokerTemplate?.pokerTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
         }
+        onCompleted()
       }
-    )
+    })
   }
 
   const handleUpgrade = () => {

@@ -1,3 +1,4 @@
+// This is the deprecated single-stage team health component
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactElement} from 'react'
