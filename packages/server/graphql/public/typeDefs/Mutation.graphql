@@ -2019,10 +2019,8 @@ type Mutation {
   Opt the viewer into or out of answering the questions in a standalone Team Health meeting.
   Spectators are excluded from the response set and from the "N of M" total
   """
-  setTeamHealthSpectate(
-    meetingId: ID!
-    isSpectating: Boolean!
-  ): SetTeamHealthSpectateSuccess! @scope(name: MEETINGS_WRITE)
+  setTeamHealthSpectate(meetingId: ID!, isSpectating: Boolean!): SetTeamHealthSpectateSuccess!
+    @scope(name: MEETINGS_WRITE)
 
   """
   Shares retro discussion to integration
@@ -2090,6 +2088,16 @@ type Mutation {
     """
     ignoreSuggestedUpgrade: Boolean
   ): StartCheckInPayload! @scope(name: MEETINGS_WRITE)
+
+  """
+  Start the next meeting of a scheduled meeting series right now, ahead of its schedule
+  """
+  startMeetingSeriesNow(
+    """
+    ID of the meeting series to start a meeting for
+    """
+    meetingSeriesId: ID!
+  ): StartMeetingSeriesNowSuccess! @scope(name: MEETINGS_WRITE)
 
   """
   Start a new meeting

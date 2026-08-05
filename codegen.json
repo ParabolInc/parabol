@@ -298,6 +298,7 @@
           "SlackIntegration": "../../postgres/types/index#SlackAuth as SlackAuthDB",
           "SlackNotification": "../../postgres/types/index#SlackNotification as SlackNotificationDB",
           "StartCheckInSuccess": "./types/StartCheckInSuccess#StartCheckInSuccessSource",
+          "StartMeetingSeriesNowSuccess": "./types/StartMeetingSeriesNowSuccess#StartMeetingSeriesNowSuccessSource",
           "StartRetrospectiveSuccess": "./types/StartRetrospectiveSuccess#StartRetrospectiveSuccessSource",
           "StartTeamHealthSuccess": "./types/StartTeamHealthSuccess#StartTeamHealthSuccessSource",
           "StartTeamPromptSuccess": "./types/StartTeamPromptSuccess#StartTeamPromptSuccessSource",

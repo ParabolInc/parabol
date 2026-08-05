@@ -4,7 +4,7 @@ import {motion} from 'motion/react'
 import MeetingSeriesId from 'parabol-client/shared/gqlIds/MeetingSeriesId'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
-import {Link} from 'react-router'
+import {Link, useNavigate} from 'react-router'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -13,6 +13,7 @@ import type {ScheduledSeriesCard_series$key} from '../__generated__/ScheduledSer
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdateMeetingSeriesMutation from '../mutations/UpdateMeetingSeriesMutation'
+import useStartMeetingSeriesNowMutation from '../mutations/useStartMeetingSeriesNowMutation'
 import {cn} from '../ui/cn'
 import {useDialogState} from '../ui/Dialog/useDialogState'
 import {Menu} from '../ui/Menu/Menu'
@@ -92,9 +93,21 @@ const ScheduledSeriesCard = (props: Props) => {
 
   const {id, title, meetingType, nextMeetingDate} = series
   const atmosphere = useAtmosphere()
+  const navigate = useNavigate()
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
+  const [startNow, isStarting] = useStartMeetingSeriesNowMutation()
   const [isEditOpen, setIsEditOpen] = useState(false)
   const cancelDialog = useDialogState()
+
+  const onStartNow = () => {
+    if (isStarting) return
+    startNow({
+      variables: {meetingSeriesId: id},
+      onCompleted: (res) => {
+        navigate(`/meet/${res.startMeetingSeriesNow.meeting.id}`)
+      }
+    })
+  }
 
   const onCancelConfirmed = () => {
     if (submitting) return
@@ -190,6 +203,9 @@ const ScheduledSeriesCard = (props: Props) => {
                 }
               >
                 <MenuContent align='end' sideOffset={4}>
+                  {/* unconditional: the dash only renders this card while the series is
+                      awaiting its first meeting */}
+                  <MenuItem onSelect={onStartNow}>Start meeting now</MenuItem>
                   <MenuItem onSelect={() => setIsEditOpen(true)}>Edit schedule</MenuItem>
                   <MenuItem onSelect={cancelDialog.open}>Cancel series</MenuItem>
                 </MenuContent>

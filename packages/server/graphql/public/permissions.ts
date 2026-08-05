@@ -345,6 +345,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       'args.reflectionId',
       'retroReflections'
     ),
+    // startMeetingSeriesNow: auth lives in the resolver (args.meetingSeriesId is a global ID
+    // that the resolver unwraps via MeetingSeriesId.split before any dataloader lookup).
     startRetrospective: isTeamMember<'Mutation.startRetrospective'>('args.teamId'),
     startSprintPoker: isTeamMember<'Mutation.startSprintPoker'>('args.teamId'),
     startTeamHealth: or(
