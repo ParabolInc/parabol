@@ -18,6 +18,11 @@ type TeamHealthResponse {
   commentParaphrased: String
 
   """
+  The raw, un-paraphrased comment the user left. Only readable by the response's author
+  """
+  comment: String
+
+  """
   *Foreign key. The meeting this response was given in
   """
   meetingId: ID!

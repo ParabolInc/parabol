@@ -2000,6 +2000,31 @@ type Mutation {
     @scope(name: MEETINGS_WRITE)
 
   """
+  Record or update the viewer's answer to a question in a standalone Team Health meeting
+  """
+  setTeamHealthResponse(
+    meetingId: ID!
+    stageId: ID!
+    """
+    The 1-5 Likert score, or null to skip the question
+    """
+    score: Int
+    """
+    An optional freeform comment left with the answer
+    """
+    comment: String
+  ): SetTeamHealthResponseSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
+  Opt the viewer into or out of answering the questions in a standalone Team Health meeting.
+  Spectators are excluded from the response set and from the "N of M" total
+  """
+  setTeamHealthSpectate(
+    meetingId: ID!
+    isSpectating: Boolean!
+  ): SetTeamHealthSpectateSuccess! @scope(name: MEETINGS_WRITE)
+
+  """
   Shares retro discussion to integration
   """
   shareTopic(

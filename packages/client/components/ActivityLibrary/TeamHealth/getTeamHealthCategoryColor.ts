@@ -32,6 +32,25 @@ const CATEGORY_DOT_CLASSES = [
   'bg-terra-500'
 ] as const
 
+// The globally-ordered category list that drives round-robin color assignment: every category in use
+// across the available question packs, deduped and sorted by createdAt then name so the ordering (and
+// therefore each category's color) is stable and identical everywhere it's rendered.
+export const getOrderedTeamHealthCategories = (
+  packs: ReadonlyArray<{
+    questions: ReadonlyArray<{category: {id: string; name: string; createdAt: string} | null}>
+  }>
+) => {
+  const categoryMap = new Map<string, {id: string; name: string; createdAt: string}>()
+  packs.forEach((pack) =>
+    pack.questions.forEach((q) => {
+      if (q.category) categoryMap.set(q.category.id, q.category)
+    })
+  )
+  return Array.from(categoryMap.values()).sort(
+    (a, b) => a.createdAt.localeCompare(b.createdAt) || a.name.localeCompare(b.name)
+  )
+}
+
 // index of a category within the ordered list, wrapped round-robin over the palette so all colors are
 // exhausted before one repeats. Unknown ids (shouldn't happen) fall back to the first color.
 const colorIndex = (categoryId: string, orderedIds: ReadonlyArray<string>) => {

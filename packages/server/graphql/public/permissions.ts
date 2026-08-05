@@ -328,6 +328,12 @@ const permissionMap: PermissionMap<Resolvers> = {
       isUser<'Mutation.setTaskHighlight'>('args.taskId', 'tasks')
     ),
     setTeamHealthVote: isTeamMember<'Mutation.setTeamHealthVote'>('args.meetingId', 'newMeetings'),
+    setTeamHealthResponse: isTeamMember<'Mutation.setTeamHealthResponse'>(
+      'args.meetingId',
+      'newMeetings'
+    ),
+    // not facilitator-only: spectating is a choice each member makes for themselves
+    setTeamHealthSpectate: isMeetingMember<'Mutation.setTeamHealthSpectate'>('args.meetingId'),
     shareTopic: isTeamMember<'Mutation.shareTopic'>('args.meetingId', 'newMeetings'),
     signOut: allow,
     signUpWithPassword: and(

@@ -3,16 +3,19 @@ import {useFragment} from 'react-relay'
 import type {TeamHealthTemplateQuestionEditor_template$key} from '../../../__generated__/TeamHealthTemplateQuestionEditor_template.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import AddTeamHealthQuestion from './AddTeamHealthQuestion'
+import {getOrderedTeamHealthCategories} from './getTeamHealthCategoryColor'
 import TeamHealthQuestionPackSection from './TeamHealthQuestionPackSection'
 
 interface Props {
   templateRef: TeamHealthTemplateQuestionEditor_template$key
   isEditing: boolean
+  // the viewer doesn't own this template; render every pack as non-interactive
+  readOnly: boolean
   onEditHint: () => void
 }
 
 const TeamHealthTemplateQuestionEditor = (props: Props) => {
-  const {templateRef, isEditing, onEditHint} = props
+  const {templateRef, isEditing, readOnly, onEditHint} = props
   const template = useFragment(
     graphql`
       fragment TeamHealthTemplateQuestionEditor_template on TeamHealthTemplate {
@@ -24,6 +27,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
           id
           userId
           questions {
+            id
             category {
               id
               name
@@ -42,25 +46,21 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
 
   const selectedIds = new Set(questions.map((q) => q.id))
 
-  // the category menu offers every category already in use across the packs (built-in + this org's)
-  const categoryMap = new Map<string, {id: string; name: string; createdAt: string}>()
-  availableQuestionPacks.forEach((pack) =>
-    pack.questions.forEach((q) => {
-      if (q.category) categoryMap.set(q.category.id, q.category)
-    })
-  )
-  // sort by createdAt, then name, so round-robin color assignment is stable and deterministic
-  const categories = Array.from(categoryMap.values()).sort(
-    (a, b) => a.createdAt.localeCompare(b.createdAt) || a.name.localeCompare(b.name)
-  )
+  // the category menu offers every category already in use across the packs (built-in + this org's),
+  // ordered so round-robin color assignment is stable and matches every other place categories render
+  const categories = getOrderedTeamHealthCategories(availableQuestionPacks)
 
   // the viewer's own pack sorts above the built-in aGhostUser packs; sort is stable, so server order
-  // (created-at within each group) is preserved
-  const sortedPacks = [...availableQuestionPacks].sort((a, b) => {
-    const aGhost = a.userId === 'aGhostUser'
-    const bGhost = b.userId === 'aGhostUser'
-    return aGhost === bGhost ? 0 : aGhost ? 1 : -1
-  })
+  // (created-at within each group) is preserved. When the viewer can't edit this template, only show
+  // packs that contribute a selected question — this drops their personal "My Questions" pack and any
+  // built-in pack the template doesn't draw from.
+  const sortedPacks = [...availableQuestionPacks]
+    .filter((pack) => !readOnly || pack.questions.some((q) => selectedIds.has(q.id)))
+    .sort((a, b) => {
+      const aGhost = a.userId === 'aGhostUser'
+      const bGhost = b.userId === 'aGhostUser'
+      return aGhost === bGhost ? 0 : aGhost ? 1 : -1
+    })
 
   // the "Add a custom question" control lives at the bottom of the viewer's own pack; when that pack
   // doesn't exist yet (no custom questions), it gets its own section so the first one can be added
@@ -79,7 +79,7 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
             <div className='px-1'>{addQuestion}</div>
           </div>
         )}
-        {sortedPacks.map((pack) => (
+        {sortedPacks.map((pack, index) => (
           <TeamHealthQuestionPackSection
             key={pack.id}
             packRef={pack}
@@ -88,8 +88,10 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
             selectedIds={selectedIds}
             categories={categories}
             isEditing={isEditing}
+            readOnly={readOnly}
             onEditHint={onEditHint}
-            defaultOpen={pack.userId !== 'aGhostUser'}
+            // read-only viewers see only built-in packs, so open the first one instead of the org pack
+            defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
             title={pack.id === myPackId ? 'My Questions' : undefined}
             footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
           />

@@ -21,12 +21,15 @@ interface Props {
   viewerId: string
   isSelected: boolean
   isEditing: boolean
+  // the viewer doesn't own this template; gray the checkbox but keep it clickable to hint at cloning
+  readOnly: boolean
   onEditHint: () => void
   categories: ReadonlyArray<{id: string; name: string}>
 }
 
 const TeamHealthQuestionRow = (props: Props) => {
-  const {questionRef, templateId, viewerId, isSelected, isEditing, onEditHint, categories} = props
+  const {questionRef, templateId, viewerId, isSelected, isEditing, readOnly, onEditHint, categories} =
+    props
   const question = useFragment(
     graphql`
       fragment TeamHealthQuestionRow_question on TeamHealthQuestion {
@@ -127,7 +130,7 @@ const TeamHealthQuestionRow = (props: Props) => {
   return (
     <div className='group flex items-center gap-1.5 rounded-md px-2 py-2 hover:bg-slate-100'>
       <Checkbox
-        className='ml-3'
+        className={cn('ml-3', readOnly && 'border-slate-400 text-slate-400')}
         checked={isSelected}
         onCheckedChange={(checked) => toggleSelected(checked === true)}
       />

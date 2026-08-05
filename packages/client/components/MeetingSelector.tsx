@@ -21,13 +21,15 @@ interface Props {
   queryRef: PreloadedQuery<MeetingSelectorQuery>
 }
 
-// teamHealth has no meeting component yet
 const meetingLookup: Partial<Record<MeetingTypeEnum, LazyExoticPreload<ComponentType<any>>>> = {
   action: lazyPreload(() => import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')),
   poker: lazyPreload(() => import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')),
   retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')),
   teamPrompt: lazyPreload(
     () => import(/* webpackChunkName: 'TeamPromptMeeting' */ './TeamPromptMeeting')
+  ),
+  teamHealth: lazyPreload(
+    () => import(/* webpackChunkName: 'TeamHealthMeeting' */ './TeamHealthMeeting')
   )
 }
 
@@ -97,6 +99,7 @@ graphql`
     ...ActionMeeting_meeting
     ...PokerMeeting_meeting
     ...TeamPromptMeeting_meeting
+    ...TeamHealthMeeting_meeting
     meetingType
   }
 `

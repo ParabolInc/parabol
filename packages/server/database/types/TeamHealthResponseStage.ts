@@ -10,7 +10,13 @@ export default class TeamHealthResponseStage extends GenericMeetingStage {
   questionId: number
   phaseType = 'TEAM_HEALTH_RESPONSE' as const
   constructor(input: Input) {
-    super({...input, phaseType: 'TEAM_HEALTH_RESPONSE', isNavigable: true})
+    // async meeting: everyone (including the owner/facilitator) self-navigates freely
+    super({
+      ...input,
+      phaseType: 'TEAM_HEALTH_RESPONSE',
+      isNavigable: true,
+      isNavigableByFacilitator: true
+    })
     this.questionId = input.questionId
   }
 }

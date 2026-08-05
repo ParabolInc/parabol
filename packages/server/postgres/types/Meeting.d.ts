@@ -116,8 +116,13 @@ export type PokerMeetingMember = MeetingMember & {
   meetingType: 'poker'
   isSpectating: boolean
 }
+export type TeamHealthMeetingMember = MeetingMember & {
+  meetingType: 'teamHealth'
+  isSpectating: boolean
+}
 export type AnyMeetingMember =
   | PokerMeetingMember
   | RetroMeetingMember
   | ActionMeetingMember
   | TeamPromptMeetingMember
+  | TeamHealthMeetingMember

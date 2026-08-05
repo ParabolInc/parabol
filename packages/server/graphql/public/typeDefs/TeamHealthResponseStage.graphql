@@ -98,4 +98,10 @@ type TeamHealthResponseStage implements NewMeetingStage {
   The team health question presented in this stage
   """
   question: TeamHealthQuestion!
+
+  """
+  The viewer's own response to this stage's question, used to prefill their answer. Null if they
+  have not answered yet. A user may always see their own answer, so this preserves anonymity
+  """
+  viewerResponse: TeamHealthResponse
 }

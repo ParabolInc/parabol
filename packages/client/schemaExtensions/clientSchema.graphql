@@ -228,6 +228,10 @@ extend type PokerMeetingMember {
   isConnectedAt: DateTime
 }
 
+extend type TeamHealthMeetingMember {
+  isConnectedAt: DateTime
+}
+
 extend interface MeetingMember {
   isConnectedAt: DateTime
 }

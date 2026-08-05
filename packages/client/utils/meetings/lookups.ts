@@ -21,7 +21,11 @@ export const phaseLabelLookup = {
   SUMMARY: 'Summary',
   SCOPE: 'Scope',
   ESTIMATE: 'Estimate',
-  RESPONSES: 'Active'
+  RESPONSES: 'Active',
+  TEAM_HEALTH_INTRO: 'Welcome',
+  TEAM_HEALTH_RESPONSE: 'Respond',
+  TEAM_HEALTH_SUBMITTED: 'All Set',
+  TEAM_HEALTH_RESULT: 'Results'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseIconLookup = {
@@ -72,5 +76,9 @@ export const phaseTypeToSlug = {
   SUMMARY: 'summary',
   SCOPE: 'scope',
   ESTIMATE: 'estimate',
-  RESPONSES: 'responses'
+  RESPONSES: 'responses',
+  TEAM_HEALTH_INTRO: 'intro',
+  TEAM_HEALTH_RESPONSE: 'respond',
+  TEAM_HEALTH_SUBMITTED: 'submitted',
+  TEAM_HEALTH_RESULT: 'result'
 } as Record<NewMeetingPhaseTypeEnum, string>

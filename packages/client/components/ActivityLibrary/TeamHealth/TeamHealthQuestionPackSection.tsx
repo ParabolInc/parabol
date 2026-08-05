@@ -16,6 +16,8 @@ interface Props {
   templateId: string
   viewerId: string
   isEditing: boolean
+  // the viewer doesn't own this template; gray out the read-only checkboxes
+  readOnly: boolean
   onEditHint: () => void
   defaultOpen: boolean
   selectedIds: ReadonlySet<string>
@@ -32,6 +34,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
     templateId,
     viewerId,
     isEditing,
+    readOnly,
     onEditHint,
     defaultOpen,
     selectedIds,
@@ -101,6 +104,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
       isSelected={selectedIds.has(question.id)}
       categories={categories}
       isEditing={isEditing}
+      readOnly={readOnly}
       onEditHint={onEditHint}
     />
   ))
@@ -146,7 +150,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
               <span className='truncate text-slate-400 text-xs'>{pack.source}</span>
             ))}
         </div>
-        {addAllButton}
+        {!readOnly && addAllButton}
       </div>
       <Collapsible.Content>
         <div className='pb-2'>

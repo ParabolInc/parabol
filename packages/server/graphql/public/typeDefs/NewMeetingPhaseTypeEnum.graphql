@@ -81,4 +81,19 @@ enum NewMeetingPhaseTypeEnum {
   Responses phase in a standalone Team Health meeting, one stage per template question
   """
   TEAM_HEALTH_RESPONSE
+
+  """
+  Intro phase of a standalone Team Health meeting, a single welcome stage
+  """
+  TEAM_HEALTH_INTRO
+
+  """
+  Confirmation phase of a standalone Team Health meeting shown after a member submits their answers
+  """
+  TEAM_HEALTH_SUBMITTED
+
+  """
+  Result phase of a standalone Team Health meeting, unlocked when the owner reveals
+  """
+  TEAM_HEALTH_RESULT
 }

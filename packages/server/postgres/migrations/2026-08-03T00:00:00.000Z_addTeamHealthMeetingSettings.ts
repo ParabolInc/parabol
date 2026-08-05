@@ -3,6 +3,10 @@ import {type Kysely, sql} from 'kysely'
 // Standalone team health meetings read their phase list + selected template from a
 // per-team MeetingSettings row (like retro/action/poker). New teams get one from
 // createTeamAndLeader; this backfills every existing team that lacks one.
+//
+// A standalone team health meeting runs through four phases (intro -> response ->
+// submitted -> result) instead of the single response phase, so the phaseType enum
+// (used by MeetingSettings.phaseTypes) needs the three additional values too.
 const DEFAULT_TEMPLATE_ID = 'everythingBagelTemplate'
 
 // Copied verbatim from packages/server/generateUID.ts so the migration has no dependency
@@ -83,7 +87,10 @@ export async function up(db: Kysely<any>): Promise<void> {
       'updates',
       'vote',
       'RESPONSES',
-      'TEAM_HEALTH_RESPONSE'
+      'TEAM_HEALTH_RESPONSE',
+      'TEAM_HEALTH_INTRO',
+      'TEAM_HEALTH_SUBMITTED',
+      'TEAM_HEALTH_RESULT'
     )
   `.execute(db)
   await sql`

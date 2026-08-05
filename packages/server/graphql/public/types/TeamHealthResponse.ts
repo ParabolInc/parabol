@@ -9,6 +9,10 @@ const TeamHealthResponse: TeamHealthResponseResolvers = {
   },
   isViewerCreator: ({userId}, _args, {authToken}) => {
     return userId === getUserId(authToken)
+  },
+  // only the author may read their own raw (un-paraphrased) comment
+  comment: ({userId, comment}, _args, {authToken}) => {
+    return userId === getUserId(authToken) ? comment : null
   }
 }
 

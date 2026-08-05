@@ -142,7 +142,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               disabled={selectedTeamIds.length === 0}
               className='h-14'
             >
-              <div className='text-lg'>Schedule Meeting</div>
+              <div className='text-lg'>Start Meeting Series</div>
             </FlatPrimaryButton>
           </DialogTrigger>
           <DialogContent noClose>

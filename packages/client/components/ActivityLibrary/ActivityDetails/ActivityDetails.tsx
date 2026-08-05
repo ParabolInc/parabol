@@ -9,9 +9,8 @@ import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
-import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
+import ActivityDetailsSidebarSwitch from '../ActivityDetailsSidebarSwitch'
 import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
-import TeamHealthDetailsSidebar from '../TeamHealthDetailsSidebar'
 import {TemplateDetails} from './TemplateDetails'
 
 graphql`
@@ -99,7 +98,7 @@ const ActivityDetails = (props: Props) => {
 
   return (
     <div className='flex h-full w-full flex-col overflow-auto bg-surface-card'>
-      <div className='flex grow'>
+      <div className='flex grow flex-col lg:flex-row'>
         <div className='mt-4 w-full grow'>
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
@@ -139,38 +138,21 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
-          {type === 'teamHealth' ? (
-            <TeamHealthDetailsSidebar
-              templateId={activity.id}
-              teamsRef={teamHealthTeams}
-              preferredTeamId={preferredTeamId}
-            />
-          ) : (
-            <ActivityDetailsSidebar
-              selectedTemplateRef={activity}
-              teamsRef={teams}
-              type={activity.type}
-              preferredTeamId={preferredTeamId}
-            />
+        <div
+          className={cn(
+            'w-full shrink-0 lg:flex lg:w-[385px] lg:flex-col',
+            isEditing && 'hidden lg:flex'
           )}
-        </div>
-      </div>
-      <div className={cn('lg:hidden', isEditing && 'hidden')}>
-        {type === 'teamHealth' ? (
-          <TeamHealthDetailsSidebar
+        >
+          <ActivityDetailsSidebarSwitch
+            type={type}
             templateId={activity.id}
-            teamsRef={teamHealthTeams}
-            preferredTeamId={preferredTeamId}
-          />
-        ) : (
-          <ActivityDetailsSidebar
             selectedTemplateRef={activity}
             teamsRef={teams}
-            type={activity.type}
+            teamHealthTeamsRef={teamHealthTeams}
             preferredTeamId={preferredTeamId}
           />
-        )}
+        </div>
       </div>
     </div>
   )

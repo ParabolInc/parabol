@@ -200,7 +200,8 @@ export const TemplateDetails = (props: Props) => {
   const [highlightEdit, setHighlightEdit] = useState(false)
   const editHintTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  // Called when a viewer tries to change a read-only template; pulse the Edit button to hint at it
+  // Called when a viewer tries to change a read-only template; pulse the Edit (owner) or
+  // Clone & Edit (non-owner) button to hint at what they need to do first
   const flashEditHint = useCallback(() => {
     setHighlightEdit(true)
     if (editHintTimeoutRef.current) clearTimeout(editHintTimeoutRef.current)
@@ -294,7 +295,12 @@ export const TemplateDetails = (props: Props) => {
                   viewerRef={viewer}
                   className='rounded-md border border-hairline-strong border-solid hover:bg-surface-hover'
                 />
-                <div className='rounded-md border border-hairline-strong border-solid'>
+                <div
+                  className={cn(
+                    'rounded-md border border-hairline-strong border-solid',
+                    highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
+                  )}
+                >
                   <FlatButton
                     style={{padding: '8px 12px', border: '0'}}
                     className='flex cursor-pointer gap-1 px-12'
@@ -314,10 +320,11 @@ export const TemplateDetails = (props: Props) => {
         <IntegrationsTip className='flex-wrap'>{integrationsTip}</IntegrationsTip>
       )}
 
-      {type === 'teamHealth' && isOwner && (
+      {type === 'teamHealth' && (
         <TeamHealthTemplateQuestionEditor
           templateRef={activity}
           isEditing={isEditing}
+          readOnly={!isOwner}
           onEditHint={flashEditHint}
         />
       )}

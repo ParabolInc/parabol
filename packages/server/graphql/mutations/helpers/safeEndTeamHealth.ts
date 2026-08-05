@@ -7,6 +7,7 @@ import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
+import getPhase from '../../../utils/getPhase'
 import {Logger} from '../../../utils/Logger'
 import logError from '../../../utils/logError'
 import publish from '../../../utils/publish'
@@ -39,7 +40,7 @@ const safeEndTeamHealth = async ({
   const operationId = dataLoader.share()
   const subOptions = {mutatorId, operationId}
   const viewerId = getUserId(authToken)
-  const {endedAt, id: meetingId, teamId} = meeting
+  const {endedAt, id: meetingId, teamId, phases} = meeting
 
   if (endedAt)
     return standardError(new Error('Meeting already ended'), {
@@ -48,12 +49,25 @@ const safeEndTeamHealth = async ({
 
   // RESOLUTION
   const insights = await gatherInsights(meeting, dataLoader)
+  // ending a team health meeting is what reveals its results, whether the owner clicked "Reveal
+  // results" or the recurrence cron hit scheduledEndTime. All that's left to persist is the result
+  // stage's navigability, which lives in the phases JSONB like every other meeting type's
+  const resultPhase = getPhase(phases, 'TEAM_HEALTH_RESULT')
+  const resultPhaseIdx = resultPhase ? phases.indexOf(resultPhase) : -1
   await pg
     .updateTable('NewMeeting')
     .set({
       endedAt: sql`CURRENT_TIMESTAMP`,
       usedReactjis: JSON.stringify(insights.usedReactjis),
-      engagement: insights.engagement
+      engagement: insights.engagement,
+      ...(!!resultPhase && {
+        phases: sql`jsonb_set(
+          jsonb_set(phases, ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigable}`)}, 'true'::jsonb, false),
+          ${sql.lit(`{${resultPhaseIdx},stages,0,isNavigableByFacilitator}`)},
+          'true'::jsonb,
+          false
+        )`
+      })
     })
     .where('id', '=', meetingId)
     .execute()

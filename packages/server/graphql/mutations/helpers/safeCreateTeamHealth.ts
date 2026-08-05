@@ -1,11 +1,15 @@
 import MeetingTeamHealth from '../../../database/types/MeetingTeamHealth'
+import TeamHealthIntroPhase from '../../../database/types/TeamHealthIntroPhase'
 import TeamHealthResponsePhase from '../../../database/types/TeamHealthResponsePhase'
+import TeamHealthResultPhase from '../../../database/types/TeamHealthResultPhase'
+import TeamHealthSubmittedPhase from '../../../database/types/TeamHealthSubmittedPhase'
 import generateUID from '../../../generateUID'
 import getKysely from '../../../postgres/getKysely'
 import type {TeamHealthMeeting} from '../../../postgres/types/Meeting'
 import type {DataLoaderWorker} from '../../graphql'
 import isValid from '../../isValid'
 import {primePhases} from './createNewMeetingPhases'
+import rotateTeamHealthQuestionIds from './rotateTeamHealthQuestionIds'
 
 const safeCreateTeamHealth = async (
   input: {
@@ -35,9 +39,20 @@ const safeCreateTeamHealth = async (
     throw new Error(`Team health template ${templateId} has no questions`)
   }
 
-  // stages reference the immutable question by its raw id, one stage per template question
-  const questionIds = questions.map((question) => question.id)
-  const phases: [TeamHealthResponsePhase] = [new TeamHealthResponsePhase({questionIds})]
+  // stages reference the immutable question by its raw id, one least-asked question per category
+  const questionIds = await rotateTeamHealthQuestionIds(questions, meetingSeriesId)
+  // intro -> response (one stage per question) -> submitted -> result (locked until reveal)
+  const phases = [
+    new TeamHealthIntroPhase(),
+    new TeamHealthResponsePhase({questionIds}),
+    new TeamHealthSubmittedPhase(),
+    new TeamHealthResultPhase()
+  ] as [
+    TeamHealthIntroPhase,
+    TeamHealthResponsePhase,
+    TeamHealthSubmittedPhase,
+    TeamHealthResultPhase
+  ]
   primePhases(phases)
 
   const meetingId = generateUID()

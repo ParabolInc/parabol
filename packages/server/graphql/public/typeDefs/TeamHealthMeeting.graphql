@@ -19,9 +19,23 @@ type TeamHealthMeeting implements NewMeeting {
   template: TeamHealthTemplate
 
   """
-  Every team member's answers to the questions in this meeting
+  Every team member's answers to the questions in this meeting. Empty until the meeting ends and
+  the results are revealed, so raw answers can never be de-anonymized while it is in progress
   """
   responses: [TeamHealthResponse!]!
+
+  """
+  The number of distinct members who have submitted at least one response. A bare count only,
+  never the member ids, so a lone response cannot be attributed to a person
+  """
+  respondentCount: Int!
+
+  """
+  The number of consecutive completed meetings in this meeting's series that had at least
+  one response, counting backwards from the most recently completed meeting. 0 if this
+  meeting isn't part of a series, or the meeting right before it had no responses
+  """
+  currentStreak: Int!
 
   """
   The unique meeting id. shortid.
