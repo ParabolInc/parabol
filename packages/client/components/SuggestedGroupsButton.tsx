@@ -1,7 +1,8 @@
 import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
-import {useFragment} from 'react-relay'
+import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {SuggestedGroupsButton_meeting$key} from '~/__generated__/SuggestedGroupsButton_meeting.graphql'
+import useAtmosphere from '../hooks/useAtmosphere'
 import useSuggestedGroupsSettings from '../hooks/useSuggestedGroupsSettings'
 import useGenerateSuggestedGroupsMutation from '../mutations/useGenerateSuggestedGroupsMutation'
 import {RetroDemo, Threshold} from '../types/constEnums'
@@ -32,11 +33,13 @@ const SuggestedGroupsButton = (props: Props) => {
           userPrompt
           isStale
         }
+        isSuggestedGroupingHidden
       }
     `,
     meetingRef
   )
-  const {id: meetingId, organization, team, suggestedGrouping} = meeting
+  const {id: meetingId, organization, team, suggestedGrouping, isSuggestedGroupingHidden} = meeting
+  const atmosphere = useAtmosphere()
   const {useAI, tier} = organization
   const {qualAIMeetingsCount} = team
   const {isOpen, open, close} = useDialogState()
@@ -76,6 +79,17 @@ const SuggestedGroupsButton = (props: Props) => {
   }
 
   const onSubmit = () => {
+    if (isSuggestedGroupingHidden) {
+      commitLocalUpdate(atmosphere, (store) => {
+        store.get(meetingId)?.setValue(false, 'isSuggestedGroupingHidden')
+      })
+      // Bringing the badges back is the whole action when the settings still describe the stored
+      // set — there is nothing for the server to recompute
+      if (isUpToDate) {
+        close()
+        return
+      }
+    }
     const {mode, userPrompt, sameColumnOnly} = settings
     execute({
       variables: {
@@ -88,6 +102,15 @@ const SuggestedGroupsButton = (props: Props) => {
       // settings the viewer just tried
       onCompleted: close
     })
+  }
+
+  // Local to this viewer: the suggestions stay stored, so a teammate's board keeps its badges and
+  // asking for a fresh set brings them back here too. See the mutation's shared updater
+  const onRemove = () => {
+    commitLocalUpdate(atmosphere, (store) => {
+      store.get(meetingId)?.setValue(true, 'isSuggestedGroupingHidden')
+    })
+    close()
   }
 
   // The demo runs against an in-memory schema with no grouping mutation to call
@@ -114,10 +137,12 @@ const SuggestedGroupsButton = (props: Props) => {
         >
           <SuggestedGroupsPanel
             onSubmit={onSubmit}
+            onRemove={suggestedGrouping && !isSuggestedGroupingHidden ? onRemove : undefined}
             settings={settings}
             updateSettings={updateSettings}
             submitting={submitting}
-            isUpToDate={isUpToDate}
+            // Hidden suggestions always leave something to do: at worst, put them back
+            isUpToDate={isUpToDate && !isSuggestedGroupingHidden}
             aiDisabledReason={aiDisabledReason}
           />
         </RadixPopover.Content>

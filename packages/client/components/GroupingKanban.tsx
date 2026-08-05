@@ -16,6 +16,7 @@ import useThrottledEvent from '../hooks/useThrottledEvent'
 import EndDraggingReflectionMutation from '../mutations/EndDraggingReflectionMutation'
 import {Breakpoint, Times} from '../types/constEnums'
 import {cn} from '../ui/cn'
+import {getMergeableSuggestedGroupIds} from '../utils/smartGroup/suggestionLookup'
 import PortalProvider from './AtmosphereProvider/PortalProvider'
 import GroupingKanbanColumn from './GroupingKanbanColumn'
 import ReflectWrapperMobile from './RetroReflectPhase/ReflectionWrapperMobile'
@@ -75,6 +76,7 @@ const GroupingKanban = (props: Props) => {
           }
         }
         suggestedGroupingRevealAt
+        isSuggestedGroupingHidden
         spotlightReflectionId
         spotlightGroup {
           ...ReflectionGroup_reflectionGroup
@@ -98,8 +100,12 @@ const GroupingKanban = (props: Props) => {
     meetingNumber,
     meetingMembers,
     suggestedGrouping,
-    suggestedGroupingRevealAt
+    suggestedGroupingRevealAt,
+    isSuggestedGroupingHidden
   } = meeting
+  // Dismissed suggestions are treated as no suggestions at all, so the badges, the hover outlines
+  // and the reveal flash all go quiet from one flag
+  const suggestions = isSuggestedGroupingHidden ? null : suggestedGrouping?.groups
   const {phaseType} = localPhase
   const {isComplete} = localStage
   const reflectPhase = phases.find((phase) => phase.phaseType === 'reflect')!
@@ -110,15 +116,21 @@ const GroupingKanban = (props: Props) => {
   const atmosphere = useAtmosphere()
   // Driven by what was actually stored rather than this viewer's modal settings, so the outline
   // always matches the live suggestions — including ones a teammate generated
-  const rawOnHoverReflection = useHoverSuggestedGroup(
-    reflectionGroups,
-    isGroupPhase,
-    suggestedGrouping?.groups
-  )
+  const rawOnHoverReflection = useHoverSuggestedGroup(reflectionGroups, isGroupPhase, suggestions)
   const isRevealingSuggestions = useSuggestedGroupsReveal(
     reflectionGroups,
-    suggestedGrouping?.groups,
+    suggestions,
     suggestedGroupingRevealAt
+  )
+
+  // Each of these groups wears a corner badge, so a suggestion is discoverable without hovering
+  // every card to find one. Recomputed as cards move: merging a suggestion retires its badges
+  const suggestedGroupIds = useMemo(
+    () =>
+      isGroupPhase
+        ? getMergeableSuggestedGroupIds(suggestions, reflectionGroups)
+        : new Set<string>(),
+    [isGroupPhase, suggestions, reflectionGroups]
   )
 
   const draggedReflectionId = useMemo(() => {
@@ -135,9 +147,10 @@ const GroupingKanban = (props: Props) => {
     rawOnHoverRef.current = rawOnHoverReflection
   }, [rawOnHoverReflection])
 
-  // When a drag starts or ends, re-run similarity for the dragged card (or clear on end)
+  // When a drag starts or ends, re-run similarity for the dragged card (or clear on end). Card
+  // intent: a drag asks where this one card belongs, not where the stack it left would go
   useEffect(() => {
-    rawOnHoverRef.current(draggedReflectionId)
+    rawOnHoverRef.current(draggedReflectionId, 'card')
   }, [draggedReflectionId])
 
   // Hovering the Group button arms the merge: the source and every match share one lit color so the
@@ -149,7 +162,7 @@ const GroupingKanban = (props: Props) => {
       if (draggedReflectionId) return
       // Leaving the card takes the button with it, so nothing stays lit without its trigger
       if (!reflectionId) setIsGroupMatchArmed(false)
-      rawOnHoverReflection(reflectionId)
+      rawOnHoverReflection(reflectionId, 'group')
     },
     [draggedReflectionId, rawOnHoverReflection]
   )
@@ -283,6 +296,7 @@ const GroupingKanban = (props: Props) => {
               onGroupMatches={onGroupMatches}
               onArmGroupMatches={setIsGroupMatchArmed}
               isGroupMatchArmed={isGroupMatchArmed}
+              suggestedGroupIds={suggestedGroupIds}
               openSpotlight={openSpotlight}
               phaseRef={phaseRef}
               prompt={prompt}

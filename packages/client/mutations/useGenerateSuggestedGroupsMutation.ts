@@ -56,6 +56,9 @@ export const suggestedGroupsMeetingUpdater: SharedUpdater<
 > = (payload) => {
   if (!payload.getValue('isUserInitiated')) return
   const meeting = payload.getLinkedRecord('meeting')
+  // A set someone just asked for is new information, so it overrides an earlier "Remove
+  // suggestions" — otherwise the button would appear to do nothing for whoever had dismissed them
+  meeting?.setValue(false, 'isSuggestedGroupingHidden')
   // Stamped with the suggestions' own createdAt rather than the arrival time, so remounting the
   // board does not re-flash a set the viewer has already been shown
   const createdAt = meeting?.getLinkedRecord('suggestedGrouping')?.getValue('createdAt')
