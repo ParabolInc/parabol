@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.34.0](https://github.com/ParabolInc/parabol/compare/v13.33.0...v13.34.0) (2026-08-05)
+
+
+### Added
+
+* enable Task Review phase by default ([#13350](https://github.com/ParabolInc/parabol/issues/13350)) ([37d3e45](https://github.com/ParabolInc/parabol/commit/37d3e45851a0f88353143cf02f6fb9761869930b))
+* Team Health Template Editing ([#13292](https://github.com/ParabolInc/parabol/issues/13292)) ([f35c9f1](https://github.com/ParabolInc/parabol/commit/f35c9f1b43c88e9dba51380197f1dbcecf304158))
+
 ## [13.33.0](https://github.com/ParabolInc/parabol/compare/v13.32.0...v13.33.0) (2026-08-04)
 
 
