@@ -1,19 +1,6 @@
-import styled from '@emotion/styled'
 import {type ChangeEvent, type FormEvent, lazy, Suspense, useRef} from 'react'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
-
-const HiddenInput = styled('input')({
-  display: 'none'
-})
-
-const Control = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  overflow: 'hidden',
-  padding: '.5rem 1rem 1rem',
-  position: 'relative'
-})
 
 interface Props {
   onSubmit: (file: File) => void
@@ -41,14 +28,20 @@ const AvatarInput = (props: Props) => {
   const errorStr = isHack ? 'You hacked us!' : error
   return (
     <div>
-      <Control>
+      <div className='relative flex justify-center overflow-hidden px-4 pt-2 pb-4'>
         <RaisedButton size='small' onClick={onClick} palette='gray' type='button'>
           {'Choose File'}
         </RaisedButton>
         <form onSubmit={onChange}>
-          <HiddenInput accept='image/*' onChange={onChange} type='file' ref={inputRef} />
+          <input
+            className='hidden'
+            accept='image/*'
+            onChange={onChange}
+            type='file'
+            ref={inputRef}
+          />
         </form>
-      </Control>
+      </div>
       <Suspense fallback={''}>
         <Confetti active={isHack} />
       </Suspense>

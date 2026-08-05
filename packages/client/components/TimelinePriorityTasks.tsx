@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   DragDropContext,
   Droppable,
@@ -22,31 +21,6 @@ import TimelineNoTasks from './TimelineNoTasks'
 interface Props {
   viewer: TimelinePriorityTasks_viewer$key
 }
-
-const PriorityTasksHeader = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 14,
-  fontWeight: 600,
-  paddingTop: 16,
-  paddingBottom: 16,
-  top: 0,
-  zIndex: 2
-})
-
-const ActiveIcon = styled(Whatshot)({
-  height: 18,
-  width: 18,
-  verticalAlign: 'bottom',
-  marginRight: 4
-})
-
-const TaskList = styled('div')({
-  paddingTop: 8
-})
-
-const PriorityTaskBody = styled('div')({
-  width: '100%'
-})
 
 const TimelinePriorityTasks = (props: Props) => {
   const {viewer: viewerRef} = props
@@ -111,12 +85,12 @@ const TimelinePriorityTasks = (props: Props) => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId={ACTIVE_TASK} type={DroppableType.TASK}>
         {(dropProvided: DroppableProvided) => (
-          <TaskList>
-            <PriorityTasksHeader>
-              <ActiveIcon />
+          <div className='pt-2'>
+            <div className='top-0 z-[2] py-4 font-semibold text-[14px] text-fg-secondary'>
+              <Whatshot className='mr-1 h-[18px] w-[18px] align-bottom' />
               Active Tasks
-            </PriorityTasksHeader>
-            <PriorityTaskBody {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
+            </div>
+            <div className='w-full' {...dropProvided.droppableProps} ref={dropProvided.innerRef}>
               {activeTasks.map((task, idx) => (
                 <NullableTask
                   key={task.id}
@@ -127,8 +101,8 @@ const TimelinePriorityTasks = (props: Props) => {
                 />
               ))}
               {dropProvided.placeholder}
-            </PriorityTaskBody>
-          </TaskList>
+            </div>
+          </div>
         )}
       </Droppable>
     </DragDropContext>

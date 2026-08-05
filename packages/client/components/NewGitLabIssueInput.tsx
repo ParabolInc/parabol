@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
@@ -22,79 +21,6 @@ import Checkbox from './Checkbox'
 import NewGitLabIssueMenu from './NewGitLabIssueMenu'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
-
-const StyledButton = styled(PlainButton)({
-  alignItems: 'center',
-  backgroundColor: 'transparent',
-  display: 'flex',
-  height: '20px',
-  justifyContent: 'flex-start',
-  margin: 0,
-  opacity: 1,
-  width: 'fit-content',
-  ':hover, :focus': {
-    backgroundColor: 'transparent'
-  }
-})
-
-const StyledIcon = styled(ExpandMore)({
-  color: 'var(--color-accent)',
-  height: 20,
-  width: 20,
-  padding: 0,
-  alignContent: 'center'
-})
-
-const StyledLink = styled('a')({
-  color: 'var(--color-accent)',
-  display: 'block',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
-})
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const Item = styled('div')({
-  backgroundColor: 'var(--color-surface-raised)',
-  cursor: 'pointer',
-  display: 'flex',
-  paddingLeft: 16,
-  paddingTop: 8,
-  paddingBottom: 8
-})
-
-const Issue = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16,
-  width: '100%'
-})
-
-const NewIssueInput = styled('input')({
-  appearance: 'none',
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  margin: 0,
-  padding: '0px 8px 0px 0px',
-  outline: 0,
-  width: '100%'
-})
-
-const Error = styled(StyledError)({
-  fontSize: 13,
-  textAlign: 'left',
-  width: '100%'
-})
 
 interface Props {
   isEditing: boolean
@@ -237,23 +163,26 @@ const NewGitLabIssueInput = (props: Props) => {
 
   if (createTaskError) {
     return (
-      <Item>
+      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
         <Checkbox active disabled />
-        <Issue>
-          <Error>{createTaskError}</Error>
-          <StyledLink>{selectedFullPath}</StyledLink>
-        </Issue>
-      </Item>
+        <div className='flex w-full flex-col pl-4'>
+          <StyledError className='w-full text-left text-[13px]'>{createTaskError}</StyledError>
+          <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
+            {selectedFullPath}
+          </a>
+        </div>
+      </div>
     )
   }
   if (!isEditing) return null
   return (
     <>
-      <Item>
+      <div className='flex cursor-pointer bg-surface-raised py-2 pl-4'>
         <Checkbox active />
-        <Issue>
-          <Form onSubmit={handleCreateNewIssue}>
-            <NewIssueInput
+        <div className='flex w-full flex-col pl-4'>
+          <form className='flex w-full flex-col' onSubmit={handleCreateNewIssue}>
+            <input
+              className='m-0 w-full appearance-none border-none bg-transparent p-0 pr-2 text-[16px] text-fg-primary outline-none'
               autoFocus
               onBlur={handleCreateNewIssue}
               onChange={onChange}
@@ -263,14 +192,22 @@ const NewGitLabIssueInput = (props: Props) => {
               ref={ref}
               type='text'
             />
-            {dirty && error && <Error>{error}</Error>}
-          </Form>
-          <StyledButton ref={originRef} onMouseDown={togglePortal}>
-            <StyledLink>{selectedFullPath}</StyledLink>
-            <StyledIcon />
-          </StyledButton>
-        </Issue>
-      </Item>
+            {dirty && error && (
+              <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
+            )}
+          </form>
+          <PlainButton
+            className='m-0 flex h-5 w-fit items-center justify-start bg-transparent opacity-100 hover:bg-transparent focus:bg-transparent'
+            ref={originRef}
+            onMouseDown={togglePortal}
+          >
+            <a className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'>
+              {selectedFullPath}
+            </a>
+            <ExpandMore className='h-5 w-5 p-0 text-accent' />
+          </PlainButton>
+        </div>
+      </div>
       {menuPortal(
         <NewGitLabIssueMenu
           gitlabProjects={gitlabProjects}

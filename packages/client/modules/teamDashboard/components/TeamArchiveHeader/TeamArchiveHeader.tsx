@@ -1,31 +1,6 @@
-import styled from '@emotion/styled'
 import {Archive} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
-
-const RootBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '16px 0',
-  width: '100%'
-})
-
-const HeadingBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  margin: '0 32px 0 0',
-  whiteSpace: 'nowrap'
-})
-
-const Heading = styled('div')({
-  fontSize: 18,
-  lineHeight: '32px'
-})
-
-const StyledIcon = styled(Archive)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
 
 interface Props {
   teamId: string
@@ -36,13 +11,13 @@ const TeamArchiveHeader = (props: Props) => {
   const navigate = useNavigate()
   const goToTeamDash = () => navigate(`/team/${teamId}/tasks`)
   return (
-    <RootBlock>
-      <HeadingBlock>
-        <StyledIcon />
-        <Heading>Archived Tasks</Heading>
-      </HeadingBlock>
+    <div className='flex w-full items-center py-4'>
+      <div className='mr-8 flex items-center whitespace-nowrap'>
+        <Archive className='mr-2 text-fg-secondary' />
+        <div className='text-[18px] leading-8'>Archived Tasks</div>
+      </div>
       <DashNavControl icon='arrow_back' label='Back to Team Tasks' onClick={goToTeamDash} />
-    </RootBlock>
+    </div>
   )
 }
 

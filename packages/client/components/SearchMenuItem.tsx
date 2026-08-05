@@ -1,31 +1,9 @@
-import styled from '@emotion/styled'
 import {Search} from '@mui/icons-material'
 import type * as React from 'react'
 import {forwardRef} from 'react'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'
-
-const SearchItem = styled(MenuItemLabel)({
-  margin: '0 8px 8px',
-  overflow: 'visible',
-  padding: 0,
-  position: 'relative'
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  margin: 0,
-  pointerEvents: 'none',
-  top: 4
-})
-
-const SearchIcon = styled(Search)({
-  height: 18,
-  width: 18,
-  color: 'var(--color-fg-secondary)'
-})
 
 interface Props {
   placeholder: string
@@ -36,11 +14,11 @@ interface Props {
 export const SearchMenuItem = forwardRef((props: Props, ref: any) => {
   const {placeholder, onChange, value} = props
   return (
-    <SearchItem ref={ref}>
-      <StyledMenuItemIcon>
-        <SearchIcon />
-      </StyledMenuItemIcon>
+    <MenuItemLabel ref={ref} className='relative mx-2 mt-0 mb-2 overflow-visible p-0'>
+      <MenuItemComponentAvatar className='pointer-events-none absolute top-1 left-2 m-0'>
+        <Search className='h-[18px] w-[18px] text-fg-secondary' />
+      </MenuItemComponentAvatar>
       <MenuSearch placeholder={placeholder} onChange={onChange} value={value} />
-    </SearchItem>
+    </MenuItemLabel>
   )
 })

@@ -1,76 +1,15 @@
-import styled from '@emotion/styled'
 import {Info} from '@mui/icons-material'
 import type * as React from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useForm from '~/hooks/useForm'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import Legitity from '~/validation/Legitity'
+import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import RaisedButton from '../RaisedButton'
-
-const LightbulbWrapper = styled('span')({
-  marginRight: 12
-})
-
-const TextArea = styled(TextAreaAutoSize)<{isDesktop: boolean}>(({isDesktop}) => ({
-  backgroundColor: 'transparent',
-  padding: 24,
-  borderColor: 'var(--color-hairline-field)',
-  borderWidth: 1,
-  borderRadius: 8,
-  display: 'block',
-  fontSize: isDesktop ? 18 : 16,
-  fontWeight: 400,
-  lineHeight: '23.4px',
-  outline: 'none',
-  resize: 'none',
-  width: '100%'
-}))
-
-const SuggestedPromptsHeader = styled('h3')({
-  fontSize: 20
-})
-
-const SuggestedPromptWrapper = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  padding: '8px 6px',
-  fontSize: isDesktop ? 18 : 16,
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: 'var(--color-surface-raised)'
-  }
-}))
-
-const UpdatePromptFooter = styled('div')({
-  paddingTop: 24,
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
-
-const StyledRaisedButton = styled(RaisedButton)({
-  marginLeft: 16,
-  paddingTop: 12,
-  paddingBottom: 12,
-  fontSize: 18
-})
-
-const ErrorWrapper = styled('div')({
-  color: PALETTE.ROSE_500,
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: 13,
-  marginTop: 16
-})
-
-const InfoIcon = styled(Info)({
-  color: 'var(--color-fg-muted)',
-  height: 18,
-  width: 18,
-  marginRight: 8
-})
 
 const SUGGESTED_PROMPTS = [
   'What’s changed with your tasks?',
@@ -126,11 +65,14 @@ const TeamPromptEditablePromptModal = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onCloseModal}>
       <DialogContent className='w-[860px] max-w-[95vw] overflow-auto'>
         <DialogTitle>Prompt</DialogTitle>
-        <TextArea
+        <TextAreaAutoSize
           {...fields.meetingPrompt}
+          className={cn(
+            'block w-full resize-none rounded-lg border border-hairline-field bg-transparent p-6 font-normal leading-[23.4px] outline-none',
+            isDesktop ? 'text-[18px]' : 'text-[16px]'
+          )}
           onFocus={(e: React.FocusEvent<HTMLTextAreaElement>) => e.target.select()}
           name='meetingPrompt'
-          isDesktop={isDesktop}
           autoFocus={true}
           maxLength={500}
           maxRows={3}
@@ -138,32 +80,36 @@ const TeamPromptEditablePromptModal = (props: Props) => {
           placeholder='What are you working on today? Stuck on anything?'
         />
         {displayError && (
-          <ErrorWrapper>
-            <InfoIcon />
+          <div className='mt-4 flex items-center text-[13px] text-rose-500'>
+            <Info className='mr-2 h-[18px] w-[18px] text-fg-muted' />
             {displayError}
-          </ErrorWrapper>
+          </div>
         )}
-        <SuggestedPromptsHeader>Suggestions</SuggestedPromptsHeader>
+        <h3 className='text-[20px]'>Suggestions</h3>
         {SUGGESTED_PROMPTS.map((prompt, i) => (
-          <SuggestedPromptWrapper
-            isDesktop={isDesktop}
+          <div
+            className={cn(
+              'cursor-pointer px-1.5 py-2 hover:bg-surface-raised',
+              isDesktop ? 'text-[18px]' : 'text-[16px]'
+            )}
             key={i}
             onClick={() => setValue('meetingPrompt', prompt)}
           >
-            <LightbulbWrapper>💡</LightbulbWrapper>
+            <span className='mr-3'>💡</span>
             {prompt}
-          </SuggestedPromptWrapper>
+          </div>
         ))}
-        <UpdatePromptFooter>
-          <StyledRaisedButton
+        <div className='flex justify-end pt-6'>
+          <RaisedButton
+            className='ml-4 py-3 text-[18px]'
             disabled={!!fields.meetingPrompt.error}
             onClick={handleSubmitUpdate}
             size='medium'
             palette='blue'
           >
             Use prompt
-          </StyledRaisedButton>
-        </UpdatePromptFooter>
+          </RaisedButton>
+        </div>
       </DialogContent>
     </Dialog>
   )

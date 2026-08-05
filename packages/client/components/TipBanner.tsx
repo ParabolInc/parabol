@@ -1,28 +1,6 @@
-import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import type {ReactNode} from 'react'
-
-const Banner = styled('div')({
-  border: `1px dashed var(--color-hairline-strong)`,
-  borderRadius: 4,
-  display: 'flex',
-  fontSize: 14,
-  lineHeight: '24px',
-  padding: 15, // 16 - 1 (border-widt)
-  userSelect: 'none'
-})
-
-const StyledIcon = styled('div')({
-  height: 24,
-  width: 24,
-  color: 'var(--color-fg-secondary)',
-  marginRight: 16
-})
-
-const Inner = styled('div')({
-  fontSize: 'inherit',
-  lineHeight: 'inherit'
-})
+import {cn} from '../ui/cn'
 
 interface Props {
   children: ReactNode
@@ -34,10 +12,15 @@ const TipBanner = (props: Props) => {
   const {children, className, icon} = props
 
   return (
-    <Banner className={className}>
-      <StyledIcon>{icon || <InfoIcon />}</StyledIcon>
-      <Inner>{children}</Inner>
-    </Banner>
+    <div
+      className={cn(
+        'flex select-none rounded-[4px] border border-hairline-strong border-dashed p-[15px] text-sm leading-6',
+        className
+      )}
+    >
+      <div className='mr-4 h-6 w-6 text-fg-secondary'>{icon || <InfoIcon />}</div>
+      <div>{children}</div>
+    </div>
   )
 }
 

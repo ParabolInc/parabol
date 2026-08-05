@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -8,35 +7,9 @@ import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleAIFeaturesMutation from '../../../../mutations/ToggleAIFeaturesMutation'
-import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
-
-const PanelRow = styled('div')({
-  borderTop: '1px solid var(--color-hairline)',
-  padding: Layout.ROW_GUTTER
-})
-
-const FeatureRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 8
-})
-
-const FeatureNameGroup = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
-  '& svg': {
-    display: 'block'
-  }
-})
 
 interface Props {
   organizationRef: OrgFeatures_organization$key
@@ -68,10 +41,10 @@ const OrgFeatures = (props: Props) => {
 
   if (!isOrgAdmin) return null
   return (
-    <StyledPanel isWide label='AI Features'>
-      <PanelRow>
-        <FeatureRow>
-          <FeatureNameGroup>
+    <Panel className='max-w-[976px]' label='AI Features'>
+      <div className='border-hairline border-t p-4'>
+        <div className='mb-2 flex items-center justify-between'>
+          <div className='flex items-center gap-1 [&_svg]:block'>
             <span>Enable AI Features</span>
             <Tooltip>
               <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
@@ -79,11 +52,11 @@ const OrgFeatures = (props: Props) => {
               </TooltipTrigger>
               <TooltipContent>Enable AI-powered features across your organization</TooltipContent>
             </Tooltip>
-          </FeatureNameGroup>
+          </div>
           <Toggle active={useAI} onClick={handleToggle} />
-        </FeatureRow>
-      </PanelRow>
-    </StyledPanel>
+        </div>
+      </div>
+    </Panel>
   )
 }
 

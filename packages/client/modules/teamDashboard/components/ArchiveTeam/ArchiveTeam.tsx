@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -10,12 +9,6 @@ import ArchiveTeamForm from './ArchiveTeamForm'
 interface Props {
   team: ArchiveTeam_team$key
 }
-
-const Hint = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 13,
-  marginTop: 8
-})
 
 const ArchiveTeam = (props: Props) => {
   const {team: teamRef} = props
@@ -45,9 +38,9 @@ const ArchiveTeam = (props: Props) => {
           >
             <IconLabel icon='remove_circle' label='Delete Team' />
           </LinkButton>
-          <Hint>
+          <div className='mt-2 text-[13px] text-fg-secondary'>
             <b>Note</b>: {'This can’t be undone.'}
-          </Hint>
+          </div>
         </div>
       ) : (
         <ArchiveTeamForm handleCancel={handleCancel} team={team} />

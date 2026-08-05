@@ -1,14 +1,13 @@
-import styled from '@emotion/styled'
 import DeleteIcon from '@mui/icons-material/Delete'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsToggleTranscription_settings$key} from '~/__generated__/NewMeetingSettingsToggleTranscription_settings.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
-import {PALETTE} from '../styles/paletteV3'
+import {cn} from '../ui/cn'
 import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
@@ -16,78 +15,20 @@ import FlatButton from './FlatButton'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
-const ButtonRow = styled(PlainButton)({
-  background: 'var(--color-surface-well)',
-  borderRadius: '8px',
-  display: 'flex',
-  fontSize: 14,
-  lineHeight: '24px',
-  fontWeight: 600,
-  userSelect: 'none',
-  width: '100%',
-  ':hover': {
-    backgroundColor: 'var(--color-surface-raised)'
-  },
-  padding: '22px 16px',
-  alignItems: 'center'
-})
-
-const Label = styled('div')({
-  flex: 1,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  fontSize: 20,
-  fontWeight: 600,
-  color: 'var(--color-fg-primary)'
-})
-
-const StyledDeleteIcon = styled(DeleteIcon)({
-  fontSize: 28,
-  cursor: 'pointer',
-  color: 'var(--color-fg-secondary)',
-  '&:hover': {
-    color: 'var(--color-fg-primary)'
-  }
-})
-
-const StyledCheckbox = styled(Checkbox)<{active: boolean}>(({active}) => ({
-  '&&': {
-    color: active ? 'var(--color-accent)' : 'var(--color-fg-primary)',
-    svg: {
-      fontSize: 28
-    },
-    width: 28,
-    height: 28,
-    textAlign: 'center',
-    userSelect: 'none'
-  }
-}))
-
-const StyledButton = styled(FlatButton)({
-  background: PALETTE.SKY_500,
-  borderColor: PALETTE.SLATE_400,
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  minWidth: 36,
-  marginLeft: '16px'
-})
-
-const StyledInput = styled('input')({
-  appearance: 'none',
-  background: 'inherit',
-  border: 'none',
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  margin: 0,
-  padding: '0px 8px 0px 0px',
-  outline: 0,
-  width: '100%',
-  ':focus': {
-    outline: 'none'
-  }
-})
+const ButtonRow = (props: {children: ReactNode; className?: string; onClick?: () => void}) => {
+  const {children, className, onClick} = props
+  return (
+    <PlainButton
+      onClick={onClick}
+      className={cn(
+        'flex w-full select-none items-center rounded-lg bg-surface-well px-4 py-[22px] font-semibold text-sm leading-6 hover:bg-surface-raised',
+        className
+      )}
+    >
+      {children}
+    </PlainButton>
+  )
+}
 
 interface Props {
   settingsRef: NewMeetingSettingsToggleTranscription_settings$key
@@ -156,12 +97,21 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
     <>
       {!showInput ? (
         <ButtonRow onClick={toggleCheckIn} className={className}>
-          <Label>{'Include Zoom Transcription'}</Label>
-          <StyledCheckbox active={isChecked} />
+          <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[20px] text-fg-primary'>
+            {'Include Zoom Transcription'}
+          </div>
+          <Checkbox
+            active={isChecked}
+            className={cn(
+              'h-7 w-7 select-none text-center [&_svg]:text-[28px]',
+              isChecked ? 'text-accent' : 'text-fg-primary'
+            )}
+          />
         </ButtonRow>
       ) : (
         <ButtonRow>
-          <StyledInput
+          <input
+            className='m-0 w-full appearance-none border-none bg-inherit p-0 pr-2 text-[16px] text-fg-primary outline-none focus:outline-none'
             placeholder='Paste your Zoom meeting URL'
             onChange={onChange}
             name='url'
@@ -169,11 +119,18 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
             readOnly={hasVideoMeetingURL}
           />
           {hasVideoMeetingURL ? (
-            <StyledDeleteIcon onClick={handleDelete} />
+            <DeleteIcon
+              onClick={handleDelete}
+              className='cursor-pointer text-[28px] text-fg-secondary hover:text-fg-primary'
+            />
           ) : (
-            <StyledButton onClick={handleSubmit} size='medium'>
+            <FlatButton
+              onClick={handleSubmit}
+              size='medium'
+              className='ml-4 min-w-9 border-slate-400 bg-sky-500 font-semibold text-[12px] text-white'
+            >
               Submit
-            </StyledButton>
+            </FlatButton>
           )}
         </ButtonRow>
       )}

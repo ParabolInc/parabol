@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key} from '~/__generated__/TaskFooterIntegrateMenuSignup_TeamMemberIntegrations.graphql'
@@ -20,16 +19,6 @@ interface Props {
   integrationsRef: TaskFooterIntegrateMenuSignup_TeamMemberIntegrations$key
 }
 
-const NarrowMenu = styled(Menu)({
-  width: 250
-})
-
-const Label = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 14,
-  padding: '8px 16px 0'
-})
-
 const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const {menuProps, mutationProps, teamId, label, integrationsRef} = props
   const {submitting} = mutationProps
@@ -49,10 +38,10 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
 
   if (submitting) return <LoadingComponent spinnerSize={24} height={24} showAfter={0} width={200} />
   return (
-    <NarrowMenu ariaLabel={'Integrate with a Service'} {...menuProps}>
+    <Menu className='w-[250px]' ariaLabel={'Integrate with a Service'} {...menuProps}>
       {label && (
         <>
-          <Label>{label}</Label>
+          <div className='px-4 pt-2 pb-0 text-[14px] text-fg-secondary'>{label}</div>
           <MenuItemHR />
         </>
       )}
@@ -68,7 +57,7 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
         teamId={teamId}
         gitlabRef={integrations.gitlab}
       />
-    </NarrowMenu>
+    </Menu>
   )
 }
 

@@ -1,26 +1,4 @@
-import styled from '@emotion/styled'
 import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingLeft: 8,
-  paddingRight: 8,
-  width: '100%'
-})
-
-const ItemIcon = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  height: 24,
-  width: 24,
-  margin: 8
-})
-
-const Label = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 14,
-  lineHeight: '32px'
-})
 
 interface Props {
   //FIXME 6062: change to React.ComponentType
@@ -32,8 +10,8 @@ interface Props {
 const MenuItemWithIcon = (props: Props) => {
   const {icon, label, dataCy} = props
   return (
-    <Wrapper data-cy={`${dataCy}`}>
-      <ItemIcon>
+    <div className='flex w-full items-center px-2' data-cy={`${dataCy}`}>
+      <div className='m-2 h-6 w-6 text-fg-secondary'>
         {
           {
             delete: <Delete />,
@@ -43,9 +21,9 @@ const MenuItemWithIcon = (props: Props) => {
             edit: <Edit />
           }[icon]
         }
-      </ItemIcon>
-      <Label>{label}</Label>
-    </Wrapper>
+      </div>
+      <div className='text-fg-primary text-sm leading-8'>{label}</div>
+    </div>
   )
 }
 

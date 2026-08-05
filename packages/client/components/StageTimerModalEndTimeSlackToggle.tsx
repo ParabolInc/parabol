@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {SetSlackNotificationMutation as TSetSlackNotificationMutation} from '../__generated__/SetSlackNotificationMutation.graphql'
@@ -10,7 +9,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetSlackNotificationMutation from '../mutations/SetSlackNotificationMutation'
-import {ICON_SIZE} from '../styles/typographyV2'
 import SlackClientManager from '../utils/SlackClientManager'
 import Checkbox from './Checkbox'
 import PlainButton from './PlainButton/PlainButton'
@@ -18,47 +16,6 @@ import PlainButton from './PlainButton/PlainButton'
 interface Props {
   teamMember: StageTimerModalEndTimeSlackToggle_teamMember$key
 }
-
-const ButtonRow = styled(PlainButton)({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%'
-})
-
-const Label = styled('div')({
-  cursor: 'pointer',
-  fontSize: 14,
-  minWidth: 160,
-  padding: '8px 0 8px 8px',
-  userSelect: 'none'
-})
-
-const Note = styled('div')({
-  fontSize: 12,
-  fontStyle: 'italic',
-  padding: '8px 0 8px 0px',
-  textAlign: 'center',
-  userSelect: 'none'
-})
-
-const StyledCheckbox = styled(Checkbox)({
-  fontSize: ICON_SIZE.MD18,
-  marginRight: 8,
-  textAlign: 'center',
-  userSelect: 'none',
-  width: ICON_SIZE.MD24
-})
-
-const Block = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const StyledNotificationErrorMessage = styled(NotificationErrorMessage)({
-  paddingBottom: 8
-})
 
 const isNotificationActive = (integration: {
   isActive: boolean
@@ -141,17 +98,30 @@ const StageTimerModalEndTimeSlackToggle = (props: Props) => {
     }
   }
   return (
-    <Block>
+    <div className='flex w-full flex-col'>
       {SlackClientManager.isAvailable && (slack?.isActive || noActiveIntegrations) && (
-        <ButtonRow onClick={onClick}>
-          <StyledCheckbox active={slackToggleActive} />
-          <Label>{'Notify team via Slack'}</Label>
-        </ButtonRow>
+        <PlainButton className='flex w-full items-center justify-between' onClick={onClick}>
+          <Checkbox
+            className='mr-2 w-6 select-none text-center text-[18px]'
+            active={slackToggleActive}
+          />
+          <div className='min-w-[160px] cursor-pointer select-none py-2 pl-2 text-[14px]'>
+            {'Notify team via Slack'}
+          </div>
+        </PlainButton>
       )}
-      {isMattermostActive && <Note>{'Notifying via Mattermost'}</Note>}
-      {isMSTeamsActive && <Note>{'Notifying via MS Teams'}</Note>}
-      <StyledNotificationErrorMessage error={error} />
-    </Block>
+      {isMattermostActive && (
+        <div className='select-none py-2 text-center text-[12px] italic'>
+          {'Notifying via Mattermost'}
+        </div>
+      )}
+      {isMSTeamsActive && (
+        <div className='select-none py-2 text-center text-[12px] italic'>
+          {'Notifying via MS Teams'}
+        </div>
+      )}
+      <NotificationErrorMessage className='pb-2' error={error} />
+    </div>
   )
 }
 

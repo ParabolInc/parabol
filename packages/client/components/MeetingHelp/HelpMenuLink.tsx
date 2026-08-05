@@ -1,8 +1,9 @@
-import styled from '@emotion/styled'
-import ExternalLink from '../ExternalLink'
+import {cn} from '../../ui/cn'
+import ExternalLink, {type ExternalLinkProps} from '../ExternalLink'
 
-const HelpMenuLink = styled(ExternalLink)({
-  textDecoration: 'underline'
-})
+const HelpMenuLink = (props: ExternalLinkProps) => {
+  const {className, ...rest} = props
+  return <ExternalLink {...rest} className={cn('underline', className)} />
+}
 
 export default HelpMenuLink

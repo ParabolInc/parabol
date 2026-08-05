@@ -1,36 +1,7 @@
-import styled from '@emotion/styled'
 import {Link} from '@mui/icons-material'
 import type {ReactNode} from 'react'
 import CopyLink from '../../../../components/CopyLink'
-
-const CopyIcon = styled('div')({
-  color: 'inherit',
-  display: 'block',
-  height: 24,
-  width: 24,
-  marginRight: 12
-})
-
-const CopyLabel = styled('div')({
-  color: 'inherit',
-  fontSize: 'inherit',
-  whiteSpace: 'nowrap'
-})
-
-const CopyBlock = styled('div')({
-  alignItems: 'center',
-  color: 'var(--color-fg-secondary)',
-  display: 'flex',
-  flexShrink: 0,
-  fontSize: 'inherit',
-  minWidth: 0,
-  userSelect: 'none',
-  overflow: 'auto',
-  '&:hover': {
-    color: 'var(--color-fg-primary)',
-    cursor: 'pointer'
-  }
-})
+import {cn} from '../../../../ui/cn'
 
 interface Props {
   className?: string
@@ -47,18 +18,23 @@ const CopyShortLink = (props: Props) => {
   const theLabel = label || url
   return (
     <CopyLink url={url} title={title} tooltip={tooltip} onCopy={onCopy}>
-      <CopyBlock className={className}>
+      <div
+        className={cn(
+          'flex min-w-0 shrink-0 select-none items-center overflow-auto text-fg-secondary hover:cursor-pointer hover:text-fg-primary',
+          className
+        )}
+      >
         {icon && (
-          <CopyIcon>
+          <div className='mr-3 block h-6 w-6'>
             {
               {
                 link: <Link />
               }[icon]
             }
-          </CopyIcon>
+          </div>
         )}
-        <CopyLabel>{theLabel}</CopyLabel>
-      </CopyBlock>
+        <div className='whitespace-nowrap'>{theLabel}</div>
+      </div>
     </CopyLink>
   )
 }

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -9,64 +8,11 @@ import PlainButton from '../../../../components/PlainButton/PlainButton'
 import ResponsiveDashSidebar from '../../../../components/ResponsiveDashSidebar'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
-import {desktopSidebarShadow} from '../../../../styles/elevation'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
-import {
-  BezierCurve,
-  Breakpoint,
-  DiscussionThreadEnum,
-  GlobalBanner,
-  ZIndex
-} from '../../../../types/constEnums'
+import {Breakpoint, DiscussionThreadEnum} from '../../../../types/constEnums'
+import {cn} from '../../../../ui/cn'
 import OrgPlanDrawerContent from './OrgPlanDrawerContent'
 
 const isGlobalBannerEnabled = window.__ACTION__.GLOBAL_BANNER_ENABLED
-
-const DrawerHeader = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'space-between',
-  padding: '16px 8px 16px 16px',
-  width: '100%'
-})
-
-const Drawer = styled('div')<{isDesktop: boolean; isOpen: boolean}>(({isDesktop, isOpen}) => ({
-  boxShadow: isDesktop ? desktopSidebarShadow : undefined,
-  backgroundColor: 'var(--color-surface-card)',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'stretch',
-  overflow: 'hidden',
-  paddingTop: isGlobalBannerEnabled ? GlobalBanner.HEIGHT : 0,
-  position: isDesktop ? 'fixed' : 'static',
-  bottom: 0,
-  top: 0,
-  right: isDesktop ? 0 : undefined,
-  transition: `all 200ms ${BezierCurve.DECELERATE}`,
-  userSelect: 'none',
-  transform: `translateX(${isOpen ? 0 : DiscussionThreadEnum.WIDTH}px)`,
-  width: DiscussionThreadEnum.WIDTH,
-  zIndex: ZIndex.SIDEBAR,
-  height: '100%',
-  '@supports (height: 1svh) and (height: 1lvh)': {
-    height: isDesktop ? '100lvh' : '100svh'
-  }
-}))
-
-const CloseIcon = styled(Close)({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: ICON_SIZE.MD18,
-  display: 'flex',
-  alignItems: 'center'
-})
 
 type Props = {
   organizationRef: OrgPlanDrawer_organization$key
@@ -107,17 +53,26 @@ const OrgPlanDrawer = (props: Props) => {
         isRightDrawer
         sidebarWidth={DiscussionThreadEnum.WIDTH}
       >
-        <Drawer isDesktop={isDesktop} isOpen={showDrawer}>
-          <DrawerHeader>
+        <div
+          className={cn(
+            'top-0 bottom-0 z-sidebar flex h-full w-[360px] flex-1 select-none flex-col justify-stretch overflow-hidden bg-surface-card transition-all duration-200 ease-[cubic-bezier(0,0,.2,1)]',
+            isGlobalBannerEnabled ? 'pt-6' : 'pt-0',
+            isDesktop
+              ? 'fixed right-0 shadow-[0px_2px_4px_-1px_rgba(0,0,0,.2),0px_4px_5px_0px_rgba(0,0,0,.14),0px_1px_10px_0px_rgba(0,0,0,.12)] supports-[(height:1svh)_and_(height:1lvh)]:h-[100lvh]'
+              : 'static supports-[(height:1svh)_and_(height:1lvh)]:h-[100svh]',
+            showDrawer ? 'translate-x-0' : 'translate-x-[360px]'
+          )}
+        >
+          <div className='flex w-full items-center justify-between py-4 pr-2 pl-4'>
             <LabelHeading className='text-xs normal-case leading-[18px]'>
               {'Plan Details'}
             </LabelHeading>
-            <StyledCloseButton onClick={toggleSidebar}>
-              <CloseIcon />
-            </StyledCloseButton>
-          </DrawerHeader>
+            <PlainButton className='flex h-[18px] items-center' onClick={toggleSidebar}>
+              <Close className='cursor-pointer text-fg-secondary hover:opacity-50' />
+            </PlainButton>
+          </div>
           <OrgPlanDrawerContent tier={billingTier} />
-        </Drawer>
+        </div>
       </ResponsiveDashSidebar>
       <div className='-translate-x-1/2 -translate-y-1/2 fixed top-1/2 left-1/2 transform'>
         <Confetti active={showConfetti} />

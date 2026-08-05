@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Search as SearchIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -8,50 +7,8 @@ import SendClientSideEvent from '~/utils/SendClientSideEvent'
 import type {SpotlightSearchBar_meeting$key} from '../__generated__/SpotlightSearchBar_meeting.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {PALETTE} from '../styles/paletteV3'
-import {ElementHeight, ElementWidth} from '../types/constEnums'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
-
-const SearchWrapper = styled('div')({
-  width: ElementWidth.REFLECTION_CARD
-})
-
-const Search = styled(MenuItemLabel)({
-  overflow: 'visible',
-  padding: 0,
-  position: 'absolute',
-  bottom: -ElementHeight.REFLECTION_CARD / 2,
-  width: ElementWidth.REFLECTION_CARD
-})
-
-const StyledMenuItemIcon = styled(MenuItemComponentAvatar)({
-  position: 'absolute',
-  left: 8,
-  top: 8
-})
-
-const StyledSearchIcon = styled(SearchIcon)({
-  color: 'var(--color-fg-secondary)'
-})
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  backgroundColor: 'var(--color-surface-input)',
-  border: '1px solid var(--color-accent)',
-  borderRadius: 4,
-  boxShadow: `0 0 1px 1px ${PALETTE.SKY_300}`,
-  color: 'var(--color-fg-primary)',
-  display: 'block',
-  fontSize: 14,
-  lineHeight: '24px',
-  outline: 'none',
-  padding: '6px 0 6px 40px',
-  width: '100%',
-  '::placeholder': {
-    color: 'var(--color-fg-secondary)'
-  }
-})
 
 const setSpotlightSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
@@ -102,12 +59,13 @@ const SpotlightSearchBar = (props: Props) => {
   }
 
   return (
-    <SearchWrapper>
-      <Search>
-        <StyledMenuItemIcon>
-          <StyledSearchIcon />
-        </StyledMenuItemIcon>
-        <SearchInput
+    <div className='w-[296px]'>
+      <MenuItemLabel className='absolute bottom-[-22px] w-[296px] overflow-visible p-0'>
+        <MenuItemComponentAvatar className='absolute top-2 left-2'>
+          <SearchIcon className='text-fg-secondary' />
+        </MenuItemComponentAvatar>
+        <input
+          className='block w-full appearance-none rounded border border-accent bg-surface-input py-1.5 pr-0 pl-10 text-fg-primary text-sm leading-6 shadow-[0_0_1px_1px_var(--color-sky-300)] outline-none placeholder:text-fg-secondary'
           onKeyDown={onKeyDown}
           autoFocus
           autoComplete='off'
@@ -119,8 +77,8 @@ const SpotlightSearchBar = (props: Props) => {
           ref={inputRef}
           value={spotlightSearchQuery ?? ''}
         />
-      </Search>
-    </SearchWrapper>
+      </MenuItemLabel>
+    </div>
   )
 }
 

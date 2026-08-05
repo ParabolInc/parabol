@@ -1,38 +1,27 @@
-import styled from '@emotion/styled'
 import {forwardRef} from 'react'
-import {PALETTE} from '~/styles/paletteV3'
-import {Radius} from '~/types/constEnums'
+import {cn} from '../ui/cn'
 import BaseButton, {type BaseButtonProps} from './BaseButton'
-
-const StyledBaseButton = styled(BaseButton)((props: BaseButtonProps) => {
-  const {disabled, waiting} = props
-  const visuallyDisabled = disabled || waiting
-  return {
-    backgroundImage: visuallyDisabled
-      ? PALETTE.GRADIENT_TOMATO_400_ROSE_300
-      : PALETTE.GRADIENT_TOMATO_600_ROSE_500,
-    borderRadius: Radius.BUTTON,
-    color: '#FFFFFF',
-    fontWeight: 600,
-    opacity: visuallyDisabled ? 1 : undefined,
-    outline: 0,
-    ':hover,:focus,:active': {
-      backgroundImage: visuallyDisabled
-        ? PALETTE.GRADIENT_TOMATO_400_ROSE_300
-        : PALETTE.GRADIENT_TOMATO_700_ROSE_600,
-      opacity: visuallyDisabled ? 1 : undefined
-    }
-  }
-})
 
 interface Props extends BaseButtonProps {}
 
 const FlatPrimaryButton = forwardRef((props: Props, ref: any) => {
-  const {children, className} = props
+  const {children, className, ...rest} = props
+  const {disabled, waiting} = rest
+  const visuallyDisabled = disabled || waiting
   return (
-    <StyledBaseButton {...props} ref={ref} className={className}>
+    <BaseButton
+      {...rest}
+      ref={ref}
+      className={cn(
+        'rounded-md font-semibold text-white outline-none',
+        visuallyDisabled
+          ? 'bg-[linear-gradient(to_right,var(--color-tomato-400)_0,var(--color-rose-300)_100%)] opacity-100 hover:bg-[linear-gradient(to_right,var(--color-tomato-400)_0,var(--color-rose-300)_100%)] hover:opacity-100 focus:bg-[linear-gradient(to_right,var(--color-tomato-400)_0,var(--color-rose-300)_100%)] focus:opacity-100 active:bg-[linear-gradient(to_right,var(--color-tomato-400)_0,var(--color-rose-300)_100%)] active:opacity-100'
+          : 'bg-[linear-gradient(to_right,var(--color-tomato-600)_0,var(--color-rose-500)_100%)] hover:bg-[linear-gradient(to_right,var(--color-tomato-700)_0,var(--color-rose-600)_100%)] focus:bg-[linear-gradient(to_right,var(--color-tomato-700)_0,var(--color-rose-600)_100%)] active:bg-[linear-gradient(to_right,var(--color-tomato-700)_0,var(--color-rose-600)_100%)]',
+        className
+      )}
+    >
       {children}
-    </StyledBaseButton>
+    </BaseButton>
   )
 })
 

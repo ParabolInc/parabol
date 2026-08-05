@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs, {type Dayjs} from 'dayjs'
@@ -22,50 +21,6 @@ import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import Legitity from '../../../../validation/Legitity'
 import DateTimePickers from './DateTimePickers'
 import VideoConferencing from './VideoConferencing'
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  paddingTop: 16
-})
-
-const StyledDialogContainer = styled(DialogContainer)({
-  width: 'auto',
-  overflowY: 'scroll'
-})
-
-const CloseIcon = styled(Close)({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  '&:hover': {
-    opacity: 0.5
-  }
-})
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  marginLeft: 'auto'
-})
-
-const StyledInput = styled('input')({
-  border: `1px solid var(--color-hairline-field)`,
-  borderRadius: 4,
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  font: 'inherit',
-  margin: '8px 0',
-  padding: '12px 16px',
-  outline: 0,
-  width: '100%',
-  '::placeholder': {
-    color: 'var(--color-fg-muted)'
-  }
-})
-
-const ErrorMessage = styled(StyledError)({
-  textAlign: 'left',
-  paddingBottom: 8
-})
 
 const validateTitle = (title: string) => {
   return new Legitity(title).trim().min(2, `C’mon, you call that a title?`)
@@ -228,7 +183,7 @@ const GcalModal = (props: Props) => {
   }
 
   return (
-    <StyledDialogContainer>
+    <DialogContainer className='w-auto overflow-y-scroll'>
       <DialogTitle>
         <div className='flex flex-col'>
           <div className='text-lg'>{'Schedule Your Meeting'}</div>
@@ -236,14 +191,15 @@ const GcalModal = (props: Props) => {
             Create a Google Calendar event with a link to the Parabol meeting in the description
           </div>
         </div>
-        <StyledCloseButton onClick={closeModal}>
-          <CloseIcon />
-        </StyledCloseButton>
+        <PlainButton className='ml-auto h-6' onClick={closeModal}>
+          <Close className='cursor-pointer text-fg-secondary hover:opacity-50' />
+        </PlainButton>
       </DialogTitle>
       <DialogContent>
         <div className='space-y-2'>
           <div>
-            <StyledInput
+            <input
+              className='my-2 w-full rounded-[4px] border border-hairline-field px-4 py-3 text-fg-primary outline-0 [font:inherit] placeholder:text-fg-muted'
               autoFocus
               maxLength={100}
               defaultValue={fields.title.value}
@@ -251,7 +207,7 @@ const GcalModal = (props: Props) => {
               name='title'
               placeholder='Enter the name of your meeting'
             />
-            {titleErr && <ErrorMessage>{titleErr}</ErrorMessage>}
+            {titleErr && <StyledError className='pb-2'>{titleErr}</StyledError>}
           </div>
           <div className='pt-1'>
             <DateTimePickers
@@ -277,17 +233,17 @@ const GcalModal = (props: Props) => {
               </label>
             </div>
           )}
-          {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
+          {inviteError && <StyledError className='pb-2'>{inviteError}</StyledError>}
         </div>
-        <Wrapper>
+        <div className='flex justify-end pt-4'>
           <DialogActions>
             <PrimaryButton size='medium' onClick={handleClick}>
               {`Create Meeting & Gcal Invite`}
             </PrimaryButton>
           </DialogActions>
-        </Wrapper>
+        </div>
       </DialogContent>
-    </StyledDialogContainer>
+    </DialogContainer>
   )
 }
 

@@ -1,41 +1,8 @@
-import styled from '@emotion/styled'
 import {NavigateNext} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  fontSize: 14,
-  padding: '16px 0px',
-  maxWidth: '100%',
-  overflow: 'hidden'
-})
-
-const StyledIcon = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  opacity: 0.5
-})
-
-const NavigateNextIcon = styled(NavigateNext)({
-  height: 18,
-  color: 'var(--color-fg-primary)'
-})
-
-const NavLabel = styled('span')<{isCurrent?: boolean}>(({isCurrent}) => ({
-  fontWeight: isCurrent ? 600 : 400,
-  textWrap: 'nowrap',
-  '&:hover': {
-    cursor: isCurrent ? 'default' : 'pointer'
-  }
-}))
-
-const OrgLabel = styled(NavLabel)({
-  overflow: 'hidden',
-  textOverflow: 'ellipsis'
-})
 
 type Props = {
   organizationRef: OrgNav_organization$key
@@ -55,17 +22,29 @@ const OrgNav = (props: Props) => {
   const {name: orgName} = organization
 
   return (
-    <Wrapper>
-      <NavLabel onClick={() => navigate('/meetings')}>Dashboard</NavLabel>
-      <StyledIcon>
-        <NavigateNextIcon />
-      </StyledIcon>
-      <NavLabel onClick={() => navigate('/me/organizations')}>Organization</NavLabel>
-      <StyledIcon>
-        <NavigateNextIcon />
-      </StyledIcon>
-      <OrgLabel isCurrent>{orgName}</OrgLabel>
-    </Wrapper>
+    <div className='flex max-w-full overflow-hidden py-4 text-[14px]'>
+      <span
+        className='text-nowrap font-normal hover:cursor-pointer'
+        onClick={() => navigate('/meetings')}
+      >
+        Dashboard
+      </span>
+      <div className='flex items-center opacity-50'>
+        <NavigateNext className='h-[18px] text-fg-primary' />
+      </div>
+      <span
+        className='text-nowrap font-normal hover:cursor-pointer'
+        onClick={() => navigate('/me/organizations')}
+      >
+        Organization
+      </span>
+      <div className='flex items-center opacity-50'>
+        <NavigateNext className='h-[18px] text-fg-primary' />
+      </div>
+      <span className='overflow-hidden text-ellipsis text-nowrap font-semibold hover:cursor-default'>
+        {orgName}
+      </span>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Route, Routes} from 'react-router'
@@ -11,10 +10,6 @@ import TeamDashActivityTab from '../TeamDashActivityTab/TeamDashActivityTab'
 import TeamDashIntegrationsTab from '../TeamDashIntegrationsTab/TeamDashIntegrationsTab'
 import TeamDashTasksTab from '../TeamDashTasksTab/TeamDashTasksTab'
 import TeamDrawer from './TeamDrawer'
-
-const AbsoluteFab = styled(StartMeetingFAB)({
-  position: 'absolute'
-})
 
 interface Props {
   queryRef: PreloadedQuery<TeamDashMainQuery>
@@ -57,7 +52,7 @@ const TeamDashMain = (props: Props) => {
           {/*Fall back to activity view if nothing is specified*/}
           <Route path='*' element={<TeamDashActivityTab teamRef={team} />} />
         </Routes>
-        <AbsoluteFab />
+        <StartMeetingFAB className='absolute' />
       </div>
       <TeamDrawer viewer={viewer} />
     </div>

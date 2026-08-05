@@ -1,10 +1,10 @@
-import styled from '@emotion/styled'
 import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
+import {cn} from '../../../ui/cn'
 import lazyPreload from '../../../utils/lazyPreload'
 
 const SelectSharingScopeDropdown = lazyPreload(
@@ -14,54 +14,6 @@ const SelectSharingScopeDropdown = lazyPreload(
       '../../../components/SelectSharingScopeDropdown'
     )
 )
-
-const HR = styled('hr')({
-  backgroundColor: 'var(--color-hairline-strong)',
-  border: 'none',
-  flexShrink: 0,
-  height: 1,
-  margin: 0,
-  marginLeft: 56,
-  padding: 0
-})
-
-const DropdownDecoratorIcon = styled('div')({
-  marginRight: '16px',
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 24
-})
-
-const DropdownLabel = styled('div')({
-  color: 'inherit'
-})
-
-const DropdownIcon = styled('div')({
-  color: 'inherit',
-  margin: 8,
-  height: 24,
-  width: 24
-})
-
-const DropdownBlock = styled('div')<{readOnly?: boolean}>(({readOnly}) => ({
-  color: 'var(--color-fg-primary)',
-  cursor: readOnly ? undefined : 'pointer',
-  alignItems: 'center',
-  display: 'flex',
-  fontSize: 16,
-  lineHeight: '24px',
-  userSelect: 'none',
-  ':hover': {
-    color: 'var(--color-fg-primary)'
-  }
-}))
 
 interface Props {
   isOwner: boolean
@@ -76,7 +28,7 @@ const TemplateSharing = (props: Props) => {
 
   return (
     <>
-      <HR />
+      <hr className='m-0 ml-14 h-px shrink-0 border-none bg-hairline-strong p-0' />
       <div className='ly-2 ml-4 py-2 pr-auto pl-0'>
         <UnstyledTemplateSharing {...props} />
       </div>
@@ -124,19 +76,22 @@ export const UnstyledTemplateSharing = (props: Props) => {
         : 'Sharing publicly'
   return (
     <>
-      <DropdownBlock
+      <div
+        className={cn(
+          'flex select-none items-center text-base text-fg-primary',
+          !readOnly && 'cursor-pointer'
+        )}
         onMouseEnter={SelectSharingScopeDropdown.preload}
         onClick={togglePortal}
         ref={originRef}
-        readOnly={readOnly}
       >
-        <DropdownDecoratorIcon>
+        <div className='mr-4 flex h-6 w-6 cursor-pointer items-center justify-center text-fg-secondary [&_svg]:text-[18px]'>
           <ShareIcon />
-        </DropdownDecoratorIcon>
-        <DropdownLabel>{label}</DropdownLabel>
+        </div>
+        <div>{label}</div>
 
-        <DropdownIcon>{!readOnly && <ExpandMoreIcon />}</DropdownIcon>
-      </DropdownBlock>
+        <div className='m-2 h-6 w-6'>{!readOnly && <ExpandMoreIcon />}</div>
+      </div>
       {menuPortal(<SelectSharingScopeDropdown menuProps={menuProps} template={template} />)}
     </>
   )

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
@@ -15,10 +14,6 @@ interface Props {
   teams: SelectTeamDropdown_teams$key
 }
 
-const TeamMenu = styled(Menu)({
-  maxWidth: 'none'
-})
-
 const SelectTeamDropdown = (props: Props) => {
   const {teams: teamsRef, menuProps, teamHandleClick} = props
   const teams = useFragment(
@@ -31,7 +26,11 @@ const SelectTeamDropdown = (props: Props) => {
     teamsRef
   )
   return (
-    <TeamMenu ariaLabel={'Select the team associated with the new task'} {...menuProps}>
+    <Menu
+      ariaLabel={'Select the team associated with the new task'}
+      {...menuProps}
+      className='max-w-none'
+    >
       <DropdownMenuLabel>Select Team:</DropdownMenuLabel>
       {teams.map((team) => {
         return (
@@ -42,7 +41,7 @@ const SelectTeamDropdown = (props: Props) => {
           />
         )
       })}
-    </TeamMenu>
+    </Menu>
   )
 }
 

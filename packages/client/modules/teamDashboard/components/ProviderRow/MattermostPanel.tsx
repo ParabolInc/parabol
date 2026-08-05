@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
@@ -18,7 +17,6 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
-import {Layout} from '../../../../types/constEnums'
 import Legitity from '../../../../validation/Legitity'
 import NotificationSettings from './NotificationSettings'
 
@@ -26,56 +24,6 @@ interface Props {
   viewerRef: MattermostPanel_viewer$key
   teamId: string
 }
-
-const StyledIcon = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  height: 24,
-  width: 24,
-  marginLeft: 4,
-  ':hover': {
-    cursor: 'pointer'
-  }
-})
-
-const MattermostPanelStyles = styled('div')({
-  borderTop: '1px solid var(--color-hairline)',
-  padding: Layout.ROW_GUTTER
-})
-
-const ConnectionGroup = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  paddingBottom: 16
-})
-
-const Heading = styled(LabelHeading)({
-  width: '100%'
-})
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 0'
-})
-
-const Label = styled('span')({
-  fontSize: 14,
-  marginRight: 16,
-  width: '100%',
-  position: 'relative',
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const StyledButton = styled(FlatButton)({
-  borderColor: 'var(--color-hairline-strong)',
-  color: 'var(--color-fg-primary)',
-  fontSize: 12,
-  fontWeight: 600,
-  minWidth: 36,
-  marginLeft: '16px',
-  marginRight: '16px'
-})
 
 const MattermostPanel = (props: Props) => {
   const {teamId, viewerRef} = props
@@ -198,18 +146,23 @@ const MattermostPanel = (props: Props) => {
   )
 
   return (
-    <MattermostPanelStyles>
-      <ConnectionGroup>
-        <Heading>Connection</Heading>
-      </ConnectionGroup>
+    <div className='border-hairline border-t p-4'>
+      <div className='flex items-center pb-4'>
+        <LabelHeading className='w-full'>Connection</LabelHeading>
+      </div>
       <form onSubmit={onSubmit}>
-        <Row>
-          <Label>
+        <div className='flex items-center py-2'>
+          <span className='relative mr-4 flex w-full items-center text-[14px]'>
             Mattermost Webhook
-            <StyledIcon onMouseOver={openTooltip} onMouseOut={closeTooltip} ref={originRef}>
+            <div
+              className='ml-1 h-6 w-6 text-fg-secondary hover:cursor-pointer'
+              onMouseOver={openTooltip}
+              onMouseOut={closeTooltip}
+              ref={originRef}
+            >
               <InfoIcon />
-            </StyledIcon>
-          </Label>
+            </div>
+          </span>
           {tooltipPortal('Configure in Mattermost: Main Menu > Integrations > Incoming Webhook')}
           <BasicInput
             value={fields.webhookUrl.value}
@@ -218,15 +171,19 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='Enter your webhook URL here...'
           />
-          <StyledButton size='medium' disabled={isUpdateDisabled(fieldError, fieldValue)}>
+          <FlatButton
+            className='mx-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
+            size='medium'
+            disabled={isUpdateDisabled(fieldError, fieldValue)}
+          >
             Update
-          </StyledButton>
-        </Row>
+          </FlatButton>
+        </div>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}
       </form>
       {teamNotificationSettings && <NotificationSettings settings={teamNotificationSettings} />}
-    </MattermostPanelStyles>
+    </div>
   )
 }
 

@@ -18,7 +18,7 @@ import MeetingSubnavItem from './MeetingSubnavItem'
 
 // navItemRaised (Elevation.Z8)
 const navItemRaisedShadowCls =
-  'shadow-[rgba(0,0,0,.2)_0px_5px_5px_-3px,rgba(0,0,0,.14)_0px_8px_10px_1px,rgba(0,0,0,.12)_0px_3px_14px_2px]'
+  'shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)]'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

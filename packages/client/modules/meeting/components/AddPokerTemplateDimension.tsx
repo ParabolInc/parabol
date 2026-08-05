@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -9,23 +8,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimensionMutation from '../../../mutations/AddPokerTemplateDimensionMutation'
 import {positionAfter} from '../../../shared/sortOrder'
-
-const AddDimensionLink = styled(LinkButton)({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: 0,
-  marginBottom: 16,
-  outline: 'none',
-  padding: '4px 0'
-})
-
-const AddDimensionLinkPlus = styled(Add)({
-  display: 'block',
-  margin: '0 16px 0 16px'
-})
 
 interface Props {
   dimensions: AddPokerTemplateDimension_dimensions$key
@@ -65,10 +47,15 @@ const AddPokerTemplateDimension = (props: Props) => {
 
   if (dimensions.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
-    <AddDimensionLink palette='blue' onClick={addDimension} waiting={submitting}>
-      <AddDimensionLinkPlus />
+    <LinkButton
+      palette='blue'
+      onClick={addDimension}
+      waiting={submitting}
+      className='m-0 mb-4 flex items-center justify-start px-0 py-1 text-base outline-none'
+    >
+      <Add className='mx-4 block' />
       <div>Add another dimension</div>
-    </AddDimensionLink>
+    </LinkButton>
   )
 }
 

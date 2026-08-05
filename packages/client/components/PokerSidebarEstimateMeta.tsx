@@ -1,33 +1,6 @@
-import styled from '@emotion/styled'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import {PALETTE} from '../styles/paletteV3'
-import {BezierCurve} from '../types/constEnums'
 
-const EstimateMeta = styled('div')({
-  fontWeight: 600,
-  paddingRight: 8
-})
-
-const EmptyProgressBar = styled('div')({
-  background: PALETTE.SLATE_400,
-  borderRadius: 10,
-  height: 4
-})
-
-const FilledProgressBar = styled(EmptyProgressBar)<{percent: number}>(({percent}) => ({
-  position: 'absolute',
-  background: PALETTE.JADE_400,
-  width: 24 * percent,
-  top: 0,
-  transition: `width 300ms ${BezierCurve.DECELERATE}`
-}))
-
-const ProgressBar = styled('div')({
-  marginRight: 8,
-  position: 'relative',
-  width: 24
-})
 interface Props {
   finalScores: (string | null)[]
 }
@@ -44,16 +17,24 @@ const PokerSidebarEstimateMeta = (props: Props) => {
   if (finalScores.length === 1) {
     const [firstScore] = finalScores
     const label = firstScore || '–'
-    return <EstimateMeta>{label}</EstimateMeta>
+    return <div className='pr-2 font-semibold'>{label}</div>
   }
 
   const tooltipBody = finalScores.map((score) => (score === null ? '?' : score)).join(' / ')
   return (
-    <ProgressBar ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
-      <EmptyProgressBar />
-      <FilledProgressBar percent={completedScoreCount / finalScores.length} />
+    <div
+      className='relative mr-2 w-6'
+      ref={originRef}
+      onMouseEnter={openTooltip}
+      onMouseLeave={closeTooltip}
+    >
+      <div className='h-1 rounded-[10px] bg-slate-400' />
+      <div
+        className='absolute top-0 h-1 rounded-[10px] bg-jade-400 transition-[width] duration-300 ease-[cubic-bezier(0,0,.2,1)]'
+        style={{width: 24 * (completedScoreCount / finalScores.length)}}
+      />
       {tooltipPortal(<div>{tooltipBody}</div>)}
-    </ProgressBar>
+    </div>
   )
 }
 

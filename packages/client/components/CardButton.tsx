@@ -1,25 +1,21 @@
-import styled from '@emotion/styled'
-import {Card, Radius} from '../types/constEnums'
-import BaseButton from './BaseButton'
+import {forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
+import BaseButton, {type BaseButtonProps} from './BaseButton'
 
-const buttonSize = Card.BUTTON_HEIGHT
-
-const CardButton = styled(BaseButton)({
-  alignItems: 'center',
-  borderRadius: Radius.BUTTON,
-  color: 'var(--color-fg-primary)',
-  display: 'flex',
-  height: buttonSize,
-  justifyContent: 'center',
-  lineHeight: Card.LINE_HEIGHT,
-  minWidth: buttonSize,
-  opacity: 0.5,
-  outline: 0,
-  padding: 0,
-  ':hover, :focus': {
-    backgroundColor: 'var(--color-surface-well)',
-    opacity: 1
-  }
+const CardButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElement>) => {
+  const {className, children, ...rest} = props
+  return (
+    <BaseButton
+      {...rest}
+      ref={ref}
+      className={cn(
+        'flex h-6 min-w-6 items-center justify-center rounded-md p-0 text-fg-primary leading-5 opacity-50 outline-none hover:bg-surface-well hover:opacity-100 focus:bg-surface-well focus:opacity-100',
+        className
+      )}
+    >
+      {children}
+    </BaseButton>
+  )
 })
 
 export default CardButton

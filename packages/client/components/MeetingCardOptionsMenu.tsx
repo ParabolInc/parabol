@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   Close as CloseIcon,
   Link,
@@ -6,6 +5,7 @@ import {
   Replay as ReplayIcon
 } from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import type {ReactNode} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -17,7 +17,7 @@ import makeAppURL from '../utils/makeAppURL'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
-import {MenuItemLabelStyle} from './MenuItemLabel'
+import MenuItemLabel from './MenuItemLabel'
 import {EndMeetingMutationLookup} from './Recurrence/EndRecurringMeetingModal'
 
 interface Props {
@@ -28,25 +28,9 @@ interface Props {
   openEndRecurringMeetingModal: () => void
 }
 
-const StyledIcon = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  height: 24,
-  width: 24,
-  svg: {
-    fontSize: 24
-  },
-  marginRight: 8
-})
-
-const LinkIcon = styled(Link)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
-
-const OptionMenuItem = styled('div')({
-  ...MenuItemLabelStyle,
-  minWidth: '200px'
-})
+const StyledIcon = (props: {children: ReactNode}) => (
+  <div className='mr-2 h-6 w-6 text-fg-secondary [&_svg]:text-[24px]'>{props.children}</div>
+)
 
 const query = graphql`
   query MeetingCardOptionsMenuQuery($teamId: ID!, $meetingId: ID!) {
@@ -101,10 +85,10 @@ const MeetingCardOptionsMenu = (props: Props) => {
         <MenuItem
           key='link'
           label={
-            <OptionMenuItem>
-              <LinkIcon />
+            <MenuItemLabel className='min-w-[200px]'>
+              <Link className='mr-2 text-fg-secondary' />
               Copy meeting permalink
-            </OptionMenuItem>
+            </MenuItemLabel>
           }
           onClick={async () => {
             popTooltip()
@@ -122,12 +106,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
       <MenuItem
         key='copy'
         label={
-          <OptionMenuItem>
+          <MenuItemLabel className='min-w-[200px]'>
             <StyledIcon>
               <PersonAddIcon />
             </StyledIcon>
             <span>{'Copy invite link'}</span>
-          </OptionMenuItem>
+          </MenuItemLabel>
         }
         onClick={async () => {
           popTooltip()
@@ -145,12 +129,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
         <MenuItem
           key='edit-recurrence'
           label={
-            <OptionMenuItem>
+            <MenuItemLabel className='min-w-[200px]'>
               <StyledIcon>
                 <ReplayIcon />
               </StyledIcon>
               <span>{'Edit recurrence settings'}</span>
-            </OptionMenuItem>
+            </MenuItemLabel>
           }
           onClick={() => {
             closePortal()
@@ -162,12 +146,12 @@ const MeetingCardOptionsMenu = (props: Props) => {
         <MenuItem
           key='close'
           label={
-            <OptionMenuItem>
+            <MenuItemLabel className='min-w-[200px]'>
               <StyledIcon>
                 <CloseIcon />
               </StyledIcon>
               <span>{'End this meeting'}</span>
-            </OptionMenuItem>
+            </MenuItemLabel>
           }
           onClick={() => {
             closePortal()

@@ -1,28 +1,32 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {forwardRef, type Ref} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptOptions_meeting$key} from '~/__generated__/TeamPromptOptions_meeting.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {mergeRefs} from '~/utils/react/mergeRefs'
 import useTooltip from '../../hooks/useTooltip'
-import BaseButton from '../BaseButton'
+import {cn} from '../../ui/cn'
+import BaseButton, {type BaseButtonProps} from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
-export const OptionsButton = styled(BaseButton)({
-  color: 'var(--color-accent)',
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  opacity: 1,
-  padding: '0px 8px',
-  fontWeight: 600,
-  ':hover, :focus, :active': {
-    color: 'var(--color-accent)'
-  }
+export const OptionsButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElement>) => {
+  const {className, children, ...rest} = props
+  return (
+    <BaseButton
+      ref={ref}
+      className={cn(
+        'flex h-full flex-col px-2 py-0 font-semibold text-accent opacity-100 hover:text-accent focus:text-accent active:text-accent',
+        className
+      )}
+      {...rest}
+    >
+      {children}
+    </BaseButton>
+  )
 })
 
 interface Props {

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type {DraggableProvided} from '@hello-pangea/dnd'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
@@ -9,6 +8,7 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateScaleValueMutation from '~/mutations/RemovePokerTemplateScaleValueMutation'
 import type {TemplateScaleValueItem_scaleValue$key} from '../../../__generated__/TemplateScaleValueItem_scaleValue.graphql'
+import {cn} from '../../../ui/cn'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
 import EditableTemplateScaleValueLabel from './EditableTemplateScaleValueLabel'
@@ -19,42 +19,6 @@ interface Props {
   scaleValue: TemplateScaleValueItem_scaleValue$key
   dragProvided?: DraggableProvided
 }
-
-const ScaleValueItem = styled('div')<{isHover: boolean; isDragging: boolean}>(
-  ({isHover, isDragging}) => ({
-    alignItems: 'center',
-    backgroundColor: isHover || isDragging ? 'var(--color-surface-raised)' : undefined,
-    cursor: 'pointer',
-    display: 'flex',
-    fontSize: 14,
-    lineHeight: '24px',
-    padding: '8px 16px',
-    width: '100%'
-  })
-)
-
-const RemoveScaleValueIcon = styled('div')<{isHover: boolean}>(({isHover}) => ({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  marginLeft: 'auto',
-  padding: 0,
-  opacity: isHover ? 1 : 0,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 24
-}))
-
-const ScaleAndDescription = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
 
 const TemplateScaleValueItem = (props: Props) => {
   const {dragProvided, isDragging, scale: scaleRef, scaleValue: scaleValueRef} = props
@@ -96,13 +60,16 @@ const TemplateScaleValueItem = (props: Props) => {
     RemovePokerTemplateScaleValueMutation(atmosphere, {scaleId, label}, {onError, onCompleted})
   }
   const isSpecial = isSpecialPokerLabel(label)
+  const showHover = !isSpecial && isHover
   return (
-    <ScaleValueItem
+    <div
       ref={dragProvided?.innerRef}
       {...dragProvided?.dragHandleProps}
       {...dragProvided?.draggableProps}
-      isDragging={isDragging}
-      isHover={!isSpecial && isHover}
+      className={cn(
+        'flex w-full cursor-pointer items-center px-4 py-2 text-[14px] leading-6',
+        (showHover || isDragging) && 'bg-surface-raised'
+      )}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
     >
@@ -111,15 +78,21 @@ const TemplateScaleValueItem = (props: Props) => {
         scaleValueLabel={label}
         scaleValueColor={color}
       />
-      <ScaleAndDescription>
+      <div className='flex w-full flex-col pl-4'>
         <EditableTemplateScaleValueLabel isHover={isHover} scale={scale} scaleValue={scaleValue} />
-      </ScaleAndDescription>
+      </div>
       {!isSpecial && (
-        <RemoveScaleValueIcon isHover={isHover} onClick={removeScaleValue}>
+        <div
+          className={cn(
+            'ml-auto flex h-6 w-6 cursor-pointer items-center justify-center text-fg-secondary [&_svg]:text-[18px]',
+            isHover ? 'opacity-100' : 'opacity-0'
+          )}
+          onClick={removeScaleValue}
+        >
           <CancelIcon />
-        </RemoveScaleValueIcon>
+        </div>
       )}
-    </ScaleValueItem>
+    </div>
   )
 }
 export default TemplateScaleValueItem

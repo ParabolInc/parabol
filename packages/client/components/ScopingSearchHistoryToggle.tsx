@@ -1,32 +1,8 @@
-import styled from '@emotion/styled'
 import {ExpandMore, Search} from '@mui/icons-material'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import PlainButton from './PlainButton/PlainButton'
 import ScopingSearchHistoryMenu, {type SearchQueries} from './ScopingSearchHistoryMenu'
-
-const StyledIcon = styled(Search)({
-  color: 'var(--color-fg-secondary)',
-  margin: '3px 15px 3px 3px'
-})
-
-const DropdownIcon = styled(ExpandMore)({
-  color: 'var(--color-fg-primary)',
-  height: 18,
-  width: 18,
-  marginLeft: -8
-})
-
-const StyledIconDropdown = styled(Search)({
-  color: 'var(--color-fg-secondary)'
-})
-
-const Toggle = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingRight: 8
-})
 
 interface Props {
   searchQueries?: SearchQueries[]
@@ -40,15 +16,19 @@ const ScopingSearchHistoryToggle = (props: Props) => {
   })
 
   if (!searchQueries) {
-    return <StyledIcon />
+    return <Search className='m-[3px] mr-[15px] text-fg-secondary' />
   }
 
   return (
     <>
-      <Toggle onClick={togglePortal} ref={originRef}>
-        <StyledIconDropdown />
-        <DropdownIcon />
-      </Toggle>
+      <PlainButton
+        className='flex items-center justify-center pr-2'
+        onClick={togglePortal}
+        ref={originRef}
+      >
+        <Search className='text-fg-secondary' />
+        <ExpandMore className='-ml-2 h-[18px] w-[18px] text-fg-primary' />
+      </PlainButton>
 
       {menuPortal(<ScopingSearchHistoryMenu searchQueries={searchQueries} menuProps={menuProps} />)}
     </>

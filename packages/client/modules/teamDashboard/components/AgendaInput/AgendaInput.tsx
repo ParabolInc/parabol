@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -14,68 +13,8 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import useTooltip from '../../../../hooks/useTooltip'
 import AddAgendaItemMutation from '../../../../mutations/AddAgendaItemMutation'
 import {positionAfter} from '../../../../shared/sortOrder'
-import makeFieldColorPalette from '../../../../styles/helpers/makeFieldColorPalette'
-import makePlaceholderStyles from '../../../../styles/helpers/makePlaceholderStyles'
-import ui from '../../../../styles/ui'
+import {cn} from '../../../../ui/cn'
 import toTeamMemberId from '../../../../utils/relay/toTeamMemberId'
-
-const AgendaInputBlock = styled('div')({
-  padding: `8px 0`,
-  position: 'relative'
-})
-
-const InputForm = styled('form')<{disabled: boolean}>(({disabled}) => ({
-  backgroundColor: 'transparent',
-  fontSize: 14,
-  padding: `0 0 0 8px`,
-  position: 'relative',
-  width: '100%',
-  ':hover': {
-    backgroundColor: disabled ? 'transparent' : undefined
-  }
-}))
-
-const inputPlaceholderStyles = makePlaceholderStyles('var(--color-accent)')
-
-const InputField = styled('input')<{disabled: boolean}>(
-  {
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles.medium,
-    boxShadow: 'none',
-    cursor: 'not-allowed',
-    display: 'block',
-    fontSize: 14,
-    fontWeight: 400,
-    lineHeight: '24px',
-    margin: 0,
-    outline: 'none',
-    padding: '8px 8px 8px 43px',
-    position: 'relative',
-    textIndent: '4px',
-    width: '100%',
-    ...makeFieldColorPalette('cool', false, {backgroundColor: 'transparent'}),
-    ...inputPlaceholderStyles
-  },
-  ({disabled}) => {
-    return (
-      !disabled && {
-        cursor: 'text',
-        ...makeFieldColorPalette('cool', true, {
-          backgroundColor: 'transparent'
-        })
-      }
-    )
-  }
-)
-
-const StyledIcon = styled(Add)({
-  color: 'var(--color-accent)',
-  display: 'block',
-  left: 16,
-  pointerEvents: 'none',
-  position: 'absolute',
-  top: 9
-})
 
 interface Props {
   className?: string
@@ -148,8 +87,8 @@ const AgendaInput = (props: Props) => {
     }
   )
   return (
-    <AgendaInputBlock
-      className={className}
+    <div
+      className={cn('relative py-2', className)}
       onMouseEnter={openTooltip}
       onMouseLeave={closeTooltip}
       ref={originRef}
@@ -161,8 +100,14 @@ const AgendaInput = (props: Props) => {
           {'like “upcoming vacation”'}
         </div>
       )}
-      <InputForm disabled={disabled} onSubmit={handleSubmit}>
-        <InputField
+      <form className='relative w-full bg-transparent pl-2 text-[14px]' onSubmit={handleSubmit}>
+        <input
+          className={cn(
+            'relative m-0 block w-full appearance-none rounded-[4px] border border-transparent bg-transparent py-2 pr-2 pl-[43px] indent-1 font-normal font-sans text-[14px] text-fg-primary leading-6 shadow-none outline-none selection:bg-hairline-strong placeholder:text-accent',
+            disabled
+              ? 'cursor-not-allowed'
+              : 'cursor-text hover:border-accent focus:border-accent active:border-accent'
+          )}
           autoCapitalize='off'
           autoComplete='off'
           disabled={disabled}
@@ -175,9 +120,9 @@ const AgendaInput = (props: Props) => {
           type='text'
           value={value}
         />
-        <StyledIcon />
-      </InputForm>
-    </AgendaInputBlock>
+        <Add className='pointer-events-none absolute top-[9px] left-4 block text-accent' />
+      </form>
+    </div>
   )
 }
 

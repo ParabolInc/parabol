@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {MoreVert as MoreVertIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef, useState} from 'react'
@@ -11,56 +10,11 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
-import {ICON_SIZE} from '../../../../styles/typographyV2'
+import {cn} from '../../../../ui/cn'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
 import PromoteTeamMemberModal from '../PromoteTeamMemberModal/PromoteTeamMemberModal'
 import RemoveTeamMemberModal from '../RemoveTeamMemberModal/RemoveTeamMemberModal'
-
-const StyledRow = styled(Row)({
-  borderTop: 0,
-  padding: `8px 8px 8px 16px`
-})
-
-const StyledButton = styled(FlatButton)<{showMenuButton: boolean}>(({showMenuButton}) => ({
-  display: showMenuButton ? 'flex' : 'none',
-  fontSize: ICON_SIZE.MD18,
-  padding: 0,
-  color: 'var(--color-fg-secondary)'
-}))
-
-const Name = styled('div')({
-  fontSize: 14,
-  fontWeight: 400,
-  color: 'var(--color-fg-primary)',
-  lineHeight: '20px',
-  padding: '0px 16px',
-  wordBreak: 'break-word'
-})
-
-const Content = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flex: 1,
-  flexWrap: 'wrap',
-  flexDirection: 'column'
-})
-
-const StyledIcon = styled('div')({
-  svg: {
-    fontSize: 18
-  },
-  height: 18,
-  width: 18
-})
-
-const TeamLeadLabel = styled('div')<{isLead: boolean}>(({isLead}) => ({
-  display: isLead ? 'flex' : 'none',
-  padding: '0px 16px',
-  color: 'var(--color-fg-primary)',
-  fontSize: 12,
-  lineHeight: '12px'
-}))
 
 const TeamMemberAvatarMenu = lazyPreload(
   () =>
@@ -123,26 +77,33 @@ const ManageTeamMember = (props: Props) => {
   useScrollIntoView(ref, isSelectedAvatar)
 
   return (
-    <StyledRow ref={ref}>
+    <Row ref={ref} className='border-t-0 py-2 pr-2 pl-4'>
       <Avatar className='h-6 w-6' picture={picture} />
-      <Content>
-        <Name>{preferredName}</Name>
-        <TeamLeadLabel isLead={isLead || isOrgAdmin}>
+      <div className='flex flex-1 flex-col flex-wrap items-start'>
+        <div className='px-4 font-normal text-fg-primary text-sm [word-break:break-word]'>
+          {preferredName}
+        </div>
+        <div
+          className={cn(
+            isLead || isOrgAdmin ? 'flex' : 'hidden',
+            'px-4 text-fg-primary text-xs leading-3'
+          )}
+        >
           {isLead && 'Team Lead'}
           {isLead && isOrgAdmin && ', '}
           {isOrgAdmin && 'Org Admin'}
-        </TeamLeadLabel>
-      </Content>
-      <StyledButton
-        showMenuButton={showMenuButton}
+        </div>
+      </div>
+      <FlatButton
+        className={cn(showMenuButton ? 'flex' : 'hidden', 'p-0 text-[18px] text-fg-secondary')}
         onClick={togglePortal}
         onMouseEnter={TeamMemberAvatarMenu.preload}
         ref={originRef}
       >
-        <StyledIcon>
+        <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
           <MoreVertIcon />
-        </StyledIcon>
-      </StyledButton>
+        </div>
+      </FlatButton>
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}
@@ -170,7 +131,7 @@ const ManageTeamMember = (props: Props) => {
         teamMember={teamMember}
         closePortal={() => setIsLeaveOpen(false)}
       />
-    </StyledRow>
+    </Row>
   )
 }
 

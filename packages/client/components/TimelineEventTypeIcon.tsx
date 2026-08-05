@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   AccountCircle,
   ChangeHistory,
@@ -9,15 +8,10 @@ import {
   Style,
   Timeline
 } from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
 
 interface Props {
   iconName?: string
 }
-
-const GrapeLock = styled(Lock)({
-  color: PALETTE.GRAPE_500
-})
 
 const TimelineEventTypeIcon = (props: Props) => {
   const {iconName} = props
@@ -31,7 +25,7 @@ const TimelineEventTypeIcon = (props: Props) => {
           account_circle: <AccountCircle />,
           group_add: <GroupAdd />,
           group_work: <GroupWork />,
-          lock: <GrapeLock />,
+          lock: <Lock className='text-grape-500' />,
           style: <Style />,
           timeline: <Timeline />
         }[iconName]

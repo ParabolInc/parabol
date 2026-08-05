@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {CreditCard} from '@mui/icons-material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe} from '@stripe/stripe-js'
@@ -9,58 +8,7 @@ import type {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/Or
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import SecondaryButton from '../../../../components/SecondaryButton'
-import {Breakpoint, ElementWidth, Layout} from '../../../../types/constEnums'
 import UpdatePayment from './UpdatePayment'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH
-})
-
-const CreditCardInfo = styled('div')({
-  alignItems: 'center',
-  color: 'var(--color-fg-primary)',
-  display: 'flex',
-  fontSize: 14,
-  lineHeight: '20px'
-})
-
-const CreditCardIcon = styled(CreditCard)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 16
-})
-
-const CreditCardProvider = styled('span')({
-  fontWeight: 600,
-  marginRight: 8
-})
-
-const CreditCardNumber = styled('span')({
-  marginRight: 32
-})
-
-const CreditCardExpiresLabel = styled('span')({
-  fontWeight: 600,
-  marginRight: 8
-})
-
-const InfoAndUpdate = styled('div')({
-  borderTop: '1px solid var(--color-hairline)',
-  padding: Layout.ROW_GUTTER,
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'space-between'
-})
-
-const StyledRow = styled(Row)({
-  flexWrap: 'nowrap'
-})
-
-const InfoBlocks = styled('div')({
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    alignItems: 'center',
-    display: 'flex'
-  }
-})
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
 
@@ -98,38 +46,38 @@ const OrgBillingCreditCardInfo = (props: Props) => {
 
   if (isUpdating) {
     return (
-      <StyledPanel label='Credit Card'>
-        <StyledRow>
+      <Panel className='max-w-[976px]' label='Credit Card'>
+        <Row className='flex-nowrap'>
           <Elements stripe={stripePromise}>
             <UpdatePayment handleClose={handleClose} orgId={orgId} />
           </Elements>
-        </StyledRow>
-      </StyledPanel>
+        </Row>
+      </Panel>
     )
   }
 
   return (
-    <StyledPanel label='Credit Card'>
-      <InfoAndUpdate>
-        <CreditCardInfo>
-          <CreditCardIcon />
-          <InfoBlocks>
+    <Panel className='max-w-[976px]' label='Credit Card'>
+      <div className='flex items-center justify-between border-hairline border-t p-4'>
+        <div className='flex items-center text-fg-primary text-sm'>
+          <CreditCard className='mr-4 text-fg-secondary' />
+          <div className='sidebar-left:flex sidebar-left:items-center'>
             <div>
-              <CreditCardProvider>{brand}</CreditCardProvider>
-              <CreditCardNumber>
+              <span className='mr-2 font-semibold'>{brand}</span>
+              <span className='mr-8'>
                 {'•••• •••• •••• '}
                 {last4}
-              </CreditCardNumber>
+              </span>
             </div>
             <div>
-              <CreditCardExpiresLabel>{'Expires'}</CreditCardExpiresLabel>
+              <span className='mr-2 font-semibold'>{'Expires'}</span>
               <span>{expiry}</span>
             </div>
-          </InfoBlocks>
-        </CreditCardInfo>
+          </div>
+        </div>
         <SecondaryButton onClick={handleStartUpdating}>{'Update'}</SecondaryButton>
-      </InfoAndUpdate>
-    </StyledPanel>
+      </div>
+    </Panel>
   )
 }
 

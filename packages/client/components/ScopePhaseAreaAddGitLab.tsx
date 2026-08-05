@@ -1,36 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import GitLabClientManager from '~/utils/GitLabClientManager'
 import type {ScopePhaseAreaAddGitLab_meeting$key} from '../__generated__/ScopePhaseAreaAddGitLab_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {PALETTE} from '../styles/paletteV3'
 import GitLabSVG from './GitLabSVG'
 import RaisedButton from './RaisedButton'
-
-const AddGitLabArea = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  height: '100%'
-})
-
-const StyledLink = styled('span')({
-  color: 'var(--color-accent)',
-  cursor: 'pointer',
-  outline: 0,
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  },
-  paddingTop: 24
-})
-
-const AddGitLabButton = styled(RaisedButton)({
-  gap: 8,
-  whiteSpace: 'pre-wrap'
-})
 
 interface Props {
   gotoParabol: () => void
@@ -83,13 +58,18 @@ const ScopePhaseAreaAddGitLab = (props: Props) => {
     )
   }
   return (
-    <AddGitLabArea>
-      <AddGitLabButton onClick={authGitLab} size={'medium'}>
+    <div className='flex h-full flex-col items-center justify-center'>
+      <RaisedButton className='gap-2 whitespace-pre-wrap' onClick={authGitLab} size={'medium'}>
         <GitLabSVG />
         Import issues from GitLab
-      </AddGitLabButton>
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
-    </AddGitLabArea>
+      </RaisedButton>
+      <span
+        className='cursor-pointer pt-6 text-accent outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+        onClick={gotoParabol}
+      >
+        Or add new tasks in Parabol
+      </span>
+    </div>
   )
 }
 

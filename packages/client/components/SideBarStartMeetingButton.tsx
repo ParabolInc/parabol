@@ -1,32 +1,7 @@
-import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
-import {BezierCurve} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import FlatPrimaryButton from './FlatPrimaryButton'
-
-const Button = styled(FlatPrimaryButton)<{isOpen: boolean}>(({isOpen}) => ({
-  height: 40,
-  overflow: 'hidden',
-  padding: 0,
-  width: isOpen ? 232 : 40,
-  marginTop: 16,
-  marginBottom: 14, // account for nav margin 2px
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  justifyContent: isOpen ? 'center' : 'flex-start'
-}))
-
-const MeetingIcon = styled(Add)({
-  margin: '0px 0px 0px 7px'
-})
-
-const MeetingLabel = styled('div')<{isOpen: boolean}>(({isOpen}) => ({
-  fontSize: 16,
-  fontWeight: 600,
-  paddingLeft: 4,
-  paddingRight: 7,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  opacity: isOpen ? 1 : 0
-}))
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   const navigate = useNavigate()
@@ -36,10 +11,23 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   }
   return (
     <div className='px-3'>
-      <Button isOpen={isOpen} onClick={onClick}>
-        <MeetingIcon />
-        <MeetingLabel isOpen={isOpen}>Add Meeting</MeetingLabel>
-      </Button>
+      <FlatPrimaryButton
+        className={cn(
+          'mt-4 mb-3.5 h-10 overflow-hidden p-0 transition-all duration-300 ease-[cubic-bezier(0,0,.2,1)]',
+          isOpen ? 'w-[232px] justify-center' : 'w-10 justify-start'
+        )}
+        onClick={onClick}
+      >
+        <Add className='ml-[7px]' />
+        <div
+          className={cn(
+            'pr-[7px] pl-1 font-semibold text-[16px] transition-all duration-300 ease-[cubic-bezier(0,0,.2,1)]',
+            isOpen ? 'opacity-100' : 'opacity-0'
+          )}
+        >
+          Add Meeting
+        </div>
+      </FlatPrimaryButton>
     </div>
   )
 }

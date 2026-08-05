@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {
@@ -20,18 +19,6 @@ import Ellipsis from './Ellipsis/Ellipsis'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
-
-const LoadingNext = styled('div')({
-  display: 'flex',
-  height: 32,
-  fontSize: 24,
-  justifyContent: 'center',
-  width: '100%'
-})
 
 interface Props {
   meetingRef: JiraServerScopingSearchResults_meeting$key
@@ -187,7 +174,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
   }
 
   return (
-    <ResultScroller>
+    <div className='overflow-auto'>
       {edges.map(({node}) => {
         return (
           <ScopingSearchResultItem
@@ -206,11 +193,11 @@ const JiraServerScopingSearchResults = (props: Props) => {
       })}
       {lastItem}
       {hasNext && (
-        <LoadingNext key={'loadingNext'}>
+        <div className='flex h-8 w-full justify-center text-[24px]' key={'loadingNext'}>
           <Ellipsis />
-        </LoadingNext>
+        </div>
       )}
-    </ResultScroller>
+    </div>
   )
 }
 

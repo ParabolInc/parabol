@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
@@ -19,18 +18,6 @@ interface Props {
   stage: JiraFieldMenu_stage$key
   submitScore(): void
 }
-
-const HintLabel = styled(MenuItemLabel)({
-  fontStyle: 'italic'
-})
-
-const ExternalIcon = styled(OpenInNew)({
-  marginLeft: 'auto',
-  color: 'var(--color-fg-muted)',
-  paddingLeft: 12,
-  width: 30,
-  height: 18
-})
 
 const JiraFieldMenu = (props: Props) => {
   const {menuProps, stage: stageRef, submitScore} = props
@@ -151,10 +138,10 @@ const JiraFieldMenu = (props: Props) => {
       {missingEstimationFieldHint && (
         <MenuItem
           label={
-            <HintLabel>
+            <MenuItemLabel className='italic'>
               Where's my field?
-              <ExternalIcon />
-            </HintLabel>
+              <OpenInNew className='ml-auto h-[18px] w-[30px] pl-3 text-fg-muted' />
+            </MenuItemLabel>
           }
           onClick={handleClickMissingField}
           noCloseOnClick

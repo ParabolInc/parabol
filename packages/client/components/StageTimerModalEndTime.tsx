@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
@@ -22,29 +21,6 @@ interface Props {
   meetingId: string
   stage: StageTimerModalEndTime_stage$key
 }
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%',
-  userSelect: 'none'
-})
-
-const SetLimit = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '16px 16px 8px'
-})
-
-const StyledButton = styled(SecondaryButton)({
-  marginTop: 8,
-  minWidth: 192
-})
-
-const ErrorMessage = styled(NotificationErrorMessage)({
-  marginBottom: -8
-})
 
 const DEFAULT_DURATION = ms('1d')
 const TOMORROW = roundDateToNearestHalfHour(new Date(Date.now() + DEFAULT_DURATION))
@@ -92,22 +68,22 @@ const StageTimerModalEndTime = (props: Props) => {
   }
 
   return (
-    <SetLimit>
-      <Row>
+    <div className='flex flex-col items-center px-4 pt-4 pb-2'>
+      <div className='flex w-full select-none items-center'>
         <StageTimerModalEndTimeDate endTime={endTime} setEndTime={setEndTime} />
-      </Row>
-      <Row>
+      </div>
+      <div className='flex w-full select-none items-center'>
         <StageTimerModalEndTimeHour endTime={endTime} setEndTime={setEndTime} />
-      </Row>
-      <Row>
+      </div>
+      <div className='flex w-full select-none items-center'>
         <StageTimerModalEndTimeSlackToggle teamMember={teamMember} />
-      </Row>
-      <ErrorMessage error={error} />
-      <StyledButton onClick={startTimer}>
+      </div>
+      <NotificationErrorMessage className='-mb-2' error={error} />
+      <SecondaryButton className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Update ' : 'Start '}
         {MeetingLabels.TIME_LIMIT}
-      </StyledButton>
-    </SetLimit>
+      </SecondaryButton>
+    </div>
   )
 }
 

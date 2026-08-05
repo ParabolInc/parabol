@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PokerVotingRow_scaleValue$key} from '../__generated__/PokerVotingRow_scaleValue.graphql'
@@ -15,11 +14,6 @@ interface Props {
   setFinalScore?: () => void
   isInitialStageRender: boolean
 }
-
-const MiniCardWrapper = styled('div')({
-  // This adds the gutter between the mini card and the avatars
-  marginRight: 16
-})
 
 const PokerVotingRow = (props: Props) => {
   const {scaleValue: scaleValueRef, scores: scoresRef, setFinalScore, isInitialStageRender} = props
@@ -47,11 +41,11 @@ const PokerVotingRow = (props: Props) => {
   const users = scores.filter(Boolean).map(({user}) => user)
   return (
     <PokerVotingRowBase>
-      <MiniCardWrapper>
+      <div className='mr-4'>
         <MiniPokerCard color={color} onClick={setFinalScore}>
           {label}
         </MiniPokerCard>
-      </MiniCardWrapper>
+      </div>
       <AvatarList
         size={PokerCards.AVATAR_WIDTH as 46}
         users={users}

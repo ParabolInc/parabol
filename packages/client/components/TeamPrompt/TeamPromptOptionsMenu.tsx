@@ -1,6 +1,6 @@
-import styled from '@emotion/styled'
 import {Flag, Link as MuiLink, OpenInNew, Replay} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
+import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import {Link, useNavigate} from 'react-router'
 import type {TeamPromptOptionsMenu_meeting$key} from '~/__generated__/TeamPromptOptionsMenu_meeting.graphql'
@@ -12,28 +12,13 @@ import makeAppURL from '../../utils/makeAppURL'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem'
-import {MenuItemLabelStyle} from '../MenuItemLabel'
 import SlackSVG from '../SlackSVG'
 
-const LinkIcon = styled(MuiLink)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
-
-const ReplayIcon = styled(Replay)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
-
-const FlagIcon = styled(Flag)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
-
-const OptionMenuItem = styled('div')({
-  ...MenuItemLabelStyle,
-  width: '240px'
-})
+const OptionMenuItem = ({children}: {children: ReactNode}) => (
+  <div className='flex w-60 flex-1 items-center overflow-hidden text-ellipsis whitespace-nowrap px-4 py-1 text-sm leading-6'>
+    {children}
+  </div>
+)
 
 interface Props {
   meetingRef: TeamPromptOptionsMenu_meeting$key
@@ -94,7 +79,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
           key='link'
           label={
             <OptionMenuItem>
-              <LinkIcon />
+              <MuiLink className='mr-2 text-fg-secondary' />
               Copy meeting permalink
             </OptionMenuItem>
           }
@@ -116,7 +101,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         isDisabled={!canToggleRecurrence}
         label={
           <OptionMenuItem>
-            <ReplayIcon />
+            <Replay className='mr-2 text-fg-secondary' />
             {hasRecurrenceEnabled ? (
               <span>{'Edit recurrence settings'}</span>
             ) : (
@@ -152,7 +137,7 @@ const TeamPromptOptionsMenu = (props: Props) => {
         isDisabled={isEnded}
         label={
           <OptionMenuItem>
-            <FlagIcon />
+            <Flag className='mr-2 text-fg-secondary' />
             <span>{'End this meeting'}</span>
           </OptionMenuItem>
         }

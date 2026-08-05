@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -13,22 +12,6 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '1.5rem auto 0'
-})
-
-const LockedAtContent = styled(DialogContent)({
-  textAlign: 'left',
-  p: {
-    marginBottom: 16
-  }
-})
-
-const ContactUsLink = styled('a')({
-  color: 'var(--color-accent)',
-  textDecoration: 'underline'
-})
 
 interface Props {
   queryRef: PreloadedQuery<UnpaidTeamModalQuery>
@@ -102,7 +85,7 @@ const UnpaidTeamModal = (props: Props) => {
     return (
       <DashModal>
         <DialogTitle>{'Organization Locked'}</DialogTitle>
-        <LockedAtContent>
+        <DialogContent className='text-left [&_p]:mb-4'>
           <p>
             Unfortunately, <strong>{organizationName}</strong> has exceeded the{' '}
             {Threshold.MAX_STARTER_TIER_TEAMS} teams limit on the Starter Plan for more than{' '}
@@ -112,18 +95,27 @@ const UnpaidTeamModal = (props: Props) => {
             <>
               <p>You can re-activate your teams by upgrading your account.</p>
               If you’d like to keep using Parabol on the Starter Plan, please{' '}
-              <ContactUsLink href={ExternalLinks.CONTACT} target='_blank' rel='noopener noreferrer'>
+              <a
+                href={ExternalLinks.CONTACT}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-accent underline'
+              >
                 contact us
-              </ContactUsLink>{' '}
+              </a>{' '}
               to let us know which teams you’d like to delete to fit within the two-team limit.
-              <StyledButton size='medium' onClick={() => goToBilling('organizationLockedModal')}>
+              <PrimaryButton
+                className='mx-auto mt-6 mb-0'
+                size='medium'
+                onClick={() => goToBilling('organizationLockedModal')}
+              >
                 <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
-              </StyledButton>
+              </PrimaryButton>
             </>
           ) : (
             `Try reaching out to ${billingLeaderName} at ${email}`
           )}
-        </LockedAtContent>
+        </DialogContent>
       </DashModal>
     )
   }
@@ -148,9 +140,13 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <StyledButton size='medium' onClick={() => goToBilling('unpaidTeamModal')}>
+          <PrimaryButton
+            className='mx-auto mt-6 mb-0'
+            size='medium'
+            onClick={() => goToBilling('unpaidTeamModal')}
+          >
             <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
-          </StyledButton>
+          </PrimaryButton>
         )}
       </DialogContent>
     </DashModal>

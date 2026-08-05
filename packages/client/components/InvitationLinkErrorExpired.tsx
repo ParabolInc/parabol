@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
@@ -14,17 +13,6 @@ import InviteDialog from './InviteDialog'
 interface Props {
   massInvitation: InvitationLinkErrorExpired_massInvitation$key
 }
-
-const TeamName = styled('span')({
-  fontWeight: 600,
-  whiteSpace: 'nowrap'
-})
-
-const DialogActions = styled('div')({
-  marginTop: 20,
-  display: 'flex',
-  justifyContent: 'center'
-})
 
 const InvitationLinkErrorExpired = (props: Props) => {
   const {massInvitation: massInvitationRef} = props
@@ -47,12 +35,13 @@ const InvitationLinkErrorExpired = (props: Props) => {
       <DialogTitle>Invitation Link Expired</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
-          The invitation to <TeamName>{teamName}</TeamName> has expired.
+          The invitation to <span className='whitespace-nowrap font-semibold'>{teamName}</span> has
+          expired.
         </InvitationDialogCopy>
         <InvitationDialogCopy>
           Reach out to the team administrator to request a new invitation
         </InvitationDialogCopy>
-        <DialogActions>
+        <div className='mt-5 flex justify-center'>
           {hasToken() ? (
             <>
               <FlatPrimaryButton onClick={() => navigate('/meetings')} size='medium'>
@@ -64,7 +53,7 @@ const InvitationLinkErrorExpired = (props: Props) => {
               Sign In
             </FlatPrimaryButton>
           )}
-        </DialogActions>
+        </div>
       </DialogContent>
     </InviteDialog>
   )

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type RefObject, useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -11,37 +10,13 @@ import useSubColumns from '~/hooks/useSubColumns'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import CreateReflectionMutation from '../mutations/CreateReflectionMutation'
-import {BezierCurve, DragAttribute, ElementWidth, MeetingControlBarEnum} from '../types/constEnums'
+import {DragAttribute, MeetingControlBarEnum} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import getNextSortOrder from '../utils/getNextSortOrder'
 import type {SwipeColumn} from './GroupingKanban'
 import GroupingKanbanColumnHeader from './GroupingKanbanColumnHeader'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import ScrollEdgeIndicator from './ScrollEdgeIndicator'
-
-const ColumnScrollContainer = styled('div')({
-  display: 'flex',
-  // must hide X on firefox v84
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  height: '100%'
-})
-
-const ColumnBody = styled('div')<{
-  isDesktop: boolean
-  isWidthExpanded: boolean
-}>(({isDesktop, isWidthExpanded}) => ({
-  alignContent: 'flex-start',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'row',
-  flexWrap: 'wrap',
-  justifyContent: 'space-around',
-  maxHeight: 'fit-content',
-  minHeight: 200,
-  padding: `${isWidthExpanded ? 12 : 6}px ${isDesktop ? 12 : 8}px`,
-  transition: `all 100ms ${BezierCurve.DECELERATE}`,
-  minWidth: ElementWidth.REFLECTION_COLUMN
-}))
 
 export type OpenSpotlight = (
   reflectionGroupId: string,
@@ -201,13 +176,16 @@ const GroupingKanbanColumn = (props: Props) => {
         toggleWidth={toggleWidth}
       />
       <ScrollEdgeIndicator scrollRef={scrollContainerRef} similarGroupIds={similarGroupIds} />
-      <ColumnScrollContainer ref={scrollContainerRef}>
+      <div className='flex h-full overflow-y-auto overflow-x-hidden' ref={scrollContainerRef}>
         {subColumnIndexes.map((subColumnIdx) => {
           return (
-            <ColumnBody
+            <div
+              className={cn(
+                'flex max-h-fit min-h-[200px] min-w-80 flex-1 flex-row flex-wrap content-start justify-around transition-all duration-100 ease-out',
+                isWidthExpanded ? 'py-3' : 'py-1.5',
+                isDesktop ? 'px-3' : 'px-2'
+              )}
               data-cy={subColumnIdx === 0 ? `group-column-${question}-body` : undefined}
-              isDesktop={isDesktop}
-              isWidthExpanded={isWidthExpanded}
               key={`${promptId}-${subColumnIdx}`}
               ref={subColumnIdx === 0 ? columnBodyRef : undefined}
               {...{[DragAttribute.DROPZONE]: `${promptId}-${subColumnIdx}`}}
@@ -235,10 +213,10 @@ const GroupingKanbanColumn = (props: Props) => {
                     />
                   )
                 })}
-            </ColumnBody>
+            </div>
           )
         })}
-      </ColumnScrollContainer>
+      </div>
     </div>
   )
 }

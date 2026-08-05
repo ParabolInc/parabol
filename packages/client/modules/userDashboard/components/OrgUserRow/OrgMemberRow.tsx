@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import type * as React from 'react'
@@ -25,12 +24,6 @@ import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveOrgModal from '../LeaveOrgModal/LeaveOrgModal'
 import RemoveFromOrgModal from '../RemoveFromOrgModal/RemoveFromOrgModal'
-
-const ActionsBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-end'
-})
 
 interface Props {
   billingLeaderCount: number
@@ -97,7 +90,7 @@ const UserActions = ({organizationUser, organization}: UserActionsProps) => {
 
   return (
     <RowActions>
-      <ActionsBlock>
+      <div className='flex items-center justify-end'>
         <OrgAdminActionMenu
           organization={organization}
           organizationUser={organizationUser}
@@ -116,7 +109,7 @@ const UserActions = ({organizationUser, organization}: UserActionsProps) => {
           organizationUsers={[organizationUser]}
           closePortal={() => setIsRemoveOpen(false)}
         />
-      </ActionsBlock>
+      </div>
     </RowActions>
   )
 }

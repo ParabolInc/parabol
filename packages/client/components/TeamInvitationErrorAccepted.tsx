@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamInvitationErrorAccepted_verifiedInvitation$key} from '../__generated__/TeamInvitationErrorAccepted_verifiedInvitation.graphql'
@@ -12,10 +11,6 @@ import StyledLink from './StyledLink'
 interface Props {
   verifiedInvitation: TeamInvitationErrorAccepted_verifiedInvitation$key
 }
-
-const InlineCopy = styled(InvitationDialogCopy)({
-  display: 'inline-block'
-})
 
 const TeamInvitationErrorAccepted = (props: Props) => {
   const {verifiedInvitation: verifiedInvitationRef} = props
@@ -48,11 +43,11 @@ const TeamInvitationErrorAccepted = (props: Props) => {
             <StyledLink to={`/meet/${meetingId}`} title={`Join ${meetingName}`}>
               Join {meetingName}
             </StyledLink>{' '}
-            <InlineCopy>in progress…</InlineCopy>
+            <InvitationDialogCopy className='inline-block'>in progress…</InvitationDialogCopy>
           </>
         ) : (
           <>
-            <InlineCopy>Visit the</InlineCopy>{' '}
+            <InvitationDialogCopy className='inline-block'>Visit the</InvitationDialogCopy>{' '}
             <StyledLink to={`/team/${teamId}`} title='Visit the Team Dashboard'>
               Team Dashboard
             </StyledLink>

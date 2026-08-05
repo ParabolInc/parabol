@@ -1,10 +1,10 @@
-import styled from '@emotion/styled'
 import {useMemo} from 'react'
 import {commitLocalUpdate} from 'react-relay'
 import useSearchFilter from '~/hooks/useSearchFilter'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import SearchQueryId from '../shared/gqlIds/SearchQueryId'
+import {cn} from '../ui/cn'
 import Checkbox from './Checkbox'
 import DropdownMenuLabel from './DropdownMenuLabel'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -15,33 +15,6 @@ import MenuItemLabel from './MenuItemLabel'
 import MockFieldList from './MockFieldList'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const StyledMenu = styled(Menu)({
-  width: 250
-})
-
-const ProjectAvatar = styled('img')({
-  height: 24,
-  width: 24,
-  marginRight: 8
-})
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-
-const UseJQLLabel = styled('span')({
-  fontWeight: 600
-})
-
-const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDisabled}) => ({
-  opacity: isDisabled ? 0.5 : undefined
-}))
-
-const FilterLabel = styled(DropdownMenuLabel)({
-  borderBottom: 0
-})
 
 type JiraSearchQuery = {
   readonly isJQL: boolean
@@ -103,7 +76,8 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
     })
   }
   return (
-    <StyledMenu
+    <Menu
+      className='w-[250px]'
       keepParentFocus
       ariaLabel={'Define the Jira search query'}
       portalStatus={portalStatus}
@@ -114,15 +88,17 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
         key={'isJQL'}
         label={
           <MenuItemLabel>
-            <StyledCheckBox active={isJQL} />
-            <UseJQLLabel>{'Use JQL'}</UseJQLLabel>
+            <Checkbox className='-ml-2 mr-2' active={isJQL} />
+            <span className='font-semibold'>{'Use JQL'}</span>
           </MenuItemLabel>
         }
         onClick={toggleJQL}
       />
       <MenuItemHR />
       {isLoading && <MockFieldList />}
-      {selectedAndFilteredProjects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {selectedAndFilteredProjects.length > 0 && (
+        <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
+      )}
       {showSearch && (
         <SearchMenuItem placeholder='Search Jira' onChange={onQueryChange} value={query} />
       )}
@@ -152,21 +128,22 @@ const JiraScopingSearchFilterMenu = (props: Props) => {
           <MenuItem
             key={globalProjectKey}
             label={
-              <StyledMenuItemLabel isDisabled={isJQL}>
-                <StyledCheckBox
+              <MenuItemLabel className={cn(isJQL && 'opacity-50')}>
+                <Checkbox
+                  className='-ml-2 mr-2'
                   active={projectKeyFilters.includes(globalProjectKey)}
                   disabled={isJQL}
                 />
-                <ProjectAvatar src={avatar || undefined} />
+                <img className='mr-2 h-6 w-6' src={avatar || undefined} />
                 <TypeAheadLabel query={query} label={name} />
-              </StyledMenuItemLabel>
+              </MenuItemLabel>
             }
             onClick={toggleProjectKeyFilter}
             isDisabled={isJQL}
           />
         )
       })}
-    </StyledMenu>
+    </Menu>
   )
 }
 

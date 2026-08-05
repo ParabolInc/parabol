@@ -1,8 +1,13 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const MeetingArea = styled('div')({
-  display: 'flex',
-  width: '100%'
+const MeetingArea = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>((props, ref) => {
+  const {className, children, ...rest} = props
+  return (
+    <div ref={ref} className={cn('flex w-full', className)} {...rest}>
+      {children}
+    </div>
+  )
 })
 
 export default MeetingArea

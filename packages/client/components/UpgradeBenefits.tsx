@@ -1,42 +1,22 @@
-import styled from '@emotion/styled'
 import {CheckCircle} from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
 
-const StyledIcon = styled(CheckCircle)({
-  color: PALETTE.JADE_400,
-  height: 18,
-  width: 18,
-  marginRight: 8,
-  opacity: 1
-})
-
-const ModalCopy = styled('p')({
-  alignItems: 'center',
-  justifyContent: 'flex-start',
-  display: 'flex',
-  fontSize: 15,
-  lineHeight: '32px',
-  margin: 0
-})
-
-const BenefitsList = styled('div')({
-  display: 'flex',
-  flexDirection: 'column'
-})
 const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Active User Billing']
 
 const UpgradeBenefits = () => {
   return (
-    <BenefitsList>
+    <div className='flex flex-col'>
       {benefits.map((benefit, idx) => {
         return (
-          <ModalCopy key={`modalBulletCopy-${idx + 1}`}>
-            <StyledIcon />
+          <p
+            key={`modalBulletCopy-${idx + 1}`}
+            className='m-0 flex items-center justify-start text-[15px] leading-8'
+          >
+            <CheckCircle className='mr-2 h-[18px] w-[18px] text-jade-400 opacity-100' />
             {benefit}
-          </ModalCopy>
+          </p>
         )
       })}
-    </BenefitsList>
+    </div>
   )
 }
 

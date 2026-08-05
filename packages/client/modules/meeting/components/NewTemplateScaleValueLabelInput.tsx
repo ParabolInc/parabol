@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -18,56 +17,6 @@ import {Threshold} from '../../../types/constEnums'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
 import EditableTemplateScaleValueColor from './EditableTemplateScaleValueColor'
-
-const Form = styled('form')({
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
-
-const StyledError = styled('div')({
-  color: PALETTE.TOMATO_500,
-  fontSize: 14
-})
-
-const NewScaleValueInput = styled('div')({
-  alignItems: 'center',
-  cursor: 'pointer',
-  display: 'flex',
-  fontSize: 14,
-  lineHeight: '24px',
-  padding: '8px 16px',
-  width: '100%'
-})
-
-const ScaleValueInputBox = styled('input')({
-  appearance: 'none',
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--color-fg-primary)',
-  fontSize: 14,
-  lineHeight: '24px',
-  margin: 0,
-  padding: 0,
-  outline: 0,
-  width: '100%'
-})
-
-const RemoveScaleValueIcon = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  width: 24,
-  marginLeft: 'auto',
-  padding: 0
-})
 
 const predictNextLabel = (values: NewTemplateScaleValueLabelInput_scale$data['values']) => {
   const existingLabels = values
@@ -184,15 +133,19 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
   useScrollIntoView(ref, isEmpty)
   const placeholder = predictNextLabel(values)
   return (
-    <NewScaleValueInput ref={ref}>
+    <div
+      ref={ref}
+      className='flex w-full cursor-pointer items-center px-4 py-2 text-[14px] leading-6'
+    >
       <EditableTemplateScaleValueColor
         scale={scale}
         scaleValueColor={scaleValueColor}
         scaleValueLabel={newScaleValueLabel}
         setScaleValueColor={setScaleValueColor}
       />
-      <Form onSubmit={handleCreateNewLabel}>
-        <ScaleValueInputBox
+      <form onSubmit={handleCreateNewLabel} className='flex w-full flex-col pl-4'>
+        <input
+          className='m-0 w-full appearance-none border-none bg-transparent p-0 text-[14px] text-fg-primary leading-6 outline-none'
           autoFocus
           onChange={(e) => {
             setNewScaleValueLabel(e.target.value)
@@ -204,12 +157,15 @@ const NewTemplateScaleValueLabelInput = (props: Props) => {
           value={newScaleValueLabel}
           type='text'
         />
-        {error && <StyledError>{error.message}</StyledError>}
-      </Form>
-      <RemoveScaleValueIcon onClick={closeAdding}>
+        {error && <div className='text-[14px] text-fg-error'>{error.message}</div>}
+      </form>
+      <div
+        className='ml-auto flex h-6 w-6 cursor-pointer items-center justify-center p-0 text-fg-secondary [&_svg]:text-[18px]'
+        onClick={closeAdding}
+      >
         <CancelIcon />
-      </RemoveScaleValueIcon>
-    </NewScaleValueInput>
+      </div>
+    </div>
   )
 }
 

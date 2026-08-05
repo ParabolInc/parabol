@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -15,19 +14,6 @@ interface Props {
   loginHint?: string
   getOffsetTop?: () => number
 }
-
-const helpText = {
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-}
-
-const ErrorMessage = styled(StyledError)({
-  ...helpText
-})
-
-const HelpMessage = styled(StyledTip)({
-  ...helpText
-})
 
 const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint, getOffsetTop} = props
@@ -61,8 +47,12 @@ const GoogleOAuthButtonBlock = (props: Props) => {
         <img src={logo} className={cn('mx-4 h-[18px] w-[18px]', submitting && 'contrast-0')} />
         <div>{label}</div>
       </RaisedButton>
-      {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
-      {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
+      {error && !submitting && (
+        <StyledError className='mt-2 text-[13px]'>{error.message}</StyledError>
+      )}
+      {submitting && (
+        <StyledTip className='mt-2 text-[13px]'>Continue through the login popup</StyledTip>
+      )}
     </>
   )
 }

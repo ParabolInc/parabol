@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Timer} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
@@ -26,28 +25,6 @@ interface Props {
 }
 
 const minuteOptions = [...Array(10).keys()].map((n) => n + 1)
-
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const SetLimit = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '16px 16px 8px'
-})
-
-const StyledIcon = styled(Timer)({
-  color: 'var(--color-fg-secondary)'
-})
-
-const StyledButton = styled(SecondaryButton)({
-  marginTop: 8,
-  minWidth: 192
-})
 
 const StageTimerModalTimeLimit = (props: Props) => {
   const {closePortal, defaultTimeLimit, meetingId, stage: stageRef} = props
@@ -89,9 +66,9 @@ const StageTimerModalTimeLimit = (props: Props) => {
   }
 
   return (
-    <SetLimit>
-      <Row>
-        <StyledIcon />
+    <div className='flex flex-col items-center px-4 pt-4 pb-2'>
+      <div className='flex w-full items-center'>
+        <Timer className='text-fg-secondary' />
         <Select
           value={String(minuteTimeLimit)}
           onValueChange={(value) => setMinuteTimeLimit(Number(value))}
@@ -107,12 +84,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
             ))}
           </SelectContent>
         </Select>
-      </Row>
-      <StyledButton onClick={startTimer}>
+      </div>
+      <SecondaryButton className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
-      </StyledButton>
+      </SecondaryButton>
       {error && <StyledError>{error.message}</StyledError>}
-    </SetLimit>
+    </div>
   )
 }
 

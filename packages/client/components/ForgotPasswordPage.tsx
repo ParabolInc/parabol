@@ -2,7 +2,6 @@
  * The password reset page. Allows the user to reset their password via email.
  *
  */
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -23,54 +22,6 @@ import StyledError from './StyledError'
 interface Props {
   email?: string
   goToPage: GotoAuthPage
-}
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const P = styled('p')({
-  fontSize: 14,
-  lineHeight: 1.5,
-  margin: '16px 0',
-  textAlign: 'center'
-})
-
-const Container = styled('div')({
-  margin: '0 auto',
-  maxWidth: 240,
-  width: '100%'
-})
-
-const SubmitButton = styled(PrimaryButton)({
-  marginTop: 16
-})
-
-const ErrorMessage = styled(StyledError)({
-  fontSize: 12,
-  paddingTop: 16
-})
-
-const BrandedLink = styled(PlainButton)({
-  color: 'var(--color-accent)',
-  ':hover,:focus': {
-    color: 'var(--color-accent)',
-    textDecoration: 'underline'
-  }
-})
-
-const DialogSubTitle = styled('div')({
-  fontSize: 14,
-  fontWeight: 400,
-  lineHeight: 1.5,
-  padding: '16px 0px 0px'
-})
-
-const linkStyle = {
-  color: 'var(--color-fg-error)',
-  fontSize: 12,
-  textDecoration: 'underline'
 }
 
 const validateEmail = (email: string) => {
@@ -139,41 +90,43 @@ const ForgotPasswordPage = (props: Props) => {
   return (
     <AuthenticationDialog>
       <DialogTitle>{'Forgot your password?'}</DialogTitle>
-      <DialogSubTitle>
+      <div className='pt-4 font-normal text-sm leading-normal'>
         <span>{'Remember it? '}</span>
-        <BrandedLink onClick={gotoSignIn}>{'Sign in with password'}</BrandedLink>
-      </DialogSubTitle>
-      <Container>
-        <P>
+        <PlainButton className='text-accent hover:underline focus:underline' onClick={gotoSignIn}>
+          {'Sign in with password'}
+        </PlainButton>
+      </div>
+      <div className='mx-auto w-full max-w-[240px]'>
+        <p className='my-4 text-center text-sm leading-normal'>
           {
             'Confirm your email address, and we’ll send you an email with password recovery instructions.'
           }
-        </P>
-        <Form onSubmit={onSubmit}>
+        </p>
+        <form className='flex flex-col' onSubmit={onSubmit}>
           <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
-          <SubmitButton size='medium' waiting={submitting}>
+          <PrimaryButton className='mt-4' size='medium' waiting={submitting}>
             {'Send Email'}
-          </SubmitButton>
+          </PrimaryButton>
           {error && (
-            <ErrorMessage>
+            <StyledError className='pt-4 text-[12px]'>
               {prettyError || (
                 <>
                   {'Oh no! Something went wrong. Try again or '}{' '}
                   <a
+                    className='text-[12px] text-fg-error underline'
                     href={'mailto:love@parabol.co'}
                     rel='noopener noreferrer'
                     target='_blank'
-                    style={linkStyle}
                     title={'love@parabol.co'}
                   >
                     {'contact us'}.
                   </a>
                 </>
               )}
-            </ErrorMessage>
+            </StyledError>
           )}
-        </Form>
-      </Container>
+        </form>
+      </div>
     </AuthenticationDialog>
   )
 }

@@ -1,24 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingCheckInGreeting_checkInGreeting$key} from '../../../__generated__/NewMeetingCheckInGreeting_checkInGreeting.graphql'
 import type {NewMeetingCheckInGreeting_user$key} from '../../../__generated__/NewMeetingCheckInGreeting_user.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
-
-const GreetingBlock = styled('div')({
-  fontSize: '1.5rem',
-  textAlign: 'center',
-  overflowWrap: 'break-word',
-  width: 'auto'
-})
-
-const GreetingSpan = styled('span')({
-  borderBottom: '.0625rem dashed currentColor',
-  color: 'inherit',
-  cursor: 'help',
-  fontStyle: 'italic'
-})
 
 interface Props {
   userRef: NewMeetingCheckInGreeting_user$key
@@ -50,13 +35,18 @@ const NewMeetingCheckInGreeting = (props: Props) => {
     {delay: 0}
   )
   return (
-    <GreetingBlock>
-      <GreetingSpan ref={originRef} onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+    <div className='w-auto break-words text-center text-[1.5rem]'>
+      <span
+        className='cursor-help border-current border-b border-dashed italic'
+        ref={originRef}
+        onMouseEnter={openTooltip}
+        onMouseLeave={closeTooltip}
+      >
         {content}
-      </GreetingSpan>
+      </span>
       {`, ${preferredName || 'Unknown user'}:`}
       {tooltipPortal(<div>{`${content} means “hello” in ${language}`}</div>)}
-    </GreetingBlock>
+    </div>
   )
 }
 

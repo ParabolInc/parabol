@@ -1,27 +1,4 @@
-import styled from '@emotion/styled'
-import srOnly from '../../styles/helpers/srOnly'
-import {PALETTE} from '../../styles/paletteV3'
-
-const size = 10 // 8 + border
-
-const Badge = styled('div')({
-  display: 'block',
-  height: size,
-  position: 'relative',
-  width: size
-})
-
-const BadgeDot = styled('div')<{isConnected: boolean}>(({isConnected}) => ({
-  backgroundColor: isConnected ? PALETTE.JADE_400 : PALETTE.SLATE_600,
-  border: '1px solid rgba(255, 255, 255, .65)',
-  borderRadius: size,
-  height: size,
-  width: size
-}))
-
-const Description = styled('div')({
-  ...srOnly
-})
+import {cn} from '../../ui/cn'
 
 interface Props {
   isConnected: boolean
@@ -31,10 +8,15 @@ const AvatarBadge = (props: Props) => {
   const {isConnected} = props
   const connection = isConnected ? 'Online' : 'Offline'
   return (
-    <Badge>
-      <BadgeDot isConnected={isConnected as boolean} />
-      <Description>{connection}</Description>
-    </Badge>
+    <div className='relative block h-[10px] w-[10px]'>
+      <div
+        className={cn(
+          'h-[10px] w-[10px] rounded-[10px] border border-[rgba(255,255,255,.65)]',
+          isConnected ? 'bg-jade-400' : 'bg-slate-600'
+        )}
+      />
+      <div className='sr-only'>{connection}</div>
+    </div>
   )
 }
 

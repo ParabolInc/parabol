@@ -1,33 +1,34 @@
-import styled from '@emotion/styled'
 import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPromptEditablePrompt_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
+import {cn} from '../../ui/cn'
 import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 
-const Prompt = styled('h1')<{isEditable?: boolean}>(({isEditable = false}) => ({
-  textAlign: 'center',
-  margin: '16px 7%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: 20,
-  lineHeight: '32px',
-  fontWeight: 400,
-  cursor: isEditable ? 'pointer' : 'default',
-  ':hover': {
-    opacity: isEditable ? 0.5 : undefined
-  }
-}))
+interface PromptProps {
+  isEditable?: boolean
+  onClick?: () => void
+  children: ReactNode
+}
 
-const StyledIcon = styled(Edit)({
-  color: 'var(--color-fg-secondary)',
-  marginLeft: 16
-})
+const Prompt = (props: PromptProps) => {
+  const {isEditable = false, onClick, children} = props
+  return (
+    <h1
+      className={cn(
+        'mx-[7%] my-4 flex items-center justify-center text-center font-normal text-[20px] leading-8',
+        isEditable ? 'cursor-pointer hover:opacity-50' : 'cursor-default'
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </h1>
+  )
+}
 
 interface Props {
   meetingRef: TeamPromptEditablePrompt_meeting$key
@@ -67,7 +68,7 @@ const TeamPromptEditablePrompt = (props: Props) => {
         <>
           <Prompt isEditable={isFacilitator} onClick={() => setIsOpen(true)}>
             {meetingPrompt}
-            <StyledIcon />
+            <Edit className='ml-4 text-fg-secondary' />
           </Prompt>
           <TeamPromptEditablePromptModal
             isOpen={isOpen}

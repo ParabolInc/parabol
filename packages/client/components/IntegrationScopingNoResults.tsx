@@ -1,25 +1,4 @@
-import styled from '@emotion/styled'
 import {Info as InfoIcon, Warning} from '@mui/icons-material'
-
-const Message = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  border: `1px dashed var(--color-hairline-strong)`,
-  borderRadius: 4,
-  color: 'var(--color-fg-secondary)',
-  fontSize: 14,
-  fontStyle: 'italic',
-  lineHeight: '32px',
-  margin: '64px auto auto',
-  padding: '8px 16px'
-})
-
-const Info = styled('div')({
-  marginRight: 16,
-  height: 24,
-  width: 24
-})
 
 interface Props {
   error?: string | null
@@ -29,10 +8,10 @@ interface Props {
 const IntegrationScopingNoResults = (props: Props) => {
   const {error, msg} = props
   return (
-    <Message>
-      <Info>{error ? <Warning /> : <InfoIcon />}</Info>
+    <div className='mx-auto mt-16 mb-auto flex items-center justify-center rounded border border-hairline-strong border-dashed px-4 py-2 text-[14px] text-fg-secondary italic leading-8'>
+      <div className='mr-4 h-6 w-6'>{error ? <Warning /> : <InfoIcon />}</div>
       {error || msg || 'No records found'}
-    </Message>
+    </div>
   )
 }
 

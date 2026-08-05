@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {RecordVoiceOver} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactElement} from 'react'
@@ -15,24 +14,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-
-const CheckIn = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  minHeight: 98,
-  padding: 16,
-  width: '100%'
-})
-
-const Hint = styled('div')({
-  marginTop: 16
-})
-
-const StyledIcon = styled(RecordVoiceOver)({
-  color: 'var(--color-fg-secondary)',
-  display: 'block',
-  margin: '0 auto 4px'
-})
 
 interface Props {
   avatarGroup: ReactElement
@@ -86,16 +67,16 @@ const NewMeetingCheckIn = (props: Props) => {
         </MeetingTopBar>
         <PhaseWrapper>
           <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user!} />
-          <CheckIn>
+          <div className='flex min-h-[98px] w-full justify-center p-4'>
             {isViewerMeetingSection && (
-              <Hint>
-                <StyledIcon />
+              <div className='mt-4'>
+                <RecordVoiceOver className='mx-auto mb-1 block text-fg-secondary' />
                 <MeetingFacilitationHint>
                   {'Verbally share your response with the team'}
                 </MeetingFacilitationHint>
-              </Hint>
+              </div>
             )}
-          </CheckIn>
+          </div>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
@@ -6,30 +5,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1
-})
-
-const SearchInput = styled('input')({
-  appearance: 'none',
-  border: '1px solid transparent',
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  margin: 0,
-  outline: 0,
-  backgroundColor: 'transparent',
-  width: '100%'
-})
-
-const ClearSearchIcon = styled(Close)<{isEmpty: boolean}>(({isEmpty}) => ({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  margin: 12,
-  visibility: isEmpty ? 'hidden' : undefined
-}))
+import {cn} from '../ui/cn'
 
 const setSearch = (atmosphere: Atmosphere, meetingId: string, value: string) => {
   commitLocalUpdate(atmosphere, (store) => {
@@ -70,10 +46,18 @@ const AzureDevOpsScopingSearchInput = (props: Props) => {
   }
   const clearSearch = () => setSearch(atmosphere, meetingId, '')
   return (
-    <Wrapper>
-      <SearchInput value={queryString!} placeholder={placeholder} onChange={onChange} />
-      <ClearSearchIcon isEmpty={isEmpty} onClick={clearSearch} />
-    </Wrapper>
+    <div className='flex flex-1 items-center'>
+      <input
+        className='m-0 w-full appearance-none border border-transparent bg-transparent text-[16px] text-fg-primary outline-none'
+        value={queryString!}
+        placeholder={placeholder}
+        onChange={onChange}
+      />
+      <Close
+        className={cn('m-3 cursor-pointer text-fg-secondary', isEmpty && 'invisible')}
+        onClick={clearSearch}
+      />
+    </div>
   )
 }
 

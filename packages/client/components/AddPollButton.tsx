@@ -1,31 +1,5 @@
-import styled from '@emotion/styled'
 import {PollOutlined} from '@mui/icons-material'
-import {PALETTE} from '~/styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
-
-const StyledPlainButton = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'var(--color-accent)',
-  fontWeight: 600,
-  fontSize: 14,
-  margin: '0 8px',
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  },
-  transition: 'color 0.1s ease'
-})
-
-const AddPollIcon = styled(PollOutlined)({
-  width: 20,
-  height: 20,
-  margin: '0 4px 0 0'
-})
-
-const AddPollLabel = styled('div')({
-  color: 'inherit'
-})
 
 interface Props {
   onClick: () => void
@@ -36,10 +10,14 @@ const AddPollButton = (props: Props) => {
   const {onClick, disabled} = props
 
   return (
-    <StyledPlainButton onClick={onClick} disabled={disabled}>
-      <AddPollIcon />
-      <AddPollLabel>Add a poll</AddPollLabel>
-    </StyledPlainButton>
+    <PlainButton
+      className='mx-2 flex items-center justify-center font-semibold text-[14px] text-accent [transition:color_0.1s_ease] hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <PollOutlined className='mr-1 h-5 w-5' />
+      <div>Add a poll</div>
+    </PlainButton>
   )
 }
 

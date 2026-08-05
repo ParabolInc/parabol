@@ -1,27 +1,14 @@
-import styled from '@emotion/styled'
 import {Forum} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/NewMeetingActionsCurrentMeetings_team.graphql'
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
-import {PALETTE} from '~/styles/paletteV3'
 import plural from '~/utils/plural'
+import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import FlatButton from './FlatButton'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
-
-const CurrentButton = styled(FlatButton)<{hasMeetings: boolean}>(({hasMeetings}) => ({
-  color: PALETTE.ROSE_500,
-  fontSize: 16,
-  fontWeight: 600,
-  height: hasMeetings ? 50 : 0,
-  visibility: hasMeetings ? undefined : 'hidden'
-}))
-
-const ForumIcon = styled(Forum)({
-  marginRight: 12
-})
 
 interface Props {
   team: NewMeetingActionsCurrentMeetings_team$key
@@ -50,10 +37,16 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   return (
     <Menu
       trigger={
-        <CurrentButton hasMeetings={meetingCount > 0} size={'large'}>
-          <ForumIcon />
+        <FlatButton
+          className={cn(
+            'font-semibold text-[16px] text-rose-500',
+            meetingCount > 0 ? 'h-[50px]' : 'invisible h-0'
+          )}
+          size={'large'}
+        >
+          <Forum className='mr-3' />
           {label}
-        </CurrentButton>
+        </FlatButton>
       }
     >
       <MenuContent className='w-[var(--radix-dropdown-menu-trigger-width)]'>

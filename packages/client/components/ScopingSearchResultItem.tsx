@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import type {UpdatePokerScopeMutation as TUpdatePokerScopeMutation} from '../__generated__/UpdatePokerScopeMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -8,33 +7,6 @@ import {Threshold} from '../types/constEnums'
 import isTempId from '../utils/relay/isTempId'
 import Checkbox from './Checkbox'
 import Ellipsis from './Ellipsis/Ellipsis'
-
-const Item = styled('div')({
-  cursor: 'pointer',
-  display: 'flex',
-  paddingLeft: 16,
-  paddingTop: 8,
-  paddingBottom: 8
-})
-
-const Issue = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
-
-const Title = styled('div')({})
-
-const StyledLink = styled('a')({
-  color: 'var(--color-accent)',
-  display: 'block',
-  fontSize: 12,
-  lineHeight: '20px',
-  textDecoration: 'none',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
-})
 
 interface Props {
   meetingId: string
@@ -96,11 +68,12 @@ const ScopingSearchResultItem = (props: Props) => {
   }
 
   return (
-    <Item onClick={onClick}>
+    <div className='flex cursor-pointer py-2 pl-4' onClick={onClick}>
       <Checkbox active={isSelected || isTemp} disabled={disabled} />
-      <Issue>
-        <Title>{summary}</Title>
-        <StyledLink
+      <div className='flex flex-col pl-4'>
+        <div>{summary}</div>
+        <a
+          className='block text-accent text-xs leading-5 no-underline hover:underline focus:underline'
           href={url}
           rel='noopener noreferrer'
           target='_blank'
@@ -109,9 +82,9 @@ const ScopingSearchResultItem = (props: Props) => {
         >
           {linkText}
           {isTemp && <Ellipsis />}
-        </StyledLink>
-      </Issue>
-    </Item>
+        </a>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import sanitizeSVG from '@mattkrick/sanitize-svg'
 import UploadOrgImageMutation from '~/mutations/UploadOrgImageMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
@@ -10,11 +9,6 @@ import jpgWithoutEXIF from '../utils/jpgWithoutEXIF'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
-
-const AvatarBlock = styled('div')({
-  margin: '1.5rem auto',
-  width: '6rem'
-})
 
 interface Props {
   isOpen: boolean
@@ -58,9 +52,9 @@ const OrgAvatarInput = (props: Props) => {
     <Dialog isOpen={isOpen} onClose={onClose}>
       <DialogContent>
         <DialogTitle>{'Upload a New Photo'}</DialogTitle>
-        <AvatarBlock>
+        <div className='mx-auto my-6 w-24'>
           <Avatar picture={picture} className='h-24 w-24 shadow-[0_4px_5px_0px_rgba(0,0,0,0.15)]' />
-        </AvatarBlock>
+        </div>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
       </DialogContent>
     </Dialog>

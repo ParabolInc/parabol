@@ -1,18 +1,8 @@
-import styled from '@emotion/styled'
 import useRefreshInterval from '~/hooks/useRefreshInterval'
 import {MenuPosition} from '../../hooks/useCoords'
 import useTooltip from '../../hooks/useTooltip'
 import absoluteDate from '../../utils/date/absoluteDate'
 import relativeDate from '../../utils/date/relativeDate'
-
-const Timestamp = styled('div')({
-  color: 'var(--color-fg-muted)',
-  fontWeight: 600,
-  fontSize: 12
-})
-const Hover = styled('span')({
-  cursor: 'pointer'
-})
 
 interface Props {
   createdAt: string | Date
@@ -29,27 +19,37 @@ export default function TeamPromptLastUpdatedTime({updatedAt, createdAt}: Props)
     openTooltip: showCreatedTime,
     closeTooltip: closeCreatedTime,
     originRef: createdTimeRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
+  } = useTooltip<HTMLSpanElement>(MenuPosition.UPPER_CENTER)
   const {
     tooltipPortal: updatedTimePortal,
     openTooltip: showUpdatedTime,
     closeTooltip: closeUpdatedTime,
     originRef: updatedTimeRef
-  } = useTooltip<HTMLButtonElement>(MenuPosition.UPPER_CENTER)
+  } = useTooltip<HTMLSpanElement>(MenuPosition.UPPER_CENTER)
 
   const isEdited = createdAt !== updatedAt
   return (
-    <Timestamp>
-      <Hover onMouseEnter={showCreatedTime} onMouseLeave={closeCreatedTime} ref={createdTimeRef}>
+    <div className='font-semibold text-[12px] text-fg-muted'>
+      <span
+        className='cursor-pointer'
+        onMouseEnter={showCreatedTime}
+        onMouseLeave={closeCreatedTime}
+        ref={createdTimeRef}
+      >
         {relativeDate(createdAt)}
         {createdTimePortal(absoluteDate(createdAt))}
-      </Hover>
+      </span>
       {isEdited && (
-        <Hover onMouseEnter={showUpdatedTime} onMouseLeave={closeUpdatedTime} ref={updatedTimeRef}>
+        <span
+          className='cursor-pointer'
+          onMouseEnter={showUpdatedTime}
+          onMouseLeave={closeUpdatedTime}
+          ref={updatedTimeRef}
+        >
           {' · Edited'}
           {updatedTimePortal(absoluteDate(updatedAt))}
-        </Hover>
+        </span>
       )}
-    </Timestamp>
+    </div>
   )
 }

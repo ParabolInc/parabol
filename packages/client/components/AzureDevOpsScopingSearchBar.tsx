@@ -1,30 +1,9 @@
-import styled from '@emotion/styled'
 import {Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
-import {Radius} from '../types/constEnums'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'
-
-const SearchIcon = styled(Search)({
-  color: 'var(--color-fg-secondary)',
-  margin: '3px 15px 3px 3px'
-})
-
-const SearchBar = styled('div')({
-  padding: 16
-})
-
-const SearchBarWrapper = styled('div')({
-  alignItems: 'center',
-  border: `1px solid var(--color-hairline-field)`,
-  borderRadius: Radius.FIELD,
-  display: 'flex',
-  height: 44,
-  padding: '0 16px',
-  width: '100%'
-})
 
 interface Props {
   meetingRef: AzureDevOpsScopingSearchBar_meeting$key
@@ -43,13 +22,13 @@ const AzureDevOpsScopingSearchBar = (props: Props) => {
     meetingRef
   )
   return (
-    <SearchBar>
-      <SearchBarWrapper>
-        <SearchIcon />
+    <div className='p-4'>
+      <div className='flex h-11 w-full items-center rounded border border-hairline-field px-4'>
+        <Search className='m-[3px] mr-[15px] text-fg-secondary' />
         <AzureDevOpsScopingSearchInput meeting={meeting} />
         <AzureDevOpsScopingSearchFilterToggle meeting={meeting} />
-      </SearchBarWrapper>
-    </SearchBar>
+      </div>
+    </div>
   )
 }
 

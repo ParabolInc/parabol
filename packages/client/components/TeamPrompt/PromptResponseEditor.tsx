@@ -1,13 +1,12 @@
-import styled from '@emotion/styled'
 import {type Editor, Extension} from '@tiptap/core'
 import Mention from '@tiptap/extension-mention'
 import {Placeholder} from '@tiptap/extensions'
 import {type JSONContent, useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Radius} from '~/types/constEnums'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
@@ -17,24 +16,7 @@ import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
 import {useStreamedEditorContent} from '../TipTapEditor/useStreamedEditorContent'
 
-const SubmitButton = styled(BaseButton)<{disabled?: boolean}>(({disabled}) => ({
-  backgroundColor: disabled ? 'var(--color-surface-well)' : 'var(--color-accent)',
-  opacity: 1,
-  borderRadius: Radius.BUTTON,
-  color: disabled ? 'var(--color-fg-muted)' : '#FFFFFF',
-  outline: 0,
-  marginTop: 12,
-  padding: '4px 12px 4px 12px',
-  fontSize: 14,
-  lineHeight: '20px',
-  fontWeight: 400
-}))
-
-const CancelButton = styled(SubmitButton)({
-  backgroundColor: 'var(--color-surface-well)',
-  marginRight: 12,
-  color: 'var(--color-fg-primary)'
-})
+const submitButtonClasses = 'mt-3 rounded-[6px] px-3 py-1 font-normal text-sm leading-5 opacity-100'
 
 interface Props {
   autoFocus?: boolean
@@ -178,17 +160,22 @@ const PromptResponseEditor = (props: Props) => {
         // about it.
         <div className='flex items-center justify-end'>
           {!!content && isEditing && (
-            <CancelButton
+            <BaseButton
+              className={cn(submitButtonClasses, 'mr-3 bg-surface-well text-fg-primary')}
               onClick={() => onCancel()}
               size='medium'
               aria-label='Cancel changes'
               title='Cancel changes'
             >
               Cancel
-            </CancelButton>
+            </BaseButton>
           )}
           {(!content || isEditing) && (
-            <SubmitButton
+            <BaseButton
+              className={cn(
+                submitButtonClasses,
+                !editor || isEditorEmpty ? 'bg-surface-well text-fg-muted' : 'bg-accent text-white'
+              )}
               onClick={() => onSubmit()}
               size='medium'
               disabled={!editor || isEditorEmpty}
@@ -196,7 +183,7 @@ const PromptResponseEditor = (props: Props) => {
               title={`${buttonTitle} your response ${modEnter}`}
             >
               {buttonTitle}
-            </SubmitButton>
+            </BaseButton>
           )}
         </div>
       )}

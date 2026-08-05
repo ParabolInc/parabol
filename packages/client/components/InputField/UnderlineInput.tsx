@@ -1,33 +1,6 @@
-import styled from '@emotion/styled'
 import * as React from 'react'
 import {forwardRef, type Ref} from 'react'
-import {FONT_FAMILY} from '../../styles/typographyV2'
 import StyledError from '../StyledError'
-
-const Input = styled('input')({
-  appearance: 'none',
-  borderWidth: 0,
-  borderBottom: `1px solid var(--color-hairline-field)`,
-  borderRadius: 0,
-  boxShadow: 'none',
-  color: 'var(--color-fg-primary)',
-  display: 'block',
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 14,
-  lineHeight: '1.375rem',
-  margin: 0,
-  outline: 0,
-  padding: '.3125rem 1rem .3125rem 0',
-  width: '100%',
-  ':hover,:focus,:active': {
-    borderColor: 'var(--color-accent-active)'
-  }
-})
-
-const ErrorMessage = styled(StyledError)({
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-})
 
 interface Props {
   ariaLabel: string
@@ -59,7 +32,7 @@ const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => 
   } = props
   return (
     <React.Fragment>
-      <Input
+      <input
         aria-label={ariaLabel}
         autoComplete={autoComplete}
         autoFocus={autoFocus}
@@ -71,8 +44,9 @@ const UnderlineInput = forwardRef((props: Props, ref: Ref<HTMLInputElement>) => 
         onChange={onChange}
         type={type}
         value={value}
+        className='m-0 block w-full appearance-none rounded-none border-0 border-hairline-field border-b py-[5px] pr-4 pl-0 font-sans text-[14px] text-fg-primary leading-[1.375rem] shadow-none outline-0 hover:border-accent-active focus:border-accent-active active:border-accent-active'
       />
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && <StyledError className='mt-2 text-[13px]'>{error}</StyledError>}
     </React.Fragment>
   )
 })

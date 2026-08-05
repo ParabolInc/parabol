@@ -1,7 +1,6 @@
-import styled from '@emotion/styled'
 import {useLocation, useParams} from 'react-router'
+import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import AuthenticationDialog from './AuthenticationDialog'
 import DialogTitle from './DialogTitle'
 import type {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
@@ -10,46 +9,6 @@ import IconLabel from './IconLabel'
 import MicrosoftOAuthButtonBlock from './MicrosoftOAuthButtonBlock'
 import PlainButton from './PlainButton/PlainButton'
 import PrimaryButton from './PrimaryButton'
-
-const P = styled('p')({
-  fontSize: 14,
-  lineHeight: 1.5,
-  margin: '16px 0',
-  textAlign: 'center'
-})
-
-const ButtonWrapper = styled('div')({
-  paddingTop: 8
-})
-
-const Container = styled('div')({
-  margin: '0 auto',
-  maxWidth: 240,
-  width: '100%'
-})
-
-const LinkButton = styled(PlainButton)({
-  color: 'var(--color-accent)',
-  ':hover': {
-    color: 'var(--color-accent)',
-    textDecoration: 'underline'
-  }
-})
-
-const SupportLink = styled('a')({
-  color: PALETTE.SKY_600,
-  fontWeight: 600,
-  textDecoration: 'none',
-  // sky-600 is too dark to read on the dark card
-  '.theme-dark &': {
-    color: 'var(--color-accent)'
-  }
-})
-
-const StyledPrimaryButton = styled(PrimaryButton)({
-  margin: '16px auto 0',
-  width: 240
-})
 
 type TextField = {
   title: string
@@ -72,14 +31,15 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const email = searchParams.get('email')
   const contactSupportCopy = (
     <>
-      <SupportLink
+      <a
         href={'mailto:love@parabol.co'}
         rel='noopener noreferrer'
         target='_blank'
+        style={emailLinkStyle}
         title={'love@parabol.co'}
       >
         {'click here '}
-      </SupportLink>
+      </a>
       {'to contact support.'}
     </>
   )
@@ -99,9 +59,9 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <ButtonWrapper>
+        <div className='pt-2'>
           <GoogleOAuthButtonBlock isCreate={false} invitationToken={token} />
-        </ButtonWrapper>
+        </div>
       )
     },
     [ForgotPasswordResType.MICROSOFT]: {
@@ -114,9 +74,9 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <ButtonWrapper>
+        <div className='pt-2'>
           <MicrosoftOAuthButtonBlock isCreate={false} invitationToken={token} />
-        </ButtonWrapper>
+        </div>
       )
     },
     [ForgotPasswordResType.SAML]: {
@@ -129,9 +89,13 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <StyledPrimaryButton onClick={() => goToPage('signin', '?sso=true')} size='medium'>
+        <PrimaryButton
+          onClick={() => goToPage('signin', '?sso=true')}
+          size='medium'
+          className='mx-auto mt-4 mb-0 w-60'
+        >
           {'Sign In with SSO'}
-        </StyledPrimaryButton>
+        </PrimaryButton>
       )
     },
     [ForgotPasswordResType.SUCCESS]: {
@@ -140,16 +104,23 @@ const SubmittedForgotPasswordPage = (props: Props) => {
       descriptionTwo: (
         <>
           {'Didn’t get it? Check your spam folder, or '}
-          <LinkButton onClick={() => goToPageWithEmail('forgot-password', email)}>
+          <PlainButton
+            className='text-accent hover:text-accent hover:underline'
+            onClick={() => goToPageWithEmail('forgot-password', email)}
+          >
             click here
-          </LinkButton>
+          </PlainButton>
           {' to try again.'}
         </>
       ),
       button: (
-        <StyledPrimaryButton onClick={() => goToPageWithEmail('signin', email)} size='medium'>
+        <PrimaryButton
+          onClick={() => goToPageWithEmail('signin', email)}
+          size='medium'
+          className='mx-auto mt-4 mb-0 w-60'
+        >
           <IconLabel icon='arrow_back' label='Back to Sign In' />
-        </StyledPrimaryButton>
+        </PrimaryButton>
       )
     }
   } as CopyType
@@ -158,11 +129,11 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   return (
     <AuthenticationDialog>
       <DialogTitle>{copy.title}</DialogTitle>
-      <Container>
-        <P>{copy.descriptionOne}</P>
-        <P>{copy.descriptionTwo}</P>
+      <div className='mx-auto w-full max-w-60'>
+        <p className='my-4 text-center text-[14px] leading-normal'>{copy.descriptionOne}</p>
+        <p className='my-4 text-center text-[14px] leading-normal'>{copy.descriptionTwo}</p>
         {copy.button}
-      </Container>
+      </div>
     </AuthenticationDialog>
   )
 }

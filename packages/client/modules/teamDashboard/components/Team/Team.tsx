@@ -1,39 +1,14 @@
-import styled from '@emotion/styled'
 import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
-import {Layout} from '~/types/constEnums'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
 import FlatButton from '../../../../components/FlatButton'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
-
-const IconButton = styled(FlatButton)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 16,
-  padding: '3px 0',
-  width: 32,
-  ':hover, :focus, :active': {
-    color: 'var(--color-fg-primary)'
-  }
-})
-
-const TeamDashHeaderInner = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexWrap: 'wrap',
-  margin: '0 auto',
-  maxWidth: Layout.SETTINGS_MAX_WIDTH,
-  width: '100%'
-})
-
-const BackIcon = styled(ArrowBack)({
-  color: 'inherit'
-})
 
 const UnpaidTeamModalRoot = lazy(
   () =>
@@ -48,12 +23,6 @@ interface Props {
   team: Team_team$key | null
   isSettings: boolean
 }
-
-const SettingsHeader = styled('div')({
-  padding: 16,
-  display: 'flex',
-  width: '100%'
-})
 
 const Team = (props: Props) => {
   const navigate = useNavigate()
@@ -85,16 +54,21 @@ const Team = (props: Props) => {
     <>
       <Suspense fallback={''}>{isLocked && <UnpaidTeamModalRoot teamId={teamId} />}</Suspense>
       {isSettings && (
-        <SettingsHeader>
-          <TeamDashHeaderInner>
+        <div className='flex w-full p-4'>
+          <div className='mx-auto flex w-full max-w-[768px] flex-wrap items-center'>
             <>
-              <IconButton aria-label='Back to Team Dashboard' key='1' onClick={goToTeamDashboard}>
-                <BackIcon />
-              </IconButton>
+              <FlatButton
+                aria-label='Back to Team Dashboard'
+                key='1'
+                onClick={goToTeamDashboard}
+                className='mr-4 w-8 px-0 py-[3px] text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+              >
+                <ArrowBack className='text-inherit' />
+              </FlatButton>
               <EditableTeamName team={team} />
             </>
-          </TeamDashHeaderInner>
-        </SettingsHeader>
+          </div>
+        </div>
       )}
       <DashContent hasOverlay={isLocked}>{children}</DashContent>
     </>

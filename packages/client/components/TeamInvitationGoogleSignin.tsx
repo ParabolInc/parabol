@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useParams} from 'react-router'
@@ -14,11 +13,6 @@ import InviteDialog from './InviteDialog'
 interface Props {
   verifiedInvitation: TeamInvitationGoogleSignin_verifiedInvitation$key
 }
-
-const TeamName = styled('span')({
-  fontWeight: 600,
-  whiteSpace: 'nowrap'
-})
 
 const TeamInvitationGoogleSignin = (props: Props) => {
   const {token} = useParams()
@@ -50,7 +44,7 @@ const TeamInvitationGoogleSignin = (props: Props) => {
         <InvitationDialogCopy>
           Tap below
           {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
-          <TeamName>{teamName}</TeamName>
+          <span className='whitespace-nowrap font-semibold'>{teamName}</span>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
           <GoogleOAuthButtonBlock loginHint={email} invitationToken={invitationToken} />

@@ -1,12 +1,5 @@
-import styled from '@emotion/styled'
 import {forwardRef, type Ref} from 'react'
 import PrimaryButton from './PrimaryButton'
-
-const ActionButton = styled(PrimaryButton)({
-  fontSize: 14,
-  marginBottom: 16,
-  padding: '4px 16px'
-})
 
 interface Props {
   children: string
@@ -16,9 +9,15 @@ interface Props {
 const SuggestedActionButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {children, onClick} = props
   return (
-    <ActionButton ref={ref} aria-label={children} size='medium' onClick={onClick}>
+    <PrimaryButton
+      ref={ref}
+      aria-label={children}
+      size='medium'
+      onClick={onClick}
+      className='mb-4 px-4 py-1 text-[14px]'
+    >
       {children}
-    </ActionButton>
+    </PrimaryButton>
   )
 })
 

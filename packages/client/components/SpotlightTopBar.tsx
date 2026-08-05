@@ -1,33 +1,5 @@
-import styled from '@emotion/styled'
 import {Close} from '@mui/icons-material'
 import PlainButton from './PlainButton/PlainButton'
-
-const StyledCloseButton = styled(PlainButton)({
-  height: 24,
-  position: 'absolute',
-  right: 16
-})
-
-const CloseIcon = styled(Close)({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  '&:hover,:focus': {
-    color: 'var(--color-fg-primary)'
-  }
-})
-
-const Title = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  fontWeight: 600,
-  textAlign: 'center'
-})
-
-const TopRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
 
 interface Props {
   closeSpotlight: () => void
@@ -36,12 +8,14 @@ interface Props {
 const SpotlightTopBar = (prop: Props) => {
   const {closeSpotlight} = prop
   return (
-    <TopRow>
-      <Title>Find cards with similar reflections</Title>
-      <StyledCloseButton onClick={closeSpotlight}>
-        <CloseIcon />
-      </StyledCloseButton>
-    </TopRow>
+    <div className='flex items-center justify-center'>
+      <div className='text-center font-semibold text-[16px] text-fg-primary'>
+        Find cards with similar reflections
+      </div>
+      <PlainButton className='absolute right-4 h-6' onClick={closeSpotlight}>
+        <Close className='cursor-pointer text-fg-secondary hover:text-fg-primary focus:text-fg-primary' />
+      </PlainButton>
+    </div>
   )
 }
 

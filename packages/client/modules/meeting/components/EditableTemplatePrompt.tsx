@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EditableTemplatePrompt_prompts$key} from '../../../__generated__/EditableTemplatePrompt_prompts.graphql'
@@ -7,12 +6,6 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import RenameReflectTemplatePromptMutation from '../../../mutations/RenameReflectTemplatePromptMutation'
 import Legitity from '../../../validation/Legitity'
-
-const StyledEditableText = styled(EditableText)({
-  fontSize: 16,
-  lineHeight: '24px',
-  padding: 0
-})
 
 interface Props {
   isOwner: boolean
@@ -69,7 +62,8 @@ const EditableTemplatePrompt = (props: Props) => {
   }
 
   return (
-    <StyledEditableText
+    <EditableText
+      className='p-0 text-[16px] leading-6'
       autoFocus={question.startsWith('New prompt #')}
       disabled={!isOwner}
       error={error?.message}

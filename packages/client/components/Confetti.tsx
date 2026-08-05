@@ -1,5 +1,4 @@
 import DOMConfetti from 'react-dom-confetti'
-import {PALETTE} from '../styles/paletteV3'
 
 // spread should hit the top left & top right of the screen assuming the start is at the centroid (req'd to look good for mobile)
 const spread = 180 - (Math.atan(window.innerHeight / window.innerWidth) / Math.PI) * 180 * 2
@@ -10,15 +9,15 @@ const confettiConfig = {
   elementCount: 250,
   decay: 0.88,
   colors: [
-    PALETTE.SKY_500,
-    PALETTE.TOMATO_600,
-    PALETTE.ROSE_500,
-    PALETTE.JADE_400,
-    PALETTE.GOLD_300,
-    PALETTE.GRAPE_700,
-    PALETTE.GRAPE_500,
-    PALETTE.TOMATO_500,
-    PALETTE.AQUA_400
+    'var(--color-sky-500)',
+    'var(--color-tomato-600)',
+    'var(--color-rose-500)',
+    'var(--color-jade-400)',
+    'var(--color-gold-300)',
+    'var(--color-grape-700)',
+    'var(--color-grape-500)',
+    'var(--color-tomato-500)',
+    'var(--color-aqua-400)'
   ]
 }
 

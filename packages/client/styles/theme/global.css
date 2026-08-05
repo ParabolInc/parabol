@@ -1368,3 +1368,167 @@
     cursor: col-resize;
   }
 }
+
+/* Meeting-summary TeamPrompt response card (TeamPromptResponseSummaryCard). The card is rendered
+   both into summary email HTML and into the in-app summary. These descendant rules only ever
+   applied in the app — email clients drop stylesheets — which is what the Emotion original did too.
+   Raw palette vars on purpose: the email/app card does not flip with the theme. */
+.summary-response-editor {
+  ul,
+  ol {
+    list-style-position: outside;
+    padding-inline-start: 16px;
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
+
+  ol {
+    margin-inline-start: 4px;
+  }
+
+  p.is-editor-empty:first-of-type::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  p:empty::after {
+    content: '\00A0';
+  }
+
+  p {
+    margin-block-start: 4px;
+    margin-block-end: 4px;
+  }
+
+  hr {
+    border-top: 1px solid var(--color-slate-300);
+  }
+
+  [data-type='mention'] {
+    background-color: var(--color-gold-100);
+    font-weight: 600;
+  }
+
+  a {
+    text-decoration: underline;
+    color: var(--color-slate-600);
+  }
+}
+
+/* ── First-party keyframes migrated from Emotion (referenced via animate-[…] arbitrary values) ── */
+
+/* styles/animation.ts fadeUp */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CreditCardIcon keyframesOpacity, CustomTemplateUpgradeMsg fadein */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Dashboard/DashModal animateIn */
+@keyframes modal-drop-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -50px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* UserDraggingHeader keyframesOpacity */
+@keyframes drag-pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.33;
+  }
+}
+
+/* Ellipsis keyframesOpacity */
+@keyframes ellipsis-blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.25;
+  }
+}
+
+/* MockFieldLine skeletonShine (background-size: 260px) */
+@keyframes skeleton-shine-sm {
+  0% {
+    background-position: -40px;
+  }
+  40%,
+  100% {
+    background-position: 180px;
+  }
+}
+
+/* MockTemplateItem skeletonShine (background-size: 600px) */
+@keyframes skeleton-shine-md {
+  0% {
+    background-position: -80px;
+  }
+  40%,
+  100% {
+    background-position: 240px;
+  }
+}
+
+/* MockScopingTask skeletonShine (background-size: 1200px) */
+@keyframes skeleton-shine-lg {
+  0% {
+    background-position: -80px;
+  }
+  40%,
+  100% {
+    background-position: 800px;
+  }
+}
+
+/* Spinner keyframesRotate */
+@keyframes spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spinner keyframesOpacity (stops = 100/6, staggered per leaf via animation-delay) */
+@keyframes spinner-fade {
+  0% {
+    opacity: 0.25;
+  }
+  16.666666666666668% {
+    opacity: 1;
+  }
+  33.333333333333336% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.25;
+  }
+}

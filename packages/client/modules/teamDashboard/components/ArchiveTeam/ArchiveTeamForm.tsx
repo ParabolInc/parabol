@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
@@ -13,15 +12,6 @@ import BasicInput from '../../../../components/InputField/BasicInput'
 import PrimaryButton from '../../../../components/PrimaryButton'
 import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 import Legitity from '../../../../validation/Legitity'
-
-const ButtonGroup = styled('div')({
-  marginTop: 16,
-  display: 'flex'
-})
-
-const SubmitButton = styled(PrimaryButton)`
-  margin-right: 12px;
-`
 
 interface Props {
   handleCancel: () => any
@@ -90,12 +80,12 @@ const ArchiveTeamForm = (props: Props) => {
         name='archivedTeamName'
         placeholder={teamName}
       />
-      <ButtonGroup>
-        <SubmitButton type='submit' waiting={submitting}>
+      <div className='mt-4 flex'>
+        <PrimaryButton className='mr-3' type='submit' waiting={submitting}>
           I understand the consequences, delete this team
-        </SubmitButton>
+        </PrimaryButton>
         <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
-      </ButtonGroup>
+      </div>
     </form>
   )
 }

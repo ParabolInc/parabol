@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -7,84 +6,9 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {PortalStatus} from '../hooks/usePortal'
-import {PALETTE} from '../styles/paletteV3'
+import {cn} from '../ui/cn'
 import isDemoRoute from '../utils/isDemoRoute'
 import lazyPreload from '../utils/lazyPreload'
-
-const FacilitatorBlock = styled('div')({
-  borderBottom: '1px solid var(--color-hairline)',
-  fontWeight: 700,
-  marginBottom: 8,
-  padding: '0 8px 8px'
-})
-
-const FacilitatorToggle = styled('div')<{
-  isActive: boolean
-  isReadOnly: boolean
-}>(({isActive, isReadOnly}) => ({
-  alignItems: 'center',
-  cursor: isReadOnly ? undefined : 'pointer',
-  display: 'flex',
-  // padding compensates for 8px grid, hanging elements
-  // icons and other decorators can be on a 4px grid, anyway, per MD spec
-  // total height = 40px like nav elements, and FacilitatorBlock and SidebarHeader (NewMeetingSidebar.tsx) add 8px gutter
-  padding: '2px 4px',
-  // StyledIcon when toggle isActive or not
-  span: {
-    backgroundColor: isActive ? 'var(--color-surface-phase-active)' : undefined,
-    color: isActive ? 'var(--color-fg-primary)' : 'var(--color-fg-secondary)'
-  },
-  // StyledIcon when toggle hovered
-  '&:hover > span': {
-    backgroundColor: 'var(--color-surface-phase-active)',
-    color: 'var(--color-fg-primary)'
-  }
-}))
-
-const Label = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '20px'
-})
-
-const Subtext = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 13,
-  fontWeight: 400,
-  lineHeight: '16px',
-  overflowWrap: 'break-word',
-  width: 165
-})
-
-const StyledIcon = styled('span')({
-  borderRadius: 32,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-  height: 32,
-  marginLeft: 'auto',
-  width: 32
-})
-
-const AvatarBlock = styled('div')<{isConnected: boolean | null}>(({isConnected}) => ({
-  border: '2px solid',
-  borderColor: isConnected ? PALETTE.JADE_400 : 'var(--color-fg-muted)',
-  borderRadius: 30,
-  flexShrink: 0,
-  height: 30,
-  marginLeft: 1,
-  marginRight: 13,
-  width: 30
-}))
-
-const Avatar = styled('img')({
-  border: '1px solid #FFFFFF',
-  borderRadius: 26,
-  height: 26,
-  width: 26
-})
 
 interface Props {
   meetingRef: Facilitator_meeting$key
@@ -139,32 +63,52 @@ const Facilitator = (props: Props) => {
       connectedMemberIds.length === 1 &&
       connectedMemberIds[0] === viewerId) ||
     !!endedAt
+  const isActive = portalStatus === PortalStatus.Entering || portalStatus === PortalStatus.Entered
+  const isConnected = !!facilitatingMeetingMember?.isConnectedAt
   const handleOnMouseEnter = () => !isReadOnly && FacilitatorMenu.preload()
   const handleOnClick = () => !isReadOnly && togglePortal()
   return (
-    <FacilitatorBlock>
-      <FacilitatorToggle
-        isActive={portalStatus === PortalStatus.Entering || portalStatus === PortalStatus.Entered}
-        isReadOnly={isReadOnly}
+    <div className='mb-2 border-hairline border-b px-2 pb-2 font-bold'>
+      <div
+        className={cn(
+          'group/facilitator flex items-center px-1 py-[2px]',
+          !isReadOnly && 'cursor-pointer'
+        )}
         onClick={handleOnClick}
         onMouseEnter={handleOnMouseEnter}
         ref={originRef}
       >
-        <AvatarBlock isConnected={!!facilitatingMeetingMember?.isConnectedAt}>
-          <Avatar alt='' src={picture} />
-        </AvatarBlock>
+        <div
+          className={cn(
+            'mr-[13px] ml-px h-[30px] w-[30px] shrink-0 rounded-[30px] border-2',
+            isConnected ? 'border-jade-400' : 'border-fg-muted'
+          )}
+        >
+          <img
+            className='h-[26px] w-[26px] rounded-[26px] border border-white'
+            alt=''
+            src={picture}
+          />
+        </div>
         <div>
-          <Label>Facilitator</Label>
-          <Subtext>{viewerId === facilitatorUserId ? 'You' : preferredName}</Subtext>
+          <div className='font-semibold text-fg-primary text-sm'>Facilitator</div>
+          <div className='w-[165px] break-words font-normal text-[13px] text-fg-secondary leading-4'>
+            {viewerId === facilitatorUserId ? 'You' : preferredName}
+          </div>
         </div>
         {!isReadOnly && (
-          <StyledIcon>
+          <span
+            className={cn(
+              'ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-[32px] group-hover/facilitator:bg-surface-phase-active group-hover/facilitator:text-fg-primary',
+              isActive ? 'bg-surface-phase-active text-fg-primary' : 'text-fg-secondary'
+            )}
+          >
             <MoreVert />
-          </StyledIcon>
+          </span>
         )}
-      </FacilitatorToggle>
+      </div>
       {menuPortal(<FacilitatorMenu menuProps={menuProps} meeting={meeting} />)}
-    </FacilitatorBlock>
+    </div>
   )
 }
 

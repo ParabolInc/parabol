@@ -2,7 +2,6 @@
  * Renders the UI for the group phase of the retrospective meeting
  *
  */
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroGroupPhase_meeting$key} from '~/__generated__/RetroGroupPhase_meeting.graphql'
@@ -20,12 +19,6 @@ import PhaseWrapper from './PhaseWrapper'
 import type {RetroMeetingPhaseProps} from './RetroMeeting'
 import StageTimerDisplay from './StageTimerDisplay'
 import SuggestedGroupsButton from './SuggestedGroupsButton'
-
-const ButtonWrapper = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  padding: '16px 0px 8px 0px'
-})
 
 interface Props extends RetroMeetingPhaseProps {
   meeting: RetroGroupPhase_meeting$key
@@ -75,9 +68,9 @@ const RetroGroupPhase = (props: Props) => {
               {'Drag cards to group by common topics'}
             </PhaseHeaderDescription>
             {isGroupPhaseActive && (
-              <ButtonWrapper>
+              <div className='flex items-center pt-4 pb-2'>
                 <SuggestedGroupsButton meeting={meeting} />
-              </ButtonWrapper>
+              </div>
             )}
           </MeetingTopBar>
           <PhaseWrapper>

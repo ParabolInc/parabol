@@ -1,63 +1,13 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import {Breakpoint, Threshold} from '../types/constEnums'
+import {Threshold} from '../types/constEnums'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import StyledError from './StyledError'
-
-const narrowScreenMediaQuery = `@media screen and (max-width: ${Breakpoint.FUZZY_TABLET}px)`
-
-const ActionRow = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  flexWrap: 'wrap',
-  padding: 24,
-  [narrowScreenMediaQuery]: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    flexWrap: 'nowrap',
-    alignContent: 'center',
-    alignSelf: 'center',
-    marginTop: 'auto',
-    paddingBottom: '24px'
-  }
-})
-
-const ActiveMeetingsBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'nowrap',
-  flexGrow: 10,
-  [narrowScreenMediaQuery]: {
-    paddingBottom: 24
-  }
-})
-
-const ButtonBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'row',
-  flexWrap: 'nowrap'
-})
-
-const StartButton = styled(FlatPrimaryButton)({
-  fontSize: 20,
-  height: 50
-})
-
-const ErrorBlock = styled(StyledError)({
-  paddingBottom: 24,
-  width: '100%',
-  textAlign: 'center'
-})
 
 interface Props {
   error?: {message: string}
@@ -101,25 +51,30 @@ const NewMeetingActions = (props: Props) => {
   }, [isLocked])
 
   return (
-    <ActionRow>
-      {error && <ErrorBlock>{error.message}</ErrorBlock>}
+    <div className='flex flex-row flex-wrap items-center justify-between p-6 max-[700px]:mt-auto max-[700px]:flex-col max-[700px]:flex-nowrap max-[700px]:content-center max-[700px]:justify-center max-[700px]:self-center'>
+      {error && <StyledError className='w-full pb-6'>{error.message}</StyledError>}
       {isLocked && (
-        <ErrorBlock>
+        <StyledError className='w-full pb-6'>
           Unfortunately, {organizationName} has exceeded the {Threshold.MAX_STARTER_TIER_TEAMS}{' '}
           teams limit on the Starter Plan for more than {Threshold.STARTER_TIER_LOCK_AFTER_DAYS}{' '}
           days, and your account has been locked. You can re-activate your teams by upgrading your
           account.
-        </ErrorBlock>
+        </StyledError>
       )}
-      <ActiveMeetingsBlock>
+      <div className='flex grow-[10] flex-row flex-nowrap items-center max-[700px]:pb-6'>
         <NewMeetingActionsCurrentMeetings team={team} />
-      </ActiveMeetingsBlock>
-      <ButtonBlock>
-        <StartButton onClick={onStartMeetingClick} waiting={submitting} disabled={isLocked}>
+      </div>
+      <div className='flex flex-row flex-nowrap items-center'>
+        <FlatPrimaryButton
+          className='h-[50px] text-[20px]'
+          onClick={onStartMeetingClick}
+          waiting={submitting}
+          disabled={isLocked}
+        >
           Start Meeting
-        </StartButton>
-      </ButtonBlock>
-    </ActionRow>
+        </FlatPrimaryButton>
+      </div>
+    </div>
   )
 }
 

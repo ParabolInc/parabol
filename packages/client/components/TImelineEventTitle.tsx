@@ -1,10 +1,17 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const TimelineEventTitle = styled('span')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 14,
-  fontWeight: 600,
-  lineHeight: '20px'
-})
+const TimelineEventTitle = forwardRef(
+  (props: ComponentPropsWithoutRef<'span'>, ref: Ref<HTMLSpanElement>) => {
+    const {className, ...rest} = props
+    return (
+      <span
+        ref={ref}
+        className={cn('font-semibold text-fg-primary text-sm', className)}
+        {...rest}
+      />
+    )
+  }
+)
 
 export default TimelineEventTitle

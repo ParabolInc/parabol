@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -10,12 +9,6 @@ import ArchiveOrganizationForm from './ArchiveOrganizationForm'
 interface Props {
   organization: ArchiveOrganization_organization$key
 }
-
-const Hint = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 13,
-  marginTop: 8
-})
 
 const ArchiveOrganization = (props: Props) => {
   const {organization: organizationRef} = props
@@ -45,9 +38,9 @@ const ArchiveOrganization = (props: Props) => {
           >
             <IconLabel icon='remove_circle' label='Delete organization' />
           </LinkButton>
-          <Hint>
+          <div className='mt-2 text-[13px] text-fg-secondary'>
             <b>Note</b>: {'This can’t be undone.'}
-          </Hint>
+          </div>
         </div>
       ) : (
         <ArchiveOrganizationForm handleFormBlur={handleFormBlur} organization={organization} />

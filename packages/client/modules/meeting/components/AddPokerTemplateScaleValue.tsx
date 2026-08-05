@@ -1,26 +1,5 @@
-import styled from '@emotion/styled'
 import {Add} from '@mui/icons-material'
 import LinkButton from '../../../components/LinkButton'
-
-const AddScaleValueLink = styled(LinkButton)({
-  alignItems: 'center',
-  borderBottom: `1px solid var(--color-hairline)`,
-  display: 'flex',
-  justifyContent: 'flex-start',
-  fontSize: 14, // match the scale item font-size
-  lineHeight: '24px',
-  margin: 0,
-  outline: 'none',
-  padding: '8px 0',
-  ':hover': {
-    backgroundColor: 'var(--color-surface-raised)'
-  }
-})
-
-const AddScaleValueLinkPlus = styled(Add)({
-  display: 'block',
-  margin: '0 16px 0 16px'
-})
 
 interface Props {
   onClick: () => void
@@ -29,10 +8,14 @@ interface Props {
 const AddTemplateScaleValue = (props: Props) => {
   const {onClick} = props
   return (
-    <AddScaleValueLink palette='blue' onClick={onClick}>
-      <AddScaleValueLinkPlus />
+    <LinkButton
+      palette='blue'
+      onClick={onClick}
+      className='m-0 flex items-center justify-start border-hairline border-b px-0 py-2 text-sm leading-6 outline-none hover:bg-surface-raised'
+    >
+      <Add className='mx-4 block' />
       <div>Add value</div>
-    </AddScaleValueLink>
+    </LinkButton>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {useNavigate, useParams} from 'react-router'
 import useCanonical from '~/hooks/useCanonical'
@@ -15,28 +14,6 @@ import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import PasswordInputField from '../PasswordInputField'
 import PrimaryButton from '../PrimaryButton'
 import TeamInvitationWrapper from '../TeamInvitationWrapper'
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const P = styled('p')({
-  fontSize: 14,
-  lineHeight: 1.5,
-  margin: '16px 0',
-  textAlign: 'center'
-})
-
-const Container = styled('div')({
-  margin: '0 auto',
-  maxWidth: 240,
-  width: '100%'
-})
-
-const SubmitButton = styled(PrimaryButton)({
-  marginTop: 16
-})
 
 const validatePassword = (password: string) => {
   return new Legitity(password)
@@ -87,21 +64,23 @@ const SetNewPassword = () => {
     <TeamInvitationWrapper>
       <AuthenticationDialog>
         <DialogTitle>{'Reset Password'}</DialogTitle>
-        <Container>
-          <P>{'Type your new password below'}</P>
+        <div className='mx-auto w-full max-w-[240px]'>
+          <p className='my-4 text-center text-[14px] leading-normal'>
+            {'Type your new password below'}
+          </p>
           {error && <ErrorAlert message={error.message} />}
-          <Form onSubmit={onSubmit}>
+          <form className='flex flex-col' onSubmit={onSubmit}>
             <PasswordInputField
               {...fields.password}
               autoFocus
               onChange={onChange}
               onBlur={handleBlur}
             />
-            <SubmitButton size='medium' waiting={submitting}>
+            <PrimaryButton className='mt-4' size='medium' waiting={submitting}>
               {'Reset Password'}
-            </SubmitButton>
-          </Form>
-        </Container>
+            </PrimaryButton>
+          </form>
+        </div>
       </AuthenticationDialog>
     </TeamInvitationWrapper>
   )

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -16,30 +15,9 @@ import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
+import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
-
-const UpgradeButton = styled(PrimaryButton)<{disabled: boolean}>(({disabled}) => ({
-  background: PALETTE.SKY_500,
-  color: PALETTE.WHITE,
-  boxShadow: 'none',
-  marginTop: 16,
-  width: '100%',
-  elevation: 0,
-  opacity: disabled ? 0.5 : 1,
-  '&:hover, &:focus': {
-    boxShadow: 'none',
-    background: disabled ? PALETTE.SKY_500 : PALETTE.SKY_600
-  }
-}))
-
-const CancelButton = styled(SecondaryButton)({
-  width: '100%'
-})
-
-const ErrorMsg = styled(StyledError)({
-  paddingTop: 8,
-  textTransform: 'none'
-})
+import {cn} from '../../../../ui/cn'
 
 const getCardElementOptions = () => {
   const isDark = document.documentElement.classList.contains('theme-dark')
@@ -181,7 +159,9 @@ const UpdatePayment = (props: Props) => {
               onChange={handleChange('CardNumber')}
             />
           </div>
-          {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
+          {cardNumberError && (
+            <StyledError className='pt-2 normal-case'>{cardNumberError}</StyledError>
+          )}
         </div>
 
         <div className='w-1/4 pr-4'>
@@ -194,7 +174,9 @@ const UpdatePayment = (props: Props) => {
               options={cardElementOptions}
               onChange={handleChange('ExpiryDate')}
             />
-            {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
+            {expiryDateError && (
+              <StyledError className='pt-2 normal-case'>{expiryDateError}</StyledError>
+            )}
           </div>
         </div>
 
@@ -208,21 +190,33 @@ const UpdatePayment = (props: Props) => {
               options={cardElementOptions}
               onChange={handleChange('CVC')}
             />
-            {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}
+            {cvcError && <StyledError className='pt-2 normal-case'>{cvcError}</StyledError>}
           </div>
         </div>
       </div>
-      <div className='flex justify-start'>{errorMsg && <ErrorMsg>{errorMsg}</ErrorMsg>}</div>
+      <div className='flex justify-start'>
+        {errorMsg && <StyledError className='pt-2 normal-case'>{errorMsg}</StyledError>}
+      </div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='mt-4 w-1/8'>
-          <CancelButton size='medium' type='button' onClick={handleClose}>
+          <SecondaryButton className='w-full' size='medium' type='button' onClick={handleClose}>
             {'Cancel'}
-          </CancelButton>
+          </SecondaryButton>
         </div>
         <div className='flex w-1/6 justify-end'>
-          <UpgradeButton disabled={isUpdateDisabled} size='medium' type={'submit'}>
+          <PrimaryButton
+            className={cn(
+              'mt-4 w-full bg-none bg-sky-500 hover:bg-none focus:bg-none active:bg-none',
+              isUpdateDisabled ? 'opacity-50' : 'hover:bg-sky-600 focus:bg-sky-600'
+            )}
+            elevationResting={Elevation.Z0}
+            elevationHovered={Elevation.Z0}
+            disabled={isUpdateDisabled}
+            size='medium'
+            type={'submit'}
+          >
             {'Update'}
-          </UpgradeButton>
+          </PrimaryButton>
         </div>
       </div>
     </form>

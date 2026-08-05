@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
 import {CancelOutlined, Close, Menu} from '@mui/icons-material'
+import {cn} from '../ui/cn'
 import LinkButton, {type LinkButtonProps} from './LinkButton'
-
-const StyledButton = styled(LinkButton)({outline: 0})
 
 interface Props extends LinkButtonProps {
   //FIXME 6062: change to React.ComponentType
@@ -10,24 +8,17 @@ interface Props extends LinkButtonProps {
   iconLarge?: boolean
 }
 
-const StyledIcon = styled('div')<{iconLarge: boolean | undefined}>(({iconLarge}) => ({
-  color: 'inherit',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: iconLarge ? 24 : 18,
-  width: iconLarge ? 24 : 18,
-  svg: {
-    fontSize: iconLarge ? 24 : 18
-  }
-}))
-
 const IconButton = (props: Props) => {
-  const {icon, iconLarge} = props
+  const {icon, iconLarge, className, ...rest} = props
 
   return (
-    <StyledButton {...props} type='button'>
-      <StyledIcon iconLarge={iconLarge}>
+    <LinkButton {...rest} className={cn('outline-0', className)} type='button'>
+      <div
+        className={cn(
+          'flex items-center justify-center text-inherit',
+          iconLarge ? 'h-6 w-6 [&_svg]:text-[24px]' : 'h-[18px] w-[18px] [&_svg]:text-[18px]'
+        )}
+      >
         {
           {
             cancel: <CancelOutlined />,
@@ -35,8 +26,8 @@ const IconButton = (props: Props) => {
             menu: <Menu />
           }[icon]
         }
-      </StyledIcon>
-    </StyledButton>
+      </div>
+    </LinkButton>
   )
 }
 

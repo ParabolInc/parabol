@@ -1,57 +1,42 @@
-import styled from '@emotion/styled'
+import type {ReactNode} from 'react'
 import type {TierEnum} from '../../../../__generated__/DowngradeToStarterMutation.graphql'
 import {EnterpriseBenefits, TeamBenefits} from '../../../../utils/constants'
 import {upperFirst} from '../../../../utils/upperFirst'
 
-const List = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '16px 0px',
-  position: 'relative',
-  width: '100%'
-})
+const List = (props: {children: ReactNode}) => (
+  <div className='relative flex w-full flex-col py-4'>{props.children}</div>
+)
 
-const DrawerContent = styled('div')({
-  backgroundColor: 'var(--color-surface-card)',
-  display: 'flex',
-  flexDirection: 'column',
-  overflowY: 'auto',
-  padding: 16
-})
+const DrawerContent = (props: {children: ReactNode}) => (
+  <div className='flex flex-col overflow-y-auto bg-surface-card p-4'>{props.children}</div>
+)
 
-const Title = styled('span')({
-  fontWeight: 600,
-  fontSize: 20
-})
+const Title = (props: {children: ReactNode}) => (
+  <span className='font-semibold text-[20px]'>{props.children}</span>
+)
 
-const Subtitle = styled('span')({
-  fontWeight: 600,
-  paddingBottom: 8
-})
+const Subtitle = (props: {children: ReactNode}) => (
+  <span className='pb-2 font-semibold'>{props.children}</span>
+)
 
-const UL = styled('ul')({
-  margin: 0
-})
+const UL = (props: {children: ReactNode}) => <ul className='m-0'>{props.children}</ul>
 
-const LI = styled('li')({
-  fontSize: 16,
-  lineHeight: '28px',
-  color: 'var(--color-fg-primary)',
-  textTransform: 'none',
-  fontWeight: 400,
-  textAlign: 'left',
-  listStyleType: 'disc'
-})
+const LI = (props: {children: ReactNode}) => (
+  <li className='list-disc text-left font-normal text-[16px] text-fg-primary normal-case leading-[28px]'>
+    {props.children}
+  </li>
+)
 
-const Link = styled('a')({
-  color: 'var(--color-accent)',
-  fontWeight: 600,
-  textDecoration: 'none',
-  '&:hover, &:focus': {
-    color: 'var(--color-accent)',
-    textDecoration: 'underline'
-  }
-})
+const Link = (props: {children: ReactNode; href: string}) => (
+  <a
+    className='font-semibold text-accent no-underline hover:text-accent hover:underline focus:text-accent focus:underline'
+    href={props.href}
+    target='_blank'
+    rel='noopener noreferrer'
+  >
+    {props.children}
+  </a>
+)
 
 const starterAgileResources = [
   {
@@ -149,9 +134,7 @@ const OrgPlanDrawerContent = (props: Props) => {
           <UL>
             {starterFeatures.map((feature) => (
               <LI key={feature.url}>
-                <Link href={feature.url} target='_blank' rel='noopener noreferrer'>
-                  {`${feature.title}: `}
-                </Link>
+                <Link href={feature.url}>{`${feature.title}: `}</Link>
                 {feature.description}
               </LI>
             ))}
@@ -162,9 +145,7 @@ const OrgPlanDrawerContent = (props: Props) => {
           <UL>
             {starterAgileResources.map((resource) => (
               <LI key={resource.url}>
-                <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
-                  {resource.title}
-                </Link>
+                <Link href={resource.url}>{resource.title}</Link>
               </LI>
             ))}
           </UL>
@@ -174,9 +155,7 @@ const OrgPlanDrawerContent = (props: Props) => {
           <UL>
             {additionalStarterResources.map((resource) => (
               <LI key={resource.url}>
-                <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
-                  {resource.title}
-                </Link>
+                <Link href={resource.url}>{resource.title}</Link>
               </LI>
             ))}
           </UL>
@@ -204,9 +183,7 @@ const OrgPlanDrawerContent = (props: Props) => {
         <UL>
           {agileResources.map((resource) => (
             <LI key={resource.title}>
-              <Link href={resource.url} target='_blank' rel='noopener noreferrer'>
-                {resource.title}
-              </Link>
+              <Link href={resource.url}>{resource.title}</Link>
             </LI>
           ))}
         </UL>
@@ -216,24 +193,16 @@ const OrgPlanDrawerContent = (props: Props) => {
         <UL>
           <LI>
             {'Cover all of your agile meetings - '}
-            <Link href={enterpriseResources.retros} target='_blank' rel='noopener noreferrer'>
-              {'retros, '}
-            </Link>
-            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.estimation}>
-              {'estimation'}
-            </Link>
+            <Link href={enterpriseResources.retros}>{'retros, '}</Link>
+            <Link href={enterpriseResources.estimation}>{'estimation'}</Link>
             {' & '}
-            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.standups}>
-              {'standups'}
-            </Link>
+            <Link href={enterpriseResources.standups}>{'standups'}</Link>
           </LI>
           <LI>
-            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.templates}>
-              {'40+ Meeting Templates'}
-            </Link>
+            <Link href={enterpriseResources.templates}>{'40+ Meeting Templates'}</Link>
           </LI>
           <LI>
-            <Link target='_blank' rel='noopener noreferrer' href={enterpriseResources.integrations}>
+            <Link href={enterpriseResources.integrations}>
               {'Integrate with Jira, Slack & More'}
             </Link>
           </LI>

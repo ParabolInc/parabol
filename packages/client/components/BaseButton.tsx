@@ -1,41 +1,14 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, type ReactNode, type Ref, useState} from 'react'
 import type {Elevation} from '../styles/elevation'
-import ui from '../styles/ui'
+import {cn} from '../ui/cn'
 import PlainButton, {type PlainButtonProps} from './PlainButton/PlainButton'
 
-interface Root {
-  disabled: boolean
-  elevationResting: Elevation | undefined
-  elevationHovered: Elevation | undefined
-  elevationPressed: Elevation | undefined
-  pressedDown: boolean
-  size: 'small' | 'medium' | 'large'
-}
-
-const ButtonRoot = styled(PlainButton)<Root>(
-  ({disabled, elevationResting, elevationHovered, elevationPressed, pressedDown, size}) => {
-    return {
-      // size is easy to override, it adds: fontSize, lineHeight, padding
-      ...(ui.buttonSizeStyles[size] as any),
-      alignItems: 'center',
-      border: '1px solid transparent',
-      boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationResting,
-      display: 'flex',
-      flexShrink: 0,
-      justifyContent: 'center',
-      textAlign: 'center',
-      transition: `box-shadow 100ms ease-in`,
-      userSelect: 'none',
-      whiteSpace: 'nowrap',
-      ':hover,:focus,:active': {
-        boxShadow: disabled ? undefined : pressedDown ? elevationPressed : elevationHovered,
-        outline: pressedDown && 0
-      }
-    }
-  }
-)
+const SIZE_STYLES = {
+  small: 'px-[1.5em] py-[5px] text-[14px] leading-5',
+  medium: 'px-[1.5em] py-[7px] text-[15px] leading-6',
+  large: 'px-[1.5em] py-[11px] text-[16px] leading-7'
+} as const
 
 export interface BaseButtonProps extends PlainButtonProps {
   'aria-label'?: string
@@ -69,11 +42,13 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
     onMouseEnter,
     style,
     waiting,
-    dataCy
+    dataCy,
+    ...rest
   } = props
   const hasDisabledStyles = !!(disabled || waiting)
 
-  const [pressedDown, setPressedDown] = useState(false)
+  const [pressedDownState, setPressedDown] = useState(false)
+  const pressedDown = !hasDisabledStyles && pressedDownState
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) {
@@ -96,30 +71,48 @@ const BaseButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
     onMouseLeave && onMouseLeave(e)
   }
 
-  // spread props to allow for html attributes like type when needed
+  const restingShadow = hasDisabledStyles
+    ? undefined
+    : pressedDown
+      ? elevationPressed
+      : elevationResting
+  const hoverShadow = hasDisabledStyles
+    ? undefined
+    : pressedDown
+      ? elevationPressed
+      : elevationHovered
+
+  const styleWithShadows = {
+    '--base-button-shadow': restingShadow,
+    '--base-button-shadow-hover': hoverShadow,
+    ...style
+  } as React.CSSProperties
+
   return (
-    <ButtonRoot
-      {...props}
+    <PlainButton
+      {...rest}
       data-cy={dataCy}
       aria-label={ariaLabel}
-      className={className}
+      className={cn(
+        'flex shrink-0 select-none items-center justify-center whitespace-nowrap border border-transparent text-center transition-shadow duration-100 ease-in',
+        SIZE_STYLES[size],
+        restingShadow && 'shadow-[var(--base-button-shadow)]',
+        hoverShadow &&
+          'hover:shadow-[var(--base-button-shadow-hover)] focus:shadow-[var(--base-button-shadow-hover)] active:shadow-[var(--base-button-shadow-hover)]',
+        className
+      )}
       disabled={hasDisabledStyles}
-      elevationHovered={elevationHovered}
-      elevationResting={elevationResting}
-      elevationPressed={elevationPressed}
       ref={ref}
       onClick={onClick}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseEnter={onMouseEnter}
       onMouseLeave={handleMouseLeave}
-      pressedDown={!hasDisabledStyles && pressedDown}
-      size={size}
-      style={style}
+      style={styleWithShadows}
       waiting={waiting}
     >
       {children}
-    </ButtonRoot>
+    </PlainButton>
   )
 })
 

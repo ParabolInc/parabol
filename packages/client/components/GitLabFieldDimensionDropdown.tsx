@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
@@ -6,6 +5,7 @@ import {useFragment} from 'react-relay'
 import type {GitLabFieldDimensionDropdown_stage$key} from '../__generated__/GitLabFieldDimensionDropdown_stage.graphql'
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import EditVotingLabelTemplateModal from './EditVotingLabelTemplateModal'
 import type {EditModalConfig} from './GitLabFieldMenu'
@@ -18,27 +18,6 @@ interface Props {
   stageRef: GitLabFieldDimensionDropdown_stage$key
   submitScore(): void
 }
-
-const Wrapper = styled(PlainButton)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  color: 'var(--color-fg-primary)',
-  cursor: isFacilitator ? undefined : 'default',
-  display: 'flex',
-  paddingRight: isFacilitator ? undefined : 8,
-  userSelect: 'none',
-  ':hover,:focus,:active': {
-    opacity: isFacilitator ? '50%' : undefined
-  }
-}))
-
-const CurrentValue = styled('div')({
-  fontSize: 14
-})
-
-const StyledIcon = styled(ExpandMore)<{isFacilitator: boolean}>(({isFacilitator}) => ({
-  height: 18,
-  width: 18,
-  display: isFacilitator ? undefined : 'none'
-}))
 
 const labelLookup = {
   [SprintPokerDefaults.GITLAB_FIELD_TIME_ESTIMATE]:
@@ -71,10 +50,17 @@ const GitLabFieldDimensionDropdown = (props: Props) => {
     interpolateVotingLabelTemplate(serviceFieldName, finalScore)
 
   const trigger = (
-    <Wrapper isFacilitator={isFacilitator}>
-      <CurrentValue>{label}</CurrentValue>
-      <StyledIcon isFacilitator={isFacilitator} />
-    </Wrapper>
+    <PlainButton
+      className={cn(
+        'flex select-none text-fg-primary',
+        isFacilitator
+          ? 'hover:opacity-50 focus:opacity-50 active:opacity-50'
+          : 'cursor-default pr-2'
+      )}
+    >
+      <div className='text-sm'>{label}</div>
+      <ExpandMore className={cn('h-[18px] w-[18px]', !isFacilitator && 'hidden')} />
+    </PlainButton>
   )
 
   if (!isFacilitator) return trigger

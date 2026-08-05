@@ -1,16 +1,7 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, type Ref} from 'react'
 import IconLabel from '../IconLabel'
 import RaisedButton from '../RaisedButton'
-
-const StyledButton = styled(RaisedButton)({
-  border: 0,
-  height: '1.5rem',
-  lineHeight: '1.5rem',
-  padding: 0,
-  width: '1.5rem'
-})
 
 interface Props {
   label: string
@@ -21,9 +12,9 @@ interface Props {
 const AddTaskButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {label, onClick, onMouseEnter} = props
   return (
-    <StyledButton
+    <RaisedButton
       aria-label={`Add a Task set to ${label}`}
-      className='bg-surface-card text-fg-primary'
+      className='h-6 w-6 border-0 bg-surface-card p-0 text-fg-primary leading-6'
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       palette='white'
@@ -31,7 +22,7 @@ const AddTaskButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => 
       dataCy={`add-task-${label}`}
     >
       <IconLabel icon='add' />
-    </StyledButton>
+    </RaisedButton>
   )
 })
 

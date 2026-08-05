@@ -33,7 +33,7 @@ const StaticSidebar = (props: Props) => {
     return (
       <div
         ref={rightDrawerRef}
-        className='relative z-side-sheet h-full min-w-0 shrink-0 grow-0 overflow-hidden transition-[width,box-shadow] duration-200 ease-[cubic-bezier(0,0,.2,1)]'
+        className='z-side-sheet h-full min-w-0 shrink-0 grow-0 overflow-hidden transition-[width,box-shadow] duration-200 ease-[cubic-bezier(0,0,.2,1)]'
         style={{
           // height is intentionally omitted so useCoverable can override it via style.height
           width: isOpen ? sidebarWidth : 0,
