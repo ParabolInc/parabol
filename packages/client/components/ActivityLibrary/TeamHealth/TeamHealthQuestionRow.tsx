@@ -28,8 +28,16 @@ interface Props {
 }
 
 const TeamHealthQuestionRow = (props: Props) => {
-  const {questionRef, templateId, viewerId, isSelected, isEditing, readOnly, onEditHint, categories} =
-    props
+  const {
+    questionRef,
+    templateId,
+    viewerId,
+    isSelected,
+    isEditing,
+    readOnly,
+    onEditHint,
+    categories
+  } = props
   const question = useFragment(
     graphql`
       fragment TeamHealthQuestionRow_question on TeamHealthQuestion {
@@ -102,7 +110,7 @@ const TeamHealthQuestionRow = (props: Props) => {
           type='button'
           onClick={startEditing}
           aria-label='Edit question'
-          className='flex shrink-0 cursor-pointer items-center text-slate-400 hover:text-slate-700'
+          className='flex shrink-0 cursor-pointer items-center text-fg-muted hover:text-fg-primary'
         >
           <Edit className='size-5' />
         </button>
@@ -118,7 +126,7 @@ const TeamHealthQuestionRow = (props: Props) => {
           type='button'
           onClick={onDelete}
           aria-label='Delete question'
-          className='flex shrink-0 cursor-pointer items-center text-slate-400 hover:text-tomato-500'
+          className='flex shrink-0 cursor-pointer items-center text-fg-muted hover:text-fg-error'
         >
           <DeleteOutline className='size-5' />
         </button>
@@ -128,9 +136,9 @@ const TeamHealthQuestionRow = (props: Props) => {
   )
 
   return (
-    <div className='group flex items-center gap-1.5 rounded-md px-2 py-2 hover:bg-slate-100'>
+    <div className='group flex items-center gap-1.5 rounded-md px-2 py-2 hover:bg-surface-hover'>
       <Checkbox
-        className={cn('ml-3', readOnly && 'border-slate-400 text-slate-400')}
+        className={cn('ml-3', readOnly && 'border-hairline')}
         checked={isSelected}
         onCheckedChange={(checked) => toggleSelected(checked === true)}
       />
@@ -148,14 +156,14 @@ const TeamHealthQuestionRow = (props: Props) => {
                 setIsEditingText(false)
               }
             }}
-            className='w-full rounded-xs border border-sky-500 border-solid px-1 py-0.5 text-slate-700 text-sm outline-none'
+            className='w-full rounded-xs border border-accent border-solid bg-surface-input px-1 py-0.5 text-fg-primary text-sm outline-none'
           />
         ) : (
           <button
             type='button'
             onClick={startEditing}
             className={cn(
-              'w-full text-left text-slate-700 text-sm',
+              'w-full text-left text-fg-primary text-sm',
               canEdit ? 'cursor-pointer' : 'cursor-default'
             )}
           >

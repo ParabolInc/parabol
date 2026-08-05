@@ -37,7 +37,7 @@ const NewMeetingTeamPickerMultiple = (props: Props) => {
       trigger={
         <button
           type='button'
-          className='flex h-auto w-full cursor-pointer items-center rounded-sm border-0 bg-slate-200 p-2 text-left hover:bg-slate-300'
+          className='flex h-auto w-full cursor-pointer items-center rounded-sm border-0 bg-surface-well p-2 text-left hover:bg-surface-hover'
         >
           <div className='grow pl-2'>
             <div className='text-sm leading-4'>Teams</div>
@@ -49,7 +49,7 @@ const NewMeetingTeamPickerMultiple = (props: Props) => {
     >
       <MenuContent align='start' sideOffset={4} className='max-h-80 w-88 overflow-auto'>
         <div className='px-3 py-2 font-semibold text-base'>Select Teams:</div>
-        <div className='border-slate-300 border-b' />
+        <div className='border-hairline border-b' />
         <div className='py-2'>
           {teams.map((team) => (
             <MenuItemCheckbox

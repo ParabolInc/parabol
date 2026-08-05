@@ -96,10 +96,19 @@ const ActivityDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
+  // below lg the sidebar stacks under the content & the whole page scrolls as one. From lg up the
+  // two panes sit side by side, each owning its own scroll, so a long template (e.g. an expanded
+  // team health question pack) never pushes the layout past the bottom of the viewport
   return (
-    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card'>
-      <div className='flex grow flex-col lg:flex-row'>
-        <div className='mt-4 w-full grow'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card lg:overflow-hidden'>
+      <div className='flex grow flex-col lg:min-h-0 lg:flex-row'>
+        <div
+          className={cn(
+            'mt-4 w-full grow lg:min-h-0 lg:overflow-y-auto',
+            // keep the last rows clear of the fixed "Done Editing" bar
+            isEditing && 'pb-24'
+          )}
+        >
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
               <Link to={categoryLink}>

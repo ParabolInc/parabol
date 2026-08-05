@@ -66,12 +66,12 @@ const TeamHealthSubmittedPhase = (props: Props) => {
 
   return (
     <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-      <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm'>
-        <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-jade-100'>
-          <CheckCircle className='text-jade-500' />
+      <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
+        <div className='flex h-14 w-14 items-center justify-center rounded-2xl bg-jade-100 dark:bg-jade-900'>
+          <CheckCircle className='text-jade-500 dark:text-jade-300' />
         </div>
-        <h1 className='mt-6 font-bold text-3xl text-slate-900'>You're all set</h1>
-        <p className='mt-2 text-slate-600'>
+        <h1 className='mt-6 font-bold text-3xl text-fg-primary'>You're all set</h1>
+        <p className='mt-2 text-fg-secondary'>
           Your answers are in. Now we wait for the rest of the team before the results reveal.
         </p>
         <TeamHealthProgress className='mt-8' respondentCount={respondentCount} total={total} />
@@ -102,7 +102,7 @@ const TeamHealthSubmittedPhase = (props: Props) => {
             <Button
               variant='link'
               size='md'
-              className='font-bold text-sky-500'
+              className='font-bold text-accent'
               onClick={() => gotoStageId(firstResponseStageId)}
             >
               Change my answers

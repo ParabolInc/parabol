@@ -70,11 +70,23 @@ const computeResults = (
   return [...byQuestion.values()]
 }
 
+// same light-100/dark-900 inversion the category tags use, so every pill on this page reads alike
 const badgeForScore = (score: number | null) => {
-  if (score === null) return {label: 'No responses', className: 'bg-slate-200 text-slate-600'}
-  if (score >= 70) return {label: 'Strong agreement', className: 'bg-jade-100 text-jade-700'}
-  if (score >= 55) return {label: 'Aligned', className: 'bg-sky-100 text-sky-700'}
-  return {label: 'Some concern', className: 'bg-gold-100 text-gold-700'}
+  if (score === null) return {label: 'No responses', className: 'bg-surface-well text-fg-secondary'}
+  if (score >= 70)
+    return {
+      label: 'Strong agreement',
+      className: 'bg-jade-100 text-jade-700 dark:bg-jade-900 dark:text-jade-200'
+    }
+  if (score >= 55)
+    return {
+      label: 'Aligned',
+      className: 'bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-200'
+    }
+  return {
+    label: 'Some concern',
+    className: 'bg-gold-100 text-gold-700 dark:bg-gold-900 dark:text-gold-200'
+  }
 }
 
 const TeamHealthResultPhase = (props: Props) => {
@@ -123,11 +135,11 @@ const TeamHealthResultPhase = (props: Props) => {
 
   return (
     <div className='mx-auto max-w-6xl px-6 py-10'>
-      <div className='rounded-2xl bg-white p-8 text-center shadow-sm'>
-        <h1 className='font-bold text-3xl text-slate-900'>
+      <div className='rounded-2xl bg-surface-card p-8 text-center shadow-card'>
+        <h1 className='font-bold text-3xl text-fg-primary'>
           The reveal — here's what the team said
         </h1>
-        <p className='mt-2 text-slate-500'>
+        <p className='mt-2 text-fg-muted'>
           Everyone's cards flipped together. Talk through the spread — the divergence is where the
           conversation is.
         </p>
@@ -140,7 +152,7 @@ const TeamHealthResultPhase = (props: Props) => {
             <div
               key={result.questionId}
               className={cn(
-                'rounded-2xl bg-white p-5 shadow-sm',
+                'rounded-2xl bg-surface-card p-5 shadow-card',
                 isDivergent && 'ring-2 ring-grape-500'
               )}
             >
@@ -161,15 +173,15 @@ const TeamHealthResultPhase = (props: Props) => {
                 >
                   {isDivergent ? 'Biggest divergence' : badge.label}
                 </span>
-                <span className='font-bold text-2xl text-slate-900'>{result.score ?? '—'}</span>
+                <span className='font-bold text-2xl text-fg-primary'>{result.score ?? '—'}</span>
               </div>
             </div>
           )
         })}
       </div>
       {divergent && divergent.comments.length > 0 && (
-        <div className='mt-8 rounded-2xl bg-white p-6 shadow-sm'>
-          <div className='flex items-center gap-2 font-bold text-lg text-slate-900'>
+        <div className='mt-8 rounded-2xl bg-surface-card p-6 shadow-card'>
+          <div className='flex items-center gap-2 font-bold text-fg-primary text-lg'>
             Let's talk:
             <span
               className={cn(
@@ -180,17 +192,17 @@ const TeamHealthResultPhase = (props: Props) => {
               {divergent.category}
             </span>
           </div>
-          <p className='mt-1 text-slate-500 text-sm'>
+          <p className='mt-1 text-fg-muted text-sm'>
             The widest split this cycle. Anonymous comments below.
           </p>
           <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2'>
             {divergent.comments.map((comment, idx) => (
-              <div key={idx} className='rounded-lg bg-slate-100 p-4 text-slate-700'>
+              <div key={idx} className='rounded-lg bg-surface-well p-4 text-fg-primary'>
                 “{comment}”
               </div>
             ))}
           </div>
-          <div className='mt-4 text-slate-400 text-xs'>Comments are never attributed to anyone</div>
+          <div className='mt-4 text-fg-muted text-xs'>Comments are never attributed to anyone</div>
         </div>
       )}
     </div>

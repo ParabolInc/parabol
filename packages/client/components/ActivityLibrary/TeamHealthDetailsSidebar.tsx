@@ -57,7 +57,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   // viewer has no teams to run a team health meeting with
   if (teams.length === 0) {
     return (
-      <div className='flex w-full flex-col items-center border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
+      <div className='flex w-full flex-col items-center border-hairline border-t border-solid bg-surface-card px-4 pt-2 lg:top-0 lg:right-0 lg:h-full lg:w-96 lg:flex-1 lg:border-l lg:pt-14'>
         <div className='self-center italic'>You have no teams to start a meeting with!</div>
         <StyledLink to='/newteam'>Create a team</StyledLink>
       </div>
@@ -103,7 +103,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
   }
 
   return (
-    <div className='sticky bottom-0 flex w-full flex-col border-slate-300 border-t border-solid bg-white px-4 pt-2 lg:top-0 lg:right-0 lg:h-screen lg:w-96 lg:border-l lg:pt-14'>
+    <div className='sticky bottom-0 flex w-full flex-col border-hairline border-t border-solid bg-surface-card px-4 pt-2 lg:top-0 lg:right-0 lg:h-screen lg:w-96 lg:border-l lg:pt-14'>
       <div className='grow'>
         <div className='flex items-center justify-between pt-2 font-semibold text-xl lg:pt-0'>
           Settings

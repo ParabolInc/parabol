@@ -87,7 +87,7 @@ const TeamHealthQuestionPackSection = (props: Props) => {
   const addAllButton = (
     <Button
       variant='outline'
-      className='shrink-0 border-slate-300 px-3 py-1 font-semibold text-slate-700 text-xs'
+      className='shrink-0 px-3 py-1 font-semibold text-xs'
       onClick={addAll}
       disabled={isEditing && unselectedIds.length === 0}
     >
@@ -110,16 +110,16 @@ const TeamHealthQuestionPackSection = (props: Props) => {
   ))
 
   return (
-    <Collapsible.Root defaultOpen={defaultOpen} className='border-slate-200 border-b'>
+    <Collapsible.Root defaultOpen={defaultOpen} className='border-hairline border-b'>
       <div className='flex items-center justify-between gap-3 py-2'>
         <div className='flex min-w-0 flex-1 items-center gap-2'>
           <Collapsible.Trigger asChild>
             <button type='button' className='group flex min-w-0 items-center gap-2 text-left'>
-              <KeyboardArrowRight className='size-5 shrink-0 text-slate-400 transition-transform group-data-[state=open]:rotate-90' />
-              <span className='shrink-0 font-semibold text-slate-700 text-sm'>
+              <KeyboardArrowRight className='size-5 shrink-0 text-fg-muted transition-transform group-data-[state=open]:rotate-90' />
+              <span className='shrink-0 font-semibold text-fg-primary text-sm'>
                 {title ?? pack.name}
               </span>
-              <span className='shrink-0 rounded-full bg-slate-200 px-2 py-0.5 font-medium text-slate-600 text-xs'>
+              <span className='shrink-0 rounded-full bg-surface-well px-2 py-0.5 font-medium text-fg-secondary text-xs'>
                 {pack.questions.length} items
               </span>
               <span className='flex shrink-0 items-center gap-1'>
@@ -141,13 +141,13 @@ const TeamHealthQuestionPackSection = (props: Props) => {
                 href={pack.sourceUrl}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex min-w-0 items-center gap-0.5 text-slate-400 text-xs hover:text-slate-600 hover:underline'
+                className='flex min-w-0 items-center gap-0.5 text-fg-muted text-xs hover:text-fg-secondary hover:underline'
               >
                 <span className='truncate'>{pack.source}</span>
                 <OpenInNew className='size-3.5 shrink-0' />
               </a>
             ) : (
-              <span className='truncate text-slate-400 text-xs'>{pack.source}</span>
+              <span className='truncate text-fg-muted text-xs'>{pack.source}</span>
             ))}
         </div>
         {!readOnly && addAllButton}

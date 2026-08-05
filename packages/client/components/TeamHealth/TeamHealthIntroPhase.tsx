@@ -87,16 +87,16 @@ const TeamHealthIntroPhase = (props: Props) => {
       <div className='absolute top-6 right-6'>
         <NewMeetingAvatarGroup meetingRef={meeting} />
       </div>
-      <div className='flex w-full max-w-md flex-col items-center rounded-3xl bg-white px-6 py-10 text-center shadow-2xl'>
-        <div className='flex h-16 w-10 items-center justify-center rounded-2xl bg-lilac-100'>
-          <MonitorHeart className='text-grape-700' fontSize='large' />
+      <div className='flex w-full max-w-md flex-col items-center rounded-3xl bg-surface-card px-6 py-10 text-center shadow-card-raised'>
+        <div className='flex h-16 w-10 items-center justify-center rounded-2xl bg-lilac-100 dark:bg-lilac-900'>
+          <MonitorHeart className='text-grape-700 dark:text-lilac-200' fontSize='large' />
         </div>
-        <h1 className='mt-6 mb-2 font-bold text-4xl text-slate-900'>Team Health</h1>
-        <div className='mt-1 text-slate-600'>
+        <h1 className='mt-6 mb-2 font-bold text-4xl text-fg-primary'>Team Health</h1>
+        <div className='mt-1 text-fg-secondary'>
           {team.name} · {responseStages.length} questions · about 2 minutes
         </div>
         {meetingSeriesId && scheduledEndTime && (
-          <div className='mt-4 flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-700 text-sm'>
+          <div className='mt-4 flex items-center gap-2 rounded-full bg-surface-well px-4 py-2 font-semibold text-fg-secondary text-sm'>
             <Schedule fontSize='small' />
             Open until {dayjs(scheduledEndTime).format('ddd h:mm A')} · auto-reveals at close
           </div>
@@ -113,7 +113,7 @@ const TeamHealthIntroPhase = (props: Props) => {
           Start your response
           <ArrowForward />
         </Button>
-        <div className='mt-8 text-slate-500 text-sm'>
+        <div className='mt-8 text-fg-muted text-sm'>
           Anonymous · your individual answers are never shown to anyone
         </div>
       </div>

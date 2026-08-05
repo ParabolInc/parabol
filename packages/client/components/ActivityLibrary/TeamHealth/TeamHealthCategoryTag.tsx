@@ -77,7 +77,7 @@ const TeamHealthCategoryTag = (props: Props) => {
             </span>
           </MenuItem>
         ))}
-        <div className='mx-1 mt-1 border-slate-200 border-t px-3 pt-2 pb-1'>
+        <div className='mx-1 mt-1 border-hairline border-t px-3 pt-2 pb-1'>
           <input
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
@@ -86,7 +86,7 @@ const TeamHealthCategoryTag = (props: Props) => {
               if (e.key === 'Enter') submitNew()
             }}
             placeholder='Add a category…'
-            className='w-full rounded-xs border border-slate-300 border-solid px-2 py-1 text-slate-700 text-xs outline-none focus:border-sky-500'
+            className='w-full rounded-xs border border-hairline-field border-solid bg-surface-input px-2 py-1 text-fg-primary text-xs outline-none placeholder:text-fg-muted focus:border-accent'
           />
         </div>
       </MenuContent>

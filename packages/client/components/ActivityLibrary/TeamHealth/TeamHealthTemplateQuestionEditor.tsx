@@ -69,34 +69,32 @@ const TeamHealthTemplateQuestionEditor = (props: Props) => {
     <AddTeamHealthQuestion templateId={templateId} isEditing={isEditing} onEditHint={onEditHint} />
   )
 
+  // the list grows freely; from lg up ActivityDetails gives this pane its own scroll
   return (
     <div className='pt-4'>
-      {/* bound the list to the viewport so expanding a pack scrolls internally instead of growing the page */}
-      <div className='max-h-[calc(100vh-320px)] overflow-y-auto'>
-        {!myPackId && isEditing && (
-          <div className='border-slate-200 border-b pb-2'>
-            <div className='py-2 font-semibold text-slate-700 text-sm'>My Questions</div>
-            <div className='px-1'>{addQuestion}</div>
-          </div>
-        )}
-        {sortedPacks.map((pack, index) => (
-          <TeamHealthQuestionPackSection
-            key={pack.id}
-            packRef={pack}
-            templateId={templateId}
-            viewerId={viewerId}
-            selectedIds={selectedIds}
-            categories={categories}
-            isEditing={isEditing}
-            readOnly={readOnly}
-            onEditHint={onEditHint}
-            // read-only viewers see only built-in packs, so open the first one instead of the org pack
-            defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
-            title={pack.id === myPackId ? 'My Questions' : undefined}
-            footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
-          />
-        ))}
-      </div>
+      {!myPackId && isEditing && (
+        <div className='border-hairline border-b pb-2'>
+          <div className='py-2 font-semibold text-fg-primary text-sm'>My Questions</div>
+          <div className='px-1'>{addQuestion}</div>
+        </div>
+      )}
+      {sortedPacks.map((pack, index) => (
+        <TeamHealthQuestionPackSection
+          key={pack.id}
+          packRef={pack}
+          templateId={templateId}
+          viewerId={viewerId}
+          selectedIds={selectedIds}
+          categories={categories}
+          isEditing={isEditing}
+          readOnly={readOnly}
+          onEditHint={onEditHint}
+          // read-only viewers see only built-in packs, so open the first one instead of the org pack
+          defaultOpen={readOnly ? index === 0 : pack.userId !== 'aGhostUser'}
+          title={pack.id === myPackId ? 'My Questions' : undefined}
+          footer={pack.id === myPackId && isEditing ? addQuestion : undefined}
+        />
+      ))}
     </div>
   )
 }

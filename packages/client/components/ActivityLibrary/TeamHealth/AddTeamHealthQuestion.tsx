@@ -69,7 +69,7 @@ const AddTeamHealthQuestion = (props: Props) => {
         }
       }}
       placeholder='Type a question and press Enter…'
-      className='w-full rounded-sm border border-sky-500 border-solid px-2 py-1 text-slate-700 text-sm outline-none'
+      className='w-full rounded-sm border border-accent border-solid bg-surface-input px-2 py-1 text-fg-primary text-sm outline-none placeholder:text-fg-muted'
     />
   )
 }

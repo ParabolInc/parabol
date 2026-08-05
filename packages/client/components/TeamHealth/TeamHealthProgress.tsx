@@ -24,14 +24,15 @@ const TeamHealthProgress = (props: Props) => {
             <div
               key={idx}
               className={cn(
-                'h-8 w-8 rounded-full border-2 border-white',
-                isFilled ? DOT_COLORS[idx % DOT_COLORS.length] : 'bg-slate-300'
+                // the ring reads as a gap between overlapping dots, so it tracks the card behind them
+                'h-8 w-8 rounded-full border-2 border-surface-card',
+                isFilled ? DOT_COLORS[idx % DOT_COLORS.length] : 'bg-surface-well'
               )}
             />
           )
         })}
       </div>
-      <div className='font-semibold text-slate-600'>
+      <div className='font-semibold text-fg-secondary'>
         {respondentCount} of {total} teammates voted
       </div>
     </div>

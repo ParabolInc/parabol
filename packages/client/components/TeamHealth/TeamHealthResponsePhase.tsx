@@ -74,9 +74,9 @@ const TeamHealthResponsePhase = (props: Props) => {
     }
     return (
       <div className='mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6'>
-        <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-white p-8 text-center shadow-sm'>
-          <h2 className='font-bold text-2xl text-slate-900'>You're the manager here</h2>
-          <p className='mt-3 text-slate-600'>
+        <div className='flex w-full max-w-2xl flex-col items-center rounded-2xl bg-surface-card p-8 text-center shadow-card'>
+          <h2 className='font-bold text-2xl text-fg-primary'>You're the manager here</h2>
+          <p className='mt-3 text-fg-secondary'>
             You're collecting the team's health data, so you're excluded from the questions. If
             you'd like to answer them too, you can share your responses.
           </p>

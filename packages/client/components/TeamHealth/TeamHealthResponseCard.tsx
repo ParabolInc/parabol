@@ -19,11 +19,13 @@ interface Props {
 }
 
 const SCORES = [1, 2, 3, 4, 5]
-// low (disagree) -> high (agree), using paletteV3 tailwind classes
+// low (disagree) -> high (agree), using paletteV3 tailwind classes. All five are saturated mid-tones
+// that hold their white label on either theme — slate-600 rather than slate-400 for the neutral,
+// which on a dark card would have been a near-white chip with white text on it.
 const SCORE_COLORS = [
   'bg-tomato-500',
   'bg-gold-500',
-  'bg-slate-400',
+  'bg-slate-600',
   'bg-jade-400',
   'bg-jade-500'
 ] as const
@@ -69,7 +71,7 @@ const TeamHealthResponseCard = (props: Props) => {
   }
 
   return (
-    <div className='w-full max-w-2xl rounded-2xl bg-white p-8 shadow-sm'>
+    <div className='w-full max-w-2xl rounded-2xl bg-surface-card p-8 shadow-card'>
       <div className='flex items-center justify-between'>
         <div
           className={cn(
@@ -86,20 +88,21 @@ const TeamHealthResponseCard = (props: Props) => {
               <div
                 key={idx}
                 className={cn(
+                  // grape-700 disappears into the dark card (grape-750), so dark lightens the fill
                   'h-1.5 w-4 rounded-full',
-                  idx <= stageIndex ? 'bg-grape-700' : 'bg-slate-200'
+                  idx <= stageIndex ? 'bg-grape-700 dark:bg-grape-200' : 'bg-surface-well'
                 )}
               />
             ))}
           </div>
-          <span className='font-semibold text-slate-500 text-sm'>
+          <span className='font-semibold text-fg-muted text-sm'>
             {stageIndex + 1} of {stageCount}
           </span>
         </div>
       </div>
-      <h2 className='mt-6 text-center font-bold text-2xl text-slate-900'>{question.question}</h2>
+      <h2 className='mt-6 text-center font-bold text-2xl text-fg-primary'>{question.question}</h2>
       {question.description && (
-        <p className='mt-2 text-center text-slate-500'>{question.description}</p>
+        <p className='mt-2 text-center text-fg-muted'>{question.description}</p>
       )}
       <div className='mt-8 flex items-center justify-center gap-4'>
         {SCORES.map((value, idx) => {
@@ -113,7 +116,7 @@ const TeamHealthResponseCard = (props: Props) => {
                 'flex h-14 w-14 items-center justify-center rounded-full font-semibold text-lg text-white transition-transform',
                 SCORE_COLORS[idx],
                 isSelected
-                  ? 'scale-110 ring-2 ring-grape-700 ring-offset-2'
+                  ? 'scale-110 ring-2 ring-grape-700 ring-offset-2 ring-offset-surface-card dark:ring-grape-200'
                   : 'opacity-70 hover:opacity-100'
               )}
             >
@@ -122,12 +125,12 @@ const TeamHealthResponseCard = (props: Props) => {
           )
         })}
       </div>
-      <div className='mt-2 flex justify-between text-slate-500 text-xs'>
+      <div className='mt-2 flex justify-between text-fg-muted text-xs'>
         <span>Strongly disagree</span>
         <span>Strongly agree</span>
       </div>
       <textarea
-        className='mt-6 w-full resize-none rounded-lg border border-slate-300 p-3 text-slate-700 placeholder:text-slate-400 focus:border-grape-500 focus:outline-hidden'
+        className='mt-6 w-full resize-none rounded-lg border border-hairline-field bg-surface-input p-3 text-fg-primary placeholder:text-fg-muted focus:border-accent focus:outline-hidden'
         rows={2}
         placeholder='Add an optional comment (anonymous)'
         value={comment}
