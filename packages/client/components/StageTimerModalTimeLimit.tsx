@@ -56,11 +56,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
       fragment StageTimerModalTimeLimit_stage on NewMeetingStage {
         suggestedTimeLimit
         scheduledEndTime
+        localScheduledEndTime
       }
     `,
     stageRef
   )
-  const {suggestedTimeLimit, scheduledEndTime} = stage
+  const {suggestedTimeLimit, scheduledEndTime, localScheduledEndTime} = stage
   const initialTimeLimit =
     scheduledEndTime || !suggestedTimeLimit
       ? defaultTimeLimit
@@ -71,9 +72,8 @@ const StageTimerModalTimeLimit = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const startTimer = () => {
     if (submitting) return
-    const spareTime = scheduledEndTime
-      ? Math.max(0, new Date(scheduledEndTime).getTime() - Date.now())
-      : 0
+    const endTime = localScheduledEndTime ?? scheduledEndTime
+    const spareTime = endTime ? Math.max(0, new Date(endTime).getTime() - Date.now()) : 0
     const timeRemaining = minuteTimeLimit * ms('1m') + spareTime
     submitMutation()
     SetStageTimerMutation(
