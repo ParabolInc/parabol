@@ -163,7 +163,11 @@ const updateRecurrenceSettings: MutationResolvers['updateRecurrenceSettings'] = 
   }
   const {teamId, meetingType, meetingSeriesId} = meeting
 
-  if (meetingType !== 'teamPrompt' && meetingType !== 'retrospective') {
+  if (
+    meetingType !== 'teamPrompt' &&
+    meetingType !== 'retrospective' &&
+    meetingType !== 'teamHealth'
+  ) {
     return standardError(new Error('Recurring meeting type is not implemented'), {userId: viewerId})
   }
 
