@@ -29,7 +29,7 @@ const CTA_STYLES = {
   primary:
     'border-0 bg-linear-to-r from-tomato-600 to-rose-500 text-white shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)] hover:from-tomato-700 hover:to-rose-600',
   secondary:
-    'border border-hairline-strong bg-surface-card text-fg-primary shadow-none hover:bg-surface-well',
+    'border border-hairline-strong bg-surface-card text-fg-primary shadow-none hover:bg-surface-hover',
   disabled:
     'border border-hairline-strong bg-transparent text-fg-secondary shadow-none hover:bg-transparent'
 } as const

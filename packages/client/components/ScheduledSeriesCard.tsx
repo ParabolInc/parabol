@@ -50,7 +50,8 @@ const RECURRING_LABEL_COLORS = {
 // TODO: add a dedicated teamHealth illustration
 const ILLUSTRATIONS = {retrospective, action, poker, teamPrompt, teamHealth: retrospective}
 
-const STACKED_CARD_BASE = 'absolute block h-full w-full rounded-card bg-surface-card shadow-card'
+const STACKED_CARD_BASE =
+  'absolute block h-full w-full rounded-card bg-surface-card shadow-[var(--shadow-card)]'
 const MEETING_IMG_WRAPPER = 'relative block rounded-t-card'
 const MEETING_IMG =
   'relative mx-auto block h-[180px] overflow-hidden rounded-t-card pt-6 dark:brightness-[.94]'
@@ -151,7 +152,7 @@ const ScheduledSeriesCard = (props: Props) => {
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
       transition={{duration: 0.25, ease: 'easeIn'}}
     >
-      <div className='relative hover:shadow-card-hover'>
+      <div className='relative hover:shadow-[var(--shadow-card-hover)]'>
         <div className={cn(STACKED_CARD_BASE, STACK_CLASSES[0])}>
           <div className={MEETING_IMG_WRAPPER}>
             <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
@@ -164,7 +165,7 @@ const ScheduledSeriesCard = (props: Props) => {
             <img className={MEETING_IMG} src={illustration} alt='' />
           </div>
         </div>
-        <div className='relative rounded-card bg-surface-card shadow-card'>
+        <div className='relative rounded-card bg-surface-card shadow-[var(--shadow-card)]'>
           <div className={MEETING_IMG_WRAPPER}>
             <div className={cn('absolute top-0 bottom-1.5 block w-full rounded-t-card', bgClass)} />
             <span className='absolute top-2 left-2 font-semibold text-white text-xs'>
@@ -197,7 +198,7 @@ const ScheduledSeriesCard = (props: Props) => {
               </Link>
               <Menu
                 trigger={
-                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-well hover:opacity-100'>
+                  <button className='absolute top-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent opacity-50 outline-hidden hover:bg-surface-hover hover:opacity-100'>
                     <MoreVert className='text-fg-primary text-lg' />
                   </button>
                 }

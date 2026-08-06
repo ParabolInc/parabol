@@ -79,7 +79,7 @@ const DueDateToggle = (props: Props) => {
             toggleIsActive
               ? 'opacity-50 hover:opacity-100 focus:opacity-100'
               : 'opacity-0 hover:opacity-0 focus:opacity-0',
-            'hover:bg-surface-well focus:bg-surface-well',
+            'hover:bg-surface-hover focus:bg-surface-hover',
             dueDate &&
               'h-6 bg-surface-well pr-1 pl-px text-[length:inherit] text-fg-secondary leading-[1em] opacity-100 hover:bg-surface-raised hover:text-fg-primary hover:opacity-100 focus:bg-surface-raised focus:text-fg-primary focus:opacity-100',
             isDueSoon &&

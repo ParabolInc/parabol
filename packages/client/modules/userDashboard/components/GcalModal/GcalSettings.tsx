@@ -171,7 +171,7 @@ const GcalSettings = (props: Props) => {
           </label>
         </div>
       )}
-      {inviteError && <StyledError className='pb-2 text-left'>{inviteError}</StyledError>}
+      {inviteError && <StyledError className='pb-2'>{inviteError}</StyledError>}
     </div>
   )
 }

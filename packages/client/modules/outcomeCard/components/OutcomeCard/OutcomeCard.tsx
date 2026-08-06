@@ -129,14 +129,14 @@ const OutcomeCard = memo((props: Props) => {
       className={cn(
         'relative w-full min-w-[256px] max-w-[300px] rounded bg-surface-card pt-4 transition-shadow duration-100 ease-in',
         isDraggingOver
-          ? 'shadow-card-dragging'
+          ? 'shadow-[var(--shadow-card-dragging)]'
           : isHighlighted
-            ? 'shadow-card-hover'
+            ? 'shadow-[var(--shadow-card-hover)]'
             : isTaskFocused
-              ? 'shadow-card-focus'
+              ? 'shadow-[var(--shadow-card-focus)]'
               : isTaskHovered
-                ? 'shadow-card-hover'
-                : 'shadow-card',
+                ? 'shadow-[var(--shadow-card-hover)]'
+                : 'shadow-[var(--shadow-card)]',
         isHighlighted && 'outline-2 outline-sky-300',
         !isHighlighted && 'outline-none'
       )}

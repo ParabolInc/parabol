@@ -33,7 +33,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-card'>
+    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
       <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>

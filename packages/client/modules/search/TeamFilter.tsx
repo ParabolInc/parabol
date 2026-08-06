@@ -60,7 +60,7 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
         <Button
           variant='flat'
           data-dirty={teamIds.length > 0 ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-well data-dirty:text-fg-primary'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-hover data-dirty:text-fg-primary'
         >
           <GroupsIcon className='pr-1' />
           <span>{displayLabel}</span>

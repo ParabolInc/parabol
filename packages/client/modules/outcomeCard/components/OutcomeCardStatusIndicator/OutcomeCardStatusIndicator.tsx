@@ -18,7 +18,7 @@ const OutcomeCardStatusIndicator = (props: Props) => {
   return (
     <div
       className={cn(
-        'mr-1 h-1 w-8 rounded-sm shadow-status-ring',
+        'mr-1 h-1 w-8 rounded-sm shadow-[var(--shadow-status-ring)]',
         taskStatusColors[status],
         className
       )}

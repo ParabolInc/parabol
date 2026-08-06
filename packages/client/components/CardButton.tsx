@@ -9,7 +9,7 @@ const CardButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElemen
       {...rest}
       ref={ref}
       className={cn(
-        'flex h-6 min-w-6 items-center justify-center rounded-md p-0 text-fg-primary leading-5 opacity-50 outline-none hover:bg-surface-well hover:opacity-100 focus:bg-surface-well focus:opacity-100',
+        'flex h-6 min-w-6 items-center justify-center rounded-md p-0 text-fg-primary leading-5 opacity-50 outline-none hover:bg-surface-hover hover:opacity-100 focus:bg-surface-hover focus:opacity-100',
         className
       )}
     >

@@ -100,7 +100,7 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
         'flex items-center',
         isDisabled ? 'cursor-not-allowed text-fg-muted' : 'cursor-pointer text-fg-primary',
         isActive && 'bg-surface-hover',
-        'hover:bg-surface-hover [&_:focus]:bg-surface-hover [&_:focus]:outline-0'
+        'hover:bg-surface-hover focus:bg-surface-hover focus:outline-0'
       )}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}

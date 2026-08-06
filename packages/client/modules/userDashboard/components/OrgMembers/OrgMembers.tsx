@@ -246,13 +246,13 @@ const OrgMembers = (props: Props) => {
                   <>
                     <button
                       onClick={exportToCSV}
-                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-well'
+                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-hover'
                     >
                       Export Selected to CSV
                     </button>
                     <button
                       onClick={() => setIsBulkRemoveOpen(true)}
-                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-well'
+                      className='flex h-6 items-center rounded border border-hairline bg-surface-raised px-3 font-medium text-fg-primary text-xs hover:bg-surface-hover'
                     >
                       Remove Selected
                     </button>

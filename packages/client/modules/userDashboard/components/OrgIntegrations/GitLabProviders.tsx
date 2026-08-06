@@ -52,7 +52,7 @@ const GitLabProviders = (props: Props) => {
 
   return (
     <>
-      <div className='my-4 flex flex-col rounded-sm bg-surface-card shadow-card'>
+      <div className='my-4 flex flex-col rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
         <div className='flex flex-center items-center p-4'>
           <GitLabProviderLogo />
           <div className='flex flex-col px-4'>

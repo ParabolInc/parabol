@@ -23,7 +23,7 @@ export const StyledCheckbox = forwardRef(
         {...rest}
         ref={ref}
         className={cn(
-          'absolute inset-0 m-0 appearance-none rounded-lg border border-hairline-field checked:border-accent checked:bg-accent hover:rounded hover:outline-1 hover:outline-fg-secondary focus:rounded focus:outline-1 focus:outline-fg-secondary active:rounded active:outline-1 active:outline-fg-secondary',
+          'absolute inset-0 m-0 appearance-none rounded-lg border border-hairline-field checked:border-sky-500 checked:bg-sky-500 hover:rounded hover:outline-1 hover:outline-fg-secondary focus:rounded focus:outline-1 focus:outline-fg-secondary active:rounded active:outline-1 active:outline-fg-secondary',
           className
         )}
       />

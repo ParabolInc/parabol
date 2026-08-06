@@ -21,7 +21,7 @@ const EditableAvatar = (props: Props) => {
       </div>
       <div
         aria-hidden
-        className='icon-wrapper absolute top-0 right-0 z-10 rounded-full bg-surface-raised px-1.5 hover:bg-surface-well'
+        className='icon-wrapper absolute top-0 right-0 z-10 rounded-full bg-surface-raised px-1.5 hover:bg-surface-hover'
       >
         <EditIcon className='mb-[-2px] w-3.5 pt-0.5' />
       </div>

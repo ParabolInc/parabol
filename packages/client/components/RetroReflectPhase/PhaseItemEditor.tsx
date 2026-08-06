@@ -262,7 +262,7 @@ const PhaseItemEditor = (props: Props) => {
                 key={card.key}
                 className={cn(
                   'absolute top-0 z-8 transition-all duration-500 ease-out',
-                  card.isStart ? 'shadow-card-raised' : 'shadow-card-grounded'
+                  card.isStart ? 'shadow-[var(--shadow-card-raised)]' : 'shadow-card-grounded'
                 )}
                 style={{transform: card.transform}}
                 onTransitionEnd={removeCardInFlight(card.key)}

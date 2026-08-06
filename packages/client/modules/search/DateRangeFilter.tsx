@@ -68,7 +68,7 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
         <Button
           variant='flat'
           data-dirty={dateRange ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-well data-dirty:text-fg-primary'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-hover data-dirty:text-fg-primary'
         >
           <DateRangeIcon className='pr-1' />
           <span>{dateRangeText}</span>
@@ -93,20 +93,20 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
               value={dateField}
               onValueChange={(val) => setDateField(val as SearchDateTypeEnum)}
             >
-              <SelectTrigger className='h-fit w-fit justify-start border-none p-0 px-1 text-xs hover:bg-surface-well'>
+              <SelectTrigger className='h-fit w-fit justify-start border-none p-0 px-1 text-xs hover:bg-surface-hover'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align='end' className='p-1'>
                 <SelectItem
                   value='createdAt'
-                  className='h-5 rounded py-0 text-xs hover:bg-surface-well'
+                  className='h-5 rounded py-0 text-xs hover:bg-surface-hover'
                   checkClassName='h-4 w-4'
                 >
                   Created
                 </SelectItem>
                 <SelectItem
                   value='updatedAt'
-                  className='h-5 rounded py-0 text-xs hover:bg-surface-well'
+                  className='h-5 rounded py-0 text-xs hover:bg-surface-hover'
                   checkClassName='h-4 w-4'
                 >
                   Last edited
@@ -122,19 +122,19 @@ export const DateRangeFilter = ({dateField, setDateField, dateRange, setDateRang
 
           <div className='flex justify-evenly'>
             <button
-              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-well'
+              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-hover'
               onClick={() => handleQuickSelect(0)}
             >
               Today
             </button>
             <button
-              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-well'
+              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-hover'
               onClick={() => handleQuickSelect(7)}
             >
               Last 7 days
             </button>
             <button
-              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-well'
+              className='cursor-pointer rounded p-1 text-left text-fg-primary text-sm hover:bg-surface-hover'
               onClick={() => handleQuickSelect(30)}
             >
               Last 30 days

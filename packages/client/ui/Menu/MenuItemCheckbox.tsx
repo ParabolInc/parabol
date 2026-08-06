@@ -18,7 +18,7 @@ export const MenuItemCheckbox = forwardRadix<typeof DropdownMenu.CheckboxItem>(
           <div
             data-highlighted={checked ? '' : undefined}
             className={
-              'flex w-full cursor-pointer items-center space-x-2 rounded-md in-data-highlighted:bg-surface-raised px-3 py-2 in-data-highlighted:text-fg-primary text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-well! hover:text-fg-primary focus:bg-surface-well'
+              'flex w-full cursor-pointer items-center space-x-2 rounded-md in-data-highlighted:bg-surface-raised px-3 py-2 in-data-highlighted:text-fg-primary text-fg-primary text-sm leading-8 outline-hidden hover:bg-surface-hover! hover:text-fg-primary focus:bg-surface-hover'
             }
           >
             <div className='flex size-4 cursor-pointer appearance-none items-center justify-center rounded-xs border-hairline-strong in-data-[state=unchecked]:border-2 bg-surface-input outline-none'>

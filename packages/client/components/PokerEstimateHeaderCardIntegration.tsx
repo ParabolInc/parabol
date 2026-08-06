@@ -65,7 +65,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
   return (
     <div className={`flex ${isDesktop ? 'px-4 pb-1' : 'px-2 pb-1'}`}>
       <div
-        className='mx-auto w-full rounded bg-surface-card p-3 px-4 shadow-card'
+        className='mx-auto w-full rounded bg-surface-card p-3 px-4 shadow-[var(--shadow-card)]'
         style={{maxWidth: '1504px'}}
       >
         <div className='mb-2 flex w-full items-start justify-between'>

@@ -35,7 +35,7 @@ const PokerEstimateHeaderCardParabol = (props: Props) => {
   return (
     <div className={`flex ${isDesktop ? 'px-4 pb-1' : 'px-2 pb-1'}`}>
       <div
-        className='relative mx-auto flex w-full items-start rounded bg-surface-card p-3 pl-4 shadow-card'
+        className='relative mx-auto flex w-full items-start rounded bg-surface-card p-3 pl-4 shadow-[var(--shadow-card)]'
         style={{maxWidth: '1504px'}}
       >
         <div className='flex-1 pr-1'>

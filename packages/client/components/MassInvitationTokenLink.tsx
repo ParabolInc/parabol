@@ -43,7 +43,7 @@ const MassInvitationTokenLink = (props: Props) => {
   const linkLabel = url.replace(/https?:\/\//, '')
   return (
     <CopyShortLink
-      className='rounded border border-sky-400 border-dashed p-[11px] font-semibold text-[15px] text-accent hover:text-sky-400'
+      className='rounded border border-sky-400 border-dashed p-[11px] font-semibold text-[15px] text-sky-500 hover:text-sky-400'
       icon='link'
       url={url}
       label={linkLabel}
