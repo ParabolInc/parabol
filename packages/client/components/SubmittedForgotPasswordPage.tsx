@@ -1,5 +1,4 @@
 import {useLocation, useParams} from 'react-router'
-import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {Button} from '../ui/Button/Button'
 import AuthenticationDialog from './AuthenticationDialog'
@@ -35,7 +34,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         href={'mailto:love@parabol.co'}
         rel='noopener noreferrer'
         target='_blank'
-        style={emailLinkStyle}
+        className='font-semibold text-sky-600 no-underline dark:text-accent'
         title={'love@parabol.co'}
       >
         {'click here '}

@@ -13,7 +13,7 @@ interface Props {
 const ErrorAlert = ({message}: Props) => {
   return (
     <div
-      className='mb-4 flex items-center overflow-x-auto rounded-[2px] bg-tomato-100 px-4 py-2 text-[14px]'
+      className='mb-4 flex items-center overflow-x-auto rounded-[2px] bg-tomato-100 px-4 py-2 text-[14px] text-slate-700'
       role='alert'
     >
       <Warning className='mr-2 h-[18px] w-[18px]' />

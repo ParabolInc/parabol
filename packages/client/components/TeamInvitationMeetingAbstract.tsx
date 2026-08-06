@@ -2,9 +2,9 @@ import type {ReactNode} from 'react'
 import {cn} from '../ui/cn'
 
 const pageContainerClasses =
-  'relative flex h-full max-h-full max-w-full flex-col items-center bg-slate-200 text-slate-700'
+  'relative flex h-full max-h-full max-w-full flex-col items-center bg-slate-200 text-fg-primary dark:bg-surface-app'
 
-const navItemLabelClasses = 'h-[14px] w-[120px] rounded-[14px] bg-slate-600'
+const navItemLabelClasses = 'h-[14px] w-[120px] rounded-[14px] bg-fg-secondary'
 
 interface Props {
   children: ReactNode
@@ -24,16 +24,18 @@ function TeamInvitationMeetingAbstract(props: Props) {
       <div className='z-[3] flex w-full max-w-full flex-1 flex-col items-center justify-center px-4 py-8'>
         {children}
       </div>
-      <div className='absolute top-0 bottom-0 left-0 z-[2] h-full w-screen bg-slate-700/30' />
+      {/* the slate scrim lightens a dark canvas, which would push the abstract forward
+          instead of behind the dialog, so dark mode needs a black one */}
+      <div className='absolute top-0 bottom-0 left-0 z-[2] h-full w-screen bg-slate-700/30 dark:bg-black/50' />
       <div
         className={cn(
           pageContainerClasses,
           'absolute top-0 left-0 z-[1] min-w-[100vw] flex-row items-start blur-[2px]'
         )}
       >
-        <div className='hidden h-full w-60 shrink-0 bg-white sm:block'>
-          <div className='mt-[21px] mb-[35px] ml-[60px] h-[14px] w-[120px] rounded-[14px] bg-slate-700' />
-          <div className='mb-[30px] ml-[60px] h-2 w-40 rounded-lg bg-slate-400' />
+        <div className='hidden h-full w-60 shrink-0 bg-surface-meeting-sidebar sm:block'>
+          <div className='mt-[21px] mb-[35px] ml-[60px] h-[14px] w-[120px] rounded-[14px] bg-fg-primary' />
+          <div className='mb-[30px] ml-[60px] h-2 w-40 rounded-lg bg-hairline-strong' />
           <NavItem />
           <NavItem />
           <NavItem />

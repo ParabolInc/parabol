@@ -1,7 +1,7 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {NewMeetingTeamPickerMultiple_teams$key} from '~/__generated__/NewMeetingTeamPickerMultiple_teams.graphql'
+import {KeyboardArrowDown as KeyboardArrowDownIcon} from '~/ui/icons'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItemCheckbox} from '../ui/Menu/MenuItemCheckbox'

@@ -1,8 +1,8 @@
-import {Add} from '@mui/icons-material'
 import {useState} from 'react'
+import {Add} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useAddTeamHealthQuestionMutation from '../../../mutations/useAddTeamHealthQuestionMutation'
-import FlatButton from '../../FlatButton'
+import {Button} from '../../../ui/Button/Button'
 
 interface Props {
   templateId: string
@@ -43,15 +43,14 @@ const AddTeamHealthQuestion = (props: Props) => {
 
   if (!isAdding) {
     return (
-      <FlatButton
-        palette='blue'
-        style={{padding: '4px 8px'}}
-        className='flex items-center gap-1 font-semibold text-sm'
+      <Button
+        variant='flat'
+        className='flex items-center gap-1 px-2 py-1 font-semibold text-sky-500 text-sm hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
         onClick={() => (isEditing ? setIsAdding(true) : onEditHint())}
       >
         <Add className='size-4' />
         Add a custom question
-      </FlatButton>
+      </Button>
     )
   }
 
