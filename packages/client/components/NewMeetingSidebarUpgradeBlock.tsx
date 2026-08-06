@@ -65,7 +65,12 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
         </div>
 
         <div className='mt-2'>
-          <Button variant='primary' size='sm' onClick={handleUpgradeClick} className='w-full'>
+          <Button
+            variant='primary'
+            size='sm'
+            onClick={handleUpgradeClick}
+            className='w-full text-sm'
+          >
             Upgrade
           </Button>
         </div>

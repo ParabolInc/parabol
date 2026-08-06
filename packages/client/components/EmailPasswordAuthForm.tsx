@@ -286,14 +286,14 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
           )}
         </div>
         {isPrimary ? (
-          <Button variant='primary' size='md' disabled={submitting}>
+          <Button variant='primary' size='md' className='h-10 text-[15px]' disabled={submitting}>
             {submitLabel}
           </Button>
         ) : (
           <Button
             variant='raised'
             size='md'
-            className='bg-slate-200 text-slate-700'
+            className='h-10 bg-slate-200 text-[15px] text-slate-700'
             disabled={submitting}
           >
             {submitLabel}

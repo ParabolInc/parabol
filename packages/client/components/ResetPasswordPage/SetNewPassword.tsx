@@ -76,7 +76,12 @@ const SetNewPassword = () => {
               onChange={onChange}
               onBlur={handleBlur}
             />
-            <Button variant='primary' className='mt-4' size='md' disabled={submitting}>
+            <Button
+              variant='primary'
+              className='mt-4 h-10 text-[15px]'
+              size='md'
+              disabled={submitting}
+            >
               {'Reset Password'}
             </Button>
           </form>

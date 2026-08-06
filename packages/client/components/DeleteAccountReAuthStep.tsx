@@ -99,7 +99,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
           size='md'
           onClick={handleSSOReAuth}
           disabled={ssoSubmitting}
-          className='w-full'
+          className='h-10 w-full text-[15px]'
         >
           Sign in with SSO
         </Button>
@@ -128,7 +128,12 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
               value={password}
             />
           </div>
-          <Button variant='primary' size='md' disabled={!password} className='mt-5 w-full'>
+          <Button
+            variant='primary'
+            size='md'
+            disabled={!password}
+            className='mt-5 h-10 w-full text-[15px]'
+          >
             Verify Password
           </Button>
         </form>
@@ -143,7 +148,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
               onClick={handleGoogleReAuth}
               disabled={googleMutationProps.submitting}
               className={cn(
-                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
+                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 text-sm disabled:opacity-100',
                 googleMutationProps.submitting
                   ? 'bg-slate-300 text-slate-600'
                   : 'bg-white text-slate-700'
@@ -173,7 +178,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
               onClick={handleMicrosoftReAuth}
               disabled={microsoftMutationProps.submitting}
               className={cn(
-                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
+                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 text-sm disabled:opacity-100',
                 microsoftMutationProps.submitting
                   ? 'bg-slate-300 text-slate-600'
                   : 'bg-white text-slate-700'

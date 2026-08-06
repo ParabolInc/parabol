@@ -37,7 +37,7 @@ const VideoConferencing = (props: Props) => {
               <Button
                 variant='raised'
                 size='sm'
-                className='rounded-sm bg-slate-200 px-4 py-1.5 text-slate-700'
+                className='h-auto rounded-sm bg-slate-200 px-4 py-1.5 text-slate-700 text-sm'
               >
                 {'Add Video Conferencing'} <ArrowDropDownIcon />
               </Button>

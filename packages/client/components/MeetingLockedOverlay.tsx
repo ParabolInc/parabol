@@ -102,7 +102,7 @@ const MeetingLockedOverlay = (props: Props) => {
               Your plan includes 30 days of meeting history. Unlock the full meeting history of{' '}
               <i>{orgName}</i> by upgrading.
             </div>
-            <Button variant='primary' size='sm' onClick={onClick}>
+            <Button variant='primary' size='sm' className='text-sm' onClick={onClick}>
               Unlock Past Meetings
             </Button>
           </>

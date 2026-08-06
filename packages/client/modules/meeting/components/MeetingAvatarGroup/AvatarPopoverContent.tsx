@@ -18,7 +18,7 @@ const AvatarPopoverContent = ({open, className, children, onMouseEnter, onMouseL
         <Popover.Content forceMount side='top' sideOffset={8} align='center' asChild>
           <motion.div
             className={cn(
-              'z-50 rounded-lg bg-surface-card py-1 shadow-card-1 outline-none',
+              'z-50 rounded-lg bg-surface-card py-1 shadow-[var(--shadow-card-raised)] outline-none',
               className
             )}
             initial={{opacity: 0, scale: 0.95, y: -8}}

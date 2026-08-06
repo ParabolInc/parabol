@@ -80,7 +80,13 @@ const ArchiveTeamForm = (props: Props) => {
         placeholder={teamName}
       />
       <div className='mt-4 flex'>
-        <Button variant='primary' size='sm' className='mr-3' type='submit' disabled={submitting}>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mr-3 text-sm'
+          type='submit'
+          disabled={submitting}
+        >
           I understand the consequences, delete this team
         </Button>
         <Button variant='outline' size='sm' onClick={handleCancel}>

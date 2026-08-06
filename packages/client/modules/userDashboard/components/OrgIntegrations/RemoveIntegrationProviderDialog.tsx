@@ -62,7 +62,13 @@ const RemoveIntegrationProviderDialog = (props: Props) => {
           integration, it will no longer be available to any teams.
         </div>
         <div className='flex justify-end pt-6'>
-          <Button variant='primary' size='sm' type='submit' onClick={handleClick}>
+          <Button
+            variant='primary'
+            size='sm'
+            className='text-sm'
+            type='submit'
+            onClick={handleClick}
+          >
             Remove {prettyService} integration
           </Button>
         </div>

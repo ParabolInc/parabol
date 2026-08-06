@@ -212,7 +212,7 @@ export const ScheduleDialog = (props: Props) => {
         <Button variant='outline' size='md' onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant='primary' size='md' onClick={handleSubmit}>
+        <Button variant='primary' size='md' className='text-[15px]' onClick={handleSubmit}>
           Create Meeting
         </Button>
       </DialogActions>

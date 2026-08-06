@@ -18,7 +18,12 @@ const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {"We've alerted the developers. Try refreshing the page"}
-        <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mt-2 text-sm'
+          onClick={() => setIsOpen(true)}
+        >
           Report Feedback
         </Button>
         <ReportErrorFeedback

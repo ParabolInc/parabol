@@ -33,7 +33,7 @@ const UndoableGroupPhaseDialog = (props: Props) => {
           >
             Cancel
           </Button>
-          <Button variant='primary' size='sm' onClick={handleConfirm}>
+          <Button variant='primary' size='sm' className='text-sm' onClick={handleConfirm}>
             Confirm Reset
           </Button>
         </div>

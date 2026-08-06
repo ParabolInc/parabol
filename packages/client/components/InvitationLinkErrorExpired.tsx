@@ -44,12 +44,22 @@ const InvitationLinkErrorExpired = (props: Props) => {
         <div className='mt-5 flex justify-center'>
           {hasToken() ? (
             <>
-              <Button variant='primary' size='md' onClick={() => navigate('/meetings')}>
+              <Button
+                variant='primary'
+                size='md'
+                className='h-10 text-[15px]'
+                onClick={() => navigate('/meetings')}
+              >
                 Go to Dashboard
               </Button>
             </>
           ) : (
-            <Button variant='primary' size='md' onClick={() => navigate('/')}>
+            <Button
+              variant='primary'
+              size='md'
+              className='h-10 text-[15px]'
+              onClick={() => navigate('/')}
+            >
               Sign In
             </Button>
           )}

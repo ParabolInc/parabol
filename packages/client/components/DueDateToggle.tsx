@@ -108,7 +108,7 @@ const DueDateToggle = (props: Props) => {
           align='end'
           sideOffset={4}
           collisionPadding={8}
-          className='z-10 rounded-lg border border-hairline bg-surface-raised shadow-2xl'
+          className='z-10 rounded-lg bg-surface-card shadow-[var(--shadow-card-raised)]'
         >
           <Suspense fallback={<div className='h-90 w-78' />}>
             <DueDatePicker

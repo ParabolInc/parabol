@@ -36,7 +36,7 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
             variant='flat'
             size='sm'
             onClick={closeModal}
-            className='bg-slate-500 font-semibold text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
+            className='bg-slate-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
           >
             {'Cancel'}
           </Button>
@@ -44,7 +44,7 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
             variant='flat'
             size='sm'
             onClick={onSubmit}
-            className='bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
+            className='bg-sky-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
           >
             {'Confirm'}
           </Button>

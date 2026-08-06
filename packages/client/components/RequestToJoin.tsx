@@ -55,7 +55,7 @@ const RequestToJoinComponent = () => {
             : "You're not a member of this team yet. Click below to request to join the team."}
         </div>
         {!isRequestSent && (
-          <Button variant='primary' size='sm' onClick={handleRequestJoin}>
+          <Button variant='primary' size='sm' className='text-sm' onClick={handleRequestJoin}>
             {'Request to Join'}
           </Button>
         )}

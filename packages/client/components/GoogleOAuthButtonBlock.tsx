@@ -42,7 +42,7 @@ const GoogleOAuthButtonBlock = (props: Props) => {
         onClick={openOAuth}
         disabled={submitting}
         className={cn(
-          'mt-4 h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
+          'mt-4 h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 text-sm disabled:opacity-100',
           submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >

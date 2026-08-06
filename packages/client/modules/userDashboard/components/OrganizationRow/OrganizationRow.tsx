@@ -89,7 +89,7 @@ const OrganizationRow = (props: Props) => {
             <Button
               variant='flat'
               size='sm'
-              className='h-9 px-2 sidebar-left:px-4 text-sky-500'
+              className='h-9 px-2 sidebar-left:px-4 text-sky-500 text-sm'
               onClick={onRowClick}
             >
               {'Upgrade'}

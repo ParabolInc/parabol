@@ -143,7 +143,13 @@ const UpsertGitLabProviderDialog = (props: Props) => {
           </div>
           {error && <ErrorAlert message={error.message} />}
           <div className='flex justify-end pt-6'>
-            <Button variant='primary' size='sm' type='submit' onClick={onSubmit}>
+            <Button
+              variant='primary'
+              size='sm'
+              className='text-sm'
+              type='submit'
+              onClick={onSubmit}
+            >
               Save
             </Button>
           </div>

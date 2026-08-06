@@ -39,7 +39,7 @@ const TeamPrivacyConfirmModal = (props: Props) => {
           <Button variant='outline' size='sm' onClick={onClose}>
             Cancel
           </Button>
-          <Button variant='primary' size='sm' className='ml-4' onClick={onConfirm}>
+          <Button variant='primary' size='sm' className='ml-4 text-sm' onClick={onConfirm}>
             Make Team Public
           </Button>
         </DialogActions>

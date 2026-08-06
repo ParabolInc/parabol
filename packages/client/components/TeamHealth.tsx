@@ -146,7 +146,7 @@ const TeamHealth = (props: Props) => {
                     variant='raised'
                     size='sm'
                     onClick={onRevealVotes}
-                    className='mt-4 h-14 w-44 rounded-md bg-white text-slate-700 disabled:opacity-50'
+                    className='mt-4 h-14 w-44 rounded-md bg-white text-slate-700 text-sm disabled:opacity-50'
                     disabled={!canReveal}
                   >
                     Reveal Results

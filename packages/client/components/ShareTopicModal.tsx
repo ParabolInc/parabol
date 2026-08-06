@@ -254,6 +254,7 @@ const ShareTopicModal = (props: Props) => {
           <Button
             variant='primary'
             size='sm'
+            className='text-sm'
             onClick={onShare}
             disabled={isLoading || channelsLoading}
           >

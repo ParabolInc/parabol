@@ -177,7 +177,7 @@ function Component(props: NodeViewProps) {
           <DropdownMenu.Content
             side='bottom'
             align='start'
-            className='z-1 rounded bg-surface-card p-2 shadow-lg'
+            className='z-1 rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
           >
             <Item
               onFocus={focus('header')}

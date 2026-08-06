@@ -47,7 +47,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className='rounded-sm bg-surface-card shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          className='rounded-sm bg-surface-card shadow-[var(--shadow-card-raised)] data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
           sideOffset={5}
         >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>

@@ -191,7 +191,7 @@ export const RecurrenceSettings = (props: Props) => {
       </div>
       <div className='space-y-1'>
         <Label>Repeats on</Label>
-        <div className='flex items-center justify-between'>
+        <div className='flex max-w-[368px] items-center justify-between'>
           {ALL_DAYS.map((day) => {
             const isSelected = recurrenceDays.some(
               (recurrenceDay) => recurrenceDay.intVal === day.intVal

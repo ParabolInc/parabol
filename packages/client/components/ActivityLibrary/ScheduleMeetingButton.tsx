@@ -66,7 +66,7 @@ const ScheduleMeetingButton = (props: Props) => {
           <div className='text-lg'>Schedule</div>
         </Button>
       </DialogTrigger>
-      <DialogContent noClose>
+      <DialogContent noClose className='md:max-w-md'>
         <ScheduleDialog
           teamRef={team}
           placeholder={placeholder}

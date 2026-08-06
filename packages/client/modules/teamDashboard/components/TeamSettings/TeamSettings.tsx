@@ -73,6 +73,7 @@ const TeamSettings = (props: Props) => {
               <Button
                 variant='primary'
                 size='sm'
+                className='text-sm'
                 onClick={() => navigate(`/me/organizations/${orgId}`)}
               >
                 {`Upgrade to ${TierLabel.TEAM} Plan`}

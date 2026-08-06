@@ -32,7 +32,7 @@ const AvatarInput = (props: Props) => {
         <Button
           variant='raised'
           size='sm'
-          className='bg-slate-200 text-slate-700'
+          className='h-8 bg-slate-200 px-5 text-slate-700 text-sm'
           onClick={onClick}
           type='button'
         >

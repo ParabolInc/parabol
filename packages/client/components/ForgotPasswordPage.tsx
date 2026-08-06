@@ -104,7 +104,12 @@ const ForgotPasswordPage = (props: Props) => {
         </p>
         <form className='flex flex-col' onSubmit={onSubmit}>
           <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
-          <Button variant='primary' className='mt-4' size='md' disabled={submitting}>
+          <Button
+            variant='primary'
+            className='mt-4 h-10 text-[15px]'
+            size='md'
+            disabled={submitting}
+          >
             {'Send Email'}
           </Button>
           {error && (

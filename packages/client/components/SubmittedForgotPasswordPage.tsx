@@ -92,7 +92,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
           variant='primary'
           onClick={() => goToPage('signin', '?sso=true')}
           size='md'
-          className='mx-auto mt-4 mb-0 w-60'
+          className='mx-auto mt-4 mb-0 h-10 w-60 text-[15px]'
         >
           {'Sign In with SSO'}
         </Button>
@@ -118,7 +118,7 @@ const SubmittedForgotPasswordPage = (props: Props) => {
           variant='primary'
           onClick={() => goToPageWithEmail('signin', email)}
           size='md'
-          className='mx-auto mt-4 mb-0 w-60'
+          className='mx-auto mt-4 mb-0 h-10 w-60 text-[15px]'
         >
           <IconLabel icon='arrow_back' label='Back to Sign In' />
         </Button>

@@ -148,7 +148,7 @@ const TeamHealthDetailsSidebar = (props: Props) => {
               <div className='text-lg'>Start Meeting Series</div>
             </Button>
           </DialogTrigger>
-          <DialogContent noClose>
+          <DialogContent noClose className='md:max-w-md'>
             <ScheduleDialog
               teamRef={gcalTeam}
               placeholder='Team Health'

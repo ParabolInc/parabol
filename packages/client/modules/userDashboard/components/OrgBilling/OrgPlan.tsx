@@ -128,7 +128,7 @@ const OrgPlan = (props: Props) => {
       </ul>
       <Button
         className={cn(
-          'w-4/5 rounded-md font-semibold opacity-100 transition-all duration-500 ease-[ease] hover:opacity-100',
+          'h-10 w-4/5 rounded-md font-semibold text-[15px] opacity-100 transition-all duration-500 ease-[ease] hover:opacity-100',
           CTA_STYLES[buttonStyle]
         )}
         disabled={buttonStyle === 'disabled'}

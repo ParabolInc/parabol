@@ -159,7 +159,7 @@ const PokerActiveVoting = (props: Props) => {
           <Button
             variant='raised'
             size='sm'
-            className='relative h-14 bg-surface-card font-semibold text-fg-secondary'
+            className='relative h-14 bg-surface-card font-semibold text-fg-secondary text-sm'
             disabled={submitting}
             onClick={() => reveal()}
           >

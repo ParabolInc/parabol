@@ -305,7 +305,7 @@ export const TemplateDetails = (props: Props) => {
                     variant='flat'
                     size='sm'
                     style={{padding: '8px 12px', border: '0'}}
-                    className='flex cursor-pointer gap-1 px-12'
+                    className='flex cursor-pointer gap-1 px-12 text-sm'
                     onClick={() => setTeamPickerOpen(true)}
                   >
                     <ContentCopy className='text-fg-secondary' />

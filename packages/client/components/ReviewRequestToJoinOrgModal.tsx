@@ -142,7 +142,13 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               <Button variant='outline' onClick={onClose} size='sm' disabled={submitting}>
                 Cancel
               </Button>
-              <Button variant='primary' size='sm' onClick={onAdd} disabled={submitting}>
+              <Button
+                variant='primary'
+                size='sm'
+                className='text-sm'
+                onClick={onAdd}
+                disabled={submitting}
+              >
                 Add to teams
               </Button>
             </div>
