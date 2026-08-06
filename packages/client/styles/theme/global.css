@@ -1,10 +1,6 @@
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
-/* `layer(utilities)` makes tailwind classes come before emotion classes.
-   We want the opposite, so until emotion is gone, comment this out
-   Repro: OAuth buttons on login page
-*/
-@import 'tailwindcss/utilities.css' /* layer(utilities) */;
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 @config '../../../../tailwind.config.js';
 
