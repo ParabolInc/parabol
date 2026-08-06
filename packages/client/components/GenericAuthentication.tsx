@@ -4,7 +4,6 @@ import {useLocation} from 'react-router'
 import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMetaTagContent from '../hooks/useMetaTagContent'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {
   CREATE_ACCOUNT_LABEL,
   CREATE_ACCOUNT_SLUG,
@@ -37,7 +36,7 @@ interface Props {
   invitationToken?: string
 }
 
-const color = PALETTE.SKY_500
+const color = 'var(--color-accent)'
 
 const ForgotPasswordLink = styled(PlainButton)({
   color,
@@ -51,9 +50,9 @@ const ForgotPasswordLink = styled(PlainButton)({
 })
 
 const BrandedLink = styled(PlainButton)({
-  color: PALETTE.SKY_500,
+  color,
   ':hover,:focus': {
-    color: PALETTE.SKY_500,
+    color,
     textDecoration: 'underline'
   }
 })

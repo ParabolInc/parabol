@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
 
-const color = PALETTE.SKY_500
+const color = 'var(--color-accent)'
 
 const Link = styled('a')({
   color,
@@ -14,7 +13,7 @@ const Link = styled('a')({
 })
 
 const FooterCopy = styled('div')({
-  color: PALETTE.SLATE_600,
+  color: 'var(--color-fg-secondary)',
   fontSize: 11,
   lineHeight: '24px',
   marginTop: 8,

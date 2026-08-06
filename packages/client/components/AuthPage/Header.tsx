@@ -4,14 +4,13 @@
  */
 import styled from '@emotion/styled'
 import {Link} from 'react-router'
-import {PALETTE} from '../../styles/paletteV3'
 import parabolLogo from '../../styles/theme/images/brand/lockup_color_mark_white_type.svg'
 import {AppBar} from '../../types/constEnums'
 
 const HeaderContainer = styled('div')({
   alignItems: 'center',
-  backgroundColor: PALETTE.GRAPE_700,
-  color: '#FFFFFF',
+  backgroundColor: 'var(--color-surface-topbar)',
+  color: 'var(--color-fg-topbar)',
   display: 'flex',
   flexDirection: 'row',
   height: AppBar.HEIGHT,

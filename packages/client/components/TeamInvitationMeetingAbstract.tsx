@@ -6,7 +6,10 @@ import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
 const PageContainer = styled('div')({
   alignItems: 'center',
   backgroundColor: PALETTE.SLATE_200,
-  color: PALETTE.SLATE_700,
+  color: 'var(--color-fg-primary)',
+  '.theme-dark &': {
+    backgroundColor: 'var(--color-surface-app)'
+  },
   display: 'flex',
   flexDirection: 'column',
   maxWidth: '100%',
@@ -29,6 +32,11 @@ const CenteredBlock = styled('div')({
 
 const Backdrop = styled('div')({
   backgroundColor: PALETTE.SLATE_700_30,
+  // the slate scrim lightens a dark canvas, which would push the abstract forward
+  // instead of behind the dialog, so dark mode needs a black one
+  '.theme-dark &': {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
   bottom: 0,
   height: '100%',
   left: 0,
@@ -53,7 +61,7 @@ const AbstractSidebar = styled('div')({
   display: 'none',
   [makeMinWidthMediaQuery(640)]: {
     display: 'block',
-    backgroundColor: 'white',
+    backgroundColor: 'var(--color-surface-meeting-sidebar)',
     flexShrink: 0,
     height: '100%',
     width: 240
@@ -61,7 +69,7 @@ const AbstractSidebar = styled('div')({
 })
 
 const AbstractSidebarHeading = styled('div')({
-  backgroundColor: PALETTE.SLATE_700,
+  backgroundColor: 'var(--color-fg-primary)',
   borderRadius: 14,
   height: 14,
   margin: '21px 0 35px 60px',
@@ -69,7 +77,7 @@ const AbstractSidebarHeading = styled('div')({
 })
 
 const AbstractSidebarLabel = styled('div')({
-  backgroundColor: PALETTE.SLATE_400,
+  backgroundColor: 'var(--color-hairline-strong)',
   borderRadius: 8,
   height: 8,
   marginLeft: 60,
@@ -93,7 +101,7 @@ const AbstractSidebarNavItemBullet = styled('div')({
 })
 
 const AbstractSidebarNavItemLabel = styled('div')({
-  backgroundColor: PALETTE.SLATE_600,
+  backgroundColor: 'var(--color-fg-secondary)',
   borderRadius: 14,
   height: 14,
   width: 120
