@@ -1,13 +1,18 @@
-import styled from '@emotion/styled'
-import {ICON_SIZE} from '../styles/typographyV2'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 
-const MenuItemAvatar = styled(MenuItemComponentAvatar)({
-  svg: {
-    display: 'block',
-    height: ICON_SIZE.MD18,
-    width: ICON_SIZE.MD18
+const MenuItemAvatar = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return (
+      <MenuItemComponentAvatar
+        ref={ref}
+        className={cn('[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]', className)}
+        {...rest}
+      />
+    )
   }
-})
+)
 
 export default MenuItemAvatar

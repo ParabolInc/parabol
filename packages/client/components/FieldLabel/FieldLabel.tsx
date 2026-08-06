@@ -1,41 +1,20 @@
-import styled from '@emotion/styled'
-import ui from '../../styles/ui'
+import type {CSSProperties} from 'react'
+import {cn} from '../../ui/cn'
 
-const FieldLabelStyles = styled('label')<
-  Pick<Props, 'customStyles' | 'fieldSize' | 'indent' | 'inline'>
->(({customStyles, fieldSize, indent, inline}) => {
-  const size = (fieldSize || ui.buttonSizeOptions[1]) as 'small' | 'medium' | 'large'
-  const paddingLeft = fieldSize && indent ? ui.controlBlockPaddingHorizontal[size] : 0
-  const inlineSizeStyles = ui.fieldSizeStyles[size]
-  const inlineStyles = {
-    lineHeight: inlineSizeStyles.lineHeight,
-    paddingBottom: ui.controlBlockPaddingVertical[size],
-    paddingTop: ui.controlBlockPaddingVertical[size]
-  }
-  const useInlineStyles = fieldSize && inline && inlineStyles
-  return {
-    color: 'var(--color-fg-secondary)',
-    fontSize: 12,
-    fontWeight: 600,
-    letterSpacing: '.03em',
-    lineHeight: '16px',
-    userSelect: 'none',
-    display: 'block',
-    padding: 0,
-    textTransform: 'none',
-    // 1. Line up controls when inline
-    ...useInlineStyles,
-    // 2. Optionally line up left edge of text using indent bool
-    paddingLeft,
-    // 3. Do what ya want
-    ...customStyles
-  }
-})
+const inlineStyles = {
+  small: 'py-1.5 leading-5',
+  medium: 'py-2 leading-6',
+  large: 'py-3 leading-7'
+} as const
 
-const FieldLabelBlock = FieldLabelStyles
+const indentStyles = {
+  small: 'pl-2',
+  medium: 'pl-3',
+  large: 'pl-4'
+} as const
 
 interface Props {
-  customStyles?: object
+  customStyles?: CSSProperties
   fieldSize: string
   htmlFor?: string
   indent: boolean
@@ -45,16 +24,19 @@ interface Props {
 
 const FieldLabel = (props: Props) => {
   const {customStyles, fieldSize, indent, inline, htmlFor, label} = props
+  const size = (fieldSize || 'medium') as 'small' | 'medium' | 'large'
   return (
-    <FieldLabelBlock
-      customStyles={customStyles}
-      fieldSize={fieldSize}
-      indent={indent}
-      inline={inline}
+    <label
+      className={cn(
+        'block select-none p-0 font-semibold text-fg-secondary text-xs normal-case tracking-[.03em]',
+        fieldSize && inline && inlineStyles[size],
+        fieldSize && indent && indentStyles[size]
+      )}
       htmlFor={htmlFor}
+      style={customStyles}
     >
       {label}
-    </FieldLabelBlock>
+    </label>
   )
 }
 

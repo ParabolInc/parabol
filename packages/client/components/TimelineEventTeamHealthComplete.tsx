@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventTeamHealthComplete_timelineEvent$key} from '../__generated__/TimelineEventTeamHealthComplete_timelineEvent.graphql'
@@ -11,10 +10,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventTeamHealthComplete_timelineEvent$key
 }
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventTeamHealthComplete = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -58,7 +53,11 @@ const TimelineEventTeamHealthComplete = (props: Props) => {
       <TimelineEventBody>
         {'Your team checked in on how it’s doing.'}
         <br />
-        {!locked && <Link to={summaryURL}>Review a summary</Link>}
+        {!locked && (
+          <StyledLink className='font-semibold' to={summaryURL}>
+            Review a summary
+          </StyledLink>
+        )}
       </TimelineEventBody>
     </TimelineEventCard>
   )

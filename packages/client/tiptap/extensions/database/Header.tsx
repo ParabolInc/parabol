@@ -1,4 +1,6 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import {useEffect, useState} from 'react'
 import {
   Check,
   ChevronRight,
@@ -8,9 +10,7 @@ import {
   LastPage,
   Notes,
   SwapHoriz
-} from '@mui/icons-material'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import {useEffect, useState} from 'react'
+} from '~/ui/icons'
 import useForm from '../../../hooks/useForm'
 import {DATABASE_COLUMN_NAME_MAX_CHARS} from '../../../utils/constants'
 import {DropdownMenuInputItem} from './DropdownMenuInputItem'

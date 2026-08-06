@@ -1,4 +1,3 @@
-import {ContentCopy} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useCallback, useEffect, useRef, useState} from 'react'
@@ -7,6 +6,7 @@ import {useLocation, useNavigate} from 'react-router'
 import type {MeetingTypeEnum} from '~/__generated__/ActivityDetailsQuery.graphql'
 import type {TemplateDetails_activity$key} from '~/__generated__/TemplateDetails_activity.graphql'
 import type {TemplateDetails_user$key} from '~/__generated__/TemplateDetails_user.graphql'
+import {ContentCopy} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateDimension from '../../../modules/meeting/components/AddPokerTemplateDimension'
@@ -18,13 +18,13 @@ import TemplatePromptList from '../../../modules/meeting/components/TemplateProm
 import {UnstyledTemplateSharing} from '../../../modules/meeting/components/TemplateSharing'
 import RemovePokerTemplateMutation from '../../../mutations/RemovePokerTemplateMutation'
 import RemoveReflectTemplateMutation from '../../../mutations/RemoveReflectTemplateMutation'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {setActiveTemplate} from '../../../utils/relay/setActiveTemplate'
 import useTemplateDescription from '../../../utils/useTemplateDescription'
 import DetailAction from '../../DetailAction'
-import FlatButton from '../../FlatButton'
 import ActivityCardFavorite from '../ActivityCardFavorite'
 import {QUICK_START_CATEGORY_ID} from '../Categories'
 import TeamHealthTemplateQuestionEditor from '../TeamHealth/TeamHealthTemplateQuestionEditor'
@@ -301,14 +301,16 @@ export const TemplateDetails = (props: Props) => {
                     highlightEdit && 'animate-pulse ring-2 ring-sky-500 ring-offset-2'
                   )}
                 >
-                  <FlatButton
+                  <Button
+                    variant='flat'
+                    size='sm'
                     style={{padding: '8px 12px', border: '0'}}
-                    className='flex cursor-pointer gap-1 px-12'
+                    className='flex cursor-pointer gap-1 px-12 text-sm'
                     onClick={() => setTeamPickerOpen(true)}
                   >
                     <ContentCopy className='text-fg-secondary' />
                     <div className='font-semibold text-fg-primary'>Clone & Edit</div>
-                  </FlatButton>
+                  </Button>
                 </div>
               </div>
             </div>

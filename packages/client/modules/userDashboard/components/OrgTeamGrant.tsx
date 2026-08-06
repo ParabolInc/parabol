@@ -1,7 +1,7 @@
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import graphql from 'babel-plugin-relay/macro'
 import type {Dispatch, SetStateAction} from 'react'
 import {useFragment} from 'react-relay'
+import {ExpandMore as ExpandMoreIcon} from '~/ui/icons'
 import type {OrgTeamGrant_viewer$key} from '../../../__generated__/OrgTeamGrant_viewer.graphql'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
@@ -130,8 +130,10 @@ export const OrgTeamGrant = ({
                         className='cursor-pointer rounded p-0.5 text-fg-muted hover:bg-surface-hover'
                       >
                         <ExpandMoreIcon
-                          fontSize='small'
-                          className={cn('transition-transform', isExpanded && 'rotate-180')}
+                          className={cn(
+                            'text-[20px] transition-transform',
+                            isExpanded && 'rotate-180'
+                          )}
                         />
                       </button>
                     )}

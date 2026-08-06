@@ -1,20 +1,21 @@
-import styled from '@emotion/styled'
-import AccountBoxIcon from '@mui/icons-material/AccountBox'
-import AddIcon from '@mui/icons-material/Add'
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import CreditScoreIcon from '@mui/icons-material/CreditScore'
-import ExitToAppIcon from '@mui/icons-material/ExitToApp'
-import ForumIcon from '@mui/icons-material/Forum'
-import GroupIcon from '@mui/icons-material/Group'
-import GroupsIcon from '@mui/icons-material/Groups'
-import KeyIcon from '@mui/icons-material/Key'
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
-import TimelineIcon from '@mui/icons-material/Timeline'
-import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useMatch} from 'react-router'
+import {
+  AccountBox as AccountBoxIcon,
+  Add as AddIcon,
+  AppRegistration as AppRegistrationIcon,
+  ArrowBack as ArrowBackIcon,
+  CreditScore as CreditScoreIcon,
+  ExitToApp as ExitToAppIcon,
+  Forum as ForumIcon,
+  Group as GroupIcon,
+  Groups as GroupsIcon,
+  Key as KeyIcon,
+  PlaylistAddCheck as PlaylistAddCheckIcon,
+  Timeline as TimelineIcon,
+  Work as WorkIcon
+} from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {cn} from '../../ui/cn'
 import {
@@ -43,45 +44,18 @@ const dashSidebarClassName = cn(
   isGlobalBannerEnabled && 'pt-6'
 )
 
-const NavBlock = styled('div')({
-  flex: 1,
-  position: 'relative',
-  padding: 8,
-  overflowY: 'auto'
-})
-
-const Nav = styled('nav')({
-  display: 'flex',
-  flexDirection: 'column',
-  left: 0,
-  height: '100%',
-  maxHeight: '100%',
-  padding: 0,
-  position: 'absolute',
-  top: 0,
-  width: '100%'
-})
-
-const TopNavItemsWrap = styled('div')({
-  padding: '10px 12px'
-})
-
-const NavItemsWrap = styled('div')({
-  padding: '10px 12px 0'
-})
-
 const dashHRClassName = '-ml-2 w-[calc(100%+8px)] border-hairline-strong border-b'
 
-const Footer = styled('div')({
-  display: 'flex',
-  // safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
-  flexDirection: 'column',
-  justifyContent: 'flex-end',
-  marginTop: 'auto',
-  padding: 8
-})
+const navBlockClassName = 'relative flex-1 overflow-y-auto p-2'
 
-const FooterBottom = styled('div')({})
+const navClassName = 'absolute top-0 left-0 flex h-full max-h-full w-full flex-col p-0'
+
+const topNavItemsWrapClassName = 'px-3 py-2.5'
+
+const navItemsWrapClassName = 'px-3 pt-2.5 pb-0'
+
+// safari flexbox bug: https://stackoverflow.com/a/58720054/3155110
+const footerClassName = 'mt-auto flex flex-col justify-end p-2'
 
 const MobileDashSidebar = (props: Props) => {
   const {handleMenuClick, viewerRef} = props
@@ -110,9 +84,9 @@ const MobileDashSidebar = (props: Props) => {
     return (
       <div className={dashSidebarClassName}>
         <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
-        <NavBlock>
-          <Nav>
-            <TopNavItemsWrap>
+        <div className={navBlockClassName}>
+          <nav className={navClassName}>
+            <div className={topNavItemsWrapClassName}>
               <LeftDashNavItem
                 onClick={handleMenuClick}
                 Icon={AccountBoxIcon}
@@ -126,9 +100,9 @@ const MobileDashSidebar = (props: Props) => {
                 label={'Sign Out'}
                 exact
               />
-            </TopNavItemsWrap>
+            </div>
             <div className={dashHRClassName} />
-            <NavItemsWrap>
+            <div className={navItemsWrapClassName}>
               <LeftDashNavItem
                 onClick={handleMenuClick}
                 Icon={ArrowBackIcon}
@@ -177,15 +151,15 @@ const MobileDashSidebar = (props: Props) => {
                 href={`/me/organizations/${orgId}/${AUTHENTICATION_PAGE}`}
                 label={'Authentication'}
               />
-            </NavItemsWrap>
-          </Nav>
-        </NavBlock>
+            </div>
+          </nav>
+        </div>
         <div className={dashHRClassName} />
-        <Footer>
-          <FooterBottom>
+        <div className={footerClassName}>
+          <div>
             <LeftDashParabol />
-          </FooterBottom>
-        </Footer>
+          </div>
+        </div>
       </div>
     )
   }
@@ -193,9 +167,9 @@ const MobileDashSidebar = (props: Props) => {
   return (
     <div className={dashSidebarClassName}>
       <StandardHub handleMenuClick={handleMenuClick} viewer={viewer} />
-      <NavBlock>
-        <Nav>
-          <TopNavItemsWrap>
+      <div className={navBlockClassName}>
+        <nav className={navClassName}>
+          <div className={topNavItemsWrapClassName}>
             <LeftDashNavItem
               onClick={handleMenuClick}
               Icon={AccountBoxIcon}
@@ -209,9 +183,9 @@ const MobileDashSidebar = (props: Props) => {
               label={'Sign Out'}
               exact
             />
-          </TopNavItemsWrap>
+          </div>
           <div className={dashHRClassName} />
-          <NavItemsWrap>
+          <div className={navItemsWrapClassName}>
             <LeftDashNavItem
               onClick={handleMenuClick}
               Icon={ForumIcon}
@@ -237,16 +211,16 @@ const MobileDashSidebar = (props: Props) => {
               href={'/newteam'}
               label={'Add a Team'}
             />
-          </NavItemsWrap>
+          </div>
           <DashNavList closeMobileSidebar={handleMenuClick} viewerRef={viewer} />
-        </Nav>
-      </NavBlock>
+        </nav>
+      </div>
       <div className={dashHRClassName} />
-      <Footer>
-        <FooterBottom>
+      <div className={footerClassName}>
+        <div>
           <LeftDashParabol />
-        </FooterBottom>
-      </Footer>
+        </div>
+      </div>
     </div>
   )
 }

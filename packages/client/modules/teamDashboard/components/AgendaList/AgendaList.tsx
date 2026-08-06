@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
@@ -10,24 +9,10 @@ import useEventCallback from '../../../../hooks/useEventCallback'
 import type useGotoStageId from '../../../../hooks/useGotoStageId'
 import UpdateAgendaItemMutation from '../../../../mutations/UpdateAgendaItemMutation'
 import {getSortOrder} from '../../../../shared/sortOrder'
-import {navItemRaised} from '../../../../styles/elevation'
+import {cn} from '../../../../ui/cn'
 import {AGENDA_ITEM} from '../../../../utils/constants'
 import AgendaItem from '../AgendaItem/AgendaItem'
 import AgendaListEmptyState from './AgendaListEmptyState'
-
-const AgendaListRoot = styled('div')<{isMeeting: boolean}>(({isMeeting}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: isMeeting ? undefined : 'auto',
-  paddingRight: 8,
-  height: '100%', // trickle down height for overflow
-  width: '100%'
-}))
-
-const DraggableAgendaItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-  borderRadius: '0 4px 4px 0',
-  boxShadow: isDragging ? navItemRaised : undefined
-}))
 
 interface Props {
   agendaItems: AgendaList_agendaItems$key
@@ -100,7 +85,10 @@ const AgendaList = (props: Props) => {
       <Droppable droppableId={AGENDA_ITEM}>
         {(provided) => {
           return (
-            <AgendaListRoot ref={provided.innerRef} isMeeting={!!meeting}>
+            <div
+              ref={provided.innerRef}
+              className={cn('flex h-full w-full flex-col pr-2', !meeting && 'overflow-auto')}
+            >
               {filteredAgendaItems.map((item, idx) => {
                 return (
                   <Draggable
@@ -111,8 +99,11 @@ const AgendaList = (props: Props) => {
                   >
                     {(dragProvided, dragSnapshot) => {
                       return (
-                        <DraggableAgendaItem
-                          isDragging={dragSnapshot.isDragging}
+                        <div
+                          className={cn(
+                            'rounded-[0_4px_4px_0]',
+                            dragSnapshot.isDragging && 'shadow-[var(--shadow-card-dragging)]'
+                          )}
                           ref={dragProvided.innerRef}
                           {...dragProvided.draggableProps}
                           {...dragProvided.dragHandleProps}
@@ -124,14 +115,14 @@ const AgendaList = (props: Props) => {
                             isDragging={dragSnapshot.isDragging}
                             meeting={meeting}
                           />
-                        </DraggableAgendaItem>
+                        </div>
                       )
                     }}
                   </Draggable>
                 )
               })}
               {provided.placeholder}
-            </AgendaListRoot>
+            </div>
           )
         }}
       </Droppable>

@@ -1,3 +1,5 @@
+import {useEffect} from 'react'
+import type {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
 import {
   Comment,
   Edit,
@@ -8,9 +10,7 @@ import {
   Receipt,
   ThumbsUpDown,
   Update
-} from '@mui/icons-material'
-import {useEffect} from 'react'
-import type {NewMeetingPhaseTypeEnum} from '~/__generated__/NewMeetingSettingsToggleCheckIn_settings.graphql'
+} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import {Times} from '../types/constEnums'

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
@@ -12,10 +11,6 @@ import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import NewJiraIssueInput from './NewJiraIssueInput'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
 
 interface Props {
   queryRef: PreloadedQuery<JiraScopingSearchResultsQuery>
@@ -142,7 +137,7 @@ const JiraScopingSearchResults = (props: Props) => {
         issues={edges}
         meetingId={meetingId}
       />
-      <ResultScroller>
+      <div className='overflow-auto'>
         {viewer && (
           <NewJiraIssueInput
             isEditing={isEditing}
@@ -168,7 +163,7 @@ const JiraScopingSearchResults = (props: Props) => {
             />
           )
         })}
-      </ResultScroller>
+      </div>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

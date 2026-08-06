@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingFirstCall_meeting$key} from '../__generated__/ActionMeetingFirstCall_meeting.graphql'
@@ -19,14 +18,6 @@ import PhaseWrapper from './PhaseWrapper'
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingFirstCall_meeting$key
 }
-
-const FirstCallWrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%'
-})
 
 const ActionMeetingFirstCall = (props: Props) => {
   const {avatarGroup, toggleSidebar, meeting: meetingRef} = props
@@ -71,7 +62,7 @@ const ActionMeetingFirstCall = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.agendaitems}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <FirstCallWrapper>
+          <div className='flex h-full flex-col items-center justify-center'>
             <MeetingPhaseHeading>
               {endedAt && agendaItemsCompleted === 0
                 ? 'Nothing to see here'
@@ -92,7 +83,7 @@ const ActionMeetingFirstCall = (props: Props) => {
                 )}
               </>
             )}
-          </FirstCallWrapper>
+          </div>
         </PhaseWrapper>
       </MeetingHeaderAndPhase>
     </MeetingContent>

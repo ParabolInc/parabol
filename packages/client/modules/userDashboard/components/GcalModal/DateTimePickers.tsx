@@ -1,43 +1,6 @@
-import {DatePicker, TimePicker} from '@mui/x-date-pickers'
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs'
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
-import type {Dayjs} from 'dayjs'
+import dayjs, {type Dayjs} from 'dayjs'
 import type * as React from 'react'
-
-const customStyles = {
-  width: '100%',
-  '& .MuiOutlinedInput-root': {
-    '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline, &.focus-within .MuiOutlinedInput-notchedOutline':
-      {
-        borderColor: 'var(--color-hairline-strong)',
-        borderWidth: '1px'
-      },
-    '&.Mui-focused': {
-      outline: 'none'
-    }
-  },
-  '& label': {
-    color: 'var(--color-fg-secondary)',
-    '&.Mui-focused': {
-      color: 'var(--color-fg-secondary)'
-    }
-  },
-  '& .MuiPickersDay-dayWithMargin': {
-    '&:hover, &:focus': {
-      borderColor: 'var(--color-hairline-strong)',
-      outline: 'none'
-    }
-  },
-  '& .MuiPickersCalendarHeader-switchHeader button:focus': {
-    outline: 'none',
-    color: 'var(--color-fg-secondary)'
-  }
-}
-
-const timePickerStyles = {
-  ...customStyles,
-  width: '50%'
-}
+import GcalDateTimeRow from './GcalDateTimeRow'
 
 type Props = {
   startValue: Dayjs
@@ -49,9 +12,8 @@ type Props = {
 const DateTimePickers = (props: Props) => {
   const {startValue, endValue, handleChangeStart, handleChangeEnd} = props
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const date = new Date()
-  const dateTimeString = date.toLocaleString('en-US', {
-    timeZone: timeZone,
+  const dateTimeString = new Date().toLocaleString('en-US', {
+    timeZone,
     timeZoneName: 'short'
   })
   const timeZoneShort = dateTimeString.split(' ').pop()
@@ -62,46 +24,24 @@ const DateTimePickers = (props: Props) => {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className='flex flex-col justify-between space-y-6 pt-3'>
-        <div className='flex space-x-2' onMouseDown={handleMouseDown}>
-          <DatePicker
-            label={`Meeting Start Date`}
-            value={startValue}
-            onChange={(date) => handleChangeStart(date, startValue)}
-            format='MMMM D, YYYY'
-            sx={customStyles}
-            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
-          />
-          <TimePicker
-            timeSteps={{minutes: 15}}
-            label={`Start Time (${timeZoneShort})`}
-            value={startValue}
-            onChange={(time) => handleChangeStart(startValue, time)}
-            sx={timePickerStyles}
-            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
-          />
-        </div>
-        <div className='flex space-x-2' onMouseDown={handleMouseDown}>
-          <DatePicker
-            label={`Meeting End Date`}
-            value={endValue}
-            onChange={(date) => handleChangeEnd(date, endValue)}
-            format='MMMM D, YYYY'
-            sx={customStyles}
-            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
-          />
-          <TimePicker
-            timeSteps={{minutes: 15}}
-            label={`End Time (${timeZoneShort})`}
-            value={endValue}
-            onChange={(time) => handleChangeEnd(endValue, time)}
-            sx={timePickerStyles}
-            slotProps={{popper: {style: {pointerEvents: 'auto'}}}}
-          />
-        </div>
-      </div>
-    </LocalizationProvider>
+    <div className='flex flex-col justify-between space-y-4 pt-3' onMouseDown={handleMouseDown}>
+      <GcalDateTimeRow
+        label={`Meeting starts (${timeZoneShort})`}
+        value={startValue}
+        onChange={(next) => {
+          const nextValue = dayjs(next)
+          handleChangeStart(nextValue, nextValue)
+        }}
+      />
+      <GcalDateTimeRow
+        label={`Meeting ends (${timeZoneShort})`}
+        value={endValue}
+        onChange={(next) => {
+          const nextValue = dayjs(next)
+          handleChangeEnd(nextValue, nextValue)
+        }}
+      />
+    </div>
   )
 }
 

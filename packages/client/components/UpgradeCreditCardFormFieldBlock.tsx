@@ -1,31 +1,25 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-interface StyleProps {
+interface Props extends ComponentPropsWithoutRef<'div'> {
   hasError: boolean
 }
 
-const UpgradeCreditCardFormFieldBlock = styled('div')<StyleProps>(({hasError}) => ({
-  alignItems: 'center',
-  border: `1px solid var(--color-hairline-field)`,
-  borderRadius: 4,
-  display: 'flex',
-  input: {
-    appearance: 'none',
-    backgroundColor: 'var(--color-surface-input)',
-    border: 0,
-    borderRadius: 4,
-    boxShadow: 'none',
-    color: 'var(--color-fg-primary)',
-    fontSize: '.9375rem',
-    lineHeight: '24px',
-    outline: 0,
-    padding: '7px 8px', // account for top/bottom border
-    width: '100%',
-    '::placeholder': {
-      color: hasError ? PALETTE.TOMATO_500 : undefined
-    }
-  }
-}))
+const UpgradeCreditCardFormFieldBlock = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {className, children, hasError, ...rest} = props
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'flex items-center rounded-[4px] border border-hairline-field [&_input]:w-full [&_input]:appearance-none [&_input]:rounded-[4px] [&_input]:border-0 [&_input]:bg-surface-input [&_input]:px-2 [&_input]:py-[7px] [&_input]:text-[15px] [&_input]:text-fg-primary [&_input]:leading-6 [&_input]:shadow-none [&_input]:outline-none',
+        hasError && '[&_input::placeholder]:text-fg-error',
+        className
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+})
 
 export default UpgradeCreditCardFormFieldBlock

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,8 +5,7 @@ import type {ThreadedPollBase_discussion$key} from '~/__generated__/ThreadedPoll
 import type {ThreadedPollBase_poll$key} from '~/__generated__/ThreadedPollBase_poll.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CreatePollMutation from '../mutations/CreatePollMutation'
-import {PALETTE} from '../styles/paletteV3'
-import {Polls, PollsAriaLabels, Radius} from '../types/constEnums'
+import {Polls, PollsAriaLabels} from '../types/constEnums'
 import type {DiscussionThreadables} from './DiscussionThreadList'
 import PlainButton from './PlainButton/PlainButton'
 import {AddPollOptionButton} from './Poll/AddPollOptionButton'
@@ -19,59 +17,8 @@ import PollOption from './Poll/PollOption'
 import {getPollState} from './Poll/PollState'
 import PollTitle from './Poll/PollTitle'
 
-const PollOptions = styled('div')({
-  fontSize: '14px',
-  padding: `12px 12px 0px 12px`,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px'
-})
-
-const PollActions = styled('div')({
-  width: '100%',
-  padding: `0px 12px 12px 12px`,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
-
-const StartPollButton = styled(PlainButton)({
-  padding: `8px 24px`,
-  fontSize: '14px',
-  fontWeight: 500,
-  background: PALETTE.SKY_500,
-  outline: 'none',
-  color: PALETTE.WHITE,
-  border: 'none',
-  borderRadius: Radius.BUTTON,
-  cursor: 'pointer',
-  ':hover,:focus': {
-    background: PALETTE.SKY_600
-  },
-  marginLeft: 'auto'
-})
-
-const SubmitVoteButton = styled(PlainButton)({
-  padding: `8px 24px`,
-  marginTop: '12px',
-  fontSize: '14px',
-  fontWeight: 500,
-  background: 'var(--color-surface-well)',
-  color: 'var(--color-fg-primary)',
-  border: 'none',
-  borderRadius: Radius.BUTTON,
-  ':hover': {
-    background: 'var(--color-surface-hover)'
-  }
-})
-
-const StartPollWrapper = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  marginTop: '12px'
-})
+const pollOptionsClassName = 'flex flex-col gap-2 px-3 pt-3 text-[14px]'
+const pollActionsClassName = 'flex w-full items-center justify-center px-3 pb-3'
 
 interface Props {
   allowedThreadables: DiscussionThreadables[]
@@ -156,7 +103,7 @@ const ThreadedPollBase = (props: Props) => {
             onFocus={() => setIsTitleFocused(true)}
             onBlur={() => setIsTitleFocused(false)}
           />
-          <PollOptions>
+          <div className={pollOptionsClassName}>
             {poll.options.map((option, index) => {
               const isLastOption = index === poll.options.length - 1
               const isOptional = index > 1
@@ -170,21 +117,22 @@ const ThreadedPollBase = (props: Props) => {
                 />
               )
             })}
-          </PollOptions>
-          <PollActions>
-            <StartPollWrapper>
+          </div>
+          <div className={pollActionsClassName}>
+            <div className='mt-3 flex w-full items-center justify-center'>
               {poll.options.length < Polls.MAX_OPTIONS && (
                 <AddPollOptionButton onClick={addPollOption} />
               )}
-              <StartPollButton
+              <PlainButton
+                className='ml-auto cursor-pointer rounded-md border-none bg-sky-500 px-6 py-2 font-medium text-[14px] text-white outline-none hover:bg-sky-600 focus:bg-sky-600'
                 aria-label={PollsAriaLabels.POLL_START}
                 onClick={createPoll}
                 disabled={!canCreatePoll}
               >
                 Start
-              </StartPollButton>
-            </StartPollWrapper>
-          </PollActions>
+              </PlainButton>
+            </div>
+          </div>
         </>
       )
     }
@@ -192,20 +140,24 @@ const ThreadedPollBase = (props: Props) => {
     return (
       <>
         <PollTitle pollRef={poll} />
-        <PollOptions>
+        <div className={pollOptionsClassName}>
           {poll.options.map((option) => {
             return (
               <PollOption key={option.id} onSelected={setSelectedOptionId} optionRef={option} />
             )
           })}
-        </PollOptions>
-        <PollActions>
+        </div>
+        <div className={pollActionsClassName}>
           {selectedOptionId && (
-            <SubmitVoteButton aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE} onClick={submitVote}>
+            <PlainButton
+              className='mt-3 rounded-md border-none bg-surface-well px-6 py-2 font-medium text-[14px] text-fg-primary hover:bg-surface-hover'
+              aria-label={PollsAriaLabels.POLL_SUBMIT_VOTE}
+              onClick={submitVote}
+            >
               Submit and view results
-            </SubmitVoteButton>
+            </PlainButton>
           )}
-        </PollActions>
+        </div>
       </>
     )
   }

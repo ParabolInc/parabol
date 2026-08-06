@@ -1,7 +1,7 @@
-import {ArrowForward} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthResponsePhase_meeting$key} from '~/__generated__/TeamHealthResponsePhase_meeting.graphql'
+import {ArrowForward} from '~/ui/icons'
 import useSetTeamHealthSpectateMutation from '../../mutations/useSetTeamHealthSpectateMutation'
 import {Button} from '../../ui/Button/Button'
 import {isNotNull} from '../../utils/predicates'

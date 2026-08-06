@@ -8,6 +8,7 @@ import useDocumentTitle from '../hooks/useDocumentTitle'
 import useMutationProps from '../hooks/useMutationProps'
 import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutation'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import {Button} from '../ui/Button/Button'
 import getValidRedirectParam from '../utils/getValidRedirectParam'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
@@ -15,7 +16,6 @@ import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import PrimaryButton from './PrimaryButton'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 interface Props {
@@ -76,10 +76,10 @@ const ViewerNotOnTeam = (props: Props) => {
           <InvitationDialogCopy>Just ask a team member for an invitation.</InvitationDialogCopy>
           <InvitationDialogCopy>This page will redirect automatically.</InvitationDialogCopy>
           <InvitationCenteredCopy>
-            <PrimaryButton size='medium' waiting>
+            <Button variant='primary' size='md' disabled>
               <span>Waiting for Invitation</span>
               <Ellipsis />
-            </PrimaryButton>
+            </Button>
           </InvitationCenteredCopy>
         </DialogContent>
       </InviteDialog>

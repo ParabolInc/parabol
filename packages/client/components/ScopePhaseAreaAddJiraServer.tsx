@@ -3,10 +3,10 @@ import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaAddJiraServer_meeting$key} from '../__generated__/ScopePhaseAreaAddJiraServer_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {Button} from '../ui/Button/Button'
 import {SALES_EMAIL} from '../utils/constants'
 import JiraServerClientManager from '../utils/JiraServerClientManager'
 import JiraServerSVG from './JiraServerSVG'
-import RaisedButton from './RaisedButton'
 
 interface Props {
   gotoParabol: () => void
@@ -72,10 +72,15 @@ const ScopePhaseAreaAddJiraServer = (props: Props) => {
 
   return (
     <div className='flex h-full flex-col items-center justify-center'>
-      <RaisedButton className='gap-2 whitespace-pre-wrap' onClick={openOAuth} size={'medium'}>
+      <Button
+        variant='raised'
+        size='md'
+        className='gap-2 whitespace-pre-wrap bg-slate-200 text-slate-700'
+        onClick={openOAuth}
+      >
         <JiraServerSVG />
         Import issues from Jira Data Center
-      </RaisedButton>
+      </Button>
       <span
         className='cursor-pointer pt-6 text-accent outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
         onClick={gotoParabol}

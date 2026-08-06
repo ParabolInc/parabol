@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
@@ -10,10 +9,6 @@ import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewAzureIssueInput from './NewAzureIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
 
 interface Props {
   meetingRef: AzureDevOpsScopingSearchResults_meeting$key
@@ -110,7 +105,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   }
   return (
     <>
-      <ResultScroller>
+      <div className='overflow-auto'>
         {query && (
           <NewAzureIssueInput
             isEditing={isEditing}
@@ -132,7 +127,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
             linkTitle={`Azure DevOps Work Item #${node.issueKey}`}
           />
         ))}
-      </ResultScroller>
+      </div>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

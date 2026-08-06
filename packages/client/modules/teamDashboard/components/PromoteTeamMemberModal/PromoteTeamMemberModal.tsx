@@ -3,9 +3,9 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {PromoteTeamMemberModal_teamMember$key} from '../../../../__generated__/PromoteTeamMemberModal_teamMember.graphql'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import PromoteToTeamLeadMutation from '../../../../mutations/PromoteToTeamLeadMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -66,18 +66,19 @@ const PromoteTeamMemberModal = (props: Props) => {
       <DialogContent>
         <DialogTitle>Are you sure?</DialogTitle>
         <p>{copy}</p>
-        <PrimaryButton
-          size='medium'
+        <Button
+          variant='primary'
+          size='md'
           className='mx-auto mt-6 mb-0'
           onClick={handleClick}
-          waiting={submitting}
+          disabled={submitting}
         >
           <IconLabel
             icon='arrow_forward'
             iconAfter
             label={<div className='break-word whitespace-normal'>Yes, promote {preferredName}</div>}
           />
-        </PrimaryButton>
+        </Button>
       </DialogContent>
     </Dialog>
   )

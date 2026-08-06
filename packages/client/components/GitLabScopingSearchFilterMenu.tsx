@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {commitLocalUpdate, type PreloadedQuery, usePreloadedQuery} from 'react-relay'
@@ -16,16 +15,6 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-const StyledMenuItemLabel = styled(MenuItemLabel)({})
-
-const StyledMenu = styled(Menu)({
-  maxWidth: '100%'
-})
 
 interface Props {
   menuProps: MenuProps
@@ -111,7 +100,8 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
 
   const {portalStatus, isDropdown} = menuProps
   return (
-    <StyledMenu
+    <Menu
+      className='max-w-full'
       keepParentFocus
       ariaLabel='Define the GitLab search query'
       portalStatus={portalStatus}
@@ -151,16 +141,16 @@ const GitLabScopingSearchFilterMenu = (props: Props) => {
           <MenuItem
             key={projectId}
             label={
-              <StyledMenuItemLabel>
-                <StyledCheckBox active={isSelected} />
+              <MenuItemLabel>
+                <Checkbox className='-ml-2 mr-2' active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={fullPath} />
-              </StyledMenuItemLabel>
+              </MenuItemLabel>
             }
             onClick={handleClick}
           />
         )
       })}
-    </StyledMenu>
+    </Menu>
   )
 }
 

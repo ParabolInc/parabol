@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TimelineEventCompletedRetroMeeting_timelineEvent$key} from '../__generated__/TimelineEventCompletedRetroMeeting_timelineEvent.graphql'
@@ -14,14 +13,6 @@ import TimelineEventCard from './TimelineEventCard'
 interface Props {
   timelineEvent: TimelineEventCompletedRetroMeeting_timelineEvent$key
 }
-
-const CountItem = styled('span')({
-  fontWeight: 600
-})
-
-const Link = styled(StyledLink)({
-  fontWeight: 600
-})
 
 const TimelineEventCompletedRetroMeeting = (props: Props) => {
   const {timelineEvent: timelineEventRef} = props
@@ -89,39 +80,47 @@ const TimelineEventCompletedRetroMeeting = (props: Props) => {
     >
       <TimelineEventBody>
         {'Your team shared '}
-        <CountItem>
+        <span className='font-semibold'>
           {reflectionCount} {plural(reflectionCount, 'reflection')}
-        </CountItem>
+        </span>
         {' and grouped them into '}
-        <CountItem>
+        <span className='font-semibold'>
           {topicCount} {plural(topicCount, 'topic')}
-        </CountItem>
+        </span>
         {'.'}
         <br />
         {'You added '}
-        <CountItem>
+        <span className='font-semibold'>
           {commentCount} {plural(commentCount, 'comment')}
-        </CountItem>
+        </span>
         {' and created '}
-        <CountItem>
+        <span className='font-semibold'>
           {taskCount} {plural(taskCount, 'task')}
-        </CountItem>
+        </span>
         {'.'}
         <br />
         {locked ? (
           canUpgrade && (
             <>
-              <Link to={`/me/organizations/${orgId}`} onClick={onUpgrade}>
+              <StyledLink
+                className='font-semibold'
+                to={`/me/organizations/${orgId}`}
+                onClick={onUpgrade}
+              >
                 Upgrade now
-              </Link>{' '}
+              </StyledLink>{' '}
               to get access to the summary and discussion
             </>
           )
         ) : (
           <>
-            <Link to={`/meet/${meetingId}/discuss/1`}>See the discussion</Link>
+            <StyledLink className='font-semibold' to={`/meet/${meetingId}/discuss/1`}>
+              See the discussion
+            </StyledLink>
             {' in your meeting or '}
-            <Link to={summaryURL}>review a summary</Link>
+            <StyledLink className='font-semibold' to={summaryURL}>
+              review a summary
+            </StyledLink>
           </>
         )}
       </TimelineEventBody>

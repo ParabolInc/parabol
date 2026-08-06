@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {DashboardAvatar_teamMember$key} from '../../__generated__/DashboardAvatar_teamMember.graphql'
@@ -7,16 +6,11 @@ import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
 import useTooltip from '../../hooks/useTooltip'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
-import {ElementWidth} from '../../types/constEnums'
 import Avatar from '../Avatar/Avatar'
 
 interface Props {
   teamMember: DashboardAvatar_teamMember$key
 }
-
-const AvatarWrapper = styled('div')({
-  width: ElementWidth.DASHBOARD_AVATAR_OVERLAPPED
-})
 
 const DashboardAvatar = (props: Props) => {
   const {teamMember: teamMemberRef} = props
@@ -68,7 +62,7 @@ const DashboardAvatar = (props: Props) => {
   }
 
   return (
-    <AvatarWrapper onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+    <div className='w-5' onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
       <Avatar
         onClick={handleClick}
         picture={picture}
@@ -76,7 +70,7 @@ const DashboardAvatar = (props: Props) => {
         className={`h-7 w-7 border-2 border-surface-well border-solid after:absolute after:h-full after:w-full after:content-[""] hover:after:bg-white/30 ${!isConnected && 'after:bg-white/60'}`}
       />
       {tooltipPortal(preferredName)}
-    </AvatarWrapper>
+    </div>
   )
 }
 

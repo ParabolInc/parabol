@@ -1,7 +1,7 @@
-import {CheckCircle} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamHealthSubmittedPhase_meeting$key} from '~/__generated__/TeamHealthSubmittedPhase_meeting.graphql'
+import {CheckCircle} from '~/ui/icons'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import {Button} from '../../ui/Button/Button'

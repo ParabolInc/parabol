@@ -1,6 +1,6 @@
-import {KeyboardArrowDown} from '@mui/icons-material'
 import * as RadixSelect from '@radix-ui/react-select'
 import * as React from 'react'
+import {KeyboardArrowDown} from '~/ui/icons'
 import {Loader} from '../../utils/relay/renderLoader'
 import {cn} from '../cn'
 

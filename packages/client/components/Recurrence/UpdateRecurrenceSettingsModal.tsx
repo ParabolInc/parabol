@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type ChangeEvent, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,8 +8,8 @@ import type {UpdateRecurrenceSettingsMutation as TUpdateRecurrenceSettingsMutati
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useForm from '../../hooks/useForm'
 import useMutationProps, {getOnCompletedError} from '../../hooks/useMutationProps'
-import {PALETTE} from '../../styles/paletteV3'
 import type {CompletedHandler} from '../../types/relayMutations'
+import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import Legitity from '../../validation/Legitity'
@@ -18,43 +17,7 @@ import PlainButton from '../PlainButton/PlainButton'
 import StyledError from '../StyledError'
 import {RecurrenceSettings} from './RecurrenceSettings'
 
-const ActionsContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: '16px 0 0'
-})
-
-const ActionButton = styled(PlainButton)({
-  height: 36,
-  padding: '0px 16px',
-  textAlign: 'center',
-  borderRadius: 32
-})
-
-const UpdateButton = styled(ActionButton)({
-  backgroundColor: PALETTE.SKY_500,
-  color: PALETTE.WHITE,
-  '&:hover': {
-    backgroundColor: PALETTE.SKY_600
-  },
-  ':focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SKY_600}`,
-    outlineOffset: 1
-  }
-})
-
-const StopButton = styled(ActionButton)({
-  color: PALETTE.SKY_500,
-  marginRight: '16px',
-  border: `1px solid ${PALETTE.SLATE_400}`,
-  '&:hover': {
-    backgroundColor: PALETTE.SLATE_100
-  },
-  ':focus, :focus-visible, :active': {
-    outline: `1px solid ${PALETTE.SLATE_300}`,
-    outlineOffset: 1
-  }
-})
+const actionButtonClassName = 'h-9 rounded-[32px] px-4 text-center'
 
 const validateTitle = (title: string) =>
   new Legitity(title).trim().min(2, `C'mon, you call that a title?`)
@@ -187,14 +150,29 @@ export const UpdateRecurrenceSettingsModal = (props: Props) => {
         />
         {titleErr && <StyledError>{titleErr}</StyledError>}
         <RecurrenceSettings className={'p-0'} rrule={rrule} onRruleUpdated={setRrule} />
-        <ActionsContainer>
+        <div className='flex justify-end pt-4'>
           {isMeetingSeriesActive && (
-            <StopButton onClick={onStopRecurrence}>Stop Recurrence</StopButton>
+            <PlainButton
+              className={cn(
+                actionButtonClassName,
+                'mr-4 border border-hairline-field text-accent hover:bg-surface-hover focus:outline-1 focus:outline-hairline focus:outline-offset-1 active:outline-1 active:outline-hairline active:outline-offset-1'
+              )}
+              onClick={onStopRecurrence}
+            >
+              Stop Recurrence
+            </PlainButton>
           )}
-          <UpdateButton onClick={onUpdateRecurrenceClicked} disabled={!canUpdate}>
+          <PlainButton
+            className={cn(
+              actionButtonClassName,
+              'bg-sky-500 text-white hover:bg-sky-600 focus:outline-1 focus:outline-sky-600 focus:outline-offset-1 active:outline-1 active:outline-sky-600 active:outline-offset-1'
+            )}
+            onClick={onUpdateRecurrenceClicked}
+            disabled={!canUpdate}
+          >
             Update
-          </UpdateButton>
-        </ActionsContainer>
+          </PlainButton>
+        </div>
         {error && <div className='text-fg-error'>{error.message}</div>}
       </DialogContent>
     </Dialog>

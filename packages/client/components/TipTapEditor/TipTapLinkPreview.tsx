@@ -1,4 +1,4 @@
-import {Delete, Edit, Link} from '@mui/icons-material'
+import {Delete, Edit, Link} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'

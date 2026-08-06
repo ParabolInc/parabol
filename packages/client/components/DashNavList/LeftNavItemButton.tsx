@@ -1,11 +1,10 @@
-import type {SvgIconTypeMap} from '@mui/material'
-import type {OverridableComponent} from '@mui/material/OverridableComponent'
+import type {IconComponent} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
 
 interface Props {
-  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
+  Icon: IconComponent
   tooltip: string
   onClick: React.MouseEventHandler
 }

@@ -1,42 +1,15 @@
-import styled from '@emotion/styled'
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Info as InfoIcon} from '~/ui/icons'
 import type {OrgFeatureFlags_organization$key} from '../../../../__generated__/OrgFeatureFlags_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ToggleFeatureFlagMutation from '../../../../mutations/ToggleFeatureFlagMutation'
-import {ElementWidth, Layout} from '../../../../types/constEnums'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
-
-const StyledPanel = styled(Panel)<{isWide: boolean}>(({isWide}) => ({
-  maxWidth: isWide ? ElementWidth.PANEL_WIDTH : 'inherit'
-}))
-
-const PanelRow = styled('div')({
-  borderTop: '1px solid var(--color-hairline)',
-  padding: Layout.ROW_GUTTER
-})
-
-const FeatureRow = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 8
-})
-
-const FeatureNameGroup = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
-  '& svg': {
-    display: 'block'
-  }
-})
 
 const FEATURE_NAME_LOOKUP: Record<string, string> = {}
 
@@ -77,11 +50,11 @@ const OrgFeatureFlags = (props: Props) => {
 
   if (!isOrgAdmin || organization.orgFeatureFlags.length === 0) return null
   return (
-    <StyledPanel isWide label='Organization Feature Flags'>
-      <PanelRow>
+    <Panel className='max-w-[976px]' label='Organization Feature Flags'>
+      <div className='border-hairline border-t p-4'>
         {organization.orgFeatureFlags.map((feature) => (
-          <FeatureRow key={feature.featureName}>
-            <FeatureNameGroup>
+          <div key={feature.featureName} className='mb-2 flex items-center justify-between'>
+            <div className='flex items-center gap-1 [&_svg]:block'>
               <span>{FEATURE_NAME_LOOKUP[feature.featureName] || feature.featureName}</span>
               <Tooltip>
                 <TooltipTrigger className='bg-transparent hover:cursor-pointer'>
@@ -89,15 +62,15 @@ const OrgFeatureFlags = (props: Props) => {
                 </TooltipTrigger>
                 <TooltipContent>{feature.description}</TooltipContent>
               </Tooltip>
-            </FeatureNameGroup>
+            </div>
             <Toggle active={!!feature.enabled} onClick={() => handleToggle(feature.featureName)} />
-          </FeatureRow>
+          </div>
         ))}
         {error && (
           <div className='mt-2 pr-4 font-semibold text-fg-error text-xs'>{error.message}</div>
         )}
-      </PanelRow>
-    </StyledPanel>
+      </div>
+    </Panel>
   )
 }
 

@@ -1,6 +1,6 @@
-import {Add, Check} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Add, Check} from '~/ui/icons'
 import type {OrgAuthenticationSSOFrame_saml$key} from '../../../../__generated__/OrgAuthenticationSSOFrame_saml.graphql'
 import {ExternalLinks} from '../../../../types/constEnums'
 

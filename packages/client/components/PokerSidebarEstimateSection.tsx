@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -7,7 +6,6 @@ import type useGotoStageId from '~/hooks/useGotoStageId'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMakeStageSummaries from '../hooks/useMakeStageSummaries'
 import DragEstimatingTaskMutation from '../mutations/DragEstimatingTaskMutation'
-import {navItemRaised} from '../styles/elevation'
 import {ESTIMATING_TASK} from '../utils/constants'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
 import MeetingSubnavItem from './MeetingSubnavItem'
@@ -18,32 +16,6 @@ interface Props {
   handleMenuClick: () => void
   meeting: PokerSidebarEstimateSection_meeting$key
 }
-
-const DraggableMeetingSubnavItem = styled('div')<{isDragging: boolean}>(({isDragging}) => ({
-  boxShadow: isDragging ? navItemRaised : undefined
-}))
-
-const ScrollWrapper = styled('div')({
-  overflow: 'auto',
-  paddingBottom: 8,
-  height: '100%'
-})
-
-const Title = styled('div')({
-  fontSize: 14,
-  lineHeight: '20px',
-  wordBreak: 'break-word',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'pre'
-})
-
-const Subtitle = styled('div')({
-  color: 'var(--color-fg-muted)',
-  fontSize: 11,
-  fontWeight: 600,
-  lineHeight: '12px'
-})
 
 const PokerSidebarEstimateSection = (props: Props) => {
   const {gotoStageId, handleMenuClick, meeting: meetingRef} = props
@@ -142,7 +114,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
         <Droppable droppableId={ESTIMATING_TASK}>
           {(provided) => {
             return (
-              <ScrollWrapper ref={provided.innerRef}>
+              <div className='h-full overflow-auto pb-2' ref={provided.innerRef}>
                 {stageSummaries!.map((summary, idx) => {
                   const {stageIds, title, subtitle, isActive, isNavigable, finalScores} = summary
                   const [firstStageId] = stageIds
@@ -158,8 +130,12 @@ const PokerSidebarEstimateSection = (props: Props) => {
                     >
                       {(dragProvided, dragSnapshot) => {
                         return (
-                          <DraggableMeetingSubnavItem
-                            isDragging={dragSnapshot.isDragging}
+                          <div
+                            className={
+                              dragSnapshot.isDragging
+                                ? 'shadow-[var(--shadow-card-raised)]'
+                                : undefined
+                            }
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                             {...dragProvided.dragHandleProps}
@@ -174,18 +150,24 @@ const PokerSidebarEstimateSection = (props: Props) => {
                               isUnsyncedFacilitatorStage={isUnsyncedFacilitatorStage}
                             >
                               <>
-                                <Title>{title!}</Title>
-                                {subtitle && <Subtitle>{subtitle}</Subtitle>}
+                                <div className='overflow-hidden text-ellipsis whitespace-pre text-sm [word-break:break-word]'>
+                                  {title!}
+                                </div>
+                                {subtitle && (
+                                  <div className='font-semibold text-[11px] text-fg-muted leading-3'>
+                                    {subtitle}
+                                  </div>
+                                )}
                               </>
                             </MeetingSubnavItem>
-                          </DraggableMeetingSubnavItem>
+                          </div>
                         )
                       }}
                     </Draggable>
                   )
                 })}
                 {provided.placeholder}
-              </ScrollWrapper>
+              </div>
             )
           }}
         </Droppable>

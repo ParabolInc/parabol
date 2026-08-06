@@ -1,5 +1,5 @@
-import {HelpOutline, Notifications, Search} from '@mui/icons-material'
 import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {HelpOutline, Notifications, Search} from '~/ui/icons'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props extends ComponentPropsWithoutRef<'button'> {

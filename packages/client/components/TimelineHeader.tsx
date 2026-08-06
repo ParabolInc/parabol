@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {FilterLabels} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {timelineEventTypeMenuLabels} from '../utils/constants'
 import constructFilterQueryParamURL from '../utils/constructFilterQueryParamURL'
 import lazyPreload from '../utils/lazyPreload'
@@ -15,7 +16,6 @@ import Checkbox from './Checkbox'
 import DashSectionControls from './Dashboard/DashSectionControls'
 import DashSectionHeader from './Dashboard/DashSectionHeader'
 import DashFilterToggle from './DashFilterToggle/DashFilterToggle'
-import LinkButton from './LinkButton'
 
 const TeamFilterMenu = lazyPreload(
   () =>
@@ -108,8 +108,9 @@ const TimelineHeader = (props: Props) => {
         {timelineEventTypeFilterMenuPortal(
           <TimelineEventTypeMenu menuProps={timelineEventTypeFilterMenuProps} />
         )}
-        <LinkButton
-          className='my-1 sidebar-left:my-0 shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+        <Button
+          size='default'
+          className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() =>
             navigate(constructFilterQueryParamURL(teamIds, null, !showArchived, eventTypes))
           }
@@ -119,7 +120,7 @@ const TimelineHeader = (props: Props) => {
             className='mr-2 w-[24px] select-none text-center text-[24px]'
           />
           {'Archived'}
-        </LinkButton>
+        </Button>
       </DashSectionControls>
     </DashSectionHeader>
   )

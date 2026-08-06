@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   type ReactElement,
   type ReactNode,
@@ -10,90 +9,25 @@ import {
 import ErrorBoundary from '../components/ErrorBoundary'
 import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import ModalError from '../components/ModalError'
-import {DECELERATE} from '../styles/animation'
-import {PALETTE} from '../styles/paletteV3'
-import {Duration, ZIndex} from '../types/constEnums'
+import {Duration} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import type {LoadingDelayRef} from './useLoadingDelay'
 import type usePortal from './usePortal'
 import {PortalStatus} from './usePortal'
 
-const ModalBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  height: '100%',
-  justifyContent: 'center',
-  left: 0,
-  // no margins or paddings since they could force it too low & cause a scrollbar to appear
-  position: 'fixed',
-  top: 0,
-  width: '100%',
-  zIndex: ZIndex.DIALOG,
-  overflow: 'scroll'
-})
-
-const backdropStyles = {
-  [PortalStatus.Entering]: {
-    opacity: 1,
-    transition: `opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
-  },
-  [PortalStatus.Exiting]: {
-    opacity: 0,
-    transition: `opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-  },
-  [PortalStatus.Mounted]: {
-    opacity: 0
-  }
+const backdropClasses = {
+  [PortalStatus.Entering]: 'opacity-100 transition-opacity duration-200 ease-out',
+  [PortalStatus.Exiting]: 'opacity-0 transition-opacity duration-[120ms] ease-out',
+  [PortalStatus.Mounted]: 'opacity-0'
 } as const
 
-const modalStyles = {
-  [PortalStatus.Mounted]: {
-    opacity: 0,
-    transform: 'translateY(32px)'
-  },
-  [PortalStatus.Entering]: {
-    opacity: 1,
-    transform: 'translateY(0)',
-    transition: `transform ${Duration.MODAL_OPEN}ms ${DECELERATE}, opacity ${Duration.MODAL_OPEN}ms ${DECELERATE}`
-  },
-  [PortalStatus.Entered]: {
-    // wipe transform so it plays nicely with @hello-pangea/dnd
-  },
-  [PortalStatus.Exiting]: {
-    opacity: 0,
-    transform: 'translateY(-32px)',
-    transition: `transform ${Duration.PORTAL_CLOSE}ms ${DECELERATE}, opacity ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-  }
+const modalClasses = {
+  [PortalStatus.Mounted]: 'opacity-0 [transform:translateY(32px)]',
+  [PortalStatus.Entering]:
+    'opacity-100 [transform:translateY(0)] transition-[transform,opacity] duration-200 ease-out',
+  [PortalStatus.Exiting]:
+    'opacity-0 [transform:translateY(-32px)] transition-[transform,opacity] duration-[120ms] ease-out'
 } as const
-
-const Scrim = styled('div')<{
-  background: string
-  portalStatus: PortalStatus
-  backdropFilter?: string
-}>(({background, portalStatus}) => ({
-  background,
-  height: '100%',
-  position: 'fixed',
-  width: '100%',
-  ...backdropStyles[portalStatus as keyof typeof backdropStyles]
-}))
-
-// Animating a blur is REALLY expensive, so we blur on the branch above to keep things flowing
-const BlurredScrim = styled('div')<{backdropFilter?: string}>(({backdropFilter}) => ({
-  height: '100%',
-  position: 'fixed',
-  width: '100%',
-  backdropFilter
-}))
-
-const ModalContents = styled('div')<{portalStatus: PortalStatus}>(({portalStatus}) => ({
-  display: 'flex',
-  flex: '0 1 auto',
-  flexDirection: 'column',
-  position: 'relative',
-  marginTop: 'auto',
-  marginBottom: 'auto',
-  ...modalStyles[portalStatus as keyof typeof backdropStyles]
-}))
 
 const useModalPortal = (
   portal: (el: ReactElement) => ReactPortal | null,
@@ -120,15 +54,26 @@ const useModalPortal = (
   }, [portalStatus, setPortalStatus])
   return (reactEl: ReactNode) => {
     return portal(
-      <ModalBlock ref={targetRef as any}>
-        <BlurredScrim backdropFilter={backdropFilter}>
-          <Scrim
+      <div
+        ref={targetRef}
+        className='fixed top-0 left-0 z-dialog flex h-full w-full items-center justify-center overflow-scroll'
+      >
+        <div className='fixed h-full w-full' style={{backdropFilter}}>
+          <div
             onClick={closePortal}
-            background={background || PALETTE.SLATE_700_30}
-            portalStatus={portalStatus}
+            className={cn(
+              'fixed h-full w-full bg-slate-700/30',
+              backdropClasses[portalStatus as keyof typeof backdropClasses]
+            )}
+            style={background ? {background} : undefined}
           />
-        </BlurredScrim>
-        <ModalContents portalStatus={portalStatus}>
+        </div>
+        <div
+          className={cn(
+            'relative my-auto flex flex-initial flex-col',
+            modalClasses[portalStatus as keyof typeof modalClasses]
+          )}
+        >
           <ErrorBoundary
             fallback={(error, eventId) => (
               <ModalError error={error} portalStatus={portalStatus} eventId={eventId} />
@@ -147,8 +92,8 @@ const useModalPortal = (
               {reactEl}
             </Suspense>
           </ErrorBoundary>
-        </ModalContents>
-      </ModalBlock>
+        </div>
+      </div>
     )
   }
 }

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {
@@ -23,18 +22,6 @@ import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import NewGitLabIssueInput from './NewGitLabIssueInput'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
 import ScopingSearchResultItem from './ScopingSearchResultItem'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
-
-const LoadingNext = styled('div')({
-  display: 'flex',
-  height: 32,
-  fontSize: 24,
-  justifyContent: 'center',
-  width: '100%'
-})
 
 interface Props {
   queryRef: PreloadedQuery<GitLabScopingSearchResultsQuery>
@@ -165,7 +152,7 @@ const GitLabScopingSearchResults = (props: Props) => {
         meetingId={meetingId}
         providerId={providerId}
       />
-      <ResultScroller>
+      <div className='overflow-auto'>
         {query && (
           <NewGitLabIssueInput
             isEditing={isEditing}
@@ -195,11 +182,11 @@ const GitLabScopingSearchResults = (props: Props) => {
         })}
         {lastItem}
         {hasNext && (
-          <LoadingNext key={'loadingNext'}>
+          <div className='flex h-8 w-full justify-center text-[24px]' key={'loadingNext'}>
             <Ellipsis />
-          </LoadingNext>
+          </div>
         )}
-      </ResultScroller>
+      </div>
       {!isEditing && (
         <NewIntegrationRecordButton onClick={handleAddIssueClick} labelText={'New Issue'} />
       )}

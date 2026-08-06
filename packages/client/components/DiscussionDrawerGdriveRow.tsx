@@ -1,6 +1,6 @@
-import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {MoreVert} from '~/ui/icons'
 import type {DiscussionDrawerGdriveRow_gdrive$key} from '../__generated__/DiscussionDrawerGdriveRow_gdrive.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

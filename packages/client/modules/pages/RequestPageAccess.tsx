@@ -1,6 +1,6 @@
-import LockIcon from '@mui/icons-material/Lock'
 import {useState} from 'react'
 import {useNavigate} from 'react-router'
+import {Lock as LockIcon} from '~/ui/icons'
 import BasicTextArea from '../../components/InputField/BasicTextArea'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useRequestPageAccessMutation} from '../../mutations/useRequestPageAccessMutation'

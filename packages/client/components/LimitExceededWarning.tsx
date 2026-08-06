@@ -1,34 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {LimitExceededWarning_organization$key} from '../__generated__/LimitExceededWarning_organization.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import relativeDate from '../utils/date/relativeDate'
-
-const WarningMsg = styled('div')({
-  background: PALETTE.GOLD_100,
-  padding: '16px',
-  fontSize: 16,
-  borderRadius: 2,
-  lineHeight: '26px',
-  fontWeight: 500
-})
-
-const BoldText = styled('span')({
-  fontWeight: 600
-})
-
-const OverLimitBlock = styled('div')({
-  backgroundColor: PALETTE.GOLD_100,
-  borderRadius: 2,
-  color: PALETTE.SLATE_900,
-  fontSize: 16,
-  lineHeight: '24px',
-  width: '100%',
-  display: 'flex',
-  flexWrap: 'wrap'
-})
 
 interface Props {
   organizationRef: LimitExceededWarning_organization$key
@@ -52,20 +26,20 @@ const LimitExceededWarning = (props: Props) => {
     : false
 
   return (
-    <OverLimitBlock>
-      <WarningMsg>
-        <BoldText>{domainId ?? orgName}</BoldText>
+    <div className='flex w-full flex-wrap rounded-[2px] bg-gold-100 text-[16px] text-slate-900 leading-6'>
+      <div className='rounded-[2px] bg-gold-100 p-4 font-medium text-[16px] leading-[26px]'>
+        <span className='font-semibold'>{domainId ?? orgName}</span>
         {` is over the limit of `}
-        <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams`}</BoldText>
+        <span className='font-semibold'>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams`}</span>
         {scheduledLockAt && !isLocked && (
           <>
             {`. Your free access will end in `}
-            <BoldText>{`${relativeDate(scheduledLockAt)}.`}</BoldText>
+            <span className='font-semibold'>{`${relativeDate(scheduledLockAt)}.`}</span>
           </>
         )}
         {isLocked && `. Please upgrade to continue using Parabol.`}
-      </WarningMsg>
-    </OverLimitBlock>
+      </div>
+    </div>
   )
 }
 

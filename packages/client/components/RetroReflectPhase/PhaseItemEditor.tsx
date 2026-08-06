@@ -1,8 +1,8 @@
-import {useEventCallback} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type MutableRefObject, type RefObject, useEffect, useMemo, useState} from 'react'
 import {useFragment} from 'react-relay'
+import useEventCallback from '~/hooks/useEventCallback'
 import type {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useIsEditing from '../../hooks/useIsEditing'
@@ -262,7 +262,7 @@ const PhaseItemEditor = (props: Props) => {
                 key={card.key}
                 className={cn(
                   'absolute top-0 z-8 transition-all duration-500 ease-out',
-                  card.isStart ? 'shadow-card-raised' : 'shadow-card-grounded'
+                  card.isStart ? 'shadow-[var(--shadow-card-raised)]' : 'shadow-card-grounded'
                 )}
                 style={{transform: card.transform}}
                 onTransitionEnd={removeCardInFlight(card.key)}

@@ -1,50 +1,6 @@
 // @deprecated Use the radix-ui based Dialog components from packages/client/ui/Dialog/ instead.
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import type {ReactNode} from 'react'
-import {DECELERATE} from '../../styles/animation'
-import {modalShadow} from '../../styles/elevation'
-import {PALETTE} from '../../styles/paletteV3'
-import {Radius, ZIndex} from '../../types/constEnums'
-
-export const animateIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -50px, 0);
-  }
-	100% {
-	  opacity: 1;
-	  transform: translate3d(0, 0, 0);
-	}
-`
-
-const Backdrop = styled('div')({
-  alignItems: 'center',
-  background: PALETTE.SLATE_700_30,
-  bottom: 0,
-  display: 'flex !important',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'center',
-  left: 0,
-  position: 'absolute',
-  right: 0,
-  textAlign: 'center',
-  top: 0,
-  zIndex: ZIndex.DIALOG
-})
-
-const Modal = styled('div')({
-  animationIterationCount: 1,
-  animation: `${animateIn.toString()} 200ms ${DECELERATE}`,
-  background: 'var(--color-surface-card)',
-  borderRadius: Radius.DIALOG,
-  boxShadow: modalShadow,
-  overflow: 'hidden',
-  padding: '1.25rem',
-  width: '30rem'
-})
 
 interface Props {
   children: ReactNode
@@ -59,9 +15,14 @@ const DashModal = (props: Props) => {
     }
   }
   return (
-    <Backdrop onClick={onBackdropClick ? onClick : undefined}>
-      <Modal>{children}</Modal>
-    </Backdrop>
+    <div
+      className='flex! absolute inset-0 z-dialog flex-1 flex-col items-center justify-center bg-slate-700/30 text-center'
+      onClick={onBackdropClick ? onClick : undefined}
+    >
+      <div className='w-[30rem] animate-[modal-drop-in_200ms_cubic-bezier(0,0,.2,1)] overflow-hidden rounded-lg bg-surface-card p-5 shadow-[var(--shadow-dialog)]'>
+        {children}
+      </div>
+    </div>
   )
 }
 

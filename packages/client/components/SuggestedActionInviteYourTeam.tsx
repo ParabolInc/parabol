@@ -1,9 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {SuggestedActionInviteYourTeam_suggestedAction$key} from '../__generated__/SuggestedActionInviteYourTeam_suggestedAction.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
@@ -15,10 +13,6 @@ interface Props {
 const AddTeamMemberModal = lazy(
   () => import(/* webpackChunkName: 'AddTeamMemberModal' */ './AddTeamMemberModal')
 )
-
-const TeamName = styled('span')({
-  fontWeight: 600
-})
 
 const SuggestedActionInviteYourTeam = (props: Props) => {
   const {suggestedAction: suggestedActionRef} = props
@@ -42,13 +36,13 @@ const SuggestedActionInviteYourTeam = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false)
   return (
     <SuggestedActionCard
-      backgroundColor={PALETTE.SKY_500}
+      backgroundColor='var(--color-sky-500)'
       iconName='person_add'
       suggestedActionId={suggestedActionId}
     >
       <SuggestedActionCopy>
         {'Invite your teammates to: '}
-        <TeamName>{teamName}</TeamName>
+        <span className='font-semibold'>{teamName}</span>
       </SuggestedActionCopy>
       <SuggestedActionButton onClick={() => setIsOpen(true)}>
         Invite Your Teammates

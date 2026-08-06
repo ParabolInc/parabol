@@ -1,31 +1,6 @@
-import styled from '@emotion/styled'
-import {AddOutlined} from '@mui/icons-material'
 import {PollsAriaLabels} from '~/types/constEnums'
+import {AddOutlined} from '~/ui/icons'
 import PlainButton from '../PlainButton/PlainButton'
-
-const StyledPlainButton = styled(PlainButton)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: 'var(--color-fg-secondary)',
-  fontWeight: 600,
-  fontSize: 14,
-  ':hover, :focus, :active': {
-    color: 'var(--color-fg-primary)'
-  },
-  transition: 'color 0.1s ease',
-  marginRight: 'auto'
-})
-
-const AddPollOptionIcon = styled(AddOutlined)({
-  width: 20,
-  height: 20,
-  margin: '0 4px'
-})
-
-const AddPollOptionLabel = styled('div')({
-  color: 'inherit'
-})
 
 interface Props {
   onClick: () => void
@@ -36,13 +11,14 @@ export const AddPollOptionButton = (props: Props) => {
   const {onClick, disabled} = props
 
   return (
-    <StyledPlainButton
+    <PlainButton
       aria-label={PollsAriaLabels.POLL_ADD_OPTION}
       onClick={onClick}
       disabled={disabled}
+      className='mr-auto flex items-center justify-center font-semibold text-[14px] text-fg-secondary [transition:color_0.1s_ease] hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
     >
-      <AddPollOptionIcon />
-      <AddPollOptionLabel>Add another choice</AddPollOptionLabel>
-    </StyledPlainButton>
+      <AddOutlined className='mx-1 h-5 w-5' />
+      <div>Add another choice</div>
+    </PlainButton>
   )
 }

@@ -1,5 +1,5 @@
-import {Close} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Close} from '~/ui/icons'
 import type {DiscussionDrawerTranscripts_meeting$key} from '../__generated__/DiscussionDrawerTranscripts_meeting.graphql'
 import useSessionStorageState from '../hooks/useSessionStorageState'
 import {GlobalBanner} from '../types/constEnums'

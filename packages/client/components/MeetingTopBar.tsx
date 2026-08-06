@@ -1,5 +1,5 @@
-import {Forum, Transcribe} from '@mui/icons-material'
 import type {ComponentPropsWithoutRef, ReactElement, ReactNode} from 'react'
+import {Forum, Transcribe} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import hasToken from '../utils/hasToken'
 import isDemoRoute from '../utils/isDemoRoute'

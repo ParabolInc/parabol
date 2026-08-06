@@ -1,11 +1,11 @@
-import {Done as DoneIcon, MoreVert as MoreVertIcon} from '@mui/icons-material'
 import type * as React from 'react'
-import FlatButton from '../../../../components/FlatButton'
+import {Done as DoneIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 
 export interface ProviderRowBaseProps {
   connected: boolean
@@ -33,7 +33,7 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
   } = props
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   return (
-    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-card'>
+    <div className='relative my-4 flex w-full shrink-0 flex-col justify-start rounded-sm bg-surface-card shadow-[var(--shadow-card)]'>
       <div className='flex justify-start p-row-gutter'>
         {providerLogo}
         <RowInfo>
@@ -57,22 +57,26 @@ const ProviderRowBase = (props: ProviderRowBaseProps) => {
                     <DoneIcon className='h-[18px] w-[18px] text-lg text-success-light' />
                     <div className='pl-[6px] font-semibold text-fg-primary text-sm'>Connected</div>
                   </div>
-                  <FlatButton
+                  <Button
+                    variant='flat'
+                    size='sm'
                     className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                     onClick={togglePortal}
                     ref={menuRef}
                   >
                     <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
-                  </FlatButton>
+                  </Button>
                 </>
               ) : (
-                <FlatButton
+                <Button
+                  variant='flat'
+                  size='sm'
                   className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                   onClick={togglePortal}
                   ref={menuRef}
                 >
                   <MoreVertIcon />
-                </FlatButton>
+                </Button>
               )}
             </>
           )}

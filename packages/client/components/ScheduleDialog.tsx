@@ -1,4 +1,3 @@
-import {EventRepeat, ExpandMore} from '@mui/icons-material'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import graphql from 'babel-plugin-relay/macro'
 import dayjs from 'dayjs'
@@ -7,6 +6,7 @@ import {type ChangeEvent, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {RRule} from 'rrule'
 import type {ScheduleDialog_team$key} from '~/__generated__/ScheduleDialog_team.graphql'
+import {EventRepeat, ExpandMore} from '~/ui/icons'
 import type {CreateGcalEventInput} from '../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
@@ -24,9 +24,7 @@ import {toHumanReadable} from '../utils/humanReadableRecurrenceRule'
 import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
-import PrimaryButton from './PrimaryButton'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
-import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
 
 const validateTitle = (title: string) =>
@@ -177,10 +175,10 @@ export const ScheduleDialog = (props: Props) => {
           </Collapsible.Root>
         ) : (
           <div>
-            <SecondaryButton className='h-11 pr-4 pl-3' onClick={onAddInvite}>
+            <Button variant='outline' size='sm' className='h-11 pr-4 pl-3' onClick={onAddInvite}>
               <img src={logo} className='mr-2' />
               {gcal?.auth ? 'Add Calendar Event' : 'Connect to Google Calendar'}
-            </SecondaryButton>
+            </Button>
           </div>
         ))}
       {withRecurrence && (
@@ -211,12 +209,12 @@ export const ScheduleDialog = (props: Props) => {
         </Collapsible.Root>
       )}
       <DialogActions>
-        <Button variant='flat' size='md' className='self-center' onClick={onCancel}>
+        <Button variant='outline' size='md' onClick={onCancel}>
           Cancel
         </Button>
-        <PrimaryButton size='medium' onClick={handleSubmit}>
+        <Button variant='primary' size='md' className='text-[15px]' onClick={handleSubmit}>
           Create Meeting
-        </PrimaryButton>
+        </Button>
       </DialogActions>
     </div>
   )

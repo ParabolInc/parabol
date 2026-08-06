@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,30 +8,11 @@ import type {OrgPlans_organization$key} from '../../../../__generated__/OrgPlans
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {ElementWidth} from '../../../../types/constEnums'
+import {cn} from '../../../../ui/cn'
 import {EnterpriseBenefits, StarterBenefits, TeamBenefits} from '../../../../utils/constants'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 import DowngradeModal from './DowngradeModal'
 import OrgPlan from './OrgPlan'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH,
-  paddingBottom: 16
-})
-
-const StyledRow = styled(Row)<{isTablet: boolean}>(({isTablet}) => ({
-  padding: '12px 16px',
-  display: 'flex',
-  flex: 1,
-  flexDirection: isTablet ? 'row' : 'column',
-  alignItems: 'inherit',
-  ':first-of-type': {
-    paddingTop: 16
-  },
-  ':nth-of-type(2)': {
-    border: 'none'
-  }
-}))
 
 const getButtonSettings = (tier: TierEnum, plan: TierEnum, canChangePlans: boolean) => {
   if (tier === plan) {
@@ -130,13 +110,18 @@ const OrgPlans = (props: Props) => {
 
   return (
     <>
-      <StyledPanel label='Plans'>
-        <StyledRow isTablet={isTablet}>
+      <Panel className='max-w-[976px] pb-4' label='Plans'>
+        <Row
+          className={cn(
+            'flex flex-1 items-stretch px-4 py-3 first-of-type:pt-4 [&:nth-of-type(2)]:border-none',
+            isTablet ? 'flex-row' : 'flex-col'
+          )}
+        >
           {plans.map((plan) => (
             <OrgPlan key={plan.tier} plan={plan} isTablet={isTablet} handleClick={handleClick} />
           ))}
-        </StyledRow>
-      </StyledPanel>
+        </Row>
+      </Panel>
       <DowngradeModal
         isOpen={isDowngradeOpen}
         closeModal={() => setIsDowngradeOpen(false)}

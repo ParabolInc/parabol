@@ -1,35 +1,4 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
 import Checkbox from '../../../components/Checkbox'
-export const skeletonShine = keyframes`
-  0% {
-    background-position: -80px;
-  }
-  40%, 100% {
-    background-position: 800px;
-  }
-`
-
-// const Checkbox = styled(Icon)({
-//   cursor: 'default'
-// })
-const MockTemplateItemBody = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  padding: '16px',
-  height: 56
-})
-
-const MockTemplateItemTitle = styled('div')<{delay: number}>(({delay}) => ({
-  animation: `${skeletonShine.toString()} 2400ms infinite linear ${delay}ms`,
-  height: 16,
-  borderRadius: '20px',
-  backgroundImage: `linear-gradient(90deg, var(--color-hairline-strong) 0px, var(--color-surface-well) 40px, var(--color-hairline-strong) 80px)`,
-  backgroundSize: 1200,
-  marginLeft: 8,
-  marginTop: 4,
-  width: '80%'
-}))
 
 interface Props {
   idx: number
@@ -37,15 +6,18 @@ interface Props {
 const MockScopingTask = (props: Props) => {
   const {idx} = props
   return (
-    <MockTemplateItemBody>
+    <div className='flex h-14 items-start p-4'>
       <Checkbox
         active={false}
         onClick={() => {
           /* noop */
         }}
       />
-      <MockTemplateItemTitle delay={idx * 20} />
-    </MockTemplateItemBody>
+      <div
+        className='mt-1 ml-2 h-4 w-4/5 animate-[skeleton-shine-lg_2400ms_linear_infinite] rounded-[20px] bg-[linear-gradient(90deg,var(--color-hairline-strong)_0px,var(--color-surface-well)_40px,var(--color-hairline-strong)_80px)] bg-size-[1200px]'
+        style={{animationDelay: `${idx * 20}ms`}}
+      />
+    </div>
   )
 }
 

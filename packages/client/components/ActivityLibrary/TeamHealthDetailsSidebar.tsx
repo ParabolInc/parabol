@@ -1,21 +1,23 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RRule} from 'rrule'
 import type {TeamHealthDetailsSidebar_teams$key} from '~/__generated__/TeamHealthDetailsSidebar_teams.graphql'
+import {
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon
+} from '~/ui/icons'
 import type {CreateGcalEventInput} from '../../__generated__/useStartTeamHealthMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'
 import useStartTeamHealthMutation from '../../mutations/useStartTeamHealthMutation'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTrigger} from '../../ui/Dialog/DialogTrigger'
 import sortByTier from '../../utils/sortByTier'
-import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingTeamPickerMultiple from '../NewMeetingTeamPickerMultiple'
 import {ScheduleDialog} from '../ScheduleDialog'
 import StyledLink from '../StyledLink'
@@ -136,16 +138,17 @@ const TeamHealthDetailsSidebar = (props: Props) => {
       <div className='z-10 flex h-fit w-full flex-col gap-2 pb-4'>
         <Dialog isOpen={isScheduleOpen} onClose={() => setIsScheduleOpen(false)}>
           <DialogTrigger>
-            <FlatPrimaryButton
+            <Button
+              variant='primary'
+              size='sm'
               onClick={() => setIsScheduleOpen(true)}
-              waiting={submitting}
-              disabled={selectedTeamIds.length === 0}
+              disabled={submitting || selectedTeamIds.length === 0}
               className='h-14'
             >
               <div className='text-lg'>Start Meeting Series</div>
-            </FlatPrimaryButton>
+            </Button>
           </DialogTrigger>
-          <DialogContent noClose>
+          <DialogContent noClose className='md:max-w-md'>
             <ScheduleDialog
               teamRef={gcalTeam}
               placeholder='Team Health'

@@ -1,6 +1,6 @@
-import {Link} from '@mui/icons-material'
 import type {Editor} from '@tiptap/react'
 import {BubbleMenu} from '@tiptap/react/menus'
+import {Link} from '~/ui/icons'
 import {getShouldShow, useBubbleMenuStates} from '../../hooks/useBubbleMenuStates'
 import {cn} from '../../ui/cn'
 import {BubbleMenuButton} from './BubbleMenuButton'

@@ -1,26 +1,8 @@
-import styled from '@emotion/styled'
-import {ContentCopy, Delete, Edit} from '@mui/icons-material'
 import type * as React from 'react'
+import {ContentCopy, Delete, Edit} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import FlatButton from './FlatButton'
-
-const Button = styled(FlatButton)({
-  alignItems: 'center',
-  color: 'var(--color-fg-secondary)',
-  height: 32,
-  justifyContent: 'center',
-  padding: 0,
-  width: 32
-})
-
-const ActionButton = styled('div')({
-  svg: {
-    fontSize: 18
-  },
-  height: 18,
-  width: 18
-})
+import {Button} from '../ui/Button/Button'
 
 interface Props {
   disabled?: boolean
@@ -38,13 +20,15 @@ const DetailAction = (props: Props) => {
   return (
     <>
       <Button
+        variant='flat'
         ref={originRef}
         onClick={disabled ? openTooltip : onClick}
-        size='small'
+        size='sm'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
+        className='h-8 w-8 items-center justify-center p-0 text-fg-secondary'
       >
-        <ActionButton>
+        <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
           {
             {
               content_copy: <ContentCopy />,
@@ -52,7 +36,7 @@ const DetailAction = (props: Props) => {
               edit: <Edit />
             }[icon]
           }
-        </ActionButton>
+        </div>
       </Button>
       {tooltipPortal(<div>{tooltip}</div>)}
     </>

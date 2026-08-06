@@ -1,11 +1,19 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const RetroPrompt = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  fontSize: 18,
-  fontWeight: 600,
-  lineHeight: '24px'
-})
+const RetroPrompt = forwardRef(
+  (props: ComponentPropsWithoutRef<'div'>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        ref={ref}
+        className={cn('flex items-center font-semibold text-[18px] leading-6', className)}
+        {...rest}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 
 export default RetroPrompt

@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
 import {forwardRef} from 'react'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import {ICON_SIZE} from '../styles/typographyV2'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import JiraSVG from './JiraSVG'
 import MenuItem from './MenuItem'
@@ -13,14 +11,6 @@ interface Props {
   teamId: string
   mutationProps: MenuMutationProps
 }
-
-const MenuItemIcon = styled(MenuItemComponentAvatar)({
-  svg: {
-    display: 'block',
-    height: ICON_SIZE.MD18,
-    width: ICON_SIZE.MD18
-  }
-})
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId} = props
@@ -34,9 +24,9 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemIcon>
+          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
             <JiraSVG />
-          </MenuItemIcon>
+          </MenuItemComponentAvatar>
           {'Add Jira integration'}
         </MenuItemLabel>
       }

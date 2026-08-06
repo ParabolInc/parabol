@@ -1,6 +1,6 @@
-import {Bookmark, Comment, Keyboard} from '@mui/icons-material'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint, ExternalLinks} from '~/types/constEnums'
+import {Bookmark, Comment, Keyboard} from '~/ui/icons'
 import useSWVersion from '../hooks/useSWVersion'
 import {MenuContent} from '../ui/Menu/MenuContent'
 import {MenuItem} from '../ui/Menu/MenuItem'

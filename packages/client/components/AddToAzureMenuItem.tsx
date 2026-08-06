@@ -1,11 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {AddToAzureMenuItem_AzureIntegration$key} from '../__generated__/AddToAzureMenuItem_AzureIntegration.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import {ICON_SIZE} from '../styles/typographyV2'
 import AzureDevOpsClientManager from '../utils/AzureDevOpsClientManager'
 import AzureDevOpsSVG from './AzureDevOpsSVG'
 import MenuItem from './MenuItem'
@@ -17,14 +15,6 @@ interface Props {
   mutationProps: MenuMutationProps
   azureRef: AddToAzureMenuItem_AzureIntegration$key
 }
-
-const MenuItemIcon = styled(MenuItemComponentAvatar)({
-  svg: {
-    display: 'block',
-    height: ICON_SIZE.MD18,
-    width: ICON_SIZE.MD18
-  }
-})
 
 const AddToAzureMenuItem = forwardRef((props: Props, ref) => {
   const {mutationProps, teamId, azureRef} = props
@@ -54,9 +44,9 @@ const AddToAzureMenuItem = forwardRef((props: Props, ref) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemIcon>
+          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
             <AzureDevOpsSVG />
-          </MenuItemIcon>
+          </MenuItemComponentAvatar>
           {'Add Azure integration'}
         </MenuItemLabel>
       }

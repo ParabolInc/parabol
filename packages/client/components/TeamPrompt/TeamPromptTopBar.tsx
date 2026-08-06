@@ -1,14 +1,12 @@
-import styled from '@emotion/styled'
-import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
-import {type ComponentPropsWithoutRef, useState} from 'react'
+import {type ComponentPropsWithoutRef, forwardRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
 import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBar_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
-import {meetingAvatarMediaQueries, meetingTopBarMediaQuery} from '../../styles/meeting'
+import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'
@@ -21,65 +19,22 @@ import {UpdateRecurrenceSettingsModal} from '../Recurrence/UpdateRecurrenceSetti
 import {TeamPromptMeetingStatus} from './TeamPromptMeetingStatus'
 import TeamPromptOptions from './TeamPromptOptions'
 
-const TeamPromptLogoBlock = styled(LogoBlock)({
-  marginRight: '8px',
-  paddingLeft: '0',
-  flexShrink: 0
-})
-
-const TeamPromptHeaderTitle = styled('h1')({
-  fontSize: 16,
-  lineHeight: '24px',
-  margin: 0,
-  padding: 0,
-  fontWeight: 600,
-  [meetingTopBarMediaQuery]: {
-    fontSize: 18
-  }
-})
-
-const EditableTeamPromptHeaderTitle = TeamPromptHeaderTitle.withComponent(EditableText)
-
-const MeetingTitleSection = styled('div')({
-  margin: 'auto 0',
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'flex-start',
-  flex: 1
-})
-
-const MiddleSection = styled('div')({
-  margin: 'auto 0',
-  flex: 2,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
+const headerTitleClassName = 'm-0 p-0 font-semibold text-[16px] leading-6 xl:text-[18px]'
 
 export const RightSection = ({className, ...props}: ComponentPropsWithoutRef<'div'>) => (
   <IconGroupBlock className={cn('my-auto flex-1 justify-end', className)} {...props} />
 )
 
-export const RightSectionContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-})
-
-const ButtonContainer = styled('div')({
-  alignItems: 'center',
-  justifyContent: 'center',
-  display: 'flex',
-  marginLeft: '16px',
-  [meetingAvatarMediaQueries[0]]: {
-    height: 48,
-    marginLeft: 10
-  },
-  [meetingAvatarMediaQueries[1]]: {
-    height: 56
+export const RightSectionContainer = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>(
+  (props, ref) => {
+    const {className, children, ...rest} = props
+    return (
+      <div ref={ref} className={cn('flex items-center justify-center', className)} {...rest}>
+        {children}
+      </div>
+    )
   }
-})
+)
 
 interface Props {
   meetingRef: TeamPromptTopBar_meeting$key
@@ -166,7 +121,7 @@ const TeamPromptTopBar = (props: Props) => {
   }
 
   const buttons = (
-    <ButtonContainer>
+    <div className='ml-4 flex items-center justify-center xl:ml-[10px] xl:h-12 min-[1600px]:h-14'>
       <button
         className='group flex h-max w-max cursor-pointer flex-col items-center bg-transparent px-2 font-semibold text-accent text-sm'
         onClick={onOpenWorkSidebar}
@@ -179,14 +134,14 @@ const TeamPromptTopBar = (props: Props) => {
         openRecurrenceSettingsModal={() => setIsRecurrenceSettingsOpen(true)}
         openEndRecurringMeetingModal={() => setIsEndRecurringMeetingOpen(true)}
       />
-    </ButtonContainer>
+    </div>
   )
 
   return (
     <>
       <MeetingTopBarStyles>
-        <MeetingTitleSection>
-          <TeamPromptLogoBlock />
+        <div className='mx-0 my-auto flex flex-1 flex-row items-center justify-start'>
+          <LogoBlock className='mr-2 shrink-0 pl-0' />
           <div>
             <div className='flex w-max gap-1'>
               {isRecurrenceEnabled && prevMeeting && (
@@ -196,7 +151,8 @@ const TeamPromptTopBar = (props: Props) => {
               )}
               <div>
                 {isFacilitator ? (
-                  <EditableTeamPromptHeaderTitle
+                  <EditableText
+                    className={headerTitleClassName}
                     error={error?.message}
                     handleSubmit={handleSubmit}
                     initialValue={meetingName}
@@ -206,7 +162,7 @@ const TeamPromptTopBar = (props: Props) => {
                     placeholder={'Best Meeting Ever!'}
                   />
                 ) : (
-                  <TeamPromptHeaderTitle>{meetingName}</TeamPromptHeaderTitle>
+                  <h1 className={headerTitleClassName}>{meetingName}</h1>
                 )}
                 <MeetingDateLabel meetingRef={meeting} />
               </div>
@@ -217,10 +173,10 @@ const TeamPromptTopBar = (props: Props) => {
               )}
             </div>
           </div>
-        </MeetingTitleSection>
-        <MiddleSection className='hidden md:flex'>
+        </div>
+        <div className='mx-0 my-auto hidden flex-[2] items-center justify-center md:flex'>
           <TeamPromptMeetingStatus meetingRef={meeting} />
-        </MiddleSection>
+        </div>
         <RightSection>
           <RightSectionContainer>
             <NewMeetingAvatarGroup meetingRef={meeting} />

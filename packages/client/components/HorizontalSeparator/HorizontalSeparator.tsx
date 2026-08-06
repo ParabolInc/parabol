@@ -4,40 +4,8 @@
  *
  */
 
-import styled from '@emotion/styled'
 import {Fragment} from 'react'
 import LabelHeading from '../LabelHeading/LabelHeading'
-
-const SeparatorContainer = styled(LabelHeading)<{
-  margin: string | number | undefined
-}>(({margin}) => ({
-  display: 'flex',
-  margin,
-  maxWidth: '100%',
-  padding: '16px 0',
-  width: '100%'
-}))
-
-const separatorLineStyles = {
-  borderBottom: `1px solid var(--color-hairline)`,
-  flex: 1,
-  margin: 'auto'
-}
-
-const LeftSeparator = styled('div')({
-  ...separatorLineStyles,
-  marginRight: 8
-})
-
-const RightSeparator = styled('div')({
-  ...separatorLineStyles,
-  marginLeft: 8
-})
-
-const FullSeparator = styled('div')({
-  ...separatorLineStyles,
-  flex: 1
-})
 
 interface Props {
   margin?: string
@@ -45,15 +13,15 @@ interface Props {
 }
 
 export default ({margin, text}: Props) => (
-  <SeparatorContainer className='text-[11px] leading-4' margin={margin}>
+  <LabelHeading className='flex w-full max-w-full py-4 text-[11px] leading-4' style={{margin}}>
     {text ? (
       <Fragment>
-        <LeftSeparator />
+        <div className='m-auto mr-2 flex-1 border-hairline border-b' />
         {text}
-        <RightSeparator />
+        <div className='m-auto ml-2 flex-1 border-hairline border-b' />
       </Fragment>
     ) : (
-      <FullSeparator />
+      <div className='m-auto flex-1 border-hairline border-b' />
     )}
-  </SeparatorContainer>
+  </LabelHeading>
 )

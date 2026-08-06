@@ -1,12 +1,8 @@
-import styled from '@emotion/styled'
-import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '@mui/icons-material'
 import type {ReactNode} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '~/ui/icons'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
-import {DECELERATE, fadeIn} from '../styles/animation'
-import {buttonShadow, cardShadow} from '../styles/elevation'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 import SuggestedActionBackground from './SuggestedActionBackground'
 
@@ -17,48 +13,6 @@ interface Props {
   iconName: string
   suggestedActionId: string
 }
-
-const Surface = styled('div')({
-  animation: `${fadeIn.toString()} 300ms ${DECELERATE}`,
-  alignItems: 'center',
-  background: 'var(--color-surface-card)',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'hidden',
-  position: 'relative',
-  width: '100%'
-})
-
-const CancelIcon = styled(Cancel)({
-  background: `rgba(255,255,255,0.8)`,
-  borderRadius: '100%',
-  color: PALETTE.SLATE_700,
-  position: 'absolute',
-  right: 8,
-  top: 8,
-  opacity: 0.7,
-  '&:hover': {
-    opacity: 1
-  }
-})
-
-const FloatingSealIcon = styled('div')({
-  color: PALETTE.GRAPE_700,
-  background: PALETTE.SLATE_300,
-  borderRadius: '100%',
-  boxShadow: buttonShadow,
-  padding: 8,
-  height: 36,
-  width: 36,
-  position: 'absolute',
-  svg: {
-    fontSize: 20
-  },
-  top: 100,
-  userSelect: 'none'
-})
 
 const SuggestedActionCard = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -72,13 +26,13 @@ const SuggestedActionCard = (props: Props) => {
 
   const {backgroundColor, children, iconName} = props
   return (
-    <Surface>
+    <div className='relative flex w-full animate-[scale-in_300ms_cubic-bezier(0,0,.2,1)] flex-col items-center overflow-hidden rounded bg-surface-card shadow-[var(--shadow-card)]'>
       <SuggestedActionBackground backgroundColor={backgroundColor} />
       {children}
       <PlainButton onClick={onCancel}>
-        <CancelIcon />
+        <Cancel className='absolute top-2 right-2 rounded-full bg-white/80 text-slate-700 opacity-70 hover:opacity-100' />
       </PlainButton>
-      <FloatingSealIcon>
+      <div className='absolute top-[100px] h-9 w-9 select-none rounded-full bg-slate-300 p-2 text-grape-700 shadow-[0px_3px_1px_-2px_rgba(0,0,0,.2),0px_2px_2px_0px_rgba(0,0,0,.14),0px_1px_5px_0px_rgba(0,0,0,.12)] [&_svg]:text-[20px]'>
         {
           {
             group_add: <GroupAdd />,
@@ -88,8 +42,8 @@ const SuggestedActionCard = (props: Props) => {
             group_work: <GroupWork />
           }[iconName]
         }
-      </FloatingSealIcon>
-    </Surface>
+      </div>
+    </div>
   )
 }
 

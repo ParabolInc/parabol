@@ -1,10 +1,9 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {Suspense} from 'react'
+import {forwardRef, type HTMLAttributes, type Ref, Suspense} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
 import type {MyDashboardTimelineQuery} from '../__generated__/MyDashboardTimelineQuery.graphql'
-import {DashTimeline} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import ErrorBoundary from './ErrorBoundary'
 import TimelineFeedList from './TimelineFeedList'
 import TimelineHeader from './TimelineHeader'
@@ -16,26 +15,16 @@ interface Props {
   queryRef: PreloadedQuery<MyDashboardTimelineQuery>
 }
 
-const TimelineFeed = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  flex: 1,
-  height: 'auto',
-  paddingLeft: DashTimeline.MIN_PADDING,
-  paddingRight: DashTimeline.MIN_PADDING,
-  paddingTop: DashTimeline.MIN_PADDING
-})
-
-export const TimelineFeedItems = styled('div')({
-  maxWidth: DashTimeline.FEED_MAX_WIDTH,
-  minWidth: DashTimeline.FEED_MIN_WIDTH,
-  width: '100%'
-})
-
-const FeedAndDrawer = styled('div')({
-  display: 'flex',
-  height: 'unset'
-})
+export const TimelineFeedItems = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div {...rest} ref={ref} className={cn('w-full min-w-[296px] max-w-[600px]', className)}>
+        {children}
+      </div>
+    )
+  }
+)
 
 const MyDashboardTimeline = (props: Props) => {
   const {queryRef} = props
@@ -62,8 +51,8 @@ const MyDashboardTimeline = (props: Props) => {
   const {viewer} = data
   useDocumentTitle('My History | Parabol', 'History')
   return (
-    <FeedAndDrawer>
-      <TimelineFeed>
+    <div className='flex'>
+      <div className='flex h-auto flex-1 justify-center px-4 pt-4'>
         <TimelineFeedItems>
           <TimelineHeader viewerRef={viewer} />
           <ErrorBoundary>
@@ -73,9 +62,9 @@ const MyDashboardTimeline = (props: Props) => {
             </Suspense>
           </ErrorBoundary>
         </TimelineFeedItems>
-      </TimelineFeed>
+      </div>
       <TimelineRightDrawer viewer={viewer} />
-    </FeedAndDrawer>
+    </div>
   )
 }
 

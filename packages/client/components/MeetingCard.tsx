@@ -1,10 +1,10 @@
 import {datadogRum} from '@datadog/browser-rum'
-import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {motion} from 'motion/react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {Lock} from '~/ui/icons'
 import action from '../../../static/images/illustrations/action.png'
 import retrospective from '../../../static/images/illustrations/retrospective.png'
 import poker from '../../../static/images/illustrations/sprintPoker.png'
@@ -183,11 +183,11 @@ const MeetingCard = (props: Props) => {
       exit={{opacity: 0, transition: {duration: 0.15, ease: 'easeOut'}}}
       transition={{duration: 0.25, ease: 'easeIn'}}
     >
-      <div className='relative hover:shadow-card-hover'>
+      <div className='relative hover:shadow-[var(--shadow-card-hover)]'>
         {isRecurring && (
           <>
             <div
-              className='absolute block h-full w-full rounded-card bg-surface-card shadow-card'
+              className='absolute block h-full w-full rounded-card bg-surface-card shadow-[var(--shadow-card)]'
               style={{
                 left: STACK_OFFSET_LEFT[0],
                 top: STACK_OFFSET_TOP[0],
@@ -197,7 +197,7 @@ const MeetingCard = (props: Props) => {
               {imgSection}
             </div>
             <div
-              className='absolute block h-full w-full rounded-card bg-surface-card shadow-card'
+              className='absolute block h-full w-full rounded-card bg-surface-card shadow-[var(--shadow-card)]'
               style={{
                 left: STACK_OFFSET_LEFT[1],
                 top: STACK_OFFSET_TOP[1],
@@ -208,7 +208,7 @@ const MeetingCard = (props: Props) => {
             </div>
           </>
         )}
-        <div className='relative rounded-card bg-surface-card shadow-card'>
+        <div className='relative rounded-card bg-surface-card shadow-[var(--shadow-card)]'>
           <div className='relative block rounded-t-card'>
             <div
               className={cn(
@@ -261,7 +261,7 @@ const MeetingCard = (props: Props) => {
                 )}
               </Link>
               <CardButton
-                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-well'
+                className='absolute top-0 right-0 h-8 w-8 text-fg-primary opacity-100 hover:bg-surface-hover'
                 ref={originRef}
                 onClick={togglePortal}
               >

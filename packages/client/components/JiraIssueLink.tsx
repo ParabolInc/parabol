@@ -1,18 +1,5 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
-import {Card} from '../types/constEnums'
-
-const StyledLink = styled('a')({
-  color: 'var(--color-fg-primary)',
-  display: 'block',
-  fontSize: Card.FONT_SIZE,
-  lineHeight: '1.25rem',
-  padding: `0 ${Card.PADDING}`,
-  textDecoration: 'underline',
-  '&:hover,:focus': {
-    textDecoration: 'underline'
-  }
-})
+import {cn} from '../ui/cn'
 
 interface Props {
   className?: string
@@ -39,8 +26,11 @@ const JiraIssueLink = (props: Props) => {
       ? 'https://www.parabol.co/features/integrations'
       : `https://${cloudName}.atlassian.net/browse/${issueKey}`
   return (
-    <StyledLink
-      className={className}
+    <a
+      className={cn(
+        'block px-4 text-[14px] text-fg-primary leading-5 underline hover:underline focus:underline',
+        className
+      )}
       data-cy={dataCy}
       href={href}
       rel='noopener noreferrer'
@@ -50,7 +40,7 @@ const JiraIssueLink = (props: Props) => {
       {`${showLabelPrefix ? 'Issue #' : ''}
       ${issueKey}`}
       {children}
-    </StyledLink>
+    </a>
   )
 }
 

@@ -1,5 +1,5 @@
-import DeleteIcon from '@mui/icons-material/Delete'
 import * as Popover from '@radix-ui/react-popover'
+import {Delete as DeleteIcon} from '~/ui/icons'
 import {ArchivedPagesRoot} from '../../modules/pages/ArchivedPagesRoot'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'

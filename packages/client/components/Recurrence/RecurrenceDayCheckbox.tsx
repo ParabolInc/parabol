@@ -1,48 +1,55 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../../styles/paletteV3'
+import {
+  forwardRef,
+  type HTMLAttributes,
+  type InputHTMLAttributes,
+  type LabelHTMLAttributes,
+  type Ref
+} from 'react'
+import {cn} from '../../ui/cn'
 import type {Day} from '../../utils/humanReadableRecurrenceRule'
 
-export const CheckboxRoot = styled('div')({
-  position: 'relative',
-  width: 46,
-  height: 46
-})
-
-export const StyledCheckbox = styled('input')({
-  appearance: 'none',
-  margin: 0,
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  border: `1px solid var(--color-hairline-field)`,
-  borderRadius: 8,
-  '&:checked': {
-    border: `1px solid ${PALETTE.SKY_500}`,
-    backgroundColor: PALETTE.SKY_500
-  },
-  ':hover, :focus, :focus-visible, :active': {
-    outline: `1px solid var(--color-fg-secondary)`,
-    borderRadius: 4
+export const CheckboxRoot = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return <div {...rest} ref={ref} className={cn('relative h-[46px] w-[46px]', className)} />
   }
-})
+)
 
-export const StyledCheckboxLabel = styled('label')<{isChecked: boolean}>(({isChecked}) => ({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  fontSize: 20,
-  lineHeight: '26px',
-  fontWeight: 600,
-  display: 'flex',
-  color: isChecked ? PALETTE.WHITE : 'var(--color-fg-primary)',
-  justifyContent: 'center',
-  alignItems: 'center',
-  cursor: 'pointer'
-}))
+export const StyledCheckbox = forwardRef(
+  (props: InputHTMLAttributes<HTMLInputElement>, ref: Ref<HTMLInputElement>) => {
+    const {className, ...rest} = props
+    return (
+      <input
+        {...rest}
+        ref={ref}
+        className={cn(
+          'absolute inset-0 m-0 appearance-none rounded-lg border border-hairline-field checked:border-sky-500 checked:bg-sky-500 hover:rounded hover:outline-1 hover:outline-fg-secondary focus:rounded focus:outline-1 focus:outline-fg-secondary active:rounded active:outline-1 active:outline-fg-secondary',
+          className
+        )}
+      />
+    )
+  }
+)
+
+export const StyledCheckboxLabel = forwardRef(
+  (
+    props: LabelHTMLAttributes<HTMLLabelElement> & {isChecked: boolean},
+    ref: Ref<HTMLLabelElement>
+  ) => {
+    const {className, isChecked, ...rest} = props
+    return (
+      <label
+        {...rest}
+        ref={ref}
+        className={cn(
+          'absolute inset-0 flex cursor-pointer items-center justify-center font-semibold text-[20px] leading-[26px]',
+          isChecked ? 'text-white' : 'text-fg-primary',
+          className
+        )}
+      />
+    )
+  }
+)
 
 export interface Props {
   day: Day

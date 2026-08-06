@@ -1,17 +1,17 @@
-import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Add as AddIcon, Remove as RemoveIcon, ThumbUp} from '~/ui/icons'
 import type {ReflectionGroupVoting_meeting$key} from '../__generated__/ReflectionGroupVoting_meeting.graphql'
 import type {ReflectionGroupVoting_reflectionGroup$key} from '../__generated__/ReflectionGroupVoting_reflectionGroup.graphql'
 import type Atmosphere from '../Atmosphere'
 import VoteForReflectionGroupMutation from '../mutations/VoteForReflectionGroupMutation'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import getGraphQLError from '../utils/relay/getGraphQLError'
 import isTempId from '../utils/relay/isTempId'
-import FlatButton from './FlatButton'
 
 interface Props {
   isExpanded: boolean
@@ -103,7 +103,9 @@ const ReflectionGroupVoting = (props: Props) => {
   return (
     <div className='flex w-24 flex-col justify-center'>
       <div className='flex items-center justify-end' data-cy='reflection-vote-row'>
-        <FlatButton
+        <Button
+          variant='flat'
+          size='sm'
           aria-label={`Remove vote`}
           disabled={!canDownvote}
           className={cn(
@@ -114,7 +116,7 @@ const ReflectionGroupVoting = (props: Props) => {
           onClick={downvote}
         >
           <RemoveIcon />
-        </FlatButton>
+        </Button>
         <span
           className={cn(
             'flex select-none items-center px-1 font-semibold',
@@ -132,7 +134,9 @@ const ReflectionGroupVoting = (props: Props) => {
           </div>
           <span data-cy={`completed-vote-count`}>{viewerVoteCount}</span>
         </span>
-        <FlatButton
+        <Button
+          variant='flat'
+          size='sm'
           aria-label={`Add vote`}
           disabled={!canUpvote}
           className={cn(
@@ -143,7 +147,7 @@ const ReflectionGroupVoting = (props: Props) => {
           onClick={vote}
         >
           <AddIcon />
-        </FlatButton>
+        </Button>
       </div>
     </div>
   )

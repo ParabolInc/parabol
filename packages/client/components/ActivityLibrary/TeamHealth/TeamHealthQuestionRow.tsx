@@ -1,7 +1,7 @@
-import {DeleteOutline, Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {DeleteOutline, Edit} from '~/ui/icons'
 import type {TeamHealthQuestionRow_question$key} from '../../../__generated__/TeamHealthQuestionRow_question.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useAddTeamHealthTemplateQuestionMutation from '../../../mutations/useAddTeamHealthTemplateQuestionMutation'

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {usePaginationFragment} from 'react-relay'
@@ -9,10 +8,6 @@ import type {TimelineFeedList_query$key} from '../__generated__/TimelineFeedList
 import type {TimelineFeedListPaginationQuery} from '../__generated__/TimelineFeedListPaginationQuery.graphql'
 import TimelineEvent from './TimelineEvent'
 import TimelineHistoryLockedCard from './TimelineHistoryLockedCard'
-
-const ResultScroller = styled('div')({
-  overflow: 'auto'
-})
 
 interface Props {
   queryRef: TimelineFeedList_query$key
@@ -141,7 +136,7 @@ const TimelineFeedList = (props: Props) => {
   }
 
   return (
-    <ResultScroller>
+    <div className='overflow-auto'>
       {groupedFreeHistory.map(({label, events}) => (
         <div key={label}>
           <div className='my-2 flex items-center gap-4 py-4'>
@@ -167,7 +162,7 @@ const TimelineFeedList = (props: Props) => {
         </>
       )}
       {lastItem}
-    </ResultScroller>
+    </div>
   )
 }
 

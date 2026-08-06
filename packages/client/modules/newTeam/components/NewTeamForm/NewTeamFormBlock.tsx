@@ -1,14 +1,20 @@
-import styled from '@emotion/styled'
-import {Breakpoint} from '../../../../types/constEnums'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../../../../ui/cn'
 
-const NewTeamFormBlock = styled('div')({
-  margin: '0 auto 1rem',
-  width: '100%',
-  [`@media screen and (min-width: ${Breakpoint.SIDEBAR_LEFT}px)`]: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    justifyContent: 'space-between'
+const NewTeamFormBlock = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        className={cn(
+          'mx-auto mb-4 sidebar-left:flex w-full sidebar-left:items-start sidebar-left:justify-between',
+          className
+        )}
+      />
+    )
   }
-})
+)
 
 export default NewTeamFormBlock

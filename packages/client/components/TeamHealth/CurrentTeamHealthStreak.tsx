@@ -1,4 +1,4 @@
-import {MonitorHeart} from '@mui/icons-material'
+import {MonitorHeart} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 
 interface Props {

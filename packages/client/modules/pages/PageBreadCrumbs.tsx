@@ -160,7 +160,7 @@ export const PageBreadCrumbs = (props: Props) => {
             }
           >
             <DropdownMenu.Content
-              className='rounded border border-hairline bg-surface-card p-2 shadow-md'
+              className='rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
               sideOffset={5}
             >
               {hiddenAncestors.map((page) => {

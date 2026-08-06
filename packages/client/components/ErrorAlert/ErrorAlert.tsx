@@ -4,39 +4,21 @@
  *   [ (!) Your Message Here ]
  *
  */
-import styled from '@emotion/styled'
-import {Warning} from '@mui/icons-material'
-import {PALETTE} from '../../styles/paletteV3'
-import {Radius} from '../../types/constEnums'
+import {Warning} from '~/ui/icons'
 
 interface Props {
   message: string
 }
 
-const ErrorAlertWrapper = styled('div')({
-  backgroundColor: PALETTE.TOMATO_100,
-  color: PALETTE.SLATE_700,
-  borderRadius: Radius.TOOLTIP,
-  display: 'flex',
-  alignItems: 'center',
-  fontSize: 14,
-  marginBottom: 16,
-  padding: '8px 16px',
-  overflowX: 'auto'
-})
-
-const SpacedIcon = styled(Warning)({
-  height: 18,
-  width: 18,
-  marginRight: 8
-})
-
 const ErrorAlert = ({message}: Props) => {
   return (
-    <ErrorAlertWrapper role='alert'>
-      <SpacedIcon />
+    <div
+      className='mb-4 flex items-center overflow-x-auto rounded-[2px] bg-tomato-100 px-4 py-2 text-[14px] text-slate-700'
+      role='alert'
+    >
+      <Warning className='mr-2 h-[18px] w-[18px]' />
       <span>{message}</span>
-    </ErrorAlertWrapper>
+    </div>
   )
 }
 

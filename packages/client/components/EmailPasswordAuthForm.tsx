@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react'
 import {useLocation, useNavigate} from 'react-router'
@@ -12,6 +11,7 @@ import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
 import {passwordStrength} from '../shared/passwordStrength'
 import {LocalStorageKey, Security} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAnonymousId from '../utils/getAnonymousId'
@@ -28,8 +28,6 @@ import ErrorAlert from './ErrorAlert/ErrorAlert'
 import type {AuthPageSlug} from './GenericAuthentication'
 import PasswordInputField from './PasswordInputField'
 import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
-import RaisedButton from './RaisedButton'
 import StyledTip from './StyledTip'
 
 interface Props {
@@ -42,31 +40,6 @@ interface Props {
   isSignin?: boolean
   goToPage?: (page: AuthPageSlug, params: string) => void
 }
-
-const FieldBlock = styled('div')<{isSSO?: boolean}>(({isSSO}) => ({
-  margin: '0 0 1.25rem',
-  visibility: isSSO ? 'hidden' : undefined
-}))
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  maxWidth: 240,
-  width: '100%'
-})
-
-const HelpMessage = styled(StyledTip)({
-  paddingTop: 8,
-  fontSize: 14
-})
-
-const UseSSO = styled(PlainButton)({
-  color: 'var(--color-accent)',
-  display: 'flex',
-  fontSize: 14,
-  justifyContent: 'center',
-  marginTop: 16
-})
 
 const getSSOUrl = (atmosphere: Atmosphere, email: string) => {
   const invitationToken = localStorage.getItem(LocalStorageKey.INVITATION_TOKEN)
@@ -278,45 +251,62 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     }
   }
 
-  const Button = isPrimary ? PrimaryButton : RaisedButton
   const hasEmail = !!fields.email.value
+  const submitLabel = `${isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}${
+    signInWithSSOOnly ? ' with SSO' : ''
+  }`
   return (
     <>
-      <Form onSubmit={onSubmit}>
+      <form className='flex w-full max-w-60 flex-col' onSubmit={onSubmit}>
         {error && <ErrorAlert message={error.message} />}
-        {isSSO && submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
+        {isSSO && submitting && (
+          <StyledTip className='pt-2 text-[14px]'>Continue through the login popup</StyledTip>
+        )}
         <div className={cn('relative', signInWithSSOOnly ? 'hidden' : 'mt-4 mb-4')}>
-          <FieldBlock isSSO={signInWithSSOOnly}>
+          <div className={cn('mb-5', signInWithSSOOnly && 'invisible')}>
             <EmailInputField
               autoFocus={!hasEmail}
               {...fields.email}
               onChange={onChange}
               onBlur={handleBlur}
             />
-          </FieldBlock>
+          </div>
           {ssoMessage && (
             <div className='absolute w-full text-center font-medium text-sm'>{ssoMessage}</div>
           )}
           {isInternalAuthEnabled && (
-            <FieldBlock isSSO={isSSO}>
+            <div className={cn('mb-5', isSSO && 'invisible')}>
               <PasswordInputField
                 autoFocus={hasEmail}
                 {...fields.password}
                 onChange={onChange}
                 onBlur={handleBlur}
               />
-            </FieldBlock>
+            </div>
           )}
         </div>
-        <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
-          {signInWithSSOOnly ? ' with SSO' : ''}
-        </Button>
-      </Form>
+        {isPrimary ? (
+          <Button variant='primary' size='md' className='h-10 text-[15px]' disabled={submitting}>
+            {submitLabel}
+          </Button>
+        ) : (
+          <Button
+            variant='raised'
+            size='md'
+            className='h-10 bg-slate-200 text-[15px] text-slate-700'
+            disabled={submitting}
+          >
+            {submitLabel}
+          </Button>
+        )}
+      </form>
       {isSSOAuthEnabled && isInternalAuthEnabled && (
-        <UseSSO onClick={toggleSSO}>
+        <PlainButton
+          className='mt-4 flex justify-center text-[14px] text-accent'
+          onClick={toggleSSO}
+        >
           {`Sign ${isSignin ? 'in' : 'up'} ${isSSO ? 'without' : 'with'} SSO`}
-        </UseSSO>
+        </PlainButton>
       )}
     </>
   )

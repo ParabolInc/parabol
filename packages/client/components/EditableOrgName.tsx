@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -12,11 +11,6 @@ import EditableText from './EditableText'
 interface Props {
   organization: EditableOrgName_organization$key
 }
-
-const EditableOrgText = styled(EditableText)({
-  fontSize: 24,
-  lineHeight: '36px'
-})
 
 const EditableOrgName = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -59,7 +53,8 @@ const EditableOrgName = (props: Props) => {
   const displayError = validationError ?? (error as any)?.message
   const {name} = organization
   return (
-    <EditableOrgText
+    <EditableText
+      className='text-[24px] leading-9'
       error={displayError as string}
       handleSubmit={handleSubmit}
       initialValue={name}

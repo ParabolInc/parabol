@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
@@ -18,11 +17,6 @@ import type {MenuProps} from '../../../../hooks/useMenu'
 import UpdateTaskMutation from '../../../../mutations/UpdateTaskMutation'
 import avatarUser from '../../../../styles/theme/images/avatar-user.svg'
 
-const StyledPreferredName = styled('div')({
-  whiteSpace: 'nowrap',
-  textOverflow: 'ellipsis',
-  overflow: 'hidden'
-})
 interface Props {
   area: AreaEnum
   menuProps: MenuProps
@@ -115,7 +109,9 @@ const TaskFooterUserAssigneeMenu = (props: Props) => {
                   alt={assignee.user.preferredName}
                   src={assignee.user.picture || avatarUser}
                 />
-                <StyledPreferredName>{assignee.user.preferredName}</StyledPreferredName>
+                <div className='overflow-hidden text-ellipsis whitespace-nowrap'>
+                  {assignee.user.preferredName}
+                </div>
               </MenuItemLabel>
             }
             onClick={handleTaskUpdate(assignee)}

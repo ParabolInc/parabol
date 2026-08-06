@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdatesPrompt_meeting$key} from '../__generated__/ActionMeetingUpdatesPrompt_meeting.graphql'
@@ -10,22 +9,6 @@ import PhaseHeaderTitle from './PhaseHeaderTitle'
 interface Props {
   meeting: ActionMeetingUpdatesPrompt_meeting$key
 }
-
-const StyledPrompt = styled('div')({
-  display: 'flex'
-})
-
-const PromptText = styled('div')({
-  marginLeft: 16,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center'
-})
-
-const StyledHeader = styled(PhaseHeaderTitle)({
-  fontSize: 18,
-  overflowWrap: 'break-word'
-})
 
 const getQuestion = (isConnected: boolean, taskCount: number, preferredName: string) => {
   if (isConnected) {
@@ -86,13 +69,13 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
   const prefix = isConnectedAt ? `${preferredName}, ` : ''
   const taskCount = tasks.edges.length
   return (
-    <StyledPrompt>
+    <div className='flex'>
       <Avatar picture={picture} className={'h-16 w-16'} />
-      <PromptText>
-        <StyledHeader className='max-w-full'>
+      <div className='ml-4 flex flex-col justify-center'>
+        <PhaseHeaderTitle className='max-w-full break-words text-[18px] xl:text-[18px]'>
           {prefix}
           <i>{getQuestion(!!isConnectedAt, taskCount, preferredName)}</i>
-        </StyledHeader>
+        </PhaseHeaderTitle>
         <PhaseHeaderDescription>
           {isViewerMeetingSection && taskCount === 0 && 'Add cards to track your current work.'}
           {isViewerMeetingSection &&
@@ -102,8 +85,8 @@ const ActionMeetingUpdatesPrompt = (props: Props) => {
             <ActionMeetingUpdatesPromptTeamHelpText currentMeetingMember={currentMeetingMember} />
           )}
         </PhaseHeaderDescription>
-      </PromptText>
-    </StyledPrompt>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PalettePicker_prompt$key} from '~/__generated__/PalettePicker_prompt.graphql'
@@ -15,21 +14,6 @@ interface Props {
   prompts: PalettePicker_prompts$key
   menuProps: MenuProps
 }
-
-const PaletteDropDown = styled(Menu)({
-  width: '214px',
-  minWidth: '214px',
-  padding: 5
-})
-
-const PaletteList = styled('ul')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  listStyle: 'none',
-  padding: 0,
-  margin: 0
-})
 
 const PalettePicker = (props: Props) => {
   const {prompt: promptRef, prompts: promptsRef, menuProps} = props
@@ -64,8 +48,8 @@ const PalettePicker = (props: Props) => {
   }
 
   return (
-    <PaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
-      <PaletteList>
+    <Menu className='w-[214px] min-w-[214px] p-[5px]' ariaLabel='Pick a group color' {...menuProps}>
+      <ul className='m-0 flex list-none flex-wrap justify-center p-0'>
         {palettePickerOptions.map((color) => {
           return (
             <PaletteColor
@@ -77,8 +61,8 @@ const PalettePicker = (props: Props) => {
             />
           )
         })}
-      </PaletteList>
-    </PaletteDropDown>
+      </ul>
+    </Menu>
   )
 }
 

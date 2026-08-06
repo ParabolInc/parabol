@@ -165,7 +165,7 @@ const ScopePhaseArea = (props: Props) => {
 
   return (
     <div
-      className={`flex flex-col rounded-lg bg-surface-card ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-card`}
+      className={`flex flex-col rounded-lg bg-surface-card ${isDesktop ? '' : 'mx-auto'} ${isDesktop ? 'w-4/5' : 'w-[calc(100%-16px)]'} h-[70%] max-w-[1040px] shadow-[var(--shadow-card)]`}
     >
       <div className='max-w-full'>
         <div className='scrollbar-thin scrollbar-thumb-gray-400 scrollbar-thumb-rounded overflow-x-auto border-hairline border-b border-solid'>

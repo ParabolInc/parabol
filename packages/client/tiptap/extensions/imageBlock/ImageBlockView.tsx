@@ -1,6 +1,6 @@
-import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useCallback, useRef, useState} from 'react'
+import {BrokenImage as BrokenImageIcon} from '~/ui/icons'
 import {useBlockResizer} from '../../../hooks/useBlockResizer'
 import {cn} from '../../../ui/cn'
 import {useEmbedNewUserAsset} from '../fileBlock/useEmbedNewUserAsset'

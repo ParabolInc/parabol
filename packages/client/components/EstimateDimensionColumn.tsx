@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -9,44 +8,10 @@ import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
 import SetPokerSpectateMutation from '../mutations/SetPokerSpectateMutation'
-import {PALETTE} from '../styles/paletteV3'
+import {Button} from '../ui/Button/Button'
 import DeckActivityAvatars from './DeckActivityAvatars'
-import LinkButton from './LinkButton'
 import PokerActiveVoting from './PokerActiveVoting'
 import PokerDiscussVoting from './PokerDiscussVoting'
-
-const ColumnInner = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  overflow: 'auto',
-  width: '100%'
-})
-
-const DimensionHeader = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  padding: '8px 16px'
-})
-
-const DimensionName = styled('div')({
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '24px',
-  marginRight: 'auto'
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  fontSize: 12,
-  fontWeight: 600
-})
-
-const StyledError = styled('div')({
-  color: PALETTE.TOMATO_500,
-  fontSize: 12,
-  fontWeight: 600,
-  paddingRight: 16
-})
 
 interface Props {
   stage: EstimateDimensionColumn_stage$key
@@ -108,26 +73,40 @@ const EstimateDimensionColumn = (props: Props) => {
   }
   const showVoting = isVoting || isClosing
   return (
-    <ColumnInner>
-      <DimensionHeader>
-        <DimensionName>{name}</DimensionName>
-        {error && <StyledError>{error.message}</StyledError>}
+    <div className='flex h-full w-full flex-col overflow-auto'>
+      <div className='flex items-center px-4 py-2'>
+        <div className='mr-auto font-semibold text-base leading-6'>{name}</div>
+        {error && (
+          <div className='pr-4 font-semibold text-[12px] text-fg-error'>{error.message}</div>
+        )}
         {!isVoting && isFacilitator && !endedAt && (
-          <StyledLinkButton onClick={reset} palette={'blue'}>
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+            onClick={reset}
+          >
             {'Team Revote'}
-          </StyledLinkButton>
+          </Button>
         )}
         {isVoting && !endedAt && isSpectating && (
-          <StyledLinkButton onClick={setSpectating(false)} palette={'blue'}>
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+            onClick={setSpectating(false)}
+          >
             {'Let me vote!'}
-          </StyledLinkButton>
+          </Button>
         )}
         {isVoting && !endedAt && !isSpectating && (
-          <StyledLinkButton onClick={setSpectating(true)} palette={'blue'}>
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+            onClick={setSpectating(true)}
+          >
             {'I don’t vote'}
-          </StyledLinkButton>
+          </Button>
         )}
-      </DimensionHeader>
+      </div>
       <DeckActivityAvatars stage={stage} />
       {showVoting ? (
         <PokerActiveVoting
@@ -143,7 +122,7 @@ const EstimateDimensionColumn = (props: Props) => {
           isInitialStageRender={isInitialStageRender}
         />
       )}
-    </ColumnInner>
+    </div>
   )
 }
 

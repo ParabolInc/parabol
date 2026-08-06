@@ -1,7 +1,6 @@
-import CheckIcon from '@mui/icons-material/Check'
-import SendIcon from '@mui/icons-material/Send'
-import type {AutocompleteGroupedOption} from '@mui/material'
+import type {AutocompleteGroupedOption} from '@mui/base/useAutocomplete'
 import {Fragment} from 'react'
+import {Check as CheckIcon, Send as SendIcon} from '~/ui/icons'
 import type {PageSubjectEnum} from '../../__generated__/useUpdatePageAccessMutation.graphql'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import {

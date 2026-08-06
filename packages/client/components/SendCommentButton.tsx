@@ -1,4 +1,4 @@
-import {ArrowUpward} from '@mui/icons-material'
+import {ArrowUpward} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 
@@ -23,18 +23,14 @@ const SendCommentButton = (props: Props) => {
   return (
     <>
       <button
-        data-disabled={commentSubmitState === 'idle' ? '' : undefined}
-        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 data-disabled:bg-surface-well'
+        className='m-2 flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-accent transition-colors hover:bg-sky-600 focus:bg-sky-600 active:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-accent'
         onClick={onSubmit}
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         disabled={isDisabled}
         ref={tipRef}
       >
-        <ArrowUpward
-          data-disabled={commentSubmitState === 'idle' ? '' : undefined}
-          className='m-1 h-5 w-5 text-white transition-colors data-disabled:text-fg-muted'
-        />
+        <ArrowUpward className='m-1 h-5 w-5 text-white transition-colors' />
       </button>
       {tooltipPortal(<div>{'Send comment'}</div>)}
     </>

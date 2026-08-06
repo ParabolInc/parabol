@@ -1,13 +1,15 @@
-import AspectRatioIcon from '@mui/icons-material/AspectRatio' // Fallback for full width
-import DeleteIcon from '@mui/icons-material/DeleteOutlined'
-import DownloadIcon from '@mui/icons-material/FileDownloadOutlined'
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter'
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft'
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight'
-import ImageSearchIcon from '@mui/icons-material/ImageSearch'
 import * as Popover from '@radix-ui/react-popover'
 import {type Editor} from '@tiptap/react'
 import {useRef} from 'react'
+import {
+  AspectRatio as AspectRatioIcon,
+  DeleteOutlined as DeleteIcon,
+  FileDownloadOutlined as DownloadIcon,
+  FormatAlignCenter as FormatAlignCenterIcon,
+  FormatAlignLeft as FormatAlignLeftIcon,
+  FormatAlignRight as FormatAlignRightIcon,
+  ImageSearch as ImageSearchIcon
+} from '~/ui/icons'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'

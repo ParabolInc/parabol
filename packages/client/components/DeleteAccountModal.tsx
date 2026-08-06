@@ -6,12 +6,12 @@ import useAtmosphere from '~/hooks/useAtmosphere'
 import type {DeleteAccountModal_viewer$key} from '../__generated__/DeleteAccountModal_viewer.graphql'
 import DeleteUserMutation from '../mutations/DeleteUserMutation'
 import {ExternalLinks} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import DeleteAccountReAuthStep from './DeleteAccountReAuthStep'
 import BasicTextArea from './InputField/BasicTextArea'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   isOpen: boolean
@@ -85,9 +85,9 @@ const DeleteAccountModal = ({isOpen, onClose, viewerRef}: Props) => {
                 value={reason}
               />
               <div className='mt-6 flex justify-end'>
-                <PrimaryButton onClick={handleDelete} disabled={!reason} size='medium'>
+                <Button variant='primary' size='md' onClick={handleDelete} disabled={!reason}>
                   {'Goodbye forever'}
-                </PrimaryButton>
+                </Button>
               </div>
             </div>
           </div>

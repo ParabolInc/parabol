@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useUnusedRecords from '~/hooks/useUnusedRecords'
@@ -6,31 +5,10 @@ import type {JiraScopingSelectAllIssues_issues$key} from '../__generated__/JiraS
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UpdatePokerScopeMutation from '../mutations/UpdatePokerScopeMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {Threshold} from '../types/constEnums'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
 
-const Item = styled('div')({
-  display: 'flex',
-  padding: '8px 16px',
-  cursor: 'pointer'
-})
-
-const Title = styled('div')({})
-
-const TitleAndError = styled('div')({
-  display: 'flex',
-  fontWeight: 600,
-  flexDirection: 'column',
-  paddingLeft: 16,
-  paddingBottom: 20 // total height is 56
-})
-
-const ErrorMessage = styled('div')({
-  color: PALETTE.TOMATO_500,
-  fontWeight: 600
-})
 interface Props {
   meetingId: string
   issues: JiraScopingSelectAllIssues_issues$key
@@ -89,13 +67,13 @@ const JiraScopingSelectAllIssues = (props: Props) => {
 
   return (
     <>
-      <Item onClick={onClick}>
+      <div className='flex cursor-pointer px-4 py-2' onClick={onClick}>
         <Checkbox active={allSelected} />
-        <TitleAndError>
-          <Title>{title}</Title>
-          {error && <ErrorMessage>{error.message}</ErrorMessage>}
-        </TitleAndError>
-      </Item>
+        <div className='flex flex-col pb-5 pl-4 font-semibold'>
+          <div>{title}</div>
+          {error && <div className='font-semibold text-fg-error'>{error.message}</div>}
+        </div>
+      </div>
     </>
   )
 }

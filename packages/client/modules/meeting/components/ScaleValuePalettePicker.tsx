@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import Menu from '~/components/Menu'
@@ -17,21 +16,6 @@ interface Props {
   menuProps: MenuProps
   setScaleValueColor?: (scaleValueColor: string) => void
 }
-
-const ScaleValuePaletteDropDown = styled(Menu)({
-  width: '214px',
-  minWidth: '214px',
-  padding: 5
-})
-
-const ScaleValuePaletteList = styled('ul')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  justifyContent: 'center',
-  listStyle: 'none',
-  padding: 0,
-  margin: 0
-})
 
 const ScaleValuePalettePicker = (props: Props) => {
   const {scaleValueLabel, scaleValueColor, scale: scaleRef, menuProps, setScaleValueColor} = props
@@ -72,8 +56,8 @@ const ScaleValuePalettePicker = (props: Props) => {
   }
 
   return (
-    <ScaleValuePaletteDropDown ariaLabel='Pick a group color' {...menuProps}>
-      <ScaleValuePaletteList>
+    <Menu ariaLabel='Pick a group color' {...menuProps} className='w-[214px] min-w-[214px] p-[5px]'>
+      <ul className='m-0 flex list-none flex-wrap justify-center p-0'>
         {palettePickerOptions.map((color) => {
           return (
             <PaletteColor
@@ -85,8 +69,8 @@ const ScaleValuePalettePicker = (props: Props) => {
             />
           )
         })}
-      </ScaleValuePaletteList>
-    </ScaleValuePaletteDropDown>
+      </ul>
+    </Menu>
   )
 }
 

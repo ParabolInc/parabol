@@ -1,51 +1,15 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
-import styled from '@emotion/styled'
-import {ExpandMore} from '@mui/icons-material'
+
 import {forwardRef, type ReactElement, type Ref} from 'react'
+import {ExpandMore} from '~/ui/icons'
 import type useMenu from '../hooks/useMenu'
-import makeFieldColorPalette from '../styles/helpers/makeFieldColorPalette'
-import ui from '../styles/ui'
+import {cn} from '../ui/cn'
 
-const DropdownIcon = styled(ExpandMore)({
-  color: 'var(--color-fg-secondary)',
-  marginLeft: 8
-})
-
-const DropdownBlock = styled('div')({
-  display: 'inline-block',
-  margin: '0 auto',
-  maxWidth: '100%',
-  width: '100%'
-})
-
-interface InputStyleProps {
-  disabled: boolean
-  flat: boolean | undefined
-  size?: 'small' | 'medium' | 'large'
-}
-
-const InputBlock = styled('div')<InputStyleProps>(
-  ({disabled, size}) => ({
-    ...ui.fieldBaseStyles,
-    ...ui.fieldSizeStyles[size!],
-    ...makeFieldColorPalette('white', !disabled),
-    cursor: 'pointer',
-    position: 'relative',
-    userSelect: 'none'
-  }),
-  ({disabled}) => disabled && {...ui.fieldDisabled},
-  ({flat}) => flat && {borderColor: 'transparent'},
-  {
-    alignItems: 'center',
-    display: 'flex'
-  }
-)
-
-const Value = styled('span')({
-  display: 'flex',
-  flex: 1,
-  minWidth: 0
-})
+const sizeStyles = {
+  small: 'text-[0.875rem] leading-5 px-[0.4375rem] py-[0.3125rem]',
+  medium: 'text-[0.9375rem] leading-6 px-[0.6875rem] py-[0.4375rem]',
+  large: 'text-[1rem] leading-7 px-[0.9375rem] py-[0.6875rem]'
+} as const
 
 interface Props {
   className?: string
@@ -61,17 +25,27 @@ interface Props {
 const DropdownMenuToggle = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {className, onClick, onMouseEnter, defaultText, disabled, flat, size} = props
   return (
-    <DropdownBlock
-      className={className}
+    <div
+      className={cn('mx-auto my-0 inline-block w-full max-w-full', className)}
       onMouseEnter={onMouseEnter}
       ref={ref}
       onClick={disabled ? undefined : onClick}
     >
-      <InputBlock disabled={!!disabled} flat={flat} size={size || 'medium'} tabIndex={0}>
-        <Value>{defaultText}</Value>
-        {!disabled && <DropdownIcon />}
-      </InputBlock>
-    </DropdownBlock>
+      <div
+        className={cn(
+          'relative flex w-full cursor-pointer select-none appearance-none items-center rounded border bg-surface-input font-sans text-fg-primary outline-none selection:bg-hairline-strong',
+          sizeStyles[size || 'medium'],
+          disabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'hover:border-fg-primary focus:border-fg-primary active:border-fg-primary',
+          flat ? 'border-transparent' : 'border-hairline-field'
+        )}
+        tabIndex={0}
+      >
+        <span className='flex min-w-0 flex-1'>{defaultText}</span>
+        {!disabled && <ExpandMore className='ml-2 text-fg-secondary' />}
+      </div>
+    </div>
   )
 })
 

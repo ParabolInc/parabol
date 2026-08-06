@@ -1,7 +1,7 @@
-import {PersonAdd} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {PersonAdd} from '~/ui/icons'
 import type {AddTeamMemberAvatarButton_teamMembers$key} from '../__generated__/AddTeamMemberAvatarButton_teamMembers.graphql'
 import {cn} from '../ui/cn'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
@@ -49,7 +49,7 @@ const AddTeamMemberAvatarButton = (props: Props) => {
                 : 'h-8 w-8 text-lg'
             )}
           >
-            <PersonAdd fontSize='inherit' sx={{marginLeft: '-1px'}} />
+            <PersonAdd className='-ml-px text-[length:inherit]' />
           </button>
         </TooltipTrigger>
         <TooltipContent>Invite to Team</TooltipContent>

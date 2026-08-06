@@ -1,7 +1,7 @@
-import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
+import {Add} from '~/ui/icons'
 import type {SelectScaleDropdown_dimension$key} from '../../../__generated__/SelectScaleDropdown_dimension.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'

@@ -1,49 +1,8 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
-import {Elevation} from '../styles/elevation'
 import {PokerCards} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
-
-const MiniPokerCardPlaceholder = styled('div')<{
-  canEdit?: boolean
-  color?: string
-  onClick?: () => void
-  isFinal?: boolean
-}>(({canEdit, color, onClick, isFinal}) => ({
-  alignItems: 'center',
-  background: color ? getPokerCardBackground(color) : 'var(--color-surface-card)',
-  border: color
-    ? 0
-    : isFinal
-      ? '1px solid var(--color-hairline-strong)'
-      : `1px dashed var(--color-hairline-strong)`,
-  borderRadius: 2,
-  color: color ? '#fff' : 'var(--color-fg-secondary)',
-  cursor: onClick || canEdit ? 'pointer' : 'default',
-  display: 'flex',
-  flexShrink: 0,
-  fontWeight: 600,
-  height: 40,
-  fontSize: 18,
-  justifyContent: 'center',
-  lineHeight: '24px',
-  textAlign: 'center',
-  textShadow: '0px 1px 1px rgba(0, 0, 0, 0.1)',
-  transition: onClick ? 'all 200ms' : 'none',
-  userSelect: 'none',
-  width: 28,
-  ':hover': {
-    boxShadow: onClick || canEdit ? Elevation.Z3 : 'none'
-  }
-}))
-
-const Pass = styled('img')({
-  display: 'block',
-  height: 16,
-  userSelect: 'none',
-  width: 16
-})
 
 interface Props {
   canEdit?: boolean
@@ -56,9 +15,27 @@ interface Props {
 const MiniPokerCard = (props: Props) => {
   const {canEdit, color, children, onClick, isFinal} = props
   return (
-    <MiniPokerCardPlaceholder canEdit={canEdit} color={color} onClick={onClick} isFinal={isFinal}>
-      {children === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : children}
-    </MiniPokerCardPlaceholder>
+    <div
+      onClick={onClick}
+      style={color ? {background: getPokerCardBackground(color)} : undefined}
+      className={cn(
+        'flex h-10 w-7 shrink-0 select-none items-center justify-center rounded-[2px] text-center font-semibold text-[18px] leading-6 [text-shadow:0px_1px_1px_rgba(0,0,0,0.1)]',
+        color ? 'border-0 text-white' : 'bg-surface-card text-fg-secondary',
+        !color &&
+          (isFinal
+            ? 'border border-hairline-strong border-solid'
+            : 'border border-hairline-strong border-dashed'),
+        onClick || canEdit ? 'cursor-pointer' : 'cursor-default',
+        (onClick || canEdit) && 'hover:shadow-[var(--shadow-card-hover)]',
+        onClick ? '[transition:all_200ms]' : 'transition-none'
+      )}
+    >
+      {children === PokerCards.PASS_CARD ? (
+        <img className='block h-4 w-4 select-none' src={PassSVG} />
+      ) : (
+        children
+      )}
+    </div>
   )
 }
 

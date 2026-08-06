@@ -1,176 +1,59 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
-import {PALETTE} from '../styles/paletteV3'
-import makeMinWidthMediaQuery from '../utils/makeMinWidthMediaQuery'
+import {cn} from '../ui/cn'
 
-const PageContainer = styled('div')({
-  alignItems: 'center',
-  backgroundColor: PALETTE.SLATE_200,
-  color: 'var(--color-fg-primary)',
-  '.theme-dark &': {
-    backgroundColor: 'var(--color-surface-app)'
-  },
-  display: 'flex',
-  flexDirection: 'column',
-  maxWidth: '100%',
-  height: '100%',
-  maxHeight: '100%',
-  position: 'relative'
-})
+const pageContainerClasses =
+  'relative flex h-full max-h-full max-w-full flex-col items-center bg-slate-200 text-fg-primary dark:bg-surface-app'
 
-const CenteredBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  flex: 1,
-  justifyContent: 'center',
-  maxWidth: '100%',
-  padding: '2rem 1rem',
-  width: '100%',
-  zIndex: 3
-})
-
-const Backdrop = styled('div')({
-  backgroundColor: PALETTE.SLATE_700_30,
-  // the slate scrim lightens a dark canvas, which would push the abstract forward
-  // instead of behind the dialog, so dark mode needs a black one
-  '.theme-dark &': {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  bottom: 0,
-  height: '100%',
-  left: 0,
-  position: 'absolute',
-  top: 0,
-  width: '100vw',
-  zIndex: 2
-})
-
-const MeetingAbstractContainer = styled(PageContainer)({
-  alignItems: 'flex-start',
-  flexDirection: 'row',
-  filter: 'blur(2px)',
-  left: 0,
-  minWidth: '100vw',
-  position: 'absolute',
-  top: 0,
-  zIndex: 1
-})
-
-const AbstractSidebar = styled('div')({
-  display: 'none',
-  [makeMinWidthMediaQuery(640)]: {
-    display: 'block',
-    backgroundColor: 'var(--color-surface-meeting-sidebar)',
-    flexShrink: 0,
-    height: '100%',
-    width: 240
-  }
-})
-
-const AbstractSidebarHeading = styled('div')({
-  backgroundColor: 'var(--color-fg-primary)',
-  borderRadius: 14,
-  height: 14,
-  margin: '21px 0 35px 60px',
-  width: 120
-})
-
-const AbstractSidebarLabel = styled('div')({
-  backgroundColor: 'var(--color-hairline-strong)',
-  borderRadius: 8,
-  height: 8,
-  marginLeft: 60,
-  marginBottom: 30,
-  width: 160
-})
-
-const AbstractSidebarNavItem = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  marginBottom: 18,
-  paddingLeft: 24
-})
-
-const AbstractSidebarNavItemBullet = styled('div')({
-  backgroundColor: PALETTE.GRAPE_700,
-  borderRadius: 24,
-  height: 24,
-  marginRight: 12,
-  width: 24
-})
-
-const AbstractSidebarNavItemLabel = styled('div')({
-  backgroundColor: 'var(--color-fg-secondary)',
-  borderRadius: 14,
-  height: 14,
-  width: 120
-})
-
-const AbstractMain = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flex: 1,
-  justifyContent: 'space-between',
-  minHeight: 56,
-  maxWidth: '100vw',
-  padding: '0 20px'
-})
-
-const AbstractMainHeading = styled(AbstractSidebarNavItemLabel)({})
-
-const AbstractAvatarGroup = styled('div')({
-  display: 'flex',
-  flexShrink: 0
-})
-
-const AbstractAvatar = styled('div')({
-  backgroundColor: PALETTE.GOLD_300,
-  borderRadius: 32,
-  marginLeft: 8,
-  height: 32,
-  width: 32
-})
+const navItemLabelClasses = 'h-[14px] w-[120px] rounded-[14px] bg-fg-secondary'
 
 interface Props {
   children: ReactNode
 }
 
 const NavItem = () => (
-  <AbstractSidebarNavItem>
-    <AbstractSidebarNavItemBullet />
-    <AbstractSidebarNavItemLabel />
-  </AbstractSidebarNavItem>
+  <div className='mb-[18px] flex items-center pl-6'>
+    <div className='mr-3 h-6 w-6 rounded-[24px] bg-grape-700' />
+    <div className={navItemLabelClasses} />
+  </div>
 )
 
 function TeamInvitationMeetingAbstract(props: Props) {
   const {children} = props
   return (
-    <PageContainer>
-      <CenteredBlock>{children}</CenteredBlock>
-      <Backdrop />
-      <MeetingAbstractContainer>
-        <AbstractSidebar>
-          <AbstractSidebarHeading />
-          <AbstractSidebarLabel />
+    <div className={pageContainerClasses}>
+      <div className='z-[3] flex w-full max-w-full flex-1 flex-col items-center justify-center px-4 py-8'>
+        {children}
+      </div>
+      {/* the slate scrim lightens a dark canvas, which would push the abstract forward
+          instead of behind the dialog, so dark mode needs a black one */}
+      <div className='absolute top-0 bottom-0 left-0 z-[2] h-full w-screen bg-slate-700/30 dark:bg-black/50' />
+      <div
+        className={cn(
+          pageContainerClasses,
+          'absolute top-0 left-0 z-[1] min-w-[100vw] flex-row items-start blur-[2px]'
+        )}
+      >
+        <div className='hidden h-full w-60 shrink-0 bg-surface-meeting-sidebar sm:block'>
+          <div className='mt-[21px] mb-[35px] ml-[60px] h-[14px] w-[120px] rounded-[14px] bg-fg-primary' />
+          <div className='mb-[30px] ml-[60px] h-2 w-40 rounded-lg bg-hairline-strong' />
           <NavItem />
           <NavItem />
           <NavItem />
           <NavItem />
           <NavItem />
-        </AbstractSidebar>
-        <AbstractMain>
-          <AbstractMainHeading />
-          <AbstractAvatarGroup>
-            <AbstractAvatar />
-            <AbstractAvatar />
-            <AbstractAvatar />
-            <AbstractAvatar />
-            <AbstractAvatar />
-          </AbstractAvatarGroup>
-        </AbstractMain>
-      </MeetingAbstractContainer>
-    </PageContainer>
+        </div>
+        <div className='flex min-h-14 max-w-[100vw] flex-1 items-center justify-between px-5'>
+          <div className={navItemLabelClasses} />
+          <div className='flex shrink-0'>
+            <div className='ml-2 h-8 w-8 rounded-[32px] bg-gold-300' />
+            <div className='ml-2 h-8 w-8 rounded-[32px] bg-gold-300' />
+            <div className='ml-2 h-8 w-8 rounded-[32px] bg-gold-300' />
+            <div className='ml-2 h-8 w-8 rounded-[32px] bg-gold-300' />
+            <div className='ml-2 h-8 w-8 rounded-[32px] bg-gold-300' />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -14,12 +13,6 @@ interface Props {
   prompts: TemplatePromptList_prompts$key
   templateId: string
 }
-
-const PromptList = styled('div')({
-  margin: 0,
-  padding: 0,
-  width: '100%'
-})
 
 const TemplatePromptList = (props: Props) => {
   const {isOwner, prompts: promptsRef, templateId} = props
@@ -60,7 +53,7 @@ const TemplatePromptList = (props: Props) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <PromptList>
+      <div className='m-0 w-full p-0'>
         <Droppable droppableId={TEMPLATE_PROMPT} isDropDisabled={!isOwner}>
           {(provided) => {
             return (
@@ -92,7 +85,7 @@ const TemplatePromptList = (props: Props) => {
             )
           }}
         </Droppable>
-      </PromptList>
+      </div>
     </DragDropContext>
   )
 }

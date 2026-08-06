@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {
   forwardRef,
@@ -8,6 +7,7 @@ import {
   useImperativeHandle,
   useRef
 } from 'react'
+import {cn} from '../ui/cn'
 import MenuItemLabel from './MenuItemLabel'
 
 export interface MenuItemProps {
@@ -26,21 +26,6 @@ interface Props {
   onView?: () => void // the viewer has scrolled to where the content is 90% in view
   parentRef?: RefObject<HTMLDivElement>
 }
-
-const MenuItemStyles = styled('div')<{
-  isActive: boolean
-  isDisabled: boolean | undefined
-}>(({isActive, isDisabled}) => ({
-  alignItems: 'center',
-  backgroundColor: isActive ? 'var(--color-surface-well)' : undefined,
-  color: isDisabled ? 'var(--color-fg-muted)' : 'var(--color-fg-primary)',
-  cursor: isDisabled ? 'not-allowed' : 'pointer',
-  display: 'flex',
-  '&:hover,:focus': {
-    backgroundColor: isActive ? 'var(--color-surface-well)' : 'var(--color-surface-raised)',
-    outline: 0
-  }
-}))
 
 const MINIMUM_VIEW_TIME = 300
 
@@ -108,16 +93,20 @@ const MenuItem = forwardRef((props: Props, ref: any) => {
   }))
 
   return (
-    <MenuItemStyles
-      isDisabled={isDisabled}
+    <div
       role='menuitem'
       ref={itemRef}
-      isActive={isActive}
+      className={cn(
+        'flex items-center',
+        isDisabled ? 'cursor-not-allowed text-fg-muted' : 'cursor-pointer text-fg-primary',
+        isActive && 'bg-surface-hover',
+        'hover:bg-surface-hover focus:bg-surface-hover focus:outline-0'
+      )}
       onClick={handleClick}
       onMouseEnter={onMouseEnter}
     >
       {typeof label === 'string' ? <MenuItemLabel data-cy={dataCy}>{label}</MenuItemLabel> : label}
-    </MenuItemStyles>
+    </div>
   )
 })
 

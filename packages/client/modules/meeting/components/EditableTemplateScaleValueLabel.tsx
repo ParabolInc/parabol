@@ -1,26 +1,15 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EditableTemplateScaleValueLabel_scale$key} from '~/__generated__/EditableTemplateScaleValueLabel_scale.graphql'
 import type {EditableTemplateScaleValueLabel_scaleValue$key} from '~/__generated__/EditableTemplateScaleValueLabel_scaleValue.graphql'
 import UpdatePokerTemplateScaleValueMutation from '~/mutations/UpdatePokerTemplateScaleValueMutation'
-import {PALETTE} from '~/styles/paletteV3'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import {Threshold} from '../../../types/constEnums'
+import {cn} from '../../../ui/cn'
 import isSpecialPokerLabel from '../../../utils/isSpecialPokerLabel'
 import Legitity from '../../../validation/Legitity'
-
-const StyledEditableText = styled(EditableText)<{
-  disabled: boolean | undefined
-}>(({disabled}) => ({
-  fontFamily: PALETTE.SLATE_700,
-  fontSize: 14,
-  lineHeight: '24px',
-  padding: 0,
-  userSelect: disabled ? 'none' : 'auto'
-}))
 
 interface Props {
   isHover: boolean
@@ -103,9 +92,11 @@ const EditableTemplateScaleValueLabel = (props: Props) => {
     return res
   }
 
+  const disabled = isSpecialPokerLabel(scaleValue.label)
   return (
-    <StyledEditableText
-      disabled={isSpecialPokerLabel(scaleValue.label)}
+    <EditableText
+      className={cn('p-0 text-sm leading-6', disabled ? 'select-none' : 'select-auto')}
+      disabled={disabled}
       error={error?.message}
       hideIcon={!isHover}
       handleSubmit={handleSubmit}

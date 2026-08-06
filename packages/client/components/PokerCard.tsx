@@ -1,6 +1,5 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
-import {type RefObject, useEffect, useRef} from 'react'
+import {type CSSProperties, type RefObject, useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import PassSVG from '../../../static/images/icons/no_entry.svg'
@@ -8,21 +7,11 @@ import type {PokerCard_scaleValue$key} from '../__generated__/PokerCard_scaleVal
 import usePokerZIndexOverride from '../hooks/usePokerZIndexOverride'
 import logoMarkWhite from '../styles/theme/images/brand/mark-white.svg'
 import {BezierCurve, Breakpoint, PokerCards} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import getPokerCardBackground from '../utils/getPokerCardBackground'
 
 const COLLAPSE_DUR = 700
 const EXPAND_DUR = 300
-interface CardBaseProps {
-  color: string
-  showTransition: boolean
-  isDesktop: boolean
-  isCollapsed: boolean
-  isSelected: boolean
-  leftEdge: number
-  radius: number
-  rotation: number
-  yOffset: number
-}
 
 const getRotation = (
   isSelected: boolean,
@@ -40,72 +29,8 @@ const getRotation = (
   return `translate(${x}px, ${y + selectedOffset}px)rotate(${rotation}deg)`
 }
 
-const CardBase = styled('div')<CardBaseProps>(
-  ({
-    color,
-    isCollapsed,
-    isDesktop,
-    isSelected,
-    leftEdge,
-    radius,
-    rotation,
-    yOffset,
-    showTransition
-  }) => {
-    const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
-    const hoverTransform = `${transform} translateY(-8px)`
-    return {
-      background: getPokerCardBackground(color),
-      borderRadius: 6,
-      cursor: 'pointer',
-      display: 'flex',
-      height: PokerCards.HEIGHT,
-      justifyContent: 'center',
-      position: 'absolute',
-      transform,
-      transition: showTransition
-        ? `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`
-        : undefined,
-      userSelect: 'none',
-      width: PokerCards.WIDTH,
-      zIndex: isSelected && isCollapsed ? 1 : undefined,
-      '&:hover': {
-        transform: isCollapsed ? undefined : isDesktop ? hoverTransform : undefined
-      }
-    }
-  }
-)
-
-const UpperLeftCardValue = styled('div')({
-  color: '#fff',
-  textShadow: '0px 1px 1px rgba(0,0,0,0.05)',
-  fontSize: 20,
-  fontWeight: 600,
-  position: 'absolute',
-  top: 4,
-  left: 8
-})
-
-const LowerRightCardValue = styled(UpperLeftCardValue)({
-  top: 'unset',
-  left: 'unset',
-  bottom: 4,
-  right: 8
-})
-
-const Logo = styled('img')({
-  // set min & max to accomodate custom logos here
-  minWidth: 64,
-  maxWidth: PokerCards.OVERLAP,
-  opacity: 0.5
-})
-
-const Pass = styled('img')({
-  display: 'block',
-  height: 18,
-  marginTop: 4,
-  width: 18
-})
+const cardValueClassName =
+  'absolute font-semibold text-[20px] text-white [text-shadow:0px_1px_1px_rgba(0,0,0,0.05)]'
 
 interface Props {
   scaleValue: PokerCard_scaleValue$key
@@ -158,27 +83,41 @@ const PokerCard = (props: Props) => {
   const isTop = isSelected && isMoving
   usePokerZIndexOverride(isTop, cardRef, isExpanding, COLLAPSE_DUR, EXPAND_DUR)
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
-  const cornerValue = label === PokerCards.PASS_CARD ? <Pass src={PassSVG} /> : label
+  const cornerValue =
+    label === PokerCards.PASS_CARD ? (
+      <img className='mt-1 block h-[18px] w-[18px]' src={PassSVG} />
+    ) : (
+      label
+    )
+  const transform = getRotation(isSelected, isCollapsed, leftEdge, radius, rotation, yOffset)
+  const hoverTransform = `${transform} translateY(-8px)`
+  const canHover = !isCollapsed && isDesktop
   return (
-    <CardBase
+    <div
       ref={cardRef}
-      yOffset={yOffset}
-      color={color}
-      isDesktop={isDesktop}
-      isCollapsed={isCollapsed}
-      isSelected={isSelected}
-      leftEdge={leftEdge}
+      className={cn(
+        'absolute flex h-[175px] w-[125px] cursor-pointer select-none justify-center rounded-md [transform:var(--poker-card-transform)]',
+        canHover && 'hover:[transform:var(--poker-card-hover-transform)]',
+        isSelected && isCollapsed && 'z-[1]'
+      )}
+      style={
+        {
+          background: getPokerCardBackground(color),
+          transition: showTransition
+            ? `transform ${isCollapsed ? COLLAPSE_DUR : EXPAND_DUR}ms ${BezierCurve.DECELERATE}`
+            : undefined,
+          '--poker-card-transform': transform,
+          '--poker-card-hover-transform': hoverTransform
+        } as CSSProperties
+      }
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      rotation={rotation}
-      radius={radius}
-      showTransition={showTransition}
     >
-      <UpperLeftCardValue>{cornerValue}</UpperLeftCardValue>
-      <LowerRightCardValue>{cornerValue}</LowerRightCardValue>
-      <Logo src={logoMarkWhite} draggable={false} />
-    </CardBase>
+      <div className={cn(cardValueClassName, 'top-1 left-2')}>{cornerValue}</div>
+      <div className={cn(cardValueClassName, 'right-2 bottom-1')}>{cornerValue}</div>
+      <img className='min-w-[64px] max-w-[96px] opacity-50' src={logoMarkWhite} draggable={false} />
+    </div>
   )
 }
 
