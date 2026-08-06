@@ -1,6 +1,5 @@
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
-import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
 import {UploadDatabaseImport} from '../../../components/UploadDatabaseImport'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {Button} from '../../../ui/Button/Button'
@@ -255,9 +254,9 @@ export const ImportDialog = (props: Props) => {
               <Button variant='outline' size='md' onClick={onBack}>
                 Back
               </Button>
-              <FlatPrimaryButton size='medium' onClick={onImport}>
+              <Button variant='primary' size='md' onClick={onImport}>
                 {discardExistingData ? 'Replace' : 'Append'}
-              </FlatPrimaryButton>
+              </Button>
             </>
           ) : (
             <Button variant='outline' size='md' onClick={onCancel}>

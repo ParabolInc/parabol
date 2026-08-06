@@ -5,9 +5,9 @@ import type {ScopePhaseAreaAddJira_meeting$key} from '../__generated__/ScopePhas
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import {ExternalLinks} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../utils/AtlassianClientManager'
 import JiraSVG from './JiraSVG'
-import RaisedButton from './RaisedButton'
 
 interface Props {
   gotoParabol: () => void
@@ -55,10 +55,15 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }
   return (
     <div className='flex h-full flex-col items-center justify-center'>
-      <RaisedButton className='gap-2 whitespace-pre-wrap' onClick={authJira} size={'medium'}>
+      <Button
+        variant='raised'
+        size='md'
+        className='gap-2 whitespace-pre-wrap bg-slate-200 text-slate-700'
+        onClick={authJira}
+      >
         <JiraSVG />
         Import issues from Jira
-      </RaisedButton>
+      </Button>
       {errorMessage && (
         <div className='p-4 pb-0 text-fg-error [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
           {errorMessage}

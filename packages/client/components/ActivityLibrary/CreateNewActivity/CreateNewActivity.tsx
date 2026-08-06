@@ -13,13 +13,12 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
 import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
-import BaseButton from '../../BaseButton'
 import IconLabel from '../../IconLabel'
 import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
-import RaisedButton from '../../RaisedButton'
 import {ActivityBadge} from '../ActivityBadge'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {
@@ -299,21 +298,23 @@ export const CreateNewActivity = (props: Props) => {
               Upgrade to the <b>Team Plan</b> to create more custom activities
             </span>
 
-            <RaisedButton
-              palette='pink'
-              className='h-12 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
+            <Button
+              variant='raised'
+              size='sm'
+              className='h-12 bg-rose-500 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
               onClick={handleUpgrade}
             >
               Upgrade to Team Plan
-            </RaisedButton>
+            </Button>
           </div>
         ) : (
-          <BaseButton
-            className='mx-auto h-12 rounded-md bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+          <Button
+            size='default'
+            className='mx-auto h-12 rounded-md bg-sky-500 px-6 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
             onClick={createCustomActivityLookup[selectedActivity.type]}
           >
             Confirm Format & Team
-          </BaseButton>
+          </Button>
         )}
       </div>
     </div>

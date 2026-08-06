@@ -6,26 +6,27 @@ import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
 import {mergeRefs} from '~/utils/react/mergeRefs'
 import useTooltip from '../../hooks/useTooltip'
+import {Button, type ButtonProps} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
-import BaseButton, {type BaseButtonProps} from '../BaseButton'
 import IconLabel from '../IconLabel'
 import TeamPromptOptionsMenu from './TeamPromptOptionsMenu'
 
 const COPIED_TOOLTIP_DURATION_MS = 2000
 
-export const OptionsButton = forwardRef((props: BaseButtonProps, ref: Ref<HTMLButtonElement>) => {
+export const OptionsButton = forwardRef((props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
   const {className, children, ...rest} = props
   return (
-    <BaseButton
+    <Button
       ref={ref}
+      size='default'
       className={cn(
-        'flex h-full flex-col px-2 py-0 font-semibold text-accent opacity-100 hover:text-accent focus:text-accent active:text-accent',
+        'flex h-full flex-col px-2 py-0 font-semibold text-[14px] text-accent leading-5 opacity-100 hover:text-accent focus:text-accent active:text-accent',
         className
       )}
       {...rest}
     >
       {children}
-    </BaseButton>
+    </Button>
   )
 })
 

@@ -8,8 +8,8 @@ import useIsInitializing from '../hooks/useIsInitializing'
 import useIsPokerVotingClosing from '../hooks/useIsPokerVotingClosing'
 import PokerResetDimensionMutation from '../mutations/PokerResetDimensionMutation'
 import SetPokerSpectateMutation from '../mutations/SetPokerSpectateMutation'
+import {Button} from '../ui/Button/Button'
 import DeckActivityAvatars from './DeckActivityAvatars'
-import LinkButton from './LinkButton'
 import PokerActiveVoting from './PokerActiveVoting'
 import PokerDiscussVoting from './PokerDiscussVoting'
 
@@ -80,27 +80,31 @@ const EstimateDimensionColumn = (props: Props) => {
           <div className='pr-4 font-semibold text-[12px] text-fg-error'>{error.message}</div>
         )}
         {!isVoting && isFacilitator && !endedAt && (
-          <LinkButton className='font-semibold text-[12px]' onClick={reset} palette={'blue'}>
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+            onClick={reset}
+          >
             {'Team Revote'}
-          </LinkButton>
+          </Button>
         )}
         {isVoting && !endedAt && isSpectating && (
-          <LinkButton
-            className='font-semibold text-[12px]'
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
             onClick={setSpectating(false)}
-            palette={'blue'}
           >
             {'Let me vote!'}
-          </LinkButton>
+          </Button>
         )}
         {isVoting && !endedAt && !isSpectating && (
-          <LinkButton
-            className='font-semibold text-[12px]'
+          <Button
+            size='default'
+            className='bg-transparent p-0 font-semibold text-[12px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
             onClick={setSpectating(true)}
-            palette={'blue'}
           >
             {'I don’t vote'}
-          </LinkButton>
+          </Button>
         )}
       </div>
       <DeckActivityAvatars stage={stage} />

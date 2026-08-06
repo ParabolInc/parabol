@@ -1,7 +1,7 @@
 import {useNavigate} from 'react-router'
 import {Add} from '~/ui/icons'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
-import FlatPrimaryButton from './FlatPrimaryButton'
 
 const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   const navigate = useNavigate()
@@ -11,7 +11,9 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
   }
   return (
     <div className='px-3'>
-      <FlatPrimaryButton
+      <Button
+        variant='primary'
+        size='sm'
         className={cn(
           'mt-4 mb-3.5 h-10 overflow-hidden p-0 transition-all duration-300 ease-[cubic-bezier(0,0,.2,1)]',
           isOpen ? 'w-[232px] justify-center' : 'w-10 justify-start'
@@ -27,7 +29,7 @@ const SideBarStartMeetingButton = ({isOpen}: {isOpen: boolean}) => {
         >
           Add Meeting
         </div>
-      </FlatPrimaryButton>
+      </Button>
     </div>
   )
 }

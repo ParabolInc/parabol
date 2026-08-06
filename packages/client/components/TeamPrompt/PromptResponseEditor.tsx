@@ -6,11 +6,11 @@ import StarterKit from '@tiptap/starter-kit'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {isEqualWhenSerialized} from '../../shared/isEqualWhenSerialized'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
 import {tiptapEmojiConfig} from '../../utils/tiptapEmojiConfig'
 import {tiptapMentionConfig} from '../../utils/tiptapMentionConfig'
-import BaseButton from '../BaseButton'
 import {LoomExtension, unfurlLoomLinks} from '../TipTapEditor/LoomExtension'
 import {TipTapEditor} from '../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../TipTapEditor/TiptapLinkExtension'
@@ -160,30 +160,30 @@ const PromptResponseEditor = (props: Props) => {
         // about it.
         <div className='flex items-center justify-end'>
           {!!content && isEditing && (
-            <BaseButton
+            <Button
               className={cn(submitButtonClasses, 'mr-3 bg-surface-well text-fg-primary')}
               onClick={() => onCancel()}
-              size='medium'
+              size='md'
               aria-label='Cancel changes'
               title='Cancel changes'
             >
               Cancel
-            </BaseButton>
+            </Button>
           )}
           {(!content || isEditing) && (
-            <BaseButton
+            <Button
               className={cn(
                 submitButtonClasses,
                 !editor || isEditorEmpty ? 'bg-surface-well text-fg-muted' : 'bg-accent text-white'
               )}
               onClick={() => onSubmit()}
-              size='medium'
+              size='md'
               disabled={!editor || isEditorEmpty}
               aria-label={`${buttonTitle} your response`}
               title={`${buttonTitle} your response ${modEnter}`}
             >
               {buttonTitle}
-            </BaseButton>
+            </Button>
           )}
         </div>
       )}

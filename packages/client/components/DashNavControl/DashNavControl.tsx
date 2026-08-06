@@ -1,5 +1,5 @@
+import {Button} from '../../ui/Button/Button'
 import IconLabel from '../IconLabel'
-import LinkButton from '../LinkButton'
 
 interface Props {
   icon: string
@@ -10,13 +10,14 @@ interface Props {
 const DashNavControl = (props: Props) => {
   const {icon, label, onClick} = props
   return (
-    <LinkButton
+    <Button
       aria-label={label}
       onClick={onClick}
-      className='font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+      size='default'
+      className='bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
     >
       <IconLabel icon={icon} iconLarge label={label} />
-    </LinkButton>
+    </Button>
   )
 }
 

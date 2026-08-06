@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
-import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
@@ -126,17 +126,17 @@ const OrgPlan = (props: Props) => {
           </li>
         ))}
       </ul>
-      <BaseButton
+      <Button
         className={cn(
           'w-4/5 rounded-md font-semibold opacity-100 transition-all duration-500 ease-[ease] hover:opacity-100',
           CTA_STYLES[buttonStyle]
         )}
         disabled={buttonStyle === 'disabled'}
         title={buttonTooltip}
-        size='medium'
+        size='md'
       >
         {buttonLabel}
-      </BaseButton>
+      </Button>
     </div>
   )
 }

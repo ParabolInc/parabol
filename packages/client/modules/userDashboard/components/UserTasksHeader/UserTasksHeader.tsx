@@ -7,8 +7,8 @@ import type {
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
-import LinkButton from '~/components/LinkButton'
 import {FilterLabels} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
@@ -152,14 +152,15 @@ const UserTasksHeader = (props: Props) => {
           <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
         )}
 
-        <LinkButton
-          className='my-1 sidebar-left:my-0 shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+        <Button
+          size='default'
+          className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
-          dataCy='archived-checkbox'
+          data-cy='archived-checkbox'
         >
           <Checkbox className='mr-2 w-6 text-center text-[24px]' active={showArchived} />
           {'Archived'}
-        </LinkButton>
+        </Button>
       </DashSectionControls>
     </DashSectionHeader>
   )

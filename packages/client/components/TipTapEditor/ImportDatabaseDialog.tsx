@@ -14,7 +14,6 @@ import {DialogTitle} from '../../ui/Dialog/DialogTitle'
 import {Spinner} from '../../ui/Spinner/Spinner'
 import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
-import FlatPrimaryButton from '../FlatPrimaryButton'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -242,9 +241,9 @@ export const ImportDatabaseDialog = (props: Props) => {
           <Button variant='outline' size='md' onClick={onUpload}>
             Cancel & Upload
           </Button>
-          <FlatPrimaryButton size='medium' onClick={onImport}>
+          <Button variant='primary' size='md' onClick={onImport}>
             Import
-          </FlatPrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

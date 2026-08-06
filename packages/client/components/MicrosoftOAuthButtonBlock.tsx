@@ -2,9 +2,9 @@ import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import logo from '../styles/theme/images/graphics/microsoft.svg'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
-import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
 
@@ -36,17 +36,19 @@ const MicrosoftOAuthButtonBlock = (props: Props) => {
   }
   return (
     <>
-      <RaisedButton
+      <Button
+        variant='raised'
+        size='sm'
         onClick={openOAuth}
-        waiting={submitting}
+        disabled={submitting}
         className={cn(
-          'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
+          'mt-4 h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
           submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >
         <img src={logo} className={cn('mx-4 h-[18px] w-[18px]', submitting && 'saturate-0')} />
         <div>{label}</div>
-      </RaisedButton>
+      </Button>
       {error && !submitting && (
         <StyledError className='mt-2 text-[13px]'>{error.message}</StyledError>
       )}

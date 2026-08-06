@@ -4,8 +4,8 @@ import {useFragment} from 'react-relay'
 import type {NewMeetingActions_team$key} from '~/__generated__/NewMeetingActions_team.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {Threshold} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import FlatPrimaryButton from './FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from './NewMeetingActionsCurrentMeetings'
 import StyledError from './StyledError'
 
@@ -65,14 +65,15 @@ const NewMeetingActions = (props: Props) => {
         <NewMeetingActionsCurrentMeetings team={team} />
       </div>
       <div className='flex flex-row flex-nowrap items-center'>
-        <FlatPrimaryButton
+        <Button
+          variant='primary'
+          size='sm'
           className='h-[50px] text-[20px]'
           onClick={onStartMeetingClick}
-          waiting={submitting}
-          disabled={isLocked}
+          disabled={isLocked || submitting}
         >
           Start Meeting
-        </FlatPrimaryButton>
+        </Button>
       </div>
     </div>
   )

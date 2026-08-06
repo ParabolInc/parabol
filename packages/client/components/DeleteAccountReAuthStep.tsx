@@ -15,7 +15,6 @@ import GoogleClientManager from '../utils/GoogleClientManager'
 import loginSSO from '../utils/loginSSO'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
 import UnderlineInput from './InputField/UnderlineInput'
-import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 
 interface Props {
@@ -138,11 +137,13 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
       <div className='flex flex-col items-start gap-2'>
         {hasGoogle && (
           <div>
-            <RaisedButton
+            <Button
+              variant='raised'
+              size='sm'
               onClick={handleGoogleReAuth}
-              waiting={googleMutationProps.submitting}
+              disabled={googleMutationProps.submitting}
               className={cn(
-                'h-10 w-60 justify-start px-4 disabled:opacity-100',
+                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
                 googleMutationProps.submitting
                   ? 'bg-slate-300 text-slate-600'
                   : 'bg-white text-slate-700'
@@ -156,7 +157,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
                 )}
               />
               <div>Sign in with Google</div>
-            </RaisedButton>
+            </Button>
             {googleMutationProps.error && !googleMutationProps.submitting && (
               <StyledError className='mt-2 text-[.8125rem]'>
                 {googleMutationProps.error.message}
@@ -166,11 +167,13 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
         )}
         {hasMicrosoft && (
           <div>
-            <RaisedButton
+            <Button
+              variant='raised'
+              size='sm'
               onClick={handleMicrosoftReAuth}
-              waiting={microsoftMutationProps.submitting}
+              disabled={microsoftMutationProps.submitting}
               className={cn(
-                'h-10 w-60 justify-start px-4 disabled:opacity-100',
+                'h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 disabled:opacity-100',
                 microsoftMutationProps.submitting
                   ? 'bg-slate-300 text-slate-600'
                   : 'bg-white text-slate-700'
@@ -184,7 +187,7 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
                 )}
               />
               <div>Sign in with Microsoft</div>
-            </RaisedButton>
+            </Button>
             {microsoftMutationProps.error && !microsoftMutationProps.submitting && (
               <StyledError className='mt-2 text-[.8125rem]'>
                 {microsoftMutationProps.error.message}

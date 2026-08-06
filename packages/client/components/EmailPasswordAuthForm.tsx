@@ -28,7 +28,6 @@ import ErrorAlert from './ErrorAlert/ErrorAlert'
 import type {AuthPageSlug} from './GenericAuthentication'
 import PasswordInputField from './PasswordInputField'
 import PlainButton from './PlainButton/PlainButton'
-import RaisedButton from './RaisedButton'
 import StyledTip from './StyledTip'
 
 interface Props {
@@ -291,9 +290,14 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
             {submitLabel}
           </Button>
         ) : (
-          <RaisedButton size='medium' disabled={false} waiting={submitting}>
+          <Button
+            variant='raised'
+            size='md'
+            className='bg-slate-200 text-slate-700'
+            disabled={submitting}
+          >
             {submitLabel}
-          </RaisedButton>
+          </Button>
         )}
       </form>
       {isSSOAuthEnabled && isInternalAuthEnabled && (

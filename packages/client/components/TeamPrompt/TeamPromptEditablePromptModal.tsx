@@ -5,11 +5,11 @@ import useForm from '~/hooks/useForm'
 import {Breakpoint} from '~/types/constEnums'
 import {Info} from '~/ui/icons'
 import Legitity from '~/validation/Legitity'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
-import RaisedButton from '../RaisedButton'
 
 const SUGGESTED_PROMPTS = [
   'What’s changed with your tasks?',
@@ -100,15 +100,15 @@ const TeamPromptEditablePromptModal = (props: Props) => {
           </div>
         ))}
         <div className='flex justify-end pt-6'>
-          <RaisedButton
-            className='ml-4 py-3 text-[18px]'
+          <Button
+            variant='raised'
+            size='md'
+            className='ml-4 bg-sky-500 py-3 text-[18px] text-white'
             disabled={!!fields.meetingPrompt.error}
             onClick={handleSubmitUpdate}
-            size='medium'
-            palette='blue'
           >
             Use prompt
-          </RaisedButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

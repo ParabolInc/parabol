@@ -9,6 +9,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import RevealTeamHealthVotesMutation from '../mutations/RevealTeamHealthVotesMutation'
 import SetTeamHealthVoteMutation from '../mutations/SetTeamHealthVoteMutation'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import getTeamHealthVoteColor from '../utils/getTeamHealthVoteColor'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -17,7 +18,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import RaisedButton from './RaisedButton'
 import StageTimerDisplay from './StageTimerDisplay'
 import TeamHealthVotingRow from './TeamHealthVotingRow'
 
@@ -142,14 +142,15 @@ const TeamHealth = (props: Props) => {
                 </RadioGroup.Root>
                 <TeamHealthVotingRow stage={localStage} />
                 {isFacilitator && (
-                  <RaisedButton
-                    palette='white'
+                  <Button
+                    variant='raised'
+                    size='sm'
                     onClick={onRevealVotes}
-                    className='mt-4 h-14 w-44 rounded-md text-slate-700 disabled:opacity-50'
+                    className='mt-4 h-14 w-44 rounded-md bg-white text-slate-700 disabled:opacity-50'
                     disabled={!canReveal}
                   >
                     Reveal Results
-                  </RaisedButton>
+                  </Button>
                 )}
               </>
             )}

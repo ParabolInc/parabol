@@ -3,10 +3,10 @@ import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {InvitationLinkErrorExpired_massInvitation$key} from '../__generated__/InvitationLinkErrorExpired_massInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
+import {Button} from '../ui/Button/Button'
 import hasToken from '../utils/hasToken'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
-import FlatPrimaryButton from './FlatPrimaryButton'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
 
@@ -44,14 +44,14 @@ const InvitationLinkErrorExpired = (props: Props) => {
         <div className='mt-5 flex justify-center'>
           {hasToken() ? (
             <>
-              <FlatPrimaryButton onClick={() => navigate('/meetings')} size='medium'>
+              <Button variant='primary' size='md' onClick={() => navigate('/meetings')}>
                 Go to Dashboard
-              </FlatPrimaryButton>
+              </Button>
             </>
           ) : (
-            <FlatPrimaryButton onClick={() => navigate('/')} size='medium'>
+            <Button variant='primary' size='md' onClick={() => navigate('/')}>
               Sign In
-            </FlatPrimaryButton>
+            </Button>
           )}
         </div>
       </DialogContent>

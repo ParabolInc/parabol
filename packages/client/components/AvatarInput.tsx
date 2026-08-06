@@ -1,5 +1,5 @@
 import {type ChangeEvent, type FormEvent, lazy, Suspense, useRef} from 'react'
-import RaisedButton from './RaisedButton'
+import {Button} from '../ui/Button/Button'
 import StyledError from './StyledError'
 
 interface Props {
@@ -29,9 +29,15 @@ const AvatarInput = (props: Props) => {
   return (
     <div>
       <div className='relative flex justify-center overflow-hidden px-4 pt-2 pb-4'>
-        <RaisedButton size='small' onClick={onClick} palette='gray' type='button'>
+        <Button
+          variant='raised'
+          size='sm'
+          className='bg-slate-200 text-slate-700'
+          onClick={onClick}
+          type='button'
+        >
           {'Choose File'}
-        </RaisedButton>
+        </Button>
         <form onSubmit={onChange}>
           <input
             className='hidden'

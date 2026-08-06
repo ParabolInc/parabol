@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
+import {Button} from '~/ui/Button/Button'
 import type {NewTeamQuery} from '../../__generated__/NewTeamQuery.graphql'
 import IconLabel from '../../components/IconLabel'
-import LinkButton from '../../components/LinkButton'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import {ExternalLinks} from '../../types/constEnums'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
@@ -56,13 +56,13 @@ const NewTeam = (props: Props) => {
                 don't share your email domain. New Organizations
                 start out on the Free Starter Plan.`}
               </div>
-              <LinkButton
-                className='mx-auto h-8'
-                palette='blue'
+              <Button
+                size='default'
+                className='mx-auto h-8 bg-transparent p-0 text-[14px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
                 onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}
               >
                 <IconLabel icon='open_in_new' iconAfter label='Learn More' />
-              </LinkButton>
+              </Button>
             </div>
           </div>
         )}

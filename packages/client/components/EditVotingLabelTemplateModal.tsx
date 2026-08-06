@@ -5,7 +5,6 @@ import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import BasicInput from './InputField/BasicInput'
 import PlainButton from './PlainButton/PlainButton'
-import RaisedButton from './RaisedButton'
 
 interface Props {
   isOpen: boolean
@@ -59,9 +58,9 @@ const EditVotingLabelTemplateModal = (props: Props) => {
             <Button variant='outline' size='md' onClick={onClose}>
               Cancel
             </Button>
-            <RaisedButton onClick={onSave} size='medium' palette={'blue'}>
+            <Button variant='raised' size='md' className='bg-sky-500 text-white' onClick={onSave}>
               Save
-            </RaisedButton>
+            </Button>
           </div>
         </div>
       </DialogContent>

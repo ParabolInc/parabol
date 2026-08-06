@@ -9,6 +9,7 @@ import type {PokerActiveVoting_stage$key} from '../__generated__/PokerActiveVoti
 import useAtmosphere from '../hooks/useAtmosphere'
 import PokerRevealVotesMutation from '../mutations/PokerRevealVotesMutation'
 import {PokerCards} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import AvatarList from './AvatarList'
 import CircularProgress from './CircularProgress'
@@ -16,7 +17,6 @@ import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import MiniPokerCard from './MiniPokerCard'
 import PokerVotingNoVotes from './PokerVotingNoVotes'
 import PokerVotingRowBase from './PokerVotingRowBase'
-import RaisedButton from './RaisedButton'
 import TipBanner from './TipBanner'
 import {JIRA_EXPORT_UPGRADE_MODAL_DISMISSED_KEY} from './useSetTaskEstimate'
 
@@ -156,7 +156,9 @@ const PokerActiveVoting = (props: Props) => {
       </PokerVotingRowBase>
       <div className='min-h-12 px-4 py-2'>
         {showRevealButton && (
-          <RaisedButton
+          <Button
+            variant='raised'
+            size='sm'
             className='relative h-14 bg-surface-card font-semibold text-fg-secondary'
             disabled={submitting}
             onClick={() => reveal()}
@@ -179,7 +181,7 @@ const PokerActiveVoting = (props: Props) => {
             <div className={cn('pl-2', allVotesIn ? 'text-jade-400' : 'text-fg-secondary')}>
               {'Reveal Votes'}
             </div>
-          </RaisedButton>
+          </Button>
         )}
         {error && (
           <div className='pt-1 pl-2 font-semibold text-[14px] text-fg-error'>{error.message}</div>

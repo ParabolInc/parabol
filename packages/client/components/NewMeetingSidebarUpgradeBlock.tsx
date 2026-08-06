@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {Button} from '../ui/Button/Button'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import FlatPrimaryButton from './FlatPrimaryButton'
 import IconButton from './IconButton'
 
 interface Props {
@@ -65,9 +65,9 @@ const NewMeetingSidebarUpgradeBlock = (props: Props) => {
         </div>
 
         <div className='mt-2'>
-          <FlatPrimaryButton onClick={handleUpgradeClick} size='small' className='w-full'>
+          <Button variant='primary' size='sm' onClick={handleUpgradeClick} className='w-full'>
             Upgrade
-          </FlatPrimaryButton>
+          </Button>
         </div>
       </div>
     </div>

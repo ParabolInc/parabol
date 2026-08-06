@@ -1,9 +1,8 @@
 import {ArrowDropDown as ArrowDropDownIcon, Close} from '~/ui/icons'
 import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
-import RaisedButton from '../../../../components/RaisedButton'
 import ZoomProviderLogo from '../../../../components/ZoomProviderLogo'
-import {Elevation} from '../../../../styles/elevation'
+import {Button} from '../../../../ui/Button/Button'
 import {Menu} from '../../../../ui/Menu/Menu'
 import {MenuContent} from '../../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../../ui/Menu/MenuItem'
@@ -35,9 +34,13 @@ const VideoConferencing = (props: Props) => {
         <div className='py-3'>
           <Menu
             trigger={
-              <RaisedButton className='rounded-sm px-4 py-1.5' elevationHovered={Elevation.Z3}>
+              <Button
+                variant='raised'
+                size='sm'
+                className='rounded-sm bg-slate-200 px-4 py-1.5 text-slate-700'
+              >
                 {'Add Video Conferencing'} <ArrowDropDownIcon />
-              </RaisedButton>
+              </Button>
             }
           >
             <MenuContent className='z-30'>

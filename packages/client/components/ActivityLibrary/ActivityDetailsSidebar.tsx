@@ -20,9 +20,9 @@ import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import type {CompletedHandler} from '../../types/relayMutations'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import sortByTier from '../../utils/sortByTier'
-import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
@@ -333,13 +333,15 @@ const ActivityDetailsSidebar = (props: Props) => {
             placeholder={meetingNamePlaceholder}
             withRecurrence={withRecurrence}
           />
-          <FlatPrimaryButton
+          <Button
+            variant='primary'
+            size='sm'
             onClick={() => handleStartActivity()}
-            waiting={submitting}
+            disabled={submitting}
             className='h-14'
           >
             <div className='text-lg'>Start Activity</div>
-          </FlatPrimaryButton>
+          </Button>
         </div>
       </div>
       {upgradeModalState && (

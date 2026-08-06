@@ -6,14 +6,14 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
 import type {PokerDimensionValueControl_stage$key} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
-import LinkButton from './LinkButton'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScorePicker from './PokerDimensionFinalScorePicker'
 import StyledError from './StyledError'
 
 const linkButtonClassName =
-  'ml-2 h-10 px-2 py-0 font-semibold text-accent hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+  'bg-transparent p-0 text-[14px] text-fg-primary leading-5 shadow-none hover:text-accent focus:text-accent active:text-accent ml-2 h-10 px-2 py-0 font-semibold text-accent hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
 
 interface Props {
   isFacilitator: boolean
@@ -160,15 +160,15 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <LinkButton className={linkButtonClassName} onClick={onSubmitScore}>
+                <Button size='default' className={linkButtonClassName} onClick={onSubmitScore}>
                   {'Update'}
-                </LinkButton>
+                </Button>
                 {errorStr && <StyledError className='pl-2 text-left'>{errorStr}</StyledError>}
               </>
             ) : (
-              <LinkButton className={linkButtonClassName} onClick={handleLabelClick}>
+              <Button size='default' className={linkButtonClassName} onClick={handleLabelClick}>
                 {'Edit Score'}
-              </LinkButton>
+              </Button>
             )}
           </>
         )}

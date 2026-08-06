@@ -3,9 +3,9 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {Threshold} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import {Add} from '~/ui/icons'
 import type {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
-import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {positionAfter} from '../../../shared/sortOrder'
 
@@ -47,15 +47,15 @@ const AddTemplatePrompt = (props: Props) => {
   }
   if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
-    <LinkButton
-      palette='blue'
+    <Button
+      size='default'
       onClick={addPrompt}
-      waiting={submitting}
-      className='m-0 mb-4 flex items-center justify-start px-0 py-1 text-base outline-none'
+      disabled={submitting}
+      className='m-0 mb-4 flex items-center justify-start bg-transparent p-0 px-0 py-1 text-[14px] text-base text-sky-500 leading-5 shadow-none outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
     >
       <Add className='mx-4 block' />
       <div>Add another prompt</div>
-    </LinkButton>
+    </Button>
   )
 }
 
