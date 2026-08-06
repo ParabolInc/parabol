@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import {useLocation, useParams} from 'react-router'
-import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
 import {PALETTE} from '../styles/paletteV3'
 import AuthenticationDialog from './AuthenticationDialog'
@@ -30,10 +29,20 @@ const Container = styled('div')({
 })
 
 const LinkButton = styled(PlainButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   ':hover': {
-    color: PALETTE.SKY_500,
+    color: 'var(--color-accent)',
     textDecoration: 'underline'
+  }
+})
+
+const SupportLink = styled('a')({
+  color: PALETTE.SKY_600,
+  fontWeight: 600,
+  textDecoration: 'none',
+  // sky-600 is too dark to read on the dark card
+  '.theme-dark &': {
+    color: 'var(--color-accent)'
   }
 })
 
@@ -63,15 +72,14 @@ const SubmittedForgotPasswordPage = (props: Props) => {
   const email = searchParams.get('email')
   const contactSupportCopy = (
     <>
-      <a
+      <SupportLink
         href={'mailto:love@parabol.co'}
         rel='noopener noreferrer'
         target='_blank'
-        style={emailLinkStyle}
         title={'love@parabol.co'}
       >
         {'click here '}
-      </a>
+      </SupportLink>
       {'to contact support.'}
     </>
   )

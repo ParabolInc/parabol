@@ -15,6 +15,7 @@ interface Props {
 
 const ErrorAlertWrapper = styled('div')({
   backgroundColor: PALETTE.TOMATO_100,
+  color: PALETTE.SLATE_700,
   borderRadius: Radius.TOOLTIP,
   display: 'flex',
   alignItems: 'center',

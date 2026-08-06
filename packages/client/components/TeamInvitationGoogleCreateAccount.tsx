@@ -5,7 +5,6 @@ import {useFragment} from 'react-relay'
 import {useParams} from 'react-router'
 import type {TeamInvitationGoogleCreateAccount_verifiedInvitation$key} from '../__generated__/TeamInvitationGoogleCreateAccount_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import {PALETTE} from '../styles/paletteV3'
 import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import AuthPrivacyFooter from './AuthPrivacyFooter'
 import DialogContent from './DialogContent'
@@ -38,7 +37,7 @@ const CopyMargins = styled('div')({
 
 const UseEmailFallback = styled(PlainButton)({
   margin: '1rem',
-  color: PALETTE.SKY_500
+  color: 'var(--color-accent)'
 })
 
 const TeamName = styled('span')({

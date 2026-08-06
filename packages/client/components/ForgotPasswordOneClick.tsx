@@ -3,7 +3,6 @@ import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import EmailPasswordResetMutation from '~/mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {
@@ -11,7 +10,7 @@ interface Props {
 }
 
 const ForgotButton = styled(PlainButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   marginTop: '1rem'
 })
 

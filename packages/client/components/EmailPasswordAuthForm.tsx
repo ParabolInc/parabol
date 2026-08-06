@@ -11,7 +11,6 @@ import AcceptTeamInvitationMutation from '../mutations/AcceptTeamInvitationMutat
 import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
 import {passwordStrength} from '../shared/passwordStrength'
-import {PALETTE} from '../styles/paletteV3'
 import {LocalStorageKey, Security} from '../types/constEnums'
 import {cn} from '../ui/cn'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
@@ -62,7 +61,7 @@ const HelpMessage = styled(StyledTip)({
 })
 
 const UseSSO = styled(PlainButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   display: 'flex',
   fontSize: 14,
   justifyContent: 'center',

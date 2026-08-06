@@ -9,7 +9,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
-import {PALETTE} from '../styles/paletteV3'
 import {AuthenticationError} from '../types/constEnums'
 import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
@@ -54,9 +53,9 @@ const ErrorMessage = styled(StyledError)({
 })
 
 const BrandedLink = styled(PlainButton)({
-  color: PALETTE.SKY_500,
+  color: 'var(--color-accent)',
   ':hover,:focus': {
-    color: PALETTE.SKY_500,
+    color: 'var(--color-accent)',
     textDecoration: 'underline'
   }
 })
@@ -69,7 +68,7 @@ const DialogSubTitle = styled('div')({
 })
 
 const linkStyle = {
-  color: PALETTE.TOMATO_500,
+  color: 'var(--color-fg-error)',
   fontSize: 12,
   textDecoration: 'underline'
 }
