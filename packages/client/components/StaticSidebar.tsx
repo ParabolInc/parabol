@@ -31,6 +31,8 @@ const Fixed = styled('div')<StyleProps>(({isOpen}) => ({
 // giving the browser a clear before/after for the CSS transition to fire.
 // height is intentionally omitted so useCoverable can override it via style.height
 const RIGHT_DRAWER_STYLE: CSSProperties = {
+  // positioned so its box shadow paints above the positioned task cards/columns beside it
+  position: 'relative',
   overflow: 'hidden',
   flexShrink: 0,
   flexGrow: 0,
