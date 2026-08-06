@@ -1,6 +1,6 @@
-import {Event} from '@mui/icons-material'
 import ms from 'ms'
 import {type DayModifiers, DayPicker} from 'react-day-picker'
+import {Event} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import {shortDays, shortMonths} from '../utils/makeDateString'

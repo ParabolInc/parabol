@@ -1,4 +1,4 @@
-import FavoriteIcon from '@mui/icons-material/Favorite'
+import {Favorite as FavoriteIcon} from '~/ui/icons'
 import type {MeetingTypeEnum} from '../../__generated__/MeetingSelectorQuery.graphql'
 import type {CardTheme} from './ActivityCard'
 

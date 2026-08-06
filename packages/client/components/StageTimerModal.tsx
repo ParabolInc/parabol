@@ -1,7 +1,7 @@
-import {Event as EventIcon, Timer as TimerIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Event as EventIcon, Timer as TimerIcon} from '~/ui/icons'
 import type {StageTimerModal_stage$key} from '../__generated__/StageTimerModal_stage.graphql'
 import type {StageTimerModal_teamMember$key} from '../__generated__/StageTimerModal_teamMember.graphql'
 import type {MenuProps} from '../hooks/useMenu'

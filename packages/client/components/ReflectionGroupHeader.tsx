@@ -1,7 +1,7 @@
-import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef, type Ref, type RefObject} from 'react'
 import {useFragment} from 'react-relay'
+import {Edit} from '~/ui/icons'
 import type {ReflectionGroupHeader_meeting$key} from '../__generated__/ReflectionGroupHeader_meeting.graphql'
 import type {ReflectionGroupHeader_reflectionGroup$key} from '../__generated__/ReflectionGroupHeader_reflectionGroup.graphql'
 import {PortalStatus} from '../hooks/usePortal'

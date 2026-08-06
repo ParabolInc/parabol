@@ -1,4 +1,3 @@
-import {CircularProgress} from '@mui/material'
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
@@ -11,6 +10,7 @@ import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
+import {Spinner} from '../../../ui/Spinner/Spinner'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
 import {getColumnMeta, getColumns, getData, getDataEntries, getRows, type RowDataMap} from './data'
@@ -150,7 +150,7 @@ export const ImportDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
           <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
         {!records ? (

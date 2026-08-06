@@ -1,5 +1,5 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import {useState} from 'react'
+import {ContentCopy as ContentCopyIcon} from '~/ui/icons'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
@@ -38,7 +38,7 @@ export const PersonalAccessTokenCreateSuccess = ({token, onClose}: Props) => {
                 className='flex shrink-0 cursor-pointer rounded p-1 text-fg-muted hover:bg-surface-hover hover:text-fg-primary'
                 title='Copy to clipboard'
               >
-                <ContentCopyIcon fontSize='small' />
+                <ContentCopyIcon className='text-[20px]' />
               </button>
             </TooltipTrigger>
             <TooltipContent>{'Copied!'}</TooltipContent>

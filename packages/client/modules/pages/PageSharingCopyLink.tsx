@@ -1,4 +1,4 @@
-import Link from '@mui/icons-material/Link'
+import {Link} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'

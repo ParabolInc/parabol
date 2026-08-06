@@ -1,5 +1,5 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {Add} from '@mui/icons-material'
+import {Add} from '~/ui/icons'
 import {appendColumn} from './data'
 import {useFocus} from './useFocus'
 

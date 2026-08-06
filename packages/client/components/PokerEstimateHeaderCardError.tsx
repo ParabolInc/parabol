@@ -1,4 +1,4 @@
-import DeleteIcon from '@mui/icons-material/Delete'
+import {Delete as DeleteIcon} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
 import {cn} from '../ui/cn'

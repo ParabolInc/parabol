@@ -1,5 +1,5 @@
-import {Add} from '@mui/icons-material'
 import type * as React from 'react'
+import {Add} from '~/ui/icons'
 import FloatingActionButton from './FloatingActionButton'
 
 interface Props {

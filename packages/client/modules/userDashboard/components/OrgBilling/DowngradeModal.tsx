@@ -1,8 +1,7 @@
-import {Error as ErrorIcon} from '@mui/icons-material'
-import {Checkbox} from '@mui/material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {CheckBox, CheckBoxOutlineBlank, Error as ErrorIcon} from '~/ui/icons'
 import type {DowngradeModal_organization$key} from '../../../../__generated__/DowngradeModal_organization.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
@@ -87,10 +86,11 @@ const DowngradeModal = (props: Props) => {
                   onClick={() => handleCheck(reason)}
                   className='flex w-full flex-nowrap items-center'
                 >
-                  <Checkbox
-                    checked={selectedReasons.includes(reason)}
-                    className='h-7 w-7 select-none text-center [&_svg]:text-[28px]'
-                  />
+                  {selectedReasons.includes(reason) ? (
+                    <CheckBox className='text-[28px] text-accent' />
+                  ) : (
+                    <CheckBoxOutlineBlank className='text-[28px] text-fg-muted' />
+                  )}
                   <div className='w-full pl-2 text-[16px] text-fg-primary leading-8'>{reason}</div>
                 </PlainButton>
               ))}

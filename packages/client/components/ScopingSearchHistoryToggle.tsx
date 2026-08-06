@@ -1,4 +1,4 @@
-import {ExpandMore, Search} from '@mui/icons-material'
+import {ExpandMore, Search} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import PlainButton from './PlainButton/PlainButton'

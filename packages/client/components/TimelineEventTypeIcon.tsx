@@ -7,7 +7,7 @@ import {
   Lock,
   Style,
   Timeline
-} from '@mui/icons-material'
+} from '~/ui/icons'
 
 interface Props {
   iconName?: string

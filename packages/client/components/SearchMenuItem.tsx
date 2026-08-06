@@ -1,6 +1,6 @@
-import {Search} from '@mui/icons-material'
 import type * as React from 'react'
 import {forwardRef} from 'react'
+import {Search} from '~/ui/icons'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
 import MenuItemLabel from './MenuItemLabel'
 import MenuSearch from './MenuSearch'

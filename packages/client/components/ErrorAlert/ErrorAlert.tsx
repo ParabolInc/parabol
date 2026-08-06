@@ -4,7 +4,7 @@
  *   [ (!) Your Message Here ]
  *
  */
-import {Warning} from '@mui/icons-material'
+import {Warning} from '~/ui/icons'
 
 interface Props {
   message: string

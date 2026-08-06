@@ -1,6 +1,6 @@
-import SearchIcon from '@mui/icons-material/Search'
 import {useRef, useState} from 'react'
 import {Input} from '~/ui/Input/Input'
+import {Search as SearchIcon} from '~/ui/icons'
 import type {SearchDateTypeEnum} from '../../__generated__/SearchDialogResultsQuery.graphql'
 import {useDebouncedSearch} from '../../hooks/useDebouncedSearch'
 import {ModIcon} from '../../utils/platform'
@@ -37,8 +37,7 @@ export const SearchDialogContent = (props: Props) => {
       <div className='flex items-center px-2 py-2'>
         <SearchIcon
           data-dirty={inputQuery ? '' : undefined}
-          className='mr-3 text-fg-muted data-dirty:text-fg-primary'
-          sx={{fontSize: 22}}
+          className='mr-3 text-[22px] text-fg-muted data-dirty:text-fg-primary'
         />{' '}
         <Input
           autoFocus
@@ -79,7 +78,7 @@ export const SearchDialogContent = (props: Props) => {
       <div className='flex items-center justify-between border-hairline border-t px-4 py-2.5 text-[11px] text-fg-muted'>
         <div className='flex items-center gap-4'>
           <span className='flex items-center gap-1'>
-            <ModIcon sx={{fontSize: 12}} /> + Enter to open in new tab
+            <ModIcon className='text-[12px]' /> + Enter to open in new tab
           </span>
           <span className='flex items-center gap-1'>
             <span className='rounded border border-hairline-strong bg-surface-well px-1'>↑↓</span>{' '}

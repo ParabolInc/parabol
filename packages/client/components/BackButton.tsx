@@ -1,5 +1,5 @@
-import {ArrowBack} from '@mui/icons-material'
 import {Link} from 'react-router'
+import {ArrowBack} from '~/ui/icons'
 import FlatButton from './FlatButton'
 
 interface Props {

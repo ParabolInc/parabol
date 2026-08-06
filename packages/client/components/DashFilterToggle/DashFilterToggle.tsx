@@ -1,5 +1,5 @@
-import {FilterList, Group, Person} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
+import {FilterList, Group, Person} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import LinkButton from '../LinkButton'
 

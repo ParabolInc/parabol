@@ -1,5 +1,5 @@
-import {Add} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
+import {Add} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import FlatPrimaryButton from './FlatPrimaryButton'
 

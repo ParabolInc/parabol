@@ -1,6 +1,6 @@
-import {CircularProgress} from '@mui/material'
 import type {LinearProjectOrTeam} from '../hooks/useLinearProjectsAndTeams'
 import type {MenuProps} from '../hooks/useMenu'
+import {Spinner} from '../ui/Spinner/Spinner'
 import {getLinearRepoName} from '../utils/getLinearRepoName'
 import Checkbox from './Checkbox'
 import {EmptyDropdownMenuItemLabel} from './EmptyDropdownMenuItemLabel'
@@ -64,7 +64,7 @@ const LinearSelectorMenu = (props: LinearSelectorMenuProps) => {
       {items.length === 0 &&
         (isLoading ? (
           <EmptyDropdownMenuItemLabel key='results-loading'>
-            <CircularProgress />
+            <Spinner />
           </EmptyDropdownMenuItemLabel>
         ) : (
           <EmptyDropdownMenuItemLabel key='no-results'>

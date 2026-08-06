@@ -1,4 +1,4 @@
-import {Add} from '@mui/icons-material'
+import {Add} from '~/ui/icons'
 import LinkButton from '../../../components/LinkButton'
 
 interface Props {

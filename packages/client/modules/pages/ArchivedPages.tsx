@@ -1,9 +1,11 @@
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever'
-import DescriptionIcon from '@mui/icons-material/Description'
-import UndoIcon from '@mui/icons-material/Undo'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
+import {
+  DeleteForever as DeleteForeverIcon,
+  Description as DescriptionIcon,
+  Undo as UndoIcon
+} from '~/ui/icons'
 import type {ArchivedPagesQuery} from '../../__generated__/ArchivedPagesQuery.graphql'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
 import {GQLID} from '../../utils/GQLID'

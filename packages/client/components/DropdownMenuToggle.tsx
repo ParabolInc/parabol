@@ -1,6 +1,7 @@
 /* DEPRECATED. SEE DropdownToggleV2 */
-import {ExpandMore} from '@mui/icons-material'
+
 import {forwardRef, type ReactElement, type Ref} from 'react'
+import {ExpandMore} from '~/ui/icons'
 import type useMenu from '../hooks/useMenu'
 import {cn} from '../ui/cn'
 

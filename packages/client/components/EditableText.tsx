@@ -1,7 +1,7 @@
-import {Edit} from '@mui/icons-material'
 import type * as React from 'react'
 import {forwardRef, useEffect, useRef, useState} from 'react'
 import TextAreaAutoSize from 'react-textarea-autosize'
+import {Edit} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import type Legitity from '../validation/Legitity'
 

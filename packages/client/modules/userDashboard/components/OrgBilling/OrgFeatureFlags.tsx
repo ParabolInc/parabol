@@ -1,6 +1,6 @@
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Info as InfoIcon} from '~/ui/icons'
 import type {OrgFeatureFlags_organization$key} from '../../../../__generated__/OrgFeatureFlags_organization.graphql'
 import Panel from '../../../../components/Panel/Panel'
 import Toggle from '../../../../components/Toggle/Toggle'

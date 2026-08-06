@@ -1,6 +1,6 @@
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {Close} from '~/ui/icons'
 import type {OrgPlanDrawer_organization$key} from '../../../../__generated__/OrgPlanDrawer_organization.graphql'
 import Confetti from '../../../../components/Confetti'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'

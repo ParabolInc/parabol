@@ -1,5 +1,3 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -10,6 +8,10 @@ import type {ActivityDetailsSidebar_template$key} from '~/__generated__/Activity
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import {
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon
+} from '~/ui/icons'
 import type {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'

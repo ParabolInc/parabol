@@ -1,5 +1,5 @@
-import ExpandMore from '@mui/icons-material/ExpandMore'
 import {forwardRef, type ReactNode} from 'react'
+import {ExpandMore} from '~/ui/icons'
 import {cn} from '../cn'
 
 export const MenuLabelTrigger = forwardRef<

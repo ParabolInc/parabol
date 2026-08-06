@@ -1,8 +1,10 @@
-import HeadphonesIcon from '@mui/icons-material/Headphones'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import StopIcon from '@mui/icons-material/Stop'
 import * as RadixPopover from '@radix-ui/react-popover'
 import {useRef, useState} from 'react'
+import {
+  Headphones as HeadphonesIcon,
+  PlayArrow as PlayArrowIcon,
+  Stop as StopIcon
+} from '~/ui/icons'
 import useMeetingMusicSync from '../hooks/useMeetingMusicSync'
 import {cn} from '../ui/cn'
 import BottomNavControl from './BottomNavControl'
@@ -52,7 +54,6 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 'size-6',
                 isPlaying ? 'animate-pulse text-fg-primary' : 'text-fg-primary'
               )}
-              fontSize='medium'
             />
             <span className='mt-0.5 font-medium text-fg-primary text-xs'>Music</span>
           </span>
@@ -65,7 +66,7 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
         >
           <div className='flex flex-col gap-4 rounded-lg bg-surface-card p-4 shadow-2xl'>
             <div className='mb-1 flex items-center gap-2'>
-              <HeadphonesIcon className='text-blue-500' fontSize='small' />
+              <HeadphonesIcon className='text-[20px] text-blue-500' />
               <span className='font-semibold text-base text-fg-primary'>Background music</span>
             </div>
             <div className='relative'>
@@ -114,9 +115,10 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 disabled={!playEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
+                  'bg-jade-500 text-white',
                   playEnabled
-                    ? 'cursor-pointer bg-jade-500 text-white shadow-sm hover:bg-jade-400'
-                    : 'cursor-not-allowed bg-jade-100 text-jade-300'
+                    ? 'cursor-pointer shadow-sm hover:bg-jade-400'
+                    : 'cursor-not-allowed opacity-50'
                 )}
                 aria-label='Play'
               >
@@ -128,9 +130,10 @@ const BottomControlBarMusic = ({meetingId}: Props) => {
                 disabled={!stopEnabled}
                 className={cn(
                   'flex min-w-[48px] items-center justify-center rounded-md px-3 py-2 font-semibold text-sm transition',
+                  'bg-tomato-600 text-white',
                   stopEnabled
-                    ? 'cursor-pointer bg-tomato-600 text-white shadow-sm hover:bg-tomato-500'
-                    : 'cursor-not-allowed bg-tomato-100 text-tomato-400'
+                    ? 'cursor-pointer shadow-sm hover:bg-tomato-500'
+                    : 'cursor-not-allowed opacity-50'
                 )}
                 aria-label='Stop'
               >

@@ -1,4 +1,4 @@
-import {CreditCard, Extension, Group, Key} from '@mui/icons-material'
+import {CreditCard, Extension, Group, Key} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 
 //    TODO:

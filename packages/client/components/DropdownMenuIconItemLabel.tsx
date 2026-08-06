@@ -1,4 +1,4 @@
-import {Business, Group, Public} from '@mui/icons-material'
+import {Business, Group, Public} from '~/ui/icons'
 
 interface Props {
   //FIXME 6062: change to React.ComponentType

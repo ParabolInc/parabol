@@ -1,15 +1,15 @@
-import {
-  Close as CloseIcon,
-  Link,
-  PersonAdd as PersonAddIcon,
-  Replay as ReplayIcon
-} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {
+  Close as CloseIcon,
+  Link,
+  PersonAdd as PersonAddIcon,
+  Replay as ReplayIcon
+} from '~/ui/icons'
 import type {MeetingCardOptionsMenuQuery} from '../__generated__/MeetingCardOptionsMenuQuery.graphql'
 import type {MenuProps} from '../hooks/useMenu'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'

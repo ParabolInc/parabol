@@ -1,7 +1,7 @@
-import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {Facilitator_meeting$key} from '~/__generated__/Facilitator_meeting.graphql'
+import {MoreVert} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'

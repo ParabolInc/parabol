@@ -1,5 +1,5 @@
-import {AddOutlined} from '@mui/icons-material'
 import {PollsAriaLabels} from '~/types/constEnums'
+import {AddOutlined} from '~/ui/icons'
 import PlainButton from '../PlainButton/PlainButton'
 
 interface Props {

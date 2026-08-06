@@ -1,5 +1,5 @@
-import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '@mui/icons-material'
 import type * as React from 'react'
+import {ArrowBack, ArrowDownward, ArrowForward, ArrowUpward} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
 import BaseTag from './Tag/BaseTag'
 

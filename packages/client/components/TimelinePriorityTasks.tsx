@@ -4,10 +4,10 @@ import {
   type DroppableProvided,
   type DropResult
 } from '@hello-pangea/dnd'
-import {Whatshot} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {Whatshot} from '~/ui/icons'
 import type {TimelinePriorityTasks_viewer$key} from '../__generated__/TimelinePriorityTasks_viewer.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useEventCallback from '../hooks/useEventCallback'

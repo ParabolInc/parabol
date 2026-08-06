@@ -1,4 +1,4 @@
-import {Edit as EditIcon} from '@mui/icons-material'
+import {Edit as EditIcon} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import Avatar from '../Avatar/Avatar'
 

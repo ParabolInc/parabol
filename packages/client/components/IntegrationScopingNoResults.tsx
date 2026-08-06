@@ -1,4 +1,4 @@
-import {Info as InfoIcon, Warning} from '@mui/icons-material'
+import {Info as InfoIcon, Warning} from '~/ui/icons'
 
 interface Props {
   error?: string | null

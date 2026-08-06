@@ -1,4 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close'
+import {Close as CloseIcon} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'

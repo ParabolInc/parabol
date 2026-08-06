@@ -1,6 +1,6 @@
-import {Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Search} from '~/ui/icons'
 import type {AzureDevOpsScopingSearchBar_meeting$key} from '../__generated__/AzureDevOpsScopingSearchBar_meeting.graphql'
 import AzureDevOpsScopingSearchFilterToggle from './AzureDevOpsScopingSearchFilterToggle'
 import AzureDevOpsScopingSearchInput from './AzureDevOpsScopingSearchInput'

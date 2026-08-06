@@ -38,6 +38,7 @@ export type PortalId =
   | 'newMeetingRecurrenceSettings'
   | 'updateRecurrenceSettingsModal'
   | 'recurrenceStartTimePicker'
+  | 'gcalDateTimePicker'
   | 'endRecurringMeetingModal'
   | 'cancelSeriesConfirmationModal'
   | 'templateTeamPickerModal'

@@ -1,7 +1,7 @@
-import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
+import {Link} from '~/ui/icons'
 import type {JiraServerObjectCard_result$key} from '../../../__generated__/JiraServerObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'

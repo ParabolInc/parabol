@@ -1,32 +1,34 @@
-import Add from '@mui/icons-material/Add'
-import Archive from '@mui/icons-material/Archive'
-import ArrowBack from '@mui/icons-material/ArrowBack'
-import ArrowForward from '@mui/icons-material/ArrowForward'
-import Close from '@mui/icons-material/Close'
-import Code from '@mui/icons-material/Code'
-import FormatBold from '@mui/icons-material/FormatBold'
-import FormatItalic from '@mui/icons-material/FormatItalic'
-import FormatQuote from '@mui/icons-material/FormatQuote'
-import FormatStrikethrough from '@mui/icons-material/FormatStrikethrough'
-import FormatUnderlined from '@mui/icons-material/FormatUnderlined'
-import Keyboard from '@mui/icons-material/Keyboard'
-import LabelIcon from '@mui/icons-material/Label'
-import Link from '@mui/icons-material/Link'
-import MoreVert from '@mui/icons-material/MoreVert'
-import OpenInNew from '@mui/icons-material/OpenInNew'
-import PersonPin from '@mui/icons-material/PersonPin'
-import Refresh from '@mui/icons-material/Refresh'
-import RemoveCircle from '@mui/icons-material/RemoveCircle'
-import Reply from '@mui/icons-material/Reply'
-import Search from '@mui/icons-material/Search'
-import SentimentSatisfied from '@mui/icons-material/SentimentSatisfied'
-import TaskAlt from '@mui/icons-material/TaskAlt'
-import Tune from '@mui/icons-material/Tune'
-import UnfoldLess from '@mui/icons-material/UnfoldLess'
-import UnfoldMore from '@mui/icons-material/UnfoldMore'
-import WebAsset from '@mui/icons-material/WebAsset'
-import Widgets from '@mui/icons-material/Widgets'
 import {forwardRef, type ReactNode, useMemo} from 'react'
+import {
+  Add,
+  Archive,
+  ArrowBack,
+  ArrowForward,
+  Close,
+  Code,
+  FormatBold,
+  FormatItalic,
+  FormatQuote,
+  FormatStrikethrough,
+  FormatUnderlined,
+  Keyboard,
+  Label as LabelIcon,
+  Link,
+  MoreVert,
+  OpenInNew,
+  PersonPin,
+  Refresh,
+  RemoveCircle,
+  Reply,
+  Search,
+  SentimentSatisfied,
+  TaskAlt,
+  Tune,
+  UnfoldLess,
+  UnfoldMore,
+  WebAsset,
+  Widgets
+} from '~/ui/icons'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'

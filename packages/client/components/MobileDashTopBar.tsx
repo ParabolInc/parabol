@@ -1,6 +1,6 @@
-import {Menu} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Menu} from '~/ui/icons'
 import type {MobileDashTopBar_query$key} from '../__generated__/MobileDashTopBar_query.graphql'
 import PlainButton from './PlainButton/PlainButton'
 import TopBarHelp from './TopBarHelp'

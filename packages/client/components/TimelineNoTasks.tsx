@@ -1,4 +1,4 @@
-import {ThumbUp} from '@mui/icons-material'
+import {ThumbUp} from '~/ui/icons'
 import getRallyLink from '../modules/userDashboard/helpers/getRallyLink'
 
 const TimelineNoTasks = () => {

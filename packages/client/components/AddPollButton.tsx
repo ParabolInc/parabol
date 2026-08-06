@@ -1,4 +1,4 @@
-import {PollOutlined} from '@mui/icons-material'
+import {PollOutlined} from '~/ui/icons'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {

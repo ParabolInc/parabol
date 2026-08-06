@@ -1,4 +1,4 @@
-import {CheckCircle} from '@mui/icons-material'
+import {CheckCircle} from '~/ui/icons'
 
 const benefits = ['Unlimited Teams', 'Priority Customer Support', 'Monthly Active User Billing']
 

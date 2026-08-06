@@ -1,4 +1,4 @@
-import {Chat} from '@mui/icons-material'
+import {Chat} from '~/ui/icons'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import PrimaryButton from './PrimaryButton'

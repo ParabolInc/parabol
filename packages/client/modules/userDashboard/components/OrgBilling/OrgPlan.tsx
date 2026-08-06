@@ -1,5 +1,5 @@
-import {Info} from '@mui/icons-material'
 import {useState} from 'react'
+import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
 import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'

@@ -1,4 +1,4 @@
-import {LiveHelp} from '@mui/icons-material'
+import {LiveHelp} from '~/ui/icons'
 import DialogContainer from './DialogContainer'
 import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationDialogCopy from './InvitationDialogCopy'

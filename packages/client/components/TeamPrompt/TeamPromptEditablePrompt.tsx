@@ -1,4 +1,3 @@
-import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,6 +5,7 @@ import type {TeamPromptEditablePrompt_meeting$key} from '~/__generated__/TeamPro
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import UpdateMeetingPromptMutation from '~/mutations/UpdateMeetingPromptMutation'
+import {Edit} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import TeamPromptEditablePromptModal from './TeamPromptEditablePromptModal'
 

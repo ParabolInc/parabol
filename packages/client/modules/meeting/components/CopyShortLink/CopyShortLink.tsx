@@ -1,5 +1,5 @@
-import {Link} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Link} from '~/ui/icons'
 import CopyLink from '../../../../components/CopyLink'
 import {cn} from '../../../../ui/cn'
 

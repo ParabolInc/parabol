@@ -1,5 +1,4 @@
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
-import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {
@@ -9,6 +8,7 @@ import type {
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type useGotoStageId from '~/hooks/useGotoStageId'
 import type {DeepNonNullable} from '~/types/generics'
+import {ThumbUp} from '~/ui/icons'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {cn} from '../ui/cn'
 import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'

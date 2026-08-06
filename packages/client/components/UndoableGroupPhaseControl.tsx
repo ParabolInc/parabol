@@ -1,8 +1,8 @@
-import {Edit} from '@mui/icons-material'
 import {useState} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useHotkey from '~/hooks/useHotkey'
 import ResetRetroMeetingToGroupStageMutation from '~/mutations/ResetRetroMeetingToGroupStageMutation'
+import {Edit} from '~/ui/icons'
 import lazyPreload from '~/utils/lazyPreload'
 import {Button} from '../ui/Button/Button'
 

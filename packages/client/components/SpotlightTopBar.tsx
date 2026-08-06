@@ -1,4 +1,4 @@
-import {Close} from '@mui/icons-material'
+import {Close} from '~/ui/icons'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {

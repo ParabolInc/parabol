@@ -1,7 +1,7 @@
-import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
+import {Receipt} from '~/ui/icons'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'

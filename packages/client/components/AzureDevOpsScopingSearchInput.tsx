@@ -1,7 +1,7 @@
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {Close} from '~/ui/icons'
 import type {AzureDevOpsScopingSearchInput_meeting$key} from '../__generated__/AzureDevOpsScopingSearchInput_meeting.graphql'
 import type Atmosphere from '../Atmosphere'
 import useAtmosphere from '../hooks/useAtmosphere'

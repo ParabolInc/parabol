@@ -1,7 +1,7 @@
-import {Chat} from '@mui/icons-material'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '~/mutations/ToggleTeamDrawerMutation'
+import {Chat} from '~/ui/icons'
 
 interface Props {
   teamId: string

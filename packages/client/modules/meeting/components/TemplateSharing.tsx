@@ -1,6 +1,6 @@
-import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {ExpandMore as ExpandMoreIcon, Share as ShareIcon} from '~/ui/icons'
 import type {TemplateSharing_template$key} from '../../../__generated__/TemplateSharing_template.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'

@@ -1,7 +1,7 @@
-import {Close} from '@mui/icons-material'
 import type * as React from 'react'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'react-relay'
+import {Close} from '~/ui/icons'
 import type {TaskServiceEnum} from '../__generated__/CreateTaskMutation.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {cn} from '../ui/cn'

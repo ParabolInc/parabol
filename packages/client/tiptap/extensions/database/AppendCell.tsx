@@ -1,5 +1,5 @@
 import {HocuspocusProvider} from '@hocuspocus/provider'
-import {DeleteOutline} from '@mui/icons-material'
+import {DeleteOutline} from '~/ui/icons'
 import {deleteRow} from './data'
 import {useFocus} from './useFocus'
 

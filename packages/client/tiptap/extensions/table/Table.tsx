@@ -1,5 +1,4 @@
 import {Parser} from '@json2csv/plainjs'
-import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
@@ -9,6 +8,7 @@ import {
   ReactNodeViewRenderer
 } from '@tiptap/react'
 import {useRef, useState} from 'react'
+import {FileDownload as FileDownloadIcon} from '~/ui/icons'
 import PlainButton from '../../../components/PlainButton/PlainButton'
 import {toSlug} from '../../../shared/toSlug'
 import {quickHash} from '../../../shared/utils/quickHash'

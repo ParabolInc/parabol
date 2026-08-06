@@ -1,11 +1,5 @@
-import {
-  Event,
-  Headphones,
-  HelpOutline,
-  PersonPinCircleOutlined,
-  TimerOutlined
-} from '@mui/icons-material'
 import {forwardRef, type ReactNode, type Ref} from 'react'
+import {Event, Headphones, HelpOutline, PersonPinCircleOutlined, TimerOutlined} from '~/ui/icons'
 import {cn} from '../ui/cn'
 
 const paletteColors = {

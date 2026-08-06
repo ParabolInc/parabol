@@ -1,5 +1,5 @@
-import {Add, Remove} from '@mui/icons-material'
 import {MeetingSettingsThreshold} from '~/types/constEnums'
+import {Add, Remove} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import PlainButton from './PlainButton/PlainButton'
 

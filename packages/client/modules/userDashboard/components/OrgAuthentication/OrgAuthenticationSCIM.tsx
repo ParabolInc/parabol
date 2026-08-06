@@ -1,9 +1,9 @@
-import {Add, Check, Close, RestartAlt} from '@mui/icons-material'
 import * as Popover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
 import {Link} from 'react-router'
+import {Add, Check, Close, RestartAlt} from '~/ui/icons'
 import type {
   OrgAuthenticationSCIM_saml$key,
   SCIMAuthenticationTypeEnum
@@ -54,14 +54,14 @@ const CensoredSecret = (props: {secret: string; label: string; onReset: () => vo
                       setConfirming(false)
                     }}
                   >
-                    <Check alt='yes' className='h-5 w-5 text-accent hover:text-fg-primary' />
+                    <Check className='h-5 w-5 text-accent hover:text-fg-primary' />
                   </PlainButton>
                   <PlainButton
                     onClick={() => {
                       setConfirming(false)
                     }}
                   >
-                    <Close alt='no' className='h-5 w-5 text-accent hover:text-fg-primary' />
+                    <Close className='h-5 w-5 text-accent hover:text-fg-primary' />
                   </PlainButton>
                 </div>
               </div>

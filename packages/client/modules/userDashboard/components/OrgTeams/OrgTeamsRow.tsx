@@ -1,8 +1,8 @@
-import {ChevronRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {format} from 'date-fns'
 import {useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {ChevronRight} from '~/ui/icons'
 import type {OrgTeamsRow_team$key} from '../../../../__generated__/OrgTeamsRow_team.graphql'
 
 type Props = {

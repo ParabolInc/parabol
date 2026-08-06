@@ -1,7 +1,7 @@
-import {Edit} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type MouseEvent} from 'react'
 import {useFragment} from 'react-relay'
+import {Edit} from '~/ui/icons'
 import type {GitHubFieldMenu_stage$key} from '../__generated__/GitHubFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import UpdateGitHubDimensionFieldMutation from '../mutations/UpdateGitHubDimensionFieldMutation'

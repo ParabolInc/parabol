@@ -1,4 +1,3 @@
-import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type ComponentPropsWithoutRef, forwardRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -7,6 +6,7 @@ import type {TeamPromptTopBar_meeting$key} from '~/__generated__/TeamPromptTopBa
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useRenameMeeting} from '~/hooks/useRenameMeeting'
 import NewMeetingAvatarGroup from '~/modules/meeting/components/MeetingAvatarGroup/NewMeetingAvatarGroup'
+import {KeyboardArrowLeft, KeyboardArrowRight} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import EditableText from '../EditableText'

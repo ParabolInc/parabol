@@ -1,5 +1,4 @@
 import type {DraggableProvided} from '@hello-pangea/dnd'
-import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -7,6 +6,7 @@ import type {TemplateDimensionItem_dimensions$key} from '~/__generated__/Templat
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
+import {Cancel as CancelIcon} from '~/ui/icons'
 import type {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
 import {cn} from '../../../ui/cn'
 import EditableTemplateDimension from './EditableTemplateDimension'

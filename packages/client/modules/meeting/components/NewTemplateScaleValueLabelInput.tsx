@@ -1,4 +1,3 @@
-import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type FormEvent, useEffect, useRef, useState} from 'react'
@@ -6,6 +5,7 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {PALETTE} from '~/styles/paletteV3'
+import {Cancel as CancelIcon} from '~/ui/icons'
 import type {
   NewTemplateScaleValueLabelInput_scale$data,
   NewTemplateScaleValueLabelInput_scale$key

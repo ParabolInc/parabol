@@ -1,4 +1,4 @@
-import {CancelOutlined, Close, Menu} from '@mui/icons-material'
+import {CancelOutlined, Close, Menu} from '~/ui/icons'
 import {cn} from '../ui/cn'
 import LinkButton, {type LinkButtonProps} from './LinkButton'
 

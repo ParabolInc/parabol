@@ -1,7 +1,7 @@
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {ExpandMore} from '~/ui/icons'
 import type {GitHubFieldDimensionDropdown_stage$key} from '../__generated__/GitHubFieldDimensionDropdown_stage.graphql'
 import interpolateVotingLabelTemplate from '../shared/interpolateVotingLabelTemplate'
 import {SprintPokerDefaults} from '../types/constEnums'

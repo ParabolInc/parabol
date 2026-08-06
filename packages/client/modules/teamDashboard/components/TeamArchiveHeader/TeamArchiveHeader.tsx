@@ -1,5 +1,5 @@
-import {Archive} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
+import {Archive} from '~/ui/icons'
 import DashNavControl from '../../../../components/DashNavControl/DashNavControl'
 
 interface Props {

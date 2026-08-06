@@ -1,5 +1,5 @@
-import {Info as InfoIcon} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Info as InfoIcon} from '~/ui/icons'
 import {cn} from '../ui/cn'
 
 interface Props {

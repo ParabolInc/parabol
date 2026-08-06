@@ -1,6 +1,7 @@
-import {MoreVert} from '@mui/icons-material'
-import {IconButton, Menu, MenuItem} from '@mui/material'
-import React from 'react'
+import {MoreVert} from 'parabol-client/ui/icons'
+import {Menu} from 'parabol-client/ui/Menu/Menu'
+import {MenuContent} from 'parabol-client/ui/Menu/MenuContent'
+import {MenuItem} from 'parabol-client/ui/Menu/MenuItem'
 
 type MenuOption = {
   label: string
@@ -12,49 +13,25 @@ type Props = {
 }
 
 const MoreMenu = ({options}: Props) => {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null)
-  const open = Boolean(anchorEl)
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
   return (
-    <div>
-      <IconButton
-        aria-label='more'
-        id='long-button'
-        aria-controls={open ? 'long-menu' : undefined}
-        aria-expanded={open ? 'true' : undefined}
-        aria-haspopup='true'
-        onClick={handleOpen}
-      >
-        <MoreVert />
-      </IconButton>
-      <Menu
-        id='long-menu'
-        MenuListProps={{
-          'aria-labelledby': 'long-button'
-        }}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
+    <Menu
+      trigger={
+        <button
+          aria-label='more'
+          className='flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent hover:bg-surface-hover'
+        >
+          <MoreVert className='text-[2.4rem]' />
+        </button>
+      }
+    >
+      <MenuContent align='end'>
         {options.map(({label, onClick}) => (
-          <MenuItem
-            style={{fontSize: '1.5rem'}}
-            key={label}
-            onClick={() => {
-              onClick()
-              handleClose()
-            }}
-          >
+          <MenuItem className='text-[1.5rem]' key={label} onClick={onClick}>
             {label}
           </MenuItem>
         ))}
-      </Menu>
-    </div>
+      </MenuContent>
+    </Menu>
   )
 }
 

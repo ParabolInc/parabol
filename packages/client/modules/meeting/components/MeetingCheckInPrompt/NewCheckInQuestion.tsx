@@ -1,9 +1,9 @@
-import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import {EditorContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
 import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {Create as CreateIcon, Refresh as RefreshIcon} from '~/ui/icons'
 import type {
   ModifyType,
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data

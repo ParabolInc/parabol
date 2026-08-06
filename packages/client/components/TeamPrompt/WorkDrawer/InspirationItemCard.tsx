@@ -1,7 +1,7 @@
-import CheckIcon from '@mui/icons-material/Check'
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import {Check as CheckIcon} from '~/ui/icons'
 import {Button} from '../../../ui/Button/Button'
 import {TipTapEditor} from '../../TipTapEditor/TipTapEditor'
 import {TiptapLinkExtension} from '../../TipTapEditor/TiptapLinkExtension'

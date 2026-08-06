@@ -1,4 +1,4 @@
-import {MailOutlined} from '@mui/icons-material'
+import {MailOutlined} from '~/ui/icons'
 import useBreakpoint from '../../../../hooks/useBreakpoint'
 import {Breakpoint} from '../../../../types/constEnums'
 import ProviderRowActionButton from './ProviderRowActionButton'

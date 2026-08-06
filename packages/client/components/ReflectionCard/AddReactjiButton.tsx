@@ -1,7 +1,7 @@
-import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined'
 import * as Popover from '@radix-ui/react-popover'
 import {useState} from 'react'
 import PlainButton from '~/components/PlainButton/PlainButton'
+import {AddReactionOutlined as AddReactionOutlinedIcon} from '~/ui/icons'
 import ReactjiPicker from '../ReactjiPicker'
 
 interface Props {

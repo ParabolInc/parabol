@@ -1,7 +1,7 @@
-import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '@mui/icons-material'
 import type {ReactNode} from 'react'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Cancel, ChangeHistory, GroupAdd, GroupWork, History, PersonAdd} from '~/ui/icons'
 import DismissSuggestedActionMutation from '../mutations/DismissSuggestedActionMutation'
 import PlainButton from './PlainButton/PlainButton'
 import SuggestedActionBackground from './SuggestedActionBackground'

@@ -1,7 +1,7 @@
-import {NavigateNext} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
+import {NavigateNext} from '~/ui/icons'
 import type {OrgNav_organization$key} from '../../../../__generated__/OrgNav_organization.graphql'
 
 type Props = {

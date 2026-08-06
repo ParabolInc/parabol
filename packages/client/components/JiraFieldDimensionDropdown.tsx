@@ -1,6 +1,6 @@
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {ExpandMore} from '~/ui/icons'
 import type {JiraFieldDimensionDropdown_stage$key} from '../__generated__/JiraFieldDimensionDropdown_stage.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'

@@ -1,4 +1,4 @@
-import {Bookmark, Comment, Delete, Edit, Keyboard} from '@mui/icons-material'
+import {Bookmark, Comment, Delete, Edit, Keyboard} from '~/ui/icons'
 
 interface Props {
   //FIXME 6062: change to React.ComponentType

@@ -1,4 +1,4 @@
-import {CallSplit} from '@mui/icons-material'
+import {CallSplit} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import type {PlainButtonProps} from '../PlainButton/PlainButton'
 import ReflectionCardButton from './ReflectionCardButton'

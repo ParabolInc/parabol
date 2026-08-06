@@ -1,6 +1,6 @@
-import {Check} from '@mui/icons-material'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
+import {Check} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import PlainButton from '../PlainButton/PlainButton'
 

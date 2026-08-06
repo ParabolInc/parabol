@@ -1,6 +1,6 @@
-import {Add as AddIcon} from '@mui/icons-material'
 import {useEffect, useRef, useState} from 'react'
 import {useNavigate} from 'react-router'
+import {Add as AddIcon} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
 import {cn} from '../ui/cn'

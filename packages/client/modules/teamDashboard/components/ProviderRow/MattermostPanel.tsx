@@ -1,4 +1,3 @@
-import {Info as InfoIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type FormEvent, useEffect} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,6 +5,7 @@ import type {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_v
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
+import {Info as InfoIcon} from '~/ui/icons'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
 import FlatButton from '../../../../components/FlatButton'

@@ -1,5 +1,5 @@
-import {FilterList} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
+import {FilterList} from '~/ui/icons'
 import FlatButton from './FlatButton'
 
 interface Props {

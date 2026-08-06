@@ -1,5 +1,5 @@
-import {CheckBox, Label, Numbers, Sell, Title} from '@mui/icons-material'
 import {ReactNode} from 'react'
+import {CheckBox, Label, Numbers, Sell, Title} from '~/ui/icons'
 import {DataType} from './data'
 
 export type {DataType} from './data'

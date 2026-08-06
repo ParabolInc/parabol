@@ -1,14 +1,9 @@
 import {datadogRum} from '@datadog/browser-rum'
-import {
-  ArrowForward as ArrowForwardIcon,
-  ChangeHistory,
-  GroupWork,
-  History
-} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {SelectMeetingDropdownItem_meeting$key} from '~/__generated__/SelectMeetingDropdownItem_meeting.graphql'
+import {ArrowForward as ArrowForwardIcon, ChangeHistory, GroupWork, History} from '~/ui/icons'
 import getMeetingPhase from '~/utils/getMeetingPhase'
 import {meetingTypeToIcon, phaseLabelLookup} from '~/utils/meetings/lookups'
 import {MenuItem} from '../ui/Menu/MenuItem'

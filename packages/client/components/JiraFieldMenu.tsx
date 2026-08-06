@@ -1,7 +1,7 @@
-import {OpenInNew} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
+import {OpenInNew} from '~/ui/icons'
 import type {JiraFieldMenu_stage$key} from '../__generated__/JiraFieldMenu_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'

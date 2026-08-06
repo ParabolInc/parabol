@@ -4,10 +4,7 @@ import {TooltipContent} from '../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../ui/Tooltip/TooltipTrigger'
 
 interface Props {
-  Icon: React.ComponentType<{
-    fontSize: 'small' | 'inherit' | 'large' | undefined
-    className?: string
-  }>
+  Icon: React.ComponentType<{className?: string}>
   isActive?: boolean
   onClick: () => void
   className?: string
@@ -27,7 +24,7 @@ export const BubbleMenuButton = (props: Props) => {
             className
           )}
         >
-          <Icon fontSize='small' className='text-fg-primary' />
+          <Icon className='text-[20px] text-fg-primary' />
         </button>
       </TooltipTrigger>
       <TooltipContent>{title}</TooltipContent>

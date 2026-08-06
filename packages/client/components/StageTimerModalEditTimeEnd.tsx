@@ -1,6 +1,6 @@
-import {Stop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Stop} from '~/ui/icons'
 import type {StageTimerModalEditTimeEnd_stage$key} from '../__generated__/StageTimerModalEditTimeEnd_stage.graphql'
 import type {StageTimerModalEditTimeEnd_teamMember$key} from '../__generated__/StageTimerModalEditTimeEnd_teamMember.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'

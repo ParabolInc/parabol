@@ -1,7 +1,7 @@
-import GroupsIcon from '@mui/icons-material/Groups'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Groups as GroupsIcon} from '~/ui/icons'
 import type {TeamFilterQuery} from '../../__generated__/TeamFilterQuery.graphql'
 import query from '../../__generated__/TeamFilterQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'

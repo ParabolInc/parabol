@@ -1,6 +1,8 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
+import {
+  CheckBox as CheckBoxIcon,
+  IndeterminateCheckBox as IndeterminateCheckBoxIcon
+} from '~/ui/icons'
 import {cn} from '../cn'
 import {forwardRadix} from '../forwardRadix'
 

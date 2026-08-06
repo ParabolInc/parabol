@@ -1,4 +1,3 @@
-import CircularProgress from '@mui/material/CircularProgress'
 import type {Editor, EditorEvents} from '@tiptap/react'
 import {useEffect, useMemo, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -11,6 +10,7 @@ import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import {Spinner} from '../../ui/Spinner/Spinner'
 import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
 import FlatPrimaryButton from '../FlatPrimaryButton'
@@ -173,7 +173,7 @@ export const ImportDatabaseDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
           <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
         <div className='mb-3 text-left font-semibold text-fg-secondary text-sm'>

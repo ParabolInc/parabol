@@ -1,5 +1,4 @@
-import {Close} from '@mui/icons-material'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import {ArrowDropDown as ArrowDropDownIcon, Close} from '~/ui/icons'
 import type {GcalVideoTypeEnum} from '../../../../__generated__/StartTeamPromptMutation.graphql'
 import GoogleMeetProviderLogo from '../../../../components/GoogleMeetProviderLogo'
 import RaisedButton from '../../../../components/RaisedButton'

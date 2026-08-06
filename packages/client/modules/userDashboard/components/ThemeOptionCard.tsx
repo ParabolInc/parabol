@@ -1,4 +1,4 @@
-import {Computer, DarkMode, LightMode} from '@mui/icons-material'
+import {Computer, DarkMode, LightMode} from '~/ui/icons'
 import {cn} from '../../../ui/cn'
 import type {ThemePreference} from '../../../utils/themePreference'
 

@@ -1,4 +1,3 @@
-import {Close, Search} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef} from 'react'
@@ -9,6 +8,7 @@ import type {TopBarSearch_viewer$key} from '~/__generated__/TopBarSearch_viewer.
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {useSearchDialog} from '~/modules/search/SearchContext'
 import {Input} from '~/ui/Input/Input'
+import {Close, Search} from '~/ui/icons'
 import type Atmosphere from '../Atmosphere'
 import {cn} from '../ui/cn'
 

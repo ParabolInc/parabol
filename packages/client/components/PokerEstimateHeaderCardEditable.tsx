@@ -1,4 +1,4 @@
-import {useEventCallback} from '@mui/material'
+import useEventCallback from '~/hooks/useEventCallback'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useTaskChildFocus from '../hooks/useTaskChildFocus'
 import {useTipTapTaskEditor} from '../hooks/useTipTapTaskEditor'

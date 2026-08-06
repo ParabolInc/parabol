@@ -1,6 +1,6 @@
-import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {ArrowBack} from '~/ui/icons'
 import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
 import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'

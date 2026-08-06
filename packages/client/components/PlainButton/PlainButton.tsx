@@ -14,7 +14,7 @@ const PlainButton = forwardRef((props: PlainButtonProps, ref: Ref<HTMLButtonElem
       ref={ref}
       disabled={disabled}
       className={cn(
-        'm-0 cursor-pointer appearance-none rounded-none border-0 bg-inherit p-0 text-inherit outline-none [font-family:inherit] [font-size:inherit] [text-align:inherit]',
+        'm-0 cursor-pointer appearance-none rounded-none border-0 bg-inherit p-0 text-[length:inherit] text-inherit outline-none [font-family:inherit] [text-align:inherit]',
         (disabled || waiting) &&
           'cursor-not-allowed opacity-50 hover:opacity-50 hover:shadow-none focus:opacity-50 focus:shadow-none active:animate-none active:shadow-none disabled:shadow-none',
         waiting && 'cursor-wait',

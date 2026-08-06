@@ -1,5 +1,5 @@
-import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '@mui/icons-material'
 import type * as React from 'react'
+import {CheckBox, CheckBoxOutlineBlank, IndeterminateCheckBox} from '~/ui/icons'
 import {cn} from '../ui/cn'
 
 interface Props {

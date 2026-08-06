@@ -1,7 +1,7 @@
-import {ExpandMore, FilterList} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import clsx from 'clsx'
 import {useFragment} from 'react-relay'
+import {ExpandMore, FilterList} from '~/ui/icons'
 import type {LinearProjectFilterBar_teamMember$key} from '../../../__generated__/LinearProjectFilterBar_teamMember.graphql'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useLinearProjectsAndTeams from '../../../hooks/useLinearProjectsAndTeams'

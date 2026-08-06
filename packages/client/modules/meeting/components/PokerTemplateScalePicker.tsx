@@ -1,7 +1,7 @@
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {ExpandMore} from '~/ui/icons'
 import type {PokerTemplateScalePicker_dimension$key} from '../../../__generated__/PokerTemplateScalePicker_dimension.graphql'
 import {Menu} from '../../../ui/Menu/Menu'
 import {Tooltip} from '../../../ui/Tooltip/Tooltip'

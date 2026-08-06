@@ -1,6 +1,6 @@
-import {Article} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {Article} from '~/ui/icons'
 import type {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'

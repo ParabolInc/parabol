@@ -1,8 +1,8 @@
-import {Launch} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {PokerEstimateHeaderCardIntegration_stage$key} from '~/__generated__/PokerEstimateHeaderCardIntegration_stage.graphql'
+import {Launch} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
 import {Breakpoint} from '../types/constEnums'
 import CardButton from './CardButton'
@@ -128,7 +128,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
           className='mt-2.5 flex items-center text-accent text-xs leading-5 no-underline'
         >
           <span className='text-xs'>{headerFields.linkText}</span>
-          <Launch sx={{height: 18, width: 18, marginLeft: '4px'}} />
+          <Launch className='ml-1 h-[18px] w-[18px]' />
         </a>
       </div>
     </div>

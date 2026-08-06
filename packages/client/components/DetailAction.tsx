@@ -1,5 +1,5 @@
-import {ContentCopy, Delete, Edit} from '@mui/icons-material'
 import type * as React from 'react'
+import {ContentCopy, Delete, Edit} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
 import FlatButton from './FlatButton'

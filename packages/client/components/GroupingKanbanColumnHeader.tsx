@@ -1,9 +1,9 @@
-import {Add, UnfoldLess, UnfoldMore} from '@mui/icons-material'
 import type {MouseEvent} from 'react'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import {Breakpoint} from '~/types/constEnums'
+import {Add, UnfoldLess, UnfoldMore} from '~/ui/icons'
 import FlatButton from './FlatButton'
 import RetroPrompt from './RetroPrompt'
 

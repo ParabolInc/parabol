@@ -1,9 +1,9 @@
-import {Archive} from '@mui/icons-material'
 import Menu from '~/components/Menu'
 import MenuItem from '~/components/MenuItem'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {MenuProps} from '~/hooks/useMenu'
 import ArchiveTimelineEventMutation from '~/mutations/ArchiveTimelineEventMutation'
+import {Archive} from '~/ui/icons'
 import MenuItemLabel from './MenuItemLabel'
 
 interface Props {

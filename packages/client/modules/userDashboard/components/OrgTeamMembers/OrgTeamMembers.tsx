@@ -1,7 +1,7 @@
-import {ArrowBack, Delete} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {Link} from 'react-router'
+import {ArrowBack, Delete} from '~/ui/icons'
 import type {OrgTeamMembersQuery} from '../../../../__generated__/OrgTeamMembersQuery.graphql'
 import DeleteTeamDialog from '../../../../components/DeleteTeamDialog'
 import InviteTeamMemberAvatar from '../../../../components/InviteTeamMemberAvatar'

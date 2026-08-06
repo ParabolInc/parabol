@@ -1,9 +1,9 @@
-import {Email as EmailIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrgBillingDangerZone_organization$key} from '~/__generated__/OrgBillingDangerZone_organization.graphql'
 import ArchiveOrganization from '~/modules/teamDashboard/components/ArchiveTeam/ArchiveOrganization'
+import {Email as EmailIcon} from '~/ui/icons'
 import Panel from '../../../../components/Panel/Panel'
 
 interface Props {

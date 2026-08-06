@@ -1,6 +1,6 @@
-import {TimerOff} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {TimerOff} from '~/ui/icons'
 import type {StageTimerModalEditTimeLimit_stage$key} from '../__generated__/StageTimerModalEditTimeLimit_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

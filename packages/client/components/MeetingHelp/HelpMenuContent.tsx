@@ -1,5 +1,5 @@
-import {Close} from '@mui/icons-material'
 import type {ReactNode} from 'react'
+import {Close} from '~/ui/icons'
 
 interface Props {
   children: ReactNode
