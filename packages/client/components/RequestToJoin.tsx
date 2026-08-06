@@ -5,8 +5,8 @@ import type {PushInvitationMutation$data} from '../__generated__/PushInvitationM
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import PushInvitationMutation from '../mutations/PushInvitationMutation'
+import {Button} from '../ui/Button/Button'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import PrimaryButton from './PrimaryButton'
 
 const RequestToJoinComponent = () => {
   const atmosphere = useAtmosphere()
@@ -55,7 +55,9 @@ const RequestToJoinComponent = () => {
             : "You're not a member of this team yet. Click below to request to join the team."}
         </div>
         {!isRequestSent && (
-          <PrimaryButton onClick={handleRequestJoin}>{'Request to Join'}</PrimaryButton>
+          <Button variant='primary' size='sm' onClick={handleRequestJoin}>
+            {'Request to Join'}
+          </Button>
         )}
         {error?.message && (
           <div className='mt-4 text-center font-semibold text-fg-error'>{error.message}</div>

@@ -2,13 +2,13 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import plural from '../../../../utils/plural'
 import BillingLeader from './BillingLeader'
@@ -73,9 +73,13 @@ const BillingLeaders = (props: Props) => {
               className='flex flex-row text-accent hover:cursor-pointer hover:text-fg-primary'
               onClick={handleClick}
             >
-              <FlatButton className='h-11 w-11 text-inherit hover:bg-transparent'>
+              <Button
+                variant='flat'
+                size='sm'
+                className='h-11 w-11 text-inherit hover:bg-transparent'
+              >
                 <IconLabel iconLarge icon='add' />
-              </FlatButton>
+              </Button>
               <RowInfo>
                 <RowInfoHeader>
                   <RowInfoHeading className='font-normal text-inherit'>

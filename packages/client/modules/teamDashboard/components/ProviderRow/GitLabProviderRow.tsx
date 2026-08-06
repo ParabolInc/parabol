@@ -1,8 +1,8 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Button} from '~/ui/Button/Button'
 import {Done as DoneIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {GitLabProviderRow_viewer$key} from '../../../../__generated__/GitLabProviderRow_viewer.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import ProviderActions from '../../../../components/ProviderActions'
 import RowInfo from '../../../../components/Row/RowInfo'
@@ -134,22 +134,26 @@ const GitLabProviderRow = (props: Props) => {
                                 Connected
                               </div>
                             </div>
-                            <FlatButton
+                            <Button
+                              variant='flat'
+                              size='sm'
                               className='min-w-[30px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                               onClick={togglePortal}
                               ref={menuRef}
                             >
                               <MoreVertIcon className='h-[18px] w-[18px] text-lg' />
-                            </FlatButton>
+                            </Button>
                           </>
                         ) : (
-                          <FlatButton
+                          <Button
+                            variant='flat'
+                            size='sm'
                             className='min-w-[36px] border-hairline-strong pr-0 pl-0 font-semibold text-fg-primary text-sm'
                             onClick={togglePortal}
                             ref={menuRef}
                           >
                             <MoreVertIcon />
-                          </FlatButton>
+                          </Button>
                         )}
                       </>
                     )}

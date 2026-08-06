@@ -7,12 +7,12 @@ import useMutationProps from '../../hooks/useMutationProps'
 import ResetPasswordMutation from '../../mutations/ResetPasswordMutation'
 import {passwordStrength} from '../../shared/passwordStrength'
 import {Security} from '../../types/constEnums'
+import {Button} from '../../ui/Button/Button'
 import Legitity from '../../validation/Legitity'
 import AuthenticationDialog from '../AuthenticationDialog'
 import DialogTitle from '../DialogTitle'
 import ErrorAlert from '../ErrorAlert/ErrorAlert'
 import PasswordInputField from '../PasswordInputField'
-import PrimaryButton from '../PrimaryButton'
 import TeamInvitationWrapper from '../TeamInvitationWrapper'
 
 const validatePassword = (password: string) => {
@@ -76,9 +76,9 @@ const SetNewPassword = () => {
               onChange={onChange}
               onBlur={handleBlur}
             />
-            <PrimaryButton className='mt-4' size='medium' waiting={submitting}>
+            <Button variant='primary' className='mt-4' size='md' disabled={submitting}>
               {'Reset Password'}
-            </PrimaryButton>
+            </Button>
           </form>
         </div>
       </AuthenticationDialog>

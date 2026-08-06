@@ -3,13 +3,12 @@ import type * as React from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {ArchiveTeamForm_team$key} from '~/__generated__/ArchiveTeamForm_team.graphql'
-import SecondaryButton from '~/components/SecondaryButton'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useForm from '~/hooks/useForm'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Button} from '~/ui/Button/Button'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import ArchiveTeamMutation from '../../../../mutations/ArchiveTeamMutation'
 import Legitity from '../../../../validation/Legitity'
 
@@ -81,10 +80,12 @@ const ArchiveTeamForm = (props: Props) => {
         placeholder={teamName}
       />
       <div className='mt-4 flex'>
-        <PrimaryButton className='mr-3' type='submit' waiting={submitting}>
+        <Button variant='primary' size='sm' className='mr-3' type='submit' disabled={submitting}>
           I understand the consequences, delete this team
-        </PrimaryButton>
-        <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
+        </Button>
+        <Button variant='outline' size='sm' onClick={handleCancel}>
+          Cancel
+        </Button>
       </div>
     </form>
   )

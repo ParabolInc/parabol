@@ -5,7 +5,7 @@ import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} 
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import SecondaryButton from '../../../../components/SecondaryButton'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -481,9 +481,14 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           </div>
 
           <div className='flex shrink-0 justify-end border-hairline border-t bg-surface-well/50 p-6 pt-4'>
-            <SecondaryButton type='submit' disabled={isSaving || (isNew && !!clientId)}>
+            <Button
+              variant='outline'
+              size='sm'
+              type='submit'
+              disabled={isSaving || (isNew && !!clientId)}
+            >
               {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
-            </SecondaryButton>
+            </Button>
           </div>
         </form>
       </DialogContent>

@@ -2,8 +2,8 @@ import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {ArrowBack} from '~/ui/icons'
 import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
-import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {Button} from '../../../ui/Button/Button'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
 import scaleValueString from './scaleValueString'
 import TemplateScaleValueList from './TemplateScaleValueList'
@@ -52,13 +52,15 @@ const PokerTemplateScaleDetails = (props: Props) => {
   return (
     <div className='flex w-full max-w-[520px] flex-col items-start overflow-hidden rounded-lg bg-surface-card pb-1'>
       <div className='flex flex-row items-start p-3'>
-        <FlatButton
+        <Button
+          variant='flat'
+          size='sm'
           aria-label='Back to Template'
           onClick={gotoTemplateDetail}
           className='h-8 w-8 items-center justify-center p-0 text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
         >
           <ArrowBack className='text-inherit' />
-        </FlatButton>
+        </Button>
         <div className='select-none pl-3 font-sans font-semibold text-[16px] leading-8'>
           {'Edit Scale'}
         </div>

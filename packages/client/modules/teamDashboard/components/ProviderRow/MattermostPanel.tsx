@@ -5,10 +5,10 @@ import type {MattermostPanel_viewer$key} from '~/__generated__/MattermostPanel_v
 import {MenuPosition} from '~/hooks/useCoords'
 import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
+import {Button} from '~/ui/Button/Button'
 import {Info as InfoIcon} from '~/ui/icons'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import StyledError from '../../../../components/StyledError'
@@ -171,13 +171,14 @@ const MattermostPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='Enter your webhook URL here...'
           />
-          <FlatButton
+          <Button
+            variant='flat'
+            size='md'
             className='mx-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
-            size='medium'
             disabled={isUpdateDisabled(fieldError, fieldValue)}
           >
             Update
-          </FlatButton>
+          </Button>
         </div>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}

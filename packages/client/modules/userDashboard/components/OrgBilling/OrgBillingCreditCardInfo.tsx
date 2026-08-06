@@ -4,10 +4,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {OrgBillingCreditCardInfo_organization$key} from '~/__generated__/OrgBillingCreditCardInfo_organization.graphql'
+import {Button} from '~/ui/Button/Button'
 import {CreditCard} from '~/ui/icons'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import UpdatePayment from './UpdatePayment'
 
 const stripePromise = loadStripe(window.__ACTION__.stripe)
@@ -75,7 +75,9 @@ const OrgBillingCreditCardInfo = (props: Props) => {
             </div>
           </div>
         </div>
-        <SecondaryButton onClick={handleStartUpdating}>{'Update'}</SecondaryButton>
+        <Button variant='outline' size='sm' onClick={handleStartUpdating}>
+          {'Update'}
+        </Button>
       </div>
     </Panel>
   )

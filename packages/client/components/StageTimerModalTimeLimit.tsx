@@ -8,13 +8,13 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {MeetingLabels} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
 import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
 import plural from '../utils/plural'
-import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
 
 interface Props {
@@ -85,9 +85,9 @@ const StageTimerModalTimeLimit = (props: Props) => {
           </SelectContent>
         </Select>
       </div>
-      <SecondaryButton className='mt-2 min-w-[192px]' onClick={startTimer}>
+      <Button variant='outline' size='sm' className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
-      </SecondaryButton>
+      </Button>
       {error && <StyledError>{error.message}</StyledError>}
     </div>
   )

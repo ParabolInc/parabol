@@ -1,8 +1,8 @@
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import GitLabProviderLogo from '../../../../components/GitLabProviderLogo'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useForm from '../../../../hooks/useForm'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -143,9 +143,9 @@ const UpsertGitLabProviderDialog = (props: Props) => {
           </div>
           {error && <ErrorAlert message={error.message} />}
           <div className='flex justify-end pt-6'>
-            <PrimaryButton type='submit' onClick={onSubmit}>
+            <Button variant='primary' size='sm' type='submit' onClick={onSubmit}>
               Save
-            </PrimaryButton>
+            </Button>
           </div>
         </form>
       </DialogContent>

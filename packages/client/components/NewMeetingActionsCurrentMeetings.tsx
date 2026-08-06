@@ -4,10 +4,10 @@ import type {NewMeetingActionsCurrentMeetings_team$key} from '~/__generated__/Ne
 import useSnacksForNewMeetings from '~/hooks/useSnacksForNewMeetings'
 import {Forum} from '~/ui/icons'
 import plural from '~/utils/plural'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
-import FlatButton from './FlatButton'
 import SelectMeetingDropdown from './SelectMeetingDropdown'
 
 interface Props {
@@ -37,16 +37,17 @@ const NewMeetingActionsCurrentMeetings = (props: Props) => {
   return (
     <Menu
       trigger={
-        <FlatButton
+        <Button
+          variant='flat'
           className={cn(
             'font-semibold text-[16px] text-rose-500',
             meetingCount > 0 ? 'h-[50px]' : 'invisible h-0'
           )}
-          size={'large'}
+          size={'lg'}
         >
           <Forum className='mr-3' />
           {label}
-        </FlatButton>
+        </Button>
       }
     >
       <MenuContent className='w-[var(--radix-dropdown-menu-trigger-width)]'>

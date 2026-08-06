@@ -5,6 +5,7 @@ import {getPageLinks} from '../../shared/tiptap/getPageLinks'
 import {isPageLink} from '../../shared/tiptap/isPageLink'
 import {getRecordHeaders, importRecords} from '../../tiptap/extensions/database/importRecords'
 import {providerManager} from '../../tiptap/providerManager'
+import {Button} from '../../ui/Button/Button'
 import {Checkbox} from '../../ui/Checkbox/Checkbox'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
@@ -14,7 +15,6 @@ import {Spinner} from '../../ui/Spinner/Spinner'
 import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
 import FlatPrimaryButton from '../FlatPrimaryButton'
-import SecondaryButton from '../SecondaryButton'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -239,9 +239,9 @@ export const ImportDatabaseDialog = (props: Props) => {
           </div>
         </div>
         <DialogActions className='mt-0 flex w-full gap-4'>
-          <SecondaryButton size='medium' onClick={onUpload}>
+          <Button variant='outline' size='md' onClick={onUpload}>
             Cancel & Upload
-          </SecondaryButton>
+          </Button>
           <FlatPrimaryButton size='medium' onClick={onImport}>
             Import
           </FlatPrimaryButton>

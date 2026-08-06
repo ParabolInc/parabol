@@ -9,14 +9,12 @@ import type {StripeElementChangeEvent} from '@stripe/stripe-js'
 import type * as React from 'react'
 import {useState} from 'react'
 import type {UpdateCreditCardMutation$data} from '../../../../__generated__/UpdateCreditCardMutation.graphql'
-import PrimaryButton from '../../../../components/PrimaryButton'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateCreditCardMutation from '../../../../mutations/UpdateCreditCardMutation'
-import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 
 const getCardElementOptions = () => {
@@ -199,24 +197,29 @@ const UpdatePayment = (props: Props) => {
       </div>
       <div className='flex w-full flex-nowrap items-center justify-between'>
         <div className='mt-4 w-1/8'>
-          <SecondaryButton className='w-full' size='medium' type='button' onClick={handleClose}>
+          <Button
+            variant='outline'
+            className='w-full'
+            size='md'
+            type='button'
+            onClick={handleClose}
+          >
             {'Cancel'}
-          </SecondaryButton>
+          </Button>
         </div>
         <div className='flex w-1/6 justify-end'>
-          <PrimaryButton
+          <Button
+            variant='primary'
             className={cn(
               'mt-4 w-full bg-none bg-sky-500 hover:bg-none focus:bg-none active:bg-none',
               isUpdateDisabled ? 'opacity-50' : 'hover:bg-sky-600 focus:bg-sky-600'
             )}
-            elevationResting={Elevation.Z0}
-            elevationHovered={Elevation.Z0}
             disabled={isUpdateDisabled}
-            size='medium'
+            size='md'
             type={'submit'}
           >
             {'Update'}
-          </PrimaryButton>
+          </Button>
         </div>
       </div>
     </form>

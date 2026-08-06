@@ -1,6 +1,6 @@
 import {Link} from 'react-router'
+import {Button} from '~/ui/Button/Button'
 import {ArrowBack} from '~/ui/icons'
-import FlatButton from './FlatButton'
 
 interface Props {
   ariaLabel: string
@@ -10,12 +10,14 @@ interface Props {
 const BackButton = ({ariaLabel, to}: Props) => {
   return (
     <Link to={to}>
-      <FlatButton
+      <Button
+        variant='flat'
+        size='sm'
         aria-label={ariaLabel}
         className='mr-4 w-8 px-0 py-[3px] text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
       >
         <ArrowBack className='text-inherit' />
-      </FlatButton>
+      </Button>
     </Link>
   )
 }

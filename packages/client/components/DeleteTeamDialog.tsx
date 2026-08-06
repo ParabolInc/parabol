@@ -3,13 +3,13 @@ import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import ArchiveTeamMutation from '../mutations/ArchiveTeamMutation'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import {Input} from '../ui/Input/Input'
 import FlatPrimaryButton from './FlatPrimaryButton'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   isOpen: boolean
@@ -65,7 +65,9 @@ const DeleteTeamDialog = (props: Props) => {
           <FlatPrimaryButton size='medium' onClick={handleDeleteTeam} disabled={!typedTeamName}>
             I understand the consequences, delete this team
           </FlatPrimaryButton>
-          <SecondaryButton onClick={onClose}>Cancel</SecondaryButton>
+          <Button variant='outline' size='sm' onClick={onClose}>
+            Cancel
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

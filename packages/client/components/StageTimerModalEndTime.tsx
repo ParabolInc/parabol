@@ -9,8 +9,8 @@ import useMutationProps from '../hooks/useMutationProps'
 import NotificationErrorMessage from '../modules/notifications/components/NotificationErrorMessage'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {MeetingLabels} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import roundDateToNearestHalfHour from '../utils/roundDateToNearestHalfHour'
-import SecondaryButton from './SecondaryButton'
 import StageTimerModalEndTimeDate from './StageTimerModalEndTimeDate'
 import StageTimerModalEndTimeHour from './StageTimerModalEndTimeHour'
 import StageTimerModalEndTimeSlackToggle from './StageTimerModalEndTimeSlackToggle'
@@ -79,10 +79,10 @@ const StageTimerModalEndTime = (props: Props) => {
         <StageTimerModalEndTimeSlackToggle teamMember={teamMember} />
       </div>
       <NotificationErrorMessage className='-mb-2' error={error} />
-      <SecondaryButton className='mt-2 min-w-[192px]' onClick={startTimer}>
+      <Button variant='outline' size='sm' className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Update ' : 'Start '}
         {MeetingLabels.TIME_LIMIT}
-      </SecondaryButton>
+      </Button>
     </div>
   )
 }

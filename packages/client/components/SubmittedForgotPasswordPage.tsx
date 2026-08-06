@@ -1,6 +1,7 @@
 import {useLocation, useParams} from 'react-router'
 import {emailLinkStyle} from '../modules/email/styles'
 import {ForgotPasswordResType} from '../mutations/EmailPasswordResetMutation'
+import {Button} from '../ui/Button/Button'
 import AuthenticationDialog from './AuthenticationDialog'
 import DialogTitle from './DialogTitle'
 import type {AuthPageSlug, GotoAuthPage} from './GenericAuthentication'
@@ -8,7 +9,6 @@ import GoogleOAuthButtonBlock from './GoogleOAuthButtonBlock'
 import IconLabel from './IconLabel'
 import MicrosoftOAuthButtonBlock from './MicrosoftOAuthButtonBlock'
 import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
 
 type TextField = {
   title: string
@@ -89,13 +89,14 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <PrimaryButton
+        <Button
+          variant='primary'
           onClick={() => goToPage('signin', '?sso=true')}
-          size='medium'
+          size='md'
           className='mx-auto mt-4 mb-0 w-60'
         >
           {'Sign In with SSO'}
-        </PrimaryButton>
+        </Button>
       )
     },
     [ForgotPasswordResType.SUCCESS]: {
@@ -114,13 +115,14 @@ const SubmittedForgotPasswordPage = (props: Props) => {
         </>
       ),
       button: (
-        <PrimaryButton
+        <Button
+          variant='primary'
           onClick={() => goToPageWithEmail('signin', email)}
-          size='medium'
+          size='md'
           className='mx-auto mt-4 mb-0 w-60'
         >
           <IconLabel icon='arrow_back' label='Back to Sign In' />
-        </PrimaryButton>
+        </Button>
       )
     }
   } as CopyType

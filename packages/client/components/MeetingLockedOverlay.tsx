@@ -5,8 +5,8 @@ import {useNavigate} from 'react-router'
 import type {MeetingLockedOverlay_meeting$key} from '~/__generated__/MeetingLockedOverlay_meeting.graphql'
 import {Lock} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {Button} from '../ui/Button/Button'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import PrimaryButton from './PrimaryButton'
 
 const UnpaidTeamModalRoot = lazy(
   () =>
@@ -102,7 +102,9 @@ const MeetingLockedOverlay = (props: Props) => {
               Your plan includes 30 days of meeting history. Unlock the full meeting history of{' '}
               <i>{orgName}</i> by upgrading.
             </div>
-            <PrimaryButton onClick={onClick}>Unlock Past Meetings</PrimaryButton>
+            <Button variant='primary' size='sm' onClick={onClick}>
+              Unlock Past Meetings
+            </Button>
           </>
         ) : (
           <>

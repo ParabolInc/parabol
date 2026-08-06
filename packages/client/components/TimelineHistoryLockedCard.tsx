@@ -6,8 +6,8 @@ import {Lock} from '~/ui/icons'
 import type {TimelineHistoryLockedCard_organization$key} from '../__generated__/TimelineHistoryLockedCard_organization.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useIsVisible from '../hooks/useIsVisible'
+import {Button} from '../ui/Button/Button'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   organizationRef: TimelineHistoryLockedCard_organization$key | null
@@ -79,9 +79,9 @@ const TimelineHistoryLockedCard = (props: Props) => {
         {title}
       </div>
       <div className='px-8 pt-1 pb-4 text-center text-sm'>{body}</div>
-      <PrimaryButton size='medium' onClick={onClick}>
+      <Button variant='primary' size='md' onClick={onClick}>
         {action}
-      </PrimaryButton>
+      </Button>
     </div>
   )
 }

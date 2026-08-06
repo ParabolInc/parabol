@@ -7,10 +7,10 @@ import DashModal from '../../../../components/Dashboard/DashModal'
 import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {UpgradeCTALocationEnumType} from '../../../../shared/UpgradeCTALocationEnumType'
 import {ExternalLinks, Threshold} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
 interface Props {
@@ -104,13 +104,14 @@ const UnpaidTeamModal = (props: Props) => {
                 contact us
               </a>{' '}
               to let us know which teams you’d like to delete to fit within the two-team limit.
-              <PrimaryButton
+              <Button
+                variant='primary'
+                size='md'
                 className='mx-auto mt-6 mb-0'
-                size='medium'
                 onClick={() => goToBilling('organizationLockedModal')}
               >
                 <IconLabel icon='arrow_forward' iconAfter label='Upgrade' />
-              </PrimaryButton>
+              </Button>
             </>
           ) : (
             `Try reaching out to ${billingLeaderName} at ${email}`
@@ -140,13 +141,14 @@ const UnpaidTeamModal = (props: Props) => {
         <br />
         {solution}
         {isALeader && (
-          <PrimaryButton
+          <Button
+            variant='primary'
+            size='md'
             className='mx-auto mt-6 mb-0'
-            size='medium'
             onClick={() => goToBilling('unpaidTeamModal')}
           >
             <IconLabel icon='arrow_forward' iconAfter label='Take me there' />
-          </PrimaryButton>
+          </Button>
         )}
       </DialogContent>
     </DashModal>

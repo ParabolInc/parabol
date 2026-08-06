@@ -11,6 +11,7 @@ import type {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
@@ -18,7 +19,6 @@ import plural from '../utils/plural'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   isOpen: boolean
@@ -191,14 +191,14 @@ const AddTeamMemberModal = (props: Props) => {
                     </div>
                   )}
                   <div className='mt-6 flex justify-start'>
-                    <PrimaryButton
+                    <Button
+                      variant='primary'
+                      size='md'
                       onClick={sendInvitations}
-                      disabled={invitees.length === 0}
-                      size='medium'
-                      waiting={submitting}
+                      disabled={invitees.length === 0 || submitting}
                     >
                       {title}
-                    </PrimaryButton>
+                    </Button>
                   </div>
                 </div>
               </div>

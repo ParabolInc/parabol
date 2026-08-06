@@ -1,5 +1,5 @@
 import {forwardRef, type Ref} from 'react'
-import PrimaryButton from './PrimaryButton'
+import {Button} from '../ui/Button/Button'
 
 interface Props {
   children: string
@@ -9,15 +9,16 @@ interface Props {
 const SuggestedActionButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {children, onClick} = props
   return (
-    <PrimaryButton
+    <Button
       ref={ref}
+      variant='primary'
+      size='md'
       aria-label={children}
-      size='medium'
       onClick={onClick}
       className='mb-4 px-4 py-1 text-[14px]'
     >
       {children}
-    </PrimaryButton>
+    </Button>
   )
 })
 

@@ -1,11 +1,11 @@
 import type * as React from 'react'
 import {useEffect, useState} from 'react'
 import {LocalStorageKey} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import BasicTextArea from './InputField/BasicTextArea'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   isOpen: boolean
@@ -76,9 +76,9 @@ const ReportErrorFeedback = (props: Props) => {
         </div>
         <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />
         <div className='mt-6 flex justify-end'>
-          <PrimaryButton onClick={onSubmit} disabled={text.length === 0} size='medium'>
+          <Button variant='primary' onClick={onSubmit} disabled={text.length === 0} size='md'>
             {'Submit Report'}
-          </PrimaryButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

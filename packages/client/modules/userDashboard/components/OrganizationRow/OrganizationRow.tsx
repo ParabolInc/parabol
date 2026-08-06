@@ -2,16 +2,15 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {OrganizationRow_organization$key} from '~/__generated__/OrganizationRow_organization.graphql'
+import {Button} from '~/ui/Button/Button'
 import {Settings as SettingsIcon} from '~/ui/icons'
 import Avatar from '../../../../components/Avatar/Avatar'
-import FlatButton from '../../../../components/FlatButton'
 import Row from '../../../../components/Row/Row'
 import RowActions from '../../../../components/Row/RowActions'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoCopy from '../../../../components/Row/RowInfoCopy'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import TagBlock from '../../../../components/Tag/TagBlock'
 import TierTag from '../../../../components/Tag/TierTag'
 import {MenuPosition} from '../../../../hooks/useCoords'
@@ -87,15 +86,18 @@ const OrganizationRow = (props: Props) => {
         </RowInfo>
         <RowActions>
           {showUpgradeCTA && (
-            <FlatButton
-              className='h-9 px-2 sidebar-left:px-4'
+            <Button
+              variant='flat'
+              size='sm'
+              className='h-9 px-2 sidebar-left:px-4 text-sky-500'
               onClick={onRowClick}
-              palette={'blue'}
             >
               {'Upgrade'}
-            </FlatButton>
+            </Button>
           )}
-          <SecondaryButton
+          <Button
+            variant='outline'
+            size='sm'
             className='ml-2 h-9 w-9 p-0'
             onClick={onRowClick}
             onMouseEnter={openTooltip}
@@ -105,7 +107,7 @@ const OrganizationRow = (props: Props) => {
             <div className='h-[18px] w-[18px] text-fg-secondary'>
               <SettingsIcon className='text-[18px]' />
             </div>
-          </SecondaryButton>
+          </Button>
           {tooltipPortal('Settings')}
         </RowActions>
       </div>

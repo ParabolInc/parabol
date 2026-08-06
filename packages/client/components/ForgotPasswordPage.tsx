@@ -9,6 +9,7 @@ import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import EmailPasswordResetMutation from '../mutations/EmailPasswordResetMutation'
 import {AuthenticationError} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import Legitity from '../validation/Legitity'
 import {emailRegex} from '../validation/regex'
 import AuthenticationDialog from './AuthenticationDialog'
@@ -16,7 +17,6 @@ import DialogTitle from './DialogTitle'
 import EmailInputField from './EmailInputField'
 import type {GotoAuthPage} from './GenericAuthentication'
 import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
 import StyledError from './StyledError'
 
 interface Props {
@@ -104,9 +104,9 @@ const ForgotPasswordPage = (props: Props) => {
         </p>
         <form className='flex flex-col' onSubmit={onSubmit}>
           <EmailInputField {...fields.email} autoFocus onChange={onChange} onBlur={handleBlur} />
-          <PrimaryButton className='mt-4' size='medium' waiting={submitting}>
+          <Button variant='primary' className='mt-4' size='md' disabled={submitting}>
             {'Send Email'}
-          </PrimaryButton>
+          </Button>
           {error && (
             <StyledError className='pt-4 text-[12px]'>
               {prettyError || (

@@ -1,7 +1,7 @@
 import upgradeLaterSvg from '../../../static/images/illustrations/conversion_prompt-upgrade_later.svg'
+import {Button} from '../ui/Button/Button'
 import DialogContainer from './DialogContainer'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   closePortal: () => void
@@ -21,9 +21,9 @@ const UpgradeLater = (props: Props) => {
       <InvitationDialogCopy className='pt-4'>{'We’ll send you an email so'}</InvitationDialogCopy>
       <InvitationDialogCopy>{'you can upgrade later'}</InvitationDialogCopy>
       <div className='p-6'>
-        <SecondaryButton size='large' onClick={closePortal} className='w-[264px] p-2'>
+        <Button variant='outline' size='lg' onClick={closePortal} className='w-[264px] p-2'>
           {'Back to Business'}
-        </SecondaryButton>
+        </Button>
       </div>
     </DialogContainer>
   )

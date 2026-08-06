@@ -1,8 +1,8 @@
 import {forwardRef, type Ref, useState} from 'react'
+import {Button} from '../ui/Button/Button'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import MenuContents, {type MenuContentsProps} from './MenuContents'
-import PrimaryButton from './PrimaryButton'
 import ReportErrorFeedback from './ReportErrorFeedback'
 
 interface Props extends MenuContentsProps {
@@ -18,9 +18,9 @@ const ModalError = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
       <DialogTitle>You found a bug!</DialogTitle>
       <DialogContent>
         {"We've alerted the developers. Try refreshing the page"}
-        <PrimaryButton className='mt-2' onClick={() => setIsOpen(true)}>
+        <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
           Report Feedback
-        </PrimaryButton>
+        </Button>
         <ReportErrorFeedback
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}

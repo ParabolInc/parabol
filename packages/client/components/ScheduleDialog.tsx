@@ -25,7 +25,6 @@ import plural from '../utils/plural'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import Legitity from '../validation/Legitity'
 import {RecurrenceSettings} from './Recurrence/RecurrenceSettings'
-import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
 
 const validateTitle = (title: string) =>
@@ -176,10 +175,10 @@ export const ScheduleDialog = (props: Props) => {
           </Collapsible.Root>
         ) : (
           <div>
-            <SecondaryButton className='h-11 pr-4 pl-3' onClick={onAddInvite}>
+            <Button variant='outline' size='sm' className='h-11 pr-4 pl-3' onClick={onAddInvite}>
               <img src={logo} className='mr-2' />
               {gcal?.auth ? 'Add Calendar Event' : 'Connect to Google Calendar'}
-            </SecondaryButton>
+            </Button>
           </div>
         ))}
       {withRecurrence && (

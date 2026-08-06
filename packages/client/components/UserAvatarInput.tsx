@@ -3,13 +3,13 @@ import jpgWithoutEXIF from '~/utils/jpgWithoutEXIF'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import UploadUserImageMutation from '../mutations/UploadUserImageMutation'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import svgToPng from '../utils/svgToPng'
 import Avatar from './Avatar/Avatar'
 import AvatarInput from './AvatarInput'
-import FlatButton from './FlatButton'
 
 type Props = {
   isOpen: boolean
@@ -57,12 +57,14 @@ const UserAvatarInput = (props: Props) => {
         </div>
         <AvatarInput error={error?.message} onSubmit={onSubmit} />
         <div className='flex w-full justify-end'>
-          <FlatButton
+          <Button
+            variant='flat'
+            size='sm'
             onClick={onClose}
             className='mr-6 mb-6 bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
           >
             {'Save'}
-          </FlatButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

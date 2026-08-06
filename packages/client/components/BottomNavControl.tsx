@@ -1,22 +1,25 @@
 import {forwardRef, type Ref} from 'react'
 import {BezierCurve} from '~/types/constEnums'
+import {Button, type ButtonProps} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
-import FlatButton, {type FlatButtonProps} from './FlatButton'
 
-interface Props extends FlatButtonProps {
+interface Props extends ButtonProps {
   confirming?: boolean
+  dataCy?: string
   disabled?: boolean
   waiting?: boolean
 }
 
 const BottomNavControl = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
-  const {confirming, disabled, waiting, className, style, ...rest} = props
+  const {confirming, dataCy, disabled, waiting, className, style, ...rest} = props
   const visuallyDisabled = disabled || waiting
   return (
-    <FlatButton
+    <Button
+      variant='flat'
+      size='sm'
       {...rest}
-      disabled={disabled}
-      waiting={waiting}
+      data-cy={dataCy}
+      disabled={disabled || waiting}
       ref={ref}
       className={cn(
         'min-h-14 w-24 origin-bottom rounded-none border-0 p-0',

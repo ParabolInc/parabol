@@ -2,7 +2,7 @@ import type * as React from 'react'
 import {ContentCopy, Delete, Edit} from '~/ui/icons'
 import {MenuPosition} from '../hooks/useCoords'
 import useTooltip from '../hooks/useTooltip'
-import FlatButton from './FlatButton'
+import {Button} from '../ui/Button/Button'
 
 interface Props {
   disabled?: boolean
@@ -19,10 +19,11 @@ const DetailAction = (props: Props) => {
   )
   return (
     <>
-      <FlatButton
+      <Button
+        variant='flat'
         ref={originRef}
         onClick={disabled ? openTooltip : onClick}
-        size='small'
+        size='sm'
         onMouseEnter={openTooltip}
         onMouseLeave={closeTooltip}
         className='h-8 w-8 items-center justify-center p-0 text-fg-secondary'
@@ -36,7 +37,7 @@ const DetailAction = (props: Props) => {
             }[icon]
           }
         </div>
-      </FlatButton>
+      </Button>
       {tooltipPortal(<div>{tooltip}</div>)}
     </>
   )

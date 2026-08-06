@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router'
 import Panel from '../../../../components/Panel/Panel'
-import PrimaryButton from '../../../../components/PrimaryButton'
+import {Button} from '../../../../ui/Button/Button'
 
 const EmptyOrgsCallOut = () => {
   const navigate = useNavigate()
@@ -22,9 +22,9 @@ const EmptyOrgsCallOut = () => {
               <br />
               {'and manage your own teams and tasks.'}
             </p>
-            <PrimaryButton className='mx-auto my-0' onClick={gotoNewTeam} size='medium'>
+            <Button variant='primary' className='mx-auto my-0' onClick={gotoNewTeam} size='md'>
               {'Start a New Organization'}
-            </PrimaryButton>
+            </Button>
           </>
         )}
       </div>

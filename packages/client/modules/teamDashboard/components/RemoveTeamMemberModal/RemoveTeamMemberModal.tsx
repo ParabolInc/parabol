@@ -3,8 +3,8 @@ import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {RemoveTeamMemberModal_teamMember$key} from '../../../../__generated__/RemoveTeamMemberModal_teamMember.graphql'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import RemoveTeamMemberMutation from '../../../../mutations/RemoveTeamMemberMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -41,13 +41,13 @@ const RemoveTeamMemberModal = (props: Props) => {
       <DialogContent>
         <DialogTitle>Are you sure?</DialogTitle>
         <p>This will remove {preferredName} from the team.</p>
-        <PrimaryButton size='medium' className='mx-auto mt-6 mb-0' onClick={handleClick}>
+        <Button variant='primary' size='md' className='mx-auto mt-6 mb-0' onClick={handleClick}>
           <IconLabel
             icon='arrow_forward'
             iconAfter
             label={<div className='break-word whitespace-normal'>Remove {preferredName}</div>}
           />
-        </PrimaryButton>
+        </Button>
       </DialogContent>
     </Dialog>
   )

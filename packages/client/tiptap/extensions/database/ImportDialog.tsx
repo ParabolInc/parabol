@@ -1,9 +1,9 @@
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
 import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
-import SecondaryButton from '../../../components/SecondaryButton'
 import {UploadDatabaseImport} from '../../../components/UploadDatabaseImport'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
@@ -252,17 +252,17 @@ export const ImportDialog = (props: Props) => {
         <DialogActions className='mt-0 flex w-full gap-4'>
           {records ? (
             <>
-              <SecondaryButton size='medium' onClick={onBack}>
+              <Button variant='outline' size='md' onClick={onBack}>
                 Back
-              </SecondaryButton>
+              </Button>
               <FlatPrimaryButton size='medium' onClick={onImport}>
                 {discardExistingData ? 'Replace' : 'Append'}
               </FlatPrimaryButton>
             </>
           ) : (
-            <SecondaryButton size='medium' onClick={onCancel}>
+            <Button variant='outline' size='md' onClick={onCancel}>
               Cancel
-            </SecondaryButton>
+            </Button>
           )}
         </DialogActions>
       </DialogContent>

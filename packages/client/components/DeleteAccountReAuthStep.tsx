@@ -9,12 +9,12 @@ import ReAuthWithPasswordMutation from '../mutations/ReAuthWithPasswordMutation'
 import logo from '../styles/theme/images/graphics/google.svg'
 import microsoftLogo from '../styles/theme/images/graphics/microsoft.svg'
 import {AuthIdentityTypeEnum} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import GoogleClientManager from '../utils/GoogleClientManager'
 import loginSSO from '../utils/loginSSO'
 import MicrosoftClientManager from '../utils/MicrosoftClientManager'
 import UnderlineInput from './InputField/UnderlineInput'
-import PrimaryButton from './PrimaryButton'
 import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 
@@ -95,15 +95,15 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
   if (samlIdP) {
     return (
       <div className='flex w-full max-w-[240px] flex-col items-stretch gap-4'>
-        <PrimaryButton
-          size='medium'
+        <Button
+          variant='primary'
+          size='md'
           onClick={handleSSOReAuth}
-          waiting={ssoSubmitting}
           disabled={ssoSubmitting}
           className='w-full'
         >
           Sign in with SSO
-        </PrimaryButton>
+        </Button>
         {ssoError && <StyledError className='mt-2 text-[.8125rem]'>{ssoError}</StyledError>}
       </div>
     )
@@ -129,9 +129,9 @@ const DeleteAccountReAuthStep = ({viewerRef, onReAuthSuccess}: Props) => {
               value={password}
             />
           </div>
-          <PrimaryButton size='medium' disabled={!password} className='mt-5 w-full'>
+          <Button variant='primary' size='md' disabled={!password} className='mt-5 w-full'>
             Verify Password
-          </PrimaryButton>
+          </Button>
         </form>
       )}
       {showDivider && <div className='my-1 text-center text-fg-muted text-xs'>or</div>}

@@ -2,10 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {lazy, type ReactNode, Suspense} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
+import {Button} from '~/ui/Button/Button'
 import {ArrowBack} from '~/ui/icons'
 import type {Team_team$key} from '../../../../__generated__/Team_team.graphql'
 import DashContent from '../../../../components/Dashboard/DashContent'
-import FlatButton from '../../../../components/FlatButton'
 import EditableTeamName from '../EditTeamName/EditableTeamName'
 
 // import DebugButton from '../../../userDashboard/components/UserDashMain/DebugButton'
@@ -57,14 +57,16 @@ const Team = (props: Props) => {
         <div className='flex w-full p-4'>
           <div className='mx-auto flex w-full max-w-[768px] flex-wrap items-center'>
             <>
-              <FlatButton
+              <Button
+                variant='flat'
+                size='sm'
                 aria-label='Back to Team Dashboard'
                 key='1'
                 onClick={goToTeamDashboard}
                 className='mr-4 w-8 px-0 py-[3px] text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
               >
                 <ArrowBack className='text-inherit' />
-              </FlatButton>
+              </Button>
               <EditableTeamName team={team} />
             </>
           </div>

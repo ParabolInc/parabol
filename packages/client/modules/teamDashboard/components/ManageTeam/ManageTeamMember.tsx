@@ -4,12 +4,12 @@ import {useFragment} from 'react-relay'
 import type {ManageTeamMember_teamMember$key} from '~/__generated__/ManageTeamMember_teamMember.graphql'
 import {MoreVert as MoreVertIcon} from '~/ui/icons'
 import Avatar from '../../../../components/Avatar/Avatar'
-import FlatButton from '../../../../components/FlatButton'
 import Row from '../../../../components/Row/Row'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import useScrollIntoView from '../../../../hooks/useScrollIntoVIew'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import lazyPreload from '../../../../utils/lazyPreload'
 import LeaveTeamModal from '../LeaveTeamModal/LeaveTeamModal'
@@ -94,7 +94,9 @@ const ManageTeamMember = (props: Props) => {
           {isOrgAdmin && 'Org Admin'}
         </div>
       </div>
-      <FlatButton
+      <Button
+        variant='flat'
+        size='sm'
         className={cn(showMenuButton ? 'flex' : 'hidden', 'p-0 text-[18px] text-fg-secondary')}
         onClick={togglePortal}
         onMouseEnter={TeamMemberAvatarMenu.preload}
@@ -103,7 +105,7 @@ const ManageTeamMember = (props: Props) => {
         <div className='h-[18px] w-[18px] [&_svg]:text-[18px]'>
           <MoreVertIcon />
         </div>
-      </FlatButton>
+      </Button>
       {menuPortal(
         <TeamMemberAvatarMenu
           menuProps={menuProps}

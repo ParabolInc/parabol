@@ -15,13 +15,12 @@ import {type MutableRefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
-import {Elevation} from '../../../../styles/elevation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
 
@@ -209,12 +208,11 @@ const BillingForm = (props: Props) => {
       </div>
       <div className='flex w-full flex-col justify-center pt-4'>
         {error && <StyledError className='pt-2 normal-case'>{error.message}</StyledError>}
-        <PrimaryButton
-          size='medium'
+        <Button
+          variant='primary'
+          size='md'
           disabled={isUpgradeDisabled}
           type={'submit'}
-          elevationResting={Elevation.Z0}
-          elevationHovered={Elevation.Z0}
           className={cn(
             'mt-4 w-full bg-none bg-sky-500 text-white hover:bg-none focus:bg-none active:bg-none',
             isUpgradeDisabled
@@ -229,7 +227,7 @@ const BillingForm = (props: Props) => {
           ) : (
             'Upgrade'
           )}
-        </PrimaryButton>
+        </Button>
       </div>
     </form>
   )

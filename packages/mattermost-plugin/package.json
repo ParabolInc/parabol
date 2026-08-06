@@ -39,7 +39,6 @@
     "react-dom": "^18.3.1",
     "react-is": "^18.3.1",
     "react-redux": "^9.2.0",
-    "react-select": "^5.8.2",
     "redux": "^5.0.1",
     "styled-components": "^5.3.6"
   },
@@ -49,10 +48,6 @@
       "react-dom": "^18.3.1"
     },
     "react-bootstrap": {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1"
-    },
-    "react-select": {
       "react": "^18.3.1",
       "react-dom": "^18.3.1"
     }

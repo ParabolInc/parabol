@@ -7,7 +7,6 @@ import useForm from '~/hooks/useForm'
 import useTooltip from '~/hooks/useTooltip'
 import linkify from '~/utils/linkify'
 import type {AddIntegrationProviderMutation as TAddIntegrationProviderMutation} from '../../../../__generated__/AddIntegrationProviderMutation.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import BasicInput from '../../../../components/InputField/BasicInput'
 import LabelHeading from '../../../../components/LabelHeading/LabelHeading'
 import StyledError from '../../../../components/StyledError'
@@ -16,6 +15,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddIntegrationProviderMutation from '../../../../mutations/AddIntegrationProviderMutation'
 import AddTeamMemberIntegrationAuthMutation from '../../../../mutations/AddTeamMemberIntegrationAuthMutation'
 import UpdateIntegrationProviderMutation from '../../../../mutations/UpdateIntegrationProviderMutation'
+import {Button} from '../../../../ui/Button/Button'
 import Legitity from '../../../../validation/Legitity'
 import NotificationSettings from './NotificationSettings'
 
@@ -169,13 +169,14 @@ const MSTeamsPanel = (props: Props) => {
             name='webhookUrl'
             placeholder='Enter your webhook URL here...'
           />
-          <FlatButton
+          <Button
+            variant='flat'
             className='mx-4 min-w-9 border-hairline-strong font-semibold text-[12px] text-fg-primary'
-            size='medium'
+            size='md'
             disabled={isUpdateDisabled(fieldError, fieldValue)}
           >
             Update
-          </FlatButton>
+          </Button>
         </div>
         {fieldError && <StyledError>{fieldError}</StyledError>}
         {!fieldError && mutationError && <StyledError>{mutationError.message}</StyledError>}

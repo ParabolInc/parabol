@@ -11,6 +11,7 @@ import LoginWithPasswordMutation from '../mutations/LoginWithPasswordMutation'
 import SignUpWithPasswordMutation from '../mutations/SignUpWithPasswordMutation'
 import {passwordStrength} from '../shared/passwordStrength'
 import {LocalStorageKey, Security} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import {CREATE_ACCOUNT_BUTTON_LABEL, SIGNIN_LABEL} from '../utils/constants'
 import getAnonymousId from '../utils/getAnonymousId'
@@ -27,7 +28,6 @@ import ErrorAlert from './ErrorAlert/ErrorAlert'
 import type {AuthPageSlug} from './GenericAuthentication'
 import PasswordInputField from './PasswordInputField'
 import PlainButton from './PlainButton/PlainButton'
-import PrimaryButton from './PrimaryButton'
 import RaisedButton from './RaisedButton'
 import StyledTip from './StyledTip'
 
@@ -252,8 +252,10 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
     }
   }
 
-  const Button = isPrimary ? PrimaryButton : RaisedButton
   const hasEmail = !!fields.email.value
+  const submitLabel = `${isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}${
+    signInWithSSOOnly ? ' with SSO' : ''
+  }`
   return (
     <>
       <form className='flex w-full max-w-60 flex-col' onSubmit={onSubmit}>
@@ -284,10 +286,15 @@ const EmailPasswordAuthForm = forwardRef((props: Props, ref: any) => {
             </div>
           )}
         </div>
-        <Button size='medium' disabled={false} waiting={submitting}>
-          {isSignin ? SIGNIN_LABEL : CREATE_ACCOUNT_BUTTON_LABEL}
-          {signInWithSSOOnly ? ' with SSO' : ''}
-        </Button>
+        {isPrimary ? (
+          <Button variant='primary' size='md' disabled={submitting}>
+            {submitLabel}
+          </Button>
+        ) : (
+          <RaisedButton size='medium' disabled={false} waiting={submitting}>
+            {submitLabel}
+          </RaisedButton>
+        )}
       </form>
       {isSSOAuthEnabled && isInternalAuthEnabled && (
         <PlainButton

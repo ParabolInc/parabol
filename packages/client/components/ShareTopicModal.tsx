@@ -7,6 +7,7 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import useSlackChannels from '../hooks/useSlackChannels'
 import useShareTopicMutation from '../mutations/useShareTopicMutation'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -20,8 +21,6 @@ import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
 import findStageById from '../utils/meetings/findStageById'
 import SlackClientManager from '../utils/SlackClientManager'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   isOpen: boolean
@@ -249,12 +248,17 @@ const ShareTopicModal = (props: Props) => {
           </Select>
         </fieldset>
         <DialogActions>
-          <SecondaryButton onClick={onClose} size='small'>
+          <Button variant='outline' size='sm' onClick={onClose}>
             Cancel
-          </SecondaryButton>
-          <PrimaryButton size='small' onClick={onShare} disabled={isLoading || channelsLoading}>
+          </Button>
+          <Button
+            variant='primary'
+            size='sm'
+            onClick={onShare}
+            disabled={isLoading || channelsLoading}
+          >
             Share
-          </PrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

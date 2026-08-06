@@ -1,6 +1,6 @@
 import {useState} from 'react'
-import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
+import {Button} from '~/ui/Button/Button'
 import {twStyled} from '../../ui/twStyled'
 import {
   isExtensionError,
@@ -33,9 +33,14 @@ const ErrorComponent = (props: Props) => {
           it that can crash apps like ours.
         </div>
         <div>If this continues, please disable the extension</div>
-        <PrimaryButton className='mt-2' onClick={() => window.location.reload()}>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mt-2'
+          onClick={() => window.location.reload()}
+        >
           Refresh the page
-        </PrimaryButton>
+        </Button>
       </ErrorBlock>
     )
   }
@@ -45,11 +50,11 @@ const ErrorComponent = (props: Props) => {
     return (
       <ErrorBlock>
         {"Oh no! You've found a bug because the browser you're using needs to be updated."}
-        <PrimaryButton className='mt-2'>
+        <Button variant='primary' size='sm' className='mt-2'>
           <a className='text-inherit' href={url} target='_blank' rel='noreferrer'>
             Update now
           </a>
-        </PrimaryButton>
+        </Button>
       </ErrorBlock>
     )
   }
@@ -58,9 +63,14 @@ const ErrorComponent = (props: Props) => {
     return (
       <ErrorBlock>
         There was a network issue. Please check your connection and try again.
-        <PrimaryButton className='mt-2' onClick={() => window.location.reload()}>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mt-2'
+          onClick={() => window.location.reload()}
+        >
           Refresh the page
-        </PrimaryButton>
+        </Button>
       </ErrorBlock>
     )
   }
@@ -69,9 +79,9 @@ const ErrorComponent = (props: Props) => {
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
       {ERROR_FEEDBACK_ENABLED && eventId && (
-        <PrimaryButton className='mt-2' onClick={() => setIsOpen(true)}>
+        <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
           Report Feedback
-        </PrimaryButton>
+        </Button>
       )}
       <ReportErrorFeedback
         isOpen={isOpen}

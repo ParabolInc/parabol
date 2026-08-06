@@ -3,8 +3,8 @@ import useBreakpoint from '~/hooks/useBreakpoint'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
 import {Breakpoint} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import {Add, UnfoldLess, UnfoldMore} from '~/ui/icons'
-import FlatButton from './FlatButton'
 import RetroPrompt from './RetroPrompt'
 
 const addReflectionButtonClass = 'h-6 w-6 border-0 p-0 leading-6'
@@ -58,24 +58,27 @@ const GroupingKanbanColumnHeader = (props: Props) => {
         </RetroPrompt>
         <div className='flex items-start'>
           {phaseType === 'group' && (
-            <FlatButton
+            <Button
+              variant='flat'
+              size='sm'
               className={addReflectionButtonClass}
-              dataCy={`add-reflection-${question}`}
+              data-cy={`add-reflection-${question}`}
               aria-label={'Add a reflection'}
-              disabled={!canAdd}
+              disabled={!canAdd || submitting}
               onClick={handleClick}
               onMouseEnter={openReflectionTooltip}
               onMouseLeave={closeReflectionTooltip}
               ref={addReflectionRef}
-              waiting={submitting}
             >
               <Add />
-            </FlatButton>
+            </Button>
           )}
           {addReflectionPortal(<div>Add new reflection</div>)}
           {isDesktop && (
             <>
-              <FlatButton
+              <Button
+                variant='flat'
+                size='sm'
                 className={`${addReflectionButtonClass} ml-1`}
                 onClick={toggleWidth}
                 onMouseEnter={openTooltip}
@@ -85,7 +88,7 @@ const GroupingKanbanColumnHeader = (props: Props) => {
                 <div className='flex h-6 w-6 rotate-45 items-center justify-center'>
                   {isWidthExpanded ? <UnfoldLess /> : <UnfoldMore />}
                 </div>
-              </FlatButton>
+              </Button>
               {tooltipPortal(<div>{`${isWidthExpanded ? 'Minimise' : 'Expand'}`}</div>)}
             </>
           )}

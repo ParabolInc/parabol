@@ -23,7 +23,7 @@ const StageTimerDisplayGauge = (props: Props) => {
     <>
       <div
         className={cn(
-          'flex min-w-[100px] animate-[scale-in_300ms_cubic-bezier(0,0,.2,1)] select-none items-end justify-center rounded-[4px] px-2 font-semibold tabular-nums leading-7 transition-[background] duration-1000 ease-[cubic-bezier(0,0,.2,1)]',
+          'flex h-7 min-w-[100px] animate-[fade-in_300ms_cubic-bezier(0,0,.2,1)] select-none items-center justify-center rounded-[4px] px-2 font-semibold tabular-nums leading-7 transition-[background] duration-1000 ease-[cubic-bezier(0,0,.2,1)]',
           timeLeft
             ? 'bg-jade-400 text-[16px] text-white'
             : 'bg-gold-300 text-[14px] text-slate-700',

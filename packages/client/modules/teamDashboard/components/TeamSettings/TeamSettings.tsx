@@ -3,10 +3,10 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {TeamSettingsQuery} from '../../../../__generated__/TeamSettingsQuery.graphql'
 import Panel from '../../../../components/Panel/Panel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import Row from '../../../../components/Row/Row'
 import useDocumentTitle from '../../../../hooks/useDocumentTitle'
 import {TierLabel} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import ArchiveTeam from '../ArchiveTeam/ArchiveTeam'
 import TeamPrivacyToggle from './TeamPrivacyToggle'
 
@@ -70,9 +70,13 @@ const TeamSettings = (props: Props) => {
                   ? `This team is currently on a free trial for the ${TierLabel.TEAM} plan.`
                   : 'This team is currently on a starter plan.'}
               </div>
-              <PrimaryButton onClick={() => navigate(`/me/organizations/${orgId}`)}>
+              <Button
+                variant='primary'
+                size='sm'
+                onClick={() => navigate(`/me/organizations/${orgId}`)}
+              >
                 {`Upgrade to ${TierLabel.TEAM} Plan`}
-              </PrimaryButton>
+              </Button>
             </Row>
           </Panel>
         )}

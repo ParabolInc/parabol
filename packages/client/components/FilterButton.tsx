@@ -1,6 +1,6 @@
 import {forwardRef, type Ref} from 'react'
+import {Button} from '~/ui/Button/Button'
 import {FilterList} from '~/ui/icons'
-import FlatButton from './FlatButton'
 
 interface Props {
   onClick: () => void
@@ -9,13 +9,15 @@ interface Props {
 const FilterButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {onClick} = props
   return (
-    <FlatButton
+    <Button
+      variant='flat'
+      size='sm'
       className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500'
       onClick={onClick}
       ref={ref}
     >
       <FilterList className='h-[18px] w-[18px] text-white' />
-    </FlatButton>
+    </Button>
   )
 })
 

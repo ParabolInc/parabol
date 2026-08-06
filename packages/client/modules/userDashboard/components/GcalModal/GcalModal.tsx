@@ -13,9 +13,9 @@ import DialogContent from '../../../../components/DialogContent'
 import DialogTitle from '../../../../components/DialogTitle'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
+import {Button} from '../../../../ui/Button/Button'
 import {DialogActions} from '../../../../ui/Dialog/DialogActions'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import Legitity from '../../../../validation/Legitity'
@@ -237,9 +237,9 @@ const GcalModal = (props: Props) => {
         </div>
         <div className='flex justify-end pt-4'>
           <DialogActions>
-            <PrimaryButton size='medium' onClick={handleClick}>
+            <Button variant='primary' size='md' onClick={handleClick}>
               {`Create Meeting & Gcal Invite`}
-            </PrimaryButton>
+            </Button>
           </DialogActions>
         </div>
       </DialogContent>

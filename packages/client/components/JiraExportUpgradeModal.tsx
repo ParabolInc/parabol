@@ -1,13 +1,12 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
 import {upgradeTitles} from './StartMeetingUpgradeModal'
 
 interface Props {
@@ -50,13 +49,13 @@ const JiraExportUpgradeModal = (props: Props) => {
           )}
         </p>
         <DialogActions className='flex-col items-center justify-center gap-2'>
-          <PrimaryButton size='medium' onClick={goToUpgrade}>
+          <Button variant='primary' size='md' onClick={goToUpgrade}>
             {'Upgrade Now'}
-          </PrimaryButton>
+          </Button>
           {!isHardBlock && (
-            <SecondaryButton size='medium' onClick={onClose}>
+            <Button variant='outline' size='md' onClick={onClose}>
               {'Upgrade Later'}
-            </SecondaryButton>
+            </Button>
           )}
         </DialogActions>
       </DialogContent>

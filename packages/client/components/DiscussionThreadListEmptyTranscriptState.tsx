@@ -5,9 +5,9 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import AddTranscriptionBot from '../mutations/AddTranscriptionBotMutation'
+import {Button} from '../ui/Button/Button'
 import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
-import FlatButton from './FlatButton'
 import StyledError from './StyledError'
 import {ZoomSVG} from './ZoomSVG'
 
@@ -93,13 +93,14 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
             value={urlValue}
           />
           <div className='flex w-full flex-col items-center'>
-            <FlatButton
+            <Button
               type='submit'
-              size='medium'
+              variant='flat'
+              size='md'
               className='mt-6 mb-2 w-1/2 min-w-9 border-hairline-strong bg-accent font-semibold text-[12px] text-white hover:bg-sky-600'
             >
               Submit
-            </FlatButton>
+            </Button>
             {fieldError && <StyledError>{fieldError}</StyledError>}
           </div>
         </form>

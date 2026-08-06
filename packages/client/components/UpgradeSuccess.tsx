@@ -1,11 +1,11 @@
 import {useEffect, useState} from 'react'
 import paymentSuccessSvg from '../../../static/images/illustrations/conversion_prompt-payment_success.svg'
+import {Button} from '../ui/Button/Button'
 import {TEAM_LABEL} from '../utils/constants'
 import Confetti from './Confetti'
 import DialogContainer from './DialogContainer'
 import DialogTitle from './DialogTitle'
 import InvitationDialogCopy from './InvitationDialogCopy'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   closePortal: () => void
@@ -30,9 +30,9 @@ const UpgradeSuccess = (props: Props) => {
         {' tier'}
       </InvitationDialogCopy>
       <div className='p-6'>
-        <SecondaryButton size='large' onClick={closePortal} className='w-[264px] p-2'>
+        <Button variant='outline' size='lg' onClick={closePortal} className='w-[264px] p-2'>
           {'Back to Business'}
-        </SecondaryButton>
+        </Button>
       </div>
       <Confetti active={active} />
     </DialogContainer>

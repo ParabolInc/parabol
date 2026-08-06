@@ -4,13 +4,13 @@ import type {UserProfileQuery} from '../../../../__generated__/UserProfileQuery.
 import EditableAvatar from '../../../../components/EditableAvatar/EditableAvatar'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import SecondaryButton from '../../../../components/SecondaryButton'
 import UserAvatarInput from '../../../../components/UserAvatarInput'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useForm from '../../../../hooks/useForm'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import UpdateUserProfileMutation from '../../../../mutations/UpdateUserProfileMutation'
 import defaultUserAvatar from '../../../../styles/theme/images/avatar-user.svg'
+import {Button} from '../../../../ui/Button/Button'
 import Legitity from '../../../../validation/Legitity'
 import NotificationErrorMessage from '../../../notifications/components/NotificationErrorMessage'
 
@@ -79,9 +79,9 @@ function UserSettings(props: UserSettingsProps) {
               placeholder='My name'
             />
           </div>
-          <SecondaryButton size='medium' className='w-28'>
+          <Button variant='outline' size='md' className='w-28'>
             {'Update'}
-          </SecondaryButton>
+          </Button>
         </div>
         <NotificationErrorMessage error={error} />
       </div>

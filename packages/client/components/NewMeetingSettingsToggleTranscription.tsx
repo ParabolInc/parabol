@@ -7,11 +7,11 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import SetMeetingSettingsMutation from '../mutations/SetMeetingSettingsMutation'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
 import Checkbox from './Checkbox'
-import FlatButton from './FlatButton'
 import PlainButton from './PlainButton/PlainButton'
 import StyledError from './StyledError'
 
@@ -124,13 +124,14 @@ const NewMeetingSettingsToggleTranscription = (props: Props) => {
               className='cursor-pointer text-[28px] text-fg-secondary hover:text-fg-primary'
             />
           ) : (
-            <FlatButton
+            <Button
+              variant='flat'
               onClick={handleSubmit}
-              size='medium'
+              size='md'
               className='ml-4 min-w-9 border-slate-400 bg-sky-500 font-semibold text-[12px] text-white'
             >
               Submit
-            </FlatButton>
+            </Button>
           )}
         </ButtonRow>
       )}

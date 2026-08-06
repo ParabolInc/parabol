@@ -17,7 +17,6 @@ import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import Panel from '../../../../components/Panel/Panel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
 import StyledError from '../../../../components/StyledError'
 import Toggle from '../../../../components/Toggle/Toggle'
@@ -27,6 +26,7 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {Threshold} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
@@ -370,14 +370,14 @@ const NewTeamForm = (props: Props) => {
               </label>
             </div>
           )}
-          <PrimaryButton
+          <Button
+            variant='primary'
             className='mx-auto mt-6 mb-0 w-64'
-            disabled={disableFields}
-            size='large'
-            waiting={submitting}
+            disabled={disableFields || submitting}
+            size='lg'
           >
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
-          </PrimaryButton>
+          </Button>
           {error && <StyledError>{error.message}</StyledError>}
         </div>
       </Panel>
