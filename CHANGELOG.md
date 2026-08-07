@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.34.1](https://github.com/ParabolInc/parabol/compare/v13.34.0...v13.34.1) (2026-08-06)
+
+
+### Changed
+
+* no more emotion ([#13352](https://github.com/ParabolInc/parabol/issues/13352)) ([787d3c3](https://github.com/ParabolInc/parabol/commit/787d3c3138bbbb629f0d38bc55fab18eae4b42ed))
+
 ## [13.34.0](https://github.com/ParabolInc/parabol/compare/v13.33.0...v13.34.0) (2026-08-05)
 
 
