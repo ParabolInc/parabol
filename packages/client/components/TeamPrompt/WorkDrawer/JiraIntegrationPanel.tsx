@@ -74,7 +74,7 @@ const JiraIntegrationPanel = (props: Props) => {
       atmosphere,
       teamMember.teamId,
       mutationProps,
-      AtlassianClientManager.SCOPE,
+      AtlassianClientManager.JIRA_SCOPE,
       teamMember.integrations.atlassian?.scope
     )
 

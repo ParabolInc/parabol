@@ -17,7 +17,7 @@ class AtlassianClientManager extends AtlassianManager {
     atmosphere: Atmosphere,
     teamId: string,
     mutationProps: MenuMutationProps,
-    requestedScopes: AtlassianPermissionScope[] = AtlassianManager.SCOPE,
+    requestedScopes: AtlassianPermissionScope[] = AtlassianManager.JIRA_SCOPE,
     heldScopes?: readonly string[] | null
   ) {
     const scopes = unionAtlassianScopes(requestedScopes, heldScopes)

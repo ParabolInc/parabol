@@ -12,3 +12,7 @@ Never claim UI work is done without checking the rendered result. Finding one vi
 Styling refactors must leave untouched surfaces pixel-identical to baseline; root-cause visual regressions rather than patching symptoms
 Test full user flows (e.g. OAuth redirect round-trips, empty/unconnected states) and match feature parity with sibling integrations
 Contrast and color-blind legibility are acceptance criteria — color alone can't carry meaning. Prefer controls that make invalid states unrepresentable
+Page.teamId exists ONLY on top-level pages — never use page.team for gating or auth decisions
+Expose raw data over derived booleans (e.g. scope lists, not hasXScopes booleans); never expose raw db ids — use CipherId. Prefer existing deps (e.g. mime-types) over hand-rolled maps
+Redis locks are scoped per user/resource, never app-global; a detached job must finalize its DB row on every exit path (no rows stuck 'running'). Logic shared by a mutation and its detached job lives in ONE helper
+Product restraint: one notification surface per event; integration entry points live in deep menus, not nav/email CTAs; no analytics args on GraphQL mutations

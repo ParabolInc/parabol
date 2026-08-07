@@ -1,8 +1,10 @@
-import AutorenewIcon from '@mui/icons-material/Autorenew'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline'
-import ScheduleIcon from '@mui/icons-material/Schedule'
+import {
+  Autorenew as AutorenewIcon,
+  CheckCircle as CheckCircleIcon,
+  ErrorOutline as ErrorOutlineIcon,
+  RemoveCircleOutline as RemoveCircleOutlineIcon,
+  Schedule as ScheduleIcon
+} from '../../ui/icons'
 
 export type ExportPage = {
   readonly pageId: string

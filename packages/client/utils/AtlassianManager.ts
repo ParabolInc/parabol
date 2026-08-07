@@ -62,7 +62,7 @@ export const unionAtlassianScopes = (
   const scopes = new Set<string>([...(heldScopes ?? []), ...requested])
   const hasProductScope = [...scopes].some((scope) => scope !== 'offline_access')
   if (!hasProductScope) {
-    AtlassianManager.SCOPE.forEach((scope) => scopes.add(scope))
+    AtlassianManager.JIRA_SCOPE.forEach((scope) => scopes.add(scope))
   }
   return [...scopes]
 }
@@ -81,7 +81,7 @@ Object.setPrototypeOf(RateLimitError.prototype, Error.prototype)
 
 export default abstract class AtlassianManager {
   abstract fetch: typeof fetch
-  static SCOPE: JiraPermissionScope[] = [
+  static JIRA_SCOPE: JiraPermissionScope[] = [
     'read:jira-user',
     'read:jira-work',
     'write:jira-work',

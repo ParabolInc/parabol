@@ -117,18 +117,16 @@ export const PageActions = (props: Props) => {
             }
           >
             <MenuContent align='center' side={'right'} sideOffset={8} className='max-h-80'>
-              {viewerAccess === 'owner' && (
-                <MenuItem
-                  onSelect={archivePage}
-                  onClick={(e) => {
-                    //  default is required in order to trigger onSelect
-                    e.stopPropagation()
-                  }}
-                >
-                  <DeleteIcon className='text-fg-secondary' />
-                  <span className='pl-1'>{'Delete page'}</span>
-                </MenuItem>
-              )}
+              <MenuItem
+                onSelect={archivePage}
+                onClick={(e) => {
+                  //  default is required in order to trigger onSelect
+                  e.stopPropagation()
+                }}
+              >
+                <DeleteIcon className='text-fg-secondary' />
+                <span className='pl-1'>{'Delete page'}</span>
+              </MenuItem>
             </MenuContent>
           </Menu>
         </div>

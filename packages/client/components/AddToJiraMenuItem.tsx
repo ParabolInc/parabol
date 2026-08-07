@@ -21,7 +21,7 @@ const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
       atmosphere,
       teamId,
       mutationProps,
-      AtlassianClientManager.SCOPE,
+      AtlassianClientManager.JIRA_SCOPE,
       heldScopes
     )
   }

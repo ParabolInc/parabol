@@ -65,7 +65,7 @@ const ScopePhaseAreaAddJira = (props: Props) => {
       atmosphere,
       teamId,
       mutationProps,
-      AtlassianClientManager.SCOPE,
+      AtlassianClientManager.JIRA_SCOPE,
       heldScopes
     )
   }
