@@ -44,6 +44,15 @@ export const FEATURE_FLAGS = {
     createdAt: new Date('2026-07-10T00:00:00+00:00'),
     updatedAt: new Date('2026-07-10T00:00:00+00:00'),
     isPublic: false
+  },
+  ConfluenceExport: {
+    featureName: 'ConfluenceExport',
+    scope: 'Organization',
+    description: 'Export Pages to Confluence Cloud',
+    expiresAt: new Date('2027-08-01T00:00:00+00:00'),
+    createdAt: new Date('2026-07-27T00:00:00+00:00'),
+    updatedAt: new Date('2026-07-27T00:00:00+00:00'),
+    isPublic: false
   }
 } as const satisfies Record<string, FeatureFlag>
 

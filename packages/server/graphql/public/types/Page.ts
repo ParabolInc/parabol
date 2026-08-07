@@ -54,6 +54,11 @@ const Page: Omit<ReqResolvers<'Page'>, 'team'> = {
     if (!deletedBy) return null
     const user = await dataLoader.get('users').loadNonNull(deletedBy)
     return user
+  },
+  lastPageExport: async ({id}, _args, {authToken, dataLoader}) => {
+    const viewerId = getUserId(authToken)
+    const exports = await dataLoader.get('pageExportsByPageId').load(id)
+    return exports.find(({userId}) => userId === viewerId) ?? null
   }
 }
 

@@ -12,6 +12,7 @@ import useMutationProps, {type MenuMutationProps} from '../../../../hooks/useMut
 import type {AuthToken} from '../../../../types/AuthToken'
 import {ExternalLinks, Providers} from '../../../../types/constEnums'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../../../../utils/AtlassianClientManager'
+import {hasJiraScopes} from '../../../../utils/atlassianScopes'
 import ProviderRow from './ProviderRow'
 
 interface Props {
@@ -63,10 +64,17 @@ const AtlassianProviderRow = (props: Props) => {
   const {integrations} = teamMember!
   const {atlassian} = integrations
   const accessToken = atlassian?.accessToken ?? undefined
+  const jiraConnected = !!accessToken && hasJiraScopes(atlassian?.scope)
   useFreshToken(accessToken, retry)
 
   const openOAuth = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      AtlassianClientManager.JIRA_SCOPE,
+      atlassian?.scope
+    )
   }
 
   const {togglePortal, originRef, menuPortal, menuProps} = useMenu(MenuPosition.UPPER_RIGHT)
@@ -96,7 +104,7 @@ const AtlassianProviderRow = (props: Props) => {
   return (
     <>
       <ProviderRow
-        connected={!!accessToken}
+        connected={jiraConnected}
         onConnectClick={openOAuth}
         submitting={submitting}
         togglePortal={togglePortal}
@@ -107,7 +115,12 @@ const AtlassianProviderRow = (props: Props) => {
         error={errorMessage}
       />
       {menuPortal(
-        <AtlassianConfigMenu mutationProps={mutationProps} menuProps={menuProps} teamId={teamId} />
+        <AtlassianConfigMenu
+          mutationProps={mutationProps}
+          menuProps={menuProps}
+          teamId={teamId}
+          heldScopes={atlassian?.scope}
+        />
       )}
     </>
   )
@@ -116,6 +129,7 @@ const AtlassianProviderRow = (props: Props) => {
 graphql`
   fragment AtlassianProviderRowAtlassianIntegration on AtlassianIntegration {
     accessToken
+    scope
   }
 `
 

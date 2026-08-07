@@ -12,6 +12,7 @@ interface Options {
     redirectTo?: string
     email?: string
     share?: boolean
+    export?: string
   } & (UTMParams | Partial<Record<keyof UTMParams, never>>)
 }
 

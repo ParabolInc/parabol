@@ -55,6 +55,12 @@ type Page implements PagePartial {
   team: Team @scope(name: TEAMS_READ)
 
   """
+  The viewer's most recent export of this page to an external service. Null when the
+  viewer has never exported it. Viewer-only: exports run by other users are not visible.
+  """
+  lastPageExport: PageExport
+
+  """
   true if this page is nested under a parent that links back to it
   """
   isParentLinked: Boolean!

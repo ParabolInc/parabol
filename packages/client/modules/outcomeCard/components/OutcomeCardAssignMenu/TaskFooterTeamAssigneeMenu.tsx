@@ -16,6 +16,7 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {MenuProps} from '../../../../hooks/useMenu'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import ChangeTaskTeamMutation from '../../../../mutations/ChangeTaskTeamMutation'
+import {hasJiraScopes} from '../../../../utils/atlassianScopes'
 import TaskFooterTeamAssigneeAddIntegrationDialog from './TaskFooterTeamAssigneeAddIntegrationDialog'
 
 const query = graphql`
@@ -28,6 +29,7 @@ const query = graphql`
           id
           atlassian {
             isActive
+            scope
           }
           github {
             isActive
@@ -138,7 +140,10 @@ const TaskFooterTeamAssigneeMenu = (props: Props) => {
         const safeRes = result instanceof Error ? undefined : result
         const {github, atlassian} = safeRes?.viewer?.teamMember?.integrations ?? {}
 
-        if ((isGitHubTask && !github?.isActive) || (isJiraTask && !atlassian?.isActive)) {
+        if (
+          (isGitHubTask && !github?.isActive) ||
+          (isJiraTask && !(atlassian?.isActive && hasJiraScopes(atlassian?.scope)))
+        ) {
           setNewTeam(nextTeam)
           setIsAddIntegrationOpen(true)
           return
