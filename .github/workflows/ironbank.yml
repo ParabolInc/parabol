@@ -84,7 +84,7 @@ jobs:
         run: |
           VERSION="${REF_NAME#v}"
           BRANCH="feat/${REF_NAME}"
-          NODE_VERSION_SUFFIX='-npm11-yarn4'
+          NODE_VERSION_SUFFIX='-npm12.0.2-yarn4.18.0'
 
           git clone --branch master "https://oauth2:${REPO1_TOKEN}@repo1.dso.mil/dsop/parabol/parabol.git" ironbank-repo
           cd ironbank-repo
