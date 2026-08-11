@@ -1,7 +1,10 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
-import AtlassianManager, {type JiraPermissionScope} from './AtlassianManager'
+import AtlassianManager, {
+  type AtlassianPermissionScope,
+  unionAtlassianScopes
+} from './AtlassianManager'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
 export const ERROR_POPUP_CLOSED = 'Popup closed before authorization was complete'
@@ -14,8 +17,10 @@ class AtlassianClientManager extends AtlassianManager {
     atmosphere: Atmosphere,
     teamId: string,
     mutationProps: MenuMutationProps,
-    scopes: JiraPermissionScope[] = AtlassianManager.SCOPE
+    requestedScopes: AtlassianPermissionScope[] = AtlassianManager.JIRA_SCOPE,
+    heldScopes?: readonly string[] | null
   ) {
+    const scopes = unionAtlassianScopes(requestedScopes, heldScopes)
     const {submitting, onError, onCompleted, submitMutation} = mutationProps
     const hash = Math.random().toString(36).substring(5)
     const providerState = btoa(
@@ -37,6 +42,12 @@ class AtlassianClientManager extends AtlassianManager {
       'OAuth',
       getOAuthPopupFeatures({width: 500, height: 810, top: 56})
     )
+    if (!popup) {
+      onError({
+        message: 'Your browser blocked the sign-in popup. Allow popups for Parabol and try again.'
+      })
+      return
+    }
     const closeCheckerId = window.setInterval(() => {
       if (popup && popup.closed) {
         onError({message: ERROR_POPUP_CLOSED})

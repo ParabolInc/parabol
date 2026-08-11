@@ -1,6 +1,7 @@
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaJira_meeting$key} from '../__generated__/ScopePhaseAreaJira_meeting.graphql'
+import {hasJiraScopes} from '../utils/atlassianScopes'
 import ScopePhaseAreaAddJira from './ScopePhaseAreaAddJira'
 import ScopePhaseAreaJiraScoping from './ScopePhaseAreaJiraScoping'
 
@@ -22,6 +23,7 @@ const ScopePhaseAreaJira = (props: Props) => {
             integrations {
               atlassian {
                 isActive
+                scope
               }
             }
           }
@@ -35,7 +37,10 @@ const ScopePhaseAreaJira = (props: Props) => {
   if (!viewerMeetingMember || !isActive) return null
   const {teamMember} = viewerMeetingMember
   const {integrations} = teamMember
-  const hasAuth = integrations?.atlassian?.isActive ?? false
+  // an active grant may be Confluence-only — Jira scoping needs Jira capability,
+  // and AddJira's OAuth unions the held Confluence scopes so nothing is lost
+  const hasAuth =
+    (integrations?.atlassian?.isActive && hasJiraScopes(integrations?.atlassian?.scope)) ?? false
   if (!hasAuth) return <ScopePhaseAreaAddJira gotoParabol={gotoParabol} meetingRef={meeting} />
   return <ScopePhaseAreaJiraScoping meetingRef={meeting} />
 }

@@ -20,6 +20,7 @@ import {
   type selectOAuthAPICode,
   type selectOAuthAPIProvider,
   type selectOrganizations,
+  type selectPageExports,
   type selectPages,
   selectPersonalAccessToken,
   type selectPoll,
@@ -230,3 +231,5 @@ export type TimelineEvent = ExtractTypeFromQueryBuilderSelect<typeof selectTimel
 export type PersonalAccessToken = ExtractTypeFromQueryBuilderSelect<
   typeof selectPersonalAccessToken
 >
+
+export type PageExport = ExtractTypeFromQueryBuilderSelect<typeof selectPageExports>

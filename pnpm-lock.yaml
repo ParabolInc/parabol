@@ -39,6 +39,9 @@ overrides:
   '@emotion/is-prop-valid': '-'
 
 patchedDependencies:
+  '@sereneinserenade/tiptap-search-and-replace@0.1.1':
+    hash: 26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5
+    path: patches/@sereneinserenade__tiptap-search-and-replace@0.1.1.patch
   '@tiptap/core@3.23.6':
     hash: e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5
     path: patches/@tiptap__core@3.23.6.patch
@@ -536,7 +539,7 @@ importers:
         version: 1.2.4(@types/react-dom@18.3.7(@types/react@18.3.29))(@types/react@18.3.29)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@sereneinserenade/tiptap-search-and-replace':
         specifier: ^0.1.1
-        version: 0.1.1(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+        version: 0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
       '@stripe/react-stripe-js':
         specifier: ^1.16.5
         version: 1.16.5(@stripe/stripe-js@4.10.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -15196,7 +15199,7 @@ snapshots:
   '@rspack/lite-tapable@1.1.0':
     optional: true
 
-  '@sereneinserenade/tiptap-search-and-replace@0.1.1(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
+  '@sereneinserenade/tiptap-search-and-replace@0.1.1(patch_hash=26cb9c1fd81d1b76f3ec04e395d579f47cc1cbdc428b137867f83d35c25189d5)(@tiptap/core@3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)':
     dependencies:
       '@tiptap/core': 3.23.6(patch_hash=e48add76209847cc634adfbfeaba3b827687ccd827bf0334fcb4e69ad2e6eea5)(@tiptap/pm@3.23.6)
       '@tiptap/pm': 3.23.6

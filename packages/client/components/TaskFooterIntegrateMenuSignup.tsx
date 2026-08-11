@@ -25,6 +25,10 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
   const integrations = useFragment(
     graphql`
       fragment TaskFooterIntegrateMenuSignup_TeamMemberIntegrations on TeamMemberIntegrations {
+        atlassian {
+          isActive
+          scope
+        }
         gitlab {
           ...AddToGitLabMenuItem_GitLabIntegration
         }
@@ -46,7 +50,11 @@ const TaskFooterIntegrateMenuSignup = (props: Props) => {
         </>
       )}
       <AddToGitHubMenuItem mutationProps={mutationProps} teamId={teamId} />
-      <AddToJiraMenuItem mutationProps={mutationProps} teamId={teamId} />
+      <AddToJiraMenuItem
+        mutationProps={mutationProps}
+        teamId={teamId}
+        heldScopes={integrations.atlassian?.scope}
+      />
       <AddToAzureMenuItem
         mutationProps={mutationProps}
         teamId={teamId}

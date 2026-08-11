@@ -10,13 +10,20 @@ import MenuItemLabel from './MenuItemLabel'
 interface Props {
   teamId: string
   mutationProps: MenuMutationProps
+  heldScopes?: readonly string[] | null
 }
 
 const AddToJiraMenuItem = forwardRef((props: Props, ref) => {
-  const {mutationProps, teamId} = props
+  const {mutationProps, teamId, heldScopes} = props
   const atmosphere = useAtmosphere()
   const onClick = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      AtlassianClientManager.JIRA_SCOPE,
+      heldScopes
+    )
   }
   if (!AtlassianClientManager.isAvailable) return null
   return (

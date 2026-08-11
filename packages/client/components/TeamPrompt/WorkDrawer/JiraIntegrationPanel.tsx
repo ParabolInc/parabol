@@ -6,6 +6,7 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import AtlassianClientManager from '../../../utils/AtlassianClientManager'
+import {hasJiraScopes} from '../../../utils/atlassianScopes'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import JiraIntegrationResultsRoot from './JiraIntegrationResultsRoot'
@@ -35,6 +36,7 @@ const JiraIntegrationPanel = (props: Props) => {
             integrations {
               atlassian {
                 isActive
+                scope
               }
             }
           }
@@ -68,7 +70,13 @@ const JiraIntegrationPanel = (props: Props) => {
     if (!teamMember) {
       return onError(new Error('Could not find team member'))
     }
-    AtlassianClientManager.openOAuth(atmosphere, teamMember.teamId, mutationProps)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamMember.teamId,
+      mutationProps,
+      AtlassianClientManager.JIRA_SCOPE,
+      teamMember.integrations.atlassian?.scope
+    )
 
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Integration Connected', {
       teamId: meeting.teamId,
@@ -79,7 +87,8 @@ const JiraIntegrationPanel = (props: Props) => {
 
   return (
     <>
-      {teamMember?.integrations.atlassian?.isActive ? (
+      {teamMember?.integrations.atlassian?.isActive &&
+      hasJiraScopes(teamMember?.integrations.atlassian?.scope) ? (
         <>
           <div className='mb-2 flex w-full px-2'>
             <WorkDrawerDateFilter dateRange={dateRange} setDateRange={setDateRange} />

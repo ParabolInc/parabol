@@ -24,11 +24,21 @@ const ScopePhaseAreaAddJira = (props: Props) => {
     graphql`
       fragment ScopePhaseAreaAddJira_meeting on PokerMeeting {
         teamId
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              atlassian {
+                scope
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {teamId} = meeting
+  const {teamId, viewerMeetingMember} = meeting
+  const heldScopes = viewerMeetingMember?.teamMember.integrations.atlassian?.scope
 
   const errorMessage = useMemo(() => {
     if (!error) return undefined
@@ -51,7 +61,13 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }, [error])
 
   const authJira = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      AtlassianClientManager.JIRA_SCOPE,
+      heldScopes
+    )
   }
   return (
     <div className='flex h-full flex-col items-center justify-center'>

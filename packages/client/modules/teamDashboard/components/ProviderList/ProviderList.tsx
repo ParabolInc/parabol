@@ -2,8 +2,10 @@ import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {ProviderListQuery} from '../../../../__generated__/ProviderListQuery.graphql'
 import SettingsWrapper from '../../../../components/Settings/SettingsWrapper'
+import {hasConfluenceScopes, hasJiraScopes} from '../../../../utils/atlassianScopes'
 import AtlassianProviderRow from '../ProviderRow/AtlassianProviderRow'
 import AzureDevOpsProviderRow from '../ProviderRow/AzureDevOpsProviderRow'
+import ConfluenceProviderRow from '../ProviderRow/ConfluenceProviderRow'
 import GcalProviderRow from '../ProviderRow/GcalProviderRow'
 import GitHubProviderRow from '../ProviderRow/GitHubProviderRow'
 import GitLabProviderRow from '../ProviderRow/GitLabProviderRow'
@@ -23,6 +25,7 @@ const query = graphql`
   query ProviderListQuery($teamId: ID!) {
     viewer {
       ...AtlassianProviderRow_viewer
+      ...ConfluenceProviderRow_viewer
       ...JiraServerProviderRow_viewer
       ...GitHubProviderRow_viewer
       ...GitLabProviderRow_viewer
@@ -36,6 +39,7 @@ const query = graphql`
         integrations {
           atlassian {
             accessToken
+            scope
           }
           jiraServer {
             auth {
@@ -102,11 +106,19 @@ const ProviderList = (props: Props) => {
 
   const allIntegrations = [
     {
-      name: 'Atlassian',
-      connected: !!integrations?.atlassian?.accessToken,
+      name: 'Atlassian Jira',
+      connected:
+        !!integrations?.atlassian?.accessToken && hasJiraScopes(integrations?.atlassian?.scope),
       component: (
         <AtlassianProviderRow key='atlassian' teamId={teamId} retry={retry} viewer={viewer} />
       )
+    },
+    {
+      name: 'Atlassian Confluence',
+      connected:
+        !!integrations?.atlassian?.accessToken &&
+        hasConfluenceScopes(integrations?.atlassian?.scope),
+      component: <ConfluenceProviderRow key='confluence' teamId={teamId} viewerRef={viewer} />
     },
     {
       name: 'Jira Data Center',

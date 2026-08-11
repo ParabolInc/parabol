@@ -1,0 +1,24 @@
+"""
+A Confluence space the user can pick as an export destination
+"""
+type ConfluenceSpace {
+  """
+  The Confluence space id (v2 API)
+  """
+  id: ID!
+
+  """
+  The space key (e.g. "ENG") — used for CQL page search within the space
+  """
+  key: String!
+
+  """
+  The human-readable space name
+  """
+  name: String!
+
+  """
+  True for the user's personal space; the picker groups these separately
+  """
+  isPersonal: Boolean!
+}
