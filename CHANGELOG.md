@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.35.0](https://github.com/ParabolInc/parabol/compare/v13.34.1...v13.35.0) (2026-08-11)
+
+
+### Added
+
+* confluence integration (behind feature flag) ([#13322](https://github.com/ParabolInc/parabol/issues/13322)) ([9e31acd](https://github.com/ParabolInc/parabol/commit/9e31acd54754985b016fbbabca154470b38101e6))
+
+
+### Fixed
+
+* bump node to v24.19.0 ([#13360](https://github.com/ParabolInc/parabol/issues/13360)) ([6b9f536](https://github.com/ParabolInc/parabol/commit/6b9f53660dea3aedc3cf1042218b8cd43e2a5f61))
+
 ## [13.34.1](https://github.com/ParabolInc/parabol/compare/v13.34.0...v13.34.1) (2026-08-06)
 
 
