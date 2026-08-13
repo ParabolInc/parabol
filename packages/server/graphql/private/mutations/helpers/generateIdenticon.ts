@@ -19,10 +19,8 @@ export const generateIdenticon = async (userId: string, name: string) => {
     backgroundColor: themeBackgroundColors,
     fontFamily: ['IBM Plex Sans']
   })
-  const svgBuffer = await avatar.toArrayBuffer()
-  const pngBuffer = await sharp(svgBuffer as ArrayBuffer)
-    .png()
-    .toBuffer()
+  const svgBuffer = Buffer.from(avatar.toString())
+  const pngBuffer = await sharp(svgBuffer).png().toBuffer()
   const manager = getFileStoreManager()
   const publicLocation = await manager.putUserAvatar(pngBuffer, userId, 'png')
   return publicLocation

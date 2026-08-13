@@ -21,6 +21,10 @@ const DUMP_ON_USR2 = path.join(SERVER_ROOT, 'dumpOnUSR2.ts')
 
 const COMMIT_HASH = cp.execSync('git rev-parse HEAD').toString().trim()
 const runtimePlatform = `${process.platform}-${process.arch}`
+const SHARP_ROOT = path.dirname(path.dirname(require.resolve('sharp', {paths: [SERVER_ROOT]})))
+const SHARP_LIBVIPS_ROOT = path.dirname(
+  require.resolve(`@img/sharp-libvips-${runtimePlatform}/package`, {paths: [SHARP_ROOT]})
+)
 
 module.exports = (config) => {
   const noDeps = config.noDeps === 'true'
@@ -121,6 +125,14 @@ module.exports = (config) => {
         contextRegExp: /@dicebear/
       }),
       new webpack.IgnorePlugin({
+        // sharp statically requires a prebuilt binary for every platform, we only ship ours
+        resourceRegExp: new RegExp(`^@img/sharp-(?!${runtimePlatform}/)[^/]+/sharp\\.node$`)
+      }),
+      new webpack.IgnorePlugin({
+        // the prebuilt binary finds libvips via rpath, the dylib itself is copied below
+        resourceRegExp: /^@img\/sharp-libvips-[^/]+\/binary$/
+      }),
+      new webpack.IgnorePlugin({
         resourceRegExp: /inter-regular.otf$/,
         contextRegExp: /@dicebear/
       }),
@@ -132,16 +144,13 @@ module.exports = (config) => {
         patterns: [
           {
             // copy sharp's libvips to the output
-            from: path.resolve(
-              PROJECT_ROOT,
-              `node_modules/.pnpm/sharp@0.34.3/node_modules/@img/sharp-libvips-${runtimePlatform}`
-            ),
+            from: SHARP_LIBVIPS_ROOT,
             to: `sharp-libvips-${runtimePlatform}`
           },
           noDeps && {
             // dd-trace-js has a lookup table for hooks, which includes the key `pg`
             // In order for `pg` to get parsed as `pg` and not `pg.js`, we need a package.json to provide the name `pg`
-            from: path.resolve(SERVER_ROOT, 'node_modules', 'pg', 'package.json'),
+            from: path.resolve(PROJECT_ROOT, 'node_modules', 'pg', 'package.json'),
             to: 'node_modules/pg/package.json'
           }
         ].filter(Boolean)
@@ -161,15 +170,6 @@ module.exports = (config) => {
           type: 'asset/resource',
           generator: {
             filename: 'images/[name][ext]'
-          }
-        },
-        {
-          test: /sharp\.js$/,
-          loader: 'string-replace-loader',
-          options: {
-            search: 'sharp = require(path)',
-            replace: `sharp = require('@img/sharp-${runtimePlatform}/sharp.node')`,
-            strict: true
           }
         },
         {
