@@ -19,7 +19,7 @@ export const Checkbox = forwardRadix<typeof CheckboxPrimitive.Root>(
         checked={checked}
         {...props}
       >
-        <CheckboxPrimitive.Indicator asChild>
+        <CheckboxPrimitive.Indicator className='flex'>
           <MultiIcon className='w-5 fill-accent group-disabled:fill-fg-muted' />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
