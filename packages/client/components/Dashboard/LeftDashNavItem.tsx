@@ -1,7 +1,6 @@
-import type {SvgIconTypeMap} from '@mui/material'
-import type {OverridableComponent} from '@mui/material/OverridableComponent'
 import {forwardRef, type Ref} from 'react'
 import {Link, useMatch} from 'react-router'
+import type {IconComponent} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {LeftNavItem} from '../DashNavList/LeftNavItem'
 
@@ -9,7 +8,7 @@ interface Props {
   onClick?: () => void
   label: string
   href: string
-  Icon: OverridableComponent<SvgIconTypeMap<{}, 'svg'>>
+  Icon: IconComponent
   exact?: boolean
 }
 

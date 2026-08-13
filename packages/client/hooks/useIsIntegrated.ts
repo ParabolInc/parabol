@@ -2,6 +2,7 @@ import graphql from 'babel-plugin-relay/macro'
 
 import {useFragment} from 'react-relay'
 import type {useIsIntegrated_integrations$key} from '../__generated__/useIsIntegrated_integrations.graphql'
+import {hasJiraScopes} from '../utils/atlassianScopes'
 
 type IntegrationLookup = {
   hasGitHub: boolean
@@ -22,6 +23,7 @@ graphql`
 graphql`
   fragment useIsIntegratedAtlassianIntegration on AtlassianIntegration {
     isActive
+    scope
   }
 `
 graphql`
@@ -92,7 +94,8 @@ export const useIsIntegrated = (integrationsRef?: useIsIntegrated_integrations$k
     return null
   }
   const {atlassian, github, jiraServer, gitlab, azureDevOps, linear} = integrations
-  const hasAtlassian = atlassian?.isActive ?? false
+  // an active grant may be Confluence-only — Jira task integration needs Jira scopes
+  const hasAtlassian = (atlassian?.isActive && hasJiraScopes(atlassian?.scope)) ?? false
   const hasGitHub = github?.isActive ?? false
   const hasGitLab = gitlab?.auth?.isActive ?? false
   const hasJiraServer = jiraServer?.auth?.isActive ?? false

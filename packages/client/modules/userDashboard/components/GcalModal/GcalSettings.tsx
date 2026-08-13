@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type dayjs from 'dayjs'
 import type {Dayjs} from 'dayjs'
@@ -13,11 +12,6 @@ import StyledError from '../../../../components/StyledError'
 import parseEmailAddressList from '../../../../utils/parseEmailAddressList'
 import DateTimePickers from './DateTimePickers'
 import VideoConferencing from './VideoConferencing'
-
-const ErrorMessage = styled(StyledError)({
-  textAlign: 'left',
-  paddingBottom: 8
-})
 
 export interface GcalEventInput {
   start: dayjs.Dayjs
@@ -177,7 +171,7 @@ const GcalSettings = (props: Props) => {
           </label>
         </div>
       )}
-      {inviteError && <ErrorMessage>{inviteError}</ErrorMessage>}
+      {inviteError && <StyledError className='pb-2'>{inviteError}</StyledError>}
     </div>
   )
 }

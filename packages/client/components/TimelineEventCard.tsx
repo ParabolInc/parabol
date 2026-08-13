@@ -1,9 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type {ReactNode} from 'react'
 import {useFragment} from 'react-relay'
 import type {TimelineEventCard_timelineEvent$key} from '../__generated__/TimelineEventCard_timelineEvent.graphql'
-import {cardShadow} from '../styles/elevation'
 import TimelineEventDate from './TimelineEventDate'
 import TimelineEventHeaderMenuToggle from './TimelineEventHeaderMenuToggle'
 import TimelineEventTypeIcon from './TimelineEventTypeIcon'
@@ -16,39 +14,6 @@ interface Props {
   title: ReactNode
   timelineEvent: TimelineEventCard_timelineEvent$key
 }
-
-const Surface = styled('div')({
-  background: 'var(--color-surface-card)',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: 16,
-  overflow: 'hidden',
-  position: 'relative',
-  width: '100%'
-})
-
-const CardHeader = styled('div')({
-  display: 'flex',
-  margin: '16px 16px 8px',
-  position: 'relative',
-  justifyContent: 'space-between'
-})
-
-const CardTitleBlock = styled('div')({
-  display: 'flex'
-})
-
-const HeaderText = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  fontSize: 14,
-  justifyContent: 'space-around',
-  lineHeight: '20px',
-  paddingLeft: 16,
-  paddingTop: 2
-})
 
 const TimelineEventCard = (props: Props) => {
   const {children, iconName, IconSVG, title, timelineEvent: timelineEventRef} = props
@@ -65,16 +30,16 @@ const TimelineEventCard = (props: Props) => {
   )
   const {id: timelineEventId, createdAt, type, isActive} = timelineEvent
   return (
-    <Surface>
-      <CardHeader>
-        <CardTitleBlock>
+    <div className='relative mb-4 flex w-full flex-col overflow-hidden rounded bg-surface-card shadow-[var(--shadow-card)]'>
+      <div className='relative mx-4 mt-4 mb-2 flex justify-between'>
+        <div className='flex'>
           <TimelineEventTypeIcon iconName={iconName} />
           {IconSVG}
-          <HeaderText>
+          <div className='flex flex-col justify-around pt-0.5 pl-4 text-sm'>
             {title}
             <TimelineEventDate createdAt={createdAt} />
-          </HeaderText>
-        </CardTitleBlock>
+          </div>
+        </div>
         {isActive &&
         (type === 'retroComplete' ||
           type === 'actionComplete' ||
@@ -82,9 +47,9 @@ const TimelineEventCard = (props: Props) => {
           type === 'TEAM_PROMPT_COMPLETE') ? (
           <TimelineEventHeaderMenuToggle timelineEventId={timelineEventId} />
         ) : null}
-      </CardHeader>
+      </div>
       {children}
-    </Surface>
+    </div>
   )
 }
 

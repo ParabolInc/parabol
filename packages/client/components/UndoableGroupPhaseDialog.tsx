@@ -4,7 +4,6 @@ import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   isOpen: boolean
@@ -34,7 +33,9 @@ const UndoableGroupPhaseDialog = (props: Props) => {
           >
             Cancel
           </Button>
-          <PrimaryButton onClick={handleConfirm}>Confirm Reset</PrimaryButton>
+          <Button variant='primary' size='sm' className='text-sm' onClick={handleConfirm}>
+            Confirm Reset
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

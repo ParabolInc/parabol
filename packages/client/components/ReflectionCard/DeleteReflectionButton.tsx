@@ -1,4 +1,4 @@
-import {Cancel} from '@mui/icons-material'
+import {Cancel} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import PlainButton, {type PlainButtonProps} from '../PlainButton/PlainButton'
 

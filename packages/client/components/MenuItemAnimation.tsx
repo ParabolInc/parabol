@@ -1,9 +1,6 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
 import {PortalStatus} from '../hooks/usePortal'
-import {DECELERATE, fadeUp} from '../styles/animation'
-import {Duration} from '../types/constEnums'
-import type {Omit} from '../types/generics'
+import {BezierCurve, Duration} from '../types/constEnums'
 
 declare global {
   interface Element {
@@ -19,7 +16,7 @@ export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdow
     const variableDelay = timeRemaining * (idx / itemsToAnimate)
     const totalDelay = fixedDelay + variableDelay
     // last item finishes animating in at Duration.MENU_OPEN + itemDuration
-    return `${fadeUp.toString()} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
+    return `fade-up ${itemDuration}ms ${BezierCurve.DECELERATE} ${totalDelay}ms forwards`
   } else {
     // based on the decelerate curve with an 8px left margin, we can begin animating after about 75% complete
     // const Duration.MENU_OPEN_MAX
@@ -29,7 +26,7 @@ export const menuItemAnimation = (idx: number, itemsToAnimate: number, isDropdow
     const timeRemaining = Duration.MENU_OPEN_MAX - fixedDelay
     const variableDelay = idx * (timeRemaining / itemsToAnimate)
     const totalDelay = fixedDelay + variableDelay
-    return `${fadeUp.toString()} ${itemDuration}ms ${DECELERATE} ${totalDelay}ms forwards`
+    return `fade-up ${itemDuration}ms ${BezierCurve.DECELERATE} ${totalDelay}ms forwards`
   }
 }
 
@@ -41,27 +38,18 @@ interface Props {
   portalStatus: PortalStatus
 }
 
-const MenuItemStyles = styled('div')<Omit<Props, 'children'>>(
-  ({idx, itemsToAnimate, isDropdown, portalStatus}) => ({
-    animation:
-      portalStatus < PortalStatus.Entered
-        ? menuItemAnimation(idx, itemsToAnimate, isDropdown)
-        : undefined,
-    opacity: portalStatus < PortalStatus.Entered ? 0 : 1
-  })
-)
-
 const MenuItemAnimation = (props: Props) => {
   const {children, idx, itemsToAnimate, isDropdown, portalStatus} = props
+  const isAnimating = portalStatus < PortalStatus.Entered
   return (
-    <MenuItemStyles
-      idx={idx}
-      itemsToAnimate={itemsToAnimate}
-      isDropdown={isDropdown}
-      portalStatus={portalStatus}
+    <div
+      className={isAnimating ? 'opacity-0' : 'opacity-100'}
+      style={
+        isAnimating ? {animation: menuItemAnimation(idx, itemsToAnimate, isDropdown)} : undefined
+      }
     >
       {children}
-    </MenuItemStyles>
+    </div>
   )
 }
 

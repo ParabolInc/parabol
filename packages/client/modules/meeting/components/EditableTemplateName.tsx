@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
@@ -12,13 +11,6 @@ interface Props {
   isOwner: boolean
   className?: string
 }
-
-const InheritedStyles = styled('div')({
-  flex: 1,
-  fontSize: 20,
-  fontWeight: 600,
-  lineHeight: '24px'
-})
 
 const EditableTemplateName = (props: Props) => {
   const {name, templateId, isOwner, className} = props
@@ -52,7 +44,7 @@ const EditableTemplateName = (props: Props) => {
   }
 
   return (
-    <InheritedStyles>
+    <div className='flex-1 font-semibold text-[20px] leading-6'>
       <div className={cn('leading-6', className)}>
         <EditableText
           autoFocus={autoFocus}
@@ -65,7 +57,7 @@ const EditableTemplateName = (props: Props) => {
           placeholder={'*New Template'}
         />
       </div>
-    </InheritedStyles>
+    </div>
   )
 }
 

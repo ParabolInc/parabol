@@ -1,7 +1,7 @@
-import {Public} from '@mui/icons-material'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
+import {Public} from '~/ui/icons'
 import type {ScaleDropdownMenuItem_dimension$key} from '../../../__generated__/ScaleDropdownMenuItem_dimension.graphql'
 import type {ScaleDropdownMenuItem_scale$key} from '../../../__generated__/ScaleDropdownMenuItem_scale.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'

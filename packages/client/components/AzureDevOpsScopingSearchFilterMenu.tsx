@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -12,23 +11,6 @@ import DropdownMenuLabel from './DropdownMenuLabel'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
-
-const StyledMenuItemLabel = styled(MenuItemLabel)<{isDisabled: boolean}>(({isDisabled}) => ({
-  opacity: isDisabled ? 0.5 : undefined
-}))
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-
-const FilterLabel = styled(DropdownMenuLabel)({
-  borderBottom: 0
-})
-
-const UseWIQLLabel = styled('span')({
-  fontWeight: 600
-})
 
 interface Props {
   menuProps: MenuProps
@@ -92,14 +74,16 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
         key={'isWIQL'}
         label={
           <MenuItemLabel>
-            <StyledCheckBox active={isWIQL} />
-            <UseWIQLLabel>{'Use WIQL'}</UseWIQLLabel>
+            <Checkbox className='-ml-2 mr-2' active={isWIQL} />
+            <span className='font-semibold'>{'Use WIQL'}</span>
           </MenuItemLabel>
         }
         onClick={toggleWIQL}
       />
 
-      {projects.length > 0 && <FilterLabel>Filter by project:</FilterLabel>}
+      {projects.length > 0 && (
+        <DropdownMenuLabel className='border-b-0'>Filter by project:</DropdownMenuLabel>
+      )}
       {projects.map((project) => {
         const {id: globalProjectKey, name} = project
         const toggleProjectKeyFilter = () => {
@@ -121,13 +105,14 @@ const AzureDevOpsScopingSearchFilterMenu = (props: Props) => {
           <MenuItem
             key={globalProjectKey}
             label={
-              <StyledMenuItemLabel isDisabled={isWIQL}>
-                <StyledCheckBox
+              <MenuItemLabel className={isWIQL ? 'opacity-50' : undefined}>
+                <Checkbox
+                  className='-ml-2 mr-2'
                   active={projectKeyFilters?.includes(name) ?? null}
                   disabled={isWIQL}
                 />
                 {name}
-              </StyledMenuItemLabel>
+              </MenuItemLabel>
             }
             onClick={toggleProjectKeyFilter}
             isDisabled={isWIQL}

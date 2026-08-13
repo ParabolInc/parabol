@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo, useRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -8,11 +7,9 @@ import type {
   UserTasksHeader_viewer$key
 } from '~/__generated__/UserTasksHeader_viewer.graphql'
 import Checkbox from '~/components/Checkbox'
-import LinkButton from '~/components/LinkButton'
-import {ICON_SIZE} from '~/styles/typographyV2'
-import {Breakpoint, FilterLabels} from '~/types/constEnums'
+import {FilterLabels} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import constructFilterQueryParamURL from '~/utils/constructFilterQueryParamURL'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import {useQueryParameterParser} from '~/utils/useQueryParameterParser'
 import DashSectionControls from '../../../../components/Dashboard/DashSectionControls'
 import DashSectionHeader from '../../../../components/Dashboard/DashSectionHeader'
@@ -21,8 +18,6 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useMenu from '../../../../hooks/useMenu'
 import lazyPreload from '../../../../utils/lazyPreload'
-
-const desktopBreakpoint = makeMinWidthMediaQuery(Breakpoint.SIDEBAR_LEFT)
 
 const TeamFilterMenu = lazyPreload(
   () =>
@@ -39,41 +34,6 @@ const UserDashTeamMemberMenu = lazyPreload(
       '../../../../components/UserDashTeamMemberMenu'
     )
 )
-
-const StyledDashFilterToggle = styled(DashFilterToggle)({
-  margin: '4px 16px 4px 0',
-  [desktopBreakpoint]: {
-    margin: '0 24px 0 0'
-  }
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  color: 'var(--color-fg-secondary)',
-  flexShrink: 0,
-  fontWeight: 600,
-  margin: '4px 0',
-  ':hover, :focus, :active': {
-    color: 'var(--color-fg-primary)'
-  },
-  [desktopBreakpoint]: {
-    margin: 0
-  }
-})
-
-const StyledCheckbox = styled(Checkbox)({
-  fontSize: ICON_SIZE.MD24,
-  marginRight: 8,
-  textAlign: 'center',
-  userSelect: 'none',
-  width: ICON_SIZE.MD24
-})
-
-const UserTasksHeaderDashSectionControls = styled(DashSectionControls)({
-  justifyContent: 'flex-start',
-  flexWrap: 'wrap',
-  width: '100%',
-  overflow: 'initial'
-})
 
 interface Props {
   viewerRef: UserTasksHeader_viewer$key | null
@@ -164,8 +124,9 @@ const UserTasksHeader = (props: Props) => {
 
   return (
     <DashSectionHeader>
-      <UserTasksHeaderDashSectionControls>
-        <StyledDashFilterToggle
+      <DashSectionControls className='w-full flex-wrap justify-start overflow-visible'>
+        <DashFilterToggle
+          className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
           label='Team'
           onClick={teamFilterTogglePortal}
           onMouseEnter={TeamFilterMenu.preload}
@@ -177,7 +138,8 @@ const UserTasksHeader = (props: Props) => {
         {teamFilterMenuPortal(<TeamFilterMenu menuProps={teamFilterMenuProps} viewer={viewer} />)}
 
         {/* Filter by Owner */}
-        <StyledDashFilterToggle
+        <DashFilterToggle
+          className='my-1 sidebar-left:my-0 mr-4 sidebar-left:mr-6 ml-0 sidebar-left:ml-0'
           label='Team Member'
           onClick={teamMemberFilterTogglePortal}
           onMouseEnter={UserDashTeamMemberMenu.preload}
@@ -190,14 +152,16 @@ const UserTasksHeader = (props: Props) => {
           <UserDashTeamMemberMenu menuProps={teamMemberFilterMenuProps} viewer={viewer} />
         )}
 
-        <StyledLinkButton
+        <Button
+          size='default'
+          className='my-1 sidebar-left:my-0 shrink-0 bg-transparent p-0 font-semibold text-[14px] text-fg-secondary leading-5 shadow-none hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
           onClick={() => navigate(constructFilterQueryParamURL(teamIds, userIds, !showArchived))}
-          dataCy='archived-checkbox'
+          data-cy='archived-checkbox'
         >
-          <StyledCheckbox active={showArchived} />
+          <Checkbox className='mr-2 w-6 text-center text-[24px]' active={showArchived} />
           {'Archived'}
-        </StyledLinkButton>
-      </UserTasksHeaderDashSectionControls>
+        </Button>
+      </DashSectionControls>
     </DashSectionHeader>
   )
 }

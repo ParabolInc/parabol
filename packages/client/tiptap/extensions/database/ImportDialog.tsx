@@ -1,16 +1,15 @@
-import {CircularProgress} from '@mui/material'
 import {useMemo, useState} from 'react'
 import * as Y from 'yjs'
-import FlatPrimaryButton from '../../../components/FlatPrimaryButton'
-import SecondaryButton from '../../../components/SecondaryButton'
 import {UploadDatabaseImport} from '../../../components/UploadDatabaseImport'
 import useAtmosphere from '../../../hooks/useAtmosphere'
+import {Button} from '../../../ui/Button/Button'
 import {Checkbox} from '../../../ui/Checkbox/Checkbox'
 import {cn} from '../../../ui/cn'
 import {Dialog} from '../../../ui/Dialog/Dialog'
 import {DialogActions} from '../../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../ui/Dialog/DialogTitle'
+import {Spinner} from '../../../ui/Spinner/Spinner'
 import plural from '../../../utils/plural'
 import {columnsAreDefault} from './columnsAreDefault'
 import {getColumnMeta, getColumns, getData, getDataEntries, getRows, type RowDataMap} from './data'
@@ -150,7 +149,7 @@ export const ImportDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
           <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
         {!records ? (
@@ -252,17 +251,17 @@ export const ImportDialog = (props: Props) => {
         <DialogActions className='mt-0 flex w-full gap-4'>
           {records ? (
             <>
-              <SecondaryButton size='medium' onClick={onBack}>
+              <Button variant='outline' size='md' onClick={onBack}>
                 Back
-              </SecondaryButton>
-              <FlatPrimaryButton size='medium' onClick={onImport}>
+              </Button>
+              <Button variant='primary' size='md' onClick={onImport}>
                 {discardExistingData ? 'Replace' : 'Append'}
-              </FlatPrimaryButton>
+              </Button>
             </>
           ) : (
-            <SecondaryButton size='medium' onClick={onCancel}>
+            <Button variant='outline' size='md' onClick={onCancel}>
               Cancel
-            </SecondaryButton>
+            </Button>
           )}
         </DialogActions>
       </DialogContent>

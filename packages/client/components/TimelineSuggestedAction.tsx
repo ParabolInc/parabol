@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {lazy} from 'react'
 import {useFragment} from 'react-relay'
@@ -40,10 +39,6 @@ const lookup = {
   )
 } as const
 
-const Wrapper = styled('div')({
-  paddingBottom: 16
-})
-
 function TimelineSuggestedAction(props: Props) {
   const {viewer: viewerRef} = props
   const viewer = useFragment(
@@ -64,13 +59,13 @@ function TimelineSuggestedAction(props: Props) {
     AsyncComponent = lookup[__typename as keyof typeof lookup]
   }
   return (
-    <Wrapper>
+    <div className='pb-4'>
       <DelayUnmount unmountAfter={500}>
         {AsyncComponent && suggestedAction ? (
           <AsyncComponent suggestedAction={suggestedAction} />
         ) : null}
       </DelayUnmount>
-    </Wrapper>
+    </div>
   )
 }
 

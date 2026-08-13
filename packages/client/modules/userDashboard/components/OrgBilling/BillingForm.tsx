@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   CardCvcElement,
   CardExpiryElement,
@@ -16,41 +15,14 @@ import {type MutableRefObject, useState} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import type {CreateStripeSubscriptionMutation$data} from '../../../../__generated__/CreateStripeSubscriptionMutation.graphql'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import StyledError from '../../../../components/StyledError'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import CreateStripeSubscriptionMutation from '../../../../mutations/CreateStripeSubscriptionMutation'
 import {PALETTE} from '../../../../styles/paletteV3'
+import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 import SendClientSideEvent from '../../../../utils/SendClientSideEvent'
-
-const ButtonBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  paddingTop: 16,
-  wrap: 'nowrap',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const UpgradeButton = styled(PrimaryButton)<{isDisabled: boolean}>(({isDisabled}) => ({
-  background: PALETTE.SKY_500,
-  color: PALETTE.WHITE,
-  boxShadow: 'none',
-  marginTop: 16,
-  width: '100%',
-  elevation: 0,
-  opacity: isDisabled ? 0.5 : 1,
-  '&:hover, &:focus': {
-    boxShadow: 'none',
-    background: isDisabled ? PALETTE.SKY_500 : PALETTE.SKY_600
-  }
-}))
-
-const ErrorMsg = styled(StyledError)({
-  paddingTop: 8,
-  textTransform: 'none'
-})
 
 const getCardElementOptions = (): StripeCardNumberElementOptions => {
   const isDark = document.documentElement.classList.contains('theme-dark')
@@ -198,7 +170,9 @@ const BillingForm = (props: Props) => {
             options={cardElementOptions}
             onChange={handleChange('CardNumber')}
           />
-          {cardNumberError && <ErrorMsg>{cardNumberError}</ErrorMsg>}
+          {cardNumberError && (
+            <StyledError className='pt-2 normal-case'>{cardNumberError}</StyledError>
+          )}
         </div>
       </div>
 
@@ -213,7 +187,9 @@ const BillingForm = (props: Props) => {
               options={cardElementOptions}
               onChange={handleChange('ExpiryDate')}
             />
-            {expiryDateError && <ErrorMsg>{expiryDateError}</ErrorMsg>}
+            {expiryDateError && (
+              <StyledError className='pt-2 normal-case'>{expiryDateError}</StyledError>
+            )}
           </div>
         </div>
         <div className='w-1/2'>
@@ -226,17 +202,23 @@ const BillingForm = (props: Props) => {
               options={cardElementOptions}
               onChange={handleChange('CVC')}
             />
-            {cvcError && <ErrorMsg>{cvcError}</ErrorMsg>}
+            {cvcError && <StyledError className='pt-2 normal-case'>{cvcError}</StyledError>}
           </div>
         </div>
       </div>
-      <ButtonBlock>
-        {error && <ErrorMsg>{error.message}</ErrorMsg>}
-        <UpgradeButton
-          size='medium'
+      <div className='flex w-full flex-col justify-center pt-4'>
+        {error && <StyledError className='pt-2 normal-case'>{error.message}</StyledError>}
+        <Button
+          variant='primary'
+          size='md'
           disabled={isUpgradeDisabled}
-          isDisabled={isUpgradeDisabled}
           type={'submit'}
+          className={cn(
+            'mt-4 w-full bg-none bg-sky-500 text-white hover:bg-none focus:bg-none active:bg-none',
+            isUpgradeDisabled
+              ? 'opacity-50 hover:opacity-50 focus:opacity-50 active:opacity-50'
+              : 'opacity-100 hover:bg-sky-600 focus:bg-sky-600'
+          )}
         >
           {submitting ? (
             <>
@@ -245,8 +227,8 @@ const BillingForm = (props: Props) => {
           ) : (
             'Upgrade'
           )}
-        </UpgradeButton>
-      </ButtonBlock>
+        </Button>
+      </div>
     </form>
   )
 }

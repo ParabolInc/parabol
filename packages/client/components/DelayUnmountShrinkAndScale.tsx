@@ -1,16 +1,26 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const DelayUnmountShrinkAndScale = styled('div')<{
+interface Props extends ComponentPropsWithoutRef<'div'> {
   isExiting: boolean
   duration: number
-}>(({isExiting, duration}) => ({
-  // height 'auto' instead of '100%' to honor vertical margins of contained component
-  height: isExiting ? 0 : 'auto',
-  opacity: isExiting ? 0 : 1,
-  // hidden means no box shadow
-  // overflow: 'hidden',
-  transform: isExiting ? 'scale(0)' : 'scale(1)',
-  transition: `all ${duration}ms`
-}))
+}
+
+const DelayUnmountShrinkAndScale = forwardRef<HTMLDivElement, Props>((props, ref) => {
+  const {isExiting, duration, className, style, children, ...rest} = props
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        isExiting ? 'h-0 scale-0 opacity-0' : 'h-auto scale-100 opacity-100',
+        className
+      )}
+      style={{transition: `all ${duration}ms`, ...style}}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+})
 
 export default DelayUnmountShrinkAndScale

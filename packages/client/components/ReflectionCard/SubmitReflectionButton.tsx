@@ -1,4 +1,4 @@
-import {ArrowUpward} from '@mui/icons-material'
+import {ArrowUpward} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import {modEnter} from '../../utils/platform'
 import PlainButton, {type PlainButtonProps} from '../PlainButton/PlainButton'

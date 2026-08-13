@@ -33,14 +33,14 @@ class PublishedDataLoaders {
       }
       setTimeout(() => {
         delete this.debugBufferHash[id]
-      }, REDIS_DATALOADER_TTL)
+      }, REDIS_DATALOADER_TTL).unref?.()
     }
     // keep the serialized dataloader in redis for long enough for each server to fetch it and make an in-memory copy
     await getRedis().set(`dataLoader:${id}`, buffer, 'PX', REDIS_DATALOADER_TTL)
     setTimeout(() => {
       delete this.promiseLookup[id]
       // all calls to publish within a single mutation SHOULD happen within this timeframe
-    }, REDIS_DATALOADER_TTL)
+    }, REDIS_DATALOADER_TTL).unref?.()
   }
   async add(id: string, topic: string, type: string) {
     if (!this.promiseLookup[id]) {

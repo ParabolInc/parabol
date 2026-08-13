@@ -1,11 +1,10 @@
-import styled from '@emotion/styled'
 import {useLocation, useNavigate} from 'react-router'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import logo from '../styles/theme/images/graphics/google.svg'
+import {Button} from '../ui/Button/Button'
 import {cn} from '../ui/cn'
 import GoogleClientManager from '../utils/GoogleClientManager'
-import RaisedButton from './RaisedButton'
 import StyledError from './StyledError'
 import StyledTip from './StyledTip'
 
@@ -15,19 +14,6 @@ interface Props {
   loginHint?: string
   getOffsetTop?: () => number
 }
-
-const helpText = {
-  fontSize: '.8125rem',
-  marginTop: '.5rem'
-}
-
-const ErrorMessage = styled(StyledError)({
-  ...helpText
-})
-
-const HelpMessage = styled(StyledTip)({
-  ...helpText
-})
 
 const GoogleOAuthButtonBlock = (props: Props) => {
   const {invitationToken, isCreate, loginHint, getOffsetTop} = props
@@ -50,19 +36,25 @@ const GoogleOAuthButtonBlock = (props: Props) => {
   }
   return (
     <>
-      <RaisedButton
+      <Button
+        variant='raised'
+        size='sm'
         onClick={openOAuth}
-        waiting={submitting}
+        disabled={submitting}
         className={cn(
-          'mt-4 h-10 w-60 justify-start px-4 disabled:opacity-100',
+          'mt-4 h-10 w-60 justify-start bg-slate-200 px-4 text-slate-700 text-sm disabled:opacity-100',
           submitting ? 'bg-slate-300 text-slate-600' : 'bg-white text-slate-700'
         )}
       >
         <img src={logo} className={cn('mx-4 h-[18px] w-[18px]', submitting && 'contrast-0')} />
         <div>{label}</div>
-      </RaisedButton>
-      {error && !submitting && <ErrorMessage>{error.message}</ErrorMessage>}
-      {submitting && <HelpMessage>Continue through the login popup</HelpMessage>}
+      </Button>
+      {error && !submitting && (
+        <StyledError className='mt-2 text-[13px]'>{error.message}</StyledError>
+      )}
+      {submitting && (
+        <StyledTip className='mt-2 text-[13px]'>Continue through the login popup</StyledTip>
+      )}
     </>
   )
 }

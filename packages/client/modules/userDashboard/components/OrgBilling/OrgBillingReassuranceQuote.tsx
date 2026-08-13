@@ -1,8 +1,8 @@
-import styled from '@emotion/styled'
 import {useState} from 'react'
 import adam from '~/styles/theme/images/adam.jpeg'
 import cliff from '~/styles/theme/images/cliff.jpeg'
 import ian from '~/styles/theme/images/ian.png'
+import {cn} from '../../../../ui/cn'
 
 const quotes = [
   {
@@ -25,71 +25,6 @@ const quotes = [
   }
 ]
 
-const Quote = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  fontSize: 16,
-  lineHeight: '20px'
-})
-
-const Text = styled('div')({
-  fontStyle: 'italic',
-  maxWidth: 280,
-  padding: '0 0 12px',
-  position: 'relative'
-})
-
-const HangQuote = styled('div')({
-  position: 'absolute',
-  left: '-2em',
-  textAlign: 'right',
-  top: 0,
-  width: '2em'
-})
-
-const Signature = styled('div')({
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const PictureBlock = styled('div')({
-  height: 48,
-  position: 'relative',
-  '&::after': {
-    borderRadius: '100%',
-    boxShadow: 'inset 0 0 0 1px rgba(0, 0, 0, .25)',
-    content: '""',
-    height: 48,
-    left: 0,
-    position: 'absolute',
-    top: 0,
-    width: 48,
-    zIndex: 2
-  }
-})
-
-const Picture = styled('img')({
-  borderRadius: '100%',
-  height: 48,
-  width: 48
-})
-
-const NameAndTitle = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
-
-const Name = styled('div')({
-  lineHeight: '24px',
-  fontWeight: 600
-})
-
-const Title = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 13
-})
-
 interface Props {
   className?: string
 }
@@ -99,21 +34,21 @@ const OrgBillingReassuranceQuote = (props: Props) => {
   const [quoteNumber] = useState(() => Math.floor(Math.random() * quotes.length))
   const {text, picture, name, title} = quotes[quoteNumber]!
   return (
-    <Quote className={className}>
-      <Text>
-        <HangQuote>“</HangQuote>
+    <div className={cn('flex flex-col text-[16px] leading-5', className)}>
+      <div className='relative max-w-[280px] pb-3 italic'>
+        <div className='absolute top-0 left-[-2em] w-[2em] text-right'>“</div>
         {text}”
-      </Text>
-      <Signature>
-        <PictureBlock>
-          <Picture src={picture} />
-        </PictureBlock>
-        <NameAndTitle>
-          <Name>{name}</Name>
-          <Title>{title}</Title>
-        </NameAndTitle>
-      </Signature>
-    </Quote>
+      </div>
+      <div className='flex items-center'>
+        <div className="relative h-12 after:absolute after:top-0 after:left-0 after:z-[2] after:h-12 after:w-12 after:rounded-[100%] after:shadow-[inset_0_0_0_1px_rgba(0,0,0,.25)] after:content-['']">
+          <img className='h-12 w-12 rounded-[100%]' src={picture} />
+        </div>
+        <div className='flex flex-col pl-4'>
+          <div className='font-semibold leading-6'>{name}</div>
+          <div className='text-[13px] text-fg-secondary'>{title}</div>
+        </div>
+      </div>
+    </div>
   )
 }
 

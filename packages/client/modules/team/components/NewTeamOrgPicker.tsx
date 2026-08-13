@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useMemo} from 'react'
 import {useFragment} from 'react-relay'
@@ -9,20 +8,6 @@ import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import lazyPreload from '../../../utils/lazyPreload'
 import sortByTier from '../../../utils/sortByTier'
-
-const MenuToggleInner = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexWrap: 'wrap',
-  minWidth: 0
-})
-
-const MenuToggleLabel = styled('div')({
-  flex: 1,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap'
-})
 
 interface Props {
   disabled: boolean
@@ -80,12 +65,14 @@ const NewTeamOrgPicker = (props: Props) => {
         ref={originRef}
         disabled={disabled || defaultText === NO_ORGS}
         defaultText={
-          <MenuToggleInner>
-            <MenuToggleLabel>{defaultText}</MenuToggleLabel>
+          <div className='flex min-w-0 flex-wrap items-center'>
+            <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap'>
+              {defaultText}
+            </div>
             {org && org.tier !== 'starter' && (
               <TierTag tier={org.tier} billingTier={org.billingTier} />
             )}
-          </MenuToggleInner>
+          </div>
         }
       />
       {menuPortal(

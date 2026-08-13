@@ -1,7 +1,7 @@
-import GroupsIcon from '@mui/icons-material/Groups'
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense, useState} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Groups as GroupsIcon} from '~/ui/icons'
 import type {TeamFilterQuery} from '../../__generated__/TeamFilterQuery.graphql'
 import query from '../../__generated__/TeamFilterQuery.graphql'
 import useQueryLoaderNow from '../../hooks/useQueryLoaderNow'
@@ -60,7 +60,7 @@ const TeamFilterContent = ({teamIds, setTeamIds, queryRef}: TeamFilterContentPro
         <Button
           variant='flat'
           data-dirty={teamIds.length > 0 ? '' : undefined}
-          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-well data-dirty:text-fg-primary'
+          className='group items-center justify-center rounded-xl p-1 px-2 text-fg-secondary text-sm hover:bg-surface-hover data-dirty:text-fg-primary'
         >
           <GroupsIcon className='pr-1' />
           <span>{displayLabel}</span>

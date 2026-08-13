@@ -1,4 +1,4 @@
-import ExtensionOffIcon from '@mui/icons-material/ExtensionOff'
+import {ExtensionOff as ExtensionOffIcon} from '~/ui/icons'
 import {ContactInfo} from '../../../types/constEnums'
 export const InsightsBlockDisabled = () => {
   return (

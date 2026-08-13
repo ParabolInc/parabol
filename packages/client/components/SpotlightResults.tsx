@@ -1,38 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type RefObject, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SpotlightResultsQuery} from '~/__generated__/SpotlightResultsQuery.graphql'
 import useResultsHeight from '~/hooks/useResultsHeight'
-import {ElementHeight, ElementWidth} from '~/types/constEnums'
 import useGroupMatrix from '../hooks/useGroupMatrix'
 import ReflectionGroup from './ReflectionGroup/ReflectionGroup'
 import SpotlightResultsEmptyState from './SpotlightResultsEmptyState'
-
-const ResultsWrapper = styled('div')({
-  background: 'var(--color-surface-well)',
-  padding: '40px 0px 24px',
-  height: '100%',
-  width: '100%',
-  overflow: 'hidden'
-})
-
-const Scrollbar = styled('div')<{height: number | string}>(({height}) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  overflow: 'auto',
-  width: '100%',
-  height,
-  minHeight: ElementHeight.REFLECTION_CARD * 4
-}))
-
-const Column = styled('div')({
-  display: 'flex',
-  maxWidth: ElementWidth.REFLECTION_COLUMN,
-  margin: '0 8px',
-  flexDirection: 'column',
-  height: 'fit-content'
-})
 
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
@@ -91,13 +64,17 @@ const SpotlightResults = (props: Props) => {
   const scrollHeight = useResultsHeight(resultsRef)
 
   return (
-    <ResultsWrapper>
+    <div className='h-full w-full overflow-hidden bg-surface-well pt-10 pb-6'>
       {!similarReflectionGroups.length ? (
         <SpotlightResultsEmptyState height={scrollHeight} />
       ) : (
-        <Scrollbar height={scrollHeight} ref={resultsRef}>
+        <div
+          className='flex min-h-44 w-full justify-center overflow-auto'
+          style={{height: scrollHeight}}
+          ref={resultsRef}
+        >
           {groupMatrix.map((row) => (
-            <Column key={`row-${row[0]?.id}`}>
+            <div className='mx-2 flex h-fit max-w-80 flex-col' key={`row-${row[0]?.id}`}>
               {row.map((group) => (
                 <ReflectionGroup
                   key={group.id}
@@ -106,11 +83,11 @@ const SpotlightResults = (props: Props) => {
                   reflectionGroupRef={group}
                 />
               ))}
-            </Column>
+            </div>
           ))}
-        </Scrollbar>
+        </div>
       )}
-    </ResultsWrapper>
+    </div>
   )
 }
 

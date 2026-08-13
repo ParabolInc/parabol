@@ -1,24 +1,10 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {MassInvitationTokenLinkQuery} from '../__generated__/MassInvitationTokenLinkQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import CopyShortLink from '../modules/meeting/components/CopyShortLink/CopyShortLink'
-import {PALETTE} from '../styles/paletteV3'
 import getMassInvitationUrl from '../utils/getMassInvitationUrl'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
-
-const StyledCopyShortLink = styled(CopyShortLink)({
-  borderRadius: 4,
-  border: `1px dashed ${PALETTE.SKY_400}`,
-  color: PALETTE.SKY_500,
-  fontSize: 15,
-  fontWeight: 600,
-  padding: 11,
-  ':hover': {
-    color: PALETTE.SKY_400
-  }
-})
 
 interface Props {
   meetingId: string | undefined
@@ -56,7 +42,8 @@ const MassInvitationTokenLink = (props: Props) => {
   const url = getMassInvitationUrl(token)
   const linkLabel = url.replace(/https?:\/\//, '')
   return (
-    <StyledCopyShortLink
+    <CopyShortLink
+      className='rounded border border-sky-400 border-dashed p-[11px] font-semibold text-[15px] text-sky-500 hover:text-sky-400'
       icon='link'
       url={url}
       label={linkLabel}

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
@@ -15,12 +14,6 @@ interface Props {
   templateId: string
   readOnly?: boolean
 }
-
-const DimensionList = styled('div')({
-  margin: 0,
-  padding: 0,
-  width: '100%'
-})
 
 const TemplateDimensionList = (props: Props) => {
   const {isOwner, dimensions: dimensionsRef, templateId, readOnly} = props
@@ -60,7 +53,7 @@ const TemplateDimensionList = (props: Props) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <DimensionList>
+      <div className='m-0 w-full p-0'>
         <Droppable droppableId={TEMPLATE_DIMENSION} isDropDisabled={!isOwner || readOnly}>
           {(provided) => {
             return (
@@ -93,7 +86,7 @@ const TemplateDimensionList = (props: Props) => {
             )
           }}
         </Droppable>
-      </DimensionList>
+      </div>
     </DragDropContext>
   )
 }

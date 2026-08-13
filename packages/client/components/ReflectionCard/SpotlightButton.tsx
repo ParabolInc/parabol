@@ -1,4 +1,4 @@
-import {Search} from '@mui/icons-material'
+import {Search} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 import type {PlainButtonProps} from '../PlainButton/PlainButton'
 import ReflectionCardButton from './ReflectionCardButton'

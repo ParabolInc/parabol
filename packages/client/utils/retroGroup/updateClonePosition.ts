@@ -1,9 +1,17 @@
-import {keyframes} from '@emotion/react'
 import {Elevation} from '../../styles/elevation'
 import {BezierCurve, DragAttribute, Times, ZIndex} from '../../types/constEnums'
 import getDeCasteljau from '../getDeCasteljau'
 
-const reflectionSpotlightFadeIn = keyframes`
+const SPOTLIGHT_KEYFRAMES_ID = 'reflection-spotlight-keyframes'
+const reflectionSpotlightFadeIn = 'reflectionSpotlightFadeIn'
+const reflectionSpotlightFadeOut = 'reflectionSpotlightFadeOut'
+
+const ensureSpotlightKeyframes = () => {
+  if (document.getElementById(SPOTLIGHT_KEYFRAMES_ID)) return
+  const styleEl = document.createElement('style')
+  styleEl.id = SPOTLIGHT_KEYFRAMES_ID
+  styleEl.textContent = `
+@keyframes ${reflectionSpotlightFadeIn} {
   0% {
     opacity: 0.1;
     z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
@@ -12,9 +20,8 @@ const reflectionSpotlightFadeIn = keyframes`
     opacity: 1;
     z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
   }
-`
-
-const reflectionSpotlightFadeOut = keyframes`
+}
+@keyframes ${reflectionSpotlightFadeOut} {
   0% {
     opacity: 1;
     z-index: ${ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT};
@@ -27,7 +34,10 @@ const reflectionSpotlightFadeOut = keyframes`
     opacity: 1;
     z-index: ${ZIndex.REFLECTION_IN_FLIGHT};
   }
+}
 `
+  document.head.appendChild(styleEl)
+}
 
 export const getMinTop = (top: number, targetEl: HTMLElement | null) => {
   if (top >= 0) return top
@@ -58,17 +68,14 @@ export const getSpotlightAnimation = (
   isClose: boolean,
   lastZIndex: number | undefined
 ) => {
+  ensureSpotlightKeyframes()
   const spotlightEl = document.getElementById('spotlight')
   const isTargetInSpotlight = targetId && groupIdsInSpotlight.includes(targetId)
   const isInSpotlight = spotlightEl?.contains(element) ?? false
   const notInSpotlight = spotlightEl ? !isInSpotlight : false
   const showAboveSpotlight = isInSpotlight || isTargetInSpotlight
-  const fadeInAnimation = `${reflectionSpotlightFadeIn.toString()} 0.5s ${
-    BezierCurve.DECELERATE
-  } 0s forwards`
-  const fadeOutAnimation = `${reflectionSpotlightFadeOut.toString()} 0.5s ${
-    BezierCurve.DECELERATE
-  } 0s forwards`
+  const fadeInAnimation = `${reflectionSpotlightFadeIn} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
+  const fadeOutAnimation = `${reflectionSpotlightFadeOut} 0.5s ${BezierCurve.DECELERATE} 0s forwards`
 
   const isCurrentlyBehindSpotlight = lastZIndex !== ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
   const isFadingIn =

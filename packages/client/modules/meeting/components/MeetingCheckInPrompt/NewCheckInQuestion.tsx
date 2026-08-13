@@ -1,10 +1,9 @@
-import styled from '@emotion/styled'
-import {Create as CreateIcon, Refresh as RefreshIcon} from '@mui/icons-material'
 import {EditorContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
-import {useState} from 'react'
+import {type ReactNode, useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewCheckInQuestion_meeting$key} from '~/__generated__/NewCheckInQuestion_meeting.graphql'
+import {Create as CreateIcon, Refresh as RefreshIcon} from '~/ui/icons'
 import type {
   ModifyType,
   useModifyCheckInQuestionMutation$data as TModifyCheckInQuestion$data
@@ -22,19 +21,11 @@ import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
 
-const CogIcon = styled('div')({
-  color: 'var(--color-fg-primary)',
-  cursor: 'pointer',
-  height: 24,
-  svg: {
-    fontSize: 18
-  },
-  margin: 3,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 24
-})
+const CogIcon = ({children}: {children: ReactNode}) => (
+  <div className='m-[3px] flex h-6 w-6 cursor-pointer items-center justify-center text-fg-primary [&_svg]:text-[18px]'>
+    {children}
+  </div>
+)
 
 interface Props {
   meetingRef: NewCheckInQuestion_meeting$key

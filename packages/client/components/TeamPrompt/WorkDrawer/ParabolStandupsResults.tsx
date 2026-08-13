@@ -105,7 +105,10 @@ const ParabolStandupsResults = (props: Props) => {
             </span>
           </div>
           {group.responses.map((response) => (
-            <div key={response.id} className='rounded-card bg-surface-card p-3 shadow-card'>
+            <div
+              key={response.id}
+              className='rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'
+            >
               <PromptResponseEditor teamId={teamId} content={response.content} readOnly />
             </div>
           ))}

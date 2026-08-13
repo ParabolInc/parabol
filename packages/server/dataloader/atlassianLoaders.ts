@@ -23,6 +23,7 @@ type TeamUserKey = {
   teamId: string
   userId: string
 }
+
 export interface JiraRemoteProjectKey {
   userId: string
   teamId: string
@@ -76,15 +77,17 @@ export const freshAtlassianAuth = (
               logError(oauthRes)
               return null
             }
-            const {accessToken, refreshToken: newRefreshToken} = oauthRes
+            const {accessToken, refreshToken: newRefreshToken, scopes} = oauthRes
             const updatedRefreshToken = newRefreshToken ?? atlassianAuthToRefresh.refreshToken
+            const updatedScope = scopes ?? atlassianAuthToRefresh.scope
             // if user integrated the same Jira account with using different teams we need to update them as well
             // reference: https://github.com/ParabolInc/parabol/issues/5601
             await pg
               .updateTable('AtlassianAuth')
               .set({
                 accessToken,
-                refreshToken: updatedRefreshToken
+                refreshToken: updatedRefreshToken,
+                scope: updatedScope
               })
               .where('userId', '=', userId)
               .where('isActive', '=', true)
@@ -94,7 +97,8 @@ export const freshAtlassianAuth = (
             return {
               ...atlassianAuthToRefresh,
               accessToken,
-              refreshToken: updatedRefreshToken
+              refreshToken: updatedRefreshToken,
+              scope: updatedScope
             }
           }
 

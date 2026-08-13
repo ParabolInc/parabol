@@ -1,19 +1,6 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {PollOption_option$key} from '../../__generated__/PollOption_option.graphql'
-import {Radius} from '../../types/constEnums'
-
-const PollOptionTitle = styled('div')({
-  width: '100%',
-  height: '36px',
-  fontSize: '14px',
-  padding: `0 12px`,
-  border: `1px solid var(--color-hairline-strong)`,
-  borderRadius: Radius.BUTTON,
-  display: 'flex',
-  alignItems: 'center'
-})
 
 interface Props {
   optionRef: PollOption_option$key
@@ -33,7 +20,14 @@ const PollOption = (props: Props) => {
   )
 
   const {id, title} = pollOption
-  return <PollOptionTitle onClick={() => onSelected(id)}>{title}</PollOptionTitle>
+  return (
+    <div
+      className='flex h-9 w-full items-center rounded-md border border-hairline-strong px-3 text-[14px]'
+      onClick={() => onSelected(id)}
+    >
+      {title}
+    </div>
+  )
 }
 
 export default PollOption

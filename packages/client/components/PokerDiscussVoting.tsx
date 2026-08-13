@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {Fragment, useEffect, useMemo, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -15,13 +14,6 @@ import JiraExportUpgradeModal from './JiraExportUpgradeModal'
 import PokerDimensionValueControl from './PokerDimensionValueControl'
 import PokerVotingRow from './PokerVotingRow'
 import useSetTaskEstimate from './useSetTaskEstimate'
-
-const GroupedVotes = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%',
-  overflowY: 'auto'
-})
 
 interface Props {
   meeting: PokerDiscussVoting_meeting$key
@@ -186,7 +178,7 @@ const PokerDiscussVoting = (props: Props) => {
         setCardScore={setCardScore}
         cardScore={cardScore}
       />
-      <GroupedVotes>
+      <div className='flex h-full flex-col overflow-y-auto'>
         {rows.map(({scaleValue, scores, key}) => {
           const {label} = scaleValue
           const canClick = isFacilitator && !isSpecialPokerLabel(label)
@@ -211,7 +203,7 @@ const PokerDiscussVoting = (props: Props) => {
             </Fragment>
           )
         })}
-      </GroupedVotes>
+      </div>
     </>
   )
 }

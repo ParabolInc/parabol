@@ -1,5 +1,4 @@
-import PrimaryButton from '~/components/PrimaryButton'
-import SecondaryButton from '~/components/SecondaryButton'
+import {Button} from '~/ui/Button/Button'
 import {Dialog} from '~/ui/Dialog/Dialog'
 import {DialogContent} from '~/ui/Dialog/DialogContent'
 import {DialogTitle} from '~/ui/Dialog/DialogTitle'
@@ -25,12 +24,12 @@ const TaskFooterTeamAssigneeAddIntegrationDialog = (props: Props) => {
           You don't have {serviceName} configured for {teamName}. Do you want to add it now?
         </p>
         <div className='mt-6 flex justify-end gap-4'>
-          <SecondaryButton onClick={onClose} size='medium'>
+          <Button variant='outline' onClick={onClose} size='md'>
             Cancel
-          </SecondaryButton>
-          <PrimaryButton onClick={onConfirm} size='medium'>
+          </Button>
+          <Button variant='primary' onClick={onConfirm} size='md'>
             Add it now
-          </PrimaryButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

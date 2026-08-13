@@ -1,20 +1,13 @@
-import styled from '@emotion/styled'
-import {
-  Event,
-  Headphones,
-  HelpOutline,
-  PersonPinCircleOutlined,
-  TimerOutlined
-} from '@mui/icons-material'
 import {forwardRef, type ReactNode, type Ref} from 'react'
-import {PALETTE} from '../styles/paletteV3'
+import {Event, Headphones, HelpOutline, PersonPinCircleOutlined, TimerOutlined} from '~/ui/icons'
+import {cn} from '../ui/cn'
 
 const paletteColors = {
-  warm: PALETTE.ROSE_500,
-  midGray: 'var(--color-fg-secondary)',
-  red: PALETTE.TOMATO_600,
-  green: PALETTE.JADE_400,
-  blue: PALETTE.SKY_500
+  warm: 'text-rose-500',
+  midGray: 'text-fg-secondary',
+  red: 'text-tomato-600',
+  green: 'text-jade-400',
+  blue: 'text-sky-500'
 }
 
 interface Props {
@@ -27,33 +20,13 @@ interface Props {
   children?: ReactNode
 }
 
-const StyledIcon = styled('div')<{iconColor?: keyof typeof paletteColors}>(({iconColor}) => ({
-  color: iconColor ? paletteColors[iconColor] : 'var(--color-fg-secondary)',
-  height: 24,
-  width: 24
-}))
-
-const Inner = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '8px 8px 4px'
-})
-
-const Label = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 12,
-  height: 16,
-  lineHeight: '16px'
-})
-
 const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
   const {children, className, icon, iconColor, label} = props
 
   return (
-    <Inner className={className} ref={ref}>
+    <div className={cn('flex flex-col items-center px-2 pt-2 pb-1', className)} ref={ref}>
       {children || (
-        <StyledIcon iconColor={iconColor}>
+        <div className={cn('h-6 w-6', iconColor ? paletteColors[iconColor] : 'text-fg-secondary')}>
           {
             {
               help_outline: <HelpOutline />,
@@ -63,10 +36,10 @@ const BottomNavIconLabel = forwardRef((props: Props, ref: Ref<HTMLDivElement>) =
               person_pin_circle: <PersonPinCircleOutlined />
             }[icon!]
           }
-        </StyledIcon>
+        </div>
       )}
-      <Label>{label}</Label>
-    </Inner>
+      <div className='h-4 text-fg-primary text-xs leading-4'>{label}</div>
+    </div>
   )
 })
 

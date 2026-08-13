@@ -1,26 +1,4 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
-import ui from '../../styles/ui'
-
-const Base = styled('label')({
-  alignItems: 'center',
-  color: 'var(--color-fg-primary)',
-  display: 'flex',
-  fontSize: ui.fieldSizeStyles.medium.fontSize,
-  lineHeight: ui.fieldSizeStyles.medium.lineHeight,
-  paddingBottom: ui.controlBlockPaddingVertical.medium,
-  paddingTop: ui.controlBlockPaddingVertical.medium,
-  paddingLeft: ui.controlBlockPaddingHorizontal.medium
-})
-
-const Input = styled('input')({
-  order: 2
-})
-
-const Label = styled('div')({
-  order: 3,
-  paddingLeft: '.5rem'
-})
 
 interface Props {
   checked: boolean
@@ -34,10 +12,17 @@ const Radio = (props: Props) => {
   // force checked to a boolean again because of react bug
   const {checked, name, onChange, label, value} = props
   return (
-    <Base>
-      <Input name={name} type='radio' checked={!!checked} value={value} onChange={onChange} />
-      <Label>{label}</Label>
-    </Base>
+    <label className='flex items-center py-2 pl-3 text-[.9375rem] text-fg-primary leading-6'>
+      <input
+        className='order-2'
+        name={name}
+        type='radio'
+        checked={!!checked}
+        value={value}
+        onChange={onChange}
+      />
+      <div className='order-3 pl-2'>{label}</div>
+    </label>
   )
 }
 

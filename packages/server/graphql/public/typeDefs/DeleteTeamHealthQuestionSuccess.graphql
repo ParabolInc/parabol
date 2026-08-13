@@ -1,0 +1,10 @@
+"""
+Returned when the deleteTeamHealthQuestion mutation succeeds. The question was unlinked from every
+template and hidden from pack listings.
+"""
+type DeleteTeamHealthQuestionSuccess {
+  """
+  The id of the question that was deleted
+  """
+  questionId: ID!
+}

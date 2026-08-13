@@ -1,65 +1,14 @@
-import styled from '@emotion/styled'
-import {Person} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewBillingLeaderInput_organization$key} from '~/__generated__/NewBillingLeaderInput_organization.graphql'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
+import {Person} from '~/ui/icons'
 import StyledError from '../../../../components/StyledError'
 import useForm from '../../../../hooks/useForm'
 import {PortalStatus} from '../../../../hooks/usePortal'
-import {ElementWidth} from '../../../../types/constEnums'
 import NewBillingLeaderMenu from './NewBillingLeaderMenu'
-
-const StyledIcon = styled(Person)({
-  color: 'var(--color-accent)',
-  width: ElementWidth.BILLING_AVATAR,
-  height: ElementWidth.BILLING_AVATAR
-})
-
-const Form = styled('form')({
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%'
-})
-
-const Item = styled('div')({
-  backgroundColor: 'var(--color-surface-well)',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  width: '100%'
-})
-
-const Wrapper = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16,
-  width: '100%'
-})
-
-const DropdownWrapper = styled('button')({
-  width: 400
-})
-
-const NewLeaderInput = styled('input')({
-  appearance: 'none',
-  background: 'transparent',
-  border: 'none',
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  margin: 0,
-  paddingRight: 8,
-  outline: 0,
-  width: '100%'
-})
-
-const Error = styled(StyledError)({
-  fontSize: 13,
-  textAlign: 'left',
-  width: '100%'
-})
 
 interface Props {
   organizationRef: NewBillingLeaderInput_organization$key
@@ -106,11 +55,11 @@ const NewBillingLeaderInput = (props: Props) => {
 
   return (
     <>
-      <Item>
-        <StyledIcon />
-        <Wrapper>
-          <Form onSubmit={handleCreateNewLeader}>
-            <NewLeaderInput
+      <div className='flex w-full cursor-pointer items-center bg-surface-well'>
+        <Person className='h-11 w-11 text-accent' />
+        <div className='flex w-full flex-col pl-4'>
+          <form onSubmit={handleCreateNewLeader} className='flex w-full flex-col'>
+            <input
               autoFocus
               autoComplete={'off'}
               onBlur={handleCreateNewLeader}
@@ -121,12 +70,15 @@ const NewBillingLeaderInput = (props: Props) => {
               placeholder='Search for a new billing leader'
               ref={ref}
               type='text'
+              className='m-0 w-full appearance-none border-none bg-transparent pr-2 text-[16px] text-fg-primary outline-none'
             />
-            <DropdownWrapper ref={originRef} />
-            {dirty && error && <Error>{error}</Error>}
-          </Form>
-        </Wrapper>
-      </Item>
+            <button ref={originRef} className='w-[400px]' />
+            {dirty && error && (
+              <StyledError className='w-full text-left text-[13px]'>{error}</StyledError>
+            )}
+          </form>
+        </div>
+      </div>
       {menuPortal(
         <NewBillingLeaderMenu
           menuProps={menuProps}

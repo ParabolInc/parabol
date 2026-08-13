@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {forwardRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,7 +5,6 @@ import GitLabClientManager from '~/utils/GitLabClientManager'
 import type {AddToGitLabMenuItem_GitLabIntegration$key} from '../__generated__/AddToGitLabMenuItem_GitLabIntegration.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps, {type MenuMutationProps} from '../hooks/useMutationProps'
-import {ICON_SIZE} from '../styles/typographyV2'
 import GitLabSVG from './GitLabSVG'
 import MenuItem from './MenuItem'
 import MenuItemComponentAvatar from './MenuItemComponentAvatar'
@@ -17,14 +15,6 @@ interface Props {
   mutationProps: MenuMutationProps
   gitlabRef: AddToGitLabMenuItem_GitLabIntegration$key
 }
-
-const MenuItemIcon = styled(MenuItemComponentAvatar)({
-  svg: {
-    display: 'block',
-    height: ICON_SIZE.MD18,
-    width: ICON_SIZE.MD18
-  }
-})
 
 const AddToGitLabMenuItem = forwardRef((props: Props, ref) => {
   const {teamId, gitlabRef} = props
@@ -60,9 +50,9 @@ const AddToGitLabMenuItem = forwardRef((props: Props, ref) => {
       ref={ref}
       label={
         <MenuItemLabel>
-          <MenuItemIcon>
+          <MenuItemComponentAvatar className='[&_svg]:block [&_svg]:h-[18px] [&_svg]:w-[18px]'>
             <GitLabSVG />
-          </MenuItemIcon>
+          </MenuItemComponentAvatar>
           {'Add GitLab integration'}
         </MenuItemLabel>
       }

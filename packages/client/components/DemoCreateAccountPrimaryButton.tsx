@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router'
+import {Button} from '../ui/Button/Button'
 import hasToken from '../utils/hasToken'
-import PrimaryButton from './PrimaryButton'
 
 const DemoCreateAccountPrimaryButton = () => {
   const navigate = useNavigate()
@@ -8,9 +8,9 @@ const DemoCreateAccountPrimaryButton = () => {
   const label = hasToken() ? 'My Dashboard' : 'Create Free Account'
   const handleClick = () => navigate(path)
   return (
-    <PrimaryButton onClick={handleClick} size='medium'>
+    <Button variant='primary' onClick={handleClick} size='md'>
       {label}
-    </PrimaryButton>
+    </Button>
   )
 }
 

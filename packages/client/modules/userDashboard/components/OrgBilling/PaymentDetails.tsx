@@ -1,4 +1,3 @@
-import {Divider} from '@mui/material'
 import {Elements} from '@stripe/react-stripe-js'
 import {loadStripe, type StripeCardNumberElement} from '@stripe/stripe-js'
 import graphql from 'babel-plugin-relay/macro'
@@ -76,7 +75,7 @@ const PaymentDetails = (props: Props) => {
                 {activeUserCount}
               </div>
             </div>
-            <Divider className='border-hairline!' />
+            <div className='w-full border-hairline border-b' />
             {coupon ? (
               <>
                 {/* shared classes promoted from children to each row div */}

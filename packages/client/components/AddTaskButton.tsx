@@ -1,4 +1,4 @@
-import {TaskAltOutlined} from '@mui/icons-material'
+import {TaskAltOutlined} from '~/ui/icons'
 import PlainButton from './PlainButton/PlainButton'
 
 interface Props {

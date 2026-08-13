@@ -1,12 +1,12 @@
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment, useMutation} from 'react-relay'
 import {Link} from 'react-router'
+import {MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PersonalAccessTokens_viewer$key} from '../../../__generated__/PersonalAccessTokens_viewer.graphql'
 import type {PersonalAccessTokensRevokeMutation} from '../../../__generated__/PersonalAccessTokensRevokeMutation.graphql'
 import Panel from '../../../components/Panel/Panel'
-import SecondaryButton from '../../../components/SecondaryButton'
+import {Button} from '../../../ui/Button/Button'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'
 import {MenuItem} from '../../../ui/Menu/MenuItem'
@@ -93,9 +93,9 @@ const PersonalAccessTokens = ({viewerRef}: Props) => {
   }
 
   const controls = (
-    <SecondaryButton size='small' onClick={() => setIsCreateOpen(true)}>
+    <Button variant='outline' size='sm' onClick={() => setIsCreateOpen(true)}>
       New Token
-    </SecondaryButton>
+    </Button>
   )
   return (
     <>

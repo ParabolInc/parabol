@@ -1,38 +1,14 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
 import type {ScopePhaseAreaAddJira_meeting$key} from '../__generated__/ScopePhaseAreaAddJira_meeting.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
-import {PALETTE} from '../styles/paletteV3'
 import {ExternalLinks} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import AtlassianClientManager, {ERROR_POPUP_CLOSED} from '../utils/AtlassianClientManager'
 import JiraSVG from './JiraSVG'
-import RaisedButton from './RaisedButton'
 
-const AddJiraArea = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  height: '100%'
-})
-
-const StyledLink = styled('span')({
-  color: 'var(--color-accent)',
-  cursor: 'pointer',
-  outline: 0,
-  ':hover, :focus, :active': {
-    color: PALETTE.SKY_600
-  },
-  paddingTop: 24
-})
-
-const AddJiraButton = styled(RaisedButton)({
-  gap: 8,
-  whiteSpace: 'pre-wrap'
-})
 interface Props {
   gotoParabol: () => void
   meetingRef: ScopePhaseAreaAddJira_meeting$key
@@ -48,11 +24,21 @@ const ScopePhaseAreaAddJira = (props: Props) => {
     graphql`
       fragment ScopePhaseAreaAddJira_meeting on PokerMeeting {
         teamId
+        viewerMeetingMember {
+          teamMember {
+            integrations {
+              atlassian {
+                scope
+              }
+            }
+          }
+        }
       }
     `,
     meetingRef
   )
-  const {teamId} = meeting
+  const {teamId, viewerMeetingMember} = meeting
+  const heldScopes = viewerMeetingMember?.teamMember.integrations.atlassian?.scope
 
   const errorMessage = useMemo(() => {
     if (!error) return undefined
@@ -75,21 +61,37 @@ const ScopePhaseAreaAddJira = (props: Props) => {
   }, [error])
 
   const authJira = () => {
-    AtlassianClientManager.openOAuth(atmosphere, teamId, mutationProps)
+    AtlassianClientManager.openOAuth(
+      atmosphere,
+      teamId,
+      mutationProps,
+      AtlassianClientManager.JIRA_SCOPE,
+      heldScopes
+    )
   }
   return (
-    <AddJiraArea>
-      <AddJiraButton onClick={authJira} size={'medium'}>
+    <div className='flex h-full flex-col items-center justify-center'>
+      <Button
+        variant='raised'
+        size='md'
+        className='gap-2 whitespace-pre-wrap bg-slate-200 text-slate-700'
+        onClick={authJira}
+      >
         <JiraSVG />
         Import issues from Jira
-      </AddJiraButton>
+      </Button>
       {errorMessage && (
         <div className='p-4 pb-0 text-fg-error [&_a]:font-semibold [&_a]:text-fg-error [&_a]:underline'>
           {errorMessage}
         </div>
       )}
-      <StyledLink onClick={gotoParabol}>Or add new tasks in Parabol</StyledLink>
-    </AddJiraArea>
+      <span
+        className='cursor-pointer pt-6 text-accent outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+        onClick={gotoParabol}
+      >
+        Or add new tasks in Parabol
+      </span>
+    </div>
   )
 }
 

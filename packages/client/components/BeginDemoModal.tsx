@@ -1,23 +1,7 @@
-import styled from '@emotion/styled'
-import {Chat} from '@mui/icons-material'
-import {PALETTE} from '../styles/paletteV3'
+import {Chat} from '~/ui/icons'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
-import PrimaryButton from './PrimaryButton'
-
-const StyledCopy = styled('p')({
-  fontSize: 16,
-  lineHeight: 1.5,
-  margin: '16px 0 24px',
-  padding: 0,
-  textAlign: 'center'
-})
-
-const StyledIcon = styled(Chat)({
-  color: PALETTE.SKY_500,
-  width: 48,
-  height: 48
-})
 
 interface Props {
   isOpen: boolean
@@ -31,14 +15,14 @@ const BeginDemoModal = (props: Props) => {
     <Dialog isOpen={isOpen}>
       <DialogContent noClose>
         <div className='flex flex-col items-center px-4 pb-8'>
-          <StyledIcon />
-          <StyledCopy>
+          <Chat className='h-12 w-12 text-sky-500' />
+          <p className='mx-0 mt-4 mb-6 p-0 text-center text-[16px] leading-normal'>
             Try Parabol for yourself by holding a 2-minute retrospective meeting with our simulated
             colleagues
-          </StyledCopy>
-          <PrimaryButton dataCy='start-demo-button' onClick={startDemo} size='medium'>
+          </p>
+          <Button variant='primary' data-cy='start-demo-button' onClick={startDemo} size='md'>
             Start Demo
-          </PrimaryButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

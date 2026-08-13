@@ -8,7 +8,6 @@ import {CREATE_ACCOUNT_SLUG, SIGNIN_SLUG} from '../../utils/constants'
 import ErrorBoundary from '../ErrorBoundary'
 import Banner from '../GlobalBanner'
 import {useIsAuthenticated} from '../IsAuthenticatedProvider'
-import LightIsland from '../LightIsland'
 import LoadingComponent from '../LoadingComponent/LoadingComponent'
 import PrivateRoutes from '../PrivateRoutes'
 import Snackbar from '../Snackbar'
@@ -66,117 +65,38 @@ const Action = memo(() => {
             )}
           >
             <Routes>
-              <Route
-                path='/'
-                element={
-                  <LightIsland>
-                    <AuthenticationPage page={'signin'} />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path={`/${SIGNIN_SLUG}`}
-                element={
-                  <LightIsland>
-                    <AuthenticationPage page={'signin'} />
-                  </LightIsland>
-                }
-              />
+              <Route path='/' element={<AuthenticationPage page={'signin'} />} />
+              <Route path={`/${SIGNIN_SLUG}`} element={<AuthenticationPage page={'signin'} />} />
               <Route
                 path={`/${CREATE_ACCOUNT_SLUG}`}
-                element={
-                  <LightIsland>
-                    <AuthenticationPage page={'create-account'} />
-                  </LightIsland>
-                }
+                element={<AuthenticationPage page={'create-account'} />}
               />
-              <Route
-                path='/auth/:provider'
-                element={
-                  <LightIsland>
-                    <AuthProvider />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path='/saml-redirect'
-                element={
-                  <LightIsland>
-                    <SAMLRedirect />
-                  </LightIsland>
-                }
-              />
+              <Route path='/auth/:provider' element={<AuthProvider />} />
+              <Route path='/saml-redirect' element={<SAMLRedirect />} />
               <Route path='/retrospective-demo/*' element={<DemoMeeting />} />
               <Route path='/retrospective-demo-summary/:urlAction' element={<DemoSummary />} />
               <Route path='/retrospective-demo-summary' element={<DemoSummary />} />
               {isInternalAuthEnabled && (
                 <Route
                   path='/forgot-password'
-                  element={
-                    <LightIsland>
-                      <AuthenticationPage page={'forgot-password'} />
-                    </LightIsland>
-                  }
+                  element={<AuthenticationPage page={'forgot-password'} />}
                 />
               )}
               {isInternalAuthEnabled && (
                 <Route
                   path='/forgot-password/submitted'
-                  element={
-                    <LightIsland>
-                      <AuthenticationPage page={'forgot-password/submitted'} />
-                    </LightIsland>
-                  }
+                  element={<AuthenticationPage page={'forgot-password/submitted'} />}
                 />
               )}
               <Route
                 path='/verify-email/:verificationToken/:invitationToken'
-                element={
-                  <LightIsland>
-                    <VerifyEmail />
-                  </LightIsland>
-                }
+                element={<VerifyEmail />}
               />
-              <Route
-                path='/verify-email/:verificationToken'
-                element={
-                  <LightIsland>
-                    <VerifyEmail />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path='/reset-password/:token'
-                element={
-                  <LightIsland>
-                    <SetNewPassword />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path='/oauth/authorize'
-                element={
-                  <LightIsland>
-                    <OAuthAuthorizePage />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path='/team-invitation/:token'
-                element={
-                  <LightIsland>
-                    <TeamInvitation />
-                  </LightIsland>
-                }
-              />
-              <Route
-                path='/invitation-link/:token'
-                element={
-                  <LightIsland>
-                    <InvitationLink />
-                  </LightIsland>
-                }
-              />
+              <Route path='/verify-email/:verificationToken' element={<VerifyEmail />} />
+              <Route path='/reset-password/:token' element={<SetNewPassword />} />
+              <Route path='/oauth/authorize' element={<OAuthAuthorizePage />} />
+              <Route path='/team-invitation/:token' element={<TeamInvitation />} />
+              <Route path='/invitation-link/:token' element={<InvitationLink />} />
               {!isAuthenticated && (
                 <Route path='/pages/:pageSlug' element={<PageRoot viewerRef={null} isPublic />} />
               )}

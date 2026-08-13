@@ -11,6 +11,7 @@ import EndRetrospectiveMutation from '../../mutations/EndRetrospectiveMutation'
 import EndSprintPokerMutation from '../../mutations/EndSprintPokerMutation'
 import EndTeamPromptMutation from '../../mutations/EndTeamPromptMutation'
 import UpdateRecurrenceSettingsMutation from '../../mutations/UpdateRecurrenceSettingsMutation'
+import useEndTeamHealthMutation from '../../mutations/useEndTeamHealthMutation'
 import type {
   CompletedHandler,
   NavigateMaybeLocalHandler,
@@ -25,8 +26,10 @@ export const EndMeetingMutationLookup = {
   teamPrompt: EndTeamPromptMutation,
   action: EndCheckInMutation,
   retrospective: EndRetrospectiveMutation,
-  poker: EndSprintPokerMutation
-} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler>>
+  poker: EndSprintPokerMutation,
+  // team health uses the useEndTeamHealthMutation hook, handled separately in onConfirm
+  teamHealth: null
+} satisfies Record<MeetingTypeEnum, StandardMutation<any, NavigateMaybeLocalHandler> | null>
 
 interface RadioToggleProps {
   checked: boolean
@@ -79,6 +82,7 @@ export const EndRecurringMeetingModal = (props: Props) => {
   const {onCompleted, onError} = useMutationProps()
   const navigate = useNavigate()
   const atmosphere = useAtmosphere()
+  const [endTeamHealth] = useEndTeamHealthMutation()
   const [isMeetingOnly, setIsMeetingOnly] = useState(true)
 
   const handleCompleted: CompletedHandler = () => {
@@ -95,6 +99,10 @@ export const EndRecurringMeetingModal = (props: Props) => {
   }
 
   const onConfirm = () => {
+    if (meetingType === 'teamHealth') {
+      endTeamHealth({variables: {meetingId}, onCompleted: handleCompleted, onError})
+      return
+    }
     EndMeetingMutationLookup[meetingType]?.(
       atmosphere,
       {meetingId},

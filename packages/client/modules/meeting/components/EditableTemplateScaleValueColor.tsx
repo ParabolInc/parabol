@@ -1,10 +1,8 @@
-import styled from '@emotion/styled'
-import {ArrowDropDown as ArrowDropDownIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {EditableTemplateScaleValueColor_scale$key} from '~/__generated__/EditableTemplateScaleValueColor_scale.graphql'
 import PlainButton from '~/components/PlainButton/PlainButton'
-import {BezierCurve} from '~/types/constEnums'
+import {ArrowDropDown as ArrowDropDownIcon} from '~/ui/icons'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useMenu from '../../../hooks/useMenu'
 import ScaleValuePalettePicker from './ScaleValuePalettePicker'
@@ -15,44 +13,6 @@ interface Props {
   scaleValueColor: string
   setScaleValueColor?: (scaleValueColor: string) => void
 }
-
-const ScaleValueColor = styled(PlainButton)({
-  cursor: 'pointer',
-  display: 'block',
-  flex: 1,
-  flexShrink: 0,
-  height: 24,
-  padding: 4,
-  position: 'relative',
-  width: 24,
-  ':hover': {
-    i: {
-      opacity: 1
-    }
-  }
-})
-
-const ColorBadge = styled('div')<{color?: string}>(({color}) => ({
-  backgroundColor: color,
-  borderRadius: '50%',
-  height: 14,
-  margin: 1,
-  width: 14
-}))
-
-const DropdownIcon = styled('div')({
-  bottom: 0,
-  color: 'var(--color-fg-secondary)',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  opacity: 0,
-  position: 'absolute',
-  right: -6,
-  transition: `opacity 300ms ${BezierCurve.DECELERATE}`,
-  width: 12
-})
 
 const EditableTemplateScaleValueColor = (props: Props) => {
   const {scaleValueLabel, scaleValueColor, scale: scaleRef, setScaleValueColor} = props
@@ -68,11 +28,15 @@ const EditableTemplateScaleValueColor = (props: Props) => {
     MenuPosition.UPPER_LEFT
   )
   return (
-    <ScaleValueColor ref={originRef} onClick={togglePortal}>
-      <ColorBadge color={scaleValueColor} />
-      <DropdownIcon>
+    <PlainButton
+      ref={originRef}
+      className='group relative block h-6 w-6 flex-1 shrink-0 cursor-pointer p-1'
+      onClick={togglePortal}
+    >
+      <div className='m-px h-3.5 w-3.5 rounded-full' style={{backgroundColor: scaleValueColor}} />
+      <div className='-right-1.5 absolute bottom-0 h-6 w-3 text-fg-secondary opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0,0,.2,1)] group-hover:opacity-100 [&_svg]:text-[18px]'>
         <ArrowDropDownIcon />
-      </DropdownIcon>
+      </div>
       {menuPortal(
         <ScaleValuePalettePicker
           menuProps={menuProps}
@@ -82,7 +46,7 @@ const EditableTemplateScaleValueColor = (props: Props) => {
           setScaleValueColor={setScaleValueColor}
         />
       )}
-    </ScaleValueColor>
+    </PlainButton>
   )
 }
 

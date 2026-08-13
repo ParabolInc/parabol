@@ -1,4 +1,4 @@
-import {Delete, Edit, Link} from '@mui/icons-material'
+import {Delete, Edit, Link} from 'parabol-client/ui/icons'
 import {Tooltip} from 'parabol-client/ui/Tooltip/Tooltip'
 import {TooltipContent} from 'parabol-client/ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from 'parabol-client/ui/Tooltip/TooltipTrigger'

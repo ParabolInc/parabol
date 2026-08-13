@@ -1,51 +1,36 @@
-import styled from '@emotion/styled'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import {PortalStatus} from '../hooks/usePortal'
-import {DECELERATE} from '../styles/animation'
-import {Duration, Radius} from '../types/constEnums'
-
-const animations = (portalStatus: PortalStatus) => {
-  switch (portalStatus) {
-    case PortalStatus.Mounted:
-      return {
-        opacity: 0
-      }
-    case PortalStatus.Entering:
-    case PortalStatus.Entered:
-      return {
-        opacity: 1,
-        transition: `opacity ${Duration.MENU_OPEN}ms ${DECELERATE}`
-      }
-    case PortalStatus.Exiting:
-      return {
-        opacity: 0,
-        transition: `opacity ${Duration.PORTAL_CLOSE} ${DECELERATE}`
-      }
-    default:
-      return {}
-  }
-}
+import {cn} from '../ui/cn'
 
 export interface MenuContentsProps {
   minWidth?: number
   menuContentStyles?: any
   portalStatus: PortalStatus
+  className?: string
+  children?: ReactNode
 }
 
-const MenuContents = styled('div')<MenuContentsProps>(
-  ({minWidth, menuContentStyles = {}, portalStatus}) => ({
-    borderRadius: Radius.MENU,
-    outline: 0,
-    overflowY: portalStatus >= PortalStatus.Entered ? 'auto' : 'hidden',
-    paddingBottom: 8,
-    paddingTop: 8,
-    textAlign: 'left',
-    width: '100%',
-    opacity: 0,
-    transition: `opacity 100ms ${DECELERATE} `,
-    minWidth,
-    ...animations(portalStatus),
-    ...menuContentStyles
-  })
-)
+const MenuContents = forwardRef((props: MenuContentsProps, ref: Ref<HTMLDivElement>) => {
+  const {minWidth, menuContentStyles = {}, portalStatus, className, children} = props
+  const isOpening = portalStatus === PortalStatus.Entering || portalStatus === PortalStatus.Entered
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'w-full rounded-[4px] py-2 text-left outline-none',
+        portalStatus >= PortalStatus.Entered ? 'overflow-y-auto' : 'overflow-y-hidden',
+        isOpening
+          ? 'opacity-100 [transition:opacity_150ms_cubic-bezier(0,0,.2,1)]'
+          : portalStatus === PortalStatus.Exiting
+            ? 'opacity-0'
+            : 'opacity-0 [transition:opacity_100ms_cubic-bezier(0,0,.2,1)]',
+        className
+      )}
+      style={{minWidth, ...menuContentStyles}}
+    >
+      {children}
+    </div>
+  )
+})
 
 export default MenuContents

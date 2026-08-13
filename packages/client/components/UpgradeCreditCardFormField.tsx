@@ -1,5 +1,5 @@
-import {CreditCard, DateRange, Lock} from '@mui/icons-material'
 import type * as React from 'react'
+import {CreditCard, DateRange, Lock} from '~/ui/icons'
 import UpgradeCreditCardFormFieldBlock from './UpgradeCreditCardFormFieldBlock'
 import UpgradeCreditCardFormFieldIcon from './UpgradeCreditCardFormFieldIcon'
 

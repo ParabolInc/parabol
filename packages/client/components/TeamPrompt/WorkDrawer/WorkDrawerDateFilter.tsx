@@ -1,7 +1,7 @@
-import DateRangeIcon from '@mui/icons-material/DateRange'
 import dayjs from 'dayjs'
 import {useState} from 'react'
 import {DayPicker} from 'react-day-picker'
+import {DateRange as DateRangeIcon} from '~/ui/icons'
 import {ClearFilterIcon} from '../../../modules/search/ClearFilterIcon'
 import {Button} from '../../../ui/Button/Button'
 import {Menu} from '../../../ui/Menu/Menu'

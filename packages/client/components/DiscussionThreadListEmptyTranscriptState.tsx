@@ -1,60 +1,15 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {DiscussionThreadListEmptyTranscriptState_meeting$key} from '~/__generated__/DiscussionThreadListEmptyTranscriptState_meeting.graphql'
-import {PALETTE} from '~/styles/paletteV3'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useForm from '../hooks/useForm'
 import useMutationProps from '../hooks/useMutationProps'
 import AddTranscriptionBot from '../mutations/AddTranscriptionBotMutation'
+import {Button} from '../ui/Button/Button'
 import linkify from '../utils/linkify'
 import Legitity from '../validation/Legitity'
-import FlatButton from './FlatButton'
 import StyledError from './StyledError'
 import {ZoomSVG} from './ZoomSVG'
-
-const mobileBreakpoint = makeMinWidthMediaQuery(380)
-
-const DiscussionThreadEmptyStateRoot = styled('div')({
-  padding: '12px 24px',
-  margin: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: 0
-})
-
-const EmptyDiscussionContainer = styled('div')({
-  width: 160,
-  margin: '14px auto',
-  textAlign: 'center',
-  [mobileBreakpoint]: {
-    width: 260
-  }
-})
-
-const Message = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 14,
-  textAlign: 'center',
-  lineHeight: '20px',
-  margin: '24 0'
-})
-
-const StyledButton = styled(FlatButton)({
-  background: 'var(--color-accent)',
-  borderColor: 'var(--color-hairline-strong)',
-  color: PALETTE.WHITE,
-  fontSize: 12,
-  fontWeight: 600,
-  minWidth: 36,
-  marginTop: 24,
-  width: '50%',
-  marginBottom: 8,
-  ':hover': {
-    backgroundColor: PALETTE.SKY_600
-  }
-})
 
 interface Props {
   isReadOnly?: boolean
@@ -104,15 +59,15 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
   const showVideoURLInput = !videoMeetingURL
 
   return (
-    <DiscussionThreadEmptyStateRoot>
-      <EmptyDiscussionContainer>
+    <div className='m-auto flex min-h-0 flex-col px-6 py-3'>
+      <div className='mx-auto my-[14px] w-[160px] text-center min-[380px]:w-[260px]'>
         <div className='flex w-full justify-center'>
           <div className='mb-4 h-16 w-16'>
             <ZoomSVG />
           </div>
         </div>
-      </EmptyDiscussionContainer>
-      <Message>
+      </div>
+      <div className='text-center text-fg-secondary text-sm'>
         {showVideoURLInput ? (
           <>
             Paste your <strong>Zoom meeting URL</strong> below and we’ll transcribe your meeting.
@@ -120,7 +75,7 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
         ) : (
           `Your Zoom transcription will begin once the 'Parabol Notetaker' bot joins the call, and it will be available once the meeting has ended.`
         )}
-      </Message>
+      </div>
       {showVideoURLInput && (
         <form
           className='flex flex-1 flex-wrap items-center justify-center'
@@ -138,14 +93,19 @@ const DiscussionThreadListEmptyTranscriptState = (props: Props) => {
             value={urlValue}
           />
           <div className='flex w-full flex-col items-center'>
-            <StyledButton type='submit' size='medium'>
+            <Button
+              type='submit'
+              variant='flat'
+              size='md'
+              className='mt-6 mb-2 w-1/2 min-w-9 border-hairline-strong bg-accent font-semibold text-[12px] text-white hover:bg-sky-600'
+            >
               Submit
-            </StyledButton>
+            </Button>
             {fieldError && <StyledError>{fieldError}</StyledError>}
           </div>
         </form>
       )}
-    </DiscussionThreadEmptyStateRoot>
+    </div>
   )
 }
 

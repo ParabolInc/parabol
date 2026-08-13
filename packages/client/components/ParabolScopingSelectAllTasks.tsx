@@ -1,5 +1,4 @@
 /* Copy and pasted from `./JiraScopingSelectAllIssues.tsx` */
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useMutationProps from '~/hooks/useMutationProps'
@@ -10,16 +9,6 @@ import useAtmosphere from '../hooks/useAtmosphere'
 import getSelectAllTitle from '../utils/getSelectAllTitle'
 import Checkbox from './Checkbox'
 
-const Item = styled('div')({
-  display: 'flex',
-  paddingLeft: 16
-})
-
-const Title = styled('div')({
-  paddingLeft: 16,
-  paddingBottom: 16,
-  fontWeight: 600
-})
 interface Props {
   meetingId: string
   tasks: ParabolScopingSelectAllTasks_tasks$key
@@ -75,10 +64,10 @@ const ParabolScopingSelectAllTasks = (props: Props) => {
   if (tasks.length < 2) return null
   const title = getSelectAllTitle(tasks.length, usedServiceTaskIds.size, 'task')
   return (
-    <Item onClick={onClick}>
+    <div className='flex pl-4' onClick={onClick}>
       <Checkbox active={allSelected} />
-      <Title>{title}</Title>
-    </Item>
+      <div className='pb-4 pl-4 font-semibold'>{title}</div>
+    </div>
   )
 }
 

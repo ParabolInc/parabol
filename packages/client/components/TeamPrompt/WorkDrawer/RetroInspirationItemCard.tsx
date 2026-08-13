@@ -1,8 +1,8 @@
-import CheckIcon from '@mui/icons-material/Check'
 import type {JSONContent} from '@tiptap/core'
 import {useEditor} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import {useState} from 'react'
+import {Check as CheckIcon} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
 import CreateReflectionMutation from '../../../mutations/CreateReflectionMutation'
@@ -64,7 +64,7 @@ const RetroInspirationItemCard = (props: Props) => {
   }
 
   return (
-    <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-card'>
+    <div className='flex flex-col gap-2 rounded-card bg-surface-card p-3 shadow-[var(--shadow-card)]'>
       {title && <div className='font-semibold text-fg-primary text-sm'>{title}</div>}
       <TipTapEditor
         editor={editor}

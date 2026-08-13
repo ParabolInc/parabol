@@ -1,9 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
 import type {RefObject} from 'react'
 import {useFragment} from 'react-relay'
-import LinkButton from '~/components/LinkButton'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import {Breakpoint} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
 import type {PokerDimensionFinalScorePicker_stage$key} from '../__generated__/PokerDimensionFinalScorePicker_stage.graphql'
 import AzureDevOpsFieldDimensionDropdown from './AzureDevOpsFieldDimensionDropdown'
 import GitHubFieldDimensionDropdown from './GitHubFieldDimensionDropdown'
@@ -60,23 +60,23 @@ const PokerDimensionFinalScorePicker = (props: Props) => {
     <div className='flex w-full select-none flex-wrap items-center'>
       {isFacilitator ? (
         canUpdate ? (
-          <LinkButton
-            className='ml-2'
+          <Button
+            size='default'
+            className='ml-2 bg-transparent p-0 text-[14px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
             onClick={submitScore}
-            palette='blue'
             style={{fontSize: 12, fontWeight: 600}}
           >
             Update
-          </LinkButton>
+          </Button>
         ) : (
-          <LinkButton
-            className='ml-2'
+          <Button
+            size='default'
+            className='ml-2 bg-transparent p-0 text-[14px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
             onClick={focusInput}
-            palette='blue'
             style={{fontSize: 12, fontWeight: 600}}
           >
             Edit Score
-          </LinkButton>
+          </Button>
         )
       ) : null}
       <div className={`flex flex-1 justify-end ${isDesktop ? '' : 'flex-col-reverse items-end'}`}>

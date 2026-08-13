@@ -1,5 +1,3 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useRef, useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -10,6 +8,10 @@ import type {ActivityDetailsSidebar_template$key} from '~/__generated__/Activity
 import StartRetrospectiveMutation from '~/mutations/StartRetrospectiveMutation'
 import StartSprintPokerMutation from '~/mutations/StartSprintPokerMutation'
 import UpdateReflectTemplateScopeMutation from '~/mutations/UpdateReflectTemplateScopeMutation'
+import {
+  KeyboardArrowDown as KeyboardArrowDownIcon,
+  KeyboardArrowUp as KeyboardArrowUpIcon
+} from '~/ui/icons'
 import type {MeetingTypeEnum} from '../../__generated__/ActivityDetailsQuery.graphql'
 import type {CreateGcalEventInput} from '../../__generated__/StartRetrospectiveMutation.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -18,9 +20,9 @@ import SelectTemplateMutation from '../../mutations/SelectTemplateMutation'
 import StartCheckInMutation from '../../mutations/StartCheckInMutation'
 import StartTeamPromptMutation from '../../mutations/StartTeamPromptMutation'
 import type {CompletedHandler} from '../../types/relayMutations'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
 import sortByTier from '../../utils/sortByTier'
-import FlatPrimaryButton from '../FlatPrimaryButton'
 import NewMeetingActionsCurrentMeetings from '../NewMeetingActionsCurrentMeetings'
 import NewMeetingSettingsToggleAnonymity from '../NewMeetingSettingsToggleAnonymity'
 import NewMeetingSettingsToggleCheckIn from '../NewMeetingSettingsToggleCheckIn'
@@ -331,13 +333,15 @@ const ActivityDetailsSidebar = (props: Props) => {
             placeholder={meetingNamePlaceholder}
             withRecurrence={withRecurrence}
           />
-          <FlatPrimaryButton
+          <Button
+            variant='primary'
+            size='sm'
             onClick={() => handleStartActivity()}
-            waiting={submitting}
+            disabled={submitting}
             className='h-14'
           >
             <div className='text-lg'>Start Activity</div>
-          </FlatPrimaryButton>
+          </Button>
         </div>
       </div>
       {upgradeModalState && (

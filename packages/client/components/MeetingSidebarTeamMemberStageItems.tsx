@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {MeetingSidebarTeamMemberStageItems_meeting$key} from '~/__generated__/MeetingSidebarTeamMemberStageItems_meeting.graphql'
@@ -8,21 +7,8 @@ import MeetingSubnavItem from '../components/MeetingSubnavItem'
 import useAnimatedPhaseListChildren from '../hooks/useAnimatedPhaseListChildren'
 import useAtmosphere from '../hooks/useAtmosphere'
 import type useGotoStageId from '../hooks/useGotoStageId'
+import {cn} from '../ui/cn'
 import MeetingSidebarPhaseItemChild from './MeetingSidebarPhaseItemChild'
-
-const AvatarBlock = styled('div')({
-  width: 32
-})
-
-const ScrollStageItems = styled('div')<{isActive: boolean}>(({isActive}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  height: '100%', // trickle down height for overflow
-  // @hello-pangea/dnd supports scrolling on 1 parent
-  // this is where we need it, in order to scroll a long list
-  overflow: isActive ? 'auto' : 'hidden',
-  width: '100%'
-}))
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -72,7 +58,13 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
   const {height, ref} = useAnimatedPhaseListChildren(isActive, childItemCount)
   return (
     <MeetingSidebarPhaseItemChild minHeight={height} height={height}>
-      <ScrollStageItems isActive={isActive} ref={ref}>
+      <div
+        className={cn(
+          'flex h-full w-full flex-col',
+          isActive ? 'overflow-auto' : 'overflow-hidden'
+        )}
+        ref={ref}
+      >
         {sidebarPhase?.stages.map((stage) => {
           const {
             id: stageId,
@@ -94,9 +86,9 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             <MeetingSubnavItem
               key={stageId}
               metaContent={
-                <AvatarBlock>
+                <div className='w-8'>
                   <Avatar picture={picture} className='h-6 w-6' />
-                </AvatarBlock>
+                </div>
               }
               isDisabled={isViewerFacilitator ? !isNavigableByFacilitator : !isNavigable}
               onClick={gotoStage(teamMemberId)}
@@ -109,7 +101,7 @@ const MeetingSidebarTeamMemberStageItems = (props: Props) => {
             </MeetingSubnavItem>
           )
         })}
-      </ScrollStageItems>
+      </div>
     </MeetingSidebarPhaseItemChild>
   )
 }

@@ -1,12 +1,18 @@
-import styled from '@emotion/styled'
 import logo from '../styles/theme/images/graphics/google-calendar.svg'
+import {cn} from '../ui/cn'
 
-const GcalProviderLogo = styled('div')({
-  background: `url("${logo}")`,
-  height: 48,
-  width: 48,
-  backgroundSize: 'contain',
-  backgroundRepeat: 'no-repeat'
-})
+type Props = {
+  className?: string
+}
+
+const GcalProviderLogo = (props: Props) => {
+  const {className} = props
+  return (
+    <div
+      className={cn('h-12 w-12 bg-contain bg-no-repeat', className)}
+      style={{backgroundImage: `url("${logo}")`}}
+    />
+  )
+}
 
 export default GcalProviderLogo

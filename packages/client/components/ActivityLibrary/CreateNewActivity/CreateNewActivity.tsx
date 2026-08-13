@@ -7,19 +7,18 @@ import {Link, useNavigate, useParams} from 'react-router'
 import type {CreateNewActivityQuery} from '~/__generated__/CreateNewActivityQuery.graphql'
 import estimatedEffortTemplate from '../../../../../static/images/illustrations/estimatedEffortTemplate.png'
 import newTemplate from '../../../../../static/images/illustrations/newTemplate.png'
-import type {AddPokerTemplateMutation$data} from '../../../__generated__/AddPokerTemplateMutation.graphql'
-import type {AddReflectTemplateMutation$data} from '../../../__generated__/AddReflectTemplateMutation.graphql'
+import type {useAddPokerTemplateMutation$data} from '../../../__generated__/useAddPokerTemplateMutation.graphql'
+import type {useAddReflectTemplateMutation$data} from '../../../__generated__/useAddReflectTemplateMutation.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import useMutationProps from '../../../hooks/useMutationProps'
-import AddPokerTemplateMutation from '../../../mutations/AddPokerTemplateMutation'
-import AddReflectTemplateMutation from '../../../mutations/AddReflectTemplateMutation'
+import useAddPokerTemplateMutation from '../../../mutations/useAddPokerTemplateMutation'
+import useAddReflectTemplateMutation from '../../../mutations/useAddReflectTemplateMutation'
+import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import sortByTier from '../../../utils/sortByTier'
-import BaseButton from '../../BaseButton'
 import IconLabel from '../../IconLabel'
 import NewMeetingTeamPicker from '../../NewMeetingTeamPicker'
-import RaisedButton from '../../RaisedButton'
 import {ActivityBadge} from '../ActivityBadge'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
 import {
@@ -148,6 +147,8 @@ export const CreateNewActivity = (props: Props) => {
   )
 
   const {submitting, error, submitMutation, onError, onCompleted} = useMutationProps()
+  const [executeAddReflectTemplate] = useAddReflectTemplateMutation()
+  const [executeAddPokerTemplate] = useAddPokerTemplateMutation()
   const navigate = useNavigate()
 
   if (!selectedTeam) return null
@@ -162,22 +163,19 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddReflectTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddReflectTemplateMutation$data) => {
-          const templateId = res.addReflectTemplate?.reflectTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
+    executeAddReflectTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddReflectTemplateMutation$data) => {
+        const templateId = res.addReflectTemplate?.reflectTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
         }
+        onCompleted()
       }
-    )
+    })
   }
 
   const handleCreatePokerTemplate = () => {
@@ -186,22 +184,19 @@ export const CreateNewActivity = (props: Props) => {
     }
 
     submitMutation()
-    AddPokerTemplateMutation(
-      atmosphere,
-      {teamId: selectedTeam.id},
-      {
-        onError,
-        onCompleted: (res: AddPokerTemplateMutation$data) => {
-          const templateId = res.addPokerTemplate?.pokerTemplate?.id
-          if (templateId) {
-            navigate(`/activity-library/details/${templateId}`, {
-              state: {prevCategory: categoryId, edit: true}
-            })
-          }
-          onCompleted()
+    executeAddPokerTemplate({
+      variables: {teamId: selectedTeam.id},
+      onError,
+      onCompleted: (res: useAddPokerTemplateMutation$data) => {
+        const templateId = res.addPokerTemplate?.pokerTemplate?.id
+        if (templateId) {
+          navigate(`/activity-library/details/${templateId}`, {
+            state: {prevCategory: categoryId, edit: true}
+          })
         }
+        onCompleted()
       }
-    )
+    })
   }
 
   const handleUpgrade = () => {
@@ -235,7 +230,7 @@ export const CreateNewActivity = (props: Props) => {
           </div>
         </div>
       </div>
-      <div className='flex flex-1 flex-col items-center gap-y-8'>
+      <div className='flex min-h-0 flex-1 flex-col items-center gap-y-8 overflow-y-auto'>
         <h1 className='font-normal text-lg'>
           Choose an <span className='font-semibold'>Activity Format:</span>
         </h1>
@@ -249,7 +244,7 @@ export const CreateNewActivity = (props: Props) => {
             return (
               <RadioGroup.Item
                 key={activity.title}
-                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-hover focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500'
+                className='group flex cursor-pointer flex-col items-start space-y-3 rounded-2xl bg-transparent p-1 pb-4 hover:bg-surface-hover focus:outline-sky-500 data-[state=checked]:ring-4 data-[state=checked]:ring-sky-500 dark:border dark:border-hairline dark:bg-surface-raised'
                 value={activity.type}
               >
                 <ActivityCard
@@ -295,30 +290,32 @@ export const CreateNewActivity = (props: Props) => {
           </div>
         </div>
         {error && <div className='px-4 text-fg-error'>{error.message}</div>}
-        <div className='mt-auto flex w-full bg-surface-well p-2 shadow-card-1'>
-          {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
-            <div className='flex w-full items-center justify-center gap-4'>
-              <span className='pr-4 text-center'>
-                Upgrade to the <b>Team Plan</b> to create more custom activities
-              </span>
+      </div>
+      <div className='flex w-full shrink-0 bg-surface-well p-2 shadow-card-1'>
+        {selectedTeam.tier === 'starter' && freeCustomTemplatesRemaining === 0 ? (
+          <div className='flex w-full items-center justify-center gap-4'>
+            <span className='pr-4 text-center'>
+              Upgrade to the <b>Team Plan</b> to create more custom activities
+            </span>
 
-              <RaisedButton
-                palette='pink'
-                className='h-12 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
-                onClick={handleUpgrade}
-              >
-                Upgrade to Team Plan
-              </RaisedButton>
-            </div>
-          ) : (
-            <BaseButton
-              className='mx-auto h-12 rounded-md bg-sky-500 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
-              onClick={createCustomActivityLookup[selectedActivity.type]}
+            <Button
+              variant='raised'
+              size='sm'
+              className='h-12 bg-rose-500 px-4 font-semibold text-lg text-white focus:outline-hidden focus:ring-2 focus:ring-offset-2'
+              onClick={handleUpgrade}
             >
-              Confirm Format & Team
-            </BaseButton>
-          )}
-        </div>
+              Upgrade to Team Plan
+            </Button>
+          </div>
+        ) : (
+          <Button
+            size='default'
+            className='mx-auto h-12 rounded-md bg-sky-500 px-6 font-semibold text-lg text-white hover:bg-sky-600 focus:outline-hidden focus:ring-2 focus:ring-sky-600 focus:ring-offset-2 active:ring-sky-600'
+            onClick={createCustomActivityLookup[selectedActivity.type]}
+          >
+            Confirm Format & Team
+          </Button>
+        )}
       </div>
     </div>
   )

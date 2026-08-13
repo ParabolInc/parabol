@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {MenuPosition} from '../hooks/useCoords'
 import useMenu from '../hooks/useMenu'
 import formatTime from '../utils/date/formatTime'
@@ -9,12 +8,6 @@ interface Props {
   endTime: Date
   setEndTime: (date: Date) => void
 }
-
-const Toggle = styled(DropdownMenuToggle)({
-  fontSize: 14,
-  padding: '4px 0 4px 32px',
-  minWidth: 160
-})
 
 const StageTimerModalEndTimeHour = (props: Props) => {
   const {endTime, setEndTime} = props
@@ -34,7 +27,14 @@ const StageTimerModalEndTimeHour = (props: Props) => {
 
   return (
     <>
-      <Toggle defaultText={timeStr} onClick={togglePortal} ref={originRef} flat size='small' />
+      <DropdownMenuToggle
+        className='min-w-[160px] py-1 pr-0 pl-8 text-[14px]'
+        defaultText={timeStr}
+        onClick={togglePortal}
+        ref={originRef}
+        flat
+        size='small'
+      />
       {menuPortal(
         <StageTimerHourPicker endTime={endTime} menuProps={menuProps} onClick={handleHourPick} />
       )}

@@ -1,4 +1,4 @@
-import {Link, Title} from '@mui/icons-material'
+import {Link, Title} from 'parabol-client/ui/icons'
 import linkify from 'parabol-client/utils/linkify'
 import {useCallback, useMemo, useState} from 'react'
 

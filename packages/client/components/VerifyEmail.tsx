@@ -4,13 +4,13 @@ import useCanonical from '~/hooks/useCanonical'
 import VerifyEmailMutation from '~/mutations/VerifyEmailMutation'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {Button} from '../ui/Button/Button'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import Ellipsis from './Ellipsis/Ellipsis'
 import InvitationCenteredCopy from './InvitationCenteredCopy'
 import InvitationDialogCopy from './InvitationDialogCopy'
 import InviteDialog from './InviteDialog'
-import PrimaryButton from './PrimaryButton'
 import TeamInvitationWrapper from './TeamInvitationWrapper'
 
 const VerifyEmail = () => {
@@ -42,10 +42,10 @@ const VerifyEmail = () => {
           <InvitationDialogCopy>{error ? error.message : 'You’re almost in!'}</InvitationDialogCopy>
           <InvitationCenteredCopy>
             {!error && (
-              <PrimaryButton size='medium' waiting>
+              <Button variant='primary' size='md' disabled>
                 <span>Verifying now</span>
                 <Ellipsis />
-              </PrimaryButton>
+              </Button>
             )}
           </InvitationCenteredCopy>
         </DialogContent>

@@ -1,12 +1,11 @@
-import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
+import {Link} from '~/ui/icons'
 import type {GitHubObjectCard_result$key} from '../../../__generated__/GitHubObjectCard_result.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
 import useTooltip from '../../../hooks/useTooltip'
-import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
 import githubIssueClosed from '../../../styles/theme/images/graphics/github-issue-closed.svg'
 import githubIssueOpen from '../../../styles/theme/images/graphics/github-issue-open.svg'
 import gitHubMerged from '../../../styles/theme/images/graphics/github-merged.svg'
@@ -16,6 +15,7 @@ import githubPROpen from '../../../styles/theme/images/graphics/github-pr-open.s
 import relativeDate from '../../../utils/date/relativeDate'
 import {mergeRefs} from '../../../utils/react/mergeRefs'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import GitHubSVG from '../../GitHubSVG'
 
 const ISSUE_STATUS_MAP: Record<string, any> = {
   OPEN: githubIssueOpen,
@@ -153,7 +153,7 @@ const GitHubObjectCard = (props: Props) => {
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <div className='h-4 w-4'>
-            <img src={gitHubSVG} />
+            <GitHubSVG className='h-4 w-4 dark:[&_path]:fill-white' />
           </div>
           <a
             href={repoUrl}

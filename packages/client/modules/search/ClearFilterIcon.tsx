@@ -1,4 +1,4 @@
-import CloseIcon from '@mui/icons-material/Close'
+import {Close as CloseIcon} from '~/ui/icons'
 import {Tooltip} from '../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../ui/Tooltip/TooltipTrigger'
@@ -13,7 +13,7 @@ export const ClearFilterIcon = (props: Props) => {
     <Tooltip>
       <TooltipTrigger asChild>
         <div
-          className='ml-0.5 flex size-4 cursor-pointer items-center justify-center rounded-md p-1 hover:bg-hairline-strong group-hover:bg-surface-well'
+          className='ml-0.5 flex size-4 cursor-pointer items-center justify-center rounded-md p-1 hover:bg-hairline-strong group-hover:bg-surface-hover'
           onClick={onClick}
           onPointerDown={(e) => e.stopPropagation()}
         >

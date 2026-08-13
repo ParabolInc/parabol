@@ -1,5 +1,4 @@
 import {DragDropContext, Draggable, Droppable, type DropResult} from '@hello-pangea/dnd'
-import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {
@@ -9,6 +8,7 @@ import type {
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type useGotoStageId from '~/hooks/useGotoStageId'
 import type {DeepNonNullable} from '~/types/generics'
+import {ThumbUp} from '~/ui/icons'
 import DragDiscussionTopicMutation from '../mutations/DragDiscussionTopicMutation'
 import {cn} from '../ui/cn'
 import {DISCUSSION_TOPIC, SORT_STEP} from '../utils/constants'
@@ -18,7 +18,7 @@ import MeetingSubnavItem from './MeetingSubnavItem'
 
 // navItemRaised (Elevation.Z8)
 const navItemRaisedShadowCls =
-  'shadow-[rgba(0,0,0,.2)_0px_5px_5px_-3px,rgba(0,0,0,.14)_0px_8px_10px_1px,rgba(0,0,0,.12)_0px_3px_14px_2px]'
+  'shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)]'
 
 interface Props {
   gotoStageId: ReturnType<typeof useGotoStageId>

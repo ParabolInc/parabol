@@ -9,7 +9,6 @@ import useAtmosphere from '../../../../hooks/useAtmosphere'
 import type {MenuMutationProps} from '../../../../hooks/useMutationProps'
 import type {UseTaskChild} from '../../../../hooks/useTaskChildFocus'
 import DeleteTaskMutation from '../../../../mutations/DeleteTaskMutation'
-import {PALETTE} from '../../../../styles/paletteV3'
 import {TaskStatus} from '../../../../types/constEnums'
 import isTaskPrivate from '../../../../utils/isTaskPrivate'
 import TaskFooterTagMenuStatusItem from './TaskFooterTagMenuStatusItem'
@@ -57,7 +56,7 @@ export const TaskTagContent = (props: Props) => {
         ))}
       <MenuItemHR key='HR1' />
       <MenuItem key='private' onSelect={() => toggleTag('private')}>
-        <MenuItemDot color={PALETTE.GOLD_300} />
+        <MenuItemDot color='var(--color-gold-300)' />
         <span>
           {isPrivate ? 'Remove ' : 'Set as '}
           <b>{'#private'}</b>
@@ -65,12 +64,12 @@ export const TaskTagContent = (props: Props) => {
       </MenuItem>
       {isAgenda ? (
         <MenuItem key='delete' onSelect={() => DeleteTaskMutation(atmosphere, {taskId})}>
-          <MenuItemDot color={PALETTE.TOMATO_500} />
+          <MenuItemDot color='var(--color-tomato-500)' />
           {'Delete this Task'}
         </MenuItem>
       ) : (
         <MenuItem key='archive' onSelect={() => toggleTag('archived')}>
-          <MenuItemDot color={PALETTE.SLATE_500} />
+          <MenuItemDot color='var(--color-slate-500)' />
           <span>
             {'Set as '}
             <b>{'#archived'}</b>

@@ -1,21 +1,20 @@
-import styled from '@emotion/styled'
-import {Timer} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Timer} from '~/ui/icons'
 import type {StageTimerModalTimeLimit_stage$key} from '../__generated__/StageTimerModalTimeLimit_stage.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import SetStageTimerMutation from '../mutations/SetStageTimerMutation'
 import {MeetingLabels} from '../types/constEnums'
+import {Button} from '../ui/Button/Button'
 import {Select} from '../ui/Select/Select'
 import {SelectContent} from '../ui/Select/SelectContent'
 import {SelectItem} from '../ui/Select/SelectItem'
 import {SelectTrigger} from '../ui/Select/SelectTrigger'
 import {SelectValue} from '../ui/Select/SelectValue'
 import plural from '../utils/plural'
-import SecondaryButton from './SecondaryButton'
 import StyledError from './StyledError'
 
 interface Props {
@@ -27,28 +26,6 @@ interface Props {
 
 const minuteOptions = [...Array(10).keys()].map((n) => n + 1)
 
-const Row = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const SetLimit = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '16px 16px 8px'
-})
-
-const StyledIcon = styled(Timer)({
-  color: 'var(--color-fg-secondary)'
-})
-
-const StyledButton = styled(SecondaryButton)({
-  marginTop: 8,
-  minWidth: 192
-})
-
 const StageTimerModalTimeLimit = (props: Props) => {
   const {closePortal, defaultTimeLimit, meetingId, stage: stageRef} = props
   const stage = useFragment(
@@ -56,11 +33,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
       fragment StageTimerModalTimeLimit_stage on NewMeetingStage {
         suggestedTimeLimit
         scheduledEndTime
+        localScheduledEndTime
       }
     `,
     stageRef
   )
-  const {suggestedTimeLimit, scheduledEndTime} = stage
+  const {suggestedTimeLimit, scheduledEndTime, localScheduledEndTime} = stage
   const initialTimeLimit =
     scheduledEndTime || !suggestedTimeLimit
       ? defaultTimeLimit
@@ -71,9 +49,8 @@ const StageTimerModalTimeLimit = (props: Props) => {
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const startTimer = () => {
     if (submitting) return
-    const spareTime = scheduledEndTime
-      ? Math.max(0, new Date(scheduledEndTime).getTime() - Date.now())
-      : 0
+    const endTime = localScheduledEndTime ?? scheduledEndTime
+    const spareTime = endTime ? Math.max(0, new Date(endTime).getTime() - Date.now()) : 0
     const timeRemaining = minuteTimeLimit * ms('1m') + spareTime
     submitMutation()
     SetStageTimerMutation(
@@ -89,9 +66,9 @@ const StageTimerModalTimeLimit = (props: Props) => {
   }
 
   return (
-    <SetLimit>
-      <Row>
-        <StyledIcon />
+    <div className='flex flex-col items-center px-4 pt-4 pb-2'>
+      <div className='flex w-full items-center'>
+        <Timer className='text-fg-secondary' />
         <Select
           value={String(minuteTimeLimit)}
           onValueChange={(value) => setMinuteTimeLimit(Number(value))}
@@ -107,12 +84,12 @@ const StageTimerModalTimeLimit = (props: Props) => {
             ))}
           </SelectContent>
         </Select>
-      </Row>
-      <StyledButton onClick={startTimer}>
+      </div>
+      <Button variant='outline' size='sm' className='mt-2 min-w-[192px]' onClick={startTimer}>
         {scheduledEndTime ? 'Add Time' : `Start ${MeetingLabels.TIMER}`}
-      </StyledButton>
+      </Button>
       {error && <StyledError>{error.message}</StyledError>}
-    </SetLimit>
+    </div>
   )
 }
 

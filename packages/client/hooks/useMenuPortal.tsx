@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {
   type ReactElement,
   type ReactNode,
@@ -12,17 +11,11 @@ import LoadingComponent from '../components/LoadingComponent/LoadingComponent'
 import Menu from '../components/Menu'
 import MenuContents from '../components/MenuContents'
 import ModalError from '../components/ModalError'
-import {Duration, ZIndex} from '../types/constEnums'
+import {Duration} from '../types/constEnums'
 import MenuBackground from './MenuBackground'
 import type {MenuPosition, UseCoordsValue} from './useCoords'
 import type {LoadingDelayRef} from './useLoadingDelay'
 import {PortalStatus} from './usePortal'
-
-const MenuBlock = styled('div')({
-  // no margins or paddings since they could force it too low & cause a scrollbar to appear
-  position: 'absolute',
-  zIndex: ZIndex.MENU
-})
 
 /**
  * Use a portal to display a menu, you usually want to use {@link useMenu} instead
@@ -55,7 +48,7 @@ const useMenuPortal = (
   }, [portalStatus, setPortalStatus])
   return (reactEl: ReactNode) => {
     return portal(
-      <MenuBlock ref={targetRef} style={{...coords}}>
+      <div ref={targetRef} className='absolute z-menu' style={{...coords}}>
         <MenuBackground
           menuPosition={menuPosition}
           portalStatus={portalStatus}
@@ -89,7 +82,7 @@ const useMenuPortal = (
             </Suspense>
           </MenuContents>
         </ErrorBoundary>
-      </MenuBlock>
+      </div>
     )
   }
 }

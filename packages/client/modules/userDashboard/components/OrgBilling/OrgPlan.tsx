@@ -1,158 +1,38 @@
-import styled from '@emotion/styled'
-import {Info} from '@mui/icons-material'
 import {useState} from 'react'
+import {Info} from '~/ui/icons'
 import type {TierEnum} from '../../../../__generated__/OrganizationSubscription.graphql'
-import BaseButton from '../../../../components/BaseButton'
 import {MenuPosition} from '../../../../hooks/useCoords'
 import useTooltip from '../../../../hooks/useTooltip'
-import {Elevation} from '../../../../styles/elevation'
-import {PALETTE} from '../../../../styles/paletteV3'
-import {Radius} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 import {MONTHLY_PRICE} from '../../../../utils/constants'
 
-const PlanTitle = styled('h6')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 22,
-  fontWeight: 600,
-  lineHeight: '30px',
-  textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  margin: 0,
-  width: '100%',
-  paddingBottom: 8,
-  justifyContent: 'center'
-})
+const TIER_BACKGROUND: Record<TierEnum, string> = {
+  starter: 'bg-starter',
+  team: 'bg-team',
+  enterprise: 'bg-enterprise'
+}
 
-const HeadingBlock = styled('div')({
-  display: 'flex',
-  flexWrap: 'wrap',
-  width: '100%',
-  lineHeight: '30px',
-  paddingBottom: 24
-})
+const TIER_ACTIVE_OUTLINE: Record<TierEnum, string> = {
+  starter: 'outline-grape-500',
+  team: 'outline-aqua-400',
+  enterprise: 'outline-tomato-400'
+}
 
-const PlanSubtitle = styled('span')<{isItalic?: boolean}>(({isItalic}) => ({
-  color: isItalic ? 'var(--color-fg-secondary)' : 'var(--color-fg-primary)',
-  fontSize: 16,
-  width: '100%',
-  lineHeight: '24px',
-  textTransform: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontWeight: 400,
-  fontStyle: isItalic ? 'italic' : 'normal'
-}))
+const TIER_HOVER_OUTLINE: Record<TierEnum, string> = {
+  starter: 'hover:outline-grape-500',
+  team: 'hover:outline-aqua-400',
+  enterprise: 'hover:outline-tomato-500'
+}
 
-const UL = styled('ul')({
-  margin: '0 0 16px 0',
-  height: '100%',
-  padding: 0,
-  width: '80%'
-})
-
-const LI = styled('li')({
-  fontSize: 16,
-  lineHeight: '32px',
-  color: 'var(--color-fg-primary)',
-  textTransform: 'none',
-  fontWeight: 400
-})
-
-const StyledIcon = styled('span')({
-  width: 18,
-  height: 18,
-  color: 'var(--color-fg-secondary)',
-  paddingLeft: 8,
-  display: 'flex',
-  alignItems: 'center',
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
-
-const Plan = styled('div')<{
-  tier: TierEnum
-  isTablet: boolean
-  isActive: boolean
-}>(({tier, isTablet, isActive}) => ({
-  background:
-    tier === 'starter'
-      ? 'var(--color-starter)'
-      : tier === 'team'
-        ? 'var(--color-team)'
-        : 'var(--color-enterprise)',
-  fontSize: 12,
-  fontWeight: 600,
-  lineHeight: '16px',
-  textTransform: 'capitalize',
-  textAlign: 'center',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  alignItems: 'center',
-  marginBottom: isTablet ? 0 : '8px',
-  marginRight: isTablet ? '8px' : 0,
-  padding: '16px 8px',
-  borderRadius: 4,
-  border: '2px solid var(--color-surface-card)',
-  outline: isActive
-    ? tier === 'starter'
-      ? `2px solid ${PALETTE.GRAPE_500}`
-      : tier === 'team'
-        ? `2px solid ${PALETTE.AQUA_400}`
-        : `2px solid ${PALETTE.TOMATO_400}`
-    : '2px solid transparent',
-  transition: 'all ease 0.5s',
-  '&:hover': {
-    outline: `2px solid ${
-      tier === 'starter'
-        ? PALETTE.GRAPE_500
-        : tier === 'team'
-          ? PALETTE.AQUA_400
-          : PALETTE.TOMATO_500
-    }`
-  },
-  '&:last-of-type': {
-    marginBottom: 0,
-    marginRight: 0
-  }
-}))
-
-const CTAButton = styled(BaseButton)<{
-  buttonStyle: 'disabled' | 'primary' | 'secondary'
-}>(({buttonStyle}) => ({
-  width: '80%',
-  boxShadow: buttonStyle === 'primary' ? Elevation.Z8 : Elevation.Z0,
-  opacity: 1,
-  bottom: 0,
-  fontWeight: 600,
-  borderRadius: Radius.BUTTON,
-  background:
-    buttonStyle === 'primary'
-      ? PALETTE.GRADIENT_TOMATO_600_ROSE_500
-      : buttonStyle === 'secondary'
-        ? 'var(--color-surface-card)'
-        : 'transparent',
-  color:
-    buttonStyle === 'primary'
-      ? PALETTE.WHITE
-      : buttonStyle === 'secondary'
-        ? 'var(--color-fg-primary)'
-        : 'var(--color-fg-secondary)',
-  border: buttonStyle === 'primary' ? 'none' : '1px solid var(--color-hairline-strong)',
-  transition: 'all ease 0.5s',
-  ':hover': {
-    opacity: 1,
-    background:
-      buttonStyle === 'primary'
-        ? PALETTE.GRADIENT_TOMATO_700_ROSE_600
-        : buttonStyle === 'secondary'
-          ? 'var(--color-surface-well)'
-          : 'transparent'
-  }
-}))
+const CTA_STYLES = {
+  primary:
+    'border-0 bg-linear-to-r from-tomato-600 to-rose-500 text-white shadow-[0px_5px_5px_-3px_rgba(0,0,0,.2),0px_8px_10px_1px_rgba(0,0,0,.14),0px_3px_14px_2px_rgba(0,0,0,.12)] hover:from-tomato-700 hover:to-rose-600',
+  secondary:
+    'border border-hairline-strong bg-surface-card text-fg-primary shadow-none hover:bg-surface-hover',
+  disabled:
+    'border border-hairline-strong bg-transparent text-fg-secondary shadow-none hover:bg-transparent'
+} as const
 
 type Props = {
   plan: {
@@ -183,7 +63,7 @@ const OrgPlan = (props: Props) => {
     isActive
   } = plan
   const [hasSelectedTeamPlan, setHasSelectedTeamPlan] = useState(false)
-  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLDivElement>(
+  const {tooltipPortal, openTooltip, closeTooltip, originRef} = useTooltip<HTMLSpanElement>(
     MenuPosition.LOWER_CENTER
   )
 
@@ -198,40 +78,66 @@ const OrgPlan = (props: Props) => {
     defaultLabel === 'Select Plan' && hasSelectedTeamPlan ? 'Selected Plan' : defaultLabel
 
   return (
-    <Plan tier={planTier} isTablet={isTablet} isActive={isActive} onClick={handleClickCTA}>
-      <HeadingBlock>
-        <PlanTitle>{planTier}</PlanTitle>
+    <div
+      className={cn(
+        'flex flex-1 flex-col items-center rounded border-2 border-surface-card px-2 py-4 text-center font-semibold text-xs capitalize outline-2 outline-transparent transition-all duration-500 ease-[ease] last-of-type:mr-0 last-of-type:mb-0',
+        TIER_BACKGROUND[planTier],
+        isTablet ? 'mr-2 mb-0' : 'mr-0 mb-2',
+        isActive && TIER_ACTIVE_OUTLINE[planTier],
+        TIER_HOVER_OUTLINE[planTier]
+      )}
+      onClick={handleClickCTA}
+    >
+      <div className='flex w-full flex-wrap pb-6 leading-[30px]'>
+        <h6 className='m-0 flex w-full justify-center pb-2 text-center font-semibold text-[22px] text-fg-primary capitalize leading-[30px]'>
+          {planTier}
+        </h6>
         {planTier === 'team' ? (
           <>
-            <PlanSubtitle>
+            <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>
               {`$${MONTHLY_PRICE} per active user `}
-              <StyledIcon ref={originRef} onMouseOver={openTooltip} onMouseOut={closeTooltip}>
+              <span
+                className='flex h-[18px] w-[18px] items-center pl-2 text-fg-secondary hover:cursor-pointer'
+                ref={originRef}
+                onMouseOver={openTooltip}
+                onMouseOut={closeTooltip}
+              >
                 {<Info />}
-              </StyledIcon>
-            </PlanSubtitle>
-            <PlanSubtitle isItalic>{'paid monthly'}</PlanSubtitle>
+              </span>
+            </span>
+            <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-secondary normal-case italic leading-6'>
+              {'paid monthly'}
+            </span>
             {tooltipPortal('Active users are anyone who uses Parabol within a billing period')}
           </>
         ) : (
-          <PlanSubtitle>{subtitle}</PlanSubtitle>
+          <span className='flex w-full items-center justify-center font-normal text-[16px] text-fg-primary normal-case not-italic leading-6'>
+            {subtitle}
+          </span>
         )}
-      </HeadingBlock>
-      <UL className={'flex flex-col items-center md:items-start'}>
+      </div>
+      <ul className='m-0 mb-4 flex h-full w-4/5 flex-col items-center p-0 md:items-start'>
         {details.map((detail) => (
-          <LI className={'list-none text-center md:list-disc md:text-left'} key={detail}>
+          <li
+            className='list-none text-center font-normal text-[16px] text-fg-primary normal-case leading-8 md:list-disc md:text-left'
+            key={detail}
+          >
             {detail}
-          </LI>
+          </li>
         ))}
-      </UL>
-      <CTAButton
-        buttonStyle={buttonStyle}
+      </ul>
+      <Button
+        className={cn(
+          'h-10 w-4/5 rounded-md font-semibold text-[15px] opacity-100 transition-all duration-500 ease-[ease] hover:opacity-100',
+          CTA_STYLES[buttonStyle]
+        )}
         disabled={buttonStyle === 'disabled'}
         title={buttonTooltip}
-        size='medium'
+        size='md'
       >
         {buttonLabel}
-      </CTAButton>
-    </Plan>
+      </Button>
+    </div>
   )
 }
 

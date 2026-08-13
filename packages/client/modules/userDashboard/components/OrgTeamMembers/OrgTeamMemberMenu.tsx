@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
@@ -19,10 +18,6 @@ interface OrgTeamMemberMenuProps {
   togglePromote: () => void
   toggleRemove: () => void
 }
-
-const StyledLabel = styled(MenuItemLabel)({
-  padding: '4px 16px'
-})
 
 export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
   const {
@@ -53,13 +48,16 @@ export const OrgTeamMemberMenu = (props: OrgTeamMemberMenuProps) => {
     <Menu ariaLabel={'Select your action'} {...menuProps}>
       {isViewerTeamAdmin && (!isSelf || !isViewerLead) && (
         <MenuItem
-          label={<StyledLabel>Promote to Team Lead</StyledLabel>}
+          label={<MenuItemLabel className='px-4 py-1'>Promote to Team Lead</MenuItemLabel>}
           key='promote'
           onClick={togglePromote}
         />
       )}
       {isViewerTeamAdmin && !isSelf && (
-        <MenuItem label={<StyledLabel>Remove from Team</StyledLabel>} onClick={toggleRemove} />
+        <MenuItem
+          label={<MenuItemLabel className='px-4 py-1'>Remove from Team</MenuItemLabel>}
+          onClick={toggleRemove}
+        />
       )}
     </Menu>
   )

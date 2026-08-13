@@ -1,12 +1,20 @@
-import styled from '@emotion/styled'
+import {forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const MenuItemDot = styled('div')<{color: string}>(({color}) => ({
-  backgroundColor: color,
-  borderRadius: 6,
-  display: 'inline-block',
-  height: 6,
-  marginRight: 12,
-  width: 6
-}))
+interface Props {
+  color: string
+  className?: string
+}
+
+const MenuItemDot = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {color, className} = props
+  return (
+    <div
+      ref={ref}
+      className={cn('mr-3 inline-block h-1.5 w-1.5 rounded-[6px]', className)}
+      style={{backgroundColor: color}}
+    />
+  )
+})
 
 export default MenuItemDot

@@ -1,8 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
-import {Breakpoint, ElementHeight, ElementWidth} from '~/types/constEnums'
+import {Breakpoint} from '~/types/constEnums'
 import fromTeamMemberId from '~/utils/relay/fromTeamMemberId'
 import type {
   DashboardAvatars_team$data,
@@ -12,63 +11,10 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useBreakpoint from '../../hooks/useBreakpoint'
 import useMutationProps from '../../hooks/useMutationProps'
 import ToggleTeamDrawerMutation from '../../mutations/ToggleTeamDrawerMutation'
-import {PALETTE} from '../../styles/paletteV3'
+import {cn} from '../../ui/cn'
 import ErrorBoundary from '../ErrorBoundary'
 import PlainButton from '../PlainButton/PlainButton'
 import DashboardAvatar from './DashboardAvatar'
-
-const AvatarsList = styled('div')<{isDesktop: boolean}>(({isDesktop}) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  marginRight: 6,
-  position: 'relative',
-  // AvatarsWrapper left causes avatars to move into left padding on mobile by 4px (-2px for the transparent border)
-  left: isDesktop ? 0 : 2
-}))
-
-const AvatarsWrapper = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  position: 'relative',
-  left: -4 // each avatar is given 20px of width but the final avatar uses 28px
-})
-
-const OverflowWrapper = styled('div')({
-  width: ElementWidth.DASHBOARD_AVATAR_OVERLAPPED
-})
-
-const OverflowCount = styled('div')({
-  alignItems: 'center',
-  border: `2px solid ${PALETTE.SLATE_200}`,
-  backgroundColor: PALETTE.SKY_400,
-  borderRadius: '50%',
-  display: 'flex',
-  height: ElementHeight.DASHBOARD_AVATAR,
-  justifyContent: 'center',
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 600,
-  overflow: 'hidden',
-  userSelect: 'none',
-  width: ElementWidth.DASHBOARD_AVATAR,
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
-
-const StyledButton = styled(PlainButton)({
-  fontSize: 12,
-  height: 16,
-  lineHeight: '16px',
-  fontWeight: 600,
-  color: 'var(--color-fg-primary)',
-  textAlign: 'center',
-  width: '100%',
-  WebkitTapHighlightColor: 'transparent',
-  '&:hover': {
-    cursor: 'pointer'
-  }
-})
 
 interface Props {
   team: DashboardAvatars_team$key
@@ -140,8 +86,15 @@ const DashboardAvatars = (props: Props) => {
   }
 
   return (
-    <AvatarsList isDesktop={isDesktop}>
-      <AvatarsWrapper>
+    <div
+      className={cn(
+        'relative mr-1.5 flex flex-col',
+        // AvatarsWrapper left causes avatars to move into left padding on mobile by 4px (-2px for the transparent border)
+        isDesktop ? 'left-0' : 'left-[2px]'
+      )}
+    >
+      {/* each avatar is given 20px of width but the final avatar uses 28px */}
+      <div className='-left-1 relative flex justify-center'>
         {sortedAvatars.map((teamMember) => {
           return (
             <ErrorBoundary key={`dbAvatar${teamMember.id}`}>
@@ -150,13 +103,18 @@ const DashboardAvatars = (props: Props) => {
           )
         })}
         {overflowCount > 0 && (
-          <OverflowWrapper onClick={() => handleClick(true)}>
-            <OverflowCount>{`+${overflowCount}`}</OverflowCount>
-          </OverflowWrapper>
+          <div className='w-5' onClick={() => handleClick(true)}>
+            <div className='flex h-7 w-7 select-none items-center justify-center overflow-hidden rounded-full border-2 border-surface-well border-solid bg-sky-400 font-semibold text-white text-xs hover:cursor-pointer'>{`+${overflowCount}`}</div>
+          </div>
         )}
-      </AvatarsWrapper>
-      <StyledButton onClick={() => handleClick(false)}>Manage Team</StyledButton>
-    </AvatarsList>
+      </div>
+      <PlainButton
+        className='h-4 w-full text-center font-semibold text-fg-primary text-xs leading-4 [-webkit-tap-highlight-color:transparent] hover:cursor-pointer'
+        onClick={() => handleClick(false)}
+      >
+        Manage Team
+      </PlainButton>
+    </div>
   )
 }
 

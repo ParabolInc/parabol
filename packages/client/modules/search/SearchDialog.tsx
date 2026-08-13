@@ -1,5 +1,5 @@
-import SearchIcon from '@mui/icons-material/Search'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
+import {Search as SearchIcon} from '~/ui/icons'
 import LeftDashNavItem from '../../components/Dashboard/LeftDashNavItem'
 import useHotkey from '../../hooks/useHotkey'
 import {Dialog} from '../../ui/Dialog/Dialog'

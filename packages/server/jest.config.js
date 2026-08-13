@@ -1,5 +1,3 @@
-const tsJestPresets = require('ts-jest/presets')
-
 module.exports = {
   testEnvironment: 'node',
   transform: {
@@ -27,6 +25,9 @@ module.exports = {
     '~/(.*)': ['<rootDir>/../client/$1']
   },
   testRegex: '/__tests__/.*.test\\.ts?$',
+  globals: {
+    __PRODUCTION__: false
+  },
   setupFilesAfterEnv: ['./__tests__/setup.ts'],
   globalSetup: './__tests__/globalSetup.ts',
   globalTeardown: './__tests__/globalTeardown.ts',

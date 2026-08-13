@@ -9,7 +9,7 @@ import {cn} from '../../../ui/cn'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import IconLabel from '../../IconLabel'
 import {ActivityCard, ActivityCardImage} from '../ActivityCard'
-import ActivityDetailsSidebar from '../ActivityDetailsSidebar'
+import ActivityDetailsSidebarSwitch from '../ActivityDetailsSidebarSwitch'
 import {CATEGORY_THEMES, type CategoryID, QUICK_START_CATEGORY_ID} from '../Categories'
 import {TemplateDetails} from './TemplateDetails'
 
@@ -43,9 +43,14 @@ export const query = graphql`
         id
         ...ActivityDetailsSidebar_teams
         ...TeamPickerModal_teams
+        ...TeamHealthDetailsSidebar_teams
       }
       organizations {
         id
+        teams {
+          id
+          ...TeamHealthDetailsSidebar_teams
+        }
       }
 
       ...TemplateDetails_user
@@ -80,6 +85,10 @@ const ActivityDetails = (props: Props) => {
   }, [])
 
   const {category, illustrationUrl, viewerLowestScope, type} = activity
+  const orgTeams = viewer.organizations.flatMap((org) => org.teams)
+  const teamHealthTeams = [...teams, ...orgTeams].filter(
+    (team, index, arr) => arr.findIndex((t) => t.id === team.id) === index
+  )
   const prevCategory = location.state?.prevCategory
   const categoryLink = `/activity-library/category/${
     prevCategory ?? category ?? QUICK_START_CATEGORY_ID
@@ -87,10 +96,19 @@ const ActivityDetails = (props: Props) => {
 
   const isOwner = viewerLowestScope === 'TEAM'
 
+  // below lg the sidebar stacks under the content & the whole page scrolls as one. From lg up the
+  // two panes sit side by side, each owning its own scroll, so a long template (e.g. an expanded
+  // team health question pack) never pushes the layout past the bottom of the viewport
   return (
-    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card'>
-      <div className='flex grow'>
-        <div className='mt-4 w-full grow'>
+    <div className='flex h-full w-full flex-col overflow-auto bg-surface-card lg:overflow-hidden'>
+      <div className='flex grow flex-col lg:min-h-0 lg:flex-row'>
+        <div
+          className={cn(
+            'mt-4 w-full grow lg:min-h-0 lg:overflow-y-auto',
+            // keep the last rows clear of the fixed "Done Editing" bar
+            isEditing && 'pb-24'
+          )}
+        >
           <div className='mb-14 ml-4 flex h-min w-max items-center max-md:mb-6'>
             <div className='mr-4'>
               <Link to={categoryLink}>
@@ -129,22 +147,21 @@ const ActivityDetails = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className='hidden w-[385px] shrink-0 lg:flex lg:flex-col'>
-          <ActivityDetailsSidebar
+        <div
+          className={cn(
+            'w-full shrink-0 lg:flex lg:w-[385px] lg:flex-col',
+            isEditing && 'hidden lg:flex'
+          )}
+        >
+          <ActivityDetailsSidebarSwitch
+            type={type}
+            templateId={activity.id}
             selectedTemplateRef={activity}
             teamsRef={teams}
-            type={activity.type}
+            teamHealthTeamsRef={teamHealthTeams}
             preferredTeamId={preferredTeamId}
           />
         </div>
-      </div>
-      <div className={cn('lg:hidden', isEditing && 'hidden')}>
-        <ActivityDetailsSidebar
-          selectedTemplateRef={activity}
-          teamsRef={teams}
-          type={activity.type}
-          preferredTeamId={preferredTeamId}
-        />
       </div>
     </div>
   )

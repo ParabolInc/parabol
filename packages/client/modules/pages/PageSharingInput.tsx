@@ -1,5 +1,5 @@
-import SendIcon from '@mui/icons-material/Send'
 import {useState} from 'react'
+import {Send as SendIcon} from '~/ui/icons'
 import {PageRoleEnum} from '../../__generated__/useRequestPageAccessMutation.graphql'
 import TeamAvatar from '../../components/TeamAvatar/TeamAvatar'
 import useAtmosphere from '../../hooks/useAtmosphere'

@@ -1,13 +1,15 @@
-import DeleteIcon from '@mui/icons-material/Delete'
-import DescriptionIcon from '@mui/icons-material/Description'
-import FileOpenIcon from '@mui/icons-material/FileOpen'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import NorthEastIcon from '@mui/icons-material/NorthEast'
-import StorageIcon from '@mui/icons-material/Storage'
 import {NodeSelection} from '@tiptap/pm/state'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useClientQuery} from 'react-relay'
 import {Link} from 'react-router'
+import {
+  Delete as DeleteIcon,
+  Description as DescriptionIcon,
+  FileOpen as FileOpenIcon,
+  MoreVert as MoreVertIcon,
+  NorthEast as NorthEastIcon,
+  Storage as StorageIcon
+} from '~/ui/icons'
 import pageDropTargetQuery, {
   type PageDropTargetQuery
 } from '../../../__generated__/PageDropTargetQuery.graphql'
@@ -129,10 +131,14 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
               <div className='flex items-center pr-1'>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MoreVertIcon
-                      className='size-5 opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
+                    <button
+                      type='button'
+                      aria-label={'More page actions'}
+                      className='flex size-5 cursor-pointer items-center justify-center opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
                       onMouseDown={focusLink}
-                    />
+                    >
+                      <MoreVertIcon className='size-5' />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
                 </Tooltip>

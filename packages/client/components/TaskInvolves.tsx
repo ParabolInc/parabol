@@ -1,10 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import NotificationAction from '~/components/NotificationAction'
 import OutcomeCardStatusIndicator from '~/modules/outcomeCard/components/OutcomeCardStatusIndicator/OutcomeCardStatusIndicator'
-import {cardShadow} from '~/styles/elevation'
 import type {TaskInvolves_notification$key} from '../__generated__/TaskInvolves_notification.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
@@ -19,39 +17,6 @@ const involvementWord = {
   [ASSIGNEE]: 'assigned',
   [MENTIONEE]: 'mentioned'
 }
-
-const TaskListView = styled('div')({
-  alignSelf: 'center',
-  backgroundColor: 'var(--color-surface-card)',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  fontSize: 14,
-  lineHeight: '20px',
-  margin: '4px 0 0',
-  padding: 8,
-  width: 240
-})
-
-const IndicatorsBlock = styled('div')({
-  display: 'flex',
-  margin: '0 0 8px'
-})
-
-const Owner = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  paddingTop: 8
-})
-const OwnerName = styled('div')({
-  fontSize: 12,
-  paddingLeft: 8
-})
-const OwnerAvatar = styled('img')({
-  borderRadius: '100%',
-  display: 'block',
-  height: 24,
-  width: 24
-})
 
 interface Props {
   notification: TaskInvolves_notification$key
@@ -131,18 +96,22 @@ const TaskInvolves = (props: Props) => {
       notification={notification}
       action={task ? <NotificationAction onClick={gotoBoard} label={'See the task'} /> : undefined}
     >
-      <TaskListView>
-        <IndicatorsBlock>
+      <div className='mt-1 w-60 self-center rounded bg-surface-card p-2 text-sm shadow-[var(--shadow-card)]'>
+        <div className='mb-2 flex'>
           <OutcomeCardStatusIndicator status={status} />
           {tags.includes('private') && <OutcomeCardStatusIndicator status='private' />}
           {tags.includes('archived') && <OutcomeCardStatusIndicator status='archived' />}
-        </IndicatorsBlock>
+        </div>
         <TipTapEditor editor={editor} />
-        <Owner>
-          <OwnerAvatar alt='Avatar' src={user?.picture || changeAuthorPicture} />
-          <OwnerName>{user?.preferredName || changeAuthorName}</OwnerName>
-        </Owner>
-      </TaskListView>
+        <div className='flex items-center pt-2'>
+          <img
+            alt='Avatar'
+            src={user?.picture || changeAuthorPicture}
+            className='block h-6 w-6 rounded-full'
+          />
+          <div className='pl-2 text-[12px]'>{user?.preferredName || changeAuthorName}</div>
+        </div>
+      </div>
     </NotificationTemplate>
   )
 }

@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type useGotoStageId from '~/hooks/useGotoStageId'
@@ -19,20 +18,6 @@ import PokerEstimateHeaderCard from './PokerEstimateHeaderCard'
 import type {PokerMeetingPhaseProps} from './PokerMeeting'
 import ResponsiveDashSidebar from './ResponsiveDashSidebar'
 import StageTimerDisplay from './StageTimerDisplay'
-
-const StoryAndEstimateWrapper = styled('div')({
-  display: 'flex',
-  flex: 1,
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  flexDirection: 'column'
-})
-
-const EstimateAreaWrapper = styled('div')({
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column'
-})
 
 interface Props extends PokerMeetingPhaseProps {
   gotoStageId: ReturnType<typeof useGotoStageId>
@@ -98,15 +83,15 @@ const PokerEstimatePhase = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.ESTIMATE}</PhaseHeaderTitle>
           <PhaseHeaderDescription>{'Estimate each story as a team'}</PhaseHeaderDescription>
         </MeetingTopBar>
-        <StoryAndEstimateWrapper>
+        <div className='flex flex-1 flex-col overflow-y-auto overflow-x-hidden'>
           <ErrorBoundary>
             <PokerEstimateHeaderCard stage={localStage} />
           </ErrorBoundary>
           <StageTimerDisplay meeting={meeting} />
-          <EstimateAreaWrapper>
+          <div className='flex flex-1 flex-col'>
             <EstimatePhaseArea gotoStageId={gotoStageId} meeting={meeting} />
-          </EstimateAreaWrapper>
-        </StoryAndEstimateWrapper>
+          </div>
+        </div>
       </MeetingHeaderAndPhase>
       <ResponsiveDashSidebar
         isOpen={rightDrawerOpen != null}

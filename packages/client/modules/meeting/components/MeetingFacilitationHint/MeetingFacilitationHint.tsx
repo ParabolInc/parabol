@@ -1,14 +1,5 @@
-import styled from '@emotion/styled'
 import type {ReactNode} from 'react'
 import Ellipsis from '../../../../components/Ellipsis/Ellipsis'
-
-const Hint = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  display: 'inline-block',
-  fontSize: 13,
-  lineHeight: '20px',
-  textAlign: 'center'
-})
 
 interface Props {
   children: ReactNode
@@ -17,12 +8,12 @@ interface Props {
 const MeetingFacilitationHint = (props: Props) => {
   const {children} = props
   return (
-    <Hint>
+    <div className='inline-block text-center text-[13px] text-fg-secondary leading-5'>
       {'('}
       {children}
       <Ellipsis />
       {')'}
-    </Hint>
+    </div>
   )
 }
 

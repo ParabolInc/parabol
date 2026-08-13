@@ -1,7 +1,7 @@
-import {Loop} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {Loop} from '~/ui/icons'
 import type {
   ExportAllTasks_meeting$key,
   TaskServiceEnum

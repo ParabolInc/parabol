@@ -1,6 +1,8 @@
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
+import {
+  CheckBox as CheckBoxIcon,
+  IndeterminateCheckBox as IndeterminateCheckBoxIcon
+} from '~/ui/icons'
 import {cn} from '../cn'
 import {forwardRadix} from '../forwardRadix'
 
@@ -17,7 +19,7 @@ export const Checkbox = forwardRadix<typeof CheckboxPrimitive.Root>(
         checked={checked}
         {...props}
       >
-        <CheckboxPrimitive.Indicator asChild>
+        <CheckboxPrimitive.Indicator className='flex'>
           <MultiIcon className='w-5 fill-accent group-disabled:fill-fg-muted' />
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>

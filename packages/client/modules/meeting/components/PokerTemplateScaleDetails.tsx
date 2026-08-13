@@ -1,83 +1,15 @@
-import styled from '@emotion/styled'
-import {ArrowBack} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {ArrowBack} from '~/ui/icons'
 import type {PokerTemplateScaleDetails_team$key} from '../../../__generated__/PokerTemplateScaleDetails_team.graphql'
-import FlatButton from '../../../components/FlatButton'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-import textOverflow from '../../../styles/helpers/textOverflow'
-import {FONT_FAMILY} from '../../../styles/typographyV2'
+import {Button} from '../../../ui/Button/Button'
 import EditableTemplateScaleName from './EditableTemplateScaleName'
 import scaleValueString from './scaleValueString'
 import TemplateScaleValueList from './TemplateScaleValueList'
 
-const ScaleHeader = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  margin: '16px 0',
-  paddingLeft: 56,
-  paddingRight: 16,
-  width: '100%'
-})
-
-const IconButton = styled(FlatButton)({
-  alignItems: 'center',
-  color: 'var(--color-fg-secondary)',
-  height: 32,
-  justifyContent: 'center',
-  padding: 0,
-  width: 32,
-  ':hover, :focus, :active': {
-    color: 'var(--color-fg-primary)'
-  }
-})
-
-const BackIcon = styled(ArrowBack)({
-  color: 'inherit'
-})
-
-const ScaleDetailHeader = styled('div')({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  padding: 12
-})
-
-const ScaleValueEditor = styled('div')({
-  alignItems: 'flex-start',
-  background: 'var(--color-surface-card)',
-  borderRadius: 8,
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'hidden',
-  maxWidth: 520,
-  paddingBottom: '4px',
-  width: '100%'
-})
-
-const ScaleNameAndValues = styled('div')({
-  alignItems: 'flex-start',
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const ScaleDetailsTitle = styled('div')({
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: '32px',
-  paddingLeft: 12,
-  userSelect: 'none'
-})
-
-const ScaleValues = styled('div')({
-  ...textOverflow,
-  color: 'var(--color-fg-secondary)',
-  fontFamily: FONT_FAMILY.SANS_SERIF,
-  fontSize: 12,
-  lineHeight: '16px',
-  paddingTop: '4px'
-})
+const scaleValuesClassName =
+  'overflow-hidden text-ellipsis whitespace-nowrap pt-1 font-sans text-fg-secondary text-xs leading-4'
 
 interface Props {
   team: PokerTemplateScaleDetails_team$key
@@ -118,27 +50,35 @@ const PokerTemplateScaleDetails = (props: Props) => {
   const isOwner = scale.teamId === teamId
 
   return (
-    <ScaleValueEditor>
-      <ScaleDetailHeader>
-        <IconButton aria-label='Back to Template' onClick={gotoTemplateDetail}>
-          <BackIcon />
-        </IconButton>
-        <ScaleDetailsTitle>{'Edit Scale'}</ScaleDetailsTitle>
-      </ScaleDetailHeader>
-      <ScaleHeader>
-        <ScaleNameAndValues>
+    <div className='flex w-full max-w-[520px] flex-col items-start overflow-hidden rounded-lg bg-surface-card pb-1'>
+      <div className='flex flex-row items-start p-3'>
+        <Button
+          variant='flat'
+          size='sm'
+          aria-label='Back to Template'
+          onClick={gotoTemplateDetail}
+          className='h-8 w-8 items-center justify-center p-0 text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary'
+        >
+          <ArrowBack className='text-inherit' />
+        </Button>
+        <div className='select-none pl-3 font-sans font-semibold text-[16px] leading-8'>
+          {'Edit Scale'}
+        </div>
+      </div>
+      <div className='my-4 flex w-full flex-col pr-4 pl-14'>
+        <div className='flex flex-col items-start'>
           <EditableTemplateScaleName
             name={scale.name}
             scaleId={scale.id}
             scales={scales}
             isOwner={isOwner}
           />
-          <ScaleValues>{scaleValueString(values)}</ScaleValues>
-          <ScaleValues>{'Note: all scales include ? and Pass cards'}</ScaleValues>
-        </ScaleNameAndValues>
-      </ScaleHeader>
+          <div className={scaleValuesClassName}>{scaleValueString(values)}</div>
+          <div className={scaleValuesClassName}>{'Note: all scales include ? and Pass cards'}</div>
+        </div>
+      </div>
       <TemplateScaleValueList scale={scale} isOwner={isOwner} />
-    </ScaleValueEditor>
+    </div>
   )
 }
 

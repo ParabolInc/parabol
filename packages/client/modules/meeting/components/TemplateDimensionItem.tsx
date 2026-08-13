@@ -1,6 +1,4 @@
-import styled from '@emotion/styled'
 import type {DraggableProvided} from '@hello-pangea/dnd'
-import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
@@ -8,7 +6,9 @@ import type {TemplateDimensionItem_dimensions$key} from '~/__generated__/Templat
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import RemovePokerTemplateDimensionMutation from '~/mutations/RemovePokerTemplateDimensionMutation'
+import {Cancel as CancelIcon} from '~/ui/icons'
 import type {TemplateDimensionItem_dimension$key} from '../../../__generated__/TemplateDimensionItem_dimension.graphql'
+import {cn} from '../../../ui/cn'
 import EditableTemplateDimension from './EditableTemplateDimension'
 import PokerTemplateScalePicker from './PokerTemplateScalePicker'
 
@@ -20,49 +20,6 @@ interface Props {
   dragProvided: DraggableProvided
   readOnly?: boolean
 }
-
-interface StyledProps {
-  isDragging?: boolean
-  isHover?: boolean
-  enabled?: boolean
-}
-
-const DimensionItem = styled('div')<StyledProps & {isOwner: boolean}>(
-  ({isOwner, isHover, isDragging}) => ({
-    alignItems: 'center',
-    backgroundColor: isOwner && (isHover || isDragging) ? 'var(--color-surface-raised)' : undefined,
-    cursor: isOwner ? 'pointer' : undefined,
-    display: 'flex',
-    fontSize: 14,
-    lineHeight: '24px',
-    padding: '8px 16px 8px 22px',
-    width: '100%'
-  })
-)
-
-const RemoveDimensionIcon = styled('div')<StyledProps>(({isHover, enabled}) => ({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  marginLeft: 'auto',
-  padding: 0,
-  opacity: isHover ? 1 : 0,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  visibility: enabled ? 'visible' : 'hidden',
-  width: 24
-}))
-
-const DimensionAndDescription = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
 
 const TemplateDimensionItem = (props: Props) => {
   const {
@@ -98,6 +55,7 @@ const TemplateDimensionItem = (props: Props) => {
   const {submitting, submitMutation, onError, onCompleted} = useMutationProps()
   const atmosphere = useAtmosphere()
   const canRemove = dimensions.length > 1 && isOwner && !readOnly
+  const isItemOwner = isOwner && !readOnly
   const onMouseEnter = () => {
     setIsHover(true)
   }
@@ -115,31 +73,40 @@ const TemplateDimensionItem = (props: Props) => {
   }
 
   return (
-    <DimensionItem
+    <div
       ref={dragProvided.innerRef}
       {...dragProvided.dragHandleProps}
       {...dragProvided.draggableProps}
-      isDragging={isDragging}
-      isHover={isHover}
-      isOwner={isOwner && !readOnly}
+      className={cn(
+        'flex w-full items-center py-2 pr-4 pl-[22px] text-[14px] leading-6',
+        isItemOwner && 'cursor-pointer',
+        isItemOwner && (isHover || isDragging) && 'bg-surface-raised'
+      )}
       onMouseOver={onMouseEnter}
       onMouseOut={onMouseLeave}
     >
-      <RemoveDimensionIcon isHover={isHover} onClick={removeDimension} enabled={canRemove}>
+      <div
+        className={cn(
+          'ml-auto flex h-6 w-6 cursor-pointer items-center justify-center p-0 text-fg-secondary [&_svg]:text-[18px]',
+          isHover ? 'opacity-100' : 'opacity-0',
+          canRemove ? 'visible' : 'invisible'
+        )}
+        onClick={removeDimension}
+      >
         <CancelIcon />
-      </RemoveDimensionIcon>
-      <DimensionAndDescription>
+      </div>
+      <div className='flex w-full flex-col pl-4'>
         <EditableTemplateDimension
-          isOwner={isOwner && !readOnly}
+          isOwner={isItemOwner}
           isEditingDescription={isEditingDescription}
           isHover={isHover}
           dimensionName={dimensionName}
           dimensionId={dimensionId}
           dimensions={dimensions}
         />
-      </DimensionAndDescription>
+      </div>
       <PokerTemplateScalePicker dimension={dimension} isOwner={isOwner} readOnly={readOnly} />
-    </DimensionItem>
+    </div>
   )
 }
 export default TemplateDimensionItem

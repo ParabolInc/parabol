@@ -1,8 +1,8 @@
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActivityDetailsCategoryBadge_template$key} from '~/__generated__/ActivityDetailsCategoryBadge_template.graphql'
+import {KeyboardArrowDown as KeyboardArrowDownIcon} from '~/ui/icons'
 import useTemplateCategoryMutation from '../../../mutations/UpdateTemplateCategoryMutation'
 import {cn} from '../../../ui/cn'
 import PlainButton from '../../PlainButton/PlainButton'
@@ -47,7 +47,7 @@ const ActivityDetailsCategoryBadge = (props: Props) => {
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          className='rounded-sm bg-surface-card shadow-lg data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
+          className='rounded-sm bg-surface-card shadow-[var(--shadow-card-raised)] data-[side="bottom"]:animate-slide-down data-[side="top"]:animate-slide-up'
           sideOffset={5}
         >
           <DropdownMenu.RadioGroup value={category} onValueChange={updateTemplateCategory}>

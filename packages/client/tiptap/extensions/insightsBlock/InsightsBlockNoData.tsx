@@ -1,5 +1,5 @@
-import AutoModeIcon from '@mui/icons-material/AutoMode'
 import type {NodeViewProps} from '@tiptap/core'
+import {AutoMode as AutoModeIcon} from '~/ui/icons'
 export const InsightsBlockNoData = (props: NodeViewProps) => {
   const {updateAttributes} = props
   return (

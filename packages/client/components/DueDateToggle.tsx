@@ -1,103 +1,17 @@
-import styled from '@emotion/styled'
-import {AccessTime} from '@mui/icons-material'
 import * as RadixPopover from '@radix-ui/react-popover'
 import graphql from 'babel-plugin-relay/macro'
 import ms from 'ms'
 import {Suspense, useState} from 'react'
 import {useFragment} from 'react-relay'
 import useTooltip from '~/hooks/useTooltip'
+import {AccessTime} from '~/ui/icons'
 import type {DueDateToggle_task$key} from '../__generated__/DueDateToggle_task.graphql'
 import {MenuPosition} from '../hooks/useCoords'
 import type {UseTaskChild} from '../hooks/useTaskChildFocus'
-import {PALETTE} from '../styles/paletteV3'
-import {Radius} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import lazyPreload from '../utils/lazyPreload'
 import {shortMonths} from '../utils/makeDateString'
 import CardButton from './CardButton'
-
-interface StyleProps {
-  cardIsActive: boolean
-  dueDate: boolean
-  isDueSoon?: boolean
-  isPastDue?: boolean
-}
-
-const DUE_DATE_BG = 'var(--color-surface-well)'
-const DUE_DATE_BG_HOVER = 'var(--color-surface-raised)'
-const DUE_DATE_COLOR = 'var(--color-fg-secondary)'
-const DUE_DATE_COLOR_HOVER = 'var(--color-fg-primary)'
-
-const DUE_DATE_PAST_BG = PALETTE.TOMATO_100
-const DUE_DATE_PAST_BG_HOVER = PALETTE.TOMATO_200
-const DUE_DATE_PAST_COLOR = PALETTE.TOMATO_500
-const DUE_DATE_PAST_COLOR_HOVER = PALETTE.TOMATO_700
-
-const DUE_DATE_SOON_BG = PALETTE.GOLD_100
-const DUE_DATE_SOON_BG_HOVER = PALETTE.GOLD_200
-const DUE_DATE_SOON_COLOR = PALETTE.GOLD_500
-const DUE_DATE_SOON_COLOR_HOVER = PALETTE.TERRA_500
-
-const Toggle = styled(CardButton)<StyleProps>(
-  {
-    alignItems: 'center',
-    borderRadius: Radius.BUTTON,
-    display: 'flex',
-    justifyContent: 'center',
-    opacity: 0
-  },
-  ({cardIsActive}) => ({
-    opacity: cardIsActive ? 0.5 : 0,
-    ':hover, :focus': {
-      backgroundColor: DUE_DATE_BG,
-      opacity: cardIsActive ? 1 : 0
-    }
-  }),
-  ({dueDate}) =>
-    dueDate && {
-      backgroundColor: DUE_DATE_BG,
-      color: DUE_DATE_COLOR,
-      fontSize: 'inherit',
-      height: 24,
-      lineHeight: '1em',
-      opacity: 1,
-      padding: '0 4px 0 1px',
-      ':hover,:focus': {
-        backgroundColor: DUE_DATE_BG_HOVER,
-        color: DUE_DATE_COLOR_HOVER,
-        opacity: 1
-      }
-    },
-  ({isDueSoon}) =>
-    isDueSoon && {
-      backgroundColor: DUE_DATE_SOON_BG,
-      color: DUE_DATE_SOON_COLOR,
-      ':hover,:focus': {
-        backgroundColor: DUE_DATE_SOON_BG_HOVER,
-        color: DUE_DATE_SOON_COLOR_HOVER
-      }
-    },
-  ({isPastDue}) =>
-    isPastDue && {
-      backgroundColor: DUE_DATE_PAST_BG,
-      color: DUE_DATE_PAST_COLOR,
-      ':hover,:focus': {
-        backgroundColor: DUE_DATE_PAST_BG_HOVER,
-        color: DUE_DATE_PAST_COLOR_HOVER
-      }
-    }
-)
-
-const DueDateIcon = styled('div')({
-  svg: {
-    fontSize: 18
-  },
-  height: 18,
-  width: 18
-})
-
-const DateString = styled('span')({
-  marginLeft: 2
-})
 
 interface Props {
   cardIsActive: boolean
@@ -154,28 +68,39 @@ const DueDateToggle = (props: Props) => {
     originRef: tipRef
   } = useTooltip<HTMLDivElement>(MenuPosition.UPPER_CENTER)
   const {title, isPastDue, isDueSoon} = getDateInfo(dueDate)
+  const toggleIsActive = !dueDate && cardIsActive
   if (isArchived) return null
   return (
     <RadixPopover.Root open={open} onOpenChange={setOpen}>
       <RadixPopover.Trigger asChild>
-        <Toggle
-          cardIsActive={!dueDate && cardIsActive}
+        <CardButton
+          className={cn(
+            'flex items-center justify-center rounded-md',
+            toggleIsActive
+              ? 'opacity-50 hover:opacity-100 focus:opacity-100'
+              : 'opacity-0 hover:opacity-0 focus:opacity-0',
+            'hover:bg-surface-hover focus:bg-surface-hover',
+            dueDate &&
+              'h-6 bg-surface-well pr-1 pl-px text-[length:inherit] text-fg-secondary leading-[1em] opacity-100 hover:bg-surface-raised hover:text-fg-primary hover:opacity-100 focus:bg-surface-raised focus:text-fg-primary focus:opacity-100',
+            isDueSoon &&
+              'bg-gold-100 text-gold-500 hover:bg-gold-200 hover:text-terra-500 focus:bg-gold-200 focus:text-terra-500',
+            isPastDue &&
+              'bg-tomato-100 text-tomato-500 hover:bg-tomato-200 hover:text-tomato-700 focus:bg-tomato-200 focus:text-tomato-700'
+          )}
           tabIndex={0}
-          dueDate={!!dueDate}
-          isPastDue={isPastDue}
-          isDueSoon={isDueSoon}
           onMouseEnter={DueDatePicker.preload}
         >
-          <DueDateIcon
+          <div
+            className='h-[18px] w-[18px] [&_svg]:text-[18px]'
             onClick={closeTooltip}
             onMouseEnter={openTooltip}
             onMouseLeave={closeTooltip}
             ref={tipRef}
           >
             <AccessTime />
-          </DueDateIcon>
-          {dueDate && <DateString>{formatDueDate(dueDate)}</DateString>}
-        </Toggle>
+          </div>
+          {dueDate && <span className='ml-0.5'>{formatDueDate(dueDate)}</span>}
+        </CardButton>
       </RadixPopover.Trigger>
       {tooltipPortal(<div>{title}</div>)}
       <RadixPopover.Portal>
@@ -183,7 +108,7 @@ const DueDateToggle = (props: Props) => {
           align='end'
           sideOffset={4}
           collisionPadding={8}
-          className='z-10 rounded-lg border border-hairline bg-surface-raised shadow-2xl'
+          className='z-10 rounded-lg bg-surface-card shadow-[var(--shadow-card-raised)]'
         >
           <Suspense fallback={<div className='h-90 w-78' />}>
             <DueDatePicker

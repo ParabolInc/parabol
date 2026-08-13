@@ -1,7 +1,7 @@
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect, useState} from 'react'
 import {useLazyLoadQuery} from 'react-relay'
+import {SwapHoriz as SwapHorizIcon} from '~/ui/icons'
 import type {MeetingOptionsQuery} from '../__generated__/MeetingOptionsQuery.graphql'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'

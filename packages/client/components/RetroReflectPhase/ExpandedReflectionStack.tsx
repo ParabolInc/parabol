@@ -1,57 +1,10 @@
-import styled from '@emotion/styled'
 import type * as React from 'react'
 import {type ReactNode, type Ref, type RefObject, useEffect, useMemo} from 'react'
-import type {BBox} from '../../types/animations'
-import {DragAttribute, ElementWidth, ZIndex} from '../../types/constEnums'
+import {DragAttribute} from '../../types/constEnums'
 import type {RefCallbackInstance} from '../../types/generics'
 import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import ExpandedReflection from './ExpandedReflection'
 import getBBox from './getBBox'
-
-const PortalBlock = styled('div')({
-  height: '100%',
-  left: 0,
-  position: 'absolute',
-  top: 0,
-  width: '100%',
-  zIndex: ZIndex.DIALOG
-})
-
-const Scrim = styled('div')({
-  position: 'fixed',
-  height: '100%',
-  width: '100%'
-})
-
-const PhaseArea = styled('div')<{phaseBBox: BBox}>(({phaseBBox}) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  position: 'absolute',
-  zIndex: ZIndex.DIALOG,
-  // use phaseBBox to center in the phase, not the screen (ignores left nav & fac nav bar)
-  top: phaseBBox.top,
-  left: phaseBBox.left,
-  width: phaseBBox.width,
-  height: phaseBBox.height
-}))
-
-const ModalArea = styled('div')({
-  borderRadius: 4,
-  display: 'flex',
-  flexDirection: 'column',
-  maxHeight: 'calc(100vh - 32px)',
-  position: 'relative'
-})
-
-const ScrollBlock = styled('div')({
-  width: 'min-content',
-  display: 'flex',
-  flexWrap: 'wrap',
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  padding: ElementWidth.REFLECTION_CARD_PADDING
-})
 
 interface Props {
   closePortal: () => void
@@ -104,12 +57,28 @@ const ExpandedReflectionStack = (props: Props) => {
     if (e.target === e.currentTarget) closePortal()
   }
   return (
-    <PortalBlock>
-      <PhaseArea phaseBBox={phaseBBox!}>
-        <Scrim onClick={closePortal} />
-        <ModalArea {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}>
+    <div className='absolute top-0 left-0 z-dialog h-full w-full'>
+      {/* use phaseBBox to center in the phase, not the screen (ignores left nav & fac nav bar) */}
+      <div
+        className='absolute z-dialog flex items-center justify-center'
+        style={{
+          top: phaseBBox.top,
+          left: phaseBBox.left,
+          width: phaseBBox.width,
+          height: phaseBBox.height
+        }}
+      >
+        <div className='fixed h-full w-full' onClick={closePortal} />
+        <div
+          className='relative flex max-h-[calc(100vh-32px)] flex-col rounded'
+          {...(isBehindSpotlight ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
+        >
           {header}
-          <ScrollBlock ref={scrollRef} onClick={closeOnEdge}>
+          <div
+            className='flex w-min flex-wrap overflow-y-auto overflow-x-hidden p-1.5'
+            ref={scrollRef}
+            onClick={closeOnEdge}
+          >
             {reflections.map((reflection, idx) => {
               return (
                 <ExpandedReflection
@@ -123,12 +92,12 @@ const ExpandedReflectionStack = (props: Props) => {
                 />
               )
             })}
-          </ScrollBlock>
+          </div>
           {/* z-[-1] keeps the scrollbar visible */}
           <div ref={bgRef} className='absolute z-[-1] h-full w-full rounded bg-slate-700/80' />
-        </ModalArea>
-      </PhaseArea>
-    </PortalBlock>
+        </div>
+      </div>
+    </div>
   )
 }
 

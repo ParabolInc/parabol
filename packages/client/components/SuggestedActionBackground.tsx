@@ -1,5 +1,4 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import type {CSSProperties} from 'react'
 import patternTile from '../styles/theme/images/icon-pattern-tile.svg'
 import {DashTimeline} from '../types/constEnums'
 import getRotatedBBox from '../utils/getRotatedBBox'
@@ -14,31 +13,12 @@ const {width, height, xOffset, yOffset} = getRotatedBBox(
   BACKGROUND_HEIGHT
 )
 
-const FullBackground = styled('div')({
-  backgroundImage: `url(${patternTile})`,
-  backgroundRepeat: 'repeat',
+// needs rotate3d to not look blurry
+const BBOX_STYLE: CSSProperties = {
   height,
-  opacity: 0.35,
-  // needs rotate3d to not look blurry
-  transform: `translate3d(${-xOffset}px,${yOffset}px,0)rotate3d(0,0,1,-${ROTATION}deg)`,
-  transformOrigin: '0 0',
   width,
-  position: 'absolute'
-})
-
-const ColorBackground = styled(FullBackground)<{backgroundColor: string}>(({backgroundColor}) => ({
-  backgroundImage: 'none',
-  backgroundColor,
-  opacity: 0.5
-}))
-
-const BackgroundClip = styled('div')({
-  backgroundColor: PALETTE.WHITE,
-  height: BACKGROUND_HEIGHT,
-  overflow: 'hidden',
-  position: 'relative',
-  width: '100%'
-})
+  transform: `translate3d(${-xOffset}px,${yOffset}px,0)rotate3d(0,0,1,-${ROTATION}deg)`
+}
 
 interface Props {
   backgroundColor: string
@@ -47,10 +27,16 @@ interface Props {
 const SuggestedActionBackground = (props: Props) => {
   const {backgroundColor} = props
   return (
-    <BackgroundClip>
-      <ColorBackground backgroundColor={backgroundColor} />
-      <FullBackground />
-    </BackgroundClip>
+    <div className='relative h-[142px] w-full overflow-hidden bg-surface-card'>
+      <div
+        className='absolute origin-top-left opacity-50'
+        style={{...BBOX_STYLE, backgroundColor}}
+      />
+      <div
+        className='absolute origin-top-left bg-repeat opacity-35'
+        style={{...BBOX_STYLE, backgroundImage: `url(${patternTile})`}}
+      />
+    </div>
   )
 }
 

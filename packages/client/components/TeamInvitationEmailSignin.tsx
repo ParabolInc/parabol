@@ -1,9 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {TeamInvitationEmailSignin_verifiedInvitation$key} from '../__generated__/TeamInvitationEmailSignin_verifiedInvitation.graphql'
 import useDocumentTitle from '../hooks/useDocumentTitle'
-import {AUTH_DIALOG_WIDTH} from './AuthenticationDialog'
 import DialogContent from './DialogContent'
 import DialogTitle from './DialogTitle'
 import EmailPasswordAuthForm from './EmailPasswordAuthForm'
@@ -16,15 +14,6 @@ interface Props {
   invitationToken: string
   verifiedInvitation: TeamInvitationEmailSignin_verifiedInvitation$key
 }
-
-const StyledDialog = styled(InviteDialog)({
-  maxWidth: AUTH_DIALOG_WIDTH
-})
-
-const TeamName = styled('span')({
-  fontWeight: 600,
-  whiteSpace: 'nowrap'
-})
 
 const TeamInvitationEmailSignin = (props: Props) => {
   const {invitationToken, verifiedInvitation: verifiedInvitationRef} = props
@@ -49,13 +38,13 @@ const TeamInvitationEmailSignin = (props: Props) => {
   const {preferredName} = user
   const {email} = teamInvitation
   return (
-    <StyledDialog>
+    <InviteDialog className='max-w-[356px]'>
       <DialogTitle>Welcome back, {preferredName}!</DialogTitle>
       <DialogContent>
         <InvitationDialogCopy>
           Enter your password
           {meetingName ? ` to join ${meetingName} for: ` : ' for immediate access to your team: '}
-          <TeamName>{teamName}</TeamName>
+          <span className='whitespace-nowrap font-semibold'>{teamName}</span>
         </InvitationDialogCopy>
         <InvitationCenteredCopy>
           <EmailPasswordAuthForm
@@ -67,7 +56,7 @@ const TeamInvitationEmailSignin = (props: Props) => {
           <ForgotPasswordOneClick email={email} />
         </InvitationCenteredCopy>
       </DialogContent>
-    </StyledDialog>
+    </InviteDialog>
   )
 }
 

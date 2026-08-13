@@ -1,5 +1,5 @@
-import {Link, Title} from '@mui/icons-material'
 import {useCallback, useMemo, useState} from 'react'
+import {Link, Title} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 import linkify from '../../utils/linkify'
 

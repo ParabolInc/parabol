@@ -1,17 +1,19 @@
-import AddIcon from '@mui/icons-material/Add'
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import CreditScoreIcon from '@mui/icons-material/CreditScore'
-import ForumIcon from '@mui/icons-material/Forum'
-import GroupIcon from '@mui/icons-material/Group'
-import GroupsIcon from '@mui/icons-material/Groups'
-import KeyIcon from '@mui/icons-material/Key'
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck'
-import TimelineIcon from '@mui/icons-material/Timeline'
-import WorkIcon from '@mui/icons-material/Work'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useMatch} from 'react-router'
+import {
+  Add as AddIcon,
+  AppRegistration as AppRegistrationIcon,
+  ArrowBack as ArrowBackIcon,
+  CreditScore as CreditScoreIcon,
+  Forum as ForumIcon,
+  Group as GroupIcon,
+  Groups as GroupsIcon,
+  Key as KeyIcon,
+  PlaylistAddCheck as PlaylistAddCheckIcon,
+  Timeline as TimelineIcon,
+  Work as WorkIcon
+} from '~/ui/icons'
 import type {DashSidebar_viewer$key} from '../../__generated__/DashSidebar_viewer.graphql'
 import {SearchDialog} from '../../modules/search/SearchDialog'
 import {cn} from '../../ui/cn'

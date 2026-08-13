@@ -1,5 +1,5 @@
-import {Close} from '@mui/icons-material'
 import * as Toast from '@radix-ui/react-toast'
+import {Close} from '~/ui/icons'
 import type {SnackAction} from './Snackbar'
 import SnackbarMessageAction from './SnackbarMessageAction'
 

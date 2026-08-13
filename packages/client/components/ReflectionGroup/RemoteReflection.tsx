@@ -1,5 +1,3 @@
-import {keyframes} from '@emotion/react'
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -10,9 +8,9 @@ import type {
   RemoteReflection_reflection$key
 } from '../../__generated__/RemoteReflection_reflection.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {Elevation} from '../../styles/elevation'
-import {BezierCurve, DragAttribute, ElementWidth, Times, ZIndex} from '../../types/constEnums'
+import {DragAttribute, ElementWidth, Times} from '../../types/constEnums'
 import type {DeepNonNullable} from '../../types/generics'
+import {cn} from '../../ui/cn'
 import {VOTE} from '../../utils/constants'
 import {getMinTop} from '../../utils/retroGroup/updateClonePosition'
 import ReflectionCardAuthor from '../ReflectionCard/ReflectionCardAuthor'
@@ -21,57 +19,6 @@ import getBBox from '../RetroReflectPhase/getBBox'
 import HTMLReflection from '../RetroReflectPhase/HTMLReflection'
 import {useTipTapContext} from '../TipTapProvider'
 import UserDraggingHeader, {type RemoteReflectionArrow} from '../UserDraggingHeader'
-
-const circleAnimation = (transform?: string) => keyframes`
-  0%{
-    transform:translate(5px)
-              rotate(0deg)
-              translate(-5px)
-              rotate(0deg)
-              ${transform ?? ''}
-  }
-  100%{
-    transform:translate(5px)
-              rotate(360deg)
-              translate(-5px)
-              rotate(-360deg)
-              ${transform ?? ''}
-  }
-`
-
-const RemoteReflectionModal = styled('div')<{
-  isInViewerSpotlightResults: boolean
-  isDropping?: boolean | null
-  transform?: string
-  isSpotlight?: boolean
-  animation?: string
-}>(({isInViewerSpotlightResults, isDropping, transform, isSpotlight, animation}) => ({
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  boxShadow: isDropping ? Elevation.CARD_SHADOW : Elevation.CARD_DRAGGING,
-  pointerEvents: 'none',
-  transition: `all ${
-    isDropping ? Times.REFLECTION_REMOTE_DROP_DURATION : Times.REFLECTION_DROP_DURATION
-  }ms ${BezierCurve.DECELERATE}`,
-  transform,
-  animation: animation
-    ? animation
-    : isSpotlight && !isDropping
-      ? `${circleAnimation(transform)} 3s ease infinite;`
-      : undefined,
-  zIndex: isInViewerSpotlightResults
-    ? ZIndex.REFLECTION_IN_FLIGHT_SPOTLIGHT
-    : ZIndex.REFLECTION_IN_FLIGHT
-}))
-
-const HeaderModal = styled('div')({
-  position: 'absolute',
-  left: 0,
-  top: 0,
-  pointerEvents: 'none',
-  width: ElementWidth.REFLECTION_CARD
-})
 
 const windowDims = {
   innerWidth: window.innerWidth,
@@ -264,21 +211,45 @@ const RemoteReflection = (props: Props) => {
   }, [remoteDrag])
   const [headerTransform, setHeaderTransform] = useState<string | undefined>(undefined)
 
+  const isSpotlight = !!remoteDrag?.isSpotlight
+  const {nextStyle, transform} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+  const circleTransform =
+    remoteDrag && !animation && isSpotlight && !isDropping ? (transform ?? '') : null
+  useEffect(() => {
+    const el = ref.current
+    if (!el || circleTransform === null) return
+    const circleAnimation = el.animate(
+      [
+        {
+          transform: `translate(5px) rotate(0deg) translate(-5px) rotate(0deg) ${circleTransform}`
+        },
+        {
+          transform: `translate(5px) rotate(360deg) translate(-5px) rotate(-360deg) ${circleTransform}`
+        }
+      ],
+      {duration: 3000, easing: 'ease', iterations: Infinity}
+    )
+    return () => {
+      circleAnimation.cancel()
+    }
+  }, [circleTransform])
+
   if (!remoteDrag) return null
 
-  const {dragUserId, dragUserName, isSpotlight} = remoteDrag
-  const {nextStyle, transform} = getStyle(remoteDrag, isDropping, isSpotlight, style)
+  const {dragUserId, dragUserName} = remoteDrag
 
   return (
     <>
-      <RemoteReflectionModal
+      <div
         ref={ref}
-        style={nextStyle}
-        isDropping={isDropping}
-        isSpotlight={isSpotlight}
-        isInViewerSpotlightResults={isInViewerSpotlightResults}
-        transform={transform}
-        animation={animation}
+        className={cn(
+          'pointer-events-none absolute top-0 left-0 transition-all ease-[cubic-bezier(0,0,.2,1)]',
+          isDropping
+            ? 'shadow-[var(--shadow-card)] duration-[2000ms]'
+            : 'shadow-[var(--shadow-card-dragging)] duration-[1000ms]',
+          isInViewerSpotlightResults ? 'z-reflection-in-flight-spotlight' : 'z-reflection-in-flight'
+        )}
+        style={{transform, animation, ...nextStyle}}
       >
         <ReflectionCardRoot>
           {!headerTransform && <UserDraggingHeader userId={dragUserId} name={dragUserName} />}
@@ -289,16 +260,16 @@ const RemoteReflection = (props: Props) => {
             </div>
           )}
         </ReflectionCardRoot>
-      </RemoteReflectionModal>
+      </div>
       {headerTransform && (
-        <HeaderModal>
+        <div className='pointer-events-none absolute top-0 left-0 w-[296px]'>
           <UserDraggingHeader
             userId={dragUserId}
             name={dragUserName}
             style={{transform: headerTransform}}
             arrow={arrow}
           />
-        </HeaderModal>
+        </div>
       )}
     </>
   )

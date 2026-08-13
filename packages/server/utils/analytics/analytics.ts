@@ -115,6 +115,10 @@ export type MusicEventProperties = {
 }
 
 export type AnalyticsEvent =
+  // confluence export
+  | 'Confluence Export Started'
+  | 'Confluence Export Completed'
+  | 'Confluence Export Failed'
   // meeting
   | 'Meeting Started'
   | 'Meeting Joined'
@@ -249,6 +253,24 @@ class Analytics {
   }
 
   checkInEnd = async (
+    completedMeeting: AnyMeeting,
+    meetingMembers: AnyMeetingMember[],
+    dataLoader: DataLoaderWorker
+  ) =>
+    Promise.all(
+      meetingMembers.map((meetingMember) =>
+        this.meetingEnd(
+          dataLoader,
+          meetingMember.userId,
+          completedMeeting,
+          meetingMembers,
+          undefined,
+          undefined
+        )
+      )
+    )
+
+  teamHealthEnd = async (
     completedMeeting: AnyMeeting,
     meetingMembers: AnyMeetingMember[],
     dataLoader: DataLoaderWorker
@@ -584,6 +606,43 @@ class Analytics {
   // page
   pageCreated = (user: AnalyticsUser, pageId: number) => {
     this.track(user, 'Page Created', {pageId})
+  }
+
+  confluenceExportStarted = (
+    user: AnalyticsUser,
+    properties: {pageExportId: string; pageCount: number}
+  ) => {
+    this.track(user, 'Confluence Export Started', properties)
+  }
+
+  confluenceExportCompleted = (
+    user: AnalyticsUser,
+    properties: {
+      pageExportId: string
+      pageCount: number
+      successCount: number
+      attachmentCount: number
+      durationMs: number
+      status: string
+      degradedCensus: string
+    }
+  ) => {
+    this.track(user, 'Confluence Export Completed', properties)
+  }
+
+  confluenceExportFailed = (
+    user: AnalyticsUser,
+    properties: {
+      pageExportId: string
+      pageCount: number
+      successCount: number
+      attachmentCount: number
+      durationMs: number
+      status: string
+      degradedCensus: string
+    }
+  ) => {
+    this.track(user, 'Confluence Export Failed', properties)
   }
 
   // insight

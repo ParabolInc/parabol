@@ -36,6 +36,16 @@ const mutation = graphql`
           integrations {
             ...MattermostProviderRowTeamMemberIntegrations
             ...MSTeamsProviderRowTeamMemberIntegrations
+            gitlab {
+              auth {
+                isActive
+              }
+            }
+            linear {
+              auth {
+                isActive
+              }
+            }
             gdrive {
               isActive
             }
