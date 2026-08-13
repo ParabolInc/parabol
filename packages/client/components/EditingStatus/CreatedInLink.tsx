@@ -1,7 +1,7 @@
-import LinkIcon from '@mui/icons-material/Link'
 import {Link} from 'react-router'
 import {MenuPosition} from '~/hooks/useCoords'
 import useTooltip from '~/hooks/useTooltip'
+import {Link as LinkIcon} from '~/ui/icons'
 
 interface Props {
   meetingId: string

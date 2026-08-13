@@ -1,7 +1,7 @@
-import {MoreVert} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
+import {MoreVert} from '~/ui/icons'
 import type {DiscussionDrawerZoomRow_zoom$key} from '../__generated__/DiscussionDrawerZoomRow_zoom.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'

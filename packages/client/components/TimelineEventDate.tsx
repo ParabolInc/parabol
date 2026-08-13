@@ -1,15 +1,8 @@
-import styled from '@emotion/styled'
 import ms from 'ms'
 import {useEffect, useState} from 'react'
 import absoluteDate from '../utils/date/absoluteDate'
 import relativeDate from '../utils/date/relativeDate'
 import SimpleTooltip from './SimpleTooltip'
-
-const StyledSpan = styled('span')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 11,
-  lineHeight: '16px'
-})
 
 interface Props {
   createdAt: string | Date
@@ -30,9 +23,9 @@ const TimelineEventDate = (props: Props) => {
   }, [createdAt])
 
   return (
-    <StyledSpan>
+    <span className='text-[11px] text-fg-secondary leading-4'>
       <SimpleTooltip text={absoluteDate(createdAt)}>{fromNow}</SimpleTooltip>
-    </StyledSpan>
+    </span>
   )
 }
 

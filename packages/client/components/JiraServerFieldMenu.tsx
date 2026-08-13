@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
@@ -10,12 +9,6 @@ import {SprintPokerDefaults} from '../types/constEnums'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
 import MenuItemHR from './MenuItemHR'
-
-const NoFieldsLabel = styled('div')({
-  color: 'var(--color-fg-secondary)',
-  fontSize: 14,
-  padding: '8px 16px 0'
-})
 
 interface Props {
   menuProps: MenuProps
@@ -99,7 +92,9 @@ const JiraServerFieldMenu = (props: Props) => {
       isDropdown={isDropdown}
       defaultActiveIdx={defaultActiveidx}
     >
-      {possibleEstimationFieldNames.length === 0 && <NoFieldsLabel>No fields found</NoFieldsLabel>}
+      {possibleEstimationFieldNames.length === 0 && (
+        <div className='px-4 pt-2 pb-0 text-fg-secondary text-sm'>No fields found</div>
+      )}
       {possibleEstimationFieldNames.map((fieldName) => {
         return <MenuItem key={fieldName} label={fieldName} onClick={handleClick(fieldName)} />
       })}

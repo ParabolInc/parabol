@@ -1,6 +1,6 @@
-import {Close} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
+import {Close} from '~/ui/icons'
 import type {RetroDrawerQuery} from '../__generated__/RetroDrawerQuery.graphql'
 import {DiscussionThreadEnum} from '../types/constEnums'
 import {cn} from '../ui/cn'

@@ -39,6 +39,12 @@ const lookup = {
       import(
         /* webpackChunkName: 'TimelineEventTeamPromptComplete' */ './TimelineEventTeamPromptComplete'
       )
+  ),
+  TimelineEventTeamHealthComplete: lazy(
+    () =>
+      import(
+        /* webpackChunkName: 'TimelineEventTeamHealthComplete' */ './TimelineEventTeamHealthComplete'
+      )
   )
 } as const
 
@@ -53,6 +59,7 @@ function TimelineEvent(props: Props) {
         ...TimelineEventCompletedActionMeeting_timelineEvent
         ...TimelineEventPokerComplete_timelineEvent
         ...TimelineEventTeamPromptComplete_timelineEvent
+        ...TimelineEventTeamHealthComplete_timelineEvent
         __typename
       }
     `,

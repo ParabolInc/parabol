@@ -1,5 +1,5 @@
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos'
 import {motion} from 'motion/react'
+import {AddToPhotos as AddToPhotosIcon} from '~/ui/icons'
 import {cn} from '../../ui/cn'
 
 /** idle: the card belongs to a suggestion. match/source: that suggestion is being hovered */

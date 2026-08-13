@@ -1,7 +1,7 @@
-import {FilterList, Group, Person} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
+import {FilterList, Group, Person} from '~/ui/icons'
+import {Button} from '../../ui/Button/Button'
 import {cn} from '../../ui/cn'
-import LinkButton from '../LinkButton'
 
 interface Props {
   className?: string
@@ -17,16 +17,18 @@ interface Props {
 const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {className, label, value, iconText, onClick, onMouseEnter, dataCy} = props
   return (
-    <LinkButton
+    <Button
       aria-label={`Filter by ${label}`}
+      size='default'
       className={cn(
+        'bg-transparent p-0 text-[14px] text-fg-primary leading-5 shadow-none hover:text-accent focus:text-accent active:text-accent',
         'shrink-0 font-semibold text-fg-secondary hover:text-fg-primary focus:text-fg-primary active:text-fg-primary',
         className
       )}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       ref={ref}
-      dataCy={dataCy}
+      data-cy={dataCy}
     >
       <div className='mr-2 h-6 w-6'>
         {
@@ -38,7 +40,7 @@ const DashFilterToggle = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) 
         {!iconText && <FilterList />}
       </div>
       {value}
-    </LinkButton>
+    </Button>
   )
 })
 

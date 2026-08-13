@@ -1,5 +1,4 @@
 import type {SlackNotificationEventEnum} from '~/__generated__/SlackNotificationList_viewer.graphql'
-import {PALETTE} from '~/styles/paletteV3'
 import JiraProjectId from '../../shared/gqlIds/JiraProjectId'
 import demoUserAvatar from '../../styles/theme/images/avatar-user.svg'
 import {ExternalLinks, MeetingSettingsThreshold, RetroDemo} from '../../types/constEnums'
@@ -367,7 +366,7 @@ const initPhases = () => {
           promptId: 'startId',
           question: 'Start',
           description: 'What new behaviors should we adopt?',
-          groupColor: PALETTE.JADE_400,
+          groupColor: 'var(--color-jade-400)',
           sortOrder: 0
         },
         {
@@ -375,7 +374,7 @@ const initPhases = () => {
           promptId: 'stopId',
           question: 'Stop',
           description: 'What existing behaviors should we cease doing?',
-          groupColor: PALETTE.TOMATO_500,
+          groupColor: 'var(--color-tomato-500)',
           sortOrder: 1
         },
         {
@@ -383,7 +382,7 @@ const initPhases = () => {
           promptId: 'continueId',
           question: 'Continue',
           description: 'What current behaviors should we keep doing?',
-          groupColor: PALETTE.SKY_500,
+          groupColor: 'var(--color-sky-500)',
           sortOrder: 2
         }
       ],

@@ -1,14 +1,14 @@
-import styled from '@emotion/styled'
 import type {DraggableProvided} from '@hello-pangea/dnd'
-import {Cancel as CancelIcon} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {TemplatePromptItem_prompts$key} from '~/__generated__/TemplatePromptItem_prompts.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Cancel as CancelIcon} from '~/ui/icons'
 import type {TemplatePromptItem_prompt$key} from '../../../__generated__/TemplatePromptItem_prompt.graphql'
 import RemoveReflectTemplatePromptMutation from '../../../mutations/RemoveReflectTemplatePromptMutation'
+import {cn} from '../../../ui/cn'
 import EditableTemplateDescription from './EditableTemplateDescription'
 import EditableTemplatePrompt from './EditableTemplatePrompt'
 import EditableTemplatePromptColor from './EditableTemplatePromptColor'
@@ -20,47 +20,6 @@ interface Props {
   prompts: TemplatePromptItem_prompts$key
   dragProvided: DraggableProvided
 }
-
-interface StyledProps {
-  isDragging?: boolean
-  isHover?: boolean
-}
-
-const PromptItem = styled('div')<StyledProps & {isOwner: boolean}>(
-  ({isOwner, isHover, isDragging}) => ({
-    alignItems: 'flex-start',
-    backgroundColor: isOwner && (isHover || isDragging) ? 'var(--color-surface-raised)' : undefined,
-    cursor: isOwner ? 'pointer' : undefined,
-    display: 'flex',
-    fontSize: 14,
-    lineHeight: '24px',
-    padding: '4px 16px',
-    width: '100%'
-  })
-)
-
-const RemovePromptIcon = styled('div')<StyledProps>(({isHover}) => ({
-  color: 'var(--color-fg-secondary)',
-  cursor: 'pointer',
-  svg: {
-    fontSize: 18
-  },
-  height: 24,
-  marginLeft: 'auto',
-  padding: 0,
-  opacity: isHover ? 1 : 0,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 24
-}))
-
-const PromptAndDescription = styled('div')({
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  paddingLeft: 16
-})
 
 const TemplatePromptItem = (props: Props) => {
   const {dragProvided, isDragging, isOwner, prompt: promptRef, prompts: promptsRef} = props
@@ -107,18 +66,20 @@ const TemplatePromptItem = (props: Props) => {
   }
 
   return (
-    <PromptItem
+    <div
       ref={dragProvided.innerRef}
       {...dragProvided.dragHandleProps}
       {...dragProvided.draggableProps}
-      isDragging={isDragging}
-      isHover={isHover}
-      isOwner={isOwner}
+      className={cn(
+        'flex w-full items-start px-4 py-1 text-[14px] leading-6',
+        isOwner && 'cursor-pointer',
+        isOwner && (isHover || isDragging) && 'bg-surface-raised'
+      )}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <EditableTemplatePromptColor isOwner={isOwner} prompt={prompt} prompts={prompts} />
-      <PromptAndDescription>
+      <div className='flex w-full flex-col pl-4'>
         <EditableTemplatePrompt
           isOwner={isOwner}
           isEditingDescription={isEditingDescription}
@@ -133,13 +94,19 @@ const TemplatePromptItem = (props: Props) => {
           onEditingChange={setIsEditingDescription}
           promptId={promptId}
         />
-      </PromptAndDescription>
+      </div>
       {canRemove && (
-        <RemovePromptIcon isHover={isHover} onClick={removePrompt}>
+        <div
+          className={cn(
+            'ml-auto flex h-6 w-6 cursor-pointer items-center justify-center p-0 text-fg-secondary [&_svg]:text-[18px]',
+            isHover ? 'opacity-100' : 'opacity-0'
+          )}
+          onClick={removePrompt}
+        >
           <CancelIcon />
-        </RemovePromptIcon>
+        </div>
       )}
-    </PromptItem>
+    </div>
   )
 }
 export default TemplatePromptItem

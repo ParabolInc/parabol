@@ -3,10 +3,10 @@ import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {RemoveFromOrgModal_organizationUsers$key} from '../../../../__generated__/RemoveFromOrgModal_organizationUsers.graphql'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -107,23 +107,24 @@ const RemoveFromOrgModal = (props: Props) => {
           </div>
         )}
         {removableCount > 0 ? (
-          <PrimaryButton
-            size='medium'
+          <Button
+            variant='primary'
+            size='md'
             className='mx-auto mt-6 mb-0'
             onClick={handleClick}
-            waiting={submitting}
+            disabled={submitting}
           >
             <IconLabel
               icon='arrow_forward'
               iconAfter
               label={`Remove ${removableCount} ${plural(removableCount, 'member')}`}
             />
-          </PrimaryButton>
+          </Button>
         ) : (
           <div className='mt-4'>
-            <PrimaryButton size='medium' className='mx-auto mb-0' onClick={closePortal}>
+            <Button variant='primary' size='md' className='mx-auto mb-0' onClick={closePortal}>
               <IconLabel icon='close' label='Close' />
-            </PrimaryButton>
+            </Button>
           </div>
         )}
       </DialogContent>

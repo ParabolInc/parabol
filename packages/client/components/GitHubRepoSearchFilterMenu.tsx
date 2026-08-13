@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
 import {useFragment} from 'react-relay'
@@ -13,19 +12,6 @@ import MenuItem from './MenuItem'
 import MenuItemLabel from './MenuItemLabel'
 import {SearchMenuItem} from './SearchMenuItem'
 import TypeAheadLabel from './TypeAheadLabel'
-
-const StyledCheckBox = styled(Checkbox)({
-  marginLeft: -8,
-  marginRight: 8
-})
-const StyledMenuItemLabel = styled(MenuItemLabel)({})
-
-const StyledMenu = styled(Menu)({
-  maxWidth: '100%',
-  minWidth: '300px',
-  padding: '8px',
-  maxHeight: '100%'
-})
 
 const getValue = (item: {nameWithOwner?: string}) => {
   return item.nameWithOwner || 'Unknown Repo'
@@ -70,7 +56,8 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
 
   const {portalStatus, isDropdown} = menuProps
   return (
-    <StyledMenu
+    <Menu
+      className='max-h-full min-w-[300px] max-w-full p-2'
       keepParentFocus
       ariaLabel='Define the GitHub search query'
       portalStatus={portalStatus}
@@ -93,16 +80,16 @@ const GitHubRepoSearchFilterMenu = (props: Props) => {
           <MenuItem
             key={repo}
             label={
-              <StyledMenuItemLabel>
-                <StyledCheckBox active={isSelected} />
+              <MenuItemLabel>
+                <Checkbox className='-ml-2 mr-2' active={isSelected} />
                 <TypeAheadLabel query={searchQuery} label={repo} />
-              </StyledMenuItemLabel>
+              </MenuItemLabel>
             }
             onClick={() => onToggleRepo(repo, isSelected)}
           />
         )
       })}
-    </StyledMenu>
+    </Menu>
   )
 }
 

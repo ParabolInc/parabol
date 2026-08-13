@@ -1,25 +1,6 @@
-import styled from '@emotion/styled'
-import {FilterList} from '@mui/icons-material'
 import {forwardRef, type Ref} from 'react'
-import {PALETTE} from '../styles/paletteV3'
-import FlatButton from './FlatButton'
-
-const StyledButton = styled(FlatButton)({
-  height: 24,
-  marginLeft: 4,
-  padding: 0,
-  width: 24,
-  background: PALETTE.SKY_500,
-  '&:hover': {
-    background: PALETTE.SKY_500
-  }
-})
-
-const FilterIcon = styled(FilterList)({
-  color: PALETTE.WHITE,
-  height: 18,
-  width: 18
-})
+import {Button} from '~/ui/Button/Button'
+import {FilterList} from '~/ui/icons'
 
 interface Props {
   onClick: () => void
@@ -28,9 +9,15 @@ interface Props {
 const FilterButton = forwardRef((props: Props, ref: Ref<HTMLButtonElement>) => {
   const {onClick} = props
   return (
-    <StyledButton onClick={onClick} ref={ref}>
-      <FilterIcon />
-    </StyledButton>
+    <Button
+      variant='flat'
+      size='sm'
+      className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500'
+      onClick={onClick}
+      ref={ref}
+    >
+      <FilterList className='h-[18px] w-[18px] text-white' />
+    </Button>
   )
 })
 

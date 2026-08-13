@@ -1,4 +1,4 @@
-import {Close as CloseIcon} from '@mui/icons-material'
+import {Close as CloseIcon} from '~/ui/icons'
 
 interface Props {
   onClose: (...args: any[]) => void

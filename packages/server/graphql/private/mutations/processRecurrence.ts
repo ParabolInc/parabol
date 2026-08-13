@@ -2,136 +2,24 @@ import dayjs from 'dayjs'
 import tracer from 'dd-trace'
 import {sql} from 'kysely'
 import ms from 'ms'
-import {MeetingSettingsThreshold, SubscriptionChannel} from 'parabol-client/types/constEnums'
 import {DateTime, RRuleSet} from 'rrule-rust'
 import TeamMemberId from '../../../../client/shared/gqlIds/TeamMemberId'
-import {toDateTime} from '../../../../client/shared/rruleUtil'
+import {fromDateTime, toDateTime} from '../../../../client/shared/rruleUtil'
 import AuthToken from '../../../database/types/AuthToken'
 import getKysely from '../../../postgres/getKysely'
 import {selectNewMeetings} from '../../../postgres/select'
-import type {MeetingSeries} from '../../../postgres/types'
-import type {RetrospectiveMeeting, TeamPromptMeeting} from '../../../postgres/types/Meeting'
-import {analytics} from '../../../utils/analytics/analytics'
-import {getNextRRuleDate} from '../../../utils/getNextRRuleDate'
-import logError from '../../../utils/logError'
-import publish, {type SubOptions} from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
-import type {DataLoaderWorker} from '../../graphql'
-import isStartMeetingLocked from '../../mutations/helpers/isStartMeetingLocked'
-import {IntegrationNotifier} from '../../mutations/helpers/notifications/IntegrationNotifier'
-import safeCreateRetrospective from '../../mutations/helpers/safeCreateRetrospective'
-import safeCreateTeamPrompt, {DEFAULT_PROMPT} from '../../mutations/helpers/safeCreateTeamPrompt'
 import safeEndRetrospective from '../../mutations/helpers/safeEndRetrospective'
+import safeEndTeamHealth from '../../mutations/helpers/safeEndTeamHealth'
 import safeEndTeamPrompt from '../../mutations/helpers/safeEndTeamPrompt'
+import startRecurringMeeting from '../../mutations/helpers/startRecurringMeeting'
 import {stopMeetingSeries} from '../../public/mutations/updateRecurrenceSettings'
 import type {MutationResolvers} from '../resolverTypes'
 import {checkSequential} from './helpers/checkSequential'
 
-const startRecurringMeeting = async (
-  meetingSeries: MeetingSeries,
-  dataLoader: DataLoaderWorker,
-  subOptions: SubOptions
-) => {
-  const {id: meetingSeriesId, teamId, facilitatorId, meetingType} = meetingSeries
-
-  // AUTH
-  const [unpaidError, facilitator] = await Promise.all([
-    isStartMeetingLocked(teamId, dataLoader),
-    dataLoader.get('users').loadNonNull(facilitatorId)
-  ])
-  if (unpaidError) return standardError(new Error(unpaidError), {userId: facilitatorId})
-
-  const [lastMeeting, meetingSettings] = await Promise.all([
-    dataLoader.get('lastMeetingByMeetingSeriesId').load(meetingSeriesId),
-    dataLoader.get('meetingSettingsByType').load({teamId, meetingType})
-  ])
-
-  const rrule = RRuleSet.parse(meetingSeries.recurrenceRule)
-  const scheduledEndTime = getNextRRuleDate(rrule)
-
-  const meetingName = meetingSeries.title
-  const meeting = await (async () => {
-    if (meetingSeries.meetingType === 'teamPrompt') {
-      const teamPromptMeeting = lastMeeting as TeamPromptMeeting | null
-      const meeting = await safeCreateTeamPrompt(meetingName, teamId, facilitatorId, dataLoader, {
-        scheduledEndTime,
-        meetingSeriesId: meetingSeries.id,
-        meetingPrompt: teamPromptMeeting?.meetingPrompt ?? DEFAULT_PROMPT
-      })
-      if (!meeting) {
-        return {
-          error: {
-            message: 'Unable to create meeting. Perhaps one was just created?'
-          }
-        }
-      }
-      const data = {teamId, meetingId: meeting.id}
-      publish(SubscriptionChannel.TEAM, teamId, 'StartTeamPromptSuccess', data, subOptions)
-      return meeting
-    } else if (meetingSeries.meetingType === 'retrospective') {
-      // Field-by-field fallback: prior meeting > MeetingSettings (nullable, may be missing) > defaults.
-      const retroLastMeeting = lastMeeting as RetrospectiveMeeting | null
-      const templateId =
-        retroLastMeeting?.templateId ??
-        meetingSettings?.selectedTemplateId ??
-        'workingStuckTemplate'
-      const totalVotes =
-        retroLastMeeting?.totalVotes ??
-        meetingSettings?.totalVotes ??
-        MeetingSettingsThreshold.RETROSPECTIVE_TOTAL_VOTES_DEFAULT
-      const maxVotesPerGroup =
-        retroLastMeeting?.maxVotesPerGroup ??
-        meetingSettings?.maxVotesPerGroup ??
-        MeetingSettingsThreshold.RETROSPECTIVE_MAX_VOTES_PER_GROUP_DEFAULT
-      const disableAnonymity =
-        retroLastMeeting?.disableAnonymity ?? meetingSettings?.disableAnonymity ?? false
-      if (!retroLastMeeting && (!meetingSettings || !meetingSettings.selectedTemplateId)) {
-        logError(new Error('processRecurrence: seeding retrospective with defaults'), {
-          tags: {meetingSeriesId, teamId}
-        })
-      }
-      const meeting = await safeCreateRetrospective(
-        {
-          teamId,
-          facilitatorUserId: facilitatorId,
-          totalVotes,
-          maxVotesPerGroup,
-          disableAnonymity,
-          templateId,
-          videoMeetingURL: undefined,
-          meetingSeriesId: meetingSeries.id,
-          scheduledEndTime,
-          name: meetingName
-        },
-        dataLoader
-      )
-      if (!meeting) {
-        return {
-          error: {
-            message: 'Unable to create meeting. Perhaps one was just created?'
-          }
-        }
-      }
-      const data = {teamId, meetingId: meeting.id}
-      publish(SubscriptionChannel.TEAM, teamId, 'StartRetrospectiveSuccess', data, subOptions)
-      return meeting
-    }
-    return standardError(new Error('Unhandled recurring meeting type'), {
-      tags: {
-        meetingSeriesId: meetingSeries.id,
-        meetingType: meetingSeries.meetingType
-      }
-    })
-  })()
-
-  if ('error' in meeting) {
-    return meeting
-  }
-
-  IntegrationNotifier.startMeeting(dataLoader, meeting.id, teamId)
-  analytics.meetingStarted(facilitator, meeting)
-  return undefined
-}
+// An occurrence and the scheduledEndTime it was derived from are both generated by the same rrule,
+// so they only ever differ by rounding. Anything closer than this is treated as the same occurrence.
+const SAME_OCCURRENCE_TOLERANCE = ms('1m')
 
 const processRecurrence: MutationResolvers['processRecurrence'] = checkSequential(
   async (_source, _args, serverContext, info) => {
@@ -164,6 +52,8 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             return safeEndTeamPrompt({meeting, context, info})
           } else if (meeting.meetingType === 'retrospective') {
             return safeEndRetrospective({meeting, context, info})
+          } else if (meeting.meetingType === 'teamHealth') {
+            return safeEndTeamHealth({meeting, context, info})
           } else {
             return standardError(new Error('Unhandled recurring meeting type'), {
               tags: {
@@ -209,6 +99,10 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             return
           }
 
+          // The series already has a meeting in progress, e.g. it was started ahead of schedule.
+          // It gets to finish, either when the team ends it or when its scheduledEndTime arrives
+          if (lastMeeting && !lastMeeting.endedAt) return
+
           // For meetings that should still be active, start the meeting and set its end time.
           // Any subscriptions are handled by the shared meeting start code
           const rrule = RRuleSet.parse(recurrenceRule)
@@ -225,12 +119,22 @@ const processRecurrence: MutationResolvers['processRecurrence'] = checkSequentia
             DateTime.fromString(toDateTime(dayjs(fromDate), rrule.tzid)),
             DateTime.fromString(toDateTime(dayjs(), rrule.tzid))
           )
-          if (newMeetingsStartTimes.length > 0) {
-            const err = await tracer.trace('startRecurringMeeting', async (span) => {
+          // The last meeting stood in for every occurrence before the one it was scheduled to end
+          // on, so those occurrences must not spawn a second meeting. This only matters when a
+          // meeting was started early & ended early, since the last meeting of a series normally
+          // runs right up until the occurrence that replaces it.
+          const {scheduledEndTime} = lastMeeting ?? {}
+          const hasUnusedOccurrence = newMeetingsStartTimes.some((startTime) => {
+            if (!scheduledEndTime) return true
+            const startsAt = fromDateTime(startTime.toString(), rrule.tzid).valueOf()
+            return startsAt >= scheduledEndTime.getTime() - SAME_OCCURRENCE_TOLERANCE
+          })
+          if (hasUnusedOccurrence) {
+            const res = await tracer.trace('startRecurringMeeting', async (span) => {
               span?.addTags({meetingSeriesId})
               return startRecurringMeeting(meetingSeries, dataLoader, subOptions)
             })
-            if (!err) meetingsStarted++
+            if (!('error' in res)) meetingsStarted++
           }
         })
       )

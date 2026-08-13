@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
@@ -9,11 +8,6 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import AddPokerTemplateScaleMutation from '../../../mutations/AddPokerTemplateScaleMutation'
 import RemovePokerTemplateScaleMutation from '../../../mutations/RemovePokerTemplateScaleMutation'
 import {Threshold} from '../../../types/constEnums'
-
-const CloneAndDelete = styled('div')({
-  display: 'flex',
-  flexDirection: 'row'
-})
 
 interface Props {
   scale: ScaleActions_scale$key
@@ -65,7 +59,7 @@ const ScaleActions = (props: Props) => {
     RemovePokerTemplateScaleMutation(atmosphere, {scaleId}, {onError, onCompleted})
   }
   return (
-    <CloneAndDelete>
+    <div className='flex flex-row'>
       {isStarter ? (
         <DetailAction
           disabled={!canClone}
@@ -79,7 +73,7 @@ const ScaleActions = (props: Props) => {
           <DetailAction icon={'delete'} tooltip={'Delete scale'} onClick={deleteScale} />
         </>
       )}
-    </CloneAndDelete>
+    </div>
   )
 }
 export default ScaleActions

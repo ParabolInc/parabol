@@ -1,37 +1,29 @@
-import styled from '@emotion/styled'
-import {DECELERATE} from '../styles/animation'
-import {menuShadow} from '../styles/elevation'
-import {Duration, Radius} from '../types/constEnums'
+import {forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 import {MenuPosition} from './useCoords'
 import {PortalStatus} from './usePortal'
 
-const transformOrigins = {
-  [MenuPosition.UPPER_RIGHT]: 'top right',
-  [MenuPosition.UPPER_LEFT]: 'top left',
-  [MenuPosition.LOWER_LEFT]: 'bottom left',
-  [MenuPosition.LOWER_RIGHT]: 'bottom right'
+const transformOriginClasses = {
+  [MenuPosition.UPPER_RIGHT]: 'origin-top-right',
+  [MenuPosition.UPPER_LEFT]: 'origin-top-left',
+  [MenuPosition.LOWER_LEFT]: 'origin-bottom-left',
+  [MenuPosition.LOWER_RIGHT]: 'origin-bottom-right'
 } as const
 
-const backgroundStyles = (portalStatus: PortalStatus, isDropdown: boolean) => {
+const backgroundClasses = (portalStatus: PortalStatus, isDropdown: boolean) => {
   switch (portalStatus) {
     case PortalStatus.Entering:
     case PortalStatus.Entered:
-      return {
-        opacity: 1,
-        transform: isDropdown ? 'scaleY(1)' : 'scale(1)',
-        transition: `all ${Duration.MENU_OPEN}ms ${DECELERATE}`
-      }
+      return cn(
+        'opacity-100 transition-all duration-150 ease-out',
+        isDropdown ? '[transform:scaleY(1)]' : '[transform:scale(1)]'
+      )
     case PortalStatus.Exiting:
-      return {
-        opacity: 0,
-        transition: `all ${Duration.PORTAL_CLOSE}ms ${DECELERATE}`
-      }
+      return 'opacity-0 transition-all duration-[120ms] ease-out'
     case PortalStatus.Mounted:
-      return {
-        transform: isDropdown ? 'scaleY(0)' : 'scale(0)'
-      }
+      return isDropdown ? '[transform:scaleY(0)]' : '[transform:scale(0)]'
     default:
-      return {}
+      return undefined
   }
 }
 
@@ -39,20 +31,22 @@ interface BackgroundProps {
   menuPosition: MenuPosition
   portalStatus: PortalStatus
   isDropdown: boolean
+  className?: string
 }
 
-const MenuBackground = styled('div')<BackgroundProps>(
-  ({menuPosition, portalStatus, isDropdown}) => ({
-    background: 'var(--color-surface-card)',
-    borderRadius: Radius.MENU,
-    boxShadow: menuShadow,
-    height: '100%',
-    position: 'absolute',
-    transformOrigin: transformOrigins[menuPosition as keyof typeof transformOrigins],
-    width: '100%',
-    zIndex: -1,
-    ...backgroundStyles(portalStatus, isDropdown)
-  })
-)
+const MenuBackground = forwardRef((props: BackgroundProps, ref: Ref<HTMLDivElement>) => {
+  const {menuPosition, portalStatus, isDropdown, className} = props
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'absolute z-[-1] h-full w-full rounded bg-surface-card shadow-[var(--shadow-card-raised)]',
+        transformOriginClasses[menuPosition as keyof typeof transformOriginClasses],
+        backgroundClasses(portalStatus, isDropdown),
+        className
+      )}
+    />
+  )
+})
 
 export default MenuBackground

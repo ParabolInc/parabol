@@ -1,43 +1,35 @@
-import styled from '@emotion/styled'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import TooltipStyled from '../components/TooltipStyled'
-import {DECELERATE} from '../styles/animation'
-import {Duration} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import {PortalStatus} from './usePortal'
 
-const backgroundStyles = (portalStatus: PortalStatus) => {
+const backgroundClasses = (portalStatus: PortalStatus) => {
   switch (portalStatus) {
-    case PortalStatus.Entering:
-      // not sure why, but this component is never mounting n the mounted state
-      return {
-        opacity: 0,
-        transform: 'scale(0)',
-        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
-      }
-    case PortalStatus.Entered:
-      return {
-        opacity: 1,
-        transform: 'scale(1)',
-        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
-      }
-    case PortalStatus.Exiting:
-      return {
-        opacity: 0,
-        transition: `all ${Duration.TOOLTIP_CLOSE}ms ${DECELERATE}`
-      }
     case PortalStatus.Mounted:
-      return {
-        opacity: 0,
-        transform: 'scale(0)',
-        transition: `all ${Duration.TOOLTIP_OPEN}ms ${DECELERATE}`
-      }
+    case PortalStatus.Entering:
+      return 'opacity-0 [transform:scale(0)] transition-all duration-150 ease-out'
+    case PortalStatus.Entered:
+      return 'opacity-100 [transform:scale(1)] transition-all duration-150 ease-out'
+    case PortalStatus.Exiting:
+      return 'opacity-0 transition-all duration-75 ease-out'
     default:
-      return {}
+      return undefined
   }
 }
 
-const TooltipBackground = styled(TooltipStyled)<{portalStatus: PortalStatus}>(({portalStatus}) => ({
-  zIndex: -1,
-  ...backgroundStyles(portalStatus)
-}))
+interface Props {
+  portalStatus: PortalStatus
+  className?: string
+  children?: ReactNode
+}
+
+const TooltipBackground = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {portalStatus, className, children} = props
+  return (
+    <TooltipStyled ref={ref} className={cn('z-[-1]', backgroundClasses(portalStatus), className)}>
+      {children}
+    </TooltipStyled>
+  )
+})
 
 export default TooltipBackground

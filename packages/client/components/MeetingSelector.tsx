@@ -1,9 +1,12 @@
 import graphql from 'babel-plugin-relay/macro'
-import {useEffect, useRef} from 'react'
+import {type ComponentType, useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
-import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
+import type {
+  MeetingSelectorQuery,
+  MeetingTypeEnum
+} from '../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'
@@ -11,19 +14,22 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import lazyPreload from '../utils/lazyPreload'
+import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
 
 interface Props {
   meetingId: string
   queryRef: PreloadedQuery<MeetingSelectorQuery>
 }
 
-const meetingLookup = {
+const meetingLookup: Partial<Record<MeetingTypeEnum, LazyExoticPreload<ComponentType<any>>>> = {
   action: lazyPreload(() => import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')),
   poker: lazyPreload(() => import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')),
   retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')),
   teamPrompt: lazyPreload(
     () => import(/* webpackChunkName: 'TeamPromptMeeting' */ './TeamPromptMeeting')
+  ),
+  teamHealth: lazyPreload(
+    () => import(/* webpackChunkName: 'TeamHealthMeeting' */ './TeamHealthMeeting')
   )
 }
 
@@ -83,6 +89,7 @@ const MeetingSelector = (props: Props) => {
 
   const {meetingType} = meeting
   const Meeting = meetingLookup[meetingType]
+  if (!Meeting) throw new Error(`No meeting component for meeting type: ${meetingType}`)
   return <Meeting meeting={meeting as any} />
 }
 
@@ -92,6 +99,7 @@ graphql`
     ...ActionMeeting_meeting
     ...PokerMeeting_meeting
     ...TeamPromptMeeting_meeting
+    ...TeamHealthMeeting_meeting
     meetingType
   }
 `

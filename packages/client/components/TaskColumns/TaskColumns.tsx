@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import {DragDropContext, type DropResult} from '@hello-pangea/dnd'
 import graphql from 'babel-plugin-relay/macro'
 import {useMemo} from 'react'
@@ -12,21 +11,9 @@ import useAtmosphere from '../../hooks/useAtmosphere'
 import useEventCallback from '../../hooks/useEventCallback'
 import TaskColumn from '../../modules/teamDashboard/components/TaskColumn/TaskColumn'
 import UpdateTaskMutation from '../../mutations/UpdateTaskMutation'
-import {Layout} from '../../types/constEnums'
 import {columnArray, MEETING, meetingColumnArray, SORT_STEP} from '../../utils/constants'
 import dndNoise from '../../utils/dndNoise'
 import makeTasksByStatus from '../../utils/makeTasksByStatus'
-
-const ColumnsBlock = styled('div')({
-  display: 'flex',
-  flex: '1',
-  height: '100%',
-  margin: '0',
-  maxWidth: Layout.TASK_COLUMNS_MAX_WIDTH,
-  overflow: 'auto',
-  padding: `0 10px`,
-  width: '100%'
-})
 
 interface Props {
   area: AreaEnum
@@ -106,7 +93,7 @@ const TaskColumns = (props: Props) => {
   })
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <ColumnsBlock>
+      <div className='m-0 flex h-full w-full max-w-[1360px] flex-1 overflow-auto px-2.5 py-0'>
         {lanes.map((status) => (
           <TaskColumn
             key={status}
@@ -120,7 +107,7 @@ const TaskColumns = (props: Props) => {
             teams={teams}
           />
         ))}
-      </ColumnsBlock>
+      </div>
       <EditorHelpModalContainer />
     </DragDropContext>
   )

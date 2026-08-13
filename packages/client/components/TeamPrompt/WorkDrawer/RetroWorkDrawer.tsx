@@ -12,12 +12,14 @@ import GitHubClientManager from '../../../utils/GitHubClientManager'
 import getNextSortOrder from '../../../utils/getNextSortOrder'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
 import GitHubSVG from '../../GitHubSVG'
+import GitLabSVG from '../../GitLabSVG'
 import JiraServerSVG from '../../JiraServerSVG'
 import JiraSVG from '../../JiraSVG'
 import LinearSVG from '../../LinearSVG'
 import ParabolLogoSVG from '../../ParabolLogoSVG'
 import GCalIntegrationPanel from './GCalIntegrationPanel'
 import GitHubIntegrationPanel from './GitHubIntegrationPanel'
+import GitLabIntegrationPanel from './GitLabIntegrationPanel'
 import JiraIntegrationPanel from './JiraIntegrationPanel'
 import JiraServerIntegrationPanel from './JiraServerIntegrationPanel'
 import LinearIntegrationPanel from './LinearIntegrationPanel'
@@ -54,6 +56,7 @@ const RetroWorkDrawer = (props: Props) => {
         }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
+        ...GitLabIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
         ...GCalIntegrationPanel_meeting
         ...JiraServerIntegrationPanel_meeting
@@ -77,6 +80,11 @@ const RetroWorkDrawer = (props: Props) => {
                   id
                 }
               }
+              gitlab {
+                cloudProvider {
+                  id
+                }
+              }
             }
           }
         }
@@ -90,6 +98,8 @@ const RetroWorkDrawer = (props: Props) => {
   const hasLinear =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
+  const hasGitLab =
+    !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
@@ -148,6 +158,16 @@ const RetroWorkDrawer = (props: Props) => {
           }
         ]
       : []),
+    ...(hasGitLab
+      ? [
+          {
+            icon: <GitLabSVG />,
+            service: 'gitlab',
+            label: 'GitLab',
+            Component: GitLabIntegrationPanel
+          }
+        ]
+      : []),
     ...(AtlassianClientManager.isAvailable
       ? [
           {
@@ -161,7 +181,7 @@ const RetroWorkDrawer = (props: Props) => {
     ...(hasLinear
       ? [
           {
-            icon: <LinearSVG />,
+            icon: <LinearSVG className='dark:[&_path]:fill-white' />,
             service: 'linear',
             label: 'Linear',
             Component: LinearIntegrationPanel

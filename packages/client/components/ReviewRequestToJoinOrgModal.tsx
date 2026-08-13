@@ -4,12 +4,11 @@ import {type PreloadedQuery, useFragment, usePreloadedQuery} from 'react-relay'
 import type {ReviewRequestToJoinOrgModal_viewer$key} from '../__generated__/ReviewRequestToJoinOrgModal_viewer.graphql'
 import type {ReviewRequestToJoinOrgModalQuery} from '../__generated__/ReviewRequestToJoinOrgModalQuery.graphql'
 import useAcceptRequestToJoinDomainMutation from '../mutations/useAcceptRequestToJoinDomainMutation'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import Checkbox from './Checkbox'
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton'
 
 const ReviewRequestToJoinOrgModalViewerFragment = graphql`
   fragment ReviewRequestToJoinOrgModal_viewer on User
@@ -88,9 +87,9 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               Request expired or deleted
             </div>
             <div className='flex w-full justify-end'>
-              <SecondaryButton onClick={onClose} size='small'>
+              <Button variant='outline' onClick={onClose} size='sm'>
                 Cancel
-              </SecondaryButton>
+              </Button>
             </div>
           </>
         ) : (
@@ -140,12 +139,18 @@ const ReviewRequestToJoinOrgModal = (props: Props) => {
               })}
             </div>
             <div className='flex w-full justify-end gap-2 pt-2'>
-              <SecondaryButton onClick={onClose} size='small' disabled={submitting}>
+              <Button variant='outline' onClick={onClose} size='sm' disabled={submitting}>
                 Cancel
-              </SecondaryButton>
-              <PrimaryButton size='small' onClick={onAdd} disabled={submitting}>
+              </Button>
+              <Button
+                variant='primary'
+                size='sm'
+                className='text-sm'
+                onClick={onAdd}
+                disabled={submitting}
+              >
                 Add to teams
-              </PrimaryButton>
+              </Button>
             </div>
           </>
         )}

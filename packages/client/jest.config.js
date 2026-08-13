@@ -1,5 +1,3 @@
-const tsJestPresets = require('ts-jest/presets')
-
 module.exports = {
   testEnvironment: 'node',
   transform: {

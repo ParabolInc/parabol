@@ -21,7 +21,11 @@ export const phaseLabelLookup = {
   SUMMARY: 'Summary',
   SCOPE: 'Scope',
   ESTIMATE: 'Estimate',
-  RESPONSES: 'Active'
+  RESPONSES: 'Active',
+  TEAM_HEALTH_INTRO: 'Welcome',
+  TEAM_HEALTH_RESPONSE: 'Respond',
+  TEAM_HEALTH_SUBMITTED: 'All Set',
+  TEAM_HEALTH_RESULT: 'Results'
 } as Record<NewMeetingPhaseTypeEnum, string>
 
 export const phaseIconLookup = {
@@ -42,11 +46,20 @@ export const phaseIconLookup = {
 export const phaseImageLookup = {
   ESTIMATE: CardsSVG
 }
+export const MeetingTypeToReadable = {
+  action: 'Team Check-in',
+  poker: 'Sprint Poker',
+  retrospective: 'Retrospective',
+  teamPrompt: 'Standup',
+  teamHealth: 'Team Health'
+} satisfies Record<MeetingTypeEnum, string>
+
 export const meetingTypeToIcon = {
   [RETROSPECTIVE]: 'history',
   [ACTION]: 'change_history',
   [POKER]: CardsSVG,
-  [TEAM_PROMPT]: 'group_work'
+  [TEAM_PROMPT]: 'group_work',
+  teamHealth: 'monitor_heart'
 } as Record<MeetingTypeEnum, string | React.ComponentType>
 
 export const phaseTypeToSlug = {
@@ -63,5 +76,9 @@ export const phaseTypeToSlug = {
   SUMMARY: 'summary',
   SCOPE: 'scope',
   ESTIMATE: 'estimate',
-  RESPONSES: 'responses'
+  RESPONSES: 'responses',
+  TEAM_HEALTH_INTRO: 'intro',
+  TEAM_HEALTH_RESPONSE: 'respond',
+  TEAM_HEALTH_SUBMITTED: 'submitted',
+  TEAM_HEALTH_RESULT: 'result'
 } as Record<NewMeetingPhaseTypeEnum, string>

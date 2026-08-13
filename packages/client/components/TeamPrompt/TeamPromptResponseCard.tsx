@@ -1,4 +1,3 @@
-import {Link} from '@mui/icons-material'
 import type {Editor} from '@tiptap/core'
 import type {JSONContent} from '@tiptap/react'
 import graphql from 'babel-plugin-relay/macro'
@@ -9,6 +8,7 @@ import {commitLocalUpdate, useFragment} from 'react-relay'
 import type {TeamPromptResponseCard_stage$key} from '~/__generated__/TeamPromptResponseCard_stage.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useEventCallback from '~/hooks/useEventCallback'
+import {Link} from '~/ui/icons'
 import plural from '~/utils/plural'
 import {MenuPosition} from '../../hooks/useCoords'
 import useMutationProps from '../../hooks/useMutationProps'
@@ -205,7 +205,9 @@ const TeamPromptResponseCard = (props: Props) => {
       <div
         className={cn(
           'flex flex-1 flex-col justify-between rounded-card p-4',
-          isEmptyResponse ? 'bg-surface-well text-fg-muted' : 'bg-surface-card shadow-card',
+          isEmptyResponse
+            ? 'bg-surface-well text-fg-muted'
+            : 'bg-surface-card shadow-[var(--shadow-card)]',
           meeting?.rightDrawerOpen != null && meeting?.localStageId === responseStage.id
             ? 'outline-2 outline-sky-300'
             : 'outline-none'

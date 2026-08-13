@@ -13,6 +13,7 @@ import {
 } from '../components/AdhocTeamMultiSelect/AdhocTeamMultiSelect'
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogActions} from '../ui/Dialog/DialogActions'
 import {DialogContent} from '../ui/Dialog/DialogContent'
@@ -21,7 +22,6 @@ import {Input} from '../ui/Input/Input'
 import {Tooltip} from '../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../ui/Tooltip/TooltipTrigger'
-import FlatPrimaryButton from './FlatPrimaryButton'
 import Toggle from './Toggle/Toggle'
 
 interface Props {
@@ -200,13 +200,14 @@ const AddTeamDialog = (props: Props) => {
         </fieldset>
 
         <DialogActions>
-          <FlatPrimaryButton
-            size='medium'
+          <Button
+            variant='primary'
+            size='md'
             onClick={handleAddTeam}
             disabled={submitting || !isValid}
           >
             Add team
-          </FlatPrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

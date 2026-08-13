@@ -1,51 +1,10 @@
-import styled from '@emotion/styled'
-import {Add as AddIcon} from '@mui/icons-material'
 import {useEffect, useRef, useState} from 'react'
 import {useNavigate} from 'react-router'
-import {PALETTE} from '~/styles/paletteV3'
+import {Add as AddIcon} from '~/ui/icons'
 import useBreakpoint from '../hooks/useBreakpoint'
-import {BezierCurve, Breakpoint, ElementWidth, ZIndex} from '../types/constEnums'
+import {Breakpoint} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import FloatingActionButton from './FloatingActionButton'
-
-const Block = styled('div')({
-  position: 'fixed',
-  bottom: 16,
-  right: 16,
-  // hacky, but we need the FAB to show up over the team right nav
-  zIndex: ZIndex.SIDE_SHEET
-})
-
-const Button = styled(FloatingActionButton)({
-  color: '#fff',
-  backgroundImage: PALETTE.GRADIENT_TOMATO_600_ROSE_500,
-  height: 56,
-  padding: 0,
-  overflow: 'hidden',
-  zIndex: ZIndex.FAB
-})
-
-const MeetingIcon = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  margin: 16,
-  marginLeft: isExpanded ? 24 : 16,
-  marginRight: 16,
-  width: 24,
-  height: 24,
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  svg: {
-    stroke: 'white',
-    fill: 'white',
-    strokeWidth: 0.4
-  }
-}))
-
-const MeetingLabel = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  fontSize: 16,
-  fontWeight: 600,
-  textAlign: 'start',
-  transition: `all 300ms ${BezierCurve.DECELERATE}`,
-  transform: `translateX(${isExpanded ? -4 : ElementWidth.NEW_MEETING_FAB}px)`,
-  width: isExpanded ? ElementWidth.NEW_MEETING_FAB : 0
-}))
 
 interface Props {
   className?: string
@@ -94,14 +53,31 @@ const StartMeetingFAB = (props: Props) => {
     return null
   }
   return (
-    <Block className={className}>
-      <Button onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-        <MeetingIcon isExpanded={isExpanded}>
-          <AddIcon />
-        </MeetingIcon>
-        <MeetingLabel isExpanded={isExpanded}>{'Add Meeting'}</MeetingLabel>
-      </Button>
-    </Block>
+    <div className={cn('fixed right-4 bottom-4 z-side-sheet', className)}>
+      <FloatingActionButton
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        className='z-fab h-14 overflow-hidden bg-[linear-gradient(to_right,var(--color-tomato-600)_0,var(--color-rose-500)_100%)] p-0 text-white'
+      >
+        <div
+          className={cn(
+            'm-4 h-6 w-6 transition-all duration-300 ease-[cubic-bezier(0,0,.2,1)]',
+            isExpanded ? 'ml-6' : 'ml-4'
+          )}
+        >
+          <AddIcon className='fill-white stroke-white [stroke-width:0.4]' />
+        </div>
+        <div
+          className={cn(
+            'text-start font-semibold text-[16px] transition-all duration-300 ease-[cubic-bezier(0,0,.2,1)]',
+            isExpanded ? '-translate-x-1 w-32' : 'w-0 translate-x-32'
+          )}
+        >
+          {'Add Meeting'}
+        </div>
+      </FloatingActionButton>
+    </div>
   )
 }
 

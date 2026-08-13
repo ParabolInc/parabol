@@ -1,6 +1,6 @@
-import {MoreVert} from '@mui/icons-material'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
+import {MoreVert} from '~/ui/icons'
 import lazyPreload from '~/utils/lazyPreload'
 import PlainButton from './PlainButton/PlainButton'
 

@@ -1,6 +1,6 @@
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import type {Editor} from '@tiptap/core'
 import {useEffect, useState} from 'react'
+import {AutoAwesome as AutoAwesomeIcon} from '~/ui/icons'
 import {Button} from '../../ui/Button/Button'
 
 interface Props {

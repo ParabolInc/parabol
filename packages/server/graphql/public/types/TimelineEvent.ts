@@ -8,7 +8,8 @@ const TimelineEvent: TimelineEventResolvers = {
       retroComplete: 'TimelineEventCompletedRetroMeeting',
       actionComplete: 'TimelineEventCompletedActionMeeting',
       POKER_COMPLETE: 'TimelineEventPokerComplete',
-      TEAM_PROMPT_COMPLETE: 'TimelineEventTeamPromptComplete'
+      TEAM_PROMPT_COMPLETE: 'TimelineEventTeamPromptComplete',
+      TEAM_HEALTH_COMPLETE: 'TimelineEventTeamHealthComplete'
     } as const
     return lookup[type as keyof typeof lookup]
   },

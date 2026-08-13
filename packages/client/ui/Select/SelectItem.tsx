@@ -1,6 +1,6 @@
-import {Check} from '@mui/icons-material'
 import * as RadixSelect from '@radix-ui/react-select'
 import * as React from 'react'
+import {Check} from '~/ui/icons'
 import {cn} from '../cn'
 
 interface SelectItemProps extends React.ComponentPropsWithoutRef<typeof RadixSelect.Item> {

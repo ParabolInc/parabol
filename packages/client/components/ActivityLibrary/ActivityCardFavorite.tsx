@@ -1,7 +1,7 @@
-import {Favorite} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useFragment} from 'react-relay'
+import {Favorite} from '~/ui/icons'
 import type {ActivityCardFavorite_user$key} from '../../__generated__/ActivityCardFavorite_user.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useMutationProps from '../../hooks/useMutationProps'

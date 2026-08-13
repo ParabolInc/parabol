@@ -1,71 +1,19 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {type Dispatch, type MutableRefObject, type SetStateAction, useRef} from 'react'
 import {useFragment} from 'react-relay'
 import useBreakpoint from '~/hooks/useBreakpoint'
-import {PALETTE} from '~/styles/paletteV3'
 import {Breakpoint} from '~/types/constEnums'
 import type {PokerDimensionValueControl_stage$key} from '../__generated__/PokerDimensionValueControl_stage.graphql'
 import useResizeFontForElement from '../hooks/useResizeFontForElement'
-import LinkButton from './LinkButton'
+import {Button} from '../ui/Button/Button'
+import {cn} from '../ui/cn'
 import MiniPokerCard from './MiniPokerCard'
 import PokerDimensionFinalScorePicker from './PokerDimensionFinalScorePicker'
 import StyledError from './StyledError'
 
-const ControlWrap = styled('div')({
-  padding: '0 8px'
-})
-
-const Control = styled('div')({
-  alignItems: 'center',
-  backgroundColor: 'var(--color-surface-card)',
-  borderRadius: 4,
-  display: 'flex',
-  padding: 8
-})
-
-const Input = styled('input')<{color?: string}>(({color}) => ({
-  background: 'none',
-  border: 0,
-  color: color || 'var(--color-fg-primary)',
-  display: 'block',
-  fontSize: 18,
-  fontWeight: 600,
-  lineHeight: '24px',
-  outline: 0,
-  padding: 0,
-  textAlign: 'center',
-  width: '100%',
-  '::placeholder': {
-    color: 'var(--color-fg-muted)'
-  }
-}))
-
-const ErrorMessage = styled(StyledError)({
-  paddingLeft: 8,
-  textAlign: 'left'
-})
-
-const Label = styled('div')({
-  flexShrink: 0,
-  fontSize: 14,
-  fontWeight: 600,
-  margin: '0 0 0 16px'
-})
-
-const StyledLinkButton = styled(LinkButton)({
-  color: 'var(--color-accent)',
-  fontSize: 14,
-  fontWeight: 600,
-  height: 40,
-  marginLeft: 8,
-  padding: '0 8px',
-  ':hover,:focus,:active': {
-    boxShadow: 'none',
-    color: PALETTE.SKY_600
-  }
-})
+const linkButtonClassName =
+  'bg-transparent p-0 text-[14px] text-fg-primary leading-5 shadow-none hover:text-accent focus:text-accent active:text-accent ml-2 h-10 px-2 py-0 font-semibold text-accent hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
 
 interface Props {
   isFacilitator: boolean
@@ -171,20 +119,22 @@ const PokerDimensionValueControl = (props: Props) => {
   const isDesktop = useBreakpoint(Breakpoint.SIDEBAR_LEFT)
   const matchingScale = scaleValues.find((scaleValue) => scaleValue.label === cardScore)
   const scaleColor = matchingScale?.color
-  const textColor = scaleColor ? '#fff' : undefined
   const isFinal = !!finalScore && cardScore === finalScore
   const hasIntegration = !!task?.integration?.__typename
   const handleLabelClick = () => inputRef.current!.focus()
   const label = isDesktop && !finalScore ? 'Final Score (set by facilitator)' : 'Final Score'
   return (
-    <ControlWrap>
-      <Control>
+    <div className='px-2'>
+      <div className='flex items-center rounded bg-surface-card p-2'>
         <MiniPokerCard canEdit={isFacilitator} color={scaleColor} isFinal={isFinal}>
-          <Input
+          <input
+            className={cn(
+              'block w-full border-0 bg-transparent p-0 text-center font-semibold text-[18px] leading-6 outline-0 placeholder:text-fg-muted',
+              scaleColor ? 'text-white' : 'text-fg-primary'
+            )}
             disabled={!isFacilitator}
             onKeyDown={onKeyDown}
             autoFocus={!finalScore}
-            color={textColor}
             ref={inputRef}
             onChange={onChange}
             placeholder={placeholder}
@@ -192,7 +142,7 @@ const PokerDimensionValueControl = (props: Props) => {
             maxLength={3}
           />
         </MiniPokerCard>
-        {!isFacilitator && <Label>{label}</Label>}
+        {!isFacilitator && <div className='ml-4 shrink-0 font-semibold text-[14px]'>{label}</div>}
 
         {hasIntegration && (
           <PokerDimensionFinalScorePicker
@@ -210,16 +160,20 @@ const PokerDimensionValueControl = (props: Props) => {
           <>
             {isStale ? (
               <>
-                <StyledLinkButton onClick={onSubmitScore}>{'Update'}</StyledLinkButton>
-                {errorStr && <ErrorMessage>{errorStr}</ErrorMessage>}
+                <Button size='default' className={linkButtonClassName} onClick={onSubmitScore}>
+                  {'Update'}
+                </Button>
+                {errorStr && <StyledError className='pl-2 text-left'>{errorStr}</StyledError>}
               </>
             ) : (
-              <StyledLinkButton onClick={handleLabelClick}>{'Edit Score'}</StyledLinkButton>
+              <Button size='default' className={linkButtonClassName} onClick={handleLabelClick}>
+                {'Edit Score'}
+              </Button>
             )}
           </>
         )}
-      </Control>
-    </ControlWrap>
+      </div>
+    </div>
   )
 }
 

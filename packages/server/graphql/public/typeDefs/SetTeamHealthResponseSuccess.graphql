@@ -1,0 +1,10 @@
+"""
+Success result for the setTeamHealthResponse mutation
+"""
+type SetTeamHealthResponseSuccess {
+  "The meeting the response was recorded in"
+  meeting: TeamHealthMeeting!
+
+  "The updated response stage, including the viewer's own answer"
+  stage: TeamHealthResponseStage!
+}

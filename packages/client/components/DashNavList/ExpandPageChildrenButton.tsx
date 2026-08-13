@@ -1,6 +1,5 @@
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import DescriptionIcon from '@mui/icons-material/Description'
 import {memo, useRef} from 'react'
+import {ChevronRight as ChevronRightIcon, Description as DescriptionIcon} from '~/ui/icons'
 import useEventCallback from '../../hooks/useEventCallback'
 import {cn} from '../../ui/cn'
 

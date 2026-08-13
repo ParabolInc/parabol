@@ -2,7 +2,7 @@ import type {JSONContent} from '@tiptap/core'
 import type {ControlledTransaction, Kysely, QueryCreator} from 'kysely'
 import {type NotNull, type SelectQueryBuilder, sql} from 'kysely'
 import type {AnyTaskIntegration} from '../../client/shared/types/TaskIntegration'
-import type {NewMeetingPhaseTypeEnum} from '../graphql/public/resolverTypes'
+import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
@@ -15,7 +15,7 @@ import type {
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
-import type {DB} from './types/pg'
+import type {DB, Newmeetingphasetypeenum} from './types/pg'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
@@ -28,7 +28,12 @@ type AssertedQuery<Q, K> = Q extends SelectQueryBuilder<infer T1, infer T2, infe
 export const selectTimelineEvent = () => {
   return getKysely().selectFrom('TimelineEvent').selectAll().$narrowType<
     | {
-        type: 'actionComplete' | 'POKER_COMPLETE' | 'TEAM_PROMPT_COMPLETE' | 'retroComplete'
+        type:
+          | 'actionComplete'
+          | 'POKER_COMPLETE'
+          | 'TEAM_PROMPT_COMPLETE'
+          | 'TEAM_HEALTH_COMPLETE'
+          | 'retroComplete'
         teamId: NotNull
         orgId: NotNull
         meetingId: NotNull
@@ -86,6 +91,26 @@ export const selectTemplateScale = () => {
 
 export const selectTemplateDimension = () => {
   return getKysely().selectFrom('TemplateDimension').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthCategories = () => {
+  return getKysely().selectFrom('TeamHealthCategory').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthQuestionPacks = () => {
+  return getKysely().selectFrom('TeamHealthQuestionPack').selectAll()
+}
+
+export const selectTeamHealthQuestions = () => {
+  return getKysely().selectFrom('TeamHealthQuestion').selectAll().where('removedAt', 'is', null)
+}
+
+export const selectTeamHealthTemplateQuestions = () => {
+  return getKysely().selectFrom('TeamHealthTemplateQuestion').selectAll()
+}
+
+export const selectTeamHealthResponses = () => {
+  return getKysely().selectFrom('TeamHealthResponse').selectAll()
 }
 
 export const selectSuggestedAction = () => {
@@ -182,7 +207,7 @@ export const selectMeetingSettings = () => {
     .selectAll()
     .select(({fn}) => [
       fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries'),
-      fn<NewMeetingPhaseTypeEnum[]>('to_json', ['phaseTypes']).as('phaseTypes')
+      fn<Newmeetingphasetypeenum[]>('to_json', ['phaseTypes']).as('phaseTypes')
     ])
     .$narrowType<
       | {meetingType: 'action' | 'poker' | 'teamPrompt'}
@@ -195,7 +220,7 @@ export const selectMeetingSettings = () => {
     >()
   return query as AssertedQuery<
     typeof query,
-    {jiraSearchQueries: JiraSearchQuery[]; phaseTypes: NewMeetingPhaseTypeEnum[]}
+    {jiraSearchQueries: JiraSearchQuery[]; phaseTypes: Newmeetingphasetypeenum[]}
   >
 }
 export const selectAgendaItems = () => getKysely().selectFrom('AgendaItem').selectAll()
@@ -328,11 +353,20 @@ export const selectPages = (queryCreator: Kysely<DB> | QueryCreator<DB> = getKys
     'deletedAt',
     'deletedBy',
     'isDatabase',
-    'isMeetingTOC'
+    'isMeetingTOC',
+    'summaryMeetingId'
   ])
 
 export const selectPageAccess = () => getKysely().selectFrom('PageAccess').selectAll()
 export const selectPageUserSortOrder = () => getKysely().selectFrom('PageUserSortOrder').selectAll()
+
+export const selectPageExports = () => {
+  const query = getKysely().selectFrom('PageExport').selectAll()
+  return query as AssertedQuery<
+    typeof query,
+    {pagesJson: PageExportPageState[]; degradedJson: DegradedItem[]}
+  >
+}
 
 export const selectDescendantPages = (
   db: ControlledTransaction<DB, []> | Kysely<DB>,

@@ -1,8 +1,6 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
-import {PALETTE} from '~/styles/paletteV3'
 import type {EditableTemplateDimension_dimensions$key} from '../../../__generated__/EditableTemplateDimension_dimensions.graphql'
 import EditableText from '../../../components/EditableText'
 import useAtmosphere from '../../../hooks/useAtmosphere'
@@ -10,13 +8,6 @@ import useMutationProps from '../../../hooks/useMutationProps'
 import useScrollIntoView from '../../../hooks/useScrollIntoVIew'
 import RenamePokerTemplateDimensionMutation from '../../../mutations/RenamePokerTemplateDimensionMutation'
 import Legitity from '../../../validation/Legitity'
-
-const StyledEditableText = styled(EditableText)({
-  fontFamily: PALETTE.SLATE_700,
-  fontSize: 14,
-  lineHeight: '24px',
-  padding: 0
-})
 
 interface Props {
   isOwner: boolean
@@ -84,7 +75,8 @@ const EditableTemplateDimension = (props: Props) => {
   const ref = useRef<HTMLDivElement>(null)
   useScrollIntoView(ref, autoFocus)
   return (
-    <StyledEditableText
+    <EditableText
+      className='p-0 text-sm leading-6'
       ref={ref}
       autoFocus={autoFocus}
       disabled={!isOwner}

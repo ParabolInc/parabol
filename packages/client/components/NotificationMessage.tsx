@@ -1,9 +1,15 @@
-import styled from '@emotion/styled'
+import {forwardRef, type HTMLAttributes, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const NotificationMessage = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 14,
-  lineHeight: '20px'
-})
+const NotificationMessage = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div {...rest} ref={ref} className={cn('text-fg-primary text-sm', className)}>
+        {children}
+      </div>
+    )
+  }
+)
 
 export default NotificationMessage

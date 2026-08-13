@@ -1,6 +1,6 @@
-import TuneIcon from '@mui/icons-material/Tune'
 import type {Editor, JSONContent} from '@tiptap/core'
 import {useState} from 'react'
+import {Tune as TuneIcon} from '~/ui/icons'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import UpsertTeamPromptResponseMutation from '../../../mutations/UpsertTeamPromptResponseMutation'
 import useGenerateInspirationItemsMutation from '../../../mutations/useGenerateInspirationItemsMutation'

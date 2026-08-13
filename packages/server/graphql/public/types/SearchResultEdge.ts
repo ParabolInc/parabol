@@ -35,7 +35,9 @@ const SearchResultEdge: ReqResolvers<'SearchResultEdge'> = {
         action: 'FixedActivity',
         poker: 'PokerTemplate',
         retrospective: 'ReflectTemplate',
-        teamPrompt: 'FixedActivity'
+        teamPrompt: 'FixedActivity',
+        // TODO: fixme when we add GraphQL types
+        teamHealth: 'FixedActivity'
       } as const
       return {
         ...templateData,

@@ -1,8 +1,8 @@
-import {Link} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {memo} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import {useFragment} from 'react-relay'
+import {Link} from '~/ui/icons'
 import type {LinearObjectCard_issue$key} from '../../../__generated__/LinearObjectCard_issue.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
 import {MenuPosition} from '../../../hooks/useCoords'
@@ -110,7 +110,7 @@ const LinearObjectCard = memo((props: Props) => {
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <div className='flex h-4 w-4 items-center justify-center'>
-            <LinearSVG />
+            <LinearSVG className='h-4 w-4 dark:[&_path]:fill-white' />
           </div>
           {repoUrl ? (
             <a

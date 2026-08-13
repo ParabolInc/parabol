@@ -1,20 +1,23 @@
 // Styled component for useTooltip
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
-import {Radius} from '../types/constEnums'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-const TooltipStyled = styled('div')({
-  color: '#FFF',
-  backgroundColor: PALETTE.SLATE_700,
-  borderRadius: Radius.TOOLTIP,
-  fontSize: 11,
-  fontWeight: 600,
-  lineHeight: '16px',
-  overflow: 'hidden',
-  padding: '4px 8px',
-  textAlign: 'center',
-  whiteSpace: 'nowrap',
-  width: '100%'
-})
+const TooltipStyled = forwardRef(
+  (props: ComponentPropsWithoutRef<'div'>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'w-full overflow-hidden whitespace-nowrap rounded-[2px] bg-slate-700 px-2 py-1 text-center font-semibold text-[11px] text-white leading-4',
+          className
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
+    )
+  }
+)
 
 export default TooltipStyled

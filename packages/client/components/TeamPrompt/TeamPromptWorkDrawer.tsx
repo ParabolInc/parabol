@@ -10,12 +10,14 @@ import AtlassianClientManager from '../../utils/AtlassianClientManager'
 import GitHubClientManager from '../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../utils/SendClientSideEvent'
 import GitHubSVG from '../GitHubSVG'
+import GitLabSVG from '../GitLabSVG'
 import JiraServerSVG from '../JiraServerSVG'
 import JiraSVG from '../JiraSVG'
 import LinearSVG from '../LinearSVG'
 import ParabolLogoSVG from '../ParabolLogoSVG'
 import GCalIntegrationPanel from './WorkDrawer/GCalIntegrationPanel'
 import GitHubIntegrationPanel from './WorkDrawer/GitHubIntegrationPanel'
+import GitLabIntegrationPanel from './WorkDrawer/GitLabIntegrationPanel'
 import JiraIntegrationPanel from './WorkDrawer/JiraIntegrationPanel'
 import JiraServerIntegrationPanel from './WorkDrawer/JiraServerIntegrationPanel'
 import LinearIntegrationPanel from './WorkDrawer/LinearIntegrationPanel'
@@ -41,6 +43,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
         }
         ...ParabolTasksPanel_meeting
         ...GitHubIntegrationPanel_meeting
+        ...GitLabIntegrationPanel_meeting
         ...JiraIntegrationPanel_meeting
         ...GCalIntegrationPanel_meeting
         ...JiraServerIntegrationPanel_meeting
@@ -64,6 +67,11 @@ const TeamPromptWorkDrawer = (props: Props) => {
                   id
                 }
               }
+              gitlab {
+                cloudProvider {
+                  id
+                }
+              }
             }
           }
         }
@@ -79,6 +87,8 @@ const TeamPromptWorkDrawer = (props: Props) => {
   const hasLinear =
     !!meeting.viewerMeetingMember?.teamMember?.integrations.linear?.cloudProvider?.id
   const hasGCal = !!meeting.viewerMeetingMember?.teamMember?.integrations.gcal?.cloudProvider?.id
+  const hasGitLab =
+    !!meeting.viewerMeetingMember?.teamMember?.integrations.gitlab?.cloudProvider?.id
 
   useEffect(() => {
     SendClientSideEvent(atmosphere, 'Inspiration Drawer Impression', {
@@ -114,6 +124,16 @@ const TeamPromptWorkDrawer = (props: Props) => {
           }
         ]
       : []),
+    ...(hasGitLab
+      ? [
+          {
+            icon: <GitLabSVG />,
+            service: 'gitlab',
+            label: 'GitLab',
+            Component: GitLabIntegrationPanel
+          }
+        ]
+      : []),
     ...(AtlassianClientManager.isAvailable
       ? [
           {
@@ -127,7 +147,7 @@ const TeamPromptWorkDrawer = (props: Props) => {
     ...(hasLinear
       ? [
           {
-            icon: <LinearSVG />,
+            icon: <LinearSVG className='dark:[&_path]:fill-white' />,
             service: 'linear',
             label: 'Linear',
             Component: LinearIntegrationPanel

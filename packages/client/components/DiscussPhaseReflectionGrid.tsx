@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useRef} from 'react'
 import {useFragment} from 'react-relay'
@@ -6,15 +5,9 @@ import type {DiscussPhaseReflectionGrid_meeting$key} from '~/__generated__/Discu
 import {useCoverable} from '~/hooks/useControlBarCovers'
 import {MeetingControlBarEnum} from '~/types/constEnums'
 import {ElementWidth} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import MasonryCSSGrid from './MasonryCSSGrid'
 import ReflectionCard from './ReflectionCard/ReflectionCard'
-
-const GridWrapper = styled('div')<{isExpanded: boolean}>(({isExpanded}) => ({
-  height: isExpanded ? '100%' : `calc(100% - ${MeetingControlBarEnum.HEIGHT + 16}px)`,
-  overflow: 'auto',
-  padding: '8px 16px 0',
-  marginBottom: 16
-}))
 
 interface Props {
   meeting: DiscussPhaseReflectionGrid_meeting$key
@@ -59,7 +52,13 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
   const isExpanded = useCoverable('reflections', ref, MeetingControlBarEnum.HEIGHT + 16)
   if (!reflections) return null
   return (
-    <GridWrapper ref={ref} isExpanded={isExpanded}>
+    <div
+      ref={ref}
+      className={cn(
+        'mb-4 overflow-auto px-4 pt-2 pb-0',
+        isExpanded ? 'h-full' : 'h-[calc(100%-72px)]'
+      )}
+    >
       <MasonryCSSGrid colWidth={ElementWidth.REFLECTION_CARD} gap={12}>
         {(setItemRef) => {
           return reflections.map((reflection) => {
@@ -71,7 +70,7 @@ const DiscussPhaseReflectionGrid = (props: Props) => {
           })
         }}
       </MasonryCSSGrid>
-    </GridWrapper>
+    </div>
   )
 }
 

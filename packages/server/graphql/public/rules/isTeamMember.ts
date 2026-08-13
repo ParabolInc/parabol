@@ -19,6 +19,20 @@ export const isTeamMember = <T>(
     async (source, args, context: GQLContext, info: GraphQLResolveInfo) => {
       const argVar = getResolverDotPath(dotPath, source, args)
       const {authToken, dataLoader} = context
+
+      // when the path resolves to an array of teamIds, require the viewer be on every team
+      if (Array.isArray(argVar)) {
+        for (const teamId of argVar as string[]) {
+          if (!authToken.tms?.includes(teamId)) {
+            return new GraphQLError(`Viewer is not on team`)
+          }
+          if (context.resourceGrants && !(await context.resourceGrants.hasTeam(teamId))) {
+            return new GraphQLError(`PAT does not grant access to this team`)
+          }
+        }
+        return true
+      }
+
       let teamId: string = argVar
       if (dataLoaderName) {
         const subject = await dataLoader.get(dataLoaderName as any).load(argVar)

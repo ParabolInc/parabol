@@ -1,58 +1,13 @@
-import styled from '@emotion/styled'
-import {Receipt} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {InvoiceRow_invoice$key} from '~/__generated__/InvoiceRow_invoice.graphql'
+import {Receipt} from '~/ui/icons'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import {PALETTE} from '../../../../styles/paletteV3'
+import {cn} from '../../../../ui/cn'
 import makeDateString from '../../../../utils/makeDateString'
 import invoiceLineFormat from '../../../invoice/helpers/invoiceLineFormat'
-
-const InvoiceAmount = styled('span')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 16,
-  lineHeight: '24px'
-})
-
-const FileIcon = styled(Receipt)<{isEstimate: boolean}>(({isEstimate}) => ({
-  color: isEstimate ? 'var(--color-accent)' : 'var(--color-fg-secondary)'
-}))
-
-const InvoiceInfo = styled(RowInfo)({
-  width: '100%'
-})
-
-const InvoiceTitle = styled(RowInfoHeading)({
-  lineHeight: '24px'
-})
-
-const InfoRow = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  width: '100%'
-})
-
-const InfoRowRight = styled('div')({
-  flex: 1,
-  justifyContent: 'flex-end',
-  textAlign: 'right'
-})
-
-const StyledDate = styled('span')<{
-  styledToPay?: boolean
-  styledPaid?: boolean
-}>(({styledToPay, styledPaid}) => ({
-  fontSize: 13,
-  color: styledToPay || styledPaid ? 'var(--color-fg-secondary)' : PALETTE.TOMATO_500
-}))
-
-const PayURL = styled('a')({
-  color: 'var(--color-accent)',
-  fontWeight: 600,
-  textDecoration: 'none'
-})
 
 interface Props {
   invoice: InvoiceRow_invoice$key
@@ -83,35 +38,47 @@ const InvoiceRow = (props: Props) => {
         rel='noopener noreferrer'
         className='flex w-full flex-row items-center justify-between text-fg-primary no-underline'
       >
-        <FileIcon isEstimate={isEstimate} />
-        <InvoiceInfo>
-          <InfoRow>
-            <InvoiceTitle>
+        <Receipt className={isEstimate ? 'text-accent' : 'text-fg-secondary'} />
+        <RowInfo className='w-full'>
+          <div className='flex w-full items-center'>
+            <RowInfoHeading>
               {status === 'UPCOMING'
                 ? `Due on ${makeDateString(periodEndAt)}`
                 : `${makeDateString(periodEndAt)}`}
-            </InvoiceTitle>
-            <InfoRowRight>
-              <InvoiceAmount>
+            </RowInfoHeading>
+            <div className='flex-1 justify-end text-right'>
+              <span className='text-base text-fg-primary leading-6'>
                 {isEstimate && '*'}
                 {invoiceLineFormat(total)}
-              </InvoiceAmount>
-            </InfoRowRight>
-          </InfoRow>
-          <InfoRow>
+              </span>
+            </div>
+          </div>
+          <div className='flex w-full items-center'>
             {status === 'UPCOMING' && (
-              <StyledDate styledToPay>{isEstimate && '*Current estimate. '}</StyledDate>
+              <span className='text-[13px] text-fg-secondary'>
+                {isEstimate && '*Current estimate. '}
+              </span>
             )}
-            {status === 'PAID' && <StyledDate styledPaid>{'Paid'}</StyledDate>}
+            {status === 'PAID' && <span className='text-[13px] text-fg-secondary'>{'Paid'}</span>}
             {status !== 'PAID' && status !== 'UPCOMING' && (
-              <StyledDate styledPaid={status === 'PENDING'}>
-                <PayURL rel='noopener noreferrer' target='_blank' href={payUrl}>
+              <span
+                className={cn(
+                  'text-[13px]',
+                  status === 'PENDING' ? 'text-fg-secondary' : 'text-fg-error'
+                )}
+              >
+                <a
+                  rel='noopener noreferrer'
+                  target='_blank'
+                  href={payUrl}
+                  className='font-semibold text-accent no-underline'
+                >
                   {'PAY NOW'}
-                </PayURL>
-              </StyledDate>
+                </a>
+              </span>
             )}
-          </InfoRow>
-        </InvoiceInfo>
+          </div>
+        </RowInfo>
       </a>
     </Row>
   )

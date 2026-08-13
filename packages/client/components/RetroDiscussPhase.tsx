@@ -1,11 +1,11 @@
 import {datadogRum} from '@datadog/browser-rum'
-import {ThumbUp} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroDiscussPhase_meeting$key} from '~/__generated__/RetroDiscussPhase_meeting.graphql'
 import useBreakpoint from '~/hooks/useBreakpoint'
 import useCallbackRef from '~/hooks/useCallbackRef'
 import useRightDrawer from '~/hooks/useRightDrawer'
+import {ThumbUp} from '~/ui/icons'
 import EditorHelpModalContainer from '../containers/EditorHelpModalContainer/EditorHelpModalContainer'
 import {Breakpoint, DiscussionThreadEnum} from '../types/constEnums'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
@@ -111,7 +111,7 @@ const RetroDiscussPhase = (props: Props) => {
               <div className='mb-3 flex items-center'>
                 <div className='relative text-2xl'>{`"${title}"`}</div>
                 <div className='ml-4 flex items-center rounded-[5em] bg-surface-well px-3 py-0.5 font-semibold text-accent text-base'>
-                  <ThumbUp sx={{fontSize: 18}} className='mr-0.5' />
+                  <ThumbUp className='mr-0.5 text-[18px]' />
                   {voteCount || 0}
                 </div>
               </div>

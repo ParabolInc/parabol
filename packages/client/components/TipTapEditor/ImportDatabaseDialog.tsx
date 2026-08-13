@@ -1,4 +1,3 @@
-import CircularProgress from '@mui/material/CircularProgress'
 import type {Editor, EditorEvents} from '@tiptap/react'
 import {useEffect, useMemo, useState} from 'react'
 import useAtmosphere from '../../hooks/useAtmosphere'
@@ -6,15 +5,15 @@ import {getPageLinks} from '../../shared/tiptap/getPageLinks'
 import {isPageLink} from '../../shared/tiptap/isPageLink'
 import {getRecordHeaders, importRecords} from '../../tiptap/extensions/database/importRecords'
 import {providerManager} from '../../tiptap/providerManager'
+import {Button} from '../../ui/Button/Button'
 import {Checkbox} from '../../ui/Checkbox/Checkbox'
 import {Dialog} from '../../ui/Dialog/Dialog'
 import {DialogActions} from '../../ui/Dialog/DialogActions'
 import {DialogContent} from '../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../ui/Dialog/DialogTitle'
+import {Spinner} from '../../ui/Spinner/Spinner'
 import {parseDatabaseImport} from '../../utils/parseDatabaseImport'
 import plural from '../../utils/plural'
-import FlatPrimaryButton from '../FlatPrimaryButton'
-import SecondaryButton from '../SecondaryButton'
 
 declare module '@tiptap/core' {
   interface EditorEvents {
@@ -173,7 +172,7 @@ export const ImportDatabaseDialog = (props: Props) => {
         <DialogTitle className='mb-4'>Import Data</DialogTitle>
         {isImporting && (
           <div className='absolute top-0 left-0 z-10 flex h-full w-full items-center justify-center bg-surface-card/50'>
-            <CircularProgress />
+            <Spinner />
           </div>
         )}
         <div className='mb-3 text-left font-semibold text-fg-secondary text-sm'>
@@ -239,12 +238,12 @@ export const ImportDatabaseDialog = (props: Props) => {
           </div>
         </div>
         <DialogActions className='mt-0 flex w-full gap-4'>
-          <SecondaryButton size='medium' onClick={onUpload}>
+          <Button variant='outline' size='md' onClick={onUpload}>
             Cancel & Upload
-          </SecondaryButton>
-          <FlatPrimaryButton size='medium' onClick={onImport}>
+          </Button>
+          <Button variant='primary' size='md' onClick={onImport}>
             Import
-          </FlatPrimaryButton>
+          </Button>
         </DialogActions>
       </DialogContent>
     </Dialog>

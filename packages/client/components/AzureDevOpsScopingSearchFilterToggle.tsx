@@ -1,30 +1,11 @@
-import styled from '@emotion/styled'
-import {FilterList} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
-import {PALETTE} from '~/styles/paletteV3'
+import {Button} from '~/ui/Button/Button'
+import {FilterList} from '~/ui/icons'
 import type {AzureDevOpsScopingSearchFilterToggle_meeting$key} from '../__generated__/AzureDevOpsScopingSearchFilterToggle_meeting.graphql'
 import AzureDevOpsScopingSearchFilterMenu from './AzureDevOpsScopingSearchFilterMenu'
-import FlatButton from './FlatButton'
-
-const StyledButton = styled(FlatButton)({
-  height: 24,
-  marginLeft: 4,
-  padding: 0,
-  width: 24,
-  background: PALETTE.SKY_500,
-  '&:hover': {
-    background: PALETTE.SKY_500
-  }
-})
-
-const FilterIcon = styled(FilterList)({
-  color: PALETTE.WHITE,
-  width: 18,
-  height: 18
-})
 
 interface Props {
   meeting: AzureDevOpsScopingSearchFilterToggle_meeting$key
@@ -47,9 +28,15 @@ const AzureDevOpsScopingSearchFilterToggle = (props: Props) => {
   })
   return (
     <>
-      <StyledButton onClick={togglePortal} ref={originRef}>
-        <FilterIcon />
-      </StyledButton>
+      <Button
+        variant='flat'
+        size='sm'
+        className='ml-1 h-6 w-6 bg-sky-500 p-0 hover:bg-sky-500'
+        onClick={togglePortal}
+        ref={originRef}
+      >
+        <FilterList className='h-[18px] w-[18px] text-white' />
+      </Button>
       {menuPortal(<AzureDevOpsScopingSearchFilterMenu meeting={meeting} menuProps={menuProps} />)}
     </>
   )

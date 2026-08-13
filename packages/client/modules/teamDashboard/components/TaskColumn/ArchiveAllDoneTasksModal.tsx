@@ -1,7 +1,7 @@
-import FlatButton from '../../../../components/FlatButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import BatchArchiveTasksMutation from '../../../../mutations/BatchArchiveTasksMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -32,18 +32,22 @@ const ArchiveAllDoneTasksModal = (props: Props) => {
           This action will archive all <b>Done</b> tasks. Are you sure you want to proceed?
         </div>
         <div className='flex w-full justify-end gap-2'>
-          <FlatButton
+          <Button
+            variant='flat'
+            size='sm'
             onClick={closeModal}
-            className='bg-slate-500 font-semibold text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
+            className='bg-slate-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-slate-700 focus:bg-slate-700'
           >
             {'Cancel'}
-          </FlatButton>
-          <FlatButton
+          </Button>
+          <Button
+            variant='flat'
+            size='sm'
             onClick={onSubmit}
-            className='bg-sky-500 font-semibold text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
+            className='bg-sky-500 font-semibold text-sm text-white duration-300 ease-in-out hover:bg-sky-700 focus:bg-sky-700'
           >
             {'Confirm'}
-          </FlatButton>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

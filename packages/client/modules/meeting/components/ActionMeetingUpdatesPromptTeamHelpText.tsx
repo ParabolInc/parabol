@@ -1,16 +1,7 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember$key} from '../../../__generated__/ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember.graphql'
 import useAtmosphere from '../../../hooks/useAtmosphere'
-
-const AgendaControl = styled('span')({
-  color: 'var(--color-accent)',
-  cursor: 'pointer',
-  '&:hover': {
-    textDecoration: 'underline'
-  }
-})
 
 interface Props {
   currentMeetingMember: ActionMeetingUpdatesPromptTeamHelpText_currentMeetingMember$key
@@ -38,7 +29,9 @@ const ActionMeetingUpdatesPromptTeamHelpText = (props: Props) => {
   return (
     <span>
       <span>{!isConnectedAt ? '(' : `(${preferredName} is sharing. `}</span>
-      <AgendaControl onClick={handleAgendaControl}>{'Add agenda items'}</AgendaControl>
+      <span className='cursor-pointer text-accent hover:underline' onClick={handleAgendaControl}>
+        {'Add agenda items'}
+      </span>
       {' for discussion.)'}
     </span>
   )

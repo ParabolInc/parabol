@@ -1,9 +1,9 @@
-import UploadFileIcon from '@mui/icons-material/UploadFile'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useRef, useState} from 'react'
 import {commitLocalUpdate, useFragment} from 'react-relay'
 import {Link} from 'react-router'
+import {UploadFile as UploadFileIcon} from '~/ui/icons'
 import type {OrgAuthenticationMetadata_saml$key} from '../../../../__generated__/OrgAuthenticationMetadata_saml.graphql'
 import orgAuthenticationMetadataQuery, {
   type OrgAuthenticationMetadataQuery

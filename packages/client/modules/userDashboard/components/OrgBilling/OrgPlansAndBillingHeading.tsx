@@ -1,62 +1,10 @@
-import styled from '@emotion/styled'
-import {Article} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {commitLocalUpdate, useFragment} from 'react-relay'
+import {Article} from '~/ui/icons'
 import type {OrgPlansAndBillingHeading_organization$key} from '../../../../__generated__/OrgPlansAndBillingHeading_organization.graphql'
 import PlainButton from '../../../../components/PlainButton/PlainButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
-import {ElementWidth} from '../../../../types/constEnums'
 import {upperFirst} from '../../../../utils/upperFirst'
-
-const Wrapper = styled('div')({
-  alignItems: 'center',
-  color: 'var(--color-fg-primary)',
-  display: 'flex',
-  justifyContent: 'space-between',
-  lineHeight: '24px',
-  padding: '16px 0px',
-  flexWrap: 'wrap',
-  maxWidth: ElementWidth.PANEL_WIDTH,
-  position: 'relative'
-})
-
-const Title = styled('h1')({
-  alignItems: 'center',
-  display: 'flex',
-  fontSize: 20,
-  fontWeight: 600,
-  margin: 0,
-  width: '100%'
-})
-
-const Subtitle = styled('span')<{isBold?: boolean}>(({isBold}) => ({
-  fontWeight: isBold ? 600 : 400
-}))
-
-const SubtitleBlock = styled('p')({
-  margin: 0,
-  padding: '8px 0px'
-})
-
-const StyledIcon = styled('div')({
-  color: 'var(--color-accent)',
-  height: 20,
-  width: 20,
-  padding: 0,
-  alignContent: 'center'
-})
-
-const StyledButton = styled(PlainButton)({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column'
-})
-
-const Label = styled('span')({
-  fontWeight: 600,
-  fontSize: 12,
-  lineHeight: '28px'
-})
 
 type Props = {
   organizationRef: OrgPlansAndBillingHeading_organization$key
@@ -90,22 +38,24 @@ const OrgPlansAndBillingHeading = (props: Props) => {
   }
 
   return (
-    <Wrapper>
-      <Title>{'Plans & Billing'}</Title>
-      <SubtitleBlock>
-        <Subtitle isBold>{name}</Subtitle>
-        <Subtitle>{` is currently on ${
+    <div className='relative flex max-w-[976px] flex-wrap items-center justify-between py-4 text-fg-primary leading-6'>
+      <h1 className='m-0 flex w-full items-center font-semibold text-[20px]'>
+        {'Plans & Billing'}
+      </h1>
+      <p className='m-0 py-2'>
+        <span className='font-semibold'>{name}</span>
+        <span className='font-normal'>{` is currently on ${
           tier !== billingTier ? 'a Free Trial for ' : ''
-        }the `}</Subtitle>
-        <Subtitle isBold>{`${tierName} Plan.`}</Subtitle>
-      </SubtitleBlock>
-      <StyledButton onClick={handleClick}>
-        <StyledIcon>
+        }the `}</span>
+        <span className='font-semibold'>{`${tierName} Plan.`}</span>
+      </p>
+      <PlainButton className='flex flex-col items-center' onClick={handleClick}>
+        <div className='h-5 w-5 content-center p-0 text-accent'>
           <Article />
-        </StyledIcon>
-        <Label>{'Plan Details'}</Label>
-      </StyledButton>
-    </Wrapper>
+        </div>
+        <span className='font-semibold text-[12px] leading-[28px]'>{'Plan Details'}</span>
+      </PlainButton>
+    </div>
   )
 }
 

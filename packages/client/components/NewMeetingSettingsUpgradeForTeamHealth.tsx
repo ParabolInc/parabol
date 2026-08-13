@@ -1,28 +1,12 @@
-import styled from '@emotion/styled'
-import {Lock} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useEffect} from 'react'
 import {useFragment} from 'react-relay'
 import type {NewMeetingSettingsUpgradeForTeamHealth_team$key} from '~/__generated__/NewMeetingSettingsUpgradeForTeamHealth_team.graphql'
+import {Lock} from '~/ui/icons'
 import useAtmosphere from '../hooks/useAtmosphere'
+import {cn} from '../ui/cn'
 import SendClientSideEvent from '../utils/SendClientSideEvent'
 import PlainButton from './PlainButton/PlainButton'
-
-const ButtonRow = styled(PlainButton)({
-  background: 'var(--color-surface-well)',
-  borderRadius: '8px',
-  display: 'flex',
-  fontSize: 14,
-  fontWeight: 600,
-  userSelect: 'none',
-  width: '100%',
-  ':hover': {
-    backgroundColor: 'var(--color-surface-hover)'
-  },
-  height: '72px',
-  padding: '12px 16px',
-  alignItems: 'center'
-})
 
 interface Props {
   teamRef: NewMeetingSettingsUpgradeForTeamHealth_team$key
@@ -62,7 +46,13 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
   }
 
   return (
-    <ButtonRow className={className} onClick={handleUpgrade}>
+    <PlainButton
+      className={cn(
+        'flex h-[72px] w-full select-none items-center rounded-lg bg-surface-well px-4 py-3 font-semibold text-[14px] hover:bg-surface-hover',
+        className
+      )}
+      onClick={handleUpgrade}
+    >
       <div className='mt-1 flex w-full flex-col'>
         <div className='flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-fg-secondary text-xl'>
           Health Check
@@ -72,7 +62,7 @@ const NewMeetingSettingsToggleTeamHealth = (props: Props) => {
         </div>
       </div>
       <Lock className='m-0.5 text-fg-secondary' />
-    </ButtonRow>
+    </PlainButton>
   )
 }
 

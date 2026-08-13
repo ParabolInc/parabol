@@ -1,63 +1,12 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import useDocumentTitle from '~/hooks/useDocumentTitle'
+import {Button} from '~/ui/Button/Button'
 import type {NewTeamQuery} from '../../__generated__/NewTeamQuery.graphql'
 import IconLabel from '../../components/IconLabel'
-import LinkButton from '../../components/LinkButton'
 import useBreakpoint from '../../hooks/useBreakpoint'
-import {cardShadow} from '../../styles/elevation'
 import {ExternalLinks} from '../../types/constEnums'
 import NewTeamForm from './components/NewTeamForm/NewTeamForm'
-
-const NewTeamLayout = styled('div')({
-  alignItems: 'center',
-  backgroundColor: 'var(--color-surface-app)',
-  display: 'flex',
-  flex: 1,
-  flexDirection: 'column',
-  justifyContent: 'center',
-  width: '100%'
-})
-
-const NewTeamInner = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  maxWidth: 960,
-  width: '100%'
-})
-
-const HelpLayout = styled('div')({
-  paddingTop: 108
-})
-
-const HelpBlock = styled('div')({
-  backgroundColor: 'var(--color-surface-card)',
-  borderRadius: 4,
-  boxShadow: cardShadow,
-  color: 'var(--color-fg-primary)',
-  margin: '16px 0',
-  padding: 16,
-  width: 272
-})
-
-const HelpHeading = styled('div')({
-  fontSize: 16,
-  fontWeight: 600,
-  lineHeight: 1.5,
-  margin: 0
-})
-
-const HelpCopy = styled('div')({
-  fontSize: 12,
-  lineHeight: 1.5,
-  margin: '8px 0'
-})
-
-const LearnMoreLink = styled(LinkButton)({
-  height: 32,
-  margin: '0 auto'
-})
 
 interface Props {
   defaultOrgId: string
@@ -88,36 +37,37 @@ const NewTeam = (props: Props) => {
     : undefined
 
   return (
-    <NewTeamLayout>
-      <NewTeamInner>
+    <div className='flex w-full flex-1 flex-col items-center justify-center bg-surface-app'>
+      <div className='flex w-full max-w-[960px] justify-center'>
         <NewTeamForm
           isInitiallyNewOrg={organizations.length === 0}
           defaultOrgId={validDefaultOrgId}
           organizationsRef={organizations}
         />
         {isDesktop && (
-          <HelpLayout>
-            <HelpBlock>
-              <HelpHeading>{'What’s an Organization?'}</HelpHeading>
-              <HelpCopy>
+          <div className='pt-[108px]'>
+            <div className='my-4 w-[272px] rounded bg-surface-card p-4 text-fg-primary shadow-[var(--shadow-card)]'>
+              <div className='font-semibold text-base'>{'What’s an Organization?'}</div>
+              <div className='my-2 text-xs leading-[1.5]'>
                 {`It’s the billing entity for a group of teams
                 such as a company, non-profit, or
                 for your personal use. Once created, you can
                 create teams and invite others, even if they
                 don't share your email domain. New Organizations
                 start out on the Free Starter Plan.`}
-              </HelpCopy>
-              <LearnMoreLink
-                palette='blue'
+              </div>
+              <Button
+                size='default'
+                className='mx-auto h-8 bg-transparent p-0 text-[14px] text-sky-500 leading-5 shadow-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
                 onClick={() => window.open(ExternalLinks.PRICING_LINK, '_blank')}
               >
                 <IconLabel icon='open_in_new' iconAfter label='Learn More' />
-              </LearnMoreLink>
-            </HelpBlock>
-          </HelpLayout>
+              </Button>
+            </div>
+          </div>
         )}
-      </NewTeamInner>
-    </NewTeamLayout>
+      </div>
+    </div>
   )
 }
 

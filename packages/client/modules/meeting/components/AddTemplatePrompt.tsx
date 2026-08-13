@@ -1,32 +1,13 @@
-import styled from '@emotion/styled'
-import {Add} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
 import {Threshold} from '~/types/constEnums'
+import {Button} from '~/ui/Button/Button'
+import {Add} from '~/ui/icons'
 import type {AddTemplatePrompt_prompts$key} from '../../../__generated__/AddTemplatePrompt_prompts.graphql'
-import LinkButton from '../../../components/LinkButton'
 import AddReflectTemplatePromptMutation from '../../../mutations/AddReflectTemplatePromptMutation'
 import {positionAfter} from '../../../shared/sortOrder'
-
-const AddPromptLink = styled(LinkButton)({
-  alignItems: 'center',
-  display: 'flex',
-  justifyContent: 'flex-start',
-  fontSize: 16,
-  // fontWeight: 600,
-  lineHeight: '24px',
-  margin: 0,
-  marginBottom: 16,
-  outline: 'none',
-  padding: '4px 0'
-})
-
-const AddPromptLinkPlus = styled(Add)({
-  display: 'block',
-  margin: '0 16px 0 16px'
-})
 
 interface Props {
   prompts: AddTemplatePrompt_prompts$key
@@ -66,10 +47,15 @@ const AddTemplatePrompt = (props: Props) => {
   }
   if (prompts.length >= Threshold.MAX_REFLECTION_PROMPTS) return null
   return (
-    <AddPromptLink palette='blue' onClick={addPrompt} waiting={submitting}>
-      <AddPromptLinkPlus />
+    <Button
+      size='default'
+      onClick={addPrompt}
+      disabled={submitting}
+      className='m-0 mb-4 flex items-center justify-start bg-transparent p-0 px-0 py-1 text-[14px] text-base text-sky-500 leading-5 shadow-none outline-none hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+    >
+      <Add className='mx-4 block' />
       <div>Add another prompt</div>
-    </AddPromptLink>
+    </Button>
   )
 }
 

@@ -1,15 +1,20 @@
-import styled from '@emotion/styled'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../../ui/cn'
 
-export const TeamPromptBadge = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  fontSize: 14,
-  fontWeight: 600,
-  padding: '6px 16px 6px 16px',
-  backgroundColor: 'var(--color-surface-card)',
-  color: 'var(--color-fg-primary)',
-  borderRadius: '100vmax',
-  minHeight: 34,
-  userSelect: 'none'
-})
+export const TeamPromptBadge = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>(
+  (props, ref) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'flex min-h-[34px] select-none items-center justify-center rounded-full bg-surface-card px-4 py-[6px] font-semibold text-[14px] text-fg-primary',
+          className
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
+    )
+  }
+)

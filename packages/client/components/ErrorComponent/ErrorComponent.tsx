@@ -1,7 +1,7 @@
-import styled from '@emotion/styled'
 import {useState} from 'react'
-import PrimaryButton from '~/components/PrimaryButton'
 import ReportErrorFeedback, {ERROR_FEEDBACK_ENABLED} from '~/components/ReportErrorFeedback'
+import {Button} from '~/ui/Button/Button'
+import {twStyled} from '../../ui/twStyled'
 import {
   isExtensionError,
   isIgnoredError,
@@ -9,23 +9,9 @@ import {
   isOldBrowserError
 } from '../../utils/errorFilters'
 
-const ErrorBlock = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  textAlign: 'center',
-  width: '100%',
-  height: '100%'
-})
-
-const Button = styled(PrimaryButton)({
-  marginTop: 8
-})
-
-const Link = styled('a')({
-  color: 'inherit'
-})
+const ErrorBlock = twStyled('div')(
+  'flex h-full w-full flex-col items-center justify-center text-center'
+)
 
 interface Props {
   error: Error
@@ -47,7 +33,14 @@ const ErrorComponent = (props: Props) => {
           it that can crash apps like ours.
         </div>
         <div>If this continues, please disable the extension</div>
-        <Button onClick={() => window.location.reload()}>Refresh the page</Button>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mt-2'
+          onClick={() => window.location.reload()}
+        >
+          Refresh the page
+        </Button>
       </ErrorBlock>
     )
   }
@@ -57,10 +50,10 @@ const ErrorComponent = (props: Props) => {
     return (
       <ErrorBlock>
         {"Oh no! You've found a bug because the browser you're using needs to be updated."}
-        <Button>
-          <Link href={url} target='_blank' rel='noreferrer'>
+        <Button variant='primary' size='sm' className='mt-2'>
+          <a className='text-inherit' href={url} target='_blank' rel='noreferrer'>
             Update now
-          </Link>
+          </a>
         </Button>
       </ErrorBlock>
     )
@@ -70,7 +63,14 @@ const ErrorComponent = (props: Props) => {
     return (
       <ErrorBlock>
         There was a network issue. Please check your connection and try again.
-        <Button onClick={() => window.location.reload()}>Refresh the page</Button>
+        <Button
+          variant='primary'
+          size='sm'
+          className='mt-2'
+          onClick={() => window.location.reload()}
+        >
+          Refresh the page
+        </Button>
       </ErrorBlock>
     )
   }
@@ -79,7 +79,9 @@ const ErrorComponent = (props: Props) => {
     <ErrorBlock>
       {'An error has occurred! We’ve alerted the developers. Try refreshing the page'}
       {ERROR_FEEDBACK_ENABLED && eventId && (
-        <Button onClick={() => setIsOpen(true)}>Report Feedback</Button>
+        <Button variant='primary' size='sm' className='mt-2' onClick={() => setIsOpen(true)}>
+          Report Feedback
+        </Button>
       )}
       <ReportErrorFeedback
         isOpen={isOpen}

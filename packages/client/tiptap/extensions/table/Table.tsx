@@ -1,5 +1,4 @@
 import {Parser} from '@json2csv/plainjs'
-import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import {type TableOptions, Table as TiptapTable} from '@tiptap/extension-table'
 import {
@@ -9,6 +8,7 @@ import {
   ReactNodeViewRenderer
 } from '@tiptap/react'
 import {useRef, useState} from 'react'
+import {FileDownload as FileDownloadIcon} from '~/ui/icons'
 import PlainButton from '../../../components/PlainButton/PlainButton'
 import {toSlug} from '../../../shared/toSlug'
 import {quickHash} from '../../../shared/utils/quickHash'
@@ -177,7 +177,7 @@ function Component(props: NodeViewProps) {
           <DropdownMenu.Content
             side='bottom'
             align='start'
-            className='z-1 rounded bg-surface-card p-2 shadow-lg'
+            className='z-1 rounded bg-surface-card p-2 shadow-[var(--shadow-card-raised)]'
           >
             <Item
               onFocus={focus('header')}

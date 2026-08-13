@@ -6,11 +6,11 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import gitHubSVG from '../../../styles/theme/images/graphics/github-circle.svg'
 import {Button} from '../../../ui/Button/Button'
 import {cn} from '../../../ui/cn'
 import GitHubClientManager from '../../../utils/GitHubClientManager'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import GitHubSVG from '../../GitHubSVG'
 import GitHubIntegrationResultsRoot from './GitHubIntegrationResultsRoot'
 import GitHubRepoFilterBar from './GitHubRepoFilterBar'
 import InspirationItemsPanel from './InspirationItemsPanel'
@@ -175,7 +175,7 @@ const GitHubIntegrationPanel = (props: Props) => {
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>
           <div className='h-10 w-10'>
-            <img className='h-10 w-10' src={gitHubSVG} />
+            <GitHubSVG className='h-10 w-10 dark:[&_path]:fill-white' />
           </div>
           <b>Connect to GitHub</b>
           <div className='w-1/2 text-center text-sm'>

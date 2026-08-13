@@ -1,7 +1,14 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
-import {type ChangeEvent, type FormEvent, useState} from 'react'
+import {
+  type ChangeEvent,
+  type FormEvent,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  type Ref,
+  useState
+} from 'react'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {NewTeamForm_organizations$key} from '../../../../__generated__/NewTeamForm_organizations.graphql'
@@ -10,7 +17,6 @@ import DashHeaderTitle from '../../../../components/DashHeaderTitle'
 import FieldLabel from '../../../../components/FieldLabel/FieldLabel'
 import BasicTextArea from '../../../../components/InputField/BasicTextArea'
 import Panel from '../../../../components/Panel/Panel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import Radio from '../../../../components/Radio/Radio'
 import StyledError from '../../../../components/StyledError'
 import Toggle from '../../../../components/Toggle/Toggle'
@@ -20,6 +26,8 @@ import useMutationProps from '../../../../hooks/useMutationProps'
 import AddOrgMutation from '../../../../mutations/AddOrgMutation'
 import AddTeamMutation from '../../../../mutations/AddTeamMutation'
 import {Threshold} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 import {Tooltip} from '../../../../ui/Tooltip/Tooltip'
 import {TooltipContent} from '../../../../ui/Tooltip/TooltipContent'
 import {TooltipTrigger} from '../../../../ui/Tooltip/TooltipTrigger'
@@ -33,69 +41,24 @@ import NewTeamFormBlock from './NewTeamFormBlock'
 import NewTeamFormOrgName from './NewTeamFormOrgName'
 import NewTeamFormTeamName from './NewTeamFormTeamName'
 
-const StyledForm = styled('form')({
-  margin: 0,
-  maxWidth: '40rem',
-  padding: 16,
-  width: '100%'
-})
-
-const StyledPanel = styled(Panel)({
-  margin: '16px 0'
-})
-
-const Header = styled('div')({
-  alignItems: 'center',
-  display: 'flex',
-  height: 24,
-  margin: '0 0 16px',
-  width: '100%'
-})
-
-const FormHeading = styled(DashHeaderTitle)({
-  margin: 0,
-  padding: 0,
-  width: '100%'
-})
-
-const FormInner = styled('div')({
-  padding: '2rem'
-})
-
-const BoldText = styled('span')({
-  fontWeight: 600
-})
-
-export const NewTeamFieldBlock = styled('div')({
-  width: '16rem'
-})
-
-const StyledButton = styled(PrimaryButton)({
-  margin: '0 auto',
-  marginTop: 24,
-  width: '16rem'
-})
-
-const WarningMsg = styled('div')({
-  background: 'var(--color-gold-100)',
-  color: 'var(--color-slate-700)',
-  padding: '16px 24px',
-  fontSize: 16,
-  borderRadius: 2,
-  lineHeight: '26px',
-  fontWeight: 500,
-  marginTop: 24
-})
-
-const StyledLink = styled('span')({
-  color: 'var(--color-accent)',
-  cursor: 'pointer',
-  outline: 0,
-  fontWeight: 600,
-  ':hover, :focus, :active': {
-    color: 'var(--color-sky-600)'
+export const NewTeamFieldBlock = forwardRef(
+  (props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) => {
+    const {className, ...rest} = props
+    return <div {...rest} ref={ref} className={cn('w-64', className)} />
   }
-})
+)
+
+const StyledLink = (props: {onClick: () => void; children: ReactNode}) => {
+  const {onClick, children} = props
+  return (
+    <span
+      className='cursor-pointer font-semibold text-accent outline-0 hover:text-sky-600 focus:text-sky-600 active:text-sky-600'
+      onClick={onClick}
+    >
+      {children}
+    </span>
+  )
+}
 
 const controlSize = 'medium'
 
@@ -284,12 +247,12 @@ const NewTeamForm = (props: Props) => {
   }
 
   return (
-    <StyledForm onSubmit={onSubmit}>
-      <Header>
-        <FormHeading>{'Create a New Team'}</FormHeading>
-      </Header>
-      <StyledPanel>
-        <FormInner>
+    <form className='m-0 w-full max-w-[40rem] p-4' onSubmit={onSubmit}>
+      <div className='mb-4 flex h-6 w-full items-center'>
+        <DashHeaderTitle className='m-0 w-full p-0'>{'Create a New Team'}</DashHeaderTitle>
+      </div>
+      <Panel className='my-4'>
+        <div className='p-8'>
           <NewTeamFormBlock className='w-full'>
             <FieldLabel fieldSize={controlSize} indent label='Add Team to…' />
           </NewTeamFormBlock>
@@ -326,13 +289,15 @@ const NewTeamForm = (props: Props) => {
             teamName={fields.teamName.value}
           />
           {disableFields && (
-            <WarningMsg>
-              <BoldText>{lockedSelectedOrg.name}</BoldText>
+            <div className='mt-6 rounded-[2px] bg-gold-100 px-6 py-4 font-medium text-[16px] text-slate-700 leading-[26px]'>
+              <span className='font-semibold'>{lockedSelectedOrg.name}</span>
               {` has reached the limit of `}
-              <BoldText>{`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`} </BoldText>
+              <span className='font-semibold'>
+                {`${Threshold.MAX_STARTER_TIER_TEAMS} free teams.`}{' '}
+              </span>
               <StyledLink onClick={() => goToBilling('publicTeams')}>Upgrade</StyledLink>
               {' to create more teams.'}
-            </WarningMsg>
+            </div>
           )}
           <div className='mt-8 flex items-center'>
             <div className='flex flex-1 items-start'>
@@ -405,13 +370,18 @@ const NewTeamForm = (props: Props) => {
               </label>
             </div>
           )}
-          <StyledButton disabled={disableFields} size='large' waiting={submitting}>
+          <Button
+            variant='primary'
+            className='mx-auto mt-6 mb-0 w-64'
+            disabled={disableFields || submitting}
+            size='lg'
+          >
             {isNewOrg ? 'Create Team & Org' : 'Create Team'}
-          </StyledButton>
+          </Button>
           {error && <StyledError>{error.message}</StyledError>}
-        </FormInner>
-      </StyledPanel>
-    </StyledForm>
+        </div>
+      </Panel>
+    </form>
   )
 }
 

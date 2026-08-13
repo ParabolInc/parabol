@@ -1,36 +1,6 @@
-import styled from '@emotion/styled'
 import {type ReactNode, useState} from 'react'
 import type {NotificationStatusEnum} from '../__generated__/NotificationDropdown_query.graphql'
-import {PALETTE} from '../styles/paletteV3'
-
-const Row = styled('div')<{isNew: boolean}>(({isNew}) => ({
-  background: isNew ? 'var(--color-surface-well)' : 'var(--color-surface-card)',
-  cursor: 'default',
-  display: 'flex',
-  width: '100%'
-}))
-
-const Avatar = styled('img')<{isParabol: boolean}>(({isParabol}) => ({
-  background: '#fff',
-  borderRadius: '100%',
-  border: isParabol ? `solid 1px var(--color-hairline-strong)` : undefined,
-  height: 40,
-  margin: 12,
-  padding: isParabol ? 2 : undefined,
-  width: 40
-}))
-
-const NewDotColumn = styled('div')({
-  padding: 12
-})
-
-const Dot = styled('div')<{isNew: boolean}>(({isNew}) => ({
-  background: PALETTE.ROSE_500,
-  borderRadius: 10,
-  height: 8,
-  width: 8,
-  visibility: isNew ? undefined : 'hidden'
-}))
+import {cn} from '../ui/cn'
 
 interface Props {
   avatar: string
@@ -45,13 +15,24 @@ const NotificationRow = (props: Props) => {
   const isClicked = initialStatus === 'CLICKED'
   const isNew = initialStatus === 'UNREAD'
   return (
-    <Row isNew={!isClicked}>
-      <Avatar isParabol={isParabol} src={avatar} />
+    <div
+      className={cn(
+        'flex w-full cursor-default',
+        !isClicked ? 'bg-surface-well' : 'bg-surface-card'
+      )}
+    >
+      <img
+        className={cn(
+          'm-3 h-10 w-10 rounded-full bg-white',
+          isParabol && 'border border-hairline-strong border-solid p-0.5'
+        )}
+        src={avatar}
+      />
       {children}
-      <NewDotColumn>
-        <Dot isNew={isNew} />
-      </NewDotColumn>
-    </Row>
+      <div className='p-3'>
+        <div className={cn('h-2 w-2 rounded-[10px] bg-rose-500', !isNew && 'invisible')} />
+      </div>
+    </div>
   )
 }
 

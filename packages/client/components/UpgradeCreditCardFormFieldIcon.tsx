@@ -1,21 +1,25 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
+import {cn} from '../ui/cn'
 
-interface StyleProps {
+interface Props extends ComponentPropsWithoutRef<'div'> {
   hasError: boolean
 }
 
-const UpgradeCreditCardFormFieldIcon = styled('div')<StyleProps>(({hasError}) => ({
-  color: hasError ? PALETTE.TOMATO_500 : 'var(--color-fg-secondary)',
-  display: 'block',
-  height: 24,
-  width: 24,
-  svg: {
-    fontSize: 18
-  },
-  opacity: 0.5,
-  paddingLeft: 8,
-  textAlign: 'center'
-}))
+const UpgradeCreditCardFormFieldIcon = forwardRef((props: Props, ref: Ref<HTMLDivElement>) => {
+  const {className, children, hasError, ...rest} = props
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'block h-6 w-6 pl-2 text-center opacity-50 [&_svg]:text-[18px]',
+        hasError ? 'text-fg-error' : 'text-fg-secondary',
+        className
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
+})
 
 export default UpgradeCreditCardFormFieldIcon

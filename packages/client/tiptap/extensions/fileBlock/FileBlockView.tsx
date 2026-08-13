@@ -1,19 +1,21 @@
-import AudioFileIcon from '@mui/icons-material/AudioFile'
-import CodeIcon from '@mui/icons-material/Code'
-import DescriptionIcon from '@mui/icons-material/Description'
-import EditIcon from '@mui/icons-material/Edit'
-import FilePresentIcon from '@mui/icons-material/FilePresent'
-import ImageIcon from '@mui/icons-material/Image'
-import InventoryIcon from '@mui/icons-material/Inventory'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf'
-import SlideshowIcon from '@mui/icons-material/Slideshow'
-import TableChartIcon from '@mui/icons-material/TableChart'
-import TextSnippetIcon from '@mui/icons-material/TextSnippet'
-import VideoFileIcon from '@mui/icons-material/VideoFile'
-import {useEventCallback} from '@mui/material'
 import {type NodeViewProps, NodeViewWrapper} from '@tiptap/react'
 import {useEffect, useRef, useState} from 'react'
+import useEventCallback from '~/hooks/useEventCallback'
+import {
+  AudioFile as AudioFileIcon,
+  Code as CodeIcon,
+  Description as DescriptionIcon,
+  Edit as EditIcon,
+  FilePresent as FilePresentIcon,
+  Image as ImageIcon,
+  Inventory as InventoryIcon,
+  MoreVert as MoreVertIcon,
+  PictureAsPdf as PictureAsPdfIcon,
+  Slideshow as SlideshowIcon,
+  TableChart as TableChartIcon,
+  TextSnippet as TextSnippetIcon,
+  VideoFile as VideoFileIcon
+} from '~/ui/icons'
 import type {FileBlockAttrs} from '../../../shared/tiptap/extensions/FileBlockBase'
 import {Menu} from '../../../ui/Menu/Menu'
 import {MenuContent} from '../../../ui/Menu/MenuContent'

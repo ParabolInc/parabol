@@ -1,10 +1,8 @@
-import AddIcon from '@mui/icons-material/Add'
-import DeleteIcon from '@mui/icons-material/Delete'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type * as Y from 'yjs'
+import {Add as AddIcon, Delete as DeleteIcon, MoreVert as MoreVertIcon} from '~/ui/icons'
 import type {PageActions_page$key} from '../../__generated__/PageActions_page.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {useArchivePageMutation} from '../../mutations/useArchivePageMutation'
@@ -111,7 +109,13 @@ export const PageActions = (props: Props) => {
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MoreVertIcon className='hidden size-5 group-hover:block' />
+                    <button
+                      type='button'
+                      aria-label={'More page actions'}
+                      className='hidden size-5 cursor-pointer items-center justify-center group-hover:flex'
+                    >
+                      <MoreVertIcon className='size-5' />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
                 </Tooltip>

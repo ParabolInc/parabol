@@ -1,13 +1,11 @@
-import CheckIcon from '@mui/icons-material/Check'
-import CloseIcon from '@mui/icons-material/Close'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useMutation} from 'react-relay'
+import {Check as CheckIcon, Close as CloseIcon, ContentCopy as ContentCopyIcon} from '~/ui/icons'
 import type {OAuthAppFormContentCreateMutation} from '../../../../__generated__/OAuthAppFormContentCreateMutation.graphql'
 import ErrorAlert from '../../../../components/ErrorAlert/ErrorAlert'
 import BasicInput from '../../../../components/InputField/BasicInput'
-import SecondaryButton from '../../../../components/SecondaryButton'
+import {Button} from '../../../../ui/Button/Button'
 import {cn} from '../../../../ui/cn'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -296,7 +294,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     onClick={() => copyToClipboard(scopes.join(' ').replaceAll('_', ':'))}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
-                    <ContentCopyIcon fontSize='small' />
+                    <ContentCopyIcon className='text-[20px]' />
                   </button>
                 </div>
               </div>
@@ -327,7 +325,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     onClick={() => copyToClipboard(clientId)}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
-                    <ContentCopyIcon fontSize='small' />
+                    <ContentCopyIcon className='text-[20px]' />
                   </button>
                 </div>
               </div>
@@ -347,7 +345,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                             className='text-fg-muted hover:text-jade-600'
                             title='Confirm Regenerate'
                           >
-                            <CheckIcon fontSize='small' />
+                            <CheckIcon className='text-[20px]' />
                           </button>
                           <button
                             type='button'
@@ -355,7 +353,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                             className='text-fg-muted hover:text-tomato-600'
                             title='Cancel'
                           >
-                            <CloseIcon fontSize='small' />
+                            <CloseIcon className='text-[20px]' />
                           </button>
                         </>
                       ) : (
@@ -394,7 +392,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                       onClick={() => copyToClipboard(clientSecret)}
                       className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                     >
-                      <ContentCopyIcon fontSize='small' />
+                      <ContentCopyIcon className='text-[20px]' />
                     </button>
                   )}
                 </div>
@@ -423,7 +421,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     onClick={() => copyToClipboard(authorizeEndpoint)}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
-                    <ContentCopyIcon fontSize='small' />
+                    <ContentCopyIcon className='text-[20px]' />
                   </button>
                 </div>
               </div>
@@ -449,7 +447,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     onClick={() => copyToClipboard(tokenEndpoint)}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
-                    <ContentCopyIcon fontSize='small' />
+                    <ContentCopyIcon className='text-[20px]' />
                   </button>
                 </div>
               </div>
@@ -475,7 +473,7 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
                     onClick={() => copyToClipboard(graphqlEndpoint)}
                     className='-ml-px relative inline-flex items-center space-x-2 rounded-r-md border border-hairline bg-surface-well px-4 py-0 font-medium text-fg-primary text-sm hover:bg-surface-hover'
                   >
-                    <ContentCopyIcon fontSize='small' />
+                    <ContentCopyIcon className='text-[20px]' />
                   </button>
                 </div>
               </div>
@@ -483,9 +481,14 @@ const OAuthAppFormContent = ({orgId, isNew, initialData, onClose}: FormContentPr
           </div>
 
           <div className='flex shrink-0 justify-end border-hairline border-t bg-surface-well/50 p-6 pt-4'>
-            <SecondaryButton type='submit' disabled={isSaving || (isNew && !!clientId)}>
+            <Button
+              variant='outline'
+              size='sm'
+              type='submit'
+              disabled={isSaving || (isNew && !!clientId)}
+            >
               {isSaving ? 'Saving...' : isNew && !!clientId ? 'Saved' : 'Save Changes'}
-            </SecondaryButton>
+            </Button>
           </div>
         </form>
       </DialogContent>

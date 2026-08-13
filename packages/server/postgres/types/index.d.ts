@@ -20,6 +20,7 @@ import {
   type selectOAuthAPICode,
   type selectOAuthAPIProvider,
   type selectOrganizations,
+  type selectPageExports,
   type selectPages,
   selectPersonalAccessToken,
   type selectPoll,
@@ -33,6 +34,11 @@ import {
   type selectTasks,
   type selectTeamInvitations,
   type selectTeamMemberIntegrationAuth,
+  type selectTeamHealthCategories,
+  type selectTeamHealthQuestionPacks,
+  type selectTeamHealthQuestions,
+  type selectTeamHealthResponses,
+  type selectTeamHealthTemplateQuestions,
   type selectTeamPromptResponses,
   type selectTeams,
   type selectTemplateDimension,
@@ -109,6 +115,17 @@ export interface TeamMemberIntegrationAuth
   extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
+export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthCategories
+>
+export type TeamHealthQuestionPack = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthQuestionPacks
+>
+export type TeamHealthQuestion = ExtractTypeFromQueryBuilderSelect<typeof selectTeamHealthQuestions>
+export type TeamHealthTemplateQuestion = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamHealthTemplateQuestions
+>
+export type TeamHealthResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamHealthResponses>
 export type TemplateScale = ExtractTypeFromQueryBuilderSelect<typeof selectTemplateScale>
 
 // TODO refactor getTemplateScaleRefsByIds to kysely
@@ -214,3 +231,5 @@ export type TimelineEvent = ExtractTypeFromQueryBuilderSelect<typeof selectTimel
 export type PersonalAccessToken = ExtractTypeFromQueryBuilderSelect<
   typeof selectPersonalAccessToken
 >
+
+export type PageExport = ExtractTypeFromQueryBuilderSelect<typeof selectPageExports>

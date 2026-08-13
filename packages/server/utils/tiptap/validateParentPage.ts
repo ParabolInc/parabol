@@ -1,9 +1,9 @@
 import {GraphQLError} from 'graphql'
 import sleep from '../../../client/utils/sleep'
-import {MAX_PAGE_DEPTH} from '../../graphql/public/mutations/updatePage'
 import {PAGE_ROLES} from '../../graphql/public/rules/hasPageAccess'
 import getKysely from '../../postgres/getKysely'
 import type {Pageroleenum} from '../../postgres/types/pg'
+import {MAX_PAGE_DEPTH} from './constants'
 
 export const validateParentPage = async (
   parentPageId: number,

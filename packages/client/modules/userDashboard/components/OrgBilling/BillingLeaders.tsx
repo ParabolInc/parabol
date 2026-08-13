@@ -1,61 +1,18 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import type {BillingLeaders_organization$key} from '../../../../__generated__/BillingLeaders_organization.graphql'
-import FlatButton from '../../../../components/FlatButton'
 import IconLabel from '../../../../components/IconLabel'
 import Panel from '../../../../components/Panel/Panel'
 import Row from '../../../../components/Row/Row'
 import RowInfo from '../../../../components/Row/RowInfo'
 import RowInfoHeader from '../../../../components/Row/RowInfoHeader'
 import RowInfoHeading from '../../../../components/Row/RowInfoHeading'
-import {ElementWidth} from '../../../../types/constEnums'
+import {Button} from '../../../../ui/Button/Button'
+import {cn} from '../../../../ui/cn'
 import plural from '../../../../utils/plural'
 import BillingLeader from './BillingLeader'
 import NewBillingLeaderInput from './NewBillingLeaderInput'
-
-const StyledPanel = styled(Panel)({
-  maxWidth: ElementWidth.PANEL_WIDTH,
-  marginBottom: 16
-})
-
-const StyledRow = styled(Row)<{isAddingBillingLeader?: boolean}>(({isAddingBillingLeader}) => ({
-  padding: '12px 16px',
-  display: 'flex',
-  alignItems: 'center',
-  backgroundColor: isAddingBillingLeader ? 'var(--color-surface-well)' : 'inherit'
-}))
-
-const InfoText = styled('span')({
-  fontSize: 16,
-  paddingTop: 8,
-  color: 'var(--color-fg-primary)'
-})
-
-const StyledButton = styled(FlatButton)({
-  width: ElementWidth.BILLING_AVATAR,
-  height: ElementWidth.BILLING_AVATAR,
-  color: 'inherit',
-  ':hover': {
-    backgroundColor: 'transparent'
-  }
-})
-
-const BillingLeaderLabel = styled(RowInfoHeading)({
-  color: 'inherit',
-  fontWeight: 400
-})
-
-const ButtonWrapper = styled('div')({
-  color: 'var(--color-accent)',
-  flexDirection: 'row',
-  display: 'flex',
-  ':hover': {
-    color: 'var(--color-fg-primary)',
-    cursor: 'pointer'
-  }
-})
 
 type Props = {
   organizationRef: BillingLeaders_organization$key
@@ -90,14 +47,14 @@ const BillingLeaders = (props: Props) => {
   }
 
   return (
-    <StyledPanel label={plural(billingLeaders.length, 'Billing Leader')}>
-      <StyledRow>
-        <InfoText>
+    <Panel className='mb-4 max-w-[976px]' label={plural(billingLeaders.length, 'Billing Leader')}>
+      <Row className='bg-inherit px-4 py-3'>
+        <span className='pt-2 text-[16px] text-fg-primary'>
           {
             'All billing leaders are able to see and update credit card information, change plans, and view invoices.'
           }
-        </InfoText>
-      </StyledRow>
+        </span>
+      </Row>
       {billingLeaders.map((billingLeader, idx) => (
         <BillingLeader
           key={billingLeader.id}
@@ -108,24 +65,33 @@ const BillingLeaders = (props: Props) => {
         />
       ))}
       {isViewerBillingLeader && (
-        <StyledRow isAddingBillingLeader={isAddingBillingLeader}>
+        <Row className={cn('px-4 py-3', isAddingBillingLeader ? 'bg-surface-well' : 'bg-inherit')}>
           {isAddingBillingLeader ? (
             <NewBillingLeaderInput removeInput={removeInput} organizationRef={organization} />
           ) : (
-            <ButtonWrapper onClick={handleClick}>
-              <StyledButton>
+            <div
+              className='flex flex-row text-accent hover:cursor-pointer hover:text-fg-primary'
+              onClick={handleClick}
+            >
+              <Button
+                variant='flat'
+                size='sm'
+                className='h-11 w-11 text-inherit hover:bg-transparent'
+              >
                 <IconLabel iconLarge icon='add' />
-              </StyledButton>
+              </Button>
               <RowInfo>
                 <RowInfoHeader>
-                  <BillingLeaderLabel>Add Billing Leader</BillingLeaderLabel>
+                  <RowInfoHeading className='font-normal text-inherit'>
+                    Add Billing Leader
+                  </RowInfoHeading>
                 </RowInfoHeader>
               </RowInfo>
-            </ButtonWrapper>
+            </div>
           )}
-        </StyledRow>
+        </Row>
       )}
-    </StyledPanel>
+    </Panel>
   )
 }
 

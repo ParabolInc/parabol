@@ -1,5 +1,5 @@
-import {Lock} from '@mui/icons-material'
 import {useNavigate} from 'react-router'
+import {Lock} from '~/ui/icons'
 import plural from '../../../../utils/plural'
 
 type Props = {

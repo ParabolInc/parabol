@@ -1,9 +1,11 @@
+import {GraphQLError} from 'graphql'
 import ms from 'ms'
 import AtlassianIntegrationId from '../../../../client/shared/gqlIds/AtlassianIntegrationId'
 import getKysely from '../../../postgres/getKysely'
 import AtlassianServerManager from '../../../utils/AtlassianServerManager'
 import {processJiraImages} from '../../../utils/atlassian/jiraImages'
 import {getUserId} from '../../../utils/authorization'
+import {ConfluenceApiError, ConfluenceServerManager} from '../../../utils/ConfluenceServerManager'
 import {Logger} from '../../../utils/Logger'
 import standardError from '../../../utils/standardError'
 import type {AtlassianIntegrationResolvers} from '../resolverTypes'
@@ -120,6 +122,52 @@ const AtlassianIntegration: AtlassianIntegrationResolvers = {
   id: ({teamId, userId}) => AtlassianIntegrationId.join(teamId, userId),
 
   isActive: ({accessToken}) => !!accessToken,
+
+  scope: ({scope, userId}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !scope) return []
+    return scope.split(' ')
+  },
+
+  confluenceSites: async ({accessToken, userId}, _args, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
+    const manager = new AtlassianServerManager(accessToken)
+    const res = await manager.getAccessibleResources()
+    if (!Array.isArray(res)) return []
+    return res
+      .filter(({scopes}) => scopes.some((scope) => scope.includes('confluence')))
+      .map(({id, name, url}) => ({cloudId: id, name, url}))
+  },
+
+  confluenceSpaces: async ({accessToken, userId}, {cloudId, query}, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      const spaces = await manager.getSpaces()
+      const normalizedQuery = query?.trim().toLowerCase()
+      return normalizedQuery
+        ? spaces.filter(({name}) => name.toLowerCase().includes(normalizedQuery))
+        : spaces
+    } catch (e) {
+      if (e instanceof ConfluenceApiError && e.errorClass === 'forbidden') {
+        throw new GraphQLError('No permission to list Confluence spaces on this site')
+      }
+      return []
+    }
+  },
+
+  confluencePageSearch: async ({accessToken, userId}, {cloudId, spaceId, query}, {authToken}) => {
+    const viewerId = getUserId(authToken)
+    if (viewerId !== userId || !accessToken) return []
+    const manager = new ConfluenceServerManager(accessToken, cloudId)
+    try {
+      return await manager.searchPagesInSpace(spaceId, query)
+    } catch {
+      return []
+    }
+  },
 
   accessToken: async ({accessToken, userId}, _args, {authToken}) => {
     const viewerId = getUserId(authToken)

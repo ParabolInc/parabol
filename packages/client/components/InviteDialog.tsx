@@ -1,13 +1,20 @@
-import styled from '@emotion/styled'
-import {modalShadow} from '../styles/elevation'
-import {Radius} from '../types/constEnums'
+import {type ComponentPropsWithoutRef, forwardRef} from 'react'
+import {cn} from '../ui/cn'
 
-const InviteDialog = styled('div')({
-  background: 'var(--color-surface-card)',
-  borderRadius: Radius.DIALOG,
-  boxShadow: modalShadow,
-  display: 'flex',
-  flexDirection: 'column'
+const InviteDialog = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<'div'>>((props, ref) => {
+  const {className, children, ...rest} = props
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        'flex flex-col rounded-lg bg-surface-card shadow-[var(--shadow-dialog)]',
+        className
+      )}
+      {...rest}
+    >
+      {children}
+    </div>
+  )
 })
 
 export default InviteDialog

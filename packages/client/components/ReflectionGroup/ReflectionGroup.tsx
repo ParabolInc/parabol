@@ -1,4 +1,3 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import {AnimatePresence} from 'motion/react'
 import {type RefObject, useEffect, useMemo, useRef, useState} from 'react'
@@ -24,46 +23,9 @@ import DraggableReflectionCard from './DraggableReflectionCard'
 import SuggestedGroupBadge, {type SuggestedGroupBadgeState} from './SuggestedGroupBadge'
 import useSpotlightReflectionGroup from './useSpotlightReflectionGroup'
 
-const CardStack = styled('div')({
-  position: 'relative'
-})
-
 export const getCardStackPadding = (count: number) => {
   return Math.max(0, Math.min(3, count) - 1) * ReflectionStackPerspective.Y
 }
-
-const Group = styled('div')({
-  height: 'max-content',
-  position: 'relative',
-  paddingTop: ElementWidth.REFLECTION_CARD_PADDING,
-  paddingBottom: ElementWidth.REFLECTION_CARD_PADDING
-})
-
-const ReflectionWrapper = styled('div')<{
-  staticIdx: number
-  isDropping: boolean | null | undefined
-  groupCount: number
-  isHiddenSpotlightSource: boolean
-  skipTransition: boolean
-}>(({staticIdx, isDropping, groupCount, isHiddenSpotlightSource, skipTransition}) => {
-  const isHidden = staticIdx === -1 || isDropping || isHiddenSpotlightSource
-  const multiple = Math.max(0, Math.min(staticIdx, 2))
-  const scaleX =
-    (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
-    ElementWidth.REFLECTION_CARD
-  const translateY = ReflectionStackPerspective.Y * multiple
-  return {
-    position: staticIdx === 0 || (staticIdx === -1 && groupCount === 1) ? 'relative' : 'absolute',
-    bottom: 0,
-    left: 0,
-    outline: 0,
-    transform: `translateY(${translateY}px) scaleX(${scaleX})`,
-    transition:
-      isHidden || skipTransition ? undefined : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
-    visibility: isHidden ? 'hidden' : undefined,
-    zIndex: 3 - multiple
-  }
-})
 
 interface Props {
   phaseRef: RefObject<HTMLDivElement>
@@ -295,7 +257,8 @@ const ReflectionGroup = (props: Props) => {
           isBehindSpotlight={isBehindSpotlight}
         />
       )}
-      <Group
+      <div
+        className='relative h-max py-1.5'
         {...(disableDrop ? null : {[DragAttribute.DROPPABLE]: reflectionGroupId})}
         ref={groupRef}
         data-cy={dataCy}
@@ -322,19 +285,36 @@ const ReflectionGroup = (props: Props) => {
               : `padding-bottom ${Times.REFLECTION_DROP_DURATION}ms, box-shadow 150ms ease`
           }}
         >
-          <CardStack data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
+          <div className='relative' data-cy={`${dataCy}-stack`} ref={stackRef} onClick={onClick}>
             {visibleReflections.map((reflection) => {
               const staticIdx = staticReflections.indexOf(reflection)
               const {id: reflectionId, isDropping} = reflection
+              const isHidden =
+                staticIdx === -1 || isDropping || (isSpotlightSrcGroup && isBehindSpotlight)
+              const multiple = Math.max(0, Math.min(staticIdx, 2))
+              const scaleX =
+                (ElementWidth.REFLECTION_CARD - ReflectionStackPerspective.X * multiple * 2) /
+                ElementWidth.REFLECTION_CARD
+              const translateY = ReflectionStackPerspective.Y * multiple
               return (
-                <ReflectionWrapper
+                <div
                   data-cy={`${dataCy}-card-${staticIdx}`}
                   key={reflectionId}
-                  groupCount={visibleReflections.length}
-                  staticIdx={staticIdx}
-                  isDropping={isDropping}
-                  isHiddenSpotlightSource={isSpotlightSrcGroup && isBehindSpotlight}
-                  skipTransition={skipTransition}
+                  className={cn(
+                    'bottom-0 left-0 outline-0',
+                    staticIdx === 0 || (staticIdx === -1 && visibleReflections.length === 1)
+                      ? 'relative'
+                      : 'absolute',
+                    isHidden && 'invisible'
+                  )}
+                  style={{
+                    transform: `translateY(${translateY}px) scaleX(${scaleX})`,
+                    transition:
+                      isHidden || skipTransition
+                        ? undefined
+                        : `transform ${Times.REFLECTION_DROP_DURATION}ms`,
+                    zIndex: 3 - multiple
+                  }}
                 >
                   <DraggableReflectionCard
                     dataCy={`${dataCy}-card-${staticIdx}`}
@@ -350,10 +330,10 @@ const ReflectionGroup = (props: Props) => {
                     swipeColumn={swipeColumn}
                     showDragHintAnimation={showDragHintAnimation}
                   />
-                </ReflectionWrapper>
+                </div>
               )
             })}
-          </CardStack>
+          </div>
           <AnimatePresence>
             {badgeState && (
               <SuggestedGroupBadge
@@ -371,7 +351,7 @@ const ReflectionGroup = (props: Props) => {
             )}
           </AnimatePresence>
         </div>
-      </Group>
+      </div>
     </>
   )
 }

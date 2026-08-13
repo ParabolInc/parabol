@@ -1,5 +1,5 @@
-import {Search as SearchIcon} from '@mui/icons-material'
 import type {ChangeEvent} from 'react'
+import {Search as SearchIcon} from '~/ui/icons'
 
 interface Props {
   searchQuery: string
@@ -20,7 +20,7 @@ const SearchBar = (props: Props) => {
         onChange={onChange}
         value={searchQuery}
       />
-      <SearchIcon fontSize='small' className='text-fg-secondary' />
+      <SearchIcon className='text-[20px] text-fg-secondary' />
     </div>
   )
 }

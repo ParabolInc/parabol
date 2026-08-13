@@ -7,7 +7,7 @@ import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import type {SpecificMeetingPickerQuery} from '../__generated__/SpecificMeetingPickerQuery.graphql'
 import type {InsightsBlockAttrs} from '../tiptap/extensions/insightsBlock/InsightsBlock'
 import {Checkbox} from '../ui/Checkbox/Checkbox'
-import {MeetingTypeToReadable} from './MeetingTypePickerCombobox'
+import {MeetingTypeToReadable} from '../utils/meetings/lookups'
 
 const query = graphql`
   query SpecificMeetingPickerQuery(

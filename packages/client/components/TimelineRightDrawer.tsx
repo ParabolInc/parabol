@@ -1,9 +1,8 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
+import {type ComponentPropsWithoutRef, forwardRef, type Ref} from 'react'
 import {useFragment} from 'react-relay'
-import makeMinWidthMediaQuery from '~/utils/makeMinWidthMediaQuery'
 import type {TimelineRightDrawer_viewer$key} from '../__generated__/TimelineRightDrawer_viewer.graphql'
-import {DashTimeline, NavSidebar} from '../types/constEnums'
+import {cn} from '../ui/cn'
 import ErrorBoundary from './ErrorBoundary'
 import TimelinePriorityTasks from './TimelinePriorityTasks'
 
@@ -11,23 +10,23 @@ interface Props {
   viewer: TimelineRightDrawer_viewer$key
 }
 
-const MIN_WIDTH =
-  NavSidebar.WIDTH +
-  DashTimeline.FEED_MIN_WIDTH +
-  DashTimeline.TIMELINE_DRAWER_WIDTH +
-  DashTimeline.MIN_PADDING * 2
-
-export const RightDrawer = styled('div')({
-  display: 'none',
-  minWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
-  maxWidth: DashTimeline.TIMELINE_DRAWER_WIDTH,
-  borderLeft: `1px solid var(--color-hairline-strong)`,
-  height: 'auto',
-  padding: 16,
-  [makeMinWidthMediaQuery(MIN_WIDTH)]: {
-    display: 'block'
+export const RightDrawer = forwardRef(
+  (props: ComponentPropsWithoutRef<'div'>, ref: Ref<HTMLDivElement>) => {
+    const {className, children, ...rest} = props
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'hidden h-auto min-w-[336px] max-w-[336px] border-hairline-strong border-l p-4 min-[920px]:block',
+          className
+        )}
+        {...rest}
+      >
+        {children}
+      </div>
+    )
   }
-})
+)
 
 const TimelineRightDrawer = (props: Props) => {
   const {viewer: viewerRef} = props

@@ -1,16 +1,17 @@
-import {Error as ErrorIcon, Warning} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import type * as React from 'react'
 import {useState} from 'react'
 import {useFragment} from 'react-relay'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import useMutationProps from '~/hooks/useMutationProps'
+import {Error as ErrorIcon, Warning} from '~/ui/icons'
 import modalTeamInvitePng from '../../../static/images/illustrations/illus-modal-team-invite.png'
 import type {AddTeamMemberModal_teamMembers$key} from '../__generated__/AddTeamMemberModal_teamMembers.graphql'
 import type {InviteToTeamMutation as TInviteToTeamMutation} from '../__generated__/InviteToTeamMutation.graphql'
 import useBreakpoint from '../hooks/useBreakpoint'
 import InviteToTeamMutation from '../mutations/InviteToTeamMutation'
 import type {CompletedHandler} from '../types/relayMutations'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import parseEmailAddressList from '../utils/parseEmailAddressList'
@@ -18,7 +19,6 @@ import plural from '../utils/plural'
 import AddTeamMemberModalSuccess from './AddTeamMemberModalSuccess'
 import BasicTextArea from './InputField/BasicTextArea'
 import MassInvitationTokenLinkRoot from './MassInvitationTokenLinkRoot'
-import PrimaryButton from './PrimaryButton'
 
 interface Props {
   isOpen: boolean
@@ -191,14 +191,14 @@ const AddTeamMemberModal = (props: Props) => {
                     </div>
                   )}
                   <div className='mt-6 flex justify-start'>
-                    <PrimaryButton
+                    <Button
+                      variant='primary'
+                      size='md'
                       onClick={sendInvitations}
-                      disabled={invitees.length === 0}
-                      size='medium'
-                      waiting={submitting}
+                      disabled={invitees.length === 0 || submitting}
                     >
                       {title}
-                    </PrimaryButton>
+                    </Button>
                   </div>
                 </div>
               </div>

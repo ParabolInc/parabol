@@ -1,26 +1,15 @@
-import styled from '@emotion/styled'
-import {Archive} from '@mui/icons-material'
 import Menu from '~/components/Menu'
 import MenuItem from '~/components/MenuItem'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import type {MenuProps} from '~/hooks/useMenu'
 import ArchiveTimelineEventMutation from '~/mutations/ArchiveTimelineEventMutation'
-import {MenuItemLabelStyle} from './MenuItemLabel'
+import {Archive} from '~/ui/icons'
+import MenuItemLabel from './MenuItemLabel'
 
 interface Props {
   menuProps: MenuProps
   timelineEventId: string
 }
-
-const StyledIcon = styled(Archive)({
-  color: 'var(--color-fg-secondary)',
-  marginRight: 8
-})
-
-const TimelineEventMenuItemLabel = styled('div')({
-  ...MenuItemLabelStyle,
-  width: '200px'
-})
 
 const TimelineEventHeaderMenu = (props: Props) => {
   const {menuProps, timelineEventId} = props
@@ -30,10 +19,10 @@ const TimelineEventHeaderMenu = (props: Props) => {
       <MenuItem
         key='archive'
         label={
-          <TimelineEventMenuItemLabel>
-            <StyledIcon />
+          <MenuItemLabel className='w-[200px]'>
+            <Archive className='mr-2 text-fg-secondary' />
             <span>{'Archive meeting'}</span>
-          </TimelineEventMenuItemLabel>
+          </MenuItemLabel>
         }
         onClick={() => ArchiveTimelineEventMutation(atmosphere, {timelineEventId})}
       />

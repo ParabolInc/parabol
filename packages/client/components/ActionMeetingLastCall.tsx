@@ -9,6 +9,7 @@ import AgendaShortcutHint from '../modules/meeting/components/AgendaShortcutHint
 import MeetingCopy from '../modules/meeting/components/MeetingCopy/MeetingCopy'
 import MeetingFacilitationHint from '../modules/meeting/components/MeetingFacilitationHint/MeetingFacilitationHint'
 import MeetingPhaseHeading from '../modules/meeting/components/MeetingPhaseHeading/MeetingPhaseHeading'
+import {Button} from '../ui/Button/Button'
 import {AGENDA_ITEM_LABEL} from '../utils/constants'
 import {phaseLabelLookup} from '../utils/meetings/lookups'
 import plural from '../utils/plural'
@@ -18,7 +19,6 @@ import MeetingHeaderAndPhase from './MeetingHeaderAndPhase'
 import MeetingTopBar from './MeetingTopBar'
 import PhaseHeaderTitle from './PhaseHeaderTitle'
 import PhaseWrapper from './PhaseWrapper'
-import PrimaryButton from './PrimaryButton'
 
 interface Props extends ActionMeetingPhaseProps {
   meeting: ActionMeetingLastCall_meeting$key
@@ -115,14 +115,15 @@ const ActionMeetingLastCall = (props: Props) => {
             <MeetingCopy className='mb-0'>{getMeetingCopy()}</MeetingCopy>
             {!endedAt && <AgendaShortcutHint />}
             {isFacilitating ? (
-              <PrimaryButton
+              <Button
+                variant='primary'
                 aria-label='End Meeting'
-                size='large'
+                size='lg'
                 onClick={endMeeting}
                 disabled={!!endedAt}
               >
                 End Check-in Meeting
-              </PrimaryButton>
+              </Button>
             ) : !endedAt ? (
               <MeetingFacilitationHint>
                 {'Waiting for'} <b>{preferredName}</b> {`to end the meeting`}

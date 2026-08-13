@@ -1,39 +1,17 @@
-import styled from '@emotion/styled'
-import {PALETTE} from '../styles/paletteV3'
-
-const color = PALETTE.SKY_500
-
-const Link = styled('a')({
-  color,
-  marginTop: '1rem',
-  textAlign: 'center',
-  ':hover,:focus,:active': {
-    color,
-    textDecoration: 'underline'
-  }
-})
-
-const FooterCopy = styled('div')({
-  color: PALETTE.SLATE_600,
-  fontSize: 11,
-  lineHeight: '24px',
-  marginTop: 8,
-  textAlign: 'center'
-})
-
 const AuthPrivacyFooter = () => (
-  <FooterCopy>
+  <div className='mt-2 text-center text-[11px] text-fg-secondary leading-6'>
     {'By creating an account, you agree to our '}
-    <Link
+    <a
+      className='mt-4 text-center text-accent hover:text-accent hover:underline focus:text-accent focus:underline active:text-accent active:underline'
       href='https://www.parabol.co/privacy'
       rel='noopener noreferrer'
       target='_blank'
       title='Privacy Policy'
     >
       {'Privacy Policy'}
-    </Link>
+    </a>
     .
-  </FooterCopy>
+  </div>
 )
 
 export default AuthPrivacyFooter

@@ -2,7 +2,8 @@ import DataLoader from 'dataloader'
 import type {Selectable} from 'kysely'
 import TeamMemberId from '../../client/shared/gqlIds/TeamMemberId'
 import type {PageSectionEnum} from '../graphql/public/resolverTypes'
-import {selectPageAccess, selectPageUserSortOrder} from '../postgres/select'
+import {selectPageAccess, selectPageExports, selectPageUserSortOrder} from '../postgres/select'
+import type {PageExport} from '../postgres/types'
 import type {PageAccess, Pageroleenum} from '../postgres/types/pg'
 import {pageAccessByUserIdBatchFn} from './pageAccessByUserIdBatchFn'
 import type RootDataLoader from './RootDataLoader'
@@ -51,6 +52,21 @@ export const pageAccessByUserId = (parent: RootDataLoader, dependsOn: RegisterDe
     async (userIds) => {
       const res = await selectPageAccess().where('userId', 'in', userIds).execute()
       return userIds.map((userId) => res.filter((r) => r.userId === userId))
+    },
+    {
+      ...parent.dataLoaderOptions
+    }
+  )
+}
+
+export const pageExportsByPageId = (parent: RootDataLoader) => {
+  return new DataLoader<number, PageExport[], number>(
+    async (pageIds) => {
+      const rows = await selectPageExports()
+        .where('pageId', 'in', pageIds as number[])
+        .orderBy('createdAt', 'desc')
+        .execute()
+      return pageIds.map((pageId) => rows.filter((row) => row.pageId === pageId).slice(0, 10))
     },
     {
       ...parent.dataLoaderOptions

@@ -1,45 +1,11 @@
-import styled from '@emotion/styled'
 import graphql from 'babel-plugin-relay/macro'
 import * as React from 'react'
 import {useFragment} from 'react-relay'
 import type {EditablePollOption_option$key} from '../../__generated__/EditablePollOption_option.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import {Polls, PollsAriaLabels} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {updateLocalPollOption} from './local/newPoll'
-
-const PollOptionInputRoot = styled('div')({
-  position: 'relative',
-  width: '100%',
-  height: '36px',
-  display: 'flex',
-  alignItems: 'center'
-})
-
-const Input = styled('input')({
-  width: '100%',
-  padding: `8px 12px`,
-  fontSize: '14px',
-  color: 'var(--color-fg-primary)',
-  borderRadius: '7px',
-  border: `1.5px solid var(--color-hairline-field)`,
-  ':hover, :focus, :active': {
-    outline: `none`,
-    border: `1.5px solid var(--color-accent)`
-  }
-})
-
-const Counter = styled('div')<{
-  isVisible: boolean
-  isMax: boolean
-}>(({isVisible, isMax}) => ({
-  display: isVisible ? 'block' : 'none',
-  position: 'absolute',
-  top: '0',
-  right: '0',
-  margin: '2px 6px',
-  fontSize: '10px',
-  color: isMax ? 'var(--color-fg-error)' : 'var(--color-fg-secondary)'
-}))
 
 interface Props {
   optionRef: EditablePollOption_option$key
@@ -73,8 +39,9 @@ const EditablePollOption = (props: Props) => {
   }
 
   return (
-    <PollOptionInputRoot>
-      <Input
+    <div className='relative flex h-9 w-full items-center'>
+      <input
+        className='w-full rounded-[7px] border-[1.5px] border-hairline-field border-solid px-3 py-2 text-[14px] text-fg-primary hover:border-accent hover:outline-none focus:border-accent focus:outline-none active:border-accent active:outline-none'
         aria-label={PollsAriaLabels.POLL_OPTION_EDITOR}
         placeholder={placeholder}
         value={title}
@@ -84,10 +51,16 @@ const EditablePollOption = (props: Props) => {
         onBlur={hideCounter}
         autoFocus={shouldAutoFocus}
       />
-      <Counter isVisible={isCounterVisible} isMax={title.length >= Polls.MAX_OPTION_TITLE_LENGTH}>
+      <div
+        className={cn(
+          'absolute top-0 right-0 mx-1.5 my-0.5 text-[10px]',
+          title.length >= Polls.MAX_OPTION_TITLE_LENGTH ? 'text-fg-error' : 'text-fg-secondary',
+          !isCounterVisible && 'hidden'
+        )}
+      >
         {title.length}/{Polls.MAX_OPTION_TITLE_LENGTH}
-      </Counter>
-    </PollOptionInputRoot>
+      </div>
+    </div>
   )
 }
 

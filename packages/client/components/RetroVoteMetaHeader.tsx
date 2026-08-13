@@ -1,10 +1,10 @@
-import {ExpandMore} from '@mui/icons-material'
 import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import type {RetroVoteMetaHeader_meeting$key} from '~/__generated__/RetroVoteMetaHeader_meeting.graphql'
 import useAtmosphere from '~/hooks/useAtmosphere'
 import {MenuPosition} from '~/hooks/useCoords'
 import useMenu from '~/hooks/useMenu'
+import {ExpandMore} from '~/ui/icons'
 import lazyPreload from '~/utils/lazyPreload'
 import LabelHeading from './LabelHeading/LabelHeading'
 

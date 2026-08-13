@@ -1,15 +1,9 @@
-import styled from '@emotion/styled'
 import {useEffect, useRef} from 'react'
 import {commitLocalUpdate} from 'relay-runtime'
 import useAtmosphere from '../../hooks/useAtmosphere'
-import {ElementWidth} from '../../types/constEnums'
 import type {RefCallbackInstance} from '../../types/generics'
 import type {OpenSpotlight} from '../GroupingKanbanColumn'
 import DraggableReflectionCard from '../ReflectionGroup/DraggableReflectionCard'
-
-const ModalReflectionWrapper = styled('div')({
-  padding: ElementWidth.REFLECTION_CARD_PADDING
-})
 
 interface Props {
   idx: number
@@ -71,7 +65,8 @@ const ExpandedReflection = (props: Props) => {
   }, [])
   if (staticIdx === -1) return null
   return (
-    <ModalReflectionWrapper
+    <div
+      className='p-1.5'
       style={{zIndex: staticReflections.length - staticIdx - 1}}
       id={reflection.id}
       ref={setRef}
@@ -86,7 +81,7 @@ const ExpandedReflection = (props: Props) => {
         staticIdx={staticIdx}
         staticReflections={staticReflections}
       />
-    </ModalReflectionWrapper>
+    </div>
   )
 }
 

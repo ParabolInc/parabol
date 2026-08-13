@@ -1,9 +1,9 @@
 import {useNavigate} from 'react-router'
 import IconLabel from '../../../../components/IconLabel'
-import PrimaryButton from '../../../../components/PrimaryButton'
 import useAtmosphere from '../../../../hooks/useAtmosphere'
 import useMutationProps from '../../../../hooks/useMutationProps'
 import RemoveOrgUsersMutation from '../../../../mutations/RemoveOrgUsersMutation'
+import {Button} from '../../../../ui/Button/Button'
 import {Dialog} from '../../../../ui/Dialog/Dialog'
 import {DialogContent} from '../../../../ui/Dialog/DialogContent'
 import {DialogTitle} from '../../../../ui/Dialog/DialogTitle'
@@ -41,14 +41,15 @@ const LeaveOrgModal = (props: Props) => {
         <DialogTitle>Are you sure?</DialogTitle>
         <p>This will remove you from the organization and all teams under it!</p>
         <p>To undo it, you'll have to ask another Billing Leader to re-add you.</p>
-        <PrimaryButton
-          size='medium'
+        <Button
+          variant='primary'
+          size='md'
           className='mx-auto mt-6 mb-0'
           onClick={handleClick}
-          waiting={submitting}
+          disabled={submitting}
         >
           <IconLabel icon='arrow_forward' iconAfter label='Leave the organization' />
-        </PrimaryButton>
+        </Button>
       </DialogContent>
     </Dialog>
   )

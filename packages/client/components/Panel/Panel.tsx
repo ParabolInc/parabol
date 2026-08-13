@@ -21,7 +21,7 @@ const Panel = (props: Props) => {
   return (
     <div
       className={cn(
-        'relative my-4 w-full rounded bg-surface-card text-sm leading-5 shadow-card',
+        'relative my-4 w-full rounded bg-surface-card text-sm leading-5 shadow-[var(--shadow-card)]',
         className
       )}
     >

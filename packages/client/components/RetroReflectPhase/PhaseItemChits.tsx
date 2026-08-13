@@ -53,7 +53,7 @@ const PhaseItemChits = (props: Props) => {
         <div
           key={totalCount - idx}
           className={cn(
-            'absolute animate-chit-fade-in rounded-[2px] bg-surface-card shadow-card transition-all duration-300',
+            'absolute animate-chit-fade-in rounded-[2px] bg-surface-card shadow-[var(--shadow-card)] transition-all duration-300',
             isOverflow ? overflowStyles[overflowIdx] : ''
           )}
           style={{

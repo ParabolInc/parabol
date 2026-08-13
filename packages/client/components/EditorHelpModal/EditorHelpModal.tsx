@@ -1,94 +1,7 @@
-import styled from '@emotion/styled'
-import {Radius} from '../../types/constEnums'
+import {cn} from '../../ui/cn'
 import {modKey} from '../../utils/platform'
 import IconButton from '../IconButton'
 import IconLabel from '../IconLabel'
-
-const ModalHeader = styled('div')({
-  alignItems: 'center',
-  color: 'var(--color-fg-primary)',
-  display: 'flex',
-  justifyContent: 'center',
-  lineHeight: 1.5,
-  padding: '16px 0 4px',
-  position: 'relative'
-})
-
-const ModalHeaderIcon = styled('div')({
-  // Define
-})
-
-const ModalHeaderTitle = styled('div')({
-  fontSize: 20,
-  marginLeft: 16
-})
-
-const CloseButton = styled(IconButton)({
-  height: 24,
-  lineHeight: '24px',
-  opacity: 0.75,
-  padding: 0,
-  position: 'absolute',
-  right: 4,
-  top: 4,
-  width: 24
-})
-
-const HelpList = styled('div')<{listIndex: number}>(({listIndex}) => ({
-  border: `1px solid var(--color-hairline-strong)`,
-  color: 'var(--color-fg-primary)',
-  fontSize: 13,
-  lineHeight: '18px',
-  margin: listIndex === 0 ? '0 auto' : '16px auto 0',
-  minWidth: 0,
-  textAlign: 'left'
-}))
-
-const HelpRow = styled('div')<{shortcutIndex: number}>(({shortcutIndex}) => ({
-  alignItems: 'center',
-  backgroundColor: shortcutIndex % 2 ? 'var(--color-surface-card)' : 'var(--color-surface-well)',
-  display: 'flex',
-  padding: '4px 0'
-}))
-
-const Icon = styled('div')({
-  padding: '0 8px 0 16px',
-  textAlign: 'center',
-  width: 44
-})
-
-const Label = styled('div')({
-  padding: '0 8px',
-  width: 120
-})
-
-const Keyboard = styled('div')({
-  padding: '0 8px',
-  width: 192
-})
-
-const Markdown = styled('div')({
-  padding: '0 8px',
-  width: 192
-})
-
-const HeaderLabelBlock = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  padding: 1,
-  width: '100%'
-})
-
-const HeaderLabel = styled('div')({
-  color: 'var(--color-fg-primary)',
-  fontSize: 13,
-  fontWeight: 600,
-  lineHeight: '18px',
-  padding: '16px 8px 4px',
-  textAlign: 'left',
-  textTransform: 'uppercase',
-  width: 192
-})
 
 const typeShortcuts = [
   {
@@ -172,15 +85,6 @@ const blockShortcuts = [
 ]
 const shortcutLists = [typeShortcuts, mentionShortcuts, blockShortcuts]
 
-const ModalBoundary = styled('div')({
-  background: 'var(--color-surface-card)',
-  borderRadius: Radius.DIALOG,
-  display: 'flex',
-  flexDirection: 'column',
-  height: 480,
-  width: 564
-})
-
 interface Props {
   handleCloseModal: () => void
 }
@@ -188,43 +92,65 @@ interface Props {
 const EditorHelpModal = (props: Props) => {
   const {handleCloseModal} = props
   return (
-    <ModalBoundary>
-      <ModalHeader>
-        <ModalHeaderIcon>
+    <div className='flex h-[480px] w-[564px] flex-col rounded-lg bg-surface-card'>
+      <div className='relative flex items-center justify-center pt-4 pb-1 text-fg-primary leading-normal'>
+        <div>
           <IconLabel icon='keyboard' iconLarge />
-        </ModalHeaderIcon>
-        <ModalHeaderTitle>{'Formatting Text'}</ModalHeaderTitle>
-        <CloseButton icon='close' iconLarge onClick={handleCloseModal} palette='midGray' />
-      </ModalHeader>
-      <HeaderLabelBlock>
-        <HeaderLabel>{'Keyboard'}</HeaderLabel>
-        <HeaderLabel>{'Markdown'}</HeaderLabel>
-      </HeaderLabelBlock>
+        </div>
+        <div className='ml-4 text-[20px]'>{'Formatting Text'}</div>
+        <IconButton
+          className='absolute top-1 right-1 h-6 w-6 p-0 leading-6 opacity-75'
+          icon='close'
+          iconLarge
+          onClick={handleCloseModal}
+          palette='midGray'
+        />
+      </div>
+      <div className='flex w-full justify-end p-px'>
+        <div className='w-48 pt-4 pr-2 pb-1 pl-2 text-left font-semibold text-[13px] text-fg-primary uppercase leading-[18px]'>
+          {'Keyboard'}
+        </div>
+        <div className='w-48 pt-4 pr-2 pb-1 pl-2 text-left font-semibold text-[13px] text-fg-primary uppercase leading-[18px]'>
+          {'Markdown'}
+        </div>
+      </div>
       {shortcutLists.map((shortcutList, listIndex) => {
         return (
-          <HelpList listIndex={listIndex} key={`shortcutList${listIndex + 1}`}>
+          <div
+            className={cn(
+              'min-w-0 border border-hairline-strong text-left text-[13px] text-fg-primary leading-[18px]',
+              listIndex === 0 ? 'mx-auto my-0' : 'mx-auto mt-4 mb-0'
+            )}
+            key={`shortcutList${listIndex + 1}`}
+          >
             {shortcutList.map((shortcut, shortcutIndex) => {
               return (
-                <HelpRow shortcutIndex={shortcutIndex} key={`${shortcut.label}`}>
-                  <Icon>
+                <div
+                  className={cn(
+                    'flex items-center py-1',
+                    shortcutIndex % 2 ? 'bg-surface-card' : 'bg-surface-well'
+                  )}
+                  key={`${shortcut.label}`}
+                >
+                  <div className='w-11 pr-2 pl-4 text-center'>
                     <IconLabel icon={shortcut.icon} />
-                  </Icon>
-                  <Label>
+                  </div>
+                  <div className='w-30 px-2'>
                     <b>{shortcut.label}</b>
-                  </Label>
-                  <Keyboard>
+                  </div>
+                  <div className='w-48 px-2'>
                     <code>{shortcut.keyboard}</code>
-                  </Keyboard>
-                  <Markdown>
+                  </div>
+                  <div className='w-48 px-2'>
                     <code>{shortcut.md}</code>
-                  </Markdown>
-                </HelpRow>
+                  </div>
+                </div>
               )
             })}
-          </HelpList>
+          </div>
         )
       })}
-    </ModalBoundary>
+    </div>
   )
 }
 

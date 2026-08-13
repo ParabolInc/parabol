@@ -5,10 +5,10 @@ import useAtmosphere from '../../../hooks/useAtmosphere'
 import useInspirationDrawer from '../../../hooks/useInspirationDrawer'
 import useMutationProps from '../../../hooks/useMutationProps'
 import useSessionStorageState from '../../../hooks/useSessionStorageState'
-import linearSVG from '../../../styles/theme/images/graphics/linear.svg'
 import LinearClientManager from '../../../utils/LinearClientManager'
 import {makeLinearWorkFilter} from '../../../utils/makeLinearWorkFilter'
 import SendClientSideEvent from '../../../utils/SendClientSideEvent'
+import LinearSVG from '../../LinearSVG'
 import InspirationItemsPanel from './InspirationItemsPanel'
 import LinearIntegrationResultsRoot from './LinearIntegrationResultsRoot'
 import LinearProjectFilterBar from './LinearProjectFilterBar'
@@ -133,7 +133,7 @@ const LinearIntegrationPanel = (props: Props) => {
       ) : (
         <div className='flex flex-col items-center gap-2 pt-12'>
           <div className='h-10 w-10'>
-            <img className='h-10 w-10' src={linearSVG} />
+            <LinearSVG className='h-10 w-10 dark:[&_path]:fill-white' />
           </div>
           <b>Connect to Linear</b>
           <div className='w-1/2 text-center text-sm'>

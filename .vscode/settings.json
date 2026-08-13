@@ -1,6 +1,7 @@
 {
   "git.ignoreLimitWarning": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
+  // no typescript.tsdk: TS7 ships no tsserver.js (tsc is a native binary), so VS Code must use
+  // its own bundled TypeScript for the language service
   "editor.tabSize": 2,
   "npm.packageManager": "pnpm",
   "editor.codeActionsOnSave": {

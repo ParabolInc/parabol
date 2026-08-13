@@ -1,37 +1,10 @@
-import styled from '@emotion/styled'
 import {useEffect, useRef, useState} from 'react'
 import {PALETTE} from '../../styles/paletteV3'
 import Confetti from '../Confetti'
 
-const Background = styled('div')({
-  display: 'flex',
-  background: 'radial-gradient(ellipse at center, #45484d 0%, #000000 100%)',
-  height: '100%',
-  width: '100%',
-  justifyContent: 'center',
-  alignItems: 'center'
-})
-
 const LOGO_WIDTH = 320
 const LOGO_HEIGHT = 320
 
-const Logo = styled('div')({
-  left: 0,
-  top: 0,
-  position: 'absolute'
-})
-
-const Label = styled('div')({
-  color: '#fff',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: 0,
-  fontWeight: 600,
-  fontSize: LOGO_WIDTH / 6,
-  transform: `translateY(-${LOGO_HEIGHT / 2}px)`
-})
-const Centroid = styled('div')({})
 const colors = [
   [PALETTE.GRAPE_700, PALETTE.TOMATO_500, PALETTE.AQUA_400],
   [PALETTE.GRAPE_700, PALETTE.AQUA_400, PALETTE.TOMATO_500],
@@ -53,7 +26,7 @@ let curY = Math.floor(Math.random() * maxY)
 let palette = colors[Math.floor(Math.random() * colors.length)]!
 const speed = 4
 
-const move = (el: HTMLImageElement, onWin: () => void) => {
+const move = (el: HTMLDivElement, onWin: () => void) => {
   const diffX = dirX * speed
   const diffY = dirY * speed
   const nextX = curX + diffX
@@ -85,7 +58,7 @@ const move = (el: HTMLImageElement, onWin: () => void) => {
 }
 
 const NotFound = () => {
-  const ref = useRef<HTMLImageElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
   const [active, _setActive] = useState(false)
   const setActive = () => {
     _setActive(true)
@@ -97,8 +70,8 @@ const NotFound = () => {
     move(ref.current!, setActive)
   }, [])
   return (
-    <Background>
-      <Logo ref={ref}>
+    <div className='flex h-full w-full items-center justify-center bg-[radial-gradient(ellipse_at_center,#45484d_0%,#000000_100%)]'>
+      <div ref={ref} className='absolute top-0 left-0'>
         <svg
           width={LOGO_WIDTH}
           height={LOGO_HEIGHT}
@@ -130,12 +103,14 @@ const NotFound = () => {
             />
           </g>
         </svg>
-        <Label>404</Label>
-      </Logo>
-      <Centroid>
+        <div className='-translate-y-[160px] flex h-0 items-center justify-center font-semibold text-[calc(320px/6)] text-white'>
+          404
+        </div>
+      </div>
+      <div>
         <Confetti active={active} />
-      </Centroid>
-    </Background>
+      </div>
+    </div>
   )
 }
 

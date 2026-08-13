@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {useFragment} from 'react-relay'
 import {useNavigate} from 'react-router'
 import type {SuggestedActionCreateNewTeam_suggestedAction$key} from '../__generated__/SuggestedActionCreateNewTeam_suggestedAction.graphql'
-import {PALETTE} from '../styles/paletteV3'
 import SuggestedActionButton from './SuggestedActionButton'
 import SuggestedActionCard from './SuggestedActionCard'
 import SuggestedActionCopy from './SuggestedActionCopy'
@@ -29,7 +28,7 @@ const SuggestedActionCreateNewTeam = (props: Props) => {
   const {id: suggestedActionId} = suggestedAction
   return (
     <SuggestedActionCard
-      backgroundColor={PALETTE.JADE_400}
+      backgroundColor='var(--color-jade-400)'
       iconName='group_add'
       suggestedActionId={suggestedActionId}
     >

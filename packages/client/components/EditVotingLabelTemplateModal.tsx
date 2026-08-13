@@ -1,11 +1,10 @@
 import useForm from '../hooks/useForm'
+import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
 import {DialogContent} from '../ui/Dialog/DialogContent'
 import {DialogTitle} from '../ui/Dialog/DialogTitle'
 import BasicInput from './InputField/BasicInput'
 import PlainButton from './PlainButton/PlainButton'
-import RaisedButton from './RaisedButton'
-import SecondaryButton from './SecondaryButton'
 
 interface Props {
   isOpen: boolean
@@ -56,12 +55,12 @@ const EditVotingLabelTemplateModal = (props: Props) => {
           <span className='p-1 text-base'>{' as the value wildcard'}</span>
 
           <div className='mt-6 flex justify-end gap-4'>
-            <SecondaryButton onClick={onClose} size='medium'>
+            <Button variant='outline' size='md' onClick={onClose}>
               Cancel
-            </SecondaryButton>
-            <RaisedButton onClick={onSave} size='medium' palette={'blue'}>
+            </Button>
+            <Button variant='raised' size='md' className='bg-sky-500 text-white' onClick={onSave}>
               Save
-            </RaisedButton>
+            </Button>
           </div>
         </div>
       </DialogContent>

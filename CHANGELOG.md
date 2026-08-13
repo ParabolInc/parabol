@@ -5,6 +5,52 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.36.1](https://github.com/ParabolInc/parabol/compare/v13.36.0...v13.36.1) (2026-08-13)
+
+
+### Fixed
+
+* chunk meeting settings inserts in migration ([#13366](https://github.com/ParabolInc/parabol/issues/13366)) ([8b134fb](https://github.com/ParabolInc/parabol/commit/8b134fbadef5bad0196dba0c1eb318915481d57b))
+
+## [13.36.0](https://github.com/ParabolInc/parabol/compare/v13.35.0...v13.36.0) (2026-08-13)
+
+
+### Added
+
+* support AWS S3 IRSA ([#13365](https://github.com/ParabolInc/parabol/issues/13365)) ([9326547](https://github.com/ParabolInc/parabol/commit/93265478cf8eb556b8798d32edf4bf422395a7b3))
+
+
+### Fixed
+
+* vuln bumps ([#13362](https://github.com/ParabolInc/parabol/issues/13362)) ([746c27f](https://github.com/ParabolInc/parabol/commit/746c27f38a628596f32affac6213c79a7a1dfad5))
+
+## [13.35.0](https://github.com/ParabolInc/parabol/compare/v13.34.1...v13.35.0) (2026-08-11)
+
+
+### Added
+
+* confluence integration (behind feature flag) ([#13322](https://github.com/ParabolInc/parabol/issues/13322)) ([9e31acd](https://github.com/ParabolInc/parabol/commit/9e31acd54754985b016fbbabca154470b38101e6))
+
+
+### Fixed
+
+* bump node to v24.19.0 ([#13360](https://github.com/ParabolInc/parabol/issues/13360)) ([6b9f536](https://github.com/ParabolInc/parabol/commit/6b9f53660dea3aedc3cf1042218b8cd43e2a5f61))
+
+## [13.34.1](https://github.com/ParabolInc/parabol/compare/v13.34.0...v13.34.1) (2026-08-06)
+
+
+### Changed
+
+* no more emotion ([#13352](https://github.com/ParabolInc/parabol/issues/13352)) ([787d3c3](https://github.com/ParabolInc/parabol/commit/787d3c3138bbbb629f0d38bc55fab18eae4b42ed))
+
+## [13.34.0](https://github.com/ParabolInc/parabol/compare/v13.33.0...v13.34.0) (2026-08-05)
+
+
+### Added
+
+* enable Task Review phase by default ([#13350](https://github.com/ParabolInc/parabol/issues/13350)) ([37d3e45](https://github.com/ParabolInc/parabol/commit/37d3e45851a0f88353143cf02f6fb9761869930b))
+* Team Health Template Editing ([#13292](https://github.com/ParabolInc/parabol/issues/13292)) ([f35c9f1](https://github.com/ParabolInc/parabol/commit/f35c9f1b43c88e9dba51380197f1dbcecf304158))
+
 ## [13.33.0](https://github.com/ParabolInc/parabol/compare/v13.32.0...v13.33.0) (2026-08-04)
 
 

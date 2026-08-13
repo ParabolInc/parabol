@@ -40,7 +40,7 @@ const pushServerAssetsToCDN = async () => {
   const templatesContext = (require as any).context(
     '../../static/images/illustrations',
     false,
-    /\/action.png$|\/teamPrompt.png$|Template.png$/
+    /\/action.png$|\/teamPrompt.png$|Template.png$|teamHealth.png$/
   )
   const templatePaths = new Set<string>()
   templatesContext.keys().forEach((relativePath: `./${string}`) => {

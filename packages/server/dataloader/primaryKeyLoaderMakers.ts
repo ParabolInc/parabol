@@ -16,6 +16,7 @@ import {
   selectNotifications,
   selectOAuthAPIProvider,
   selectOrganizations,
+  selectPageExports,
   selectPages,
   selectPersonalAccessToken,
   selectReflectPrompts,
@@ -24,6 +25,11 @@ import {
   selectSlackNotifications,
   selectSuggestedAction,
   selectTasks,
+  selectTeamHealthCategories,
+  selectTeamHealthQuestionPacks,
+  selectTeamHealthQuestions,
+  selectTeamHealthResponses,
+  selectTeamHealthTemplateQuestions,
   selectTeamInvitations,
   selectTeamPromptResponses,
   selectTeams,
@@ -61,6 +67,26 @@ export const meetingSeries = primaryKeyLoaderMaker((ids: readonly number[]) => {
 
 export const meetingTemplates = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectMeetingTemplates().where('id', 'in', ids).execute()
+})
+
+export const teamHealthCategories = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthCategories().where('id', 'in', ids).execute()
+})
+
+export const teamHealthQuestionPacks = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthQuestionPacks().where('id', 'in', ids).execute()
+})
+
+export const teamHealthQuestions = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthQuestions().where('id', 'in', ids).execute()
+})
+
+export const teamHealthTemplateQuestions = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthTemplateQuestions().where('id', 'in', ids).execute()
+})
+
+export const teamHealthResponses = primaryKeyLoaderMaker((ids: readonly number[]) => {
+  return selectTeamHealthResponses().where('id', 'in', ids).execute()
 })
 export const domainJoinRequests = primaryKeyLoaderMaker(getDomainJoinRequestsByIds)
 
@@ -201,4 +227,8 @@ export const userDetails = primaryKeyLoaderMaker((ids: readonly string[]) => {
 
 export const personalAccessTokens = primaryKeyLoaderMaker((ids: readonly string[]) => {
   return selectPersonalAccessToken().where('id', 'in', ids).execute()
+})
+
+export const pageExports = primaryKeyLoaderMaker((ids: readonly string[]) => {
+  return selectPageExports().where('id', 'in', ids).execute()
 })

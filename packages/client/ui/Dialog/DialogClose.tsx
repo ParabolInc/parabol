@@ -1,6 +1,6 @@
-import CloseIcon from '@mui/icons-material/Close'
 import * as RadixDialog from '@radix-ui/react-dialog'
 import {forwardRef} from 'react'
+import {Close as CloseIcon} from '~/ui/icons'
 import {cn} from '../cn'
 
 export const DialogClose = forwardRef<
