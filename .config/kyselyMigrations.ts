@@ -7,7 +7,7 @@ export const migrations = {
   // using in the transaction that added it. The tradeoff is that a batch that fails
   // partway leaves the earlier migrations applied, so migrations must be independently
   // safe to leave in place & fixed forward
-  transactionMode: 'per-migration' as const,
+  transactionMode: 'per-migration',
   // Uncomment this if you need to fix your local DB migration order!
   // allowUnorderedMigrations: true,
   getMigrationPrefix: () => `${new Date().toISOString()}_`,
