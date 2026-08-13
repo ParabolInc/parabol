@@ -166,8 +166,8 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       kysely:
-        specifier: ^0.29.5
-        version: 0.29.5
+        specifier: 0.30.0-beta.1
+        version: 0.30.0-beta.1
       magic-bytes.js:
         specifier: ^1.13.0
         version: 1.13.0
@@ -375,10 +375,10 @@ importers:
         version: 0.5.7
       kysely-codegen:
         specifier: ^0.20.0
-        version: 0.20.0(kysely@0.29.5)(pg@8.23.0)(typescript@7.0.2)
+        version: 0.20.0(kysely@0.30.0-beta.1)(pg@8.23.0)(typescript@7.0.2)
       kysely-ctl:
         specifier: ^0.21.0
-        version: 0.21.0(kysely@0.29.5)
+        version: 0.21.0(kysely@0.30.0-beta.1)
       lint-staged:
         specifier: ^10.1.7
         version: 10.5.4
@@ -8317,8 +8317,8 @@ packages:
       kysely-prisma-postgres:
         optional: true
 
-  kysely@0.29.5:
-    resolution: {integrity: sha512-ooa+eSbBNPTo3MycPEuW5jdrxQdQwdtB3LC3h43FiXQbIry5tR0C5lDG7eealK0E4D7XjrnOP5DIUg/LyjRMYQ==}
+  kysely@0.30.0-beta.1:
+    resolution: {integrity: sha512-Eh16r4NnBLQTMlTO0bkJWm0k6DdGaSXC9t4OgnZntzoBlB+cEqr28FPHH1Bhf620Db0gYUZqgUQ0fjkROG5vwg==}
     engines: {node: '>=22.0.0'}
 
   launch-editor@2.14.1:
@@ -19436,14 +19436,14 @@ snapshots:
 
   koalas@1.0.2: {}
 
-  kysely-codegen@0.20.0(kysely@0.29.5)(pg@8.23.0)(typescript@7.0.2):
+  kysely-codegen@0.20.0(kysely@0.30.0-beta.1)(pg@8.23.0)(typescript@7.0.2):
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.1(typescript@7.0.2)
       diff: 8.0.4
       dotenv: 17.4.2
       dotenv-expand: 12.0.3
-      kysely: 0.29.5
+      kysely: 0.30.0-beta.1
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
@@ -19453,14 +19453,14 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  kysely-ctl@0.21.0(kysely@0.29.5):
+  kysely-ctl@0.21.0(kysely@0.30.0-beta.1):
     dependencies:
       c12: 3.3.4
       citty: 0.2.2
       confbox: 0.2.4
       consola: 3.4.2
       jiti: 2.7.0
-      kysely: 0.29.5
+      kysely: 0.30.0-beta.1
       nypm: 0.6.6
       ofetch: 1.5.1
       pathe: 2.0.3
@@ -19469,7 +19469,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  kysely@0.29.5: {}
+  kysely@0.30.0-beta.1: {}
 
   launch-editor@2.14.1:
     dependencies:
