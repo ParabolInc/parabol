@@ -64,59 +64,52 @@ const onActivate = async (_event: ExtendableEvent) => {
   )
 }
 
+const isCacheable = (url: string) => {
+  if (!url.startsWith('http')) return false
+  // /assets/ requires auth & 307s to a (possibly presigned, possibly expiring) location.
+  // Handling it here would hand a redirected response to respondWith, which is a network error
+  // unless the request's redirect mode is 'follow'. Let the browser follow the redirect itself.
+  if (new URL(url).pathname.startsWith('/assets/')) return false
+  return !!url.match(/.(js|json|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
+}
+
 const onFetch = async (event: FetchEvent) => {
   const {request} = event
   const {url} = request
-  const isCacheable =
-    url.startsWith('http') &&
-    url.match(/.(js|json|css|mjs|png|svg|gif|jpg|jpeg|ico|eot|ttf|wav|mp3|woff|woff2|otf)$/)
-  if (isCacheable) {
-    const cachedRes = await caches.match(request.url)
-    // all our assets are hashed, so if the hash matches, it's valid
-    // let's skip opaque responses because we don't know whether they're valid
-    if (cachedRes && cachedRes.type !== 'opaque' && cachedRes.ok) {
-      return cachedRes
-    }
-    try {
-      // request.mode could be 'no-cors'
-      // By fetching the URL without specifying the mode the response will not be opaque
-      const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
-      // if one of our assets is not in the service worker cache, then it's either fetched via network or served from the broswer cache.
-      // The browser cache most likely has incorrect CORS headers set, so we better always fetch from the network.
-      const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
-      const networkRes = await req
-      const cache = await caches.open(DYNAMIC_CACHE)
-      if (isParabolHosted && networkRes.status === 404 && url.match(/.(js|json|mjs)/)) {
-        // If we encounter a 404 for a script file, we most likely have a stale dyanmic cache.
-        // We could clear the cache and the app probably will recover after a reload, however more likely the whole service worker is stale.
-        // Because failing to load a script file might prevent the code to refresh the service worker from loading, it's better to just harakiri.
-        console.error(`Parabol source file ${url} returned 404, updating service worker`)
-        self.registration.update().catch((error) => {
-          console.error('Failed to update service worker, unregistering it', error)
-          self.registration.unregister()
-        })
-        return networkRes
-      }
-      // cloning here because I'm not sure if we must clone before reading the body
-      cache.put(request.url, networkRes.clone()).catch(console.error)
-      return networkRes
-    } catch (e) {
-      // if we have an opaque cached response, it's better than nothing
-      if (cachedRes) return cachedRes
-      throw e
-    }
-    // } else if (request.destination === 'document') {
-    //   // dynamic because index.html isn't hashed (and the server returns an html with keys)
-    //   const dynamicCache = await caches.open(DYNAMIC_CACHE)
-    //   const cachedRes = await dynamicCache.match('/')
-    //   if (cachedRes) return cachedRes
-    //   const networkRes = await fetch(request)
-    //   const cache = await caches.open(DYNAMIC_CACHE)
-    //   // cloning here because I'm not sure if we must clone before reading the body
-    //   cache.put('/', networkRes.clone()).catch(console.error)
-    //   return networkRes
+  const cachedRes = await caches.match(request.url)
+  // all our assets are hashed, so if the hash matches, it's valid
+  // let's skip opaque responses because we don't know whether they're valid
+  if (cachedRes && cachedRes.type !== 'opaque' && cachedRes.ok) {
+    return cachedRes
   }
-  return fetch(request)
+  try {
+    // request.mode could be 'no-cors'
+    // By fetching the URL without specifying the mode the response will not be opaque
+    const isParabolHosted = url.startsWith(PUBLIC_PATH) || url.startsWith(self.origin)
+    // if one of our assets is not in the service worker cache, then it's either fetched via network or served from the broswer cache.
+    // The browser cache most likely has incorrect CORS headers set, so we better always fetch from the network.
+    const req = isParabolHosted ? fetch(request.url, {cache: 'no-store'}) : fetch(request)
+    const networkRes = await req
+    const cache = await caches.open(DYNAMIC_CACHE)
+    if (isParabolHosted && networkRes.status === 404 && url.match(/.(js|json|mjs)/)) {
+      // If we encounter a 404 for a script file, we most likely have a stale dyanmic cache.
+      // We could clear the cache and the app probably will recover after a reload, however more likely the whole service worker is stale.
+      // Because failing to load a script file might prevent the code to refresh the service worker from loading, it's better to just harakiri.
+      console.error(`Parabol source file ${url} returned 404, updating service worker`)
+      self.registration.update().catch((error) => {
+        console.error('Failed to update service worker, unregistering it', error)
+        self.registration.unregister()
+      })
+      return networkRes
+    }
+    // cloning here because I'm not sure if we must clone before reading the body
+    cache.put(request.url, networkRes.clone()).catch(console.error)
+    return networkRes
+  } catch (e) {
+    // if we have an opaque cached response, it's better than nothing
+    if (cachedRes) return cachedRes
+    throw e
+  }
 }
 
 const onMessage = async (event: MessageEvent) => {
@@ -131,6 +124,7 @@ self.onmessage = onMessage
 self.oninstall = waitUntil(onInstall)
 self.onactivate = waitUntil(onActivate)
 self.onfetch = (e: FetchEvent) => {
+  if (!isCacheable(e.request.url)) return
   e.respondWith(onFetch(e))
 }
 export {}
