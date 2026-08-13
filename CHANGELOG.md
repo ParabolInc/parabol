@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.36.1](https://github.com/ParabolInc/parabol/compare/v13.36.0...v13.36.1) (2026-08-13)
+
+
+### Fixed
+
+* chunk meeting settings inserts in migration ([#13366](https://github.com/ParabolInc/parabol/issues/13366)) ([8b134fb](https://github.com/ParabolInc/parabol/commit/8b134fbadef5bad0196dba0c1eb318915481d57b))
+
 ## [13.36.0](https://github.com/ParabolInc/parabol/compare/v13.35.0...v13.36.0) (2026-08-13)
 
 
