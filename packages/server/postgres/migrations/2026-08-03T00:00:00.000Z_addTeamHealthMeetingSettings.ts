@@ -135,19 +135,23 @@ export async function up(db: Kysely<any>): Promise<void> {
       )
     )
     .execute()
-  if (teams.length === 0) return
-  await db
-    .insertInto('MeetingSettings')
-    .values(
-      teams.map((team: {id: string}) => ({
-        id: generateUID(),
-        teamId: team.id,
-        meetingType: 'teamHealth',
-        phaseTypes: ['TEAM_HEALTH_RESPONSE'],
-        selectedTemplateId: DEFAULT_TEMPLATE_ID
-      }))
-    )
-    .execute()
+  // 5 bind params per row & pg caps a statement at 65535, so insert in chunks
+  const CHUNK_SIZE = 1000
+  for (let i = 0; i < teams.length; i += CHUNK_SIZE) {
+    const chunk = teams.slice(i, i + CHUNK_SIZE)
+    await db
+      .insertInto('MeetingSettings')
+      .values(
+        chunk.map((team: {id: string}) => ({
+          id: generateUID(),
+          teamId: team.id,
+          meetingType: 'teamHealth',
+          phaseTypes: ['TEAM_HEALTH_RESPONSE'],
+          selectedTemplateId: DEFAULT_TEMPLATE_ID
+        }))
+      )
+      .execute()
+  }
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
