@@ -5,6 +5,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.36.0](https://github.com/ParabolInc/parabol/compare/v13.35.0...v13.36.0) (2026-08-13)
+
+
+### Added
+
+* support AWS S3 IRSA ([#13365](https://github.com/ParabolInc/parabol/issues/13365)) ([9326547](https://github.com/ParabolInc/parabol/commit/93265478cf8eb556b8798d32edf4bf422395a7b3))
+
+
+### Fixed
+
+* vuln bumps ([#13362](https://github.com/ParabolInc/parabol/issues/13362)) ([746c27f](https://github.com/ParabolInc/parabol/commit/746c27f38a628596f32affac6213c79a7a1dfad5))
+
 ## [13.35.0](https://github.com/ParabolInc/parabol/compare/v13.34.1...v13.35.0) (2026-08-11)
 
 
