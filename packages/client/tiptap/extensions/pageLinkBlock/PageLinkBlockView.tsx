@@ -131,10 +131,14 @@ export const PageLinkBlockView = (props: NodeViewProps) => {
               <div className='flex items-center pr-1'>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MoreVertIcon
-                      className='size-5 opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
+                    <button
+                      type='button'
+                      aria-label={'More page actions'}
+                      className='flex size-5 cursor-pointer items-center justify-center opacity-0 transition-opacity delay-200 group-hover:opacity-100 group-[&:not(:hover)]:delay-0'
                       onMouseDown={focusLink}
-                    />
+                    >
+                      <MoreVertIcon className='size-5' />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
                 </Tooltip>

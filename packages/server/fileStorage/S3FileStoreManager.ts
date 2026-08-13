@@ -81,6 +81,11 @@ export default class S3Manager extends FileStoreManager {
     this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
     this.bucket = AWS_S3_BUCKET
 
+    // the default chain reads these from the environment itself, so a placeholder left in the pod spec
+    // would beat the IRSA web identity token
+    if (!AWS_ACCESS_KEY_ID) delete process.env.AWS_ACCESS_KEY_ID
+    if (!AWS_SECRET_ACCESS_KEY) delete process.env.AWS_SECRET_ACCESS_KEY
+
     // when unset, the SDK's default chain resolves credentials from IRSA, an instance profile, or shared config
     const credentials =
       AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY

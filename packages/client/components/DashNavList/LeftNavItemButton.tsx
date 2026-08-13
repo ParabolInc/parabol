@@ -14,7 +14,14 @@ export const LeftNavItemButton = (props: Props) => {
     <div className='flex size-6 items-center justify-center rounded-sm hover:bg-surface-nav-button-hover'>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Icon className='hidden size-4 cursor-pointer group-hover:block' onClick={onClick} />
+          <button
+            type='button'
+            aria-label={tooltip}
+            className='hidden size-4 cursor-pointer items-center justify-center group-hover:flex'
+            onClick={onClick}
+          >
+            <Icon className='size-4' />
+          </button>
         </TooltipTrigger>
         <TooltipContent side={'bottom'}>{tooltip}</TooltipContent>
       </Tooltip>

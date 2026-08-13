@@ -109,7 +109,13 @@ export const PageActions = (props: Props) => {
               <div>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <MoreVertIcon className='hidden size-5 group-hover:block' />
+                    <button
+                      type='button'
+                      aria-label={'More page actions'}
+                      className='hidden size-5 cursor-pointer items-center justify-center group-hover:flex'
+                    >
+                      <MoreVertIcon className='size-5' />
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side={'bottom'}>{'More page actions'}</TooltipContent>
                 </Tooltip>
