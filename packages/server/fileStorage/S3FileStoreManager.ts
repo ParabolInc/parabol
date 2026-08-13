@@ -37,6 +37,12 @@ class CloudflareRetry extends StandardRetryStrategy {
   }
 }
 
+// the deploy chart substitutes real values for `key_*` placeholders, so an unsubstituted placeholder means unset
+const getEnv = (name: string) => {
+  const value = process.env[name]
+  return !value || value === `key_${name}` ? undefined : value
+}
+
 export default class S3Manager extends FileStoreManager {
   // e.g. development, production
   private envSubDir: string
@@ -49,9 +55,12 @@ export default class S3Manager extends FileStoreManager {
   private s3: S3Client
   constructor() {
     super()
-    const {CDN_BASE_URL, AWS_REGION, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, AWS_S3_BUCKET} =
-      process.env
-    if (!CDN_BASE_URL || CDN_BASE_URL === 'key_CDN_BASE_URL') {
+    const CDN_BASE_URL = getEnv('CDN_BASE_URL')
+    const AWS_REGION = getEnv('AWS_REGION')
+    const AWS_SECRET_ACCESS_KEY = getEnv('AWS_SECRET_ACCESS_KEY')
+    const AWS_ACCESS_KEY_ID = getEnv('AWS_ACCESS_KEY_ID')
+    const AWS_S3_BUCKET = getEnv('AWS_S3_BUCKET')
+    if (!CDN_BASE_URL) {
       throw new Error('CDN_BASE_URL ENV VAR NOT SET')
     }
 
@@ -72,7 +81,7 @@ export default class S3Manager extends FileStoreManager {
     this.baseUrl = baseUrl.href.slice(0, baseUrl.href.lastIndexOf(this.envSubDir))
     this.bucket = AWS_S3_BUCKET
 
-    // credentials are optional since the file store could be public & not need a key to write
+    // when unset, the SDK's default chain resolves credentials from IRSA, an instance profile, or shared config
     const credentials =
       AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY
         ? {
