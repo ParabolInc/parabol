@@ -109,8 +109,8 @@ const AtlassianProviderRow = (props: Props) => {
         submitting={submitting}
         togglePortal={togglePortal}
         menuRef={originRef}
-        providerName={Providers.ATLASSIAN_NAME}
-        providerDescription={Providers.ATLASSIAN_DESC}
+        providerName={Providers.JIRA_CLOUD_NAME}
+        providerDescription={Providers.JIRA_CLOUD_DESC}
         providerLogo={<AtlassianProviderLogo />}
         error={errorMessage}
       />
