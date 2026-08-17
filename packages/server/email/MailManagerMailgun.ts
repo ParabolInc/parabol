@@ -19,8 +19,8 @@ export default class MailManagerMailgun extends MailManager {
         from: process.env.MAIL_FROM,
         subject,
         html,
-        body,
-        attachments,
+        text: body,
+        attachment: attachments,
         'o:tag': tags
       })
     } catch (e) {
