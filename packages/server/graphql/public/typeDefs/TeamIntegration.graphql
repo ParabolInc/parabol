@@ -1,0 +1,19 @@
+"""
+A task-integration service, whether it is usable on this team, and what it can do
+"""
+type TeamIntegration {
+  id: ID!
+  service: IntegrationProviderServiceEnum!
+  title: String!
+
+  """
+  true if the service is configured for this team (env creds or provider row)
+  """
+  isAvailable: Boolean!
+
+  """
+  true if the viewer has an active auth for this service on this team
+  """
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}

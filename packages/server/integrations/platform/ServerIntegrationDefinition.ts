@@ -1,6 +1,7 @@
 import type {GraphQLResolveInfo} from 'graphql'
 import type {IntegrationMeta} from 'parabol-client/shared/integrations/IntegrationMeta'
 import type {DataLoaderWorker, GQLContext} from '../../graphql/graphql'
+import type {Integrationproviderserviceenum} from '../../postgres/types/pg'
 import type {TaskIntegrationManager} from '../TaskIntegrationManagerFactory'
 
 export interface IntegrationCtx {
@@ -62,6 +63,16 @@ export abstract class ServerIntegrationDefinition {
   abstract readonly authStrategy: 'oauth1' | 'oauth2' | 'pat' | 'webhook'
   abstract readonly capabilities: ServerIntegrationCapabilities
   abstract resolveAuth(ctx: IntegrationCtx): Promise<IntegrationAuth | null>
+  abstract isAvailable(ctx: IntegrationCtx): Promise<boolean>
+
+  protected async hasSharedProvider(ctx: IntegrationCtx, service: Integrationproviderserviceenum) {
+    const {dataLoader, teamId} = ctx
+    const team = await dataLoader.get('teams').loadNonNull(teamId)
+    const providers = await dataLoader
+      .get('sharedIntegrationProviders')
+      .load({service, orgIds: [team.orgId], teamIds: [teamId]})
+    return providers.length > 0
+  }
 
   getCapabilityKeys() {
     const keys = Object.keys(this.capabilities) as IntegrationCapabilityKey[]

@@ -24,24 +24,24 @@ const WatermarkSVG = ({Icon, className}: WatermarkSVGProps) => (
 // GitHub and Linear logos are near-black, so they need the white variant in dark mode.
 // The other services' logos are colored and stay legible on dark surfaces.
 const iconLookup: {
-  [type: string]: {Icon: React.ComponentType; className?: string} | undefined
+  [service: string]: {Icon: React.ComponentType; className?: string} | undefined
 } = {
-  _xGitHubIssue: {Icon: GitHubSVG, className: 'dark:[&_path]:fill-white'},
-  JiraIssue: {Icon: JiraSVG},
-  JiraServerIssue: {Icon: JiraServerSVG},
-  _xGitLabIssue: {Icon: GitLabSVG},
-  AzureDevOpsWorkItem: {Icon: AzureDevOpsSVG},
-  _xLinearIssue: {Icon: LinearSVG, className: 'dark:[&_path]:fill-white'}
+  github: {Icon: GitHubSVG, className: 'dark:[&_path]:fill-white'},
+  jira: {Icon: JiraSVG},
+  jiraServer: {Icon: JiraServerSVG},
+  gitlab: {Icon: GitLabSVG},
+  azureDevOps: {Icon: AzureDevOpsSVG},
+  linear: {Icon: LinearSVG, className: 'dark:[&_path]:fill-white'}
 }
 
 interface Props {
-  type: string | undefined
+  service: string | undefined
 }
 
 const TaskWatermark = (props: Props) => {
-  const {type} = props
-  if (!type) return null
-  const entry = iconLookup[type]
+  const {service} = props
+  if (!service) return null
+  const entry = iconLookup[service]
   if (!entry) return null
   const {Icon, className} = entry
 

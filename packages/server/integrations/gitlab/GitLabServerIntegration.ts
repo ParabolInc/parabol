@@ -24,6 +24,10 @@ export class GitLabServerIntegration extends ServerIntegrationDefinition {
     }
   }
 
+  async isAvailable(ctx: IntegrationCtx) {
+    return this.hasSharedProvider(ctx, 'gitlab')
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

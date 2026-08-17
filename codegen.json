@@ -320,6 +320,7 @@
           "TeamHealthResponse": "../../postgres/types/index#TeamHealthResponse as TeamHealthResponseDB",
           "TeamHealthStage": "./types/TeamHealthStage#TeamHealthStageSource",
           "TeamHealthTemplate": "../../postgres/types/index#MeetingTemplate as MeetingTemplateDB",
+          "TeamIntegration": "./types/TeamIntegration#TeamIntegrationSource",
           "TeamInvitation": "../../postgres/types/index#TeamInvitation as TeamInvitationDB",
           "TeamMeetingSettings": "../../postgres/types/index#MeetingSettings as TeamMeetingSettingsDB",
           "TeamMember": "../../postgres/types/index#TeamMember as TeamMemberDB",

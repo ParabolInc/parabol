@@ -7,3 +7,7 @@ type _xGitLabProject implements RepoIntegration
 extend type _xGitLabProject {
   service: IntegrationProviderServiceEnum!
 }
+
+extend type _xGitLabIssue {
+  service: IntegrationProviderServiceEnum!
+}

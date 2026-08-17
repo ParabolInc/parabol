@@ -19,6 +19,10 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return {accessToken: auth.accessToken, accessUserId: auth.userId, providerId: null, raw: auth}
   }
 
+  async isAvailable(_ctx: IntegrationCtx) {
+    return !!process.env.ATLASSIAN_CLIENT_ID
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

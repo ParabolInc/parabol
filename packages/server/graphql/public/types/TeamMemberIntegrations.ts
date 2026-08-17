@@ -1,4 +1,8 @@
 import TeamMemberIntegrationsId from '../../../../client/shared/gqlIds/TeamMemberIntegrationsId'
+import {
+  type RegisteredServerIntegration,
+  serverIntegrations
+} from '../../../integrations/platform/registry'
 import {isTeamMember} from '../../../utils/authorization'
 import type {TeamMemberIntegrationsResolvers} from '../resolverTypes'
 
@@ -12,6 +16,11 @@ const TeamMemberIntegrations: TeamMemberIntegrationsResolvers = {
   },
 
   id: ({teamId, userId}) => TeamMemberIntegrationsId.join(teamId, userId),
+
+  all: ({teamId, userId}) => {
+    const services = Object.keys(serverIntegrations) as RegisteredServerIntegration[]
+    return services.map((service) => ({service, teamId, userId}))
+  },
 
   atlassian: async ({teamId, userId}, _args, {authToken, dataLoader}) => {
     if (!isTeamMember(authToken, teamId)) return null

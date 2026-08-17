@@ -1,0 +1,11 @@
+"""
+An optional capability a task-integration service may implement
+"""
+enum IntegrationCapabilityEnum {
+  issueCreate
+  issueRead
+  issueSearch
+  repoList
+  estimatePush
+  workItems
+}

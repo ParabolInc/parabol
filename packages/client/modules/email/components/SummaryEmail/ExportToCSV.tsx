@@ -66,21 +66,7 @@ const query = graphql`
               }
               task {
                 integration {
-                  ... on JiraIssue {
-                    __typename
-                    summary
-                    issueKey
-                  }
-                  ... on _xGitHubIssue {
-                    __typename
-                    number
-                    title
-                  }
-                  ... on _xLinearIssue {
-                    __typename
-                    identifier
-                    title
-                  }
+                  title
                 }
                 title
               }
@@ -192,14 +178,7 @@ const ExportToCSV = (props: Props) => {
       if (!dimensionRef || !task) return
       const {name} = dimensionRef
       const {integration, title} = task
-      let story = title
-      if (integration?.__typename === 'JiraIssue') {
-        story = `${integration.issueKey}: ${integration.summary}`
-      } else if (integration?.__typename === '_xGitHubIssue') {
-        story = `${integration.number}: ${integration.title}`
-      } else if (integration?.__typename === '_xLinearIssue') {
-        story = `${integration.identifier}: ${integration.title}`
-      }
+      const story = integration?.title ?? title
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
         story,
