@@ -30,10 +30,18 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
   const responseType = params.get('response_type')
   const scope = params.get('scope')
   const state = params.get('state')
+  const codeChallenge = params.get('code_challenge')
+  const codeChallengeMethod = params.get('code_challenge_method')
 
   if (!clientId || !redirectUri || responseType !== 'code') {
     res.writeStatus('400 Bad Request')
     res.end('Invalid request parameters')
+    return
+  }
+
+  if (codeChallenge && codeChallengeMethod !== 'S256') {
+    res.writeStatus('400 Bad Request')
+    res.end('Only S256 code_challenge_method is supported')
     return
   }
 
@@ -44,7 +52,8 @@ const authorizeHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequ
       clientId,
       redirectUri,
       scopes,
-      userId: authToken.sub
+      userId: authToken.sub,
+      ...(codeChallenge && {codeChallenge, codeChallengeMethod: codeChallengeMethod ?? 'S256'})
     })
 
     const redirectUrl = new URL(redirectUri)

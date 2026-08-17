@@ -9,11 +9,15 @@ import {disconnectAllSockets} from './disconnectAllSockets'
 import {setIsShuttingDown} from './getIsShuttingDown'
 import {hocusPocusHandler} from './hocusPocusHandler'
 import googleDriveWebhookHandler from './integrations/gdrive/googleDriveWebhookHandler'
+import mattermostSetupHandler, {
+  mattermostSetupConfirmHandler
+} from './integrations/mattermost/mattermostSetupHandler'
 import mattermostWebhookHandler from './integrations/mattermost/mattermostWebhookHandler'
 import zoomWebhookHandler from './integrations/zoom/zoomWebhookHandler'
 import listenHandler from './listenHandler'
 import {metricsHandler} from './metricsHandler'
 import authorizeHandler from './oauth2/authorizeHandler'
+import mattermostCallbackHandler from './oauth2/mattermostCallbackHandler'
 import tokenHandler from './oauth2/tokenHandler'
 import PWAHandler from './PWAHandler'
 import {schemaProxyHandler} from './schemaProxyHandler'
@@ -82,6 +86,9 @@ const app = uws
   })
   .post('/saml/:domain', SAMLHandler)
   .get('/oauth/authorize', authorizeHandler)
+  .get('/oauth/mattermost-callback', mattermostCallbackHandler)
+  .get('/mattermost/setup', mattermostSetupHandler)
+  .post('/mattermost/setup/confirm', mattermostSetupConfirmHandler)
   .post('/oauth/token', tokenHandler)
   .ws('/yjs', hocusPocusHandler)
   .ws('/*', wsHandler)
