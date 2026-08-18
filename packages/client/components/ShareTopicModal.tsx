@@ -92,7 +92,7 @@ const ShareTopicModal = (props: Props) => {
   const slack = meeting?.viewerMeetingMember?.teamMember.integrations.slack ?? null
   const isSlackConnected = slack?.isActive
   const slackDefaultTeamChannelId = slack?.defaultTeamChannelId
-  const slackChannels = useSlackChannels(slack)
+  const {channels: slackChannels} = useSlackChannels(slack)
   const channelsLoading = slackChannels.length === 0 && isSlackConnected
   const isLoading = slackOAuthSubmitting || shareTopicSubmitting
 

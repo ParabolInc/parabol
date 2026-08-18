@@ -19,6 +19,7 @@ import logError from '../../../../utils/logError'
 import SlackServerManager from '../../../../utils/SlackServerManager'
 import {convertToMarkdown} from '../../../../utils/tiptap/convertToMarkdown'
 import type {DataLoaderWorker} from '../../../graphql'
+import joinSlackChannel from '../joinSlackChannel'
 import getSummaryText from './getSummaryText'
 import {makeButtons, makeHeader, makeSection, makeSections} from './makeSlackBlocks'
 import type {NotificationIntegrationHelper} from './NotificationIntegrationHelper'
@@ -42,7 +43,7 @@ const handleError = async (
   const {channelId, auth} = notificationChannel
   if ('error' in res) {
     const {error} = res
-    if (error === 'channel_not_found') {
+    if (error === 'channel_not_found' || error === 'not_in_channel') {
       await getKysely()
         .updateTable('SlackNotification')
         .set({channelId: null})
@@ -50,9 +51,9 @@ const handleError = async (
         .where('channelId', '=', channelId)
         .execute()
       return {
-        error: new Error('channel_not_found')
+        error: new Error(error)
       }
-    } else if (error === 'not_in_channel' || error === 'invalid_auth') {
+    } else if (error === 'invalid_auth') {
       logError(new Error(`Slack Channel Notification Error: ${teamId}, ${channelId}, ${auth.id}`))
       return {
         error: new Error(error)
@@ -81,7 +82,12 @@ const notifySlack = async (
   const {channelId, auth} = notificationChannel
   const {botAccessToken} = auth
   const manager = new SlackServerManager(botAccessToken!)
-  const res = await manager.postMessage(channelId!, slackMessage, notificationText, ts)
+  const post = () => manager.postMessage(channelId!, slackMessage, notificationText, ts)
+  let res = await post()
+  if (!res.ok && res.error === 'not_in_channel') {
+    const joinRes = await manager.joinConversation(channelId!)
+    if (joinRes.ok) res = await post()
+  }
   analytics.slackNotificationSent(user, teamId, event, reflectionGroupId)
 
   return res
@@ -621,21 +627,9 @@ export const SlackNotifier = {
 
     const {botAccessToken} = slackAuth
     const manager = new SlackServerManager(botAccessToken!)
-
-    const channelInfo = await manager.getConversationInfo(channelId)
-    if (!channelInfo.ok) {
-      throw new Error(channelInfo.error)
-    }
-    const {channel} = channelInfo
-    const {is_member: isMember, is_archived: isArchived} = channel
-    if (isArchived) {
-      throw new Error('Slack channel archived')
-    }
-    if (!isMember) {
-      const joinConvoRes = await manager.joinConversation(channelId)
-      if (!joinConvoRes.ok) {
-        throw new Error('Unable to join slack channel')
-      }
+    const joinRes = await joinSlackChannel(manager, channelId)
+    if (!joinRes.ok) {
+      throw new Error(joinRes.error)
     }
 
     const topic = reflectionGroup.title
