@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.36.4](https://github.com/ParabolInc/parabol/compare/v13.36.3...v13.36.4) (2026-08-18)
+
+
+### Fixed
+
+* Activity Library card tooltip text invisible in light mode ([#13384](https://github.com/ParabolInc/parabol/issues/13384)) ([dfb5081](https://github.com/ParabolInc/parabol/commit/dfb50819b9bc1a85daffa424cc3b5711aefac4b1))
+
 ## [13.36.3](https://github.com/ParabolInc/parabol/compare/v13.36.2...v13.36.3) (2026-08-18)
 
 
