@@ -1,3 +1,4 @@
+import type * as React from 'react'
 import DropdownMenuToggle from '../../../../components/DropdownMenuToggle'
 import type {
   SlackChannelDropdownChannels,
@@ -15,6 +16,7 @@ interface Props {
   channels: SlackChannelDropdownChannels
   localChannelId: string | null
   onClick: SlackChannelDropdownOnClick
+  onOpen: () => void
   teamId: string
 }
 
@@ -33,7 +35,7 @@ enum ChannelState {
 }
 
 const SlackChannelPicker = (props: Props) => {
-  const {isTokenValid, channels, localChannelId, onClick, teamId} = props
+  const {isTokenValid, channels, localChannelId, onClick, onOpen, teamId} = props
   const activeIdx = localChannelId
     ? channels.findIndex((channel) => channel.id === localChannelId)
     : -1
@@ -58,7 +60,10 @@ const SlackChannelPicker = (props: Props) => {
   const mutationProps = useMutationProps()
   const handleClick =
     channelState !== ChannelState.error
-      ? togglePortal
+      ? (e?: React.MouseEvent | React.TouchEvent) => {
+          onOpen()
+          togglePortal(e)
+        }
       : () => {
           SlackClientManager.openOAuth(atmosphere, teamId, mutationProps)
         }

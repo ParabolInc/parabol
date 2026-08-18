@@ -6,6 +6,7 @@ import {getUserId} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import SlackServerManager from '../../../utils/SlackServerManager'
 import standardError from '../../../utils/standardError'
+import joinSlackChannel from '../../mutations/helpers/joinSlackChannel'
 import type {MutationResolvers} from '../resolverTypes'
 import {slackNotificationEventTypeLookup} from '../types/SlackNotification'
 
@@ -92,8 +93,8 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
   const {response} = manager
   const slackUserId = response.authed_user.id
   const defaultChannelId = response.incoming_webhook.channel_id
-  const [joinConvoRes, userInfoRes, viewer] = await Promise.all([
-    manager.joinConversation(defaultChannelId),
+  const [joinRes, userInfoRes, viewer] = await Promise.all([
+    joinSlackChannel(manager, defaultChannelId),
     manager.getUserInfo(slackUserId),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
@@ -101,9 +102,8 @@ const addSlackAuth: MutationResolvers['addSlackAuth'] = async (
     return standardError(new Error(userInfoRes.error), {userId: viewerId})
   }
 
-  // The default channel could be anything: public, private, im, mpim. Only allow public channels or the @Parabol channel
-  // Using the slackUserId sends a DM to the user from @Parabol
-  const teamChannelId = joinConvoRes.ok ? joinConvoRes.channel.id : slackUserId
+  // If the bot can't post to the chosen channel (e.g. a private channel it wasn't invited to), DM the user from @Parabol instead
+  const teamChannelId = joinRes.ok ? joinRes.channelId : slackUserId
 
   const [, slackAuthId] = await Promise.all([
     upsertNotifications(viewerId, teamId, teamChannelId, defaultChannelId),

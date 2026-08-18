@@ -2,6 +2,8 @@ import type * as React from 'react'
 import type {MenuProps} from '../hooks/useMenu'
 import Menu from './Menu'
 import MenuItem from './MenuItem'
+import MenuItemHR from './MenuItemHR'
+import SlackPrivateChannelHint from './SlackPrivateChannelHint'
 
 export type SlackChannelDropdownChannels = {id: string; name: string}[]
 export type SlackChannelDropdownOnClick = (
@@ -26,6 +28,8 @@ const SlackChannelDropdown = (props: Props) => {
       {channels.map((channel) => {
         return <MenuItem key={channel.id!} label={channel.name} onClick={onClick(channel.id)} />
       })}
+      <MenuItemHR />
+      <SlackPrivateChannelHint />
     </Menu>
   )
 }
