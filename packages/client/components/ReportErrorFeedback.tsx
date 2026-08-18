@@ -1,5 +1,5 @@
 import type * as React from 'react'
-import {useState} from 'react'
+import {useRef, useState} from 'react'
 import useSubmitErrorFeedbackMutation from '../mutations/useSubmitErrorFeedbackMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
@@ -54,15 +54,21 @@ const postToGoogleForm = (email: string | null, error: Error, text: string, even
 const ReportErrorFeedback = (props: Props) => {
   const {isOpen, onClose, error, eventId} = props
   const [text, setText] = useState('')
+  const [submitError, setSubmitError] = useState<string>()
   const [execute, submitting] = useSubmitErrorFeedbackMutation()
+  const formPostedRef = useRef(false)
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value)
+    setSubmitError(undefined)
   }
 
   const onSubmit = () => {
-    if (!text || submitting) return
+    if (!text.trim() || submitting) return
     const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
-    postToGoogleForm(email, error, text, eventId)
+    if (!formPostedRef.current) {
+      formPostedRef.current = true
+      postToGoogleForm(email, error, text, eventId)
+    }
     execute({
       variables: {
         errorMessage: error.message,
@@ -70,8 +76,16 @@ const ReportErrorFeedback = (props: Props) => {
         eventId,
         email
       },
-      onCompleted: onClose,
-      onError: onClose
+      onCompleted: (_res, errors) => {
+        if (errors?.length) {
+          setSubmitError(errors[0]!.message)
+          return
+        }
+        setText('')
+        formPostedRef.current = false
+        onClose()
+      },
+      onError: (err) => setSubmitError(err.message)
     })
   }
 
@@ -82,12 +96,18 @@ const ReportErrorFeedback = (props: Props) => {
         <div className='mb-4 pl-0 text-fg-primary text-sm'>
           What were you doing when the error happened?
         </div>
-        <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />
+        <BasicTextArea
+          autoFocus
+          name='errorReport'
+          onChange={onChange}
+          value={text}
+          error={submitError}
+        />
         <div className='mt-6 flex justify-end'>
           <Button
             variant='primary'
             onClick={onSubmit}
-            disabled={text.length === 0 || submitting}
+            disabled={text.trim().length === 0 || submitting}
             size='md'
           >
             {'Submit Report'}

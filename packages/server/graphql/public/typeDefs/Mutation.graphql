@@ -1029,9 +1029,9 @@ type Mutation {
     errorMessage: String!
     "What the user was doing when the error happened"
     content: String!
-    "Client-generated id correlating this feedback with Datadog RUM"
-    eventId: ID
-    "Fallback contact email when the submitter is not authenticated"
+    "Client-generated UUID correlating this feedback with Datadog RUM"
+    eventId: ID!
+    "Contact email; only used when the submitter is not authenticated"
     email: String
   ): SubmitErrorFeedbackSuccess! @scope(name: USERS_WRITE)
 

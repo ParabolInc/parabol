@@ -6,7 +6,7 @@ const mutation = graphql`
   mutation useSubmitErrorFeedbackMutation(
     $errorMessage: String!
     $content: String!
-    $eventId: ID
+    $eventId: ID!
     $email: String
   ) {
     submitErrorFeedback(
@@ -15,7 +15,7 @@ const mutation = graphql`
       eventId: $eventId
       email: $email
     ) {
-      feedbackId
+      success
     }
   }
 `
