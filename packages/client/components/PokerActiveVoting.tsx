@@ -159,24 +159,26 @@ const PokerActiveVoting = (props: Props) => {
           <Button
             variant='raised'
             size='sm'
-            className='relative h-14 bg-surface-card font-semibold text-fg-secondary text-sm'
+            className='h-14 bg-surface-card font-semibold text-fg-secondary text-sm'
             disabled={submitting}
             onClick={() => reveal()}
           >
-            <CircularProgress
-              className='z-[1] [transform:translate(-4px,0px)]'
-              radius={22}
-              thickness={4}
-              stroke={'var(--color-jade-400)'}
-              progress={votePercent}
-            />
-            <div
-              className={cn(
-                'absolute top-[7px] left-[19px] flex h-10 w-10 items-center justify-center rounded-[100%] border border-[rgba(130,128,154,0.2)] shadow-[0px_0px_2px_rgba(68,66,88,0.14),0px_2px_2px_rgba(68,66,88,0.12),0px_1px_3px_rgba(68,66,88,0.2)] [&_svg]:fill-current [&_svg]:stroke-1 [&_svg]:stroke-current',
-                allVotesIn ? 'text-jade-400' : 'text-fg-muted'
-              )}
-            >
-              <CheckIcon />
+            <div className='relative flex size-11 items-center justify-center'>
+              <CircularProgress
+                className='z-[1]'
+                radius={22}
+                thickness={4}
+                stroke={'var(--color-jade-400)'}
+                progress={votePercent}
+              />
+              <div
+                className={cn(
+                  'absolute flex size-10 items-center justify-center rounded-full border border-[rgba(130,128,154,0.2)] shadow-[0px_0px_2px_rgba(68,66,88,0.14),0px_2px_2px_rgba(68,66,88,0.12),0px_1px_3px_rgba(68,66,88,0.2)] [&_svg]:fill-current [&_svg]:stroke-1 [&_svg]:stroke-current',
+                  allVotesIn ? 'text-jade-400' : 'text-fg-muted'
+                )}
+              >
+                <CheckIcon />
+              </div>
             </div>
             <div className={cn('pl-2', allVotesIn ? 'text-jade-400' : 'text-fg-secondary')}>
               {'Reveal Votes'}

@@ -5,6 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.36.3](https://github.com/ParabolInc/parabol/compare/v13.36.2...v13.36.3) (2026-08-18)
+
+
+### Fixed
+
+* accept private Slack channels at install time ([#13379](https://github.com/ParabolInc/parabol/issues/13379)) ([2b41ab8](https://github.com/ParabolInc/parabol/commit/2b41ab824846a262b02d758e4dac64d8c478edbc))
+* mailgun attachments, cid images inlined ([#13376](https://github.com/ParabolInc/parabol/issues/13376)) ([1c64aae](https://github.com/ParabolInc/parabol/commit/1c64aaeefe2b618d040845fdbad85bd8b802bc6d))
+* mailgun plaintext version, attachments ([#13375](https://github.com/ParabolInc/parabol/issues/13375)) ([fe2180a](https://github.com/ParabolInc/parabol/commit/fe2180a167ee7adde8ad993a8f6c799cfe969a42))
+* reveal votes styling ([#13373](https://github.com/ParabolInc/parabol/issues/13373)) ([b757e39](https://github.com/ParabolInc/parabol/commit/b757e3940aa53150835c903163ceb10f9830a8ef))
+
+
+### Changed
+
+* add integration platform contracts and registries ([#13359](https://github.com/ParabolInc/parabol/issues/13359)) ([d2619c7](https://github.com/ParabolInc/parabol/commit/d2619c7c8b0d03023197fbd874152ecd07877ae8))
+
+## [13.36.2](https://github.com/ParabolInc/parabol/compare/v13.36.1...v13.36.2) (2026-08-13)
+
+
+### Fixed
+
+* per-migration transactions ([#13369](https://github.com/ParabolInc/parabol/issues/13369)) ([7be3299](https://github.com/ParabolInc/parabol/commit/7be3299bfd39ee22525508d026eda68b0895fcf8))
+
 ## [13.36.1](https://github.com/ParabolInc/parabol/compare/v13.36.0...v13.36.1) (2026-08-13)
 
 

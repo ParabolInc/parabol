@@ -4,60 +4,27 @@ const SEED_DATE = new Date('2026-07-08T00:00:00.000Z')
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
-  // Add 'teamHealth' to MeetingTypeEnum by rebuilding the type in place. pg forbids
-  // *using* an enum value in the same transaction that added it via `ALTER TYPE ... ADD
-  // VALUE`, and kysely runs every pending migration in a single transaction — so a later
-  // migration in this batch that seeds MeetingTemplate rows of type 'teamHealth' would
-  // fail with "unsafe use of new value". Doing the ADD VALUE on a separate autocommit
-  // connection doesn't work either: on a fresh database the whole batch (including the
-  // init migration that CREATEs MeetingTypeEnum) is still uncommitted, so that connection
-  // can't see the type ("type does not exist"). Recreating the type here sidesteps both:
-  // values of a type created in the current transaction may be used within it.
-  await sql`ALTER TYPE public."MeetingTypeEnum" RENAME TO "MeetingTypeEnum_old"`.execute(db)
-  await sql`
-    CREATE TYPE public."MeetingTypeEnum" AS ENUM (
-      'action',
-      'retrospective',
-      'poker',
-      'teamPrompt',
-      'teamHealth'
+  // every enum value team health needs, added here so later migrations can use them: pg
+  // forbids *using* a value in the transaction that added it, and each migration commits
+  // on its own (see transactionMode in .config/kyselyMigrations.ts). ADD VALUE is O(1) —
+  // recreating the type instead would rewrite every table using it under an ACCESS
+  // EXCLUSIVE lock, which deadlocks against live traffic
+  await sql`ALTER TYPE public."MeetingTypeEnum" ADD VALUE IF NOT EXISTS 'teamHealth'`.execute(db)
+  // a standalone team health meeting runs four phases (intro -> response -> submitted ->
+  // result) & emits its own timeline event when it ends
+  for (const phaseType of [
+    'TEAM_HEALTH_RESPONSE',
+    'TEAM_HEALTH_INTRO',
+    'TEAM_HEALTH_SUBMITTED',
+    'TEAM_HEALTH_RESULT'
+  ]) {
+    await sql`ALTER TYPE public."NewMeetingPhaseTypeEnum" ADD VALUE IF NOT EXISTS ${sql.lit(phaseType)}`.execute(
+      db
     )
-  `.execute(db)
-  await sql`
-    ALTER TABLE public."NewMeeting"
-    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
-    USING "meetingType"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`
-    ALTER TABLE public."MeetingMember"
-    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
-    USING "meetingType"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`
-    ALTER TABLE public."MeetingSettings"
-    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
-    USING "meetingType"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`
-    ALTER TABLE public."MeetingSeries"
-    ALTER COLUMN "meetingType" TYPE public."MeetingTypeEnum"
-    USING "meetingType"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`
-    ALTER TABLE public."MeetingTemplate"
-    ALTER COLUMN "type" TYPE public."MeetingTypeEnum"
-    USING "type"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`ALTER TABLE public."Team" ALTER COLUMN "lastMeetingType" DROP DEFAULT`.execute(db)
-  await sql`
-    ALTER TABLE public."Team"
-    ALTER COLUMN "lastMeetingType" TYPE public."MeetingTypeEnum"
-    USING "lastMeetingType"::text::public."MeetingTypeEnum"
-  `.execute(db)
-  await sql`ALTER TABLE public."Team" ALTER COLUMN "lastMeetingType" SET DEFAULT 'retrospective'`.execute(
+  }
+  await sql`ALTER TYPE public."TimelineEventEnum" ADD VALUE IF NOT EXISTS 'TEAM_HEALTH_COMPLETE'`.execute(
     db
   )
-  await sql`DROP TYPE public."MeetingTypeEnum_old"`.execute(db)
 
   await db.schema.createType('TeamHealthQuestionTypeEnum').asEnum(['likert']).execute()
 
