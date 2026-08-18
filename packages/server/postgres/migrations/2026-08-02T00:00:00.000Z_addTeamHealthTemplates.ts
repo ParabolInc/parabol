@@ -5,10 +5,7 @@ const SEED_DATE = new Date('2026-07-08T00:00:00.000Z')
 // One built-in MeetingTemplate per team-health question pack (seeded in the
 // addTeamHealth migration). Each template exposes every question in its pack via
 // TeamHealthTemplateQuestion. `name` matches the pack name 1:1 so we can look the
-// pack up by name. Inserting rows of type 'teamHealth' is safe here — even when this
-// runs in the same batch transaction as addTeamHealth — because that migration
-// recreates MeetingTypeEnum (rather than ALTER TYPE ... ADD VALUE); values of a type
-// created in the current transaction can be used within it.
+// pack up by name.
 const PACK_TEMPLATES: {id: string; name: string; isStarter: boolean}[] = [
   // canonical pack: mirror the "one starter per category" convention
   {id: 'googleProjectAristotleTemplate', name: 'Google Project Aristotle', isStarter: true},

@@ -1,7 +1,7 @@
-interface Attachment {
+export interface Attachment {
   filename: string
   path: string
-  cid: string
+  cid?: string
 }
 
 export interface MailManagerOptions {

@@ -58,7 +58,7 @@ const SlackNotificationList = (props: Props) => {
   const {integrations} = teamMember!
   const {slack} = integrations
   const notifications = slack?.notifications ?? []
-  const channels = useSlackChannels(slack)
+  const {channels, refetch: refetchChannels} = useSlackChannels(slack)
   const {submitting, onError, onCompleted, submitMutation, error} = useMutationProps()
   const atmosphere = useAtmosphere()
   const localPrivateChannel = channels.find((channel) => channel.name === '@Parabol')
@@ -107,6 +107,7 @@ const SlackNotificationList = (props: Props) => {
           isTokenValid={isActive}
           localChannelId={defaultTeamChannelId}
           onClick={changeTeamChannel}
+          onOpen={refetchChannels}
           teamId={teamId}
         />
       </div>

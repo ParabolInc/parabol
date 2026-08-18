@@ -20,7 +20,7 @@ module.exports = {
   transformIgnorePatterns: ['/marked\.esm\.js/'],
   modulePaths: ['<rootDir>/packages/'],
   moduleNameMapper: {
-    'server/(.*)': ['<rootDir>/$1'],
+    '^server/(.*)': ['<rootDir>/$1'],
     'parabol-client/(.*)': ['<rootDir>/../client/$1'],
     '~/(.*)': ['<rootDir>/../client/$1']
   },
