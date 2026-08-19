@@ -1,5 +1,6 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
-import {type drive_v3, google} from 'googleapis'
+import {type docs_v1, type drive_v3, google} from 'googleapis'
+import {hasGdriveDocsScope} from 'parabol-client/shared/gdriveScopes'
 import appOrigin from '../../appOrigin'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
@@ -12,6 +13,7 @@ import {
 } from './attachTranscriptToSummaryPage'
 import {verifyGdriveToken} from './gdriveWebhookToken'
 import {getGoogleDocLinkPage} from './getGoogleDocLinkPage'
+import {googleDocToPages} from './googleDocToPages'
 import {splitMarkdownIntoPages} from './processGoogleMeetFile'
 
 const googleDriveWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req: HttpRequest) => {
@@ -36,15 +38,41 @@ const getHttpStatus = (e: unknown) => {
   return typeof code === 'number' ? code : null
 }
 
-// files.export currently 404s for Google Docs under drive.meet.readonly; null = link to the doc instead
-const exportDocPages = async (drive: drive_v3.Drive, fileId: string) => {
+const isRateLimited = (e: unknown) => {
+  if (typeof e !== 'object' || e === null) return false
+  const {errors} = e as {errors?: unknown}
+  return (
+    Array.isArray(errors) &&
+    errors.some((err) => /rateLimit/i.test(String((err as {reason?: unknown})?.reason ?? '')))
+  )
+}
+
+const isUnavailable = (e: unknown) => {
+  const status = getHttpStatus(e)
+  return (status === 404 || status === 403) && !isRateLimited(e)
+}
+
+// files.export currently 404s for Google Docs under drive.meet.readonly, so the Docs API is
+// preferred when its scope was granted; null = content unavailable, link to the doc instead
+const fetchDocPages = async (
+  drive: drive_v3.Drive,
+  docs: docs_v1.Docs | null,
+  fileId: string
+): Promise<TranscriptPageInput[] | null> => {
+  if (docs) {
+    try {
+      const {data} = await docs.documents.get({documentId: fileId, includeTabsContent: true})
+      return googleDocToPages(data)
+    } catch (e) {
+      if (!isUnavailable(e)) throw e
+    }
+  }
   try {
     const resp = await drive.files.export({fileId, mimeType: 'text/markdown'})
     const markdown = typeof resp.data === 'string' ? resp.data : ''
     return splitMarkdownIntoPages(markdown)
   } catch (e) {
-    const status = getHttpStatus(e)
-    if (status === 404 || status === 403) return null
+    if (isUnavailable(e)) return null
     throw e
   }
 }
@@ -65,6 +93,9 @@ export const processNewFiles = async ({userId, teamId}: {userId: string; teamId:
     const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, appOrigin)
     oauth2Client.setCredentials({access_token, refresh_token, expiry_date})
     const drive = google.drive({version: 'v3', auth: oauth2Client})
+    const docs = hasGdriveDocsScope(gdriveAuth.scopes)
+      ? google.docs({version: 'v1', auth: oauth2Client})
+      : null
 
     const filesRes = await drive.files.list({
       q: "mimeType='application/vnd.google-apps.document' and trashed=false",
@@ -98,7 +129,7 @@ export const processNewFiles = async ({userId, teamId}: {userId: string; teamId:
 
       let pages: TranscriptPageInput[] | null = []
       try {
-        pages = await exportDocPages(drive, file.id)
+        pages = await fetchDocPages(drive, docs, file.id)
       } catch (e) {
         await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
         Logger.log(e)
@@ -109,7 +140,7 @@ export const processNewFiles = async ({userId, teamId}: {userId: string; teamId:
           await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
           continue
         }
-        Logger.log('gdrive export unavailable, linking doc instead', {tags: {fileId: file.id}})
+        Logger.log('gdrive doc content unavailable, linking doc instead', {tags: {fileId: file.id}})
         pages = [getGoogleDocLinkPage(file.name, file.webViewLink)]
       } else if (pages.length === 0) {
         // Gemini is still writing; release the row so the next notification retries

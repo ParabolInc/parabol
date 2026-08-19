@@ -1,12 +1,15 @@
 const mockListFiles = jest.fn()
 const mockExportFile = jest.fn()
+const mockDocsGet = jest.fn()
+const mockAuthRow = {accessToken: 'a', refreshToken: 'r', expiresAt: null, scopes: ''}
 const mockInsertedIds: string[] = []
 const mockDeletedIds: string[] = []
 
 jest.mock('googleapis', () => ({
   google: {
     auth: {OAuth2: jest.fn().mockImplementation(() => ({setCredentials: jest.fn()}))},
-    drive: () => ({files: {list: mockListFiles, export: mockExportFile}})
+    drive: () => ({files: {list: mockListFiles, export: mockExportFile}}),
+    docs: () => ({documents: {get: mockDocsGet}})
   }
 }))
 jest.mock('../../../graphql/uWSAsyncHandler', () => ({
@@ -15,7 +18,7 @@ jest.mock('../../../graphql/uWSAsyncHandler', () => ({
 }))
 jest.mock('../../../dataloader/getNewDataLoader', () => ({
   getNewDataLoader: () => ({
-    get: () => ({load: async () => ({accessToken: 'a', refreshToken: 'r', expiresAt: null})}),
+    get: () => ({load: async () => mockAuthRow}),
     dispose: jest.fn()
   })
 }))
@@ -48,6 +51,7 @@ jest.mock('../attachTranscriptToSummaryPage', () => ({
   attachTranscriptToSummaryPage: jest.fn()
 }))
 
+import {GDRIVE_DOCS_SCOPE, GDRIVE_MEET_SCOPE} from 'parabol-client/shared/gdriveScopes'
 import {matchExternalMeetingToMeeting} from '../../matchExternalMeetingToMeeting'
 import {attachTranscriptToSummaryPage} from '../attachTranscriptToSummaryPage'
 import {processNewFiles} from '../googleDriveWebhookHandler'
@@ -79,8 +83,85 @@ describe('googleDriveWebhookHandler processNewFiles', () => {
   beforeEach(() => {
     mockInsertedIds.length = 0
     mockDeletedIds.length = 0
+    mockAuthRow.scopes = GDRIVE_MEET_SCOPE
     mockListFiles.mockResolvedValue({data: {files: [geminiDoc]}})
     mockExportFile.mockResolvedValue({data: '# Transcript\n\nhello'})
+    mockDocsGet.mockResolvedValue({
+      data: {
+        title: geminiDoc.name,
+        tabs: [
+          {
+            tabProperties: {title: 'Notes'},
+            documentTab: {
+              body: {
+                content: [
+                  {
+                    paragraph: {
+                      elements: [{textRun: {content: 'Docs API notes\n', textStyle: {}}}],
+                      paragraphStyle: {namedStyleType: 'NORMAL_TEXT'}
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    })
+  })
+
+  it('reads the doc through the Docs API when the docs scope was granted', async () => {
+    mockAuthRow.scopes = `${GDRIVE_MEET_SCOPE} ${GDRIVE_DOCS_SCOPE}`
+    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
+    await processNewFiles(payload)
+    expect(mockDocsGet).toHaveBeenCalledWith({documentId: 'doc1', includeTabsContent: true})
+    expect(mockExportFile).not.toHaveBeenCalled()
+    expect(mockAttach).toHaveBeenCalledWith(
+      42,
+      [expect.objectContaining({title: 'Notes'})],
+      'user1',
+      'google:doc1'
+    )
+  })
+
+  it('falls back to export, then to a link page, when the Docs API rejects the doc', async () => {
+    mockAuthRow.scopes = `${GDRIVE_MEET_SCOPE} ${GDRIVE_DOCS_SCOPE}`
+    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
+    mockDocsGet.mockRejectedValue(Object.assign(new Error('Forbidden'), {status: 403}))
+    mockExportFile.mockRejectedValue(Object.assign(new Error('File not found'), {status: 404}))
+    await processNewFiles(payload)
+    expect(mockDeletedIds).toEqual([])
+    expect(mockAttach).toHaveBeenCalledWith(
+      42,
+      [expect.objectContaining({title: geminiDoc.name})],
+      'user1',
+      'google:doc1'
+    )
+  })
+
+  it('releases the dedup row on a transient Docs API error so a later notification retries', async () => {
+    mockAuthRow.scopes = `${GDRIVE_MEET_SCOPE} ${GDRIVE_DOCS_SCOPE}`
+    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
+    mockDocsGet.mockRejectedValue(Object.assign(new Error('Backend Error'), {status: 503}))
+    await processNewFiles(payload)
+    expect(mockDeletedIds).toEqual(['google:doc1'])
+    expect(mockAttach).not.toHaveBeenCalled()
+  })
+
+  it('releases the dedup row when the Docs API returns a doc with no content yet', async () => {
+    mockAuthRow.scopes = `${GDRIVE_MEET_SCOPE} ${GDRIVE_DOCS_SCOPE}`
+    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
+    mockDocsGet.mockResolvedValue({data: {title: geminiDoc.name, tabs: []}})
+    await processNewFiles(payload)
+    expect(mockDeletedIds).toEqual(['google:doc1'])
+    expect(mockAttach).not.toHaveBeenCalled()
+  })
+
+  it('does not call the Docs API without the docs scope', async () => {
+    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
+    await processNewFiles(payload)
+    expect(mockDocsGet).not.toHaveBeenCalled()
+    expect(mockExportFile).toHaveBeenCalled()
   })
 
   it('releases the dedup row when no Parabol meeting has ended yet, so a later notification retries', async () => {
@@ -124,7 +205,9 @@ describe('googleDriveWebhookHandler processNewFiles', () => {
               expect.objectContaining({
                 type: 'paragraph',
                 content: [
+                  expect.objectContaining({text: "Parabol couldn't import these notes yet. "}),
                   expect.objectContaining({
+                    text: 'Open them in Google Docs',
                     marks: [
                       expect.objectContaining({
                         attrs: expect.objectContaining({href: geminiDoc.webViewLink})

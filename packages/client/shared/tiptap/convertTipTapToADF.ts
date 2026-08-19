@@ -136,10 +136,7 @@ function convertNode(node: TipTapContentNode): AdfNode | AdfNode[] | null {
         type: 'bulletList',
         content: node.content.map((item) => ({
           type: 'listItem',
-          content: item.content.map((p) => ({
-            type: 'paragraph',
-            content: convertInlineContent(p.content)
-          }))
+          content: convertChildren(item.content)
         }))
       }
 
@@ -150,10 +147,7 @@ function convertNode(node: TipTapContentNode): AdfNode | AdfNode[] | null {
         attrs: {order: node.attrs.start ?? 1},
         content: node.content.map((item) => ({
           type: 'listItem',
-          content: item.content.map((p) => ({
-            type: 'paragraph',
-            content: convertInlineContent(p.content)
-          }))
+          content: convertChildren(item.content)
         }))
       }
 

@@ -9,9 +9,10 @@ export const getGoogleDocLinkPage = (name: string, webViewLink: string): Transcr
       {
         type: 'paragraph',
         content: [
+          {type: 'text', text: "Parabol couldn't import these notes yet. "},
           {
             type: 'text',
-            text: 'Open in Google Docs',
+            text: 'Open them in Google Docs',
             marks: [{type: 'link', attrs: {href: webViewLink, target: '_blank'}}]
           }
         ]

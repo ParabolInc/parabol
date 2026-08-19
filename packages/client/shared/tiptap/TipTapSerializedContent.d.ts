@@ -62,12 +62,12 @@ interface TipTapOrderedListNode {
     start: number
     type: null
   }
-  content: [TipTapListItemNode]
+  content: TipTapListItemNode[]
 }
 
 interface TipTapListItemNode {
   type: 'listItem'
-  content: TipTapParagraphNode[]
+  content: (TipTapParagraphNode | TipTapBulletListNode | TipTapOrderedListNode)[]
 }
 
 interface TipTapTaskListNode {

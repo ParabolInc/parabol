@@ -5,6 +5,7 @@ import type {DiscussionDrawerGdriveRow_gdrive$key} from '../__generated__/Discus
 import useAtmosphere from '../hooks/useAtmosphere'
 import useMutationProps from '../hooks/useMutationProps'
 import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
+import {hasGdriveDocsScope} from '../shared/gdriveScopes'
 import {Button} from '../ui/Button/Button'
 import {Menu} from '../ui/Menu/Menu'
 import {MenuContent} from '../ui/Menu/MenuContent'
@@ -25,6 +26,9 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
       fragment DiscussionDrawerGdriveRow_gdrive on GdriveIntegration {
         isActive
         watchExpiresAt
+        auth {
+          scopes
+        }
         cloudProvider {
           id
           clientId
@@ -41,8 +45,10 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
   const cloudProvider = gdrive.cloudProvider
   if (!cloudProvider) return null
 
+  const hasDocsScope = hasGdriveDocsScope(gdrive.auth?.scopes)
   const isConnected =
     gdrive.isActive &&
+    hasDocsScope &&
     !!gdrive.watchExpiresAt &&
     new Date(gdrive.watchExpiresAt).getTime() > Date.now() + TWO_HOURS_MS
 
@@ -95,7 +101,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
             onClick={handleConnect}
             disabled={submitting}
           >
-            {'Connect'}
+            {gdrive.isActive && !hasDocsScope ? 'Reconnect' : 'Connect'}
           </button>
         )}
       </div>

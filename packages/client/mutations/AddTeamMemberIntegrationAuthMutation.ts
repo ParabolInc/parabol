@@ -48,6 +48,9 @@ const mutation = graphql`
             }
             gdrive {
               isActive
+              auth {
+                scopes
+              }
             }
             zoom {
               isActive
