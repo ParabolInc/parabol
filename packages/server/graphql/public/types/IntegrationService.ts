@@ -3,9 +3,9 @@ import {
   type RegisteredServerIntegration
 } from '../../../integrations/platform/registry'
 import type {IntegrationCapabilityKey} from '../../../integrations/platform/ServerIntegrationDefinition'
-import type {TeamIntegrationResolvers} from '../resolverTypes'
+import type {IntegrationServiceResolvers} from '../resolverTypes'
 
-export type TeamIntegrationSource = {
+export type IntegrationServiceSource = {
   service: RegisteredServerIntegration
   title: string
   capabilities: IntegrationCapabilityKey[]
@@ -14,15 +14,15 @@ export type TeamIntegrationSource = {
 }
 
 const TYPENAME_BY_SERVICE = {
-  azureDevOps: 'AzureDevOpsTeamIntegration',
-  github: 'GitHubTeamIntegration',
-  gitlab: 'GitLabTeamIntegration',
-  jira: 'JiraTeamIntegration',
-  jiraServer: 'JiraServerTeamIntegration',
-  linear: 'LinearTeamIntegration'
+  azureDevOps: 'AzureDevOpsIntegrationService',
+  github: 'GitHubIntegrationService',
+  gitlab: 'GitLabIntegrationService',
+  jira: 'JiraIntegrationService',
+  jiraServer: 'JiraServerIntegrationService',
+  linear: 'LinearIntegrationService'
 } as const
 
-const TeamIntegration: TeamIntegrationResolvers = {
+const IntegrationService: IntegrationServiceResolvers = {
   __resolveType: ({service}) => TYPENAME_BY_SERVICE[service],
   isAvailable: ({service, teamId, userId}, _args, {dataLoader}) =>
     getServerIntegration(service).isAvailable({dataLoader, teamId, userId}),
@@ -30,4 +30,4 @@ const TeamIntegration: TeamIntegrationResolvers = {
     getServerIntegration(service).isConnected({dataLoader, teamId, userId})
 }
 
-export default TeamIntegration
+export default IntegrationService

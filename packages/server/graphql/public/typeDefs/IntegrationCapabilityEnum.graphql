@@ -18,6 +18,11 @@ enum IntegrationCapabilityEnum {
   issueSearch
 
   """
+  List the viewer's issues for standup/retro drawers
+  """
+  issueList
+
+  """
   List the repos/projects a task can be pushed to
   """
   repoList
@@ -26,9 +31,4 @@ enum IntegrationCapabilityEnum {
   Push a poker estimate back to the service (comment, field, or label)
   """
   estimatePush
-
-  """
-  List the viewer's work items for standup/retro drawers
-  """
-  workItemList
 }

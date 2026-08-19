@@ -42,17 +42,17 @@ export interface EstimatePushCapability {
   targets: Array<'comment' | 'field' | 'label'>
 }
 
-export interface WorkItemsCapability {
-  getUserWorkItems(ctx: GqlIntegrationCtx): Promise<unknown[]>
+export interface IssueListCapability {
+  getViewerIssues(ctx: GqlIntegrationCtx): Promise<unknown[]>
 }
 
 export interface ServerIntegrationCapabilities {
   issueCreate?: IssueCreateCapability
   issueRead?: IssueReadCapability
   issueSearch?: IssueSearchCapability
+  issueList?: IssueListCapability
   repoList?: RepoListCapability
   estimatePush?: EstimatePushCapability
-  workItemList?: WorkItemsCapability
 }
 
 export type IntegrationCapabilityKey = keyof ServerIntegrationCapabilities

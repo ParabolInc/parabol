@@ -12,7 +12,7 @@ const KNOWN_CAPABILITIES: IntegrationCapabilityKey[] = [
   'issueSearch',
   'repoList',
   'estimatePush',
-  'workItemList'
+  'issueList'
 ]
 
 describe('serverIntegrations registry', () => {

@@ -6,11 +6,6 @@ type TeamMemberIntegrations {
   id: ID!
 
   """
-  All registered task integrations, generically
-  """
-  all: [TeamIntegration!]!
-
-  """
   All things associated with an Atlassian integration for a team member
   """
   atlassian: AtlassianIntegration
