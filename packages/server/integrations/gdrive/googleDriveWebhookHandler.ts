@@ -25,7 +25,7 @@ const googleDriveWebhookHandler = uWSAsyncHandler(async (res: HttpResponse, req:
   processNewFiles(payload).catch(Logger.log)
 })
 
-const processNewFiles = async ({
+export const processNewFiles = async ({
   userId,
   teamId,
   folderId
@@ -76,11 +76,21 @@ const processNewFiles = async ({
       if (insertResult.numInsertedOrUpdatedRows === 0n) continue
       const fileCreatedTime = new Date(file.createdTime)
       const meeting = await matchExternalMeetingToMeeting(fileCreatedTime, teamId)
-      // Meeting hasn't ended yet or doesn't exist in Parabol. Exit
-      if (!meeting) continue
+      // release the dedup row so a later notification retries once the meeting has ended
+      if (!meeting?.summaryPageId) {
+        await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+        continue
+      }
 
-      const resp = await drive.files.export({fileId: file.id, mimeType: 'text/markdown'})
-      const markdown = (resp.data as string) ?? ''
+      let markdown = ''
+      try {
+        const resp = await drive.files.export({fileId: file.id, mimeType: 'text/markdown'})
+        markdown = (resp.data as string) ?? ''
+      } catch (e) {
+        await pg.deleteFrom('ExternalMeetingFile').where('id', '=', externalId).execute()
+        Logger.log(e)
+        continue
+      }
       // Skip empty exports — docs are created before Gemini writes content;
       // the next webhook notification will arrive once the content is ready.
       // Do NOT mark as processed so the next notification retries this file.
@@ -95,10 +105,7 @@ const processNewFiles = async ({
         continue
       }
 
-      const {summaryPageId} = meeting
-      if (summaryPageId) {
-        await attachTranscriptToSummaryPage(summaryPageId, pages, userId, externalId)
-      }
+      await attachTranscriptToSummaryPage(meeting.summaryPageId, pages, userId, externalId)
     }
   } finally {
     dataLoader.dispose()
