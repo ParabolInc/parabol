@@ -4,7 +4,7 @@
  */
 
 import type {RecordProxy} from 'relay-runtime'
-import type {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {Handler} from 'relay-runtime/store/RelayStoreTypes'
 import initHandler from './initHandler'
 
 const LATENCY = 200 // ms to travel from server to client

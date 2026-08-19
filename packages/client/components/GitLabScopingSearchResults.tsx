@@ -31,7 +31,7 @@ interface Props {
 const GitLabScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
 
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<GitLabScopingSearchResultsQuery>(
     graphql`
       query GitLabScopingSearchResultsQuery(
         $teamId: ID!

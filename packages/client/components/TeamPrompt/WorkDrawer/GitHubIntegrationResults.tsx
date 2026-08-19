@@ -20,7 +20,7 @@ interface Props {
 
 const GitHubIntegrationResults = (props: Props) => {
   const {queryRef, queryType, searchQuery, teamId, onResultCount} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<GitHubIntegrationResultsQuery>(
     graphql`
       query GitHubIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...GitHubIntegrationResults_search @arguments(teamId: $teamId)

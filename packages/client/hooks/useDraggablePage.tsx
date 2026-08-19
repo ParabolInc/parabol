@@ -1,7 +1,7 @@
 import type * as React from 'react'
 import {useRef} from 'react'
 import {ConnectionHandler, commitLocalUpdate} from 'relay-runtime'
-import type {RecordSource} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {RecordSource} from 'relay-runtime/store/RelayStoreTypes'
 import * as Y from 'yjs'
 import type {PageDragHandleQuery$data} from '../__generated__/PageDragHandleQuery.graphql'
 import type Atmosphere from '../Atmosphere'

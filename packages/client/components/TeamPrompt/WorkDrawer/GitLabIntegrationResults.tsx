@@ -16,7 +16,7 @@ interface Props {
 
 const GitLabIntegrationResults = (props: Props) => {
   const {queryRef, teamId} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<GitLabIntegrationResultsQuery>(
     graphql`
       query GitLabIntegrationResultsQuery($teamId: ID!) {
         ...GitLabIntegrationResults_search @arguments(teamId: $teamId)

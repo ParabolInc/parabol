@@ -19,7 +19,7 @@ interface Props {
 
 const JiraIntegrationResults = (props: Props) => {
   const {queryRef, teamId, searchQuery, onResultCount} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<JiraIntegrationResultsQuery>(
     graphql`
       query JiraIntegrationResultsQuery($teamId: ID!, $searchQuery: String!) {
         ...JiraIntegrationResults_search @arguments(teamId: $teamId)
