@@ -4,7 +4,6 @@ import getKysely from '../../postgres/getKysely'
 type TokenPayload = {
   userId: string
   teamId: string
-  folderId: string
 }
 
 const secret = () => Buffer.from(process.env.SERVER_SECRET!, 'base64')
