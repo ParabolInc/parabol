@@ -30,7 +30,7 @@ const JiraServerScopingSearchResults = (props: Props) => {
   const {queryRef} = props
   const atmosphere = useAtmosphere()
 
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<JiraServerScopingSearchResultsQuery>(
     graphql`
       query JiraServerScopingSearchResultsQuery(
         $teamId: ID!

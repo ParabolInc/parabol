@@ -1,4 +1,4 @@
-import type {Handler} from 'relay-runtime/lib/store/RelayStoreTypes'
+import type {Handler} from 'relay-runtime/store/RelayStoreTypes'
 import type {TaskStatusEnum} from '~/__generated__/UpdateTaskMutation.graphql'
 import SearchQueryId from '../../shared/gqlIds/SearchQueryId'
 import createProxyRecord from './createProxyRecord'

@@ -19,7 +19,7 @@ const AzureDevOpsScopingSearchResults = (props: Props) => {
   const {meetingRef} = props
   const {queryRef} = props
 
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<AzureDevOpsScopingSearchResultsQuery>(
     graphql`
       query AzureDevOpsScopingSearchResultsQuery(
         $teamId: ID!

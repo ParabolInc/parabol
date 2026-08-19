@@ -17,7 +17,7 @@ interface Props {
 
 const GCalIntegrationResults = (props: Props) => {
   const {queryRef, order, teamId, searchQuery, onResultCount} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<GCalIntegrationResultsQuery>(
     graphql`
       query GCalIntegrationResultsQuery($teamId: ID!, $startDate: DateTime!, $endDate: DateTime!) {
         viewer {

@@ -21,7 +21,7 @@ const ParabolTasksResults = (props: Props) => {
   const atmosphere = useAtmosphere()
 
   // :TODO: (jmtaber129): Add pagination of tasks.
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<ParabolTasksResultsQuery>(
     graphql`
       query ParabolTasksResultsQuery($userId: ID!) {
         viewer {

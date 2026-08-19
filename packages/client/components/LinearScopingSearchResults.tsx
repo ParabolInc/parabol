@@ -32,7 +32,7 @@ interface Props {
 
 const LinearScopingSearchResults = (props: Props) => {
   const {queryRef, meetingRef} = props
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<LinearScopingSearchResultsQuery>(
     graphql`
       query LinearScopingSearchResultsQuery($teamId: ID!, $filter: _xLinearIssueFilter) {
         ...LinearScopingSearchResults_query @arguments(filter: $filter)
