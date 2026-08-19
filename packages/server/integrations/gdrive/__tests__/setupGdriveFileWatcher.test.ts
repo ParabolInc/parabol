@@ -68,6 +68,16 @@ describe('setupGdriveFileWatcher', () => {
     expect(mockUpdateSets).toEqual([{watchExpiresAt: new Date(1800000000000)}])
   })
 
+  it('surfaces Google API errors as GraphQL errors', async () => {
+    mockChangesWatch.mockRejectedValue(
+      Object.assign(new Error('Bad webhook address: localhost'), {status: 400})
+    )
+    await expect(setupGdriveFileWatcher(gdriveAuth, 'user1', 'team1')).rejects.toMatchObject({
+      name: 'GraphQLError',
+      message: 'Google Drive: Bad webhook address: localhost'
+    })
+  })
+
   it('throws when Google does not return a channel resourceId', async () => {
     mockChangesWatch.mockResolvedValue({data: {}})
     await expect(setupGdriveFileWatcher(gdriveAuth, 'user1', 'team1')).rejects.toThrow(

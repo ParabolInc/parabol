@@ -1,7 +1,7 @@
 import {sql} from 'kysely'
 import getKysely from '../postgres/getKysely'
 
-const MATCH_WINDOW_MS = 30 * 60 * 1000 // ±30 minutes
+const MATCH_WINDOW_MS = 60 * 60 * 1000 // ±60 minutes
 
 export const matchExternalMeetingToMeeting = async (meetingEndedAt: Date, teamId: string) => {
   const pg = getKysely()
