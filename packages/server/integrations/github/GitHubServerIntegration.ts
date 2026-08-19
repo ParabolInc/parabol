@@ -23,6 +23,12 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     return !!process.env.GITHUB_CLIENT_ID
   }
 
+  async isConnected(ctx: IntegrationCtx) {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader.get('githubAuth').load({teamId, userId})
+    return !!auth?.accessToken
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

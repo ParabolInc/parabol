@@ -20,5 +20,9 @@ export const describeServerIntegrationConformance = (def: ServerIntegrationDefin
     it('implements isAvailable', () => {
       expect(typeof def.isAvailable).toBe('function')
     })
+
+    it('implements isConnected', () => {
+      expect(typeof def.isConnected).toBe('function')
+    })
   })
 }

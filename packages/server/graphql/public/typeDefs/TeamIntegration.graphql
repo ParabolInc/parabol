@@ -1,8 +1,7 @@
 """
 A task-integration service, whether it is usable on this team, and what it can do
 """
-type TeamIntegration {
-  id: ID!
+interface TeamIntegration {
   service: IntegrationProviderServiceEnum!
   title: String!
 
@@ -12,8 +11,56 @@ type TeamIntegration {
   isAvailable: Boolean!
 
   """
-  true if the viewer has an active auth for this service on this team
+  true if the viewer has an active auth row for this service on this team. Does not validate or refresh the token
   """
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type AzureDevOpsTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type GitHubTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type GitLabTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type JiraTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type JiraServerTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
+
+type LinearTeamIntegration implements TeamIntegration {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
   isConnected: Boolean!
   capabilities: [IntegrationCapabilityEnum!]!
 }

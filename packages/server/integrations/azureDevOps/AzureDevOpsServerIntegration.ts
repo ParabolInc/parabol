@@ -30,6 +30,10 @@ export class AzureDevOpsServerIntegration extends ServerIntegrationDefinition {
     return this.hasSharedProvider(ctx, 'azureDevOps')
   }
 
+  async isConnected(ctx: IntegrationCtx) {
+    return this.hasActiveAuthRow(ctx, 'azureDevOps')
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

@@ -1,4 +1,5 @@
 import type Atmosphere from '../../Atmosphere'
+import GitLabSVG from '../../components/GitLabSVG'
 import {gitlabIntegrationMeta} from '../../shared/integrations/gitlabIntegrationMeta'
 import GitLabClientManager from '../../utils/GitLabClientManager'
 import {
@@ -11,6 +12,7 @@ export class GitLabClientIntegration extends ClientIntegrationDefinition {
   readonly title = gitlabIntegrationMeta.title
   readonly description = gitlabIntegrationMeta.description
   readonly ids = gitlabIntegrationMeta.ids
+  readonly Icon = GitLabSVG
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider) return
     GitLabClientManager.openOAuth(

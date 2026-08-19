@@ -28,6 +28,10 @@ export class LinearServerIntegration extends ServerIntegrationDefinition {
     return this.hasSharedProvider(ctx, 'linear')
   }
 
+  async isConnected(ctx: IntegrationCtx) {
+    return this.hasActiveAuthRow(ctx, 'linear')
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

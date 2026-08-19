@@ -24,24 +24,34 @@ graphql`
     task {
       title
       integration {
-        __typename
-        title
         ... on AzureDevOpsWorkItem {
+          __typename
+          title
           id
         }
         ... on JiraIssue {
+          __typename
+          title
           issueKey
         }
         ... on JiraServerIssue {
+          __typename
+          title
           issueKey
         }
         ... on _xGitHubIssue {
+          __typename
+          title
           number
         }
         ... on _xGitLabIssue {
+          __typename
+          title
           iid
         }
         ... on _xLinearIssue {
+          __typename
+          title
           identifier
         }
       }
@@ -88,26 +98,38 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
             subtitle: ''
           }
         }
-        const getSubtitle = () => {
-          switch (integration.__typename) {
-            case 'JiraIssue':
-            case 'JiraServerIssue':
-              return integration.issueKey
-            case 'AzureDevOpsWorkItem':
-              return `#${integration.id}`
-            case '_xGitHubIssue':
-              return `#${integration.number}`
-            case '_xGitLabIssue':
-              return `#${integration.iid}`
-            case '_xLinearIssue':
-              return `${integration.identifier}`
-            default:
-              return ''
-          }
-        }
-        return {
-          title: integration.title,
-          subtitle: getSubtitle() ?? ''
+        switch (integration.__typename) {
+          case 'JiraIssue':
+          case 'JiraServerIssue':
+            return {
+              title: integration.title,
+              subtitle: integration.issueKey
+            }
+          case 'AzureDevOpsWorkItem':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.id}`
+            }
+          case '_xGitHubIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.number}`
+            }
+          case '_xGitLabIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.iid}`
+            }
+          case '_xLinearIssue':
+            return {
+              title: integration.title,
+              subtitle: `${integration.identifier}`
+            }
+          default:
+            return {
+              title: '<Unknown Story>',
+              subtitle: ''
+            }
         }
       }
       summaries.push({

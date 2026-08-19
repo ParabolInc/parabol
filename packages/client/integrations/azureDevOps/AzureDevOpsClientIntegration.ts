@@ -1,4 +1,5 @@
 import type Atmosphere from '../../Atmosphere'
+import AzureDevOpsSVG from '../../components/AzureDevOpsSVG'
 import {azureDevOpsIntegrationMeta} from '../../shared/integrations/azureDevOpsIntegrationMeta'
 import AzureDevOpsClientManager from '../../utils/AzureDevOpsClientManager'
 import {
@@ -11,6 +12,7 @@ export class AzureDevOpsClientIntegration extends ClientIntegrationDefinition {
   readonly title = azureDevOpsIntegrationMeta.title
   readonly description = azureDevOpsIntegrationMeta.description
   readonly ids = azureDevOpsIntegrationMeta.ids
+  readonly Icon = AzureDevOpsSVG
   connect(atmosphere: Atmosphere, {teamId, mutationProps, provider}: ConnectParams) {
     if (!provider) return
     void AzureDevOpsClientManager.openOAuth(

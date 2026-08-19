@@ -30,6 +30,10 @@ export class JiraServerServerIntegration extends ServerIntegrationDefinition {
     return this.hasSharedProvider(ctx, 'jiraServer')
   }
 
+  async isConnected(ctx: IntegrationCtx) {
+    return this.hasActiveAuthRow(ctx, 'jiraServer')
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>

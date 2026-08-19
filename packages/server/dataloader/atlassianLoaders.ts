@@ -40,6 +40,33 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
+export const atlassianAuth = (
+  parent: RootDataLoader
+): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
+  return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
+    async (keys) => {
+      const results = await selectAtlassianAuth()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.userId))
+          )
+        )
+        .where('isActive', '=', true)
+        .execute()
+      return keys.map(
+        (key) =>
+          results.find(({teamId, userId}) => key.teamId === teamId && key.userId === userId) || null
+      )
+    },
+    {
+      ...parent.dataLoaderOptions,
+      cacheKeyFn: (key) => `${key.teamId}:${key.userId}`
+    }
+  )
+}
+
 export const freshAtlassianAuth = (
   parent: RootDataLoader
 ): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {

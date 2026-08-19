@@ -23,6 +23,12 @@ export class JiraServerIntegration extends ServerIntegrationDefinition {
     return !!process.env.ATLASSIAN_CLIENT_ID
   }
 
+  async isConnected(ctx: IntegrationCtx) {
+    const {dataLoader, teamId, userId} = ctx
+    const auth = await dataLoader.get('atlassianAuth').load({teamId, userId})
+    return !!auth?.accessToken
+  }
+
   readonly capabilities: {issueCreate: IssueCreateCapability} = {
     issueCreate: {
       initManager: (ctx) =>
