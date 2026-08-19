@@ -42,12 +42,12 @@ const TeamHealth = (props: Props) => {
         facilitatorUserId
         localStage {
           id
-          ...TeamHealthLocalStage @relay(mask: false)
+          ...TeamHealthLocalStage @relay(mask: false) @alias
         }
         phases {
           stages {
             id
-            ...TeamHealthLocalStage @relay(mask: false)
+            ...TeamHealthLocalStage @relay(mask: false) @alias
           }
         }
         teamId
@@ -56,7 +56,14 @@ const TeamHealth = (props: Props) => {
     meetingRef
   )
   const {id: meetingId, endedAt, showSidebar, localStage, facilitatorUserId} = meeting
-  const {id: stageId, question, labels, viewerVote, votes, votedUserIds, isRevealed} = localStage
+  const {id: stageId} = localStage
+  const healthStage = localStage.TeamHealthLocalStage
+  const question = healthStage?.question
+  const labels = healthStage?.labels
+  const viewerVote = healthStage?.viewerVote
+  const votes = healthStage?.votes
+  const votedUserIds = healthStage?.votedUserIds
+  const isRevealed = healthStage?.isRevealed
   const {viewerId} = atmosphere
   const {onError, onCompleted, submitMutation, submitting} = useMutationProps()
 
@@ -140,7 +147,7 @@ const TeamHealth = (props: Props) => {
                     </RadioGroup.Item>
                   ))}
                 </RadioGroup.Root>
-                <TeamHealthVotingRow stage={localStage} />
+                {healthStage && <TeamHealthVotingRow stage={healthStage} />}
                 {isFacilitator && (
                   <Button
                     variant='raised'

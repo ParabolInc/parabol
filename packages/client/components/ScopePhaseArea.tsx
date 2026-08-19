@@ -44,13 +44,13 @@ const ScopePhaseArea = (props: Props) => {
         ...ScopePhaseAreaLinear_meeting
         endedAt
         localPhase {
-          ...ScopePhaseArea_phase @relay(mask: false)
+          ...ScopePhaseArea_phase @relay(mask: false) @alias
         }
         localStage {
           isComplete
         }
         phases {
-          ...ScopePhaseArea_phase @relay(mask: false)
+          ...ScopePhaseArea_phase @relay(mask: false) @alias
         }
         showSidebar
         viewerMeetingMember {

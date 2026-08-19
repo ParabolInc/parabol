@@ -37,7 +37,7 @@ const mutation = graphql`
         }
       }
 
-      ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false)
+      ...RemoveTeamMemberIntegrationAuthMutation_team @relay(mask: false) @alias
     }
   }
 `

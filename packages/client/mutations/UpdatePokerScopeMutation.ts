@@ -101,13 +101,15 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdatePokerScopeMutation_meeting @relay(mask: false)
+      ...UpdatePokerScopeMutation_meeting @relay(mask: false) @alias
     }
   }
 `
 
 export type PokerScopeMeeting = NonNullable<
-  TUpdatePokerScopeMutation['response']['updatePokerScope']['meeting']
+  NonNullable<
+    TUpdatePokerScopeMutation['response']['updatePokerScope']['UpdatePokerScopeMutation_meeting']
+  >['meeting']
 >
 
 interface Handlers extends BaseLocalHandlers {
@@ -306,7 +308,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
         onCompleted(res, errors)
       }
       const {updatePokerScope} = res
-      const {meeting} = updatePokerScope
+      const meeting = updatePokerScope.UpdatePokerScopeMutation_meeting?.meeting
       if (!meeting) return
       const {meetingId, updates} = variables
       const update = updates[0]!

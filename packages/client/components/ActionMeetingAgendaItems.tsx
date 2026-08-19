@@ -39,11 +39,11 @@ const ActionMeetingAgendaItems = (props: Props) => {
         facilitatorUserId
         phases {
           stages {
-            ...ActionMeetingAgendaItemsStage @relay(mask: false)
+            ...ActionMeetingAgendaItemsStage @relay(mask: false) @alias
           }
         }
         localStage {
-          ...ActionMeetingAgendaItemsStage @relay(mask: false)
+          ...ActionMeetingAgendaItemsStage @relay(mask: false) @alias
         }
       }
     `,
@@ -57,7 +57,9 @@ const ActionMeetingAgendaItems = (props: Props) => {
     isCommentUnread,
     rightDrawerOpen
   } = meeting
-  const {agendaItem, discussionId} = localStage
+  const agendaItemStage = localStage.ActionMeetingAgendaItemsStage
+  const agendaItem = agendaItemStage?.agendaItem
+  const discussionId = agendaItemStage?.discussionId
   const [toggleDrawer] = useRightDrawer(meetingId)
   // optimistic updater could remove the agenda item
   if (!agendaItem) return null

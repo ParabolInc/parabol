@@ -46,7 +46,7 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
           integration {
             __typename
             ... on JiraIssue {
-              ...JiraExtraFieldsContent_issue
+              ...JiraExtraFieldsContent_issue @alias
             }
           }
         }
@@ -113,10 +113,10 @@ const PokerEstimateHeaderCardIntegration = (props: Props) => {
           ) : (
             <PokerEstimateHeaderCardReadonly descriptionHTML={headerFields.descriptionHTML} />
           )}
-          {isJira && integration?.__typename === 'JiraIssue' && (
+          {isJira && integration?.JiraExtraFieldsContent_issue && (
             <JiraExtraFieldsContent
               jiraDisplayFieldIds={jiraDisplayFieldIds!}
-              issueRef={integration}
+              issueRef={integration.JiraExtraFieldsContent_issue}
             />
           )}
         </div>

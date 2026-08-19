@@ -14,7 +14,7 @@ const query = graphql`
   query DemoMeetingRootQuery($meetingId: ID!) {
     viewer {
       meeting(meetingId: $meetingId) {
-        ...RetroMeeting_meeting
+        ...RetroMeeting_meeting @alias
       }
     }
   }
@@ -31,7 +31,8 @@ const DemoMeetingRoot = () => {
   const data = useLazyLoadQuery<DemoMeetingRootQuery>(query, {
     meetingId: RetroDemo.MEETING_ID
   })
-  if (!data?.viewer?.meeting) return null
-  return <RetroMeeting meeting={data.viewer.meeting} />
+  const meeting = data?.viewer?.meeting?.RetroMeeting_meeting
+  if (!meeting) return null
+  return <RetroMeeting meeting={meeting} />
 }
 export default DemoMeetingRoot

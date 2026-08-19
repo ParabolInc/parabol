@@ -29,7 +29,7 @@ const mutation = graphql`
           message
         }
       }
-      ...DeleteCommentMutation_meeting @relay(mask: false)
+      ...DeleteCommentMutation_meeting @relay(mask: false) @alias
     }
   }
 `

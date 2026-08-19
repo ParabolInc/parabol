@@ -27,7 +27,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PersistGitHubSearchQueryMutation_notification @relay(mask: false)
+      ...PersistGitHubSearchQueryMutation_notification @relay(mask: false) @alias
     }
   }
 `

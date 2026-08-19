@@ -40,7 +40,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateJiraServerDimensionFieldMutation_team @relay(mask: false)
+      ...UpdateJiraServerDimensionFieldMutation_team @relay(mask: false) @alias
     }
   }
 `

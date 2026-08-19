@@ -18,7 +18,7 @@ graphql`
 const mutation = graphql`
   mutation EditCommentingMutation($isCommenting: Boolean!, $discussionId: ID!) {
     editCommenting(isCommenting: $isCommenting, discussionId: $discussionId) {
-      ...EditCommentingMutation_meeting @relay(mask: false)
+      ...EditCommentingMutation_meeting @relay(mask: false) @alias
       ... on ErrorPayload {
         error {
           message

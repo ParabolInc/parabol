@@ -40,7 +40,7 @@ const EstimatePhaseArea = (props: Props) => {
         ...PokerCardDeck_meeting
         ...EstimateDimensionColumn_meeting
         localStage {
-          ...EstimatePhaseAreaStage @relay(mask: false)
+          ...EstimatePhaseAreaStage @relay(mask: false) @alias
         }
         phases {
           ... on EstimatePhase {
@@ -56,7 +56,9 @@ const EstimatePhaseArea = (props: Props) => {
     meetingRef
   )
   const {localStage, phases} = meeting
-  const {id: localStageId, taskId} = localStage
+  const estimateStage = localStage.EstimatePhaseAreaStage
+  const localStageId = estimateStage?.id
+  const taskId = estimateStage?.taskId
   const {stages} = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const dimensionStages = stages!.filter((stage) => stage.taskId === taskId)
   const stageIdx = dimensionStages!.findIndex(({id}) => id === localStageId)

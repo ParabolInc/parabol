@@ -13,7 +13,7 @@ const mutation = graphql`
           message
         }
       }
-      ...SetMeetingMusicMutation_meeting @relay(mask: false)
+      ...SetMeetingMusicMutation_meeting @relay(mask: false) @alias
     }
   }
 `

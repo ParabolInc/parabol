@@ -41,7 +41,7 @@ const mutation = graphql`
           message
         }
       }
-      ...StartTeamPromptMutation_team @relay(mask: false)
+      ...StartTeamPromptMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -58,7 +58,8 @@ const StartTeamPromptMutation: StandardMutation<TStartTeamPromptMutation, Naviga
       onCompleted(res, errors)
       const startTeamPrompt = res?.startTeamPrompt
       if (!startTeamPrompt) return
-      const {meeting, meetingSeries, hasGcalError} = startTeamPrompt
+      const {meeting, meetingSeries, hasGcalError} =
+        startTeamPrompt.StartTeamPromptMutation_team ?? {}
       if (!meeting) {
         if (meetingSeries) {
           atmosphere.eventEmitter.emit('addSnackbar', {

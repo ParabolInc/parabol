@@ -3,8 +3,12 @@ import {useMemo} from 'react'
 import {readInlineData} from 'react-relay'
 import type {useGetUsedServiceTaskIds_phase$key} from '../__generated__/useGetUsedServiceTaskIds_phase.graphql'
 
-const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) => {
+const useGetUsedServiceTaskIds = (
+  phaseRef: useGetUsedServiceTaskIds_phase$key | null | undefined
+) => {
   return useMemo(() => {
+    const usedServiceTaskIds = new Set<string>()
+    if (!phaseRef) return usedServiceTaskIds
     const estimatePhase = readInlineData(
       graphql`
         fragment useGetUsedServiceTaskIds_phase on EstimatePhase @inline {
@@ -19,7 +23,6 @@ const useGetUsedServiceTaskIds = (phaseRef: useGetUsedServiceTaskIds_phase$key) 
       phaseRef
     )
     const {stages} = estimatePhase
-    const usedServiceTaskIds = new Set<string>()
     stages.forEach((stage) => {
       const {task, taskId} = stage
       const serviceTaskId = task?.integrationHash ?? taskId

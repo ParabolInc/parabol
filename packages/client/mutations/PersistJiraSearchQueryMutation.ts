@@ -25,7 +25,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PersistJiraSearchQueryMutation_notification @relay(mask: false)
+      ...PersistJiraSearchQueryMutation_notification @relay(mask: false) @alias
     }
   }
 `

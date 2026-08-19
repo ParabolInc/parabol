@@ -31,13 +31,13 @@ graphql`
     addedNotification {
       type
       id
-      ...mapDiscussionMentionedToToast_notification @relay(mask: false)
-      ...mapResponseMentionedToToast_notification @relay(mask: false)
-      ...mapMentionedToToast_notification @relay(mask: false)
-      ...mapResponseRepliedToToast_notification @relay(mask: false)
-      ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
-      ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
-      ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+      ...mapDiscussionMentionedToToast_notification @relay(mask: false) @alias
+      ...mapResponseMentionedToToast_notification @relay(mask: false) @alias
+      ...mapMentionedToToast_notification @relay(mask: false) @alias
+      ...mapResponseRepliedToToast_notification @relay(mask: false) @alias
+      ...mapTeamsLimitReminderToToast_notification @relay(mask: false) @alias
+      ...mapPromptToJoinOrgToToast_notification @relay(mask: false) @alias
+      ...mapRequestToJoinOrgToToast_notification @relay(mask: false) @alias
     }
   }
 `

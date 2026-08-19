@@ -38,9 +38,9 @@ const PinnedSnackbarNotifications = ({queryRef}: Props) => {
                 id
                 status
                 type
-                ...mapTeamsLimitReminderToToast_notification @relay(mask: false)
-                ...mapPromptToJoinOrgToToast_notification @relay(mask: false)
-                ...mapRequestToJoinOrgToToast_notification @relay(mask: false)
+                ...mapTeamsLimitReminderToToast_notification @relay(mask: false) @alias
+                ...mapPromptToJoinOrgToToast_notification @relay(mask: false) @alias
+                ...mapRequestToJoinOrgToToast_notification @relay(mask: false) @alias
               }
             }
           }

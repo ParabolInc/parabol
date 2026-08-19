@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...MovePokerTemplateScaleValueMutation_team @relay(mask: false)
+      ...MovePokerTemplateScaleValueMutation_team @relay(mask: false) @alias
     }
   }
 `

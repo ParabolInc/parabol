@@ -1,12 +1,9 @@
 import graphql from 'babel-plugin-relay/macro'
-import {type ComponentType, useEffect, useRef} from 'react'
+import {useEffect, useRef} from 'react'
 import {type PreloadedQuery, usePreloadedQuery} from 'react-relay'
 import {useNavigate} from 'react-router'
 import {commitLocalUpdate} from 'relay-runtime'
-import type {
-  MeetingSelectorQuery,
-  MeetingTypeEnum
-} from '../__generated__/MeetingSelectorQuery.graphql'
+import type {MeetingSelectorQuery} from '../__generated__/MeetingSelectorQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
 import {useConnectedMeetingMembers} from '../hooks/useConnectedMeetingMembers'
 import useSubscription from '../hooks/useSubscription'
@@ -14,14 +11,14 @@ import NotificationSubscription from '../subscriptions/NotificationSubscription'
 import OrganizationSubscription from '../subscriptions/OrganizationSubscription'
 import TaskSubscription from '../subscriptions/TaskSubscription'
 import TeamSubscription from '../subscriptions/TeamSubscription'
-import lazyPreload, {type LazyExoticPreload} from '../utils/lazyPreload'
+import lazyPreload from '../utils/lazyPreload'
 
 interface Props {
   meetingId: string
   queryRef: PreloadedQuery<MeetingSelectorQuery>
 }
 
-const meetingLookup: Partial<Record<MeetingTypeEnum, LazyExoticPreload<ComponentType<any>>>> = {
+const meetingLookup = {
   action: lazyPreload(() => import(/* webpackChunkName: 'ActionMeeting' */ './ActionMeeting')),
   poker: lazyPreload(() => import(/* webpackChunkName: 'PokerMeeting' */ './PokerMeeting')),
   retrospective: lazyPreload(() => import(/* webpackChunkName: 'RetroMeeting' */ './RetroMeeting')),
@@ -87,19 +84,29 @@ const MeetingSelector = (props: Props) => {
     throw new Error('Meeting was null')
   }
 
-  const {meetingType} = meeting
-  const Meeting = meetingLookup[meetingType]
-  if (!Meeting) throw new Error(`No meeting component for meeting type: ${meetingType}`)
-  return <Meeting meeting={meeting as any} />
+  const {
+    meetingType,
+    RetroMeeting_meeting: retroMeeting,
+    ActionMeeting_meeting: actionMeeting,
+    PokerMeeting_meeting: pokerMeeting,
+    TeamPromptMeeting_meeting: teamPromptMeeting,
+    TeamHealthMeeting_meeting: teamHealthMeeting
+  } = meeting
+  if (retroMeeting) return <meetingLookup.retrospective meeting={retroMeeting} />
+  if (actionMeeting) return <meetingLookup.action meeting={actionMeeting} />
+  if (pokerMeeting) return <meetingLookup.poker meeting={pokerMeeting} />
+  if (teamPromptMeeting) return <meetingLookup.teamPrompt meeting={teamPromptMeeting} />
+  if (teamHealthMeeting) return <meetingLookup.teamHealth meeting={teamHealthMeeting} />
+  throw new Error(`No meeting component for meeting type: ${meetingType}`)
 }
 
 graphql`
   fragment MeetingSelector_meeting on NewMeeting {
-    ...RetroMeeting_meeting
-    ...ActionMeeting_meeting
-    ...PokerMeeting_meeting
-    ...TeamPromptMeeting_meeting
-    ...TeamHealthMeeting_meeting
+    ...RetroMeeting_meeting @alias
+    ...ActionMeeting_meeting @alias
+    ...PokerMeeting_meeting @alias
+    ...TeamPromptMeeting_meeting @alias
+    ...TeamHealthMeeting_meeting @alias
     meetingType
   }
 `

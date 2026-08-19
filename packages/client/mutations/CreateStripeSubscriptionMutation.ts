@@ -17,7 +17,7 @@ const mutation = graphql`
           message
         }
       }
-      ...CreateStripeSubscriptionMutation_organization @relay(mask: false)
+      ...CreateStripeSubscriptionMutation_organization @relay(mask: false) @alias
     }
   }
 `

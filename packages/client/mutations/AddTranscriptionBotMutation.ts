@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...AddTranscriptionBotMutation_meeting @relay(mask: false)
+      ...AddTranscriptionBotMutation_meeting @relay(mask: false) @alias
     }
   }
 `

@@ -45,7 +45,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateAzureDevOpsDimensionFieldMutation_team @relay(mask: false)
+      ...UpdateAzureDevOpsDimensionFieldMutation_team @relay(mask: false) @alias
     }
   }
 `

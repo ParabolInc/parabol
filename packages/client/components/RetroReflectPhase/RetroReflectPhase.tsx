@@ -35,13 +35,13 @@ const RetroReflectPhase = (props: Props) => {
         endedAt
         rightDrawerOpen
         localPhase {
-          ...RetroReflectPhase_phase @relay(mask: false)
+          ...RetroReflectPhase_phase @relay(mask: false) @alias
         }
         localStage {
           isComplete
         }
         phases {
-          ...RetroReflectPhase_phase @relay(mask: false)
+          ...RetroReflectPhase_phase @relay(mask: false) @alias
         }
         showSidebar
         disableAnonymity
@@ -55,9 +55,10 @@ const RetroReflectPhase = (props: Props) => {
   const {disableAnonymity, localPhase, endedAt, showSidebar, rightDrawerOpen} = meeting
   // autoToggle: open the inspiration drawer by default when the reflect phase mounts (desktop)
   const [toggleDrawer] = useRightDrawer(meeting.id, 'inspiration', true)
-  if (!localPhase || !localPhase.reflectPrompts) return null
-  const reflectPrompts = localPhase!.reflectPrompts
-  const focusedPromptId = localPhase!.focusedPromptId
+  const reflectPhase = localPhase?.RetroReflectPhase_phase
+  if (!reflectPhase || !reflectPhase.reflectPrompts) return null
+  const reflectPrompts = reflectPhase.reflectPrompts
+  const focusedPromptId = reflectPhase.focusedPromptId
   const ColumnWrapper = isDesktop ? ReflectWrapperDesktop : ReflectWrapperMobile
 
   return (

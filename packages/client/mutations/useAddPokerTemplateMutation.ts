@@ -31,7 +31,7 @@ const mutation = graphql`
           message
         }
       }
-      ...useAddPokerTemplateMutation_team @relay(mask: false)
+      ...useAddPokerTemplateMutation_team @relay(mask: false) @alias
     }
   }
 `

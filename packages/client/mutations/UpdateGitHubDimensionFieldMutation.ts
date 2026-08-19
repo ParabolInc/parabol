@@ -41,7 +41,7 @@ const mutation = graphql`
           message
         }
       }
-      ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false)
+      ...UpdateGitHubDimensionFieldMutation_team @relay(mask: false) @alias
     }
   }
 `

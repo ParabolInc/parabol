@@ -26,7 +26,10 @@ interface Props {
   meeting: RetroSidebarDiscussSection_meeting$key
 }
 
-type NonNullPhase = DeepNonNullable<RetroSidebarDiscussSection_meeting$data['phases'][0]>
+type DiscussPhase = NonNullable<
+  RetroSidebarDiscussSection_meeting$data['phases'][0]['RetroSidebarDiscussSectionDiscussPhase']
+>
+type NonNullPhase = DeepNonNullable<DiscussPhase>
 
 const RetroSidebarDiscussSection = (props: Props) => {
   const atmosphere = useAtmosphere()
@@ -42,7 +45,7 @@ const RetroSidebarDiscussSection = (props: Props) => {
         facilitatorStageId
         # load up the localPhase
         phases {
-          ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false)
+          ...RetroSidebarDiscussSectionDiscussPhase @relay(mask: false) @alias
         }
         localStage {
           id
@@ -52,7 +55,10 @@ const RetroSidebarDiscussSection = (props: Props) => {
     meetingRef
   )
   const {localStage, facilitatorStageId, id: meetingId, phases, endedAt} = meeting
-  const discussPhase = phases.find(({phaseType}) => phaseType === 'discuss')
+  const discussPhase = phases.find(
+    ({RetroSidebarDiscussSectionDiscussPhase}) =>
+      RetroSidebarDiscussSectionDiscussPhase?.phaseType === 'discuss'
+  )?.RetroSidebarDiscussSectionDiscussPhase
   // assert that the discuss phase and its stages are non-null
   // since we render this component when the vote phase is complete
   // see: RetroSidebarPhaseListItemChildren.tsx

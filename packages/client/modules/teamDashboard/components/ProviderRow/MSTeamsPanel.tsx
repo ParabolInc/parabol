@@ -112,7 +112,8 @@ const MSTeamsPanel = (props: Props) => {
     } else {
       const handleCompleted = (res: TAddIntegrationProviderMutation['response']) => {
         const {addIntegrationProvider} = res
-        const {provider} = addIntegrationProvider
+        const provider =
+          addIntegrationProvider.AddIntegrationProviderMutation_organization?.provider
         if (!provider) return
         const {id: providerId} = provider
         AddTeamMemberIntegrationAuthMutation(

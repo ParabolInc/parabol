@@ -27,7 +27,7 @@ const mutation = graphql`
           message
         }
       }
-      ...StartCheckInMutation_team @relay(mask: false)
+      ...StartCheckInMutation_team @relay(mask: false) @alias
     }
   }
 `
@@ -44,7 +44,7 @@ const StartCheckInMutation: StandardMutation<TStartCheckInMutation, NavigateLoca
     onCompleted: (res, errors) => {
       onCompleted(res, errors)
       const {startCheckIn} = res
-      const {meeting, hasGcalError} = startCheckIn
+      const {meeting, hasGcalError} = startCheckIn.StartCheckInMutation_team ?? {}
       if (!meeting) return
       const {id: meetingId} = meeting
       if (hasGcalError) {
