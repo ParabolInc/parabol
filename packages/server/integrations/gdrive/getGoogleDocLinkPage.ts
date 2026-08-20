@@ -2,22 +2,23 @@ import type {TipTapSerializedPageContent} from 'parabol-client/shared/tiptap/Tip
 import type {TranscriptPageInput} from './attachTranscriptToSummaryPage'
 
 export const getGoogleDocLinkPage = (name: string, webViewLink: string): TranscriptPageInput => {
+  const title = 'Gemini Notes'
   const content: TipTapSerializedPageContent = {
     type: 'doc',
     content: [
-      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: name}]},
+      {type: 'heading', attrs: {level: 1}, content: [{type: 'text', text: title}]},
       {
         type: 'paragraph',
         content: [
-          {type: 'text', text: "Parabol couldn't import these notes yet. "},
+          {type: 'text', text: `${name} — `},
           {
             type: 'text',
-            text: 'Open them in Google Docs',
+            text: 'Open in Google Docs',
             marks: [{type: 'link', attrs: {href: webViewLink, target: '_blank'}}]
           }
         ]
       }
     ]
   }
-  return {title: name, content}
+  return {title, content}
 }

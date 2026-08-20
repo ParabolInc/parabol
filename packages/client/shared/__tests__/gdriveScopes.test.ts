@@ -1,14 +1,14 @@
-import {GDRIVE_DOCS_SCOPE, GDRIVE_MEET_SCOPE, hasGdriveDocsScope} from '../gdriveScopes'
+import {GDRIVE_MEET_SCOPE, GDRIVE_MEETINGS_SCOPE, hasGdriveMeetingsScope} from '../gdriveScopes'
 
-describe('hasGdriveDocsScope', () => {
-  it('accepts space- or comma-separated scope strings containing the docs scope', () => {
-    expect(hasGdriveDocsScope(`${GDRIVE_MEET_SCOPE} ${GDRIVE_DOCS_SCOPE}`)).toBe(true)
-    expect(hasGdriveDocsScope(`${GDRIVE_MEET_SCOPE},${GDRIVE_DOCS_SCOPE}`)).toBe(true)
+describe('hasGdriveMeetingsScope', () => {
+  it('accepts space- or comma-separated scope strings containing the meetings scope', () => {
+    expect(hasGdriveMeetingsScope(`${GDRIVE_MEET_SCOPE} ${GDRIVE_MEETINGS_SCOPE}`)).toBe(true)
+    expect(hasGdriveMeetingsScope(`${GDRIVE_MEET_SCOPE},${GDRIVE_MEETINGS_SCOPE}`)).toBe(true)
   })
   it('rejects meet-only, empty and missing scope strings', () => {
-    expect(hasGdriveDocsScope(GDRIVE_MEET_SCOPE)).toBe(false)
-    expect(hasGdriveDocsScope('')).toBe(false)
-    expect(hasGdriveDocsScope(null)).toBe(false)
-    expect(hasGdriveDocsScope(undefined)).toBe(false)
+    expect(hasGdriveMeetingsScope(GDRIVE_MEET_SCOPE)).toBe(false)
+    expect(hasGdriveMeetingsScope('')).toBe(false)
+    expect(hasGdriveMeetingsScope(null)).toBe(false)
+    expect(hasGdriveMeetingsScope(undefined)).toBe(false)
   })
 })
