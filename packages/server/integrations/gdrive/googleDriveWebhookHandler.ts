@@ -1,6 +1,5 @@
 import type {HttpRequest, HttpResponse} from 'uWebSockets.js'
 import {google} from 'googleapis'
-import {hasGdriveMeetingsScope} from 'parabol-client/shared/gdriveScopes'
 import appOrigin from '../../appOrigin'
 import {getNewDataLoader} from '../../dataloader/getNewDataLoader'
 import uWSAsyncHandler from '../../graphql/uWSAsyncHandler'
@@ -78,7 +77,7 @@ export const processNewFiles = async ({userId, teamId}: {userId: string; teamId:
       }
 
       let transcriptPage: TranscriptPageInput | null = null
-      if (access_token && hasGdriveMeetingsScope(gdriveAuth.scopes)) {
+      if (access_token) {
         try {
           const content = await fetchMeetTranscript(access_token, file.id, fileCreatedTime)
           if (content) transcriptPage = {title: 'Transcript', content}

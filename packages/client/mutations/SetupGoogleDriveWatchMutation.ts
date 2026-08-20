@@ -11,9 +11,6 @@ const mutation = graphql`
         gdrive {
           isActive
           watchExpiresAt
-          auth {
-            scopes
-          }
         }
       }
     }

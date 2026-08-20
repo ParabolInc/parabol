@@ -1,5 +1,5 @@
 const mockListFiles = jest.fn()
-const mockAuthRow = {accessToken: 'a', refreshToken: 'r', expiresAt: null, scopes: ''}
+const mockAuthRow = {accessToken: 'a', refreshToken: 'r', expiresAt: null}
 const mockInsertedIds: string[] = []
 const mockDeletedIds: string[] = []
 
@@ -52,7 +52,6 @@ jest.mock('../meetTranscript', () => ({
   fetchMeetTranscript: jest.fn()
 }))
 
-import {GDRIVE_MEET_SCOPE, GDRIVE_MEETINGS_SCOPE} from 'parabol-client/shared/gdriveScopes'
 import {matchExternalMeetingToMeeting} from '../../matchExternalMeetingToMeeting'
 import {attachTranscriptToSummaryPage} from '../attachTranscriptToSummaryPage'
 import {processNewFiles} from '../googleDriveWebhookHandler'
@@ -87,7 +86,6 @@ describe('googleDriveWebhookHandler processNewFiles', () => {
     jest.clearAllMocks()
     mockInsertedIds.length = 0
     mockDeletedIds.length = 0
-    mockAuthRow.scopes = `${GDRIVE_MEET_SCOPE} ${GDRIVE_MEETINGS_SCOPE}`
     mockListFiles.mockResolvedValue({data: {files: [geminiDoc]}})
     mockFetchTranscript.mockResolvedValue(null)
   })
@@ -154,19 +152,6 @@ describe('googleDriveWebhookHandler processNewFiles', () => {
     await processNewFiles(payload)
     expect(mockDeletedIds).toEqual(['google:doc1'])
     expect(mockAttach).not.toHaveBeenCalled()
-  })
-
-  it('does not call the Meet API without the meetings scope (notes link only)', async () => {
-    mockAuthRow.scopes = GDRIVE_MEET_SCOPE
-    mockMatch.mockResolvedValue({id: 'meeting1', summaryPageId: 42})
-    await processNewFiles(payload)
-    expect(mockFetchTranscript).not.toHaveBeenCalled()
-    expect(mockAttach).toHaveBeenCalledWith(
-      42,
-      [expect.objectContaining({title: 'Gemini Notes'})],
-      'user1',
-      'google:doc1'
-    )
   })
 
   it('releases the dedup row when no Parabol meeting has ended yet, so a later notification retries', async () => {
