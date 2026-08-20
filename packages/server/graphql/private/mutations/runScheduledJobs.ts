@@ -4,6 +4,7 @@ import processTeamsLimitsJob from '../../../database/types/processTeamsLimitsJob
 import type ScheduledJobMeetingStageTimeLimit from '../../../database/types/ScheduledJobMetingStageTimeLimit'
 import type ScheduledTeamLimitsJob from '../../../database/types/ScheduledTeamLimitsJob'
 import generateUID from '../../../generateUID'
+import {processMeetTranscriptJob} from '../../../integrations/gdrive/processMeetTranscriptJob'
 import getKysely from '../../../postgres/getKysely'
 import type {DB} from '../../../postgres/types/pg'
 import {Logger} from '../../../utils/Logger'
@@ -52,6 +53,9 @@ const processJob = async (job: Selectable<DB['ScheduledJob']>, dataLoader: DataL
       job as ScheduledJobMeetingStageTimeLimit,
       dataLoader
     ).catch(Logger.error)
+  } else if (job.type === 'MEET_TRANSCRIPT') {
+    if (!job.meetingId) return
+    return processMeetTranscriptJob(job.meetingId, dataLoader).catch(Logger.error)
   } else if (job.type === 'LOCK_ORGANIZATION' || job.type === 'WARN_ORGANIZATION') {
     return processTeamsLimitsJob(job as ScheduledTeamLimitsJob, dataLoader).catch(Logger.error)
   }
