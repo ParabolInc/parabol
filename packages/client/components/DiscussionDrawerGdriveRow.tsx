@@ -17,14 +17,11 @@ interface Props {
   teamId: string
 }
 
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000
-
 const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
   const gdrive = useFragment(
     graphql`
       fragment DiscussionDrawerGdriveRow_gdrive on GdriveIntegration {
         isActive
-        watchExpiresAt
         cloudProvider {
           id
           clientId
@@ -41,10 +38,7 @@ const DiscussionDrawerGdriveRow = ({gdriveRef, teamId}: Props) => {
   const cloudProvider = gdrive.cloudProvider
   if (!cloudProvider) return null
 
-  const isConnected =
-    gdrive.isActive &&
-    !!gdrive.watchExpiresAt &&
-    new Date(gdrive.watchExpiresAt).getTime() > Date.now() + TWO_HOURS_MS
+  const isConnected = gdrive.isActive
 
   const handleConnect = () => {
     if (submitting) return

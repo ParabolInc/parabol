@@ -1,12 +1,11 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
 import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
-import SetupGoogleDriveWatchMutation from '../mutations/SetupGoogleDriveWatchMutation'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 import makeHref from './makeHref'
 
 class GDriveClientManager {
-  static SCOPES = 'https://www.googleapis.com/auth/drive.meet.readonly'
+  static SCOPES = 'https://www.googleapis.com/auth/meetings.space.readonly'
 
   static openOAuth(
     atmosphere: Atmosphere,
@@ -42,7 +41,7 @@ class GDriveClientManager {
               onError(errors?.[0] ?? new Error('Failed to connect Google Drive'))
               return
             }
-            SetupGoogleDriveWatchMutation(atmosphere, {teamId}, {onError, onCompleted})
+            onCompleted()
           }
         }
       )
