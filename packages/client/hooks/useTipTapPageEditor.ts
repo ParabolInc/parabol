@@ -247,7 +247,7 @@ export const useTipTapPageEditor = (
           }
         }),
         InsightsBlock,
-        AutoJoiner,
+        AutoJoiner.configure({elementsToJoin: ['taskList']}),
         Markdown,
         PageLinkPicker.configure({
           atmosphere
