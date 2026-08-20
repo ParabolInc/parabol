@@ -16,3 +16,4 @@ Page.teamId exists ONLY on top-level pages — never use page.team for gating or
 Expose raw data over derived booleans (e.g. scope lists, not hasXScopes booleans); never expose raw db ids — use CipherId. Prefer existing deps (e.g. mime-types) over hand-rolled maps
 Redis locks are scoped per user/resource, never app-global; a detached job must finalize its DB row on every exit path (no rows stuck 'running'). Logic shared by a mutation and its detached job lives in ONE helper
 Product restraint: one notification surface per event; integration entry points live in deep menus, not nav/email CTAs; no analytics args on GraphQL mutations
+Never name a file index.ts/index.tsx — name every file for its default export (e.g. GitHubClientIntegration.ts). index.ts files are ambiguous in IDE tab bars and file switchers.

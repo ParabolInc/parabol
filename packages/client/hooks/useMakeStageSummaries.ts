@@ -26,18 +26,18 @@ graphql`
       integration {
         ... on AzureDevOpsWorkItem {
           __typename
-          id
           title
+          id
         }
         ... on JiraIssue {
           __typename
+          title
           issueKey
-          summary
         }
         ... on JiraServerIssue {
           __typename
+          title
           issueKey
-          summary
         }
         ... on _xGitHubIssue {
           __typename
@@ -98,39 +98,38 @@ const useMakeStageSummaries = (phaseRef: useMakeStageSummaries_phase$key, localS
             subtitle: ''
           }
         }
-        if (
-          integration.__typename === 'JiraIssue' ||
-          integration.__typename === 'JiraServerIssue'
-        ) {
-          // jira-integration parabol card
-          return {
-            title: integration.summary,
-            subtitle: integration.issueKey
-          }
-        } else if (integration.__typename === 'AzureDevOpsWorkItem') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.id}`
-          }
-        } else if (integration.__typename === '_xGitHubIssue') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.number}`
-          }
-        } else if (integration.__typename === '_xGitLabIssue') {
-          return {
-            title: integration.title,
-            subtitle: `#${integration.iid}`
-          }
-        } else if (integration.__typename === '_xLinearIssue') {
-          return {
-            title: integration.title,
-            subtitle: `${integration.identifier}`
-          }
-        }
-        return {
-          title: '<Unknown Story>',
-          subtitle: ''
+        switch (integration.__typename) {
+          case 'JiraIssue':
+          case 'JiraServerIssue':
+            return {
+              title: integration.title,
+              subtitle: integration.issueKey
+            }
+          case 'AzureDevOpsWorkItem':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.id}`
+            }
+          case '_xGitHubIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.number}`
+            }
+          case '_xGitLabIssue':
+            return {
+              title: integration.title,
+              subtitle: `#${integration.iid}`
+            }
+          case '_xLinearIssue':
+            return {
+              title: integration.title,
+              subtitle: `${integration.identifier}`
+            }
+          default:
+            return {
+              title: '<Unknown Story>',
+              subtitle: ''
+            }
         }
       }
       summaries.push({

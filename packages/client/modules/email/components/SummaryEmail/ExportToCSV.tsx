@@ -68,18 +68,33 @@ const query = graphql`
                 integration {
                   ... on JiraIssue {
                     __typename
-                    summary
+                    title
                     issueKey
+                  }
+                  ... on JiraServerIssue {
+                    __typename
+                    title
+                    issueKey
+                  }
+                  ... on AzureDevOpsWorkItem {
+                    __typename
+                    title
+                    workItemKey: issueKey
                   }
                   ... on _xGitHubIssue {
                     __typename
-                    number
                     title
+                    number
+                  }
+                  ... on _xGitLabIssue {
+                    __typename
+                    title
+                    iid
                   }
                   ... on _xLinearIssue {
                     __typename
-                    identifier
                     title
+                    identifier
                   }
                 }
                 title
@@ -192,14 +207,25 @@ const ExportToCSV = (props: Props) => {
       if (!dimensionRef || !task) return
       const {name} = dimensionRef
       const {integration, title} = task
-      let story = title
-      if (integration?.__typename === 'JiraIssue') {
-        story = `${integration.issueKey}: ${integration.summary}`
-      } else if (integration?.__typename === '_xGitHubIssue') {
-        story = `${integration.number}: ${integration.title}`
-      } else if (integration?.__typename === '_xLinearIssue') {
-        story = `${integration.identifier}: ${integration.title}`
+      const getStory = () => {
+        if (!integration) return title
+        switch (integration.__typename) {
+          case 'JiraIssue':
+          case 'JiraServerIssue':
+            return `${integration.issueKey}: ${integration.title}`
+          case 'AzureDevOpsWorkItem':
+            return `${integration.workItemKey}: ${integration.title}`
+          case '_xGitHubIssue':
+            return `${integration.number}: ${integration.title}`
+          case '_xGitLabIssue':
+            return `${integration.iid}: ${integration.title}`
+          case '_xLinearIssue':
+            return `${integration.identifier}: ${integration.title}`
+          default:
+            return title
+        }
       }
+      const story = getStory()
       const voteCount = scores!.filter((score) => score.label !== PokerCards.PASS_CARD).length
       rows.push({
         story,

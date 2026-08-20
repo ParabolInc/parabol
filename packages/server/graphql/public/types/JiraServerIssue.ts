@@ -22,6 +22,10 @@ const JiraServerIssue: JiraServerIssueResolvers = {
     return `${origin}/browse/${issueKey}`
   },
 
+  service: () => 'jiraServer' as const,
+
+  title: ({summary}) => summary,
+
   possibleEstimationFieldNames: async (
     {teamId, userId, providerId, issueType, projectId},
     _args,

@@ -3,7 +3,6 @@ jest.mock('../../TaskIntegrationManagerFactory', () => ({
   default: {initManager: jest.fn()}
 }))
 
-import {deriveCapabilityKeys} from '../capabilities'
 import {getServerIntegration, serverIntegrations} from '../registry'
 import type {IntegrationCapabilityKey} from '../ServerIntegrationDefinition'
 
@@ -13,7 +12,7 @@ const KNOWN_CAPABILITIES: IntegrationCapabilityKey[] = [
   'issueSearch',
   'repoList',
   'estimatePush',
-  'workItems'
+  'issueList'
 ]
 
 describe('serverIntegrations registry', () => {
@@ -39,7 +38,7 @@ describe('serverIntegrations registry', () => {
   })
 
   it.each(entries)('%s: declares only known capability keys', (_key, def) => {
-    for (const capability of deriveCapabilityKeys(def)) {
+    for (const capability of def.getCapabilityKeys()) {
       expect(KNOWN_CAPABILITIES).toContain(capability)
     }
   })

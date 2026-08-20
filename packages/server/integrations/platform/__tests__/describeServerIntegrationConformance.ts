@@ -16,5 +16,13 @@ export const describeServerIntegrationConformance = (def: ServerIntegrationDefin
       expect(typeof def.resolveAuth).toBe('function')
       expect(def.resolveAuth.length).toBe(1)
     })
+
+    it('implements isAvailable', () => {
+      expect(typeof def.isAvailable).toBe('function')
+    })
+
+    it('implements isConnected', () => {
+      expect(typeof def.isConnected).toBe('function')
+    })
   })
 }

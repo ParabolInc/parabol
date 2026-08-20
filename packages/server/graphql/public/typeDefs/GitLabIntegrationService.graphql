@@ -1,0 +1,7 @@
+type GitLabIntegrationService implements IntegrationService {
+  service: IntegrationProviderServiceEnum!
+  title: String!
+  isAvailable: Boolean!
+  isConnected: Boolean!
+  capabilities: [IntegrationCapabilityEnum!]!
+}
