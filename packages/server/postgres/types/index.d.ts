@@ -2,13 +2,12 @@ import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
 import {
   type selectAgendaItems,
-  type selectAtlassianAuth,
   type selectComments,
   type selectDiscussion,
-  type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
+  type selectIntegrationSearchQuery,
   type selectJiraDimensionFieldMap,
   type selectJiraServerDimensionFieldMap,
   type selectMassInvitations,
@@ -111,8 +110,9 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-export interface TeamMemberIntegrationAuth
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
+export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamMemberIntegrationAuth
+>
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
@@ -183,14 +183,31 @@ export type JiraSearchQuery = {
   lastUsedAt: string
 }
 
-export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
+export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
+  typeof selectIntegrationSearchQuery
+>
+
+export type JiraAuthMeta = {cloudIds: string[]}
+
+export type AtlassianAuth = Extract<TeamMemberIntegrationAuth, {service: 'jira'}> & {
+  accessToken: string
+  refreshToken: string
+  scope: string
+  accountId: string
+  cloudIds: string[]
+}
 
 export interface GitHubSearchQuery {
   id: string
   queryString: string
   lastUsedAt: string
 }
-export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
+export type GitHubAuth = Exclude<TeamMemberIntegrationAuth, {service: 'jira'}> & {
+  service: 'github'
+  accessToken: string
+  scope: string
+  login: string
+}
 export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
   typeof selectGitLabDimensionFieldMap
 >

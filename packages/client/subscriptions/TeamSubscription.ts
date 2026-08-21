@@ -58,9 +58,6 @@ const subscription = graphql`
       AddAgendaItemPayload {
         ...AddAgendaItemMutation_team @relay(mask: false)
       }
-      AddAtlassianAuthPayload {
-        ...AddAtlassianAuthMutation_team @relay(mask: false)
-      }
       AddReflectTemplateSuccess {
         ...useAddReflectTemplateMutation_team @relay(mask: false)
       }

@@ -5,12 +5,14 @@ import type {StandardMutation} from '../types/relayMutations'
 
 const mutation = graphql`
   mutation AddTeamMemberIntegrationAuthMutation(
-    $providerId: ID!
+    $providerId: ID
     $service: IntegrationProviderServiceEnum
     $oauthCodeOrPat: ID
     $oauthVerifier: ID
     $teamId: ID!
     $redirectUri: URL
+    $includeAtlassian: Boolean = false
+    $includeGitHub: Boolean = false
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
@@ -33,6 +35,7 @@ const mutation = graphql`
           ...AzureDevOpsProviderRowTeamMember
           ...GcalProviderRowTeamMember
           ...LinearProviderRowTeamMember
+          ...ScopePhaseAreaGitHub_teamMember
           integrations {
             ...MattermostProviderRowTeamMemberIntegrations
             ...MSTeamsProviderRowTeamMemberIntegrations
@@ -51,6 +54,15 @@ const mutation = graphql`
             }
             zoom {
               isActive
+            }
+            atlassian @include(if: $includeAtlassian) {
+              ...AtlassianProviderRowAtlassianIntegration
+              ...useIsIntegratedAtlassianIntegration
+            }
+            github @include(if: $includeGitHub) {
+              ...useIsIntegratedGitHubIntegration
+              ...GitHubProviderRowGitHubIntegration
+              ...GitHubScopingSearchBarGitHubIntegration
             }
           }
         }

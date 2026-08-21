@@ -1,8 +1,6 @@
-import {sql} from 'kysely'
 import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import IntegrationRepoId from '~/shared/gqlIds/IntegrationRepoId'
 import JiraServerRestManager from '../../../integrations/jiraServer/JiraServerRestManager'
-import {selectIntegrationSearchQuery} from '../../../postgres/select'
 import type {TeamMember} from '../../../postgres/types'
 import type {IntegrationProviderJiraServer} from '../../../postgres/types/IntegrationProvider'
 import {getUserId} from '../../../utils/authorization'
@@ -183,16 +181,9 @@ const JiraServerIntegration: JiraServerIntegrationResolvers = {
     }
 
     const {providerId} = auth
-    const searchQueries = await selectIntegrationSearchQuery()
-      .where('teamId', '=', teamId)
-      .where('userId', '=', userId)
-      .where('service', '=', 'jiraServer')
-      .$if(!providerId, (qb) => qb.where('providerId', 'is', null))
-      .$if(!!providerId, (qb) => qb.where('providerId', '=', providerId))
-      .where('lastUsedAt', '>', sql<Date>`NOW() - INTERVAL '60 days'`)
-      .orderBy('lastUsedAt', 'desc')
-      .limit(5)
-      .execute()
+    const searchQueries = await dataLoader
+      .get('recentIntegrationSearchQueries')
+      .load({teamId, userId, service: 'jiraServer', providerId})
 
     return searchQueries.map((searchQuery) => {
       const query = searchQuery.query as {

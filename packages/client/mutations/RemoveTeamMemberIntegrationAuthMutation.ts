@@ -20,6 +20,12 @@ graphql`
         zoom {
           isActive
         }
+        atlassian {
+          ...AtlassianProviderRowAtlassianIntegration @relay(mask: false)
+        }
+        github {
+          ...GitHubProviderRowGitHubIntegration @relay(mask: false)
+        }
       }
     }
   }

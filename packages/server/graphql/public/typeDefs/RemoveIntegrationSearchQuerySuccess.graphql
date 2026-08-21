@@ -14,4 +14,12 @@ type RemoveIntegrationSearchQuerySuccess {
   The updated Jira Server integration after removing the query
   """
   jiraServerIntegration: JiraServerIntegration
+  """
+  The updated Jira Cloud integration with its saved queries
+  """
+  atlassianIntegration: AtlassianIntegration
+  """
+  The updated GitHub integration with its saved queries
+  """
+  githubIntegration: GitHubIntegration
 }

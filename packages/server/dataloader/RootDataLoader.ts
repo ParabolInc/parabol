@@ -10,6 +10,7 @@ import * as gdriveLoaders from './gdriveLoaders'
 import * as githubLoaders from './githubLoaders'
 import * as gitlabLoaders from './gitlabLoaders'
 import * as integrationAuthLoaders from './integrationAuthLoaders'
+import * as integrationSearchQueryLoaders from './integrationSearchQueryLoaders'
 import * as jiraServerLoaders from './jiraServerLoaders'
 import * as linearLoaders from './linearLoaders'
 import * as pageLoaderMakers from './pageLoaderMakers'
@@ -37,6 +38,7 @@ const loaderMakers = {
   ...gcalLoaders,
   ...gdriveLoaders,
   ...integrationAuthLoaders,
+  ...integrationSearchQueryLoaders,
   ...pollLoaders,
   ...azureDevOpsLoaders,
   ...linearLoaders,

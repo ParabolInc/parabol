@@ -16,17 +16,20 @@ export class GitHubServerIntegration extends ServerIntegrationDefinition {
     const {dataLoader, teamId, userId} = ctx
     const auth = await dataLoader.get('githubAuth').load({teamId, userId})
     if (!auth?.accessToken) return null
-    return {accessToken: auth.accessToken, accessUserId: auth.userId, providerId: null, raw: auth}
+    return {
+      accessToken: auth.accessToken,
+      accessUserId: auth.userId,
+      providerId: auth.providerId,
+      raw: auth
+    }
   }
 
-  async isAvailable(_ctx: IntegrationCtx) {
-    return !!process.env.GITHUB_CLIENT_ID
+  async isAvailable(ctx: IntegrationCtx) {
+    return this.hasGlobalProvider(ctx, 'github')
   }
 
   async isConnected(ctx: IntegrationCtx) {
-    const {dataLoader, teamId, userId} = ctx
-    const auth = await dataLoader.get('githubAuth').load({teamId, userId})
-    return !!auth?.accessToken
+    return this.hasActiveAuthRow(ctx, 'github')
   }
 
   readonly capabilities: {issueCreate: IssueCreateCapability} = {

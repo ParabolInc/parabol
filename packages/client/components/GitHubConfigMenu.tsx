@@ -1,7 +1,7 @@
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import RemoveGitHubAuthMutation from '../mutations/RemoveGitHubAuthMutation'
+import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import {Duration} from '../types/constEnums'
 import GitHubClientManager from '../utils/GitHubClientManager'
 import Menu from './Menu'
@@ -26,7 +26,11 @@ const GitHubConfigMenu = (props: Props) => {
     submitMutation()
     // wait for the portal to animate closed before removing, otherwise it'll stick around forever
     setTimeout(() => {
-      RemoveGitHubAuthMutation(atmosphere, {teamId}, {onCompleted, onError})
+      RemoveTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {service: 'github', teamId},
+        {onCompleted, onError}
+      )
     }, Duration.PORTAL_CLOSE)
   }
   return (

@@ -1,6 +1,8 @@
 import {fetch} from '@whatwg-node/fetch'
 import OAuth2Manager, {
+  type OAuth2AfterAuthorizePatch,
   type OAuth2AuthorizationParams,
+  type OAuth2AuthorizeResponse,
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
 
@@ -66,12 +68,12 @@ export default class ZoomOAuth2Manager extends OAuth2Manager {
     } as TSuccess
   }
 
-  async getProviderUserId(accessToken: string): Promise<string | null> {
+  async afterAuthorize(auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
     const res = await fetch('https://api.zoom.us/v2/users/me', {
-      headers: {Authorization: `Bearer ${accessToken}`}
+      headers: {Authorization: `Bearer ${auth.accessToken}`}
     })
-    if (!res.ok) return null
+    if (!res.ok) return {providerUserId: null}
     const data = (await res.json()) as {id?: string}
-    return data.id ?? null
+    return {providerUserId: data.id ?? null}
   }
 }
