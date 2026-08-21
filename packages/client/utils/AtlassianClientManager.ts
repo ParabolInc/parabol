@@ -65,7 +65,13 @@ class AtlassianClientManager extends AtlassianManager {
       submitMutation()
       AddTeamMemberIntegrationAuthMutation(
         atmosphere,
-        {service: 'jira', oauthCodeOrPat: code, teamId, redirectUri: redirect},
+        {
+          service: 'jira',
+          oauthCodeOrPat: code,
+          teamId,
+          redirectUri: redirect,
+          includeAtlassian: true
+        },
         {onError, onCompleted}
       )
       popup && popup.close()

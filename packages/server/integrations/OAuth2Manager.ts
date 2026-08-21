@@ -1,3 +1,4 @@
+import type {JsonObject} from '../postgres/types/pg'
 export interface OAuth2AuthorizationParams {
   grant_type: 'authorization_code'
   code: string
@@ -27,7 +28,7 @@ export type OAuth2AuthorizeResponse = {
 
 export type OAuth2AfterAuthorizePatch = {
   providerUserId?: string | null
-  meta?: Record<string, unknown>
+  meta?: JsonObject
   scopes?: string
 }
 
