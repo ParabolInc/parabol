@@ -1,26 +1,5 @@
 import {type Kysely, sql} from 'kysely'
 
-// Global providers for the two legacy services. Seeded here (not only in primeIntegrations)
-// because the backfill below needs their ids in the same migration, and primeIntegrations
-// never runs in dev.
-const GLOBAL_PROVIDERS = [
-  {
-    service: 'jira',
-    serverBaseUrl: 'https://api.atlassian.com',
-    clientId: process.env.ATLASSIAN_CLIENT_ID,
-    clientSecret: process.env.ATLASSIAN_CLIENT_SECRET
-  },
-  {
-    service: 'github',
-    serverBaseUrl: 'https://api.github.com',
-    clientId: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET
-  }
-] as const
-
-const globalProviderId = (service: 'jira' | 'github') =>
-  sql`(SELECT id FROM "IntegrationProvider" WHERE service = ${service} AND scope = 'global' AND "authStrategy" = 'oauth2' AND "isActive" = true LIMIT 1)`
-
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
   // AtlassianAuth already holds tokens up to 8192 (2025-08-19T13:30:51.353Z_maxOAuthTokenSize.ts)
@@ -48,69 +27,39 @@ export async function up(db: Kysely<any>): Promise<void> {
     .where(sql.ref('providerUserId'), 'is not', null)
     .execute()
 
-  for (const {service, serverBaseUrl, clientId, clientSecret} of GLOBAL_PROVIDERS) {
-    if (!clientId || !clientSecret) continue
-    await db
+  // Credentials are deliberately not read from env here: the global providers are
+  // created inactive & without secrets so the backfill has stable ids to point at, and
+  // primeIntegrations (predeploy in prod, every Socket Server boot in dev) upserts the
+  // clientId/clientSecret from env onto these same rows & activates them. A PPMI without
+  // Atlassian/GitHub creds keeps an inactive provider, which every loader filters out.
+  const providerIds = {} as Record<'jira' | 'github', number>
+  for (const [service, serverBaseUrl] of [
+    ['jira', 'https://api.atlassian.com'],
+    ['github', 'https://api.github.com']
+  ] as const) {
+    const {id} = await db
       .insertInto('IntegrationProvider')
-      .values({
-        service,
-        authStrategy: 'oauth2',
-        scope: 'global',
-        serverBaseUrl,
-        clientId,
-        clientSecret
-      })
+      .values({service, authStrategy: 'oauth2', scope: 'global', serverBaseUrl, isActive: false})
       .onConflict((oc) =>
-        oc.columns(['orgId', 'teamId', 'service', 'authStrategy']).doUpdateSet({
-          serverBaseUrl,
-          clientId,
-          clientSecret,
-          isActive: true
-        })
+        oc
+          .columns(['orgId', 'teamId', 'service', 'authStrategy'])
+          .doUpdateSet({service: sql`excluded.service`})
       )
-      .execute()
+      .returning('id')
+      .executeTakeFirstOrThrow()
+    providerIds[service] = id
   }
 
-  const LEGACY_TABLES = {
-    jira: {
-      legacyTable: 'AtlassianAuth',
-      envVars: ['ATLASSIAN_CLIENT_ID', 'ATLASSIAN_CLIENT_SECRET']
-    },
-    github: {legacyTable: 'GitHubAuth', envVars: ['GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET']}
-  } as const
-
-  for (const service of ['jira', 'github'] as const) {
-    const {id: providerId} = await sql<{
-      id: number | null
-    }>`SELECT ${globalProviderId(service)} AS id`
-      .execute(db)
-      .then((res) => res.rows[0]!)
-    if (providerId !== null) continue
-    const {legacyTable, envVars} = LEGACY_TABLES[service]
-    const {count} = await sql<{count: string}>`SELECT count(*) FROM ${sql.raw(`"${legacyTable}"`)}`
-      .execute(db)
-      .then((res) => res.rows[0]!)
-    if (Number(count) > 0) {
-      throw new Error(
-        `unifyJiraGitHubAuth: ${count} row(s) in "${legacyTable}" but no ${service} global provider could be seeded — set ${envVars[0]}/${envVars[1]} before running this migration`
-      )
-    }
-  }
-
-  // Row-for-row: each legacy row is a distinct team grant (spec §4.11a), so no dedup.
-  // A deployment without a jira/github provider (no creds) has no rows to carry over —
-  // the subselect yields NULL and the NOT NULL providerId rejects nothing because the
-  // WHERE clause filters those out.
+  // Row-for-row: each legacy row is a distinct team grant, so no dedup.
   await sql`
     INSERT INTO "TeamMemberIntegrationAuth"
       ("teamId", "userId", "providerId", service, "accessToken", "refreshToken", scopes,
        "providerUserId", meta, "isActive", "createdAt", "updatedAt")
-    SELECT a."teamId", a."userId", ${globalProviderId('jira')}, 'jira', a."accessToken",
+    SELECT a."teamId", a."userId", ${providerIds.jira}, 'jira', a."accessToken",
            a."refreshToken", a.scope, a."accountId",
            jsonb_build_object('cloudIds', to_jsonb(a."cloudIds")),
            a."isActive", a."createdAt", a."updatedAt"
     FROM "AtlassianAuth" a
-    WHERE ${globalProviderId('jira')} IS NOT NULL
     ON CONFLICT ("userId", "teamId", service) DO NOTHING
   `.execute(db)
 
@@ -118,10 +67,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     INSERT INTO "TeamMemberIntegrationAuth"
       ("teamId", "userId", "providerId", service, "accessToken", scopes, "providerUserId",
        "isActive", "createdAt", "updatedAt")
-    SELECT g."teamId", g."userId", ${globalProviderId('github')}, 'github', g."accessToken",
+    SELECT g."teamId", g."userId", ${providerIds.github}, 'github', g."accessToken",
            g.scope, g.login, g."isActive", g."createdAt", g."updatedAt"
     FROM "GitHubAuth" g
-    WHERE ${globalProviderId('github')} IS NOT NULL
     ON CONFLICT ("userId", "teamId", service) DO NOTHING
   `.execute(db)
 
@@ -130,22 +78,20 @@ export async function up(db: Kysely<any>): Promise<void> {
   // JiraServerIntegration.searchQueries already reads ({queryString, isJQL, projectKeyFilters}).
   await sql`
     INSERT INTO "IntegrationSearchQuery" ("userId", "teamId", service, "providerId", query, "lastUsedAt")
-    SELECT a."userId", a."teamId", 'jira', ${globalProviderId('jira')},
+    SELECT a."userId", a."teamId", 'jira', ${providerIds.jira},
            q.value - 'id' - 'lastUsedAt', (q.value->>'lastUsedAt')::timestamptz
     FROM "AtlassianAuth" a, LATERAL unnest(a."jiraSearchQueries") AS q(value)
     WHERE a."isActive" = true
-      AND ${globalProviderId('jira')} IS NOT NULL
       AND (q.value->>'lastUsedAt')::timestamptz > now() - interval '60 days'
     ON CONFLICT DO NOTHING
   `.execute(db)
 
   await sql`
     INSERT INTO "IntegrationSearchQuery" ("userId", "teamId", service, "providerId", query, "lastUsedAt")
-    SELECT g."userId", g."teamId", 'github', ${globalProviderId('github')},
+    SELECT g."userId", g."teamId", 'github', ${providerIds.github},
            q.value - 'id' - 'lastUsedAt', (q.value->>'lastUsedAt')::timestamptz
     FROM "GitHubAuth" g, LATERAL unnest(g."githubSearchQueries") AS q(value)
     WHERE g."isActive" = true
-      AND ${globalProviderId('github')} IS NOT NULL
       AND (q.value->>'lastUsedAt')::timestamptz > now() - interval '60 days'
     ON CONFLICT DO NOTHING
   `.execute(db)

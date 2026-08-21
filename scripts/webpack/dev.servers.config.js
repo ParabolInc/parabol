@@ -29,7 +29,13 @@ module.exports = [
       __dirname: false
     },
     entry: {
-      web: [DOTENV, INIT_PUBLIC_PATH, path.join(SERVER_ROOT, 'server.ts')],
+      web: [
+        DOTENV,
+        INIT_PUBLIC_PATH,
+        // upsert global IntegrationProviders from .env so dev never needs a manual predeploy
+        path.join(PROJECT_ROOT, 'scripts/toolboxSrc/primeIntegrations.ts'),
+        path.join(SERVER_ROOT, 'server.ts')
+      ],
       embedder: [
         DOTENV,
         INIT_PUBLIC_PATH,

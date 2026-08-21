@@ -1,3 +1,4 @@
+import type {JiraAuthMeta} from '../../postgres/types'
 import AtlassianServerManager from '../../utils/AtlassianServerManager'
 import {hasJiraScopes} from '../../utils/hasJiraScopes'
 import {authorizeOAuth2} from '../helpers/authorizeOAuth2'
@@ -7,8 +8,6 @@ import OAuth2Manager, {
   type OAuth2AuthorizeResponse,
   type OAuth2RefreshAuthorizationParams
 } from '../OAuth2Manager'
-
-export type JiraAuthMeta = {cloudIds: string[]}
 
 const accountIdFromJwt = (accessToken: string): string | Error => {
   try {
