@@ -295,8 +295,8 @@ export enum Pricing {
 }
 
 export enum Providers {
-  ATLASSIAN_NAME = 'Atlassian Jira',
-  ATLASSIAN_DESC = 'Use Jira Cloud issues from within Parabol.',
+  JIRA_CLOUD_NAME = 'Atlassian Jira',
+  JIRA_CLOUD_DESC = 'Use Jira Cloud issues from within Parabol.',
   CONFLUENCE_NAME = 'Atlassian Confluence',
   CONFLUENCE_DESC = 'Export Pages and meeting summaries as native Confluence pages',
   JIRA_SERVER_NAME = 'Jira Data Center',

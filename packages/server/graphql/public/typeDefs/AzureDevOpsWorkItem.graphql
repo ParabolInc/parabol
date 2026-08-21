@@ -49,6 +49,11 @@ type AzureDevOpsWorkItem implements TaskIntegration {
   project: AzureDevOpsRemoteProject!
 
   """
+  The service this work item comes from
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
   The current workflow state of the work item as defined in Azure DevOps (e.g. "Active", "Resolved", "Closed").
   The available states depend on the work item type and the process template configured for the project.
   Use this to show progress, filter by status, or decide whether a task should be marked complete in Parabol.

@@ -1,5 +1,6 @@
 import type * as React from 'react'
-import {useEffect, useState} from 'react'
+import {useRef, useState} from 'react'
+import useSubmitErrorFeedbackMutation from '../mutations/useSubmitErrorFeedbackMutation'
 import {LocalStorageKey} from '../types/constEnums'
 import {Button} from '../ui/Button/Button'
 import {Dialog} from '../ui/Dialog/Dialog'
@@ -35,36 +36,57 @@ const parseFormConfig = () => {
 }
 
 const formConfig = parseFormConfig()
-export const ERROR_FEEDBACK_ENABLED = !!formConfig
+
+// Dual-write during the CRM decoupling transition: Postgres is the system of
+// record; the Google Form post is best-effort until ops confirms the PG path.
+const postToGoogleForm = (email: string | null, error: Error, text: string, eventId: string) => {
+  if (!formConfig) return
+  const {url, emailField, subjectField, contentField, eventIdField} = formConfig
+  const body = new URLSearchParams({
+    [emailField]: email || 'errors@parabol.co',
+    [subjectField]: error.message,
+    [contentField]: text,
+    [eventIdField]: eventId
+  })
+  fetch(url, {method: 'POST', mode: 'no-cors', body})
+}
 
 const ReportErrorFeedback = (props: Props) => {
   const {isOpen, onClose, error, eventId} = props
   const [text, setText] = useState('')
+  const [submitError, setSubmitError] = useState<string>()
+  const [execute, submitting] = useSubmitErrorFeedbackMutation()
+  const formPostedRef = useRef(false)
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const nextValue = e.target.value
-    setText(nextValue)
+    setText(e.target.value)
+    setSubmitError(undefined)
   }
-  useEffect(() => {
-    if (!formConfig) {
-      onClose()
-    }
-  }, [onClose])
-  if (!formConfig) {
-    return null
-  }
-  const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
 
   const onSubmit = () => {
-    if (!text) return
-    const {url, emailField, subjectField, contentField, eventIdField} = formConfig
-    const body = new URLSearchParams({
-      [emailField]: email || 'errors@parabol.co',
-      [subjectField]: error.message,
-      [contentField]: text,
-      [eventIdField]: eventId
+    if (!text.trim() || submitting) return
+    const email = window.localStorage.getItem(LocalStorageKey.EMAIL)
+    if (!formPostedRef.current) {
+      formPostedRef.current = true
+      postToGoogleForm(email, error, text, eventId)
+    }
+    execute({
+      variables: {
+        errorMessage: error.message,
+        content: text,
+        eventId,
+        email
+      },
+      onCompleted: (_res, errors) => {
+        if (errors?.length) {
+          setSubmitError(errors[0]!.message)
+          return
+        }
+        setText('')
+        formPostedRef.current = false
+        onClose()
+      },
+      onError: (err) => setSubmitError(err.message)
     })
-    fetch(url, {method: 'POST', mode: 'no-cors', body})
-    onClose()
   }
 
   return (
@@ -74,9 +96,20 @@ const ReportErrorFeedback = (props: Props) => {
         <div className='mb-4 pl-0 text-fg-primary text-sm'>
           What were you doing when the error happened?
         </div>
-        <BasicTextArea autoFocus name='errorReport' onChange={onChange} value={text} />
+        <BasicTextArea
+          autoFocus
+          name='errorReport'
+          onChange={onChange}
+          value={text}
+          error={submitError}
+        />
         <div className='mt-6 flex justify-end'>
-          <Button variant='primary' onClick={onSubmit} disabled={text.length === 0} size='md'>
+          <Button
+            variant='primary'
+            onClick={onSubmit}
+            disabled={text.trim().length === 0 || submitting}
+            size='md'
+          >
             {'Submit Report'}
           </Button>
         </div>

@@ -43,6 +43,7 @@ graphql`
       integrationHash
       integration {
         ... on JiraIssue {
+          service
           cloudId
           cloudName
           url
@@ -52,6 +53,7 @@ graphql`
           descriptionHTML
         }
         ... on _xGitHubIssue {
+          service
           number
           title
           repository {
@@ -59,6 +61,7 @@ graphql`
           }
         }
         ... on _xGitLabIssue {
+          service
           id
           iid
           title
@@ -66,6 +69,7 @@ graphql`
           webUrl
         }
         ... on AzureDevOpsWorkItem {
+          service
           id
           title
           url
@@ -75,6 +79,7 @@ graphql`
         }
         ... on _xLinearIssue {
           __typename
+          service
           id
           description
           identifier
@@ -202,6 +207,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         if (service === 'jira') {
           const {cloudId, projectKey} = JiraProjectId.split(serviceProjectHash)
           const optimisticJiraIssue = createProxyRecord(store, 'JiraIssue', {
+            service,
             cloudId,
             url: '',
             issueKey: `${projectKey}-?`,
@@ -218,6 +224,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
             owner: repoOwner
           })
           const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
+            service,
             number: 0,
             title: plaintextContent,
             description: '',
@@ -229,6 +236,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
         } else if (service === 'gitlab') {
           const webPath = `/${serviceProjectHash}/-/issues/?`
           const optimisticTaskIntegration = createProxyRecord(store, '_xGitLabIssue', {
+            service,
             state: 'opened',
             title: plaintextContent,
             description: '',
@@ -243,6 +251,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
             name: '?'
           })
           const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+            service,
             title: plaintextContent,
             url: `https://${instanceId}`,
             type: 'Basic:Issue',
@@ -252,6 +261,7 @@ const CreateTaskMutation: StandardMutation<TCreateTaskMutation, OptionalHandlers
           task.setLinkedRecord(optimisticTaskIntegration, 'integration')
         } else if (service === 'linear') {
           const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
+            service,
             state: 'opened',
             identifier: '?',
             title: plaintextContent,

@@ -224,7 +224,7 @@
       }
     },
     {
-      "includes": ["**/__tests__/**", "packages/server/integrations/platform/conformance/**"],
+      "includes": ["**/__tests__/**"],
       "linter": {
         "domains": {
           "test": "all"

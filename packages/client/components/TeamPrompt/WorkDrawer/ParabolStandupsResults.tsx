@@ -26,7 +26,7 @@ const ParabolStandupsResults = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {viewerId} = atmosphere
 
-  const query = usePreloadedQuery(
+  const query = usePreloadedQuery<ParabolStandupsResultsQuery>(
     graphql`
       query ParabolStandupsResultsQuery($teamId: ID!, $after: DateTime, $before: DateTime!) {
         viewer {

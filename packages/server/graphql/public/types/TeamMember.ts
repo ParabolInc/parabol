@@ -1,6 +1,7 @@
 import ms from 'ms'
 import isTaskPrivate from 'parabol-client/utils/isTaskPrivate'
 import MeetingMemberId from '../../../../client/shared/gqlIds/MeetingMemberId'
+import {serverIntegrations} from '../../../integrations/platform/registry'
 import {getUserId} from '../../../utils/authorization'
 import getAllRepoIntegrationsRedisKey from '../../../utils/getAllRepoIntegrationsRedisKey'
 import getRedis from '../../../utils/getRedis'
@@ -24,6 +25,16 @@ const TeamMember: TeamMemberResolvers = {
   isSelf: (source, _args, {authToken}) => {
     const userId = getUserId(authToken)
     return source.userId === userId
+  },
+
+  services: ({teamId, userId}) => {
+    return Object.values(serverIntegrations).map((definition) => ({
+      service: definition.service,
+      title: definition.title,
+      capabilities: definition.getCapabilityKeys(),
+      teamId,
+      userId
+    }))
   },
 
   integrations: ({teamId, userId}) => {

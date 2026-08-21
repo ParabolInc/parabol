@@ -7,3 +7,7 @@ type _xGitHubRepository implements RepoIntegration
 extend type _xGitHubRepository {
   service: IntegrationProviderServiceEnum!
 }
+
+extend type _xGitHubIssue {
+  service: IntegrationProviderServiceEnum!
+}

@@ -193,11 +193,11 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       react-relay:
-        specifier: ^20.1.1
-        version: 20.1.1(react@18.3.1)
+        specifier: ^21.0.1
+        version: 21.0.1(react@18.3.1)
       relay-runtime:
-        specifier: ^20.1.1
-        version: 20.1.1
+        specifier: ^21.0.1
+        version: 21.0.1
       sanitize-html:
         specifier: ^2.17.6
         version: 2.17.6
@@ -310,12 +310,6 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.7(@types/react@18.3.29)
-      '@types/react-relay':
-        specifier: 16.0.6
-        version: 16.0.6
-      '@types/relay-runtime':
-        specifier: ^18.2.5
-        version: 18.2.5
       '@types/sanitize-html':
         specifier: ^2.16.1
         version: 2.16.1
@@ -332,8 +326,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       babel-plugin-relay:
-        specifier: ^20.1.1
-        version: 20.1.1
+        specifier: ^21.0.1
+        version: 21.0.1
       clean-webpack-plugin:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.107.0)
@@ -410,8 +404,8 @@ importers:
         specifier: ^0.17.0
         version: 0.17.0
       relay-compiler:
-        specifier: ^20.1.1
-        version: 20.1.1
+        specifier: ^21.0.1
+        version: 21.0.1
       relay-config:
         specifier: ^12.0.1
         version: 12.0.1
@@ -432,7 +426,7 @@ importers:
         version: 7.0.2
       vscode-apollo-relay:
         specifier: ^1.5.0
-        version: 1.5.2(relay-compiler@20.1.1)(relay-config@12.0.1)
+        version: 1.5.2(relay-compiler@21.0.1)(relay-config@12.0.1)
       webpack:
         specifier: ^5.104.1
         version: 5.107.0(@swc/core@1.15.33(@swc/helpers@0.5.21))(html-minifier-terser@5.1.1)(postcss@8.5.26)(webpack-cli@5.1.4)
@@ -5516,14 +5510,8 @@ packages:
     peerDependencies:
       '@types/react': ^18.3.0
 
-  '@types/react-relay@16.0.6':
-    resolution: {integrity: sha512-VTntVQJhlwQYNUlbNgGf8RYy7EtQPRZqsD/w2Si0ygZspJXuNlVdRkklWMFN99EMRhHDpqlNHD8i3wIs7QRz9g==}
-
   '@types/react@18.3.29':
     resolution: {integrity: sha512-ch0qJdr2JY0r04NXSprbK6TXOgnaJ1Tz23fm5W+z0/CBah6BSBc3n96h7K9GOtwh0HrilNWHIBzE1Ko4Dcw/Wg==}
-
-  '@types/relay-runtime@18.2.5':
-    resolution: {integrity: sha512-2ukE6xQMIpa3kG8F33kXZMcGl/VJdDjNW3eKjQVe1AZQaYnIpNX8vXpcRD6pc+No2rOwVFLbQ6thaPSXPs8ouQ==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -6085,8 +6073,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-relay@20.1.1:
-    resolution: {integrity: sha512-BWlqLPiHbxZTxlyng2rVgsZCwztHNje7H8FR4c+UKy3ErQJBG6BKLr9vUdeR7mAZCH2v0sOAxNhG6zR1FrWjAg==}
+  babel-plugin-relay@21.0.1:
+    resolution: {integrity: sha512-/eswQ+KRhZApdgCzORcBHQ6xVtiIQvOseAEO7XbvcufQ7r8/IKd5NmuwBIjKH2w3kpLKYjw77o4xOjAAqjdQ7Q==}
 
   babel-preset-current-node-syntax@1.2.0:
     resolution: {integrity: sha512-E/VlAEzRrsLEb2+dv8yp3bo4scof3l9nR4lrld+Iy5NyVqgVYUJnDAmunkhPMisRI32Qc4iRiz425d8vM++2fg==}
@@ -9562,8 +9550,8 @@ packages:
     resolution: {integrity: sha512-z6F7K9bV85EfseRCp2bzrpyQ0Gkw1uLoCel9XBVWPg/TjRj94SkJzUTGfOa4bs7iJvBWtQG0Wq7wnI0syw3EBQ==}
     engines: {node: '>=0.10.0'}
 
-  react-relay@20.1.1:
-    resolution: {integrity: sha512-pwl7wHHXCOx32dOg4TVNkhVojgGVvOBMo9pcMGeM1BIFYvmwGauKTtBB+qr5buXHGooCL8TXjMVg+ZLizIsbeQ==}
+  react-relay@21.0.1:
+    resolution: {integrity: sha512-08BBmpdolP8vslClnszG+g4vkcbVHvaoR0BDHyhicwpCfbtnVGe73/MfPja/xj30eLWSP5WPYNqZupTdEPZvtw==}
     peerDependencies:
       react: ^18.3.1
 
@@ -9709,15 +9697,15 @@ packages:
     resolution: {integrity: sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog==}
     engines: {node: '>= 0.10'}
 
-  relay-compiler@20.1.1:
-    resolution: {integrity: sha512-J/FFFLS/3vnbDkyQMw8l3Ev7dNHXMgC1RAs0fITz4Q63TFPOw142knKxY1Mm5ZZBABkAs9g2JghXaqM+phwTxw==}
+  relay-compiler@21.0.1:
+    resolution: {integrity: sha512-Wqlg3MtHyBlAYByVo24Wy9H3n2bAw991gPmzdo3XfNv+TzhI8zuGogtiae+7NORI7zhghgZaHC7Sp8S8ZPRYEA==}
     hasBin: true
 
   relay-config@12.0.1:
     resolution: {integrity: sha512-vq7GLLsGPpb/tZr9kmfbfe5sLO1cGa67jpCp4Xtk+N98fMInCu9YIH8R/FxxUhKVPnpLQf3ecmz+s+/MjzcnTQ==}
 
-  relay-runtime@20.1.1:
-    resolution: {integrity: sha512-N98ZkkyuIHdXmHaPuljihM1QbFYXATF0gxA0CESFphszsQzXs9A/zZloVfzdOI/xg3B3CfM/5nozvIoeTDIcfw==}
+  relay-runtime@21.0.1:
+    resolution: {integrity: sha512-OS+We56sp6gkGVEcce9VCNOeg/sMbxT9unEoerQPgNAICHowSWrXNc6LJxF2OqjypxYF7kaLDSPPiaPii2Pw1g==}
 
   remedial@1.0.8:
     resolution: {integrity: sha512-/62tYiOe6DzS5BqVsNpH/nkGlX45C/Sp6V+NtiN6JQNS1Viay7cWkazmRkrQrdFj2eshDe96SIQNIoMxqhzBOg==}
@@ -16336,17 +16324,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.29
 
-  '@types/react-relay@16.0.6':
-    dependencies:
-      '@types/react': 18.3.29
-      '@types/relay-runtime': 18.2.5
-
   '@types/react@18.3.29':
     dependencies:
       '@types/prop-types': 15.7.15
       csstype: 3.2.3
-
-  '@types/relay-runtime@18.2.5': {}
 
   '@types/resolve@1.20.2': {}
 
@@ -16890,7 +16871,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-relay@20.1.1:
+  babel-plugin-relay@21.0.1:
     dependencies:
       babel-plugin-macros: 2.8.0
       cosmiconfig: 5.2.1
@@ -20712,14 +20693,14 @@ snapshots:
 
   react-refresh@0.17.0: {}
 
-  react-relay@20.1.1(react@18.3.1):
+  react-relay@21.0.1(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.29.2
       fbjs: 3.0.5
       invariant: 2.2.4
       nullthrows: 1.1.1
       react: 18.3.1
-      relay-runtime: 20.1.1
+      relay-runtime: 21.0.1
     transitivePeerDependencies:
       - encoding
 
@@ -20891,13 +20872,13 @@ snapshots:
 
   relateurl@0.2.7: {}
 
-  relay-compiler@20.1.1: {}
+  relay-compiler@21.0.1: {}
 
   relay-config@12.0.1:
     dependencies:
       cosmiconfig: 5.2.1
 
-  relay-runtime@20.1.1:
+  relay-runtime@21.0.1:
     dependencies:
       '@babel/runtime': 7.29.2
       fbjs: 3.0.5
@@ -21909,9 +21890,9 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vscode-apollo-relay@1.5.2(relay-compiler@20.1.1)(relay-config@12.0.1):
+  vscode-apollo-relay@1.5.2(relay-compiler@21.0.1)(relay-config@12.0.1):
     dependencies:
-      relay-compiler: 20.1.1
+      relay-compiler: 21.0.1
       relay-config: 12.0.1
 
   vscode-languageserver-types@3.17.5: {}
