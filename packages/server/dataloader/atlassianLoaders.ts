@@ -6,9 +6,8 @@ import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import type {JiraIssueMissingEstimationFieldHintEnum} from '../graphql/private/resolverTypes'
 import JiraOAuth2Manager from '../integrations/jira/JiraOAuth2Manager'
 import syncJiraSiblingAuths from '../integrations/jira/syncJiraSiblingAuths'
-import toAtlassianAuth from '../integrations/jira/toAtlassianAuth'
 import getKysely from '../postgres/getKysely'
-import {selectJiraDimensionFieldMap, selectTeamMemberIntegrationAuth} from '../postgres/select'
+import {selectAtlassianAuth, selectJiraDimensionFieldMap} from '../postgres/select'
 import type {AtlassianAuth, JiraDimensionFieldMap} from '../postgres/types'
 import AtlassianServerManager, {
   type JiraIssueRaw,
@@ -43,24 +42,6 @@ export interface JiraIssueKey {
   taskId?: string
 }
 
-export const atlassianAuth = (
-  parent: RootDataLoader
-): DataLoader<TeamUserKey, AtlassianAuth | null, string> => {
-  return new DataLoader<TeamUserKey, AtlassianAuth | null, string>(
-    async (keys) => {
-      const rows = await Promise.all(
-        keys.map(({teamId, userId}) =>
-          parent
-            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-            .load({service: 'jira', teamId, userId})
-        )
-      )
-      return rows.map(toAtlassianAuth)
-    },
-    {...parent.dataLoaderOptions, cacheKeyFn: (key) => `${key.teamId}:${key.userId}`}
-  )
-}
-
 const refreshAtlassianAuth = async (
   parent: RootDataLoader,
   auth: AtlassianAuth
@@ -85,7 +66,6 @@ const refreshAtlassianAuth = async (
         .where('id', '=', auth.id)
         .execute()
       parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
-      parent.get('atlassianAuth').clearAll()
     }
     logError(oauthRes)
     return null
@@ -100,7 +80,6 @@ const refreshAtlassianAuth = async (
   }
   await syncJiraSiblingAuths(pg, {userId: auth.userId, providerUserId: auth.accountId, ...patch})
   parent.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clearAll()
-  parent.get('atlassianAuth').clearAll()
   return {...auth, ...patch, scope: patch.scopes}
 }
 
@@ -117,13 +96,11 @@ export const freshAtlassianAuth = (
     async (keys) => {
       const results = await Promise.allSettled(
         keys.map(async ({userId, teamId}) => {
-          const row = await selectTeamMemberIntegrationAuth()
-            .where('service', '=', 'jira')
+          const auth = await selectAtlassianAuth()
             .where('userId', '=', userId)
             .where('teamId', '=', teamId)
             .where('isActive', '=', true)
             .executeTakeFirst()
-          const auth = toAtlassianAuth(row)
           if (!auth) return null
           const inAMinute = Date.now() + 60_000
           const isFresh = auth.expiresAt
