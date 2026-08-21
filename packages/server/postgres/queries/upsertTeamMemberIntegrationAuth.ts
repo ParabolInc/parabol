@@ -1,5 +1,5 @@
 import getKysely from '../getKysely'
-import type {Integrationproviderserviceenum} from '../types/pg'
+import type {Integrationproviderserviceenum, Json} from '../types/pg'
 
 interface ITeamMemberIntegrationAuthBaseInput {
   service: Integrationproviderserviceenum
@@ -18,6 +18,8 @@ export interface ITeamMemberIntegrationAuthOAuth2Input extends ITeamMemberIntegr
   refreshToken: string | undefined
   scopes: string
   expiresAt: Date | null
+  providerUserId?: string | null
+  meta?: Json | null
 }
 
 type ITeamMemberIntegrationAuthInput =
@@ -37,6 +39,8 @@ const upsertTeamMemberIntegrationAuth = async (auth: ITeamMemberIntegrationAuthI
         scopes: eb.ref('excluded.scopes'),
         accessTokenSecret: eb.ref('excluded.accessTokenSecret'),
         expiresAt: eb.ref('excluded.expiresAt'),
+        providerUserId: eb.ref('excluded.providerUserId'),
+        meta: eb.ref('excluded.meta'),
         isActive: true
       }))
     )

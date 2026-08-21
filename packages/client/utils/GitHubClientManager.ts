@@ -1,6 +1,6 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import AddGitHubAuthMutation from '../mutations/AddGitHubAuthMutation'
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import {Providers} from '../types/constEnums'
 import getOAuthPopupFeatures from './getOAuthPopupFeatures'
 
@@ -33,7 +33,16 @@ class GitHubClientManager {
       const {code, state} = event.data
       if (state !== providerState || typeof code !== 'string') return
       submitMutation()
-      AddGitHubAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      AddTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {
+          service: 'github',
+          oauthCodeOrPat: code,
+          teamId,
+          redirectUri: window.__ACTION__.oauth2Redirect
+        },
+        {onError, onCompleted}
+      )
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

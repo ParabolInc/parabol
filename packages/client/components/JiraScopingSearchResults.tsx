@@ -5,7 +5,7 @@ import useGetUsedServiceTaskIds from '~/hooks/useGetUsedServiceTaskIds'
 import type {JiraScopingSearchResults_meeting$key} from '../__generated__/JiraScopingSearchResults_meeting.graphql'
 import type {JiraScopingSearchResultsQuery} from '../__generated__/JiraScopingSearchResultsQuery.graphql'
 import useAtmosphere from '../hooks/useAtmosphere'
-import PersistJiraSearchQueryMutation from '../mutations/PersistJiraSearchQueryMutation'
+import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
 import IntegrationScopingNoResults from './IntegrationScopingNoResults'
 import JiraScopingSelectAllIssues from './JiraScopingSelectAllIssues'
 import NewIntegrationRecordButton from './NewIntegrationRecordButton'
@@ -120,9 +120,10 @@ const JiraScopingSearchResults = (props: Props) => {
     })
     const isQueryNew = !searchHashes.includes(lookupKey)
     if (isQueryNew) {
-      PersistJiraSearchQueryMutation(atmosphere, {
+      PersistIntegrationSearchQueryMutation(atmosphere, {
         teamId,
-        input: {
+        service: 'jira',
+        jiraSearchQuery: {
           queryString,
           isJQL,
           projectKeyFilters: projectKeyFilters as string[]

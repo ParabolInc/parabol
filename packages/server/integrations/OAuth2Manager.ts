@@ -25,6 +25,12 @@ export type OAuth2AuthorizeResponse = {
   expiresIn?: number
 }
 
+export type OAuth2AfterAuthorizePatch = {
+  providerUserId?: string | null
+  meta?: Record<string, unknown>
+  scopes?: string
+}
+
 export default abstract class OAuth2Manager {
   protected clientId: string
   protected clientSecret: string
@@ -35,6 +41,11 @@ export default abstract class OAuth2Manager {
     this.serverBaseUrl = serverBaseUrl
   }
   abstract authorize(code: string, redirectUri: string): Promise<Error | OAuth2AuthorizeResponse>
+
+  /** Service-specific data fetched with the fresh token (account id, site list…). Stored generically on the auth row. */
+  async afterAuthorize(_auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
+    return {}
+  }
 
   abstract refresh(refreshToken: string): Promise<Error | {accessToken: string}>
   protected abstract fetchToken(

@@ -4,29 +4,33 @@ import type {DataLoaderWorker} from '../../graphql'
 import removeFromOrg from './removeFromOrg'
 import removeSlackAuths from './removeSlackAuths'
 
-const removeGitHubAuths = async (userId: string, teamIds: string[]) =>
-  Promise.all(
-    teamIds.map((teamId) => {
-      return getKysely()
-        .updateTable('GitHubAuth')
-        .set({isActive: false})
-        .where('userId', '=', userId)
-        .where('teamId', '=', teamId)
-        .where('isActive', '=', true)
-        .execute()
-    })
-  )
-
-const removeAtlassianAuths = async (userId: string, teamIds: string[]) => {
+const removeIntegrationAuths = async (userId: string, teamIds: string[]) => {
   if (teamIds.length === 0) return
   const pg = getKysely()
-  return pg
-    .updateTable('AtlassianAuth')
-    .set({isActive: false})
-    .where('userId', '=', userId)
-    .where('teamId', 'in', teamIds)
-    .where('isActive', '=', true)
-    .execute()
+  await Promise.all([
+    pg
+      .updateTable('TeamMemberIntegrationAuth')
+      .set({isActive: false})
+      .where('userId', '=', userId)
+      .where('teamId', 'in', teamIds)
+      .where('service', 'in', ['jira', 'github'])
+      .where('isActive', '=', true)
+      .execute(),
+    pg
+      .updateTable('AtlassianAuth')
+      .set({isActive: false})
+      .where('userId', '=', userId)
+      .where('teamId', 'in', teamIds)
+      .where('isActive', '=', true)
+      .execute(),
+    pg
+      .updateTable('GitHubAuth')
+      .set({isActive: false})
+      .where('userId', '=', userId)
+      .where('teamId', 'in', teamIds)
+      .where('isActive', '=', true)
+      .execute()
+  ])
 }
 
 const removePageAcces = async (userId: string) => {
@@ -51,8 +55,7 @@ const softDeleteUser = async (userIdToDelete: string, dataLoader: DataLoaderWork
   const teamIds = teamMembers.map(({teamId}) => teamId)
 
   await Promise.all([
-    removeAtlassianAuths(userIdToDelete, teamIds),
-    removeGitHubAuths(userIdToDelete, teamIds),
+    removeIntegrationAuths(userIdToDelete, teamIds),
     removeSlackAuths(userIdToDelete, teamIds, true),
     removePageAcces(userIdToDelete)
   ])

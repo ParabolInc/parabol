@@ -14,7 +14,7 @@ import type {GitHubScopingSearchResultsQuery} from '../__generated__/GitHubScopi
 import useAtmosphere from '../hooks/useAtmosphere'
 import useGetUsedServiceTaskIds from '../hooks/useGetUsedServiceTaskIds'
 import useLoadNextOnScrollBottom from '../hooks/useLoadNextOnScrollBottom'
-import PersistGitHubSearchQueryMutation from '../mutations/PersistGitHubSearchQueryMutation'
+import PersistIntegrationSearchQueryMutation from '../mutations/PersistIntegrationSearchQueryMutation'
 import GitHubIssueId from '../shared/gqlIds/GitHubIssueId'
 import {SprintPokerDefaults} from '../types/constEnums'
 import type {GQLType} from '../types/generics'
@@ -177,9 +177,10 @@ const GitHubScopingSearchResults = (props: Props) => {
     const searchHashes = githubSearchQueries.map(({queryString}) => queryString)
     const isQueryNew = !searchHashes.includes(normalizedQueryString)
     if (isQueryNew) {
-      PersistGitHubSearchQueryMutation(atmosphere, {
+      PersistIntegrationSearchQueryMutation(atmosphere, {
         teamId,
-        queryString: normalizedQueryString
+        service: 'github',
+        githubSearchQuery: {queryString: normalizedQueryString}
       })
     }
   }

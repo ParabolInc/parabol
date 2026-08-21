@@ -14,4 +14,12 @@ type PersistIntegrationSearchQuerySuccess {
   The updated Jira Server integration with the saved query
   """
   jiraServerIntegration: JiraServerIntegration
+  """
+  The updated Jira Cloud integration with its saved queries
+  """
+  atlassianIntegration: AtlassianIntegration
+  """
+  The updated GitHub integration with its saved queries
+  """
+  githubIntegration: GitHubIntegration
 }

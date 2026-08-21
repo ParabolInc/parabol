@@ -1,6 +1,6 @@
 import type Atmosphere from '../Atmosphere'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import AddAtlassianAuthMutation from '../mutations/AddAtlassianAuthMutation'
+import AddTeamMemberIntegrationAuthMutation from '../mutations/AddTeamMemberIntegrationAuthMutation'
 import AtlassianManager, {
   type AtlassianPermissionScope,
   unionAtlassianScopes
@@ -63,7 +63,11 @@ class AtlassianClientManager extends AtlassianManager {
       if (state !== providerState || typeof code !== 'string') return
       window.clearInterval(closeCheckerId)
       submitMutation()
-      AddAtlassianAuthMutation(atmosphere, {code, teamId}, {onError, onCompleted})
+      AddTeamMemberIntegrationAuthMutation(
+        atmosphere,
+        {service: 'jira', oauthCodeOrPat: code, teamId, redirectUri: redirect},
+        {onError, onCompleted}
+      )
       popup && popup.close()
       window.removeEventListener('message', handler)
     }

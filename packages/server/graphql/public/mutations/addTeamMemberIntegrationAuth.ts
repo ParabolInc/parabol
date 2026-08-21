@@ -1,13 +1,17 @@
 import {sql} from 'kysely'
-import IntegrationProviderId from '~/shared/gqlIds/IntegrationProviderId'
 import GcalOAuth2Manager from '../../../integrations/gcal/GcalOAuth2Manager'
+import GitHubOAuth2Manager from '../../../integrations/github/GitHubOAuth2Manager'
 import GitLabOAuth2Manager from '../../../integrations/gitlab/GitLabOAuth2Manager'
 import GmeetOAuth2Manager from '../../../integrations/gmeet/GmeetOAuth2Manager'
+import JiraOAuth2Manager from '../../../integrations/jira/JiraOAuth2Manager'
+import syncJiraSiblingAuths from '../../../integrations/jira/syncJiraSiblingAuths'
 import JiraServerOAuth1Manager, {
   type OAuth1Auth
 } from '../../../integrations/jiraServer/JiraServerOAuth1Manager'
 import LinearManager from '../../../integrations/linear/LinearManager'
+import type OAuth2Manager from '../../../integrations/OAuth2Manager'
 import type {OAuth2AuthorizeResponse} from '../../../integrations/OAuth2Manager'
+import resolveIntegrationProviderForTeam from '../../../integrations/platform/resolveIntegrationProviderForTeam'
 import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
@@ -41,29 +45,27 @@ const convertExpiresIn = (authResponse: OAuth2AuthorizeResponse | Error): OAuth2
 
 const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationAuth'] = async (
   _source,
-  {providerId, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
+  {providerId, service, oauthCodeOrPat, oauthVerifier, teamId, redirectUri},
   context
 ) => {
   const {authToken, dataLoader} = context
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
-  const providerDbId = IntegrationProviderId.split(providerId)
   const [integrationProvider, viewer] = await Promise.all([
-    dataLoader.get('integrationProviders').load(providerDbId),
+    resolveIntegrationProviderForTeam(dataLoader, {providerId, service, teamId}),
     dataLoader.get('users').loadNonNull(viewerId)
   ])
   if (!integrationProvider) {
     return standardError(
-      new Error(`Unable to find appropriate integration provider for providerId ${providerId}`),
-      {
-        userId: viewerId
-      }
+      new Error(`Unable to find appropriate integration provider for ${providerId ?? service}`),
+      {userId: viewerId}
     )
   }
+  const providerDbId = integrationProvider.id
 
   // VALIDATION
-  const {authStrategy, service, scope} = integrationProvider
+  const {authStrategy, service: providerService, scope} = integrationProvider
   if (scope === 'team') {
     if (teamId !== integrationProvider.teamId) {
       return {error: {message: 'teamId mismatch'}}
@@ -77,10 +79,11 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined
   let providerUserId: string | null = null
+  let meta: Record<string, unknown> | null = null
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
-    if (service === 'azureDevOps') {
+    if (providerService === 'azureDevOps') {
       if (!oauthVerifier) {
         return {
           error: {
@@ -95,16 +98,10 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       const authRes = await manager.authorize(oauthCodeOrPat, oauthVerifier)
       tokenMetadata = convertExpiresIn(authRes)
     }
-    let manager:
-      | GcalOAuth2Manager
-      | GmeetOAuth2Manager
-      | LinearManager
-      | GitLabOAuth2Manager
-      | ZoomOAuth2Manager
-      | null = null
+    let manager: OAuth2Manager | null = null
     const {clientId, clientSecret, serverBaseUrl} = integrationProvider
 
-    switch (service) {
+    switch (providerService) {
       case 'gcal':
         manager = new GcalOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
@@ -120,27 +117,28 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       case 'zoom':
         manager = new ZoomOAuth2Manager(clientId, clientSecret, serverBaseUrl)
         break
+      case 'jira':
+        manager = new JiraOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
+      case 'github':
+        manager = new GitHubOAuth2Manager(clientId, clientSecret, serverBaseUrl)
+        break
     }
 
     if (manager) {
       const authRes = await manager.authorize(oauthCodeOrPat, redirectUri)
-      tokenMetadata = convertExpiresIn(authRes)
-    }
-
-    if (
-      service === 'zoom' &&
-      manager instanceof ZoomOAuth2Manager &&
-      tokenMetadata &&
-      !(tokenMetadata instanceof Error)
-    ) {
-      const {accessToken} = tokenMetadata as {accessToken: string}
-      providerUserId = await manager.getProviderUserId(accessToken)
+      if (authRes instanceof Error) return standardError(authRes, {userId: viewerId})
+      const patch = await manager.afterAuthorize(authRes)
+      if (patch instanceof Error) return standardError(patch, {userId: viewerId})
+      tokenMetadata = convertExpiresIn({...authRes, scopes: patch.scopes ?? authRes.scopes})
+      providerUserId = patch.providerUserId ?? null
+      meta = patch.meta ?? null
     }
   }
   if (authStrategy === 'oauth1') {
     if (!oauthCodeOrPat || !oauthVerifier)
       return {error: {message: 'Missing OAuth1 token or verifier'}}
-    if (service === 'jiraServer') {
+    if (providerService === 'jiraServer') {
       const {serverBaseUrl, consumerKey, consumerSecret} = integrationProvider
       const manager = new JiraServerOAuth1Manager(serverBaseUrl, consumerKey, consumerSecret)
       tokenMetadata = await manager.accessToken(oauthCodeOrPat, oauthVerifier)
@@ -159,17 +157,19 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     .values({
       ...tokenMetadata,
       providerId: providerDbId,
-      service,
+      service: providerService,
       teamId,
       userId: viewerId,
-      ...(providerUserId !== null && {providerUserId})
+      ...(providerUserId !== null && {providerUserId}),
+      ...(meta !== null && {meta: JSON.stringify(meta)})
     })
     .onConflict((oc) =>
       oc.columns(['userId', 'teamId', 'service']).doUpdateSet({
         ...tokenMetadata,
         providerId: providerDbId,
         isActive: true,
-        ...(providerUserId !== null && {providerUserId})
+        ...(providerUserId !== null && {providerUserId}),
+        ...(meta !== null && {meta: JSON.stringify(meta)})
       })
     )
     .returning('id')
@@ -181,7 +181,25 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
     })
   }
 
-  if (service === 'msTeams' || service === 'mattermost') {
+  if (
+    providerService === 'jira' &&
+    providerUserId &&
+    tokenMetadata &&
+    'refreshToken' in tokenMetadata
+  ) {
+    const {accessToken, refreshToken, scopes, expiresAt} = tokenMetadata
+    await syncJiraSiblingAuths(pg, {
+      userId: viewerId,
+      providerUserId,
+      accessToken,
+      refreshToken: refreshToken ?? null,
+      scopes,
+      expiresAt: expiresAt ?? null,
+      excludeTeamId: teamId
+    })
+  }
+
+  if (providerService === 'msTeams' || providerService === 'mattermost') {
     await pg
       .insertInto('TeamNotificationSettings')
       .columns(['providerId', 'teamId', 'events'])
@@ -196,9 +214,9 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   updateRepoIntegrationsCacheByPerms(dataLoader, viewerId, teamId, true)
 
-  analytics.integrationAdded(viewer, teamId, service)
+  analytics.integrationAdded(viewer, teamId, providerService)
 
-  const data = {userId: viewerId, teamId, service}
+  const data = {userId: viewerId, teamId, service: providerService}
   return data
 }
 
