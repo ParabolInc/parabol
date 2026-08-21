@@ -10,6 +10,7 @@ const SERVER_ROOT = path.join(PROJECT_ROOT, 'packages', 'server')
 const EMBEDDER_ROOT = path.join(PROJECT_ROOT, 'packages', 'embedder')
 const DOTENV = path.join(PROJECT_ROOT, 'scripts', 'webpack', 'utils', 'dotenv.js')
 const INIT_PUBLIC_PATH = path.join(SERVER_ROOT, 'initPublicPath.ts')
+const PRELOAD_TRACED_BUILTINS = path.join(SERVER_ROOT, 'preloadTracedBuiltins.ts')
 const WriteWorkerAssets = require('./utils/WriteWorkerAssets')
 
 // const CircularDependencyPlugin = require('circular-dependency-plugin')
@@ -30,6 +31,8 @@ module.exports = [
     },
     entry: {
       web: [
+        // must stay first, see the file for why
+        PRELOAD_TRACED_BUILTINS,
         DOTENV,
         INIT_PUBLIC_PATH,
         // upsert global IntegrationProviders from .env so dev never needs a manual predeploy
@@ -37,6 +40,7 @@ module.exports = [
         path.join(SERVER_ROOT, 'server.ts')
       ],
       embedder: [
+        PRELOAD_TRACED_BUILTINS,
         DOTENV,
         INIT_PUBLIC_PATH,
         // make sure all the extensions (pgvector) exist & are updated
