@@ -2,8 +2,10 @@ import {Selectable, SelectQueryBuilder} from 'kysely'
 import type {JobType} from '../../../embedder/custom'
 import {
   type selectAgendaItems,
+  type selectAtlassianAuth,
   type selectComments,
   type selectDiscussion,
+  type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
@@ -189,25 +191,14 @@ export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
 
 export type JiraAuthMeta = {cloudIds: string[]}
 
-export type AtlassianAuth = Extract<TeamMemberIntegrationAuth, {service: 'jira'}> & {
-  accessToken: string
-  refreshToken: string
-  scope: string
-  accountId: string
-  cloudIds: string[]
-}
+export type AtlassianAuth = ExtractTypeFromQueryBuilderSelect<typeof selectAtlassianAuth>
 
 export interface GitHubSearchQuery {
   id: string
   queryString: string
   lastUsedAt: string
 }
-export type GitHubAuth = Exclude<TeamMemberIntegrationAuth, {service: 'jira'}> & {
-  service: 'github'
-  accessToken: string
-  scope: string
-  login: string
-}
+export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
 export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
   typeof selectGitLabDimensionFieldMap
 >

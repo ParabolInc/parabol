@@ -1,6 +1,5 @@
 import DataLoader from 'dataloader'
-import toGitHubAuth from '../integrations/github/toGitHubAuth'
-import {selectGitHubDimensionFieldMap} from '../postgres/select'
+import {selectGitHubAuth, selectGitHubDimensionFieldMap} from '../postgres/select'
 import type {GitHubAuth, GitHubDimensionFieldMap} from '../postgres/types'
 import NullableDataLoader from './NullableDataLoader'
 import type RootDataLoader from './RootDataLoader'
@@ -8,14 +7,20 @@ import type RootDataLoader from './RootDataLoader'
 export const githubAuth = (parent: RootDataLoader) => {
   return new NullableDataLoader<{teamId: string; userId: string}, GitHubAuth | null, string>(
     async (keys) => {
-      const rows = await Promise.all(
-        keys.map(({teamId, userId}) =>
-          parent
-            .get('teamMemberIntegrationAuthsByServiceTeamAndUserId')
-            .load({service: 'github', teamId, userId})
+      const rows = await selectGitHubAuth()
+        .where(({eb, refTuple, tuple}) =>
+          eb(
+            refTuple('teamId', 'userId'),
+            'in',
+            keys.map((key) => tuple(key.teamId, key.userId))
+          )
         )
+        .where('isActive', '=', true)
+        .execute()
+      return keys.map(
+        (key) =>
+          rows.find(({teamId, userId}) => key.teamId === teamId && key.userId === userId) ?? null
       )
-      return rows.map(toGitHubAuth)
     },
     {...parent.dataLoaderOptions, cacheKeyFn: ({teamId, userId}) => `${userId}:${teamId}`}
   )

@@ -56,6 +56,47 @@ export const selectTeamMemberIntegrationAuth = () => {
     >()
 }
 
+export const selectAtlassianAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select(({ref}) => [
+      ref('providerUserId').as('accountId'),
+      sql<string>`coalesce("scopes", '')`.as('scope'),
+      sql<string[]>`coalesce("meta" -> 'cloudIds', '[]'::jsonb)`.as('cloudIds')
+    ])
+    .where('service', '=', 'jira')
+    .where('accessToken', 'is not', null)
+    .where('refreshToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'jira'
+      meta: JiraAuthMeta
+      accessToken: NotNull
+      refreshToken: NotNull
+      accountId: NotNull
+    }>()
+}
+
+export const selectGitHubAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select(({ref}) => [
+      ref('providerUserId').as('login'),
+      sql<string>`coalesce("scopes", '')`.as('scope')
+    ])
+    .where('service', '=', 'github')
+    .where('accessToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'github'
+      meta: null
+      accessToken: NotNull
+      login: NotNull
+    }>()
+}
+
 export const selectTemplateRef = () => {
   return getKysely()
     .selectFrom([
