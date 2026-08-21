@@ -6,6 +6,7 @@ import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
+  JiraAuthMeta,
   JiraSearchQuery,
   ReactjiDB,
   TaskTag,
@@ -14,7 +15,7 @@ import type {
 import type {TIntegrationProvider} from './types/IntegrationProvider'
 import type {AnyMeeting, AnyMeetingMember} from './types/Meeting'
 import type {AnyNotification} from './types/Notification'
-import type {DB, Newmeetingphasetypeenum} from './types/pg'
+import type {DB, Integrationproviderserviceenum, Newmeetingphasetypeenum} from './types/pg'
 
 // This type is to allow us to perform a selectAll & then overwrite any column with another type
 // e.g. a column might be of type string[] but when calling to_json it will be {id: string}[]
@@ -46,7 +47,13 @@ export const selectDiscussion = () => {
 }
 
 export const selectTeamMemberIntegrationAuth = () => {
-  return getKysely().selectFrom('TeamMemberIntegrationAuth').selectAll()
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .$narrowType<
+      | {service: 'jira'; meta: JiraAuthMeta}
+      | {service: Exclude<Integrationproviderserviceenum, 'jira'>; meta: null}
+    >()
 }
 
 export const selectTemplateRef = () => {

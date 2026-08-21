@@ -110,8 +110,9 @@ export type SuggestedAction = ExtractTypeFromQueryBuilderSelect<typeof selectSug
 export interface Team extends ExtractTypeFromQueryBuilderSelect<typeof selectTeams> {}
 
 export type TeamMember = Selectable<TeamMemberPG>
-export interface TeamMemberIntegrationAuth
-  extends ExtractTypeFromQueryBuilderSelect<typeof selectTeamMemberIntegrationAuth> {}
+export type TeamMemberIntegrationAuth = ExtractTypeFromQueryBuilderSelect<
+  typeof selectTeamMemberIntegrationAuth
+>
 export type TeamPromptResponse = ExtractTypeFromQueryBuilderSelect<typeof selectTeamPromptResponses>
 export type InspirationItem = ExtractTypeFromQueryBuilderSelect<typeof selectInspirationItems>
 export type TeamHealthCategory = ExtractTypeFromQueryBuilderSelect<
@@ -186,7 +187,9 @@ export type IntegrationSearchQuery = ExtractTypeFromQueryBuilderSelect<
   typeof selectIntegrationSearchQuery
 >
 
-export type AtlassianAuth = TeamMemberIntegrationAuth & {
+export type JiraAuthMeta = {cloudIds: string[]}
+
+export type AtlassianAuth = Extract<TeamMemberIntegrationAuth, {service: 'jira'}> & {
   accessToken: string
   refreshToken: string
   scope: string
@@ -199,7 +202,8 @@ export interface GitHubSearchQuery {
   queryString: string
   lastUsedAt: string
 }
-export type GitHubAuth = TeamMemberIntegrationAuth & {
+export type GitHubAuth = Exclude<TeamMemberIntegrationAuth, {service: 'jira'}> & {
+  service: 'github'
   accessToken: string
   scope: string
   login: string

@@ -104,9 +104,16 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
 }
 
 const primeIntegrations = async () => {
-  Logger.log('⛓️ Prime Integrationgs Started')
+  Logger.log('⛓️ Prime Integrations Started')
   await upsertGlobalIntegrationProvidersFromEnv()
   Logger.log('⛓️ Prime Integrations Complete')
+}
+
+// dev bundles this ahead of the Socket Server so global providers track .env on every boot.
+// it is an idempotent upsert; a failure (e.g. PG Migrations still running on a fresh DB)
+// must not take the server down with it
+if (require.main === module) {
+  primeIntegrations().catch((e) => Logger.error('⛓️ Prime Integrations Failed', e))
 }
 
 export default primeIntegrations
