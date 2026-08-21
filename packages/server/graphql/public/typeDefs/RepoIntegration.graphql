@@ -4,4 +4,5 @@ The suggested repos and projects a user can integrate with
 interface RepoIntegration {
   id: ID!
   service: IntegrationProviderServiceEnum!
+  name: String!
 }

@@ -70,7 +70,10 @@ interface ContentProps {
 }
 
 const LinearScopingSearchFilterMenuContent = ({queryRef, menuProps, meetingId}: ContentProps) => {
-  const queryData = usePreloadedQuery(LinearScopingSearchFilterMenuRootQueryNode, queryRef)
+  const queryData = usePreloadedQuery<LinearScopingSearchFilterMenuRootQuery>(
+    LinearScopingSearchFilterMenuRootQueryNode,
+    queryRef
+  )
   const fragmentData = useFragment<LinearScopingSearchFilterMenuRoot_query$key>(
     LinearScopingSearchFilterMenuRootFragmentNode,
     queryData

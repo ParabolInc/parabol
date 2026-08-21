@@ -354,6 +354,8 @@ const permissionMap: PermissionMap<Resolvers> = {
       isViewerBillingLeader<'Mutation.startTeamHealth'>('args.teamIds', 'teams')
     ),
     startTeamPrompt: isTeamMember<'Mutation.startTeamPrompt'>('args.teamId'),
+    // no isAuthenticated: errors can occur pre-auth (parity with the legacy Google Form flow)
+    submitErrorFeedback: rateLimit({perMinute: 5, perHour: 20}),
     toggleAIFeatures: or(
       isSuperUser,
       isViewerBillingLeader<'Mutation.toggleAIFeatures'>('args.orgId')
@@ -500,7 +502,8 @@ const permissionMap: PermissionMap<Resolvers> = {
     organization: isViewerOnOrg<'Team.organization'>('source.orgId')
   },
   TeamMember: {
-    integrations: isUserViewer<'TeamMember.integrations'>('source.userId')
+    integrations: isUserViewer<'TeamMember.integrations'>('source.userId'),
+    services: isUserViewer<'TeamMember.services'>('source.userId')
   },
   User: {
     archivedTasks: isTeamMember<'User.archivedTasks'>('args.teamId'),

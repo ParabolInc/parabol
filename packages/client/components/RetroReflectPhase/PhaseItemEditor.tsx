@@ -6,6 +6,7 @@ import useEventCallback from '~/hooks/useEventCallback'
 import type {PhaseItemEditor_meeting$key} from '../../__generated__/PhaseItemEditor_meeting.graphql'
 import useAtmosphere from '../../hooks/useAtmosphere'
 import useIsEditing from '../../hooks/useIsEditing'
+import useIsFocused from '../../hooks/useIsFocused'
 import useMutationProps from '../../hooks/useMutationProps'
 import usePortal from '../../hooks/usePortal'
 import {useTipTapReflectionEditor} from '../../hooks/useTipTapReflectionEditor'
@@ -36,6 +37,7 @@ interface Props {
   stackTopRef: RefObject<HTMLDivElement>
   dataCy: string
   readOnly?: boolean
+  autoFocus: boolean
   meetingRef: PhaseItemEditor_meeting$key
 }
 
@@ -50,6 +52,7 @@ const PhaseItemEditor = (props: Props) => {
     forceUpdateColumn,
     dataCy,
     readOnly,
+    autoFocus,
     meetingRef
   } = props
   const atmosphere = useAtmosphere()
@@ -150,7 +153,8 @@ const PhaseItemEditor = (props: Props) => {
       placeholder,
       teamId,
       readOnly: !!readOnly,
-      onModEnter: handleSubmit
+      onModEnter: handleSubmit,
+      autoFocus: autoFocus && !readOnly
     }
   )
 
@@ -182,7 +186,7 @@ const PhaseItemEditor = (props: Props) => {
       })
     }
   })
-  const isFocused = editor?.isFocused
+  const isFocused = useIsFocused(editor)
 
   useEffect(() => {
     if (!editor) return
@@ -233,7 +237,7 @@ const PhaseItemEditor = (props: Props) => {
       <ReflectionCardRoot data-cy={dataCy} ref={phaseEditorRef} className='pb-2'>
         <TipTapEditor
           className={cn('flex h-fit max-h-41 overflow-auto px-4 pt-2 transition-all', {
-            'min-h-16': isEditing || isFocused
+            'min-h-16': isFocused
           })}
           editor={editor}
         />

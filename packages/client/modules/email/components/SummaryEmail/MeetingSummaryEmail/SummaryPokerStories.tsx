@@ -62,28 +62,7 @@ const SummaryPokerStories = (props: Props) => {
                 task {
                   title
                   integration {
-                    ... on JiraIssue {
-                      __typename
-                      summary
-                      issueKey
-                    }
-                    ... on _xGitHubIssue {
-                      __typename
-                      number
-                      title
-                    }
-                    ... on _xGitLabIssue {
-                      __typename
-                      title
-                    }
-                    ... on AzureDevOpsWorkItem {
-                      __typename
-                      title
-                    }
-                    ... on _xLinearIssue {
-                      __typename
-                      title
-                    }
+                    title
                   }
                 }
               }
@@ -111,19 +90,7 @@ const SummaryPokerStories = (props: Props) => {
                 if (usedTaskIds.has(taskId) || !task) return null
                 usedTaskIds.add(taskId)
                 const isLast = idx === stages.length - 1
-                let title = task.title
-                const {integration} = task
-                if (integration?.__typename === 'JiraIssue') {
-                  title = integration.summary
-                } else if (integration?.__typename === '_xGitHubIssue') {
-                  title = integration.title
-                } else if (integration?.__typename === '_xGitLabIssue') {
-                  title = integration.title
-                } else if (integration?.__typename === 'AzureDevOpsWorkItem') {
-                  title = integration.title
-                } else if (integration?.__typename === '_xLinearIssue') {
-                  title = integration.title
-                }
+                const title = task.integration?.title ?? task.title
                 const urlPath = `/meet/${meetingId}/estimate/${idx + 1}`
                 const to = isEmail
                   ? makeAppURL(appOrigin, urlPath, {

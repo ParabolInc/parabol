@@ -28,10 +28,11 @@ interface Props {
   meeting: PhaseItemColumn_meeting$key
   phaseRef: RefObject<HTMLDivElement>
   prompt: PhaseItemColumn_prompt$key
+  autoFocus: boolean
 }
 
 const PhaseItemColumn = (props: Props) => {
-  const {idx, meeting: meetingRef, phaseRef, prompt: promptRef, isDesktop} = props
+  const {idx, meeting: meetingRef, phaseRef, prompt: promptRef, isDesktop, autoFocus} = props
   const prompt = useFragment(
     graphql`
       fragment PhaseItemColumn_prompt on ReflectPrompt {
@@ -210,6 +211,7 @@ const PhaseItemColumn = (props: Props) => {
                   promptId={promptId}
                   stackTopRef={stackTopRef}
                   readOnly={!!endedAt}
+                  autoFocus={autoFocus}
                   meetingRef={meeting}
                 />
               </div>

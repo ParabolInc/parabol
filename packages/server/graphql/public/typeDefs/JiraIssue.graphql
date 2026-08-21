@@ -58,9 +58,19 @@ type JiraIssue implements TaskIntegration {
   project: JiraRemoteProject
 
   """
+  The service this issue comes from
+  """
+  service: IntegrationProviderServiceEnum!
+
+  """
   The plaintext summary of the jira issue
   """
   summary: String!
+
+  """
+  The plaintext title of the issue, same as the summary
+  """
+  title: String!
 
   """
   Field names that exists on the issue and can be used as estimation fields

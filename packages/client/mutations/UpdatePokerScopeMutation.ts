@@ -200,6 +200,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             const descriptionHTML = generateHTML(bodyContent, serverTipTapExtensions)
             const {cloudId, issueKey, projectKey} = JiraIssueId.split(serviceTaskId)
             const optimisticTaskIntegration = createProxyRecord(store, 'JiraIssue', {
+              service,
               teamId,
               meetingId,
               userId: viewerId,
@@ -209,6 +210,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               issueKey,
               projectKey,
               summary: plaintextContent,
+              title: plaintextContent,
               description: '',
               descriptionHTML
             })
@@ -217,6 +219,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             //const descriptionHTML = stateToHTML(contentState)
             //const {instanceId, issueKey, projectKey} = AzureDevOpsIssueId.split(serviceTaskId)
             const optimisticTaskIntegration = createProxyRecord(store, 'AzureDevOpsWorkItem', {
+              service,
               teamId,
               meetingId,
               userId: viewerId,
@@ -236,6 +239,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
               owner: repoOwner
             })
             const optimisticTaskIntegration = createProxyRecord(store, '_xGitHubIssue', {
+              service,
               number: issueNumber,
               title,
               description: '',
@@ -249,6 +253,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             const gitlabIssue = store.get(gid)
             const iid = gitlabIssue?.getValue('iid')
             const optimisticGitLabIssue = createProxyRecord(store, '_xGitLabIssue', {
+              service,
               title,
               iid
             })
@@ -258,6 +263,7 @@ const UpdatePokerScopeMutation: StandardMutation<TUpdatePokerScopeMutation, Hand
             const linearIssue = store.get(issueId)
             const identifier = linearIssue?.getValue('identifier')
             const optimisticTaskIntegration = createProxyRecord(store, '_xLinearIssue', {
+              service,
               title,
               description: '',
               identifier,
