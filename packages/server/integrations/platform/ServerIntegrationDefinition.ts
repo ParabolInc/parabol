@@ -75,13 +75,23 @@ export abstract class ServerIntegrationDefinition {
     return !!auth?.accessToken
   }
 
-  protected async hasSharedProvider(ctx: IntegrationCtx, service: Integrationproviderserviceenum) {
+  private async loadSharedProviders(ctx: IntegrationCtx, service: Integrationproviderserviceenum) {
     const {dataLoader, teamId} = ctx
     const team = await dataLoader.get('teams').loadNonNull(teamId)
-    const providers = await dataLoader
+    return dataLoader
       .get('sharedIntegrationProviders')
       .load({service, orgIds: [team.orgId], teamIds: [teamId]})
+  }
+
+  protected async hasSharedProvider(ctx: IntegrationCtx, service: Integrationproviderserviceenum) {
+    const providers = await this.loadSharedProviders(ctx, service)
     return providers.length > 0
+  }
+
+  // jira/github clients never send a providerId, so only a global provider is reachable until P4
+  protected async hasGlobalProvider(ctx: IntegrationCtx, service: Integrationproviderserviceenum) {
+    const providers = await this.loadSharedProviders(ctx, service)
+    return providers.some((provider) => provider.scope === 'global')
   }
 
   getCapabilityKeys() {

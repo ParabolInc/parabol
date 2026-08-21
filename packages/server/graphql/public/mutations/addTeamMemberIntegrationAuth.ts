@@ -15,6 +15,7 @@ import resolveIntegrationProviderForTeam from '../../../integrations/platform/re
 import ZoomOAuth2Manager from '../../../integrations/zoom/ZoomOAuth2Manager'
 import getKysely from '../../../postgres/getKysely'
 import type {IntegrationProviderAzureDevOps} from '../../../postgres/types/IntegrationProvider'
+import type {JsonObject} from '../../../postgres/types/pg'
 import AzureDevOpsServerManager from '../../../utils/AzureDevOpsServerManager'
 import {analytics} from '../../../utils/analytics/analytics'
 import {getUserId} from '../../../utils/authorization'
@@ -52,6 +53,9 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
   const viewerId = getUserId(authToken)
   const pg = getKysely()
 
+  if (!providerId && !service) {
+    return {error: {message: 'Provide either providerId or service'}}
+  }
   const [integrationProvider, viewer] = await Promise.all([
     resolveIntegrationProviderForTeam(dataLoader, {providerId, service, teamId}),
     dataLoader.get('users').loadNonNull(viewerId)
@@ -79,7 +83,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
 
   let tokenMetadata: OAuth2Auth | OAuth1Auth | Error | undefined
   let providerUserId: string | null = null
-  let meta: Record<string, unknown> | null = null
+  let meta: JsonObject | null = null
   if (authStrategy === 'oauth2') {
     if (!oauthCodeOrPat || !redirectUri)
       return {error: {message: 'Missing OAuth2 code or redirect URI'}}
@@ -161,7 +165,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
       teamId,
       userId: viewerId,
       ...(providerUserId !== null && {providerUserId}),
-      ...(meta !== null && {meta: JSON.stringify(meta)})
+      ...(meta !== null && {meta})
     })
     .onConflict((oc) =>
       oc.columns(['userId', 'teamId', 'service']).doUpdateSet({
@@ -169,7 +173,7 @@ const addTeamMemberIntegrationAuth: MutationResolvers['addTeamMemberIntegrationA
         providerId: providerDbId,
         isActive: true,
         ...(providerUserId !== null && {providerUserId}),
-        ...(meta !== null && {meta: JSON.stringify(meta)})
+        ...(meta !== null && {meta})
       })
     )
     .returning('id')

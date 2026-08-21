@@ -39,7 +39,8 @@ class GitHubClientManager {
           service: 'github',
           oauthCodeOrPat: code,
           teamId,
-          redirectUri: window.__ACTION__.oauth2Redirect
+          redirectUri: window.__ACTION__.oauth2Redirect,
+          includeGitHub: true
         },
         {onError, onCompleted}
       )

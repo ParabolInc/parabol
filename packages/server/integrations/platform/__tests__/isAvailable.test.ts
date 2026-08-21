@@ -34,11 +34,21 @@ describe('isAvailable', () => {
 
   providerBacked.forEach((service) => {
     it(`${service} is available when a provider row exists`, async () => {
-      await expect(serverIntegrations[service].isAvailable(makeCtx([{id: 1}]))).resolves.toBe(true)
+      await expect(
+        serverIntegrations[service].isAvailable(makeCtx([{id: 1, scope: 'global'}]))
+      ).resolves.toBe(true)
     })
 
     it(`${service} is unavailable when no provider row exists`, async () => {
       await expect(serverIntegrations[service].isAvailable(makeCtx([]))).resolves.toBe(false)
+    })
+  })
+
+  ;(['jira', 'github'] as const).forEach((service) => {
+    it(`${service} ignores team/org-scoped providers the client cannot select`, async () => {
+      await expect(
+        serverIntegrations[service].isAvailable(makeCtx([{id: 1, scope: 'team'}]))
+      ).resolves.toBe(false)
     })
   })
 })
