@@ -1,5 +1,5 @@
 import {isNotNull} from 'parabol-client/utils/predicates'
-import {selectAtlassianAuth} from '../../../postgres/select'
+import {selectTeamMemberIntegrationAuth} from '../../../postgres/select'
 import isNotError from '../../errorFilter'
 import type {MutationResolvers} from '../resolverTypes'
 
@@ -9,7 +9,9 @@ const updateOAuthRefreshTokens: MutationResolvers['updateOAuthRefreshTokens'] = 
   {dataLoader}
 ) => {
   // RESOLUTION
-  const atlassianAuthRows = await selectAtlassianAuth()
+  const atlassianAuthRows = await selectTeamMemberIntegrationAuth()
+    .select(['userId', 'teamId'])
+    .where('service', '=', 'jira')
     .where('updatedAt', '<=', updatedBefore)
     .where('isActive', '=', true)
     .execute()

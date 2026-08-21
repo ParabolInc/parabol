@@ -1,18 +1,16 @@
-export type RemoveIntegrationSearchQuerySuccessSource =
-  | {
-      userId: string
-      teamId: string
-    }
-  | {error: {message: string}}
+import type {RemoveIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
 
-const RemoveIntegrationSearchQuerySuccess: {
-  jiraServerIntegration: (
-    source: RemoveIntegrationSearchQuerySuccessSource
-  ) => RemoveIntegrationSearchQuerySuccessSource
-} = {
-  jiraServerIntegration: (source) => {
-    return source
-  }
+export type RemoveIntegrationSearchQuerySuccessSource = {
+  teamId: string
+  userId: string
+}
+
+const RemoveIntegrationSearchQuerySuccess: RemoveIntegrationSearchQuerySuccessResolvers = {
+  jiraServerIntegration: (source) => source,
+  atlassianIntegration: ({teamId, userId}, _args, {dataLoader}) =>
+    dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
+  githubIntegration: async ({teamId, userId}, _args, {dataLoader}) =>
+    (await dataLoader.get('githubAuth').load({teamId, userId})) ?? null
 }
 
 export default RemoveIntegrationSearchQuerySuccess

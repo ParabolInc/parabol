@@ -17,10 +17,8 @@ type NotificationSubscriptionPayload {
   RemoveOrgUsersSuccess: RemoveOrgUsersSuccess
   RemoveTeamMemberPayload: RemoveTeamMemberPayload
   StripeFailPaymentPayload: StripeFailPaymentPayload
-  PersistJiraSearchQuerySuccess: PersistJiraSearchQuerySuccess
   User: User
   AuthTokenPayload: AuthTokenPayload
-  PersistGitHubSearchQuerySuccess: PersistGitHubSearchQuerySuccess
   JiraServerIssue: JiraServerIssue
   AddedNotification: AddedNotification
   JiraIssue: JiraIssue

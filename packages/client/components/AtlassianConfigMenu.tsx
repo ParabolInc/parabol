@@ -1,7 +1,7 @@
 import useAtmosphere from '../hooks/useAtmosphere'
 import type {MenuProps} from '../hooks/useMenu'
 import type {MenuMutationProps} from '../hooks/useMutationProps'
-import RemoveAtlassianAuthMutation from '../mutations/RemoveAtlassianAuthMutation'
+import RemoveTeamMemberIntegrationAuthMutation from '../mutations/RemoveTeamMemberIntegrationAuthMutation'
 import AtlassianClientManager from '../utils/AtlassianClientManager'
 import {hasConfluenceScopes, hasJiraScopes} from '../utils/atlassianScopes'
 import Menu from './Menu'
@@ -39,7 +39,11 @@ const AtlassianConfigMenu = (props: Props) => {
   const removeAtlassian = () => {
     if (submitting) return
     submitMutation()
-    RemoveAtlassianAuthMutation(atmosphere, {teamId}, {onError, onCompleted})
+    RemoveTeamMemberIntegrationAuthMutation(
+      atmosphere,
+      {service: 'jira', teamId},
+      {onError, onCompleted}
+    )
   }
   return (
     <Menu ariaLabel={'Configure your Atlassian integration'} {...menuProps}>

@@ -1,8 +1,6 @@
 import {SubscriptionChannel} from 'parabol-client/types/constEnums'
 import getKysely from '../../../postgres/getKysely'
-import upsertAtlassianAuths from '../../../postgres/queries/upsertAtlassianAuths'
-import upsertGitHubAuth from '../../../postgres/queries/upsertGitHubAuth'
-import type {AtlassianAuth, GitHubAuth} from '../../../postgres/types'
+import upsertTeamMemberIntegrationAuth from '../../../postgres/queries/upsertTeamMemberIntegrationAuth'
 import {getUserId, isTeamMember} from '../../../utils/authorization'
 import publish from '../../../utils/publish'
 import standardError from '../../../utils/standardError'
@@ -62,28 +60,27 @@ const changeTaskTeam: MutationResolvers['changeTaskTeam'] = async (
     // Transfer integration to target team
     if (task.integration) {
       if (sourceTeamAuth && !targetTeamAuth) {
+        await upsertTeamMemberIntegrationAuth({
+          service: sourceTeamAuth.service,
+          providerId: sourceTeamAuth.providerId,
+          teamId,
+          userId: sourceTeamAuth.userId,
+          accessToken: sourceTeamAuth.accessToken,
+          refreshToken: sourceTeamAuth.refreshToken ?? undefined,
+          scopes: sourceTeamAuth.scopes ?? '',
+          expiresAt: sourceTeamAuth.expiresAt,
+          providerUserId: sourceTeamAuth.providerUserId,
+          meta: sourceTeamAuth.meta
+        })
         if (task.integration.service === 'jira') {
-          await upsertAtlassianAuths([
-            {
-              ...(sourceTeamAuth as AtlassianAuth),
-              teamId
-            }
-          ])
-          // dataLoader does not allow to refresh the value, so clear the updated one
           dataLoader.get('freshAtlassianAuth').clear(targetTeamAuthKey)
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddAtlassianAuthPayload', data, subOptions)
-        }
-        if (task.integration.service === 'github') {
-          await upsertGitHubAuth({
-            ...(sourceTeamAuth as GitHubAuth),
-            teamId
-          })
-          // dataLoader does not allow to refresh the value, so clear the updated one
+        } else {
           dataLoader.get('githubAuth').clear(targetTeamAuthKey)
-          const data = {teamId, userId: viewerId}
-          publish(SubscriptionChannel.TEAM, teamId, 'AddGitHubAuthPayload', data, subOptions)
         }
+        dataLoader.get('teamMemberIntegrationAuthsByServiceTeamAndUserId').clear({
+          service: task.integration.service,
+          ...targetTeamAuthKey
+        })
         integration.accessUserId = viewerId
       } else if (targetTeamAuth) {
         // in case the task was pushed by someone else before

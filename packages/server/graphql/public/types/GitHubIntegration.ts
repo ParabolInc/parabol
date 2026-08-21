@@ -1,6 +1,4 @@
-import ms from 'ms'
 import GitHubIntegrationId from '../../../../client/shared/gqlIds/GitHubIntegrationId'
-import getKysely from '../../../postgres/getKysely'
 import {getUserId} from '../../../utils/authorization'
 import type {GitHubIntegrationResolvers} from '../resolverTypes'
 
@@ -14,19 +12,15 @@ const GitHubIntegration: GitHubIntegrationResolvers = {
 
   isActive: ({accessToken}) => !!accessToken,
 
-  githubSearchQueries: async ({githubSearchQueries, teamId, userId}) => {
-    const expirationThresh = ms('60d')
-    const thresh = new Date(Date.now() - expirationThresh).toISOString()
-    const unexpiredQueries = githubSearchQueries.filter((query) => query.lastUsedAt > thresh)
-    if (unexpiredQueries.length < githubSearchQueries.length) {
-      await getKysely()
-        .updateTable('GitHubAuth')
-        .set({githubSearchQueries: unexpiredQueries.map((obj) => JSON.stringify(obj))})
-        .where('teamId', '=', teamId)
-        .where('userId', '=', userId)
-        .execute()
-    }
-    return unexpiredQueries
+  githubSearchQueries: async ({teamId, userId, providerId}, _args, {dataLoader}) => {
+    const queries = await dataLoader
+      .get('recentIntegrationSearchQueries')
+      .load({teamId, userId, service: 'github', providerId})
+    return queries.map(({id, query, lastUsedAt}) => ({
+      id: String(id),
+      queryString: (query as {queryString: string}).queryString,
+      lastUsedAt: lastUsedAt.toJSON()
+    }))
   }
 }
 

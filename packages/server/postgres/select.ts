@@ -6,7 +6,6 @@ import type {DegradedItem, PageExportPageState} from '../utils/confluence/types'
 import getKysely from './getKysely'
 import type {
   AutogroupReflectionGroupType,
-  GitHubSearchQuery,
   JiraSearchQuery,
   ReactjiDB,
   TaskTag,
@@ -385,26 +384,6 @@ export const selectDescendantPages = (
           .select(['p.id', 'p.parentPageId'])
       )
   )
-
-export const selectGitHubAuth = () => {
-  const query = getKysely()
-    .selectFrom('GitHubAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<GitHubSearchQuery[]>('to_json', ['githubSearchQueries']).as('githubSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {githubSearchQueries: GitHubSearchQuery[]}>
-}
-
-export const selectAtlassianAuth = () => {
-  const query = getKysely()
-    .selectFrom('AtlassianAuth')
-    .selectAll()
-    .select(({fn}) => [
-      fn<JiraSearchQuery[]>('to_json', ['jiraSearchQueries']).as('jiraSearchQueries')
-    ])
-  return query as AssertedQuery<typeof query, {jiraSearchQueries: JiraSearchQuery[]}>
-}
 
 export const selectGitHubDimensionFieldMap = () => {
   return getKysely().selectFrom('GitHubDimensionFieldMap').selectAll()

@@ -60,6 +60,22 @@ const upsertGlobalIntegrationProvidersFromEnv = async () => {
       serverBaseUrl: 'https://api.zoom.us/v2',
       clientId: process.env.ZOOM_CLIENT_ID,
       clientSecret: process.env.ZOOM_CLIENT_SECRET
+    },
+    {
+      service: 'jira',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      serverBaseUrl: 'https://api.atlassian.com',
+      clientId: process.env.ATLASSIAN_CLIENT_ID,
+      clientSecret: process.env.ATLASSIAN_CLIENT_SECRET
+    },
+    {
+      service: 'github',
+      authStrategy: 'oauth2',
+      scope: 'global',
+      serverBaseUrl: 'https://api.github.com',
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET
     }
   ] as const
 

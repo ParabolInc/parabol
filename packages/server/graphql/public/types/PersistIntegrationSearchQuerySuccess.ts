@@ -1,18 +1,16 @@
-export type PersistIntegrationSearchQuerySource =
-  | {
-      userId: string
-      teamId: string
-    }
-  | {error: {message: string}}
+import type {PersistIntegrationSearchQuerySuccessResolvers} from '../resolverTypes'
 
-const PersistIntegrationSearchQuerySuccess: {
-  jiraServerIntegration: (
-    source: PersistIntegrationSearchQuerySource
-  ) => PersistIntegrationSearchQuerySource
-} = {
-  jiraServerIntegration: (source) => {
-    return source
-  }
+export type PersistIntegrationSearchQuerySuccessSource = {
+  teamId: string
+  userId: string
+}
+
+const PersistIntegrationSearchQuerySuccess: PersistIntegrationSearchQuerySuccessResolvers = {
+  jiraServerIntegration: (source) => source,
+  atlassianIntegration: ({teamId, userId}, _args, {dataLoader}) =>
+    dataLoader.get('freshAtlassianAuth').load({teamId, userId}),
+  githubIntegration: async ({teamId, userId}, _args, {dataLoader}) =>
+    (await dataLoader.get('githubAuth').load({teamId, userId})) ?? null
 }
 
 export default PersistIntegrationSearchQuerySuccess
