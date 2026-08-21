@@ -78,6 +78,25 @@ export const selectAtlassianAuth = () => {
     }>()
 }
 
+export const selectGitHubAuth = () => {
+  return getKysely()
+    .selectFrom('TeamMemberIntegrationAuth')
+    .selectAll()
+    .select(({ref}) => [
+      ref('providerUserId').as('login'),
+      sql<string>`coalesce("scopes", '')`.as('scope')
+    ])
+    .where('service', '=', 'github')
+    .where('accessToken', 'is not', null)
+    .where('providerUserId', 'is not', null)
+    .$narrowType<{
+      service: 'github'
+      meta: null
+      accessToken: NotNull
+      login: NotNull
+    }>()
+}
+
 export const selectTemplateRef = () => {
   return getKysely()
     .selectFrom([

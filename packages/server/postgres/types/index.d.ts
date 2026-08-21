@@ -5,6 +5,7 @@ import {
   type selectAtlassianAuth,
   type selectComments,
   type selectDiscussion,
+  type selectGitHubAuth,
   type selectGitHubDimensionFieldMap,
   type selectGitLabDimensionFieldMap,
   type selectInspirationItems,
@@ -197,12 +198,7 @@ export interface GitHubSearchQuery {
   queryString: string
   lastUsedAt: string
 }
-export type GitHubAuth = Exclude<TeamMemberIntegrationAuth, {service: 'jira'}> & {
-  service: 'github'
-  accessToken: string
-  scope: string
-  login: string
-}
+export type GitHubAuth = ExtractTypeFromQueryBuilderSelect<typeof selectGitHubAuth>
 export type GitLabDimensionFieldMap = ExtractTypeFromQueryBuilderSelect<
   typeof selectGitLabDimensionFieldMap
 >
