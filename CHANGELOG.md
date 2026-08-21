@@ -5,6 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 This CHANGELOG follows conventions [outlined here](http://keepachangelog.com/).
 
+## [13.37.0](https://github.com/ParabolInc/parabol/compare/v13.36.4...v13.37.0) (2026-08-21)
+
+
+### Added
+
+* decouple HubSpot from app; add BigQuery integration ([#13277](https://github.com/ParabolInc/parabol/issues/13277)) ([bac5eb6](https://github.com/ParabolInc/parabol/commit/bac5eb69534ff7c4787e6e8db528573d09b371f5))
+* Zoom transcripts to GA ([#13397](https://github.com/ParabolInc/parabol/issues/13397)) ([04f9641](https://github.com/ParabolInc/parabol/commit/04f9641c87642fa31f807c947981a5707046e87c))
+
+
+### Fixed
+
+* bump relay to v21 ([#13388](https://github.com/ParabolInc/parabol/issues/13388)) ([5e3883b](https://github.com/ParabolInc/parabol/commit/5e3883b9f499036e96c9b860b3ff9dd513ca7690))
+* height reflection in flight. autofocus editor. editor height ([#13396](https://github.com/ParabolInc/parabol/issues/13396)) ([d20c588](https://github.com/ParabolInc/parabol/commit/d20c5888a99e4113b4ee55e281efdc875a966466))
+
+
+### Changed
+
+* task titles and integrations capability query (integrations refactor part 2) ([#13372](https://github.com/ParabolInc/parabol/issues/13372)) ([a64e9c1](https://github.com/ParabolInc/parabol/commit/a64e9c1335c81d9c72dc329f39d99e7dd6b97fbc))
+
 ## [13.36.4](https://github.com/ParabolInc/parabol/compare/v13.36.3...v13.36.4) (2026-08-18)
 
 
