@@ -56,6 +56,17 @@ describe('JiraOAuth2Manager', () => {
     })
   })
 
+  it('afterAuthorize rejects a grant without a refresh token', async () => {
+    MockedManager.prototype.getAccessibleResources = jest.fn()
+    const patch = await manager.afterAuthorize({
+      accessToken: 'tok',
+      refreshToken: undefined,
+      scopes: 'read:jira-work'
+    })
+    expect(patch).toBeInstanceOf(Error)
+    expect(MockedManager.prototype.getAccessibleResources).not.toHaveBeenCalled()
+  })
+
   it('afterAuthorize falls back to the JWT sub for a Confluence-only grant', async () => {
     MockedManager.prototype.getAccessibleResources = jest
       .fn()

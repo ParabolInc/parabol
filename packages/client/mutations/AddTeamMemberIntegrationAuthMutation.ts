@@ -11,6 +11,8 @@ const mutation = graphql`
     $oauthVerifier: ID
     $teamId: ID!
     $redirectUri: URL
+    $includeAtlassian: Boolean = false
+    $includeGitHub: Boolean = false
   ) {
     addTeamMemberIntegrationAuth(
       providerId: $providerId
@@ -53,11 +55,11 @@ const mutation = graphql`
             zoom {
               isActive
             }
-            atlassian {
+            atlassian @include(if: $includeAtlassian) {
               ...AtlassianProviderRowAtlassianIntegration
               ...useIsIntegratedAtlassianIntegration
             }
-            github {
+            github @include(if: $includeGitHub) {
               ...useIsIntegratedGitHubIntegration
               ...GitHubProviderRowGitHubIntegration
               ...GitHubScopingSearchBarGitHubIntegration

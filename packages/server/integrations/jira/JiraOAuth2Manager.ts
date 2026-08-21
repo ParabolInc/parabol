@@ -42,6 +42,9 @@ export default class JiraOAuth2Manager extends OAuth2Manager {
 
   async afterAuthorize(auth: OAuth2AuthorizeResponse): Promise<OAuth2AfterAuthorizePatch | Error> {
     const {accessToken, refreshToken, scopes} = auth
+    // Atlassian only returns a refresh token when offline_access is granted; without one the
+    // access token dies in an hour and the row would read as Connected while every call fails
+    if (!refreshToken) return new Error('Atlassian did not grant offline access')
     const manager = new AtlassianServerManager(accessToken)
     const sites = await manager.getAccessibleResources()
     if (!Array.isArray(sites)) return new Error(`Jira: ${sites.message}`)
@@ -51,13 +54,7 @@ export default class JiraOAuth2Manager extends OAuth2Manager {
     // RFC 6749 §5.1: the token response may omit scope, so fall back to the granted
     // scopes each site reports — still IdP-derived, never a guess at what was requested
     const scopesToStore =
-      scopes ??
-      [
-        ...new Set([
-          ...sites.flatMap((site) => site.scopes),
-          ...(refreshToken ? ['offline_access'] : [])
-        ])
-      ].join(' ')
+      scopes ?? [...new Set([...sites.flatMap((site) => site.scopes), 'offline_access'])].join(' ')
     // getMyself is a Jira API call — a Confluence-only grant 401s on it. The account id
     // is also the sub claim of the OAuth access token (a JWT), which needs no scopes.
     const accountId = hasJiraScopes(scopesToStore)
