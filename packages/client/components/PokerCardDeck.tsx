@@ -53,7 +53,7 @@ const PokerCardDeck = (props: Props) => {
           }
         }
         localStage {
-          ...PokerCardDeckStage @relay(mask: false)
+          ...PokerCardDeckStage @relay(mask: false) @alias
         }
         viewerMeetingMember {
           isSpectating
@@ -65,10 +65,11 @@ const PokerCardDeck = (props: Props) => {
   const {id: meetingId, rightDrawerOpen, localStage, showSidebar, viewerMeetingMember} = meeting
   const isSpectating = !!viewerMeetingMember?.isSpectating
   // fallbacks used here to test https://github.com/ParabolInc/parabol/issues/6247
-  const stageId = localStage.id ?? ''
-  const cards = localStage.dimensionRef?.scale.values ?? []
-  const scores = localStage.scores ?? []
-  const isVoting = localStage.isVoting ?? false
+  const pokerStage = localStage.PokerCardDeckStage
+  const stageId = pokerStage?.id ?? ''
+  const cards = pokerStage?.dimensionRef?.scale.values ?? []
+  const scores = pokerStage?.scores ?? []
+  const isVoting = pokerStage?.isVoting ?? false
   const totalCards = cards.length
   const [isCollapsed, setIsCollapsed] = useState(!isVoting)
   const [estimateAreaWidth, showTransition] = usePokerDeckLeftEdge(estimateAreaRef, isVoting)

@@ -1,13 +1,10 @@
 import graphql from 'babel-plugin-relay/macro'
 import {Suspense} from 'react'
 import {useFragment} from 'react-relay'
-import type {
-  NotificationEnum,
-  NotificationPicker_notification$key
-} from '~/__generated__/NotificationPicker_notification.graphql'
-import lazyPreload, {type LazyPreloadedComponent} from '~/utils/lazyPreload'
+import type {NotificationPicker_notification$key} from '~/__generated__/NotificationPicker_notification.graphql'
+import lazyPreload from '~/utils/lazyPreload'
 
-const typePicker: Record<NotificationEnum, LazyPreloadedComponent> = {
+const typePicker = {
   DISCUSSION_MENTIONED: lazyPreload(
     () => import(/* webpackChunkName: 'DiscussionMentioned' */ './DiscussionMentioned')
   ),
@@ -74,34 +71,74 @@ const NotificationPicker = (props: Props) => {
       fragment NotificationPicker_notification on Notification {
         type
         id
-        ...DiscussionMentioned_notification
-        ...KickedOut_notification
-        ...PaymentRejected_notification
-        ...TaskInvolves_notification
-        ...PromoteToBillingLeader_notification
-        ...TeamArchived_notification
-        ...TeamInvitationNotification_notification
-        ...MeetingStageTimeLimitEnd_notification
-        ...ResponseMentioned_notification
-        ...Mentioned_notification
-        ...ResponseReplied_notification
-        ...TeamsLimitReminderNotification_notification
-        ...TeamsLimitExceededNotification_notification
-        ...PromptToJoinOrgNotification_notification
-        ...RequestToJoinOrgNotification_notification
-        ...PageAccessGranted_notification
-        ...PageAccessRequested_notification
+        ...DiscussionMentioned_notification @alias
+        ...KickedOut_notification @alias
+        ...PaymentRejected_notification @alias
+        ...TaskInvolves_notification @alias
+        ...PromoteToBillingLeader_notification @alias
+        ...TeamArchived_notification @alias
+        ...TeamInvitationNotification_notification @alias
+        ...MeetingStageTimeLimitEnd_notification @alias
+        ...ResponseMentioned_notification @alias
+        ...Mentioned_notification @alias
+        ...ResponseReplied_notification @alias
+        ...TeamsLimitReminderNotification_notification @alias
+        ...TeamsLimitExceededNotification_notification @alias
+        ...PromptToJoinOrgNotification_notification @alias
+        ...RequestToJoinOrgNotification_notification @alias
+        ...PageAccessGranted_notification @alias
+        ...PageAccessRequested_notification @alias
       }
     `,
     notificationRef
   )
-  const {type} = notification
-  const SpecificNotification = typePicker[type]!
-  return (
-    <Suspense fallback={''}>
-      <SpecificNotification notification={notification} />
-    </Suspense>
-  )
+  const renderNotification = () => {
+    const {
+      DiscussionMentioned_notification: discussionMentioned,
+      KickedOut_notification: kickedOut,
+      PaymentRejected_notification: paymentRejected,
+      TaskInvolves_notification: taskInvolves,
+      PromoteToBillingLeader_notification: promoteToBillingLeader,
+      TeamArchived_notification: teamArchived,
+      TeamInvitationNotification_notification: teamInvitation,
+      MeetingStageTimeLimitEnd_notification: meetingStageTimeLimitEnd,
+      ResponseMentioned_notification: responseMentioned,
+      Mentioned_notification: mentioned,
+      ResponseReplied_notification: responseReplied,
+      TeamsLimitReminderNotification_notification: teamsLimitReminder,
+      TeamsLimitExceededNotification_notification: teamsLimitExceeded,
+      PromptToJoinOrgNotification_notification: promptToJoinOrg,
+      RequestToJoinOrgNotification_notification: requestToJoinOrg,
+      PageAccessGranted_notification: pageAccessGranted,
+      PageAccessRequested_notification: pageAccessRequested
+    } = notification
+    if (discussionMentioned)
+      return <typePicker.DISCUSSION_MENTIONED notification={discussionMentioned} />
+    if (kickedOut) return <typePicker.KICKED_OUT notification={kickedOut} />
+    if (paymentRejected) return <typePicker.PAYMENT_REJECTED notification={paymentRejected} />
+    if (taskInvolves) return <typePicker.TASK_INVOLVES notification={taskInvolves} />
+    if (promoteToBillingLeader)
+      return <typePicker.PROMOTE_TO_BILLING_LEADER notification={promoteToBillingLeader} />
+    if (teamArchived) return <typePicker.TEAM_ARCHIVED notification={teamArchived} />
+    if (teamInvitation) return <typePicker.TEAM_INVITATION notification={teamInvitation} />
+    if (meetingStageTimeLimitEnd)
+      return <typePicker.MEETING_STAGE_TIME_LIMIT_END notification={meetingStageTimeLimitEnd} />
+    if (responseMentioned) return <typePicker.RESPONSE_MENTIONED notification={responseMentioned} />
+    if (mentioned) return <typePicker.MENTIONED notification={mentioned} />
+    if (responseReplied) return <typePicker.RESPONSE_REPLIED notification={responseReplied} />
+    if (teamsLimitReminder)
+      return <typePicker.TEAMS_LIMIT_REMINDER notification={teamsLimitReminder} />
+    if (teamsLimitExceeded)
+      return <typePicker.TEAMS_LIMIT_EXCEEDED notification={teamsLimitExceeded} />
+    if (promptToJoinOrg) return <typePicker.PROMPT_TO_JOIN_ORG notification={promptToJoinOrg} />
+    if (requestToJoinOrg) return <typePicker.REQUEST_TO_JOIN_ORG notification={requestToJoinOrg} />
+    if (pageAccessGranted)
+      return <typePicker.PAGE_ACCESS_GRANTED notification={pageAccessGranted} />
+    if (pageAccessRequested)
+      return <typePicker.PAGE_ACCESS_REQUESTED notification={pageAccessRequested} />
+    return null
+  }
+  return <Suspense fallback={''}>{renderNotification()}</Suspense>
 }
 
 export default NotificationPicker

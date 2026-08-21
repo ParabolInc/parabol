@@ -44,7 +44,7 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
           }
         }
         localStage {
-          ...RetroMeetingUpdatesPromptLocalStage @relay(mask: false)
+          ...RetroMeetingUpdatesPromptLocalStage @relay(mask: false) @alias
         }
       }
     `,
@@ -53,7 +53,8 @@ const RetroMeetingUpdatesPrompt = (props: Props) => {
   const {localStage, team, meetingMembers} = meeting
   const {tasks} = team
   const currentMeetingMember = meetingMembers.find(
-    (meetingMember) => meetingMember.teamMember.id === localStage?.teamMemberId
+    (meetingMember) =>
+      meetingMember.teamMember.id === localStage?.RetroMeetingUpdatesPromptLocalStage?.teamMemberId
   )
   if (!currentMeetingMember) return null
   const {teamMember, user, isConnectedAt} = currentMeetingMember

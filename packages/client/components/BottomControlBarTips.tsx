@@ -111,15 +111,15 @@ const BottomControlBarTips = (props: Props) => {
   const meeting = useFragment(
     graphql`
       fragment BottomControlBarTips_meeting on NewMeeting {
-        ...VoteHelpMenu_meeting
-        ...ReflectHelpMenu_settings
+        ...VoteHelpMenu_meeting @alias
+        ...ReflectHelpMenu_settings @alias
         id
         meetingType
         localPhase {
           phaseType
         }
         localStage {
-          ...TeamHealthHelpMenu_stage
+          ...TeamHealthHelpMenu_stage @alias
         }
         phases {
           phaseType
@@ -156,6 +156,24 @@ const BottomControlBarTips = (props: Props) => {
     return null
   }
 
+  const renderMenuContent = () => {
+    if (menus === helps) {
+      if (phaseType === 'vote') {
+        const voteRef = meeting.VoteHelpMenu_meeting
+        return voteRef ? <VoteHelpMenu meetingRef={voteRef} /> : null
+      }
+      if (phaseType === 'reflect') {
+        const settingsRef = meeting.ReflectHelpMenu_settings
+        return settingsRef ? <ReflectHelpMenu meetingRef={settingsRef} /> : null
+      }
+      if (phaseType === 'TEAM_HEALTH') {
+        const stageRef = localStage.TeamHealthHelpMenu_stage
+        return stageRef ? <TeamHealthHelpMenu stageRef={stageRef} /> : null
+      }
+    }
+    return <MenuContent meetingType={meetingType} />
+  }
+
   return (
     <BottomNavControl
       dataCy={`tip-menu-toggle`}
@@ -166,7 +184,7 @@ const BottomControlBarTips = (props: Props) => {
       <BottomNavIconLabel icon='help_outline' iconColor='midGray' label={'Tips'} />
       {menuPortal(
         <Menu ariaLabel='Meeting tips' {...menuProps} className='max-h-80'>
-          <MenuContent meetingType={meetingType} stageRef={localStage} meetingRef={meeting} />
+          {renderMenuContent()}
         </Menu>
       )}
     </BottomNavControl>

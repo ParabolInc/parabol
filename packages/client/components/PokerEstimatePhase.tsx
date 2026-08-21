@@ -38,7 +38,7 @@ const PokerEstimatePhase = (props: Props) => {
         isCommentUnread
         rightDrawerOpen
         localStage {
-          ...PokerEstimateHeaderCard_stage
+          ...PokerEstimateHeaderCard_stage @alias
           ... on EstimateStage {
             discussionId
           }
@@ -85,7 +85,9 @@ const PokerEstimatePhase = (props: Props) => {
         </MeetingTopBar>
         <div className='flex flex-1 flex-col overflow-y-auto overflow-x-hidden'>
           <ErrorBoundary>
-            <PokerEstimateHeaderCard stage={localStage} />
+            {localStage.PokerEstimateHeaderCard_stage && (
+              <PokerEstimateHeaderCard stage={localStage.PokerEstimateHeaderCard_stage} />
+            )}
           </ErrorBoundary>
           <StageTimerDisplay meeting={meeting} />
           <div className='flex flex-1 flex-col'>

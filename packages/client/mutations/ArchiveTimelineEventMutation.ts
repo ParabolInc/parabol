@@ -25,7 +25,7 @@ const mutation = graphql`
           message
         }
       }
-      ...ArchiveTimelineEventMutation_notification @relay(mask: false)
+      ...ArchiveTimelineEventMutation_notification @relay(mask: false) @alias
     }
   }
 `

@@ -30,7 +30,7 @@ const mutation = graphql`
           message
         }
       }
-      ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false)
+      ...PokerAnnounceDeckHoverMutation_meeting @relay(mask: false) @alias
     }
   }
 `

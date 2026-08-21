@@ -91,7 +91,7 @@ const GitHubScopingSearchResults = (props: Props) => {
                         node {
                           __typename
                           ... on _xGitHubIssue {
-                            ...GitHubScopingSelectAllIssues_issues
+                            ...GitHubScopingSelectAllIssues_issues @alias
                             id
                             title
                             number
@@ -125,7 +125,7 @@ const GitHubScopingSearchResults = (props: Props) => {
           queryString
         }
         phases {
-          ...useGetUsedServiceTaskIds_phase
+          ...useGetUsedServiceTaskIds_phase @alias
           phaseType
         }
       }
@@ -148,7 +148,7 @@ const GitHubScopingSearchResults = (props: Props) => {
   const [isEditing, setIsEditing] = useState(false)
   const atmosphere = useAtmosphere()
   const estimatePhase = phases.find(({phaseType}) => phaseType === 'ESTIMATE')!
-  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase)
+  const usedServiceTaskIds = useGetUsedServiceTaskIds(estimatePhase.useGetUsedServiceTaskIds_phase)
   const handleAddIssueClick = () => setIsEditing(true)
 
   // even though it's a little herky jerky, we need to give the user feedback that a search is pending
@@ -187,7 +187,11 @@ const GitHubScopingSearchResults = (props: Props) => {
     <>
       <GitHubScopingSelectAllIssues
         usedServiceTaskIds={usedServiceTaskIds}
-        issuesRef={issues}
+        issuesRef={
+          issues?.flatMap(({GitHubScopingSelectAllIssues_issues: issue}) =>
+            issue ? [issue] : []
+          ) ?? null
+        }
         meetingId={meetingId}
       />
       <div className='overflow-auto'>

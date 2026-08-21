@@ -25,11 +25,11 @@ const ActionMeetingUpdates = (props: Props) => {
         endedAt
         showSidebar
         localStage {
-          ...ActionMeetingUpdatesStage @relay(mask: false)
+          ...ActionMeetingUpdatesStage @relay(mask: false) @alias
         }
         phases {
           stages {
-            ...ActionMeetingUpdatesStage @relay(mask: false)
+            ...ActionMeetingUpdatesStage @relay(mask: false) @alias
           }
         }
         team {
@@ -56,13 +56,14 @@ const ActionMeetingUpdates = (props: Props) => {
   const {viewerId} = atmosphere
   const {id: meetingId, endedAt, localStage, showSidebar, team} = meeting
   const {id: teamId, tasks} = team
-  const {teamMember} = localStage!
-  const {userId} = teamMember!
+  const userId = localStage?.ActionMeetingUpdatesStage?.teamMember.userId
   const teamMemberTasks = useMemo(() => {
     return tasks.edges
       .map(({node}) => node)
       .filter((task) => task.userId === userId && !isTaskPrivate(task.tags))
   }, [tasks, userId])
+
+  if (!userId) return null
 
   return (
     <MeetingUpdatesContent

@@ -61,7 +61,7 @@ const useStartMeeting = () => {
           }
         }
         startRetrospective(teamId: $teamId) {
-          ...useStartMeeting_retrospective @relay(mask: false)
+          ...useStartMeeting_retrospective @relay(mask: false) @alias
           ... on ErrorPayload {
             error {
               message
@@ -74,7 +74,7 @@ const useStartMeeting = () => {
   const [startCheckIn, startCheckInLoading] = useMutation<useStartMeetingCheckInMutation>(graphql`
     mutation useStartMeetingCheckInMutation($teamId: ID!) {
       startCheckIn(teamId: $teamId) {
-        ...useStartMeeting_checkIn @relay(mask: false)
+        ...useStartMeeting_checkIn @relay(mask: false) @alias
         ... on ErrorPayload {
           error {
             message
@@ -98,7 +98,7 @@ const useStartMeeting = () => {
           }
         }
         startSprintPoker(teamId: $teamId) {
-          ...useStartMeeting_sprintPoker @relay(mask: false)
+          ...useStartMeeting_sprintPoker @relay(mask: false) @alias
           ... on ErrorPayload {
             error {
               message
@@ -112,7 +112,7 @@ const useStartMeeting = () => {
     graphql`
       mutation useStartMeetingTeamPromptMutation($teamId: ID!) {
         startTeamPrompt(teamId: $teamId) {
-          ...useStartMeeting_teamPrompt @relay(mask: false)
+          ...useStartMeeting_teamPrompt @relay(mask: false) @alias
           ... on ErrorPayload {
             error {
               message
@@ -143,7 +143,7 @@ const useStartMeeting = () => {
               if (data.startRetrospective?.error) {
                 reject(data.startRetrospective.error.message)
               }
-              resolve(data.startRetrospective?.meeting?.id)
+              resolve(data.startRetrospective?.useStartMeeting_retrospective?.meeting?.id)
             }
           })
         case 'action':
@@ -155,7 +155,7 @@ const useStartMeeting = () => {
               if (data.startCheckIn?.error) {
                 reject(data.startCheckIn.error.message)
               }
-              resolve(data.startCheckIn?.meeting?.id)
+              resolve(data.startCheckIn?.useStartMeeting_checkIn?.meeting?.id)
             }
           })
         case 'poker':
@@ -167,7 +167,7 @@ const useStartMeeting = () => {
               if (data.startSprintPoker?.error) {
                 reject(data.startSprintPoker.error.message)
               }
-              resolve(data.startSprintPoker?.meeting?.id)
+              resolve(data.startSprintPoker?.useStartMeeting_sprintPoker?.meeting?.id)
             }
           })
         case 'teamPrompt':
@@ -179,7 +179,7 @@ const useStartMeeting = () => {
               if (data.startTeamPrompt?.error) {
                 reject(data.startTeamPrompt.error.message)
               }
-              resolve(data.startTeamPrompt?.meeting?.id)
+              resolve(data.startTeamPrompt?.useStartMeeting_teamPrompt?.meeting?.id)
             }
           })
         default: {

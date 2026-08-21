@@ -22,7 +22,7 @@ export const useUnlinkTeam = () => {
             message
           }
         }
-        ...useUnlinkTeam_success
+        ...useUnlinkTeam_success @alias
       }
     }
   `)

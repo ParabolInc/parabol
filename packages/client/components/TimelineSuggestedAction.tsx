@@ -2,7 +2,6 @@ import graphql from 'babel-plugin-relay/macro'
 import {lazy} from 'react'
 import {useFragment} from 'react-relay'
 import type {TimelineSuggestedAction_viewer$key} from '../__generated__/TimelineSuggestedAction_viewer.graphql'
-import type {ValueOf} from '../types/generics'
 import DelayUnmount from './DelayUnmount'
 
 interface Props {
@@ -53,18 +52,29 @@ function TimelineSuggestedAction(props: Props) {
   )
   const {suggestedActions} = viewer
   const suggestedAction = suggestedActions?.[0]
-  let AsyncComponent: ValueOf<typeof lookup> | undefined
-  if (suggestedAction) {
-    const {__typename} = suggestedAction
-    AsyncComponent = lookup[__typename as keyof typeof lookup]
+  const renderAction = () => {
+    if (!suggestedAction) return null
+    const {
+      SuggestedActionInviteYourTeam_suggestedAction: inviteYourTeam,
+      SuggestedActionTryTheDemo_suggestedAction: tryTheDemo,
+      SuggestedActionTryRetroMeeting_suggestedAction: tryRetroMeeting,
+      SuggestedActionTryActionMeeting_suggestedAction: tryActionMeeting,
+      SuggestedActionCreateNewTeam_suggestedAction: createNewTeam
+    } = suggestedAction
+    if (inviteYourTeam)
+      return <lookup.SuggestedActionInviteYourTeam suggestedAction={inviteYourTeam} />
+    if (tryTheDemo) return <lookup.SuggestedActionTryTheDemo suggestedAction={tryTheDemo} />
+    if (tryRetroMeeting)
+      return <lookup.SuggestedActionTryRetroMeeting suggestedAction={tryRetroMeeting} />
+    if (tryActionMeeting)
+      return <lookup.SuggestedActionTryActionMeeting suggestedAction={tryActionMeeting} />
+    if (createNewTeam)
+      return <lookup.SuggestedActionCreateNewTeam suggestedAction={createNewTeam} />
+    return null
   }
   return (
     <div className='pb-4'>
-      <DelayUnmount unmountAfter={500}>
-        {AsyncComponent && suggestedAction ? (
-          <AsyncComponent suggestedAction={suggestedAction} />
-        ) : null}
-      </DelayUnmount>
+      <DelayUnmount unmountAfter={500}>{renderAction()}</DelayUnmount>
     </div>
   )
 }
@@ -73,11 +83,11 @@ function TimelineSuggestedAction(props: Props) {
 graphql`
   fragment TimelineSuggestedAction_suggestedAction on SuggestedAction {
     __typename
-    ...SuggestedActionInviteYourTeam_suggestedAction
-    ...SuggestedActionTryTheDemo_suggestedAction
-    ...SuggestedActionTryRetroMeeting_suggestedAction
-    ...SuggestedActionTryActionMeeting_suggestedAction
-    ...SuggestedActionCreateNewTeam_suggestedAction
+    ...SuggestedActionInviteYourTeam_suggestedAction @alias
+    ...SuggestedActionTryTheDemo_suggestedAction @alias
+    ...SuggestedActionTryRetroMeeting_suggestedAction @alias
+    ...SuggestedActionTryActionMeeting_suggestedAction @alias
+    ...SuggestedActionCreateNewTeam_suggestedAction @alias
   }
 `
 

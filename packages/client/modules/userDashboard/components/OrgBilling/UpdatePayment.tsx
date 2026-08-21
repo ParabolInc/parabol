@@ -91,7 +91,9 @@ const UpdatePayment = (props: Props) => {
 
     const handleCompletedUpdate = async (res: UpdateCreditCardMutation$data) => {
       const {updateCreditCard} = res
-      const {stripeSubscriptionClientSecret, error} = updateCreditCard
+      const {error} = updateCreditCard
+      const stripeSubscriptionClientSecret =
+        updateCreditCard.UpdateCreditCardMutation_organization?.stripeSubscriptionClientSecret
       if (error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           error?.message ?? 'Something went wrong. Please try again or contact support.'

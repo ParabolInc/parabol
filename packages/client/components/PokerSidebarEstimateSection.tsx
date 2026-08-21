@@ -30,7 +30,7 @@ const PokerSidebarEstimateSection = (props: Props) => {
         facilitatorStageId
         # load up the localPhase
         phases {
-          ...useMakeStageSummaries_phase
+          ...useMakeStageSummaries_phase @alias
           ... on EstimatePhase {
             stages {
               scores {
@@ -56,7 +56,10 @@ const PokerSidebarEstimateSection = (props: Props) => {
   const estimatePhase = phases!.find(({phaseType}) => phaseType === 'ESTIMATE')!
   const {stages} = estimatePhase!
   const {id: localStageId} = localStage
-  const stageSummaries = useMakeStageSummaries(estimatePhase, localStageId)
+  const stageSummaries = useMakeStageSummaries(
+    estimatePhase.useMakeStageSummaries_phase,
+    localStageId
+  )
   const inSync = localStageId === facilitatorStageId
 
   const onDragEnd = (result: DropResult) => {

@@ -19,7 +19,7 @@ const mutation = graphql`
           message
         }
       }
-      ...RevealTeamHealthVotesMutation_meeting @relay(mask: false)
+      ...RevealTeamHealthVotesMutation_meeting @relay(mask: false) @alias
     }
   }
 `

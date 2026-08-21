@@ -33,12 +33,12 @@ const NewMeetingCheckIn = (props: Props) => {
         facilitatorStageId
         localStage {
           id
-          ...NewMeetingCheckInLocalStage @relay(mask: false)
+          ...NewMeetingCheckInLocalStage @relay(mask: false) @alias
         }
         phases {
           stages {
             id
-            ...NewMeetingCheckInLocalStage @relay(mask: false)
+            ...NewMeetingCheckInLocalStage @relay(mask: false) @alias
           }
         }
         teamId
@@ -49,10 +49,10 @@ const NewMeetingCheckIn = (props: Props) => {
   const atmosphere = useAtmosphere()
   const {endedAt, showSidebar, localStage, phases} = meeting
   const {id: localStageId} = localStage
-  const user = localStage.teamMember?.user
+  const user = localStage.NewMeetingCheckInLocalStage?.teamMember.user
   const nextStageRes = findStageAfterId(phases, localStageId)
   // in case the checkin is the last phase of the meeting
-  if (!nextStageRes) return null
+  if (!nextStageRes || !user) return null
   const {viewerId} = atmosphere
   const isViewerMeetingSection = user?.id === viewerId
   return (
@@ -66,7 +66,7 @@ const NewMeetingCheckIn = (props: Props) => {
           <PhaseHeaderTitle>{phaseLabelLookup.checkin}</PhaseHeaderTitle>
         </MeetingTopBar>
         <PhaseWrapper>
-          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user!} />
+          <NewMeetingCheckInPrompt meetingRef={meeting} userRef={user} />
           <div className='flex min-h-[98px] w-full justify-center p-4'>
             {isViewerMeetingSection && (
               <div className='mt-4'>

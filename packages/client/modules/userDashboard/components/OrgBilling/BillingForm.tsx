@@ -92,7 +92,8 @@ const BillingForm = (props: Props) => {
     const handleCompletedSubscription = async (res: CreateStripeSubscriptionMutation$data) => {
       const {createStripeSubscription} = res
       const stripeSubscriptionClientSecret =
-        createStripeSubscription?.stripeSubscriptionClientSecret
+        createStripeSubscription?.CreateStripeSubscriptionMutation_organization
+          ?.stripeSubscriptionClientSecret
       if (createStripeSubscription.error || !stripeSubscriptionClientSecret) {
         const newErrMsg =
           createStripeSubscription.error?.message ??

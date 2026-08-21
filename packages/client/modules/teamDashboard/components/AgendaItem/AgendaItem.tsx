@@ -41,7 +41,8 @@ const getItemProps = (
   const agendaItemsPhase = phases.find((phase) => phase.phaseType === 'agendaitems')!
   const localStageId = (localStage && localStage.id) || ''
   const {phaseType} = localPhase
-  const {stages} = (phaseType === 'agendaitems' ? localPhase : agendaItemsPhase) ?? {}
+  const stages = (phaseType === 'agendaitems' ? localPhase : agendaItemsPhase)?.AgendaItemPhase
+    ?.stages
   if (!stages) return fallback
   const agendaItemStage = stages.find((stage) => stage.agendaItem?.id === agendaItemId)
   if (!agendaItemStage) return fallback
@@ -101,11 +102,11 @@ const AgendaItem = (props: Props) => {
           stages {
             id
           }
-          ...AgendaItemPhase @relay(mask: false)
+          ...AgendaItemPhase @relay(mask: false) @alias
         }
         localPhase {
           phaseType
-          ...AgendaItemPhase @relay(mask: false)
+          ...AgendaItemPhase @relay(mask: false) @alias
         }
         localStage {
           id
