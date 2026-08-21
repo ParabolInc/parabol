@@ -80,8 +80,12 @@ export async function up(db: Kysely<any>): Promise<void> {
   } as const
 
   for (const service of ['jira', 'github'] as const) {
-    const {clientId, clientSecret} = GLOBAL_PROVIDERS.find((p) => p.service === service)!
-    if (clientId && clientSecret) continue
+    const {id: providerId} = await sql<{
+      id: number | null
+    }>`SELECT ${globalProviderId(service)} AS id`
+      .execute(db)
+      .then((res) => res.rows[0]!)
+    if (providerId !== null) continue
     const {legacyTable, envVars} = LEGACY_TABLES[service]
     const {count} = await sql<{count: string}>`SELECT count(*) FROM ${sql.raw(`"${legacyTable}"`)}`
       .execute(db)
